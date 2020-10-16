@@ -3,3 +3,14 @@
 ################################################################################
 
 /Sushi.Mediakiwi/bin/Debug/netcoreapp3.1/Sushi.Mediakiwi.pdb
+/Sushi.Mediakiwi/bin/Debug/netcoreapp3.1/Sushi.Mediakiwi.dll
+/Sushi.Mediakiwi/bin/Debug/netcoreapp3.1/Sushi.Mediakiwi.deps.json
+/Sushi.Mediakiwi/bin/Debug/netcoreapp3.1/Sushi.Mediakiwi.Data.pdb
+/Sushi.Mediakiwi/bin/Debug/netcoreapp3.1/Sushi.Mediakiwi.Data.dll
+/Sushi.Mediakiwi/obj
+/Sushi.Mediakiwi.Data/bin/Debug/netstandard2.0
+/Sushi.Mediakiwi.Tests/obj
+/Sushi.Mediakiwi.Tests/bin/Debug/netcoreapp3.1
+/Sushi.Mediakiwi.Demonstration/obj
+/Sushi.Mediakiwi.Demonstration/bin/Debug/netcoreapp3.1
+/Sushi.Mediakiwi.Data/obj

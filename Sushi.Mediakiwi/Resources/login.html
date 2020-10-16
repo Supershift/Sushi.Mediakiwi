@@ -1,0 +1,38 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <title>[[MK_ENV_TITLE]]</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta name="robots" content="noindex">
+    <link rel="stylesheet" href="[[MK_CDN_PATH]]compiled/bundel_login.min.css" type="text/css" media="all" />
+    [[MK_STYLE]]
+    <script type="text/javascript" src="[[MK_CDN_PATH]]compiled/bundel_login.min.js"></script>
+    <!--[if IE]>
+        <meta http-equiv="imagetoolbar" content="no"/>
+        <script type="text/javascript" src="[[MK_CDN_PATH]]scripts/html5.js"></script>
+    <![endif]-->
+    [[MK_SIGNIN_HEAD]]
+    <style type="text/css">
+        body {
+            background: #f4f4f4 !important;
+        }
+    </style>
+</head>
+<body>
+    <form id="uxForm" method="post" action="[[MK_CURR_PAGE]]" enctype="multipart/form-data">
+        <input type="hidden" name="autopostback" id="autopostback" value="" />
+        <section id="bodySection" class="loginPage"[[MK_LOGINSECTION_STYLE]]>
+            <section id="loginContent">
+                <section id="login" class="component">
+                    [[MK_LOGINBOX_LOGO]]
+                    <div id="api">
+                        [[MK_FORM]]
+                    </div>
+                </section>
+            </section>
+            [[MK_SIGNIN_SIGNATURE]]
+        </section>
+    </form>
+</body>
+</html>
