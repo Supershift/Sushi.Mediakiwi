@@ -21,3 +21,4 @@
 /Sushi.Mediakiwi.Data/bin/Release/netstandard2.0
 /Sushi.Mediakiwi.Demonstration/bin/Release/netcoreapp3.1
 /Sushi.Mediakiwi.Tests/bin/Release/netcoreapp3.1
+*.testlog
