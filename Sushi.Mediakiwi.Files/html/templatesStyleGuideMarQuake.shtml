@@ -1,0 +1,79 @@
+﻿<!doctype html>
+<html>
+	<head>
+		<meta charset="UTF-8" />
+		<title>Example HTML 5 Template</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+		<meta name = "viewport" content = "initial-scale = 1.0">
+		<!--[if IE]>
+			<meta http-equiv="imagetoolbar" content="no"/>            
+			<script type="text/javascript" src="../scripts/html5.js"></script>
+		<![endif]-->
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<link rel="stylesheet" href="../styles/stylesFlatv2.css" type="text/css" media="all" />
+		<link rel="stylesheet" href="../styles/stylesSentimention.css">
+		<link rel="stylesheet" href="../styles/mainMenuFlatv2.css" type="text/css"/>
+		<link rel="stylesheet" href="../styles/stylesBar.css" type="text/css"/>
+		<link rel="stylesheet" href="../styles/colorbox.css" type="text/css"/>
+		<link rel="stylesheet" href="../styles/fontello.css">
+		<link rel="stylesheet" href="../styles/animation.css">
+		<link rel="stylesheet" href="../styles/formalizev2.css" type="text/css" media="all" />
+		<link rel="stylesheet" href="../styles/planning.css" type="text/css" media="all" />
+		<link rel="stylesheet" href="../styles/jquery-ui-1.8.16.custom.css" type="text/css" media="all" />
+		<!-- 
+		favicon 
+		<link rel="icon" href="../images/favicon.png" type="image/png" />
+		<link rel="shortcut icon" href="../images/favicon.ico" type="image/x-icon" />
+		scripts
+		<script type="text/javascript" src="../scripts/search.js"></script>
+		-->
+        <script type="text/javascript" src="../scripts/preview.js"></script>
+        <script type="text/javascript" src="../scripts/jquery-1.7.1.js"></script>
+        <script type="text/javascript" src="../scripts/jquery-ui-1.10.3.custom.min.js"></script>
+        <script type="text/javascript" src="../scripts/ui.multiselect.js"></script>
+        <link rel="stylesheet" href="../scripts/select2/select2.css" type="text/css" media="all" />
+        <script type="text/javascript" src="../scripts/select2/select2.js"></script>
+        <!-- only for dutch -->
+        <script type="text/javascript" src="../scripts/testdrive.demo.js"></script>
+        <script type="text/javascript" src="../scripts/jquery.hoverIntent.min.js"></script>
+        <script type="text/javascript" src="../scripts/jquery.curtainMenu.js"></script>
+        <script type="text/javascript" src="../scripts/jquery.colorbox.js"></script>
+        <script type="text/javascript" src="../scripts/jquery.barrating.js"></script>
+        <link rel="stylesheet" href="../styles/css/stylesMarQuake.css">
+	</head>
+	<body class="fixed">
+		<section id="bodySection">
+			<header id="bodyHeader">
+				<a href=""><img src="../images/logoSenti.png" alt="Sentimention" title="Website logo" id="bodyLogo" /></a>
+			</header>
+			<section id="homeContent">
+				<!--#include file="./component_sideNav.html" -->
+				<article id="homeArticle">
+					<!--#include file="./component_filterForm.html" -->
+					<!--#include file="./component_pageHeaderv2.html" -->
+                    <!--#include file="./component_pageHeaderv2Senti.html" -->
+					<!--#include file="./component_pageHeaderFilter.html" -->
+                    <!--#include file="./component_iconBar.html" -->
+					<!--#include file="./component_iconBarAdd.html" -->	
+					<!--#include file="./component_formGridv2.html" -->	
+					<!--#include file="./component_formFilterSenti.html" -->	
+					<!--#include file="./component_formStylesv2.html" -->	
+                    <!--#include file="./component_inbox.html" -->
+                    <!--#include file="./component_notification.html" -->
+                    <!--#include file="./component_notificationDropdown.html" -->
+				</article>
+				<div class="clear"></div>
+			</section>
+            <menu id="demoControls" type="toolbar">
+                <li><a class="popNew" title="Zoeken" href="../html/popupZoeken.shtml">Open popup</a></li>
+                <li><a class="popSentiment" title="Jan Jansen on Twitter" href="../html/popupSentimentPos.shtml">Open popup</a></li>
+                <li><a class="popSentiment" title="Jan Jansen on Twitter" href="../html/popupSentimentNeg.shtml">Open popup</a></li>
+                <li><a class="popSentiment" title="Jan Jansen on Twitter" href="../html/popupSentimentNeu.shtml">Open popup</a></li>
+            </menu>
+			<nav id="bodyNav">
+                <!--#include file="./component_mainMenuSentimention.html" -->
+                <!--#include file="./component_loginNavNew.html" -->
+			</nav>
+		</section>
+	</body>
+</html>

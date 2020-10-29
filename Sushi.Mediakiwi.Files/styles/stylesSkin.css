@@ -1,0 +1,246 @@
+	/* CLASSES: The markup of layouts */
+@media all {
+	body {
+		color: #ffffff;
+		background: #3598db url(../images/backNavFlat.png) repeat-x 0% 0%; /* Old browsers */
+	}
+
+		body h1, body h2, body h3 {
+			color: #ffffff;
+		}
+
+		body menu.sideNav a {
+			color: #ffffff !important;
+		}
+
+		body ul.tabs {
+			background: #2988c8;
+		}
+
+			body ul.tabs li a {
+				background: #2988c8;
+				color: #ffffff !important;
+				border-right: solid 2px #3598db!important;
+			}
+
+		body .forms {
+			background: #2988c8;
+		}
+
+		body label, body li.laster {
+			color: #ffffff !important;
+		}
+
+		body .detail ul.issues {
+			background: #3598db !important;
+		}
+
+			body .detail ul.issues li {
+				background: #2988c8 !important;
+				color: #ffffff;
+			}
+
+				body .detail ul.issues li h2, body .detail ul.issues li h2 span.number, .dashes header h2 {
+					color: #ffffff !important;
+				}
+
+				body .detail ul.issues li span.time, body .detail ul.issues li span.time strong, body .detail ul.issues li span.time em, body .detail ul.issues li span.time span {
+					color: #ffffff;
+				}
+
+		body .detail {
+			background: #2988c8;
+		}
+
+		body div.footer {
+			background: #2988c8;
+			border-top: solid 2px #3598db!important;
+		}
+
+		body #fixedBar {
+			background: #2988c8;
+		}
+
+			body #fixedBar div.supper li, body #fixedBar div.supper li a {
+				background: #2988c8;
+			}
+
+			body #fixedBar div.supper div.arrow {
+				border-top: solid 10px #2988c8;
+			}
+
+	body .planning article, body .searchFilters, body .dashes, body article.dataBlock, .dataBlock table tbody tr.odd td {
+		background: #2988c8;
+	}
+		body article.dataBlock, .dataBlock table tbody tr td, body article.dataBlock, .dataBlock table thead tr th {
+			color: #ffffff !important;
+			border-bottom: solid 1px #3598db;
+		}
+		body article.dataBlock, .dataBlock table thead tr th {
+			color: #363636 !important;
+		}
+		body .dashes header {
+			border-bottom: solid 3px #3598db;
+		}
+		.planning article table tbody tr {
+			border-top: solid 4px #3598db;
+		}
+		.planning article table tbody td {
+			background: #3598db !important;
+		}
+			body .planning article table tbody td {
+				border-left: solid 15px #2988c8 !important;
+			}
+			body .planning article table thead td div, .planning article table tbody th div {
+				color: #ffffff;
+			}
+				body .dashes header figure .flaticon.solid.gear {
+					color: #ffffff;
+				}
+	body .searchGraphic {
+		background: #2988c8;	
+	}
+	body .searchFilters.smaller {
+		background: #2988c8;
+	}
+		body .dataBlock table.issue{
+			border-bottom: solid 2px #3598db !important;
+		}	
+			body .dataBlock table.issue h3 {
+				color: #ffffff;
+			}
+			body .dataBlock table.issue div.sign {
+				color: #1a1a1a;
+				background: #ffffff;
+			}
+			body .dataBlock table.issue div.sign h3 {
+				color: #1a1a1a;
+				background: #ffffff;
+			}
+			.dataBlock table thead tr th.number {
+				background: #ffffff;
+			}
+	body input.error {
+		border-left: 8px solid #3a3a3a;
+	}
+	body .formTable:hover {
+		border-left: solid 8px #3a3a3a;
+	}
+	body #homeArticle footer,body .buttonBar {
+		background: #2988c8 !important;
+	}
+	body .style div.item, body .style div.results {
+		background: #2988c8 !important;
+	}
+		body .style div.item p {
+			color: #ffffff;
+		}
+		body .style div.item span.blue {
+			color: #ffffff;
+		}
+		body .style ul.folders li {
+			background: #2988c8 !important;
+			border: none;
+		}
+		body .style ul.folders li p {
+			color: #ffffff;
+		}
+		body .style ul.folders li a {
+			color: #1a1a1a !important;
+		}
+	body .style div.files {
+		background: #2988c8 !important;
+	}
+	body .metaMenu {
+			color: #2988c8;
+			background: #ffffff;
+		}
+		body .metaMenu span.flaticon {
+			color: #3598db !important;
+			font-size: 200%;
+		}
+			body .metaMenu li.last a {
+				color: #2988c8;
+			}
+			body .metaMenu li img {
+				padding: 0px 0px 0px 4px;
+				margin-top: -8px;
+			}
+			body .inbox {
+				color: #ffffff;
+				background: #ffffff;
+			}
+				body .inbox span.flaticon {
+					color: #3598db !important;
+					font-size: 200%;
+				}
+				body .inbox a {
+					color: #3598db;
+				}
+				body .inbox ul {
+					background: #ffffff;
+				}
+					body .inbox ul li {
+						border-bottom: solid 2px #3598db;
+					}
+					body .inbox ul li h3 {
+						color: #3598db;
+					}
+					body .inbox ul li p {
+						color: #3598db;
+					}
+		body .searchFields  {
+			color: #ffffff;
+			background: #ffffff;
+		}
+			body .searchFields span.flaticon {
+				color: #3598db !important;
+				font-size: 200%;
+			}
+			body .searchFields fieldset {
+				float:right;
+				background: #ffffff;
+			}
+			body .searchFields input.bigUn {
+				color: #ffffff !important;
+				background: #323232;
+			}
+			body .searchFields select.bigUn {
+				color: #ffffff;
+				background: #323232;
+			}
+	body #loginContent article {
+		background: #2988c8 !important;
+		border: none;
+	}
+		body #loginContent article h1 {
+			color: #ffffff;
+		}
+	body input[type="submit"], a.submit{
+		background: #ffffff;
+		color: #3598db !important;
+	}
+	body input[type="submit"]:hover{
+		background: #3598db; /* Old browsers */
+		color: #ffffff !important;
+	}
+	body input[type="submit"].else{
+		background: #3598db; /* Old browsers */
+		color: #ffffff;
+	}
+	body input[type="submit"].else:hover {
+		background: #3598db; /* Old browsers */
+	}
+	.buttonBar a {
+		background: #ffffff;
+		color: #3598db;	
+	}
+	.buttonBar a:hover {
+		background: #3598db; /* Old browsers */
+		color: #ffffff;
+	}
+	div.footer ul li ul a {
+		background: #ffffff;
+		color: #3598db !important;	
+	}
+}

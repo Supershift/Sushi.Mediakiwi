@@ -1,0 +1,77 @@
+﻿<!doctype html>
+<html>
+	<head>
+		<meta charset="UTF-8" />
+		<title>Example HTML 5 Template</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+		<meta name="viewport" content="width=device-width, user-scalable=1.0">
+        <script type='text/javascript' src='ReView.js'></script>
+		<!--[if IE]>
+			<meta http-equiv="imagetoolbar" content="no"/>            
+			<script type="text/javascript" src="../scripts/html5.js"></script>
+		<![endif]-->
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<link rel="stylesheet" href="../styles/stylesFlatv2.css" type="text/css" media="all" />
+		<link rel="stylesheet" href="../styles/mainMenuFlatv2.css" type="text/css"/>
+		<link rel="stylesheet" href="../styles/stylesBar.css" type="text/css"/>
+		<link rel="stylesheet" href="../styles/colorbox.css" type="text/css"/>
+		<link rel="stylesheet" href="../styles/fontello.css">
+		<link rel="stylesheet" href="../styles/animation.css">
+		<link rel="stylesheet" href="../styles/formalizev2.css" type="text/css" media="all" />
+		<link rel="stylesheet" href="../styles/planning.css" type="text/css" media="all" />
+		<link rel="stylesheet" href="../styles/jquery-ui-1.8.16.custom.css" type="text/css" media="all" />
+		<link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700' rel='stylesheet' type='text/css'>
+		<link rel="stylesheet" href="../styles/styles.css">
+		<!-- 
+		favicon 
+		<link rel="icon" href="../images/favicon.png" type="image/png" />
+		<link rel="shortcut icon" href="../images/favicon.ico" type="image/x-icon" />
+		scripts
+		<script type="text/javascript" src="../scripts/search.js"></script>
+		-->
+		<script type="text/javascript" src="../scripts/preview.js"></script>
+		<script type="text/javascript" src="../scripts/jquery-1.7.1.js"></script>		
+        <script type="text/javascript" src="../scripts/jquery-ui-1.10.3.custom.min.js"></script>
+		<script type="text/javascript" src="../scripts/jquery-ui.multidatespicker.js"></script>
+		<script type="text/javascript" src="../scripts/ui.multiselect.js"></script>
+	     <!-- only for dutch -->
+		<script type="text/javascript" src="../scripts/highcharts.js"></script>
+		<script type="text/javascript" src="../scripts/jquery.colorbox.js"></script>
+        <script type="text/javascript" src="../scripts/jquery.ui.datepicker-nl.js"></script>
+		<script type="text/javascript" src="../scripts/jquery.tipTip.minified.js"></script>
+		<script type="text/javascript" src="../scripts/jquery.slimscroll.min.js"></script>
+        <script type="text/javascript" src="../scripts/jquery.numeric.js"></script>
+		<script type="text/javascript" src="../scripts/jquery.formalize.js"></script>
+		<script type="text/javascript" src="../scripts/jquery-ui-timepicker-addon.js"></script>
+		<script type="text/javascript" src="../scripts/jquery.hoverIntent.min.js"></script>
+		<script type="text/javascript" src="../scripts/jquery.curtainMenu.js"></script>
+        <script type="text/javascript" src="../scripts/knockout-2.2.1.js"></script>
+        <script type="text/javascript" src="../scripts/jquery.ambiance.js"></script>
+		<script type="text/javascript" src="../scripts/testdrive.demo.js"></script>
+		<script type="text/javascript" src="../scripts/fixedBar.js"></script>
+		<link rel="stylesheet" href="../scripts/select2/select2.min.css" type="text/css" media="all" />
+		<script type="text/javascript" src="../scripts/select2/select2.js"></script>
+	</head>
+	<body class="full sider">
+		<section id="bodySection">
+			<header id="bodyHeader">
+				<a href=""><img src="../images/MK_logo.png" alt="Sentimention" title="Website logo" id="bodyLogo" /></a>
+			</header>
+			<section id="homeContent">
+				<!--#include file="./component_sideNavs.html" -->
+				<article id="homeArticle">
+					<!--#include file="./component_pageHeaderv2.html" -->
+					<!--#include file="./component_planningTool.html" -->
+                    <!--#include file="./component_kanbanTool.html" -->
+					<!--#include file="./component_startWidgets.html" -->
+					<!--#include file="./component_planningTools.html" -->
+				</article>
+				<div class="clear"></div>
+			</section>
+			<nav id="bodyNav">
+				<!--#include file="./component_mainMenu.html" -->
+				<!--#include file="./component_loginNav.html" -->
+			</nav>
+		</section>
+	</body>
+</html>

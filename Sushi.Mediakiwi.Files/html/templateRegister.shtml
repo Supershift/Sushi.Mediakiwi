@@ -1,0 +1,58 @@
+﻿<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8" />
+		<title>Example HTML 5 Template</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<meta http-equiv="Content-Language" content="en-GB" />
+		<meta http-equiv="imagetoolbar" content="no"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<link rel="stylesheet" href="../styles/stylesFlatv2.css" type="text/css" media="all" />
+		<link rel="stylesheet" href="../styles/jquery-ui-1.8.16.custom.css" type="text/css" media="all" />
+		<link rel="stylesheet" href="../styles/formalizev2.css" type="text/css" media="all" />
+		<link rel="stylesheet" href="../styles/colorbox.css" type="text/css" media="all" />
+        <link rel="stylesheet" href="../styles/fontello.css">
+		<link rel="stylesheet" href="../styles/search.css" type="text/css"/>
+		<link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600,700' rel='stylesheet' type='text/css'>
+		<link rel="stylesheet" href="../styles/stylesSentimention.css">
+		<!-- 
+		favicon 
+		<link rel="icon" href="../images/favicon.png" type="image/png" />
+		<link rel="shortcut icon" href="../images/favicon.ico" type="image/x-icon" />
+		
+		scripts
+		<script type="text/javascript" src="../scripts/search.js"></script>
+		-->
+		<script type="text/javascript" src="../scripts/jquery-1.7.1.js"></script>
+        <script src="../scripts/jquery.placeholder.js"></script>
+		<script type="text/javascript" src="../scripts/head.load.min.js"></script>
+		<script type="text/javascript" src="../scripts/preview.js"></script>
+		<!--[if IE]>
+			<meta http-equiv="imagetoolbar" content="no"/>
+			<meta http-equiv="X-UA-Compatible" content="IE=8" />
+			<script type="text/javascript" src="../scripts/html5.js"></script>
+		<![endif]-->
+        <script>
+            $( document ).ready(function() {
+                $('input').placeholder();
+            });
+        </script>
+	</head>
+	<body class="registerPage">
+		<form enctype="multipart/form-data" action="/sentimention/" method="post">
+            <section id="bodySection">
+			    <header id="bodyHeader">
+				    <a href=""><img src="../images/logoSenti.png" alt="Sentimention" title="Website logo" id="bodyLogo" /></a>
+			    </header>
+			    <section id="loginContent" class="register">
+				    <!--#include file="./component_personal.html"-->
+                    <!--#include file="./component_billing.html"-->
+                    <!--#include file="./component_plans.html"-->
+                    <!--#include file="./component_thanks.html"-->
+                    <!--#include file="./component_extra.html"-->
+			    </section>
+			    <div class="clear"></div>
+		    </section>
+        </form>
+	</body>
+</html>

@@ -1,0 +1,227 @@
+﻿<section class="component" id="subjects">
+	<div class="ballGraph">
+		<style>
+				svg {
+					background: #ffffff; /* Old browsers */
+				}
+
+				.link line, marker {
+					stroke: #a0b0c6;
+					fill: #a0b0c6;
+					stroke-width: 1px;
+				}
+
+					.link line.separator {
+						stroke: #a0b0c6;
+						stroke-width: 2px;
+					}
+
+				.node circle {
+					/*stroke: #6b839f;
+			stroke-width: 1.5px; */
+				}
+
+				.node text {
+					font: 10px sans-serif;
+					fill: #a0b0c6;
+					pointer-events: none;
+				}
+
+				.button {
+					float: left;
+					clear: both;
+				}
+
+				.labelText {
+					background-color: #808080 !important;
+					border-radius: 4px;
+					font-size: 70%;
+					font-family: Arial;
+				}
+		</style>
+		<script src="../scripts/js/d3.v3.min.js"></script>
+		<script>
+
+			var width = 1280,
+				height = 600;
+
+			var size_ratio = 1.5;
+
+			var color = d3.scale.ordinal().range(["#3598db", "#9b58b5", "#1bbc9b", "#34495e", "#f39c11", "#e74b3c", "#34495e", "#f1c40f"]);
+
+			var radius = d3.scale.sqrt()
+				.range([0, 6]);
+
+			var svg = d3.select(".ballGraph").append("svg")
+				.attr("width", width)
+				.attr("height", height);
+
+			var force = d3.layout.force()
+				.size([width, height])
+				.charge(-800)
+				.friction(0.6)
+				.linkDistance(function (d) { return radius(d.source.size) + radius(d.target.size) + 100; });
+
+			d3.json("../scripts/js/graph.json", function (graph) {
+				force
+					.nodes(getNodes(graph))
+					.links(graph.links)
+					.on("tick", tick)
+					.start();
+
+				// build the arrow.
+				svg.append("svg").selectAll("marker")
+					.data([1, 2, 3, 4, 5, 6, 7, 8, 9, 10])      // Different link/path types can be defined here
+					  .enter().append("svg:marker")    // This section adds in the arrows
+						.attr("id", function (d) { return "marker_id_" + d })
+						.attr("viewBox", "0 -5 8 10")
+						.attr("refX", function (d) { return 24 + d * 2.5 }) // No idea why these numbers work
+						.attr("refY", 0)
+						.attr("markerWidth", 7)
+						.attr("markerHeight", 7)
+						.attr("orient", "auto")
+					  .append("svg:path")
+						.attr("d", "M0,-5L10,0L0,5");
+
+				var link = svg.selectAll(".link")
+					.data(graph.links)
+				  .enter().append("g")
+					.attr("class", "link")
+					.attr("id", function (d, i) { return "link_id_" + i; })
+					.attr("marker-end", function (d) { return "url(#marker_id_" + d.target.size + ")" })
+
+				link.append("line")
+				//.style("stroke-width", function(d) { return (d.correlation * 2 - 1) * 2 + "px"; });
+
+				//link.filter(function(d) { return d.correlation > 1; }).append("line")
+				//    .attr("class", "separator");
+
+				var node = svg.selectAll(".node")
+					.data(graph.nodes)
+				  .enter().append("g")
+					.attr("class", "node")
+					.call(force.drag);
+
+				node.append("circle")
+					.attr("r", function (d) { return radius(d.size) * size_ratio; })
+					.style("fill", function (d) { return color(d.color) });
+
+				node.append("text")
+					.attr("dy", ".35em")
+					.attr("x", function (d) { return 35 - 25 / d.size; })
+					.text(function (d) { return d.title; });
+
+				link.append("text")
+					.attr("class", "labelText")
+					.attr("dx", 20)
+					.attr("dy", 20)
+					.style("fill", "000000")
+				  .append("textPath")
+					.attr("xlink:href", function (d, i) { return "#link_id_" + i; })
+					.text(function (d, i) { return d.correlation; });
+
+
+				function tick() {
+					link.selectAll("line")
+						.attr("x1", function (d) { return d.source.x; })
+						.attr("y1", function (d) { return d.source.y; })
+						.attr("x2", function (d) { return d.target.x; })
+						.attr("y2", function (d) { return d.target.y; });
+
+					link.selectAll(".labelText")
+						.attr("dx", function (d) { return d.source.x; })
+						.attr("dy", function (d) { return d.source.y + 40; })
+
+					node.attr("transform", function (d) { return "translate(" + d.x + "," + d.y + ")"; });
+					node.each(collide(2));
+				}
+
+				function collide(node) {
+					var r = node.radius + 16,
+						nx1 = node.x - r,
+						nx2 = node.x + r,
+						ny1 = node.y - r,
+						ny2 = node.y + r;
+					return function (quad, x1, y1, x2, y2) {
+						if (quad.point && (quad.point !== node)) {
+							var x = node.x - quad.point.x,
+								y = node.y - quad.point.y,
+								l = Math.sqrt(x * x + y * y),
+								r = node.radius + quad.point.radius;
+							if (l < r) {
+								l = (l - r) / l * .5;
+								node.x -= x *= l;
+								node.y -= y *= l;
+								quad.point.x += x;
+								quad.point.y += y;
+							}
+						}
+						return x1 > nx2 || x2 < nx1 || y1 > ny2 || y2 < ny1;
+					};
+				}
+			});
+
+			function saveNodes() {
+				var nodes = $.extend(true, [], d3.selectAll('g.node'));
+				var nodes_data = [];
+
+				// Only need the 'root' nodes at depth 0, because it has all the children
+				//   associated with it. Just strip out the unneeded metadata...
+				var remove_d3_metadata = function (node_data) {
+					// remove the d3 metadata
+					delete node_data.parent;
+					delete node_data.x;
+					delete node_data.x0;
+					delete node_data.y;
+					delete node_data.y0;
+					delete node_data.__proto__;
+
+					var grandchildren = node_data.children;
+					if (grandchildren != null) {
+						$.each(grandchildren, function (index, grandchild) {
+							remove_d3_metadata(grandchild);
+						});
+					}
+				};
+
+				nodes.each(function () {
+					var node_data = d3.select(this).datum();
+					node_data.px = node_data.x;
+					node_data.py = node_data.y;
+					if (node_data.depth == 0) {
+						var children = node_data.children;
+						if (children != null) {
+							$.each(children, function (index, child) {
+								//remove_d3_metadata(child);
+							});
+						}
+					}
+					nodes_data.push(node_data);
+				});
+
+				//var root_node = nodes[0][0].__data__;
+				var nodes_json = JSON.stringify(nodes_data, "false", "  ");
+				console.log(nodes_json);
+				localStorage.setItem("subjects", nodes_json);
+			}
+
+			function getNodes(graph) {
+				var nodes_local = localStorage.getItem("subjects");
+
+				if (nodes_local != null) {
+					var nodes_json = JSON.parse(nodes_local);
+					graph.nodes = nodes_json;
+				}
+				console.log(nodes_local);
+
+				return graph.nodes;
+			}
+
+			function resetNodes(graph) {
+				localStorage.removeItem("subjects");
+				location.reload();
+			}
+
+		</script>
+	</div>
+</section>

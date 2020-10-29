@@ -1,0 +1,57 @@
+﻿<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8" />
+		<title>Example HTML 5 Template</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<meta http-equiv="Content-Language" content="en-GB" />
+		<meta http-equiv="imagetoolbar" content="no"/>
+		<meta http-equiv="X-UA-Compatible" content="IE=8" />
+		<link rel="stylesheet" href="../styles/stylesFlatv2.css" type="text/css" media="all" />
+		<link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600,700' rel='stylesheet' type='text/css'>
+        <link rel="stylesheet" href="../styles/responsive.css">
+        <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+		<!-- 
+		favicon 
+		<link rel="icon" href="../images/favicon.png" type="image/png" />
+		<link rel="shortcut icon" href="../images/favicon.ico" type="image/x-icon" />
+		-->
+        <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+        <script>
+            $( document ).ready(function() {
+                $(".add").click(function() {
+                    $("article").removeClass("desktop");
+                    $("article").addClass("mobile");
+                });
+                $(".remove").click(function() {
+                    $("article").removeClass("mobile");
+                    $("article").addClass("desktop");
+                });
+            });
+        </script>
+	</head>
+	<body>
+            <section id="bodySection">
+                <header id="bodyHeader">
+                    <a href=""><img src="../images/MK_logo.png" alt="Sentimention" title="Website logo" id="bodyLogo" /></a>
+                    <ul>
+                        <li>Preview</li>
+                        <li>
+                            <a href="#" class="fa fa-desktop remove"></a>
+                            <a href="#" class="fa fa-tablet add"></a>
+                        </li>
+                    </ul>
+			    </header>
+			    <article class="desktop">
+                    <div class="cell">
+                        <div class="card">
+                            <span class="three-quarters">Loading&#8230;</span>
+                        </div>
+                    </div>
+                    <div id="mask"></div>
+                    <iframe src="http://localhost/Mediakiwi/Main/Mediakiwi/Wim.Framework.Presentation/html/templatesStyleGuidePlanning.shtml?components=kanbanTool,mainMenu,loginNav"></iframe>
+                </article>
+			    <div class="clear"></div>
+		    </section>
+	</body>
+</html>

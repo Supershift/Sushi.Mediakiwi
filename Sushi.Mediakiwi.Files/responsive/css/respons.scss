@@ -1,0 +1,51 @@
+﻿@import 'stylesMixins.scss';
+body {
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+* { 
+    padding: 0px; margin:0px;
+    font-family: 'Open Sans', sans-serif;
+    box-sizing: border-box;
+}
+menu#mainMenu {
+	left: -400px;
+	border: solid 1px red;
+	width: 200px;
+	li {
+		display: block;
+		float: none;
+		a {
+			float: none;
+			display: block;
+		}
+	}
+}
+#homeAside {
+	left: -240px;
+}
+#homeArticle {
+	width: 100vw;
+	padding-left: 0px;
+}
+.widgets article.column-3 {
+	-webkit-column-count: 1; 
+    /* -webkit-column-gap: 15px; */
+    -webkit-column-width: 100%;
+    /* column-count: 3; */
+    /* column-gap: 15px; */
+    column-width: 100%;
+}
+.formTable tr th, .formTable tr td {
+	width: 100%;
+	display: block;
+}
+.formTable tr th label {
+	width: 100%;
+	display: block;
+}
+.formTable input.long, .formTable select.long, .formTable textarea.long, .formTable div.long {
+	width: calc(100vw - 40px);
+	display: block;
+}

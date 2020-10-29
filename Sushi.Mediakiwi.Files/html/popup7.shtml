@@ -1,0 +1,103 @@
+﻿<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8" />
+		<title>Example HTML 5 Template</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<meta http-equiv="Content-Language" content="en-GB" />
+		<meta http-equiv="imagetoolbar" content="no"/>
+		<meta http-equiv="X-UA-Compatible" content="IE=8" />
+		<link rel="stylesheet" href="../styles/stylesFlat.css" type="text/css" media="all" />
+		<link rel="stylesheet" href="../styles/jquery-ui-1.8.16.custom.css" type="text/css" media="all" />
+		<link rel="stylesheet" href="../styles/colorbox.css" type="text/css" media="all" />
+		<link rel="stylesheet" href="../styles/search.css" type="text/css"/>
+		<link rel="stylesheet" href="../styles/formalize.css" type="text/css"/>
+		<link rel="stylesheet" href="../styles/solid.css" type="text/css"/>
+		<!-- 
+		favicon 
+		<link rel="icon" href="../images/favicon.png" type="image/png" />
+		<link rel="shortcut icon" href="../images/favicon.ico" type="image/x-icon" />
+		scripts
+		<script type="text/javascript" src="../scripts/search.js"></script>
+		-->
+		<script type="text/javascript" src="../scripts/preview.js"></script>
+		<script type="text/javascript" src="../scripts/jquery-1.7.1.js"></script>
+		<script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+		<script type="text/javascript" src="../scripts/ui.multiselect.js"></script>
+	     <!-- only for dutch -->
+        <script type="text/javascript" src="../scripts/jquery.ui.datepicker-nl.js"></script>
+		<script type="text/javascript" src="../scripts/jquery.tipTip.minified.js"></script>
+		<script type="text/javascript" src="../scripts/jquery.slimscroll.min.js"></script>
+        <script type="text/javascript" src="../scripts/jquery.numeric.js"></script>
+		<script type="text/javascript" src="../scripts/jquery.formalize.js"></script>
+		<script type="text/javascript" src="../scripts/jquery.colorbox.js"></script>
+		<script type="text/javascript" src="../scripts/jquery-ui-timepicker-addon.js"></script>
+		<script type="text/javascript" src="../scripts/jquery.hoverIntent.min.js"></script>
+		<script type="text/javascript" src="../scripts/jquery.curtainMenu.js"></script>
+		<script type="text/javascript" src="../scripts/nicEdit.js"></script>
+        <script type="text/javascript" src="../scripts/knockout-2.2.1.js"></script>
+		<script type="text/javascript" src="../scripts/testdrive.demo.js"></script>
+		<script type="text/javascript" src="../scripts/testDrive.js"></script>
+		<script type="text/javascript" src="../scripts/fixedBar.js"></script>
+		
+		<!--[if IE]>
+			<meta http-equiv="imagetoolbar" content="no"/>
+			<meta http-equiv="X-UA-Compatible" content="IE=8" />
+			<script type="text/javascript" src="../scripts/html5.js"></script>
+		<![endif]-->
+		<style>
+		</style>
+	</head>
+	<body class="popupPage">
+		<header>
+			<p>
+				Nulla vitae elit libero, a pharetra augue. Integer posuere erat a ante venenatis dapibus posuere velit aliquet. Maecenas sed diam eget risus varius blandit sit amet non magna. Cras mattis consectetur purus sit amet fermentum.
+			</p>
+			<hr />
+		</header>
+		<article>
+			<h2>Edit</h2>
+			<div class="imageEdit">
+				<figure>
+					<img src="../images/person.jpg" />	
+				</figure>
+				<input class="half error" type="text" id="Text1" name="name" required="required" placeholder="Titel" />
+				<div class="half">
+					<textarea class="nicEditor half" id="Textarea1" name="description" cols="10" rows="8" required="required"></textarea>
+				</div>
+				<br class="clear" />
+			</div>
+			<hr />
+			<div class="imageEdit">
+				<figure>
+					<span class="flaticon solid camera"></span>
+				</figure>
+				<input class="half" type="text" id="Text2" name="name" required="required" placeholder="Titel" />
+				<div class="half">
+					<textarea class="nicEditor half" id="Textarea2" name="description" cols="10" rows="8" required="required"></textarea>
+				</div>
+				<br class="clear" />
+			</div>
+			<hr />
+			<div class="imageEdit">
+				<figure>
+					<img src="../images/person.jpg" />	
+				</figure>
+				<input class="half" type="text" id="Text3" name="name" required="required" placeholder="Titel" />
+				<div class="half">
+					<textarea class="nicEditor half" id="Textarea3" name="description" cols="10" rows="8" required="required"></textarea>
+				</div>
+				<br class="clear" />
+			</div>
+            <span class="clear"></span>
+            <div>
+                <input class="reset right" type="submit" value="Opslaan">
+            </div>
+		</article>
+	</body>
+	<script type="text/javascript" src="rte/tiny_mce.js"></script>
+    <script type="text/javascript">var prefix = '/superintra/repository/wim/portal.ashx'; var elements = 'description';</script>
+    <script type="text/javascript" src="rte//tiny_mce_options.js"></script>
+</html>
+
+				

@@ -9,6 +9,8 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <Copyright>2005-2020 Supershift B.V.</Copyright>
     <Description>Data Access Layer for the Mediakiwi Rapid Portal Development Framework.</Description>
+    <PackageProjectUrl>https://github.com/Supershift/Sushi.Mediakiwi</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/Supershift/Sushi.Mediakiwi</RepositoryUrl>
   </PropertyGroup>
 
   <ItemGroup>
