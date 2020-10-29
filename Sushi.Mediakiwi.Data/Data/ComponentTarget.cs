@@ -2,7 +2,7 @@
 using Sushi.MicroORM.Mapping;
 using System;
 using System.Threading.Tasks;
-using Sushi.Mediakiwi.Data.MircoORM;
+using Sushi.Mediakiwi.Data.MicroORM;
 
 namespace Sushi.Mediakiwi.Data
 {
@@ -120,7 +120,7 @@ DELETE FROM [wim_ComponentTargets]
 WHERE [ComponentTarget_Page_Key] = @thisPageId 
 AND [ComponentTarget_Component_Target] = @thisTarget 
 AND NOT [ComponentTarget_Component_Source] = @thisSource", filter);
-			connector.Cache.FlushRegion(connector.CacheRegion);
+			connector.Cache?.FlushRegion(connector.CacheRegion);
         }
 
         /// <summary>
@@ -140,7 +140,7 @@ DELETE FROM [wim_ComponentTargets]
 WHERE [ComponentTarget_Page_Key] = @thisPageId 
 AND [ComponentTarget_Component_Target] = @thisTarget 
 AND NOT [ComponentTarget_Component_Source] = @thisSource", filter);
-			connector.Cache.FlushRegion(connector.CacheRegion);
+			connector.Cache?.FlushRegion(connector.CacheRegion);
         }
 
         /// <summary>

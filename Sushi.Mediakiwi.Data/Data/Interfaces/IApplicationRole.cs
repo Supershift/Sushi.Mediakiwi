@@ -15,6 +15,7 @@ namespace Sushi.Mediakiwi.Data
         bool CanChangePage { get; set; }
         bool CanCreateList { get; set; }
         bool CanCreatePage { get; set; }
+        bool CanSeeFolder { get; set; }
         bool CanDeletePage { get; set; }
         bool CanPublishPage { get; set; }
         bool CanSeeAdmin { get; set; }

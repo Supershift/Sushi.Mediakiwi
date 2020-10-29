@@ -1,7 +1,7 @@
 ﻿using Sushi.MicroORM;
 using Sushi.MicroORM.Mapping;
 using System.Threading.Tasks;
-using Sushi.Mediakiwi.Data.MircoORM;
+using Sushi.Mediakiwi.Data.MicroORM;
 
 namespace Sushi.Mediakiwi.Data
 {
@@ -135,7 +135,7 @@ namespace Sushi.Mediakiwi.Data
                 filter.AddParameter("@thisID", ID);
 
                 connector.ExecuteNonQuery("UPDATE [Wim_PropertySearchColumns] SET [PropertySearchColumn_SortOrder] = [PropertySearchColumn_Key] WHERE [PropertySearchColumn_Key] = @thisID", filter);
-				connector.Cache.FlushRegion(connector.CacheRegion);
+				connector.Cache?.FlushRegion(connector.CacheRegion);
             }
 
             return true;
@@ -160,7 +160,7 @@ namespace Sushi.Mediakiwi.Data
                 filter.AddParameter("@thisID", ID);
 
                 await connector.ExecuteNonQueryAsync("UPDATE [Wim_PropertySearchColumns] SET [PropertySearchColumn_SortOrder] = [PropertySearchColumn_Key] WHERE [PropertySearchColumn_Key] = @thisID", filter);
-				connector.Cache.FlushRegion(connector.CacheRegion);
+				connector.Cache?.FlushRegion(connector.CacheRegion);
             }
 
             return true;

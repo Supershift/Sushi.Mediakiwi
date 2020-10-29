@@ -3,7 +3,7 @@ using Sushi.MicroORM.Mapping;
 using System;
 using System.Collections;
 using System.Threading.Tasks;
-using Sushi.Mediakiwi.Data.MircoORM;
+using Sushi.Mediakiwi.Data.MicroORM;
 
 namespace Sushi.Mediakiwi.Data
 {
@@ -97,7 +97,7 @@ namespace Sushi.Mediakiwi.Data
         {
             get { return SelectOne(); }
         }
-
+        public virtual string LogoHrefFull { get; set; }
         public virtual int ID { get; set; }
 
         /// <summary>

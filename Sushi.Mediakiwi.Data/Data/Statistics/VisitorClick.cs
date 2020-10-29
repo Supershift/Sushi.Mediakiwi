@@ -3,7 +3,7 @@ using Sushi.MicroORM.Mapping;
 using System;
 using System.Data;
 using System.Threading.Tasks;
-using Sushi.Mediakiwi.Data.MircoORM;
+using Sushi.Mediakiwi.Data.MicroORM;
 using Sushi.Mediakiwi.Data;
 
 namespace Sushi.Mediakiwi.Data.Statistics
@@ -201,14 +201,14 @@ namespace Sushi.Mediakiwi.Data.Statistics
                 filter.AddParameter("@profileId", ProfileID);
                 filter.AddParameter("@visitorLogId", VisitorLogID);
                 connector.ExecuteNonQuery("UPDATE [wim_VisitorLogs] SET [VisitorLog_Profile_Key] = @profileId, [VisitorLog_Pageview] = [VisitorLog_Pageview] + 1 WHERE [VisitorLog_Key] = @visitorLogId", filter);
-				connector.Cache.FlushRegion(connector.CacheRegion);
+				connector.Cache?.FlushRegion(connector.CacheRegion);
             }
             else
             {
                 var filter = connector.CreateDataFilter();
                 filter.AddParameter("@visitorLogId", VisitorLogID);
                 connector.ExecuteNonQuery("UPDATE [wim_VisitorLogs] SET [VisitorLog_Pageview] = [VisitorLog_Pageview] + 1 WHERE [VisitorLog_Key] = @visitorLogId", filter);
-				connector.Cache.FlushRegion(connector.CacheRegion);
+				connector.Cache?.FlushRegion(connector.CacheRegion);
             }
 
             connector.Save(this);
@@ -224,14 +224,14 @@ namespace Sushi.Mediakiwi.Data.Statistics
                 filter.AddParameter("@profileId", ProfileID);
                 filter.AddParameter("@visitorLogId", VisitorLogID);
                 await connector.ExecuteNonQueryAsync("UPDATE [wim_VisitorLogs] SET [VisitorLog_Profile_Key] = @profileId, [VisitorLog_Pageview] = [VisitorLog_Pageview] + 1 WHERE [VisitorLog_Key] = @visitorLogId", filter);
-				connector.Cache.FlushRegion(connector.CacheRegion);
+				connector.Cache?.FlushRegion(connector.CacheRegion);
             }
             else
             {
                 var filter = connector.CreateDataFilter();
                 filter.AddParameter("@visitorLogId", VisitorLogID);
                 await connector.ExecuteNonQueryAsync("UPDATE [wim_VisitorLogs] SET [VisitorLog_Pageview] = [VisitorLog_Pageview] + 1 WHERE [VisitorLog_Key] = @visitorLogId", filter);
-				connector.Cache.FlushRegion(connector.CacheRegion);
+				connector.Cache?.FlushRegion(connector.CacheRegion);
             }
 
             await connector.SaveAsync(this);

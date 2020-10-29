@@ -3,7 +3,7 @@
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
     "iis": {
-      "applicationUrl": "C:\\code\\supershift\\Mediakiwi\\Main\\NetCore\\Sushi.Mediakiwi.Demonstration",
+      "applicationUrl": "https://localhost/Sushi.Mediakiwi.Demonstration",
       "sslPort": 0
     },
     "iisExpress": {
@@ -22,6 +22,7 @@
     "Sushi.Mediakiwi.Demonstration": {
       "commandName": "Project",
       "launchBrowser": true,
+      "launchUrl": "https://localhost/Sushi.Mediakiwi.Demonstration",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
@@ -29,7 +30,11 @@
     },
     "IIS": {
       "commandName": "IIS",
-      "launchBrowser": true
+      "launchBrowser": true,
+      "launchUrl": "https://localhost/Sushi.Mediakiwi.Demonstration/2/repository/wim/portal.ashx?list=1",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT ": "Development"
+      }
     }
   }
 }

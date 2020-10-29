@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Sushi.Mediakiwi.Data.Caching;
-using Sushi.Mediakiwi.Data.MircoORM;
+using Sushi.Mediakiwi.Data.MicroORM;
 
 namespace Sushi.Mediakiwi.Data
 {
@@ -287,7 +287,7 @@ namespace Sushi.Mediakiwi.Data
 	                        [ComponentVersion_Page_Key] = @pageId
 	                    AND
                             [AvailableTemplates_Key] IS NULL AND [ComponentVersion_IsFixedOnTemplate] = 1)", filter);
-			connector.Cache.FlushRegion(connector.CacheRegion);
+			connector.Cache?.FlushRegion(connector.CacheRegion);
         }
 
         /// <summary>
@@ -310,7 +310,7 @@ namespace Sushi.Mediakiwi.Data
 	                        [ComponentVersion_Page_Key] = @pageId
 	                    AND
                             [AvailableTemplates_Key] IS NULL AND [ComponentVersion_IsFixedOnTemplate] = 1)", filter);
-			connector.Cache.FlushRegion(connector.CacheRegion);
+			connector.Cache?.FlushRegion(connector.CacheRegion);
         }
 
         /// <summary>
@@ -333,7 +333,7 @@ namespace Sushi.Mediakiwi.Data
                 filter.AddParameter("@target", target);
                 connector.ExecuteNonQuery(@"UPDATE [wim_ComponentVersions] SET [ComponentVersion_Target] = '@target' WHERE [ComponentVersion_AvailableTemplate_Key] = @templateId", filter);
             }
-			connector.Cache.FlushRegion(connector.CacheRegion);
+			connector.Cache?.FlushRegion(connector.CacheRegion);
         }
 
         /// <summary>
@@ -356,7 +356,7 @@ namespace Sushi.Mediakiwi.Data
                 filter.AddParameter("@target", target);
                 await connector.ExecuteNonQueryAsync(@"UPDATE [wim_ComponentVersions] SET [ComponentVersion_Target] = '@target' WHERE [ComponentVersion_AvailableTemplate_Key] = @templateId", filter);
             }
-			connector.Cache.FlushRegion(connector.CacheRegion);
+			connector.Cache?.FlushRegion(connector.CacheRegion);
         }
 
         /// <summary>
@@ -758,7 +758,7 @@ namespace Sushi.Mediakiwi.Data
             try
             {
                 connector.ExecuteNonQuery("DELETE FROM [wim_ComponentVersions] WHERE [ComponentVersion_Page_Key] = @pageId", filter);
-				connector.Cache.FlushRegion(connector.CacheRegion);
+				connector.Cache?.FlushRegion(connector.CacheRegion);
                 return true;
             }
             catch (Exception ex)
@@ -781,7 +781,7 @@ namespace Sushi.Mediakiwi.Data
             try
             {
                 await connector.ExecuteNonQueryAsync("DELETE FROM [wim_ComponentVersions] WHERE [ComponentVersion_Page_Key] = @pageId", filter);
-				connector.Cache.FlushRegion(connector.CacheRegion);
+				connector.Cache?.FlushRegion(connector.CacheRegion);
                 return true;
             }
             catch (Exception ex)

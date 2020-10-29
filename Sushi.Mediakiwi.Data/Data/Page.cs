@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Sushi.Mediakiwi.Data.MircoORM;
+using Sushi.Mediakiwi.Data.MicroORM;
 
 namespace Sushi.Mediakiwi.Data
 {
@@ -339,11 +339,61 @@ namespace Sushi.Mediakiwi.Data
             set { m_Site = value; }
         }
 
+        public string HRef
+        {
+            get
+            {
+                return string.Empty;
+            }
+
+        }
+
+        /// <summary>
+        /// The complete page URL
+        /// </summary>
+        /// <value>The H ref full.</value>
+        public string HRefFull
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(Name))
+                    return null;
+                return "TODO";
+
+                //string ext = Sushi.Mediakiwi.Data.Environment.Current.GetRegistryValue("PAGE_WILDCARD_EXTENTION", "aspx");
+                //ext = (ext == ".") ? "" : string.Concat(".", ext);
+
+                //if (CompletePath.StartsWith(HttpContext.Current.Request.Url.Scheme))
+                //    return string.Concat(CompletePath, ext);
+
+
+                //string[] urlArr = HttpContext.Current.Request.Url.AbsoluteUri.Split('/');
+                ////  Creates /www.url.ext
+                //string rebuild = string.Format("{0}/{1}", urlArr[1], urlArr[2]);
+
+                ////  Creates /www.url.ext/folder/file.ext
+                //string tmp = string.Concat(rebuild, CompletePath, ext);
+
+                //if (Wim.CommonConfiguration.REDIRECT_CHANNEL_PATH
+                //    && !Wim.CommonConfiguration.IS_LOCAL_DEVELOPMENT
+                //    && !string.IsNullOrEmpty(this.Site.Domain))
+                //{
+                //    tmp = string.Concat("/", this.Site.Domains[0], Wim.Utility.RemApplicationPath(CompletePath), ext);
+                //}
+
+                //string unEncoded = Utility.GlobalRegularExpression.Implement.CleanRelativePathSlash.Replace(tmp, "/");
+                ////  Creates http://www.url.ext/folder/file.ext
+                //return string.Format("{0}/{1}", urlArr[0], Utility.CleanUrl(unEncoded));
+            }
+        }
+
         /// <summary>
         /// The complete page path including the possible application path
         /// </summary>
         /// <value>The complete path.</value>
         public string InternalPath { get; set; }
+
+        public string CompletePath { get; set; }
 
         /// <summary>
         /// The complete page path including the possible application path
@@ -367,6 +417,63 @@ namespace Sushi.Mediakiwi.Data
             filter.AddOrder(x => x.MasterID);
 
             return connector.FetchAll(filter).ToArray();
+        }
+
+
+        /// <summary>
+        /// Select all pages in a folder.
+        /// The default setting is: select all published pages in the requested folder sorted by the linkText.
+        /// </summary>
+        /// <param name="folderID">The folder ID.</param>
+        /// <param name="folderType">Type of the folder.</param>
+        /// <param name="propertySet">The property set.</param>
+        /// <param name="sort">The sort.</param>
+        /// <param name="onlyReturnPublishedPages">if set to <c>true</c> [only return published pages].</param>
+        /// <returns></returns>
+        public static List<Page> SelectAll(int folderID, PageFolderSortType folderType = PageFolderSortType.Folder, PageReturnProperySet propertySet = PageReturnProperySet.All, PageSortBy sort = PageSortBy.SortOrder, bool onlyReturnPublishedPages = false)
+        {
+            var connector = ConnectorFactory.CreateConnector<Page>();
+            var filter = connector.CreateDataFilter();
+            filter.AddOrder(x => x.MasterID);
+
+            if (sort == PageSortBy.Name) 
+                filter.AddOrder(x => x.Name, Sushi.MicroORM.SortOrder.ASC);
+            else if (sort == PageSortBy.LinkText) 
+                filter.AddOrder(x => x.LinkText, Sushi.MicroORM.SortOrder.ASC);
+            else if (sort == PageSortBy.SortOrder) 
+                filter.AddOrder(x => x.SortOrder, Sushi.MicroORM.SortOrder.ASC);
+            else if (sort == PageSortBy.CustomDate)
+            {
+                filter.AddOrder(x => x.CustomDate, Sushi.MicroORM.SortOrder.ASC);
+                filter.AddOrder(x => x.SortOrder, Sushi.MicroORM.SortOrder.ASC);
+            }
+            else if (sort == PageSortBy.CustomDateDown)
+            {
+                filter.AddOrder(x => x.CustomDate, Sushi.MicroORM.SortOrder.DESC);
+                filter.AddOrder(x => x.SortOrder, Sushi.MicroORM.SortOrder.ASC);
+            }
+
+            switch (propertySet)
+            {
+                case PageReturnProperySet.OnlyDefault:
+                    filter.Add(x => x.IsFolderDefault, true);
+                    break;
+                case PageReturnProperySet.AllExceptDefault:
+                    filter.Add(x => x.IsFolderDefault, false);
+                    break;
+            }
+
+            if (onlyReturnPublishedPages)
+                filter.Add(x => x.IsPublished, true);
+
+            if (onlyReturnPublishedPages)
+            {
+                filter.AddParameter("date", DateTime.UtcNow);
+
+                filter.AddSql("(Page_Publish is null or Page_Publish <= @date and (Page_Expire is null or Page_Expire >= @seadaterch)");
+            }
+
+            return connector.FetchAll(filter);
         }
 
         /// <summary>
@@ -521,7 +628,7 @@ namespace Sushi.Mediakiwi.Data
                     AND [Page_Folder_Key] in (
 		                SELECT [Folder_Key] FROM [wim_Folders] JOIN [wim_Sites] ON [Folder_Site_Key] = [Site_Key] AND [Site_AutoPublishInherited] = 1
                 )", filter);
-				connector.Cache.FlushRegion(connector.CacheRegion);
+				connector.Cache?.FlushRegion(connector.CacheRegion);
 
                 return true;
             }
@@ -559,7 +666,7 @@ namespace Sushi.Mediakiwi.Data
                     AND [Page_Folder_Key] in (
 		                SELECT [Folder_Key] FROM [wim_Folders] JOIN [wim_Sites] ON [Folder_Site_Key] = [Site_Key] AND [Site_AutoPublishInherited] = 1
                 )", filter);
-				connector.Cache.FlushRegion(connector.CacheRegion);
+				connector.Cache?.FlushRegion(connector.CacheRegion);
 
                 return true;
             }
@@ -638,7 +745,7 @@ namespace Sushi.Mediakiwi.Data
             connector.ExecuteNonQuery(@"DELETE FROM [wim_componentVersions] WHERE [ComponentVersion_Page_Key] IN (SELECT [Page_Key] FROM [wim_pages] WHERE ([Page_Key] = @thisId OR [Page_Master_Key] = @thisId))", filter);
             connector.ExecuteNonQuery(@"DELETE FROM [wim_components] WHERE [Component_Page_Key] IN (SELECT [Page_Key] FROM [wim_pages] WHERE ([Page_Key] = @thisId OR [Page_Master_Key] = @thisId))", filter);
             connector.ExecuteNonQuery(@"DELETE FROM [wim_pages] WHERE ([Page_Key] = @thisId OR [Page_Master_Key] = @thisId)", filter);
-            connector.Cache.FlushRegion(connector.CacheRegion);
+            connector.Cache?.FlushRegion(connector.CacheRegion);
             return true;
         }
 
@@ -655,7 +762,7 @@ namespace Sushi.Mediakiwi.Data
             await connector.ExecuteNonQueryAsync(@"DELETE FROM [wim_componentVersions] WHERE [ComponentVersion_Page_Key] IN (SELECT [Page_Key] FROM [wim_pages] WHERE ([Page_Key] = @thisId OR [Page_Master_Key] = @thisId))", filter);
             await connector.ExecuteNonQueryAsync(@"DELETE FROM [wim_components] WHERE [Component_Page_Key] IN (SELECT [Page_Key] FROM [wim_pages] WHERE ([Page_Key] = @thisId OR [Page_Master_Key] = @thisId))", filter);
             await connector.ExecuteNonQueryAsync(@"DELETE FROM [wim_pages] WHERE ([Page_Key] = @thisId OR [Page_Master_Key] = @thisId)", filter);
-            connector.Cache.FlushRegion(connector.CacheRegion);
+            connector.Cache?.FlushRegion(connector.CacheRegion);
             return true;
         }
 
@@ -823,7 +930,7 @@ namespace Sushi.Mediakiwi.Data
         /// <param name="pages">The pages.</param>
         /// <param name="user">The user.</param>
         /// <returns></returns>
-        public static Page[] ValidateAccessRight(Page[] pages, IApplicationUser user)
+        public static IEnumerable<Page> ValidateAccessRight(IEnumerable<Page> pages, IApplicationUser user)
         {
             return (from item in pages join relation in Folder.SelectAllAccessible(user) on item.FolderID equals relation.ID select item).ToArray();
         }
@@ -842,7 +949,7 @@ namespace Sushi.Mediakiwi.Data
             filter.AddParameter("@thisId", ID);
 
             connector.ExecuteNonQuery("UPDATE [wim_Pages] SET [Page_SortOrder] = @sortOrder WHERE [Page_Key] = @thisId", filter);
-			connector.Cache.FlushRegion(connector.CacheRegion);
+			connector.Cache?.FlushRegion(connector.CacheRegion);
             return true;
         }
 
@@ -860,7 +967,7 @@ namespace Sushi.Mediakiwi.Data
             filter.AddParameter("@thisId", ID);
 
             await connector.ExecuteNonQueryAsync("UPDATE [wim_Pages] SET [Page_SortOrder] = @sortOrder WHERE [Page_Key] = @thisId", filter);
-			connector.Cache.FlushRegion(connector.CacheRegion);
+			connector.Cache?.FlushRegion(connector.CacheRegion);
             return true;
         }
 
@@ -1066,7 +1173,7 @@ namespace Sushi.Mediakiwi.Data
             filter.AddParameter("@folderId", folderID);
 
             connector.ExecuteNonQuery("UPDATE [wim_Pages] SET [Page_IsDefault] = 0 WHERE [Page_Folder_Key] = @folderId AND NOT [Page_Key] = @pageId", filter);
-            connector.Cache.FlushRegion(connector.CacheRegion);
+            connector.Cache?.FlushRegion(connector.CacheRegion);
         }
 
         /// <summary>
@@ -1085,7 +1192,7 @@ namespace Sushi.Mediakiwi.Data
             filter.AddParameter("@folderId", folderID);
 
             await connector.ExecuteNonQueryAsync("UPDATE [wim_Pages] SET [Page_IsDefault] = 0 WHERE [Page_Folder_Key] = @folderId AND NOT [Page_Key] = @pageId", filter);
-            connector.Cache.FlushRegion(connector.CacheRegion);
+            connector.Cache?.FlushRegion(connector.CacheRegion);
         }
 
         /// <summary>
@@ -1166,7 +1273,7 @@ namespace Sushi.Mediakiwi.Data
                         WHERE
                             [Component_Page_Key] = @pageId)
             ", filter);
-			connector.Cache.FlushRegion(connector.CacheRegion);
+			connector.Cache?.FlushRegion(connector.CacheRegion);
         }
 
         /// <summary>
@@ -1182,7 +1289,7 @@ namespace Sushi.Mediakiwi.Data
             filter.AddParameter("@pageId", ID);
 
             connector.ExecuteNonQuery(@"DELETE FROM [wim_Components] WHERE [Component_Page_Key] = @pageId", filter);
-			connector.Cache.FlushRegion(connector.CacheRegion);
+			connector.Cache?.FlushRegion(connector.CacheRegion);
         }
 
         /// <summary>
@@ -1335,6 +1442,39 @@ namespace Sushi.Mediakiwi.Data
             filter.Add(x => x.SiteID, siteID);
 
             return connector.FetchAll(filter).ToArray();
+        }
+
+
+        /// <summary>
+        /// Select a page inherited child (returns only published pages)
+        /// </summary>
+        /// <param name="pageID">The page ID.</param>
+        /// <param name="siteID">The site ID.</param>
+        /// <returns></returns>
+        public static Sushi.Mediakiwi.Data.Page SelectOneChild(int pageID, int siteID)
+        {
+            return SelectOneChild(pageID, siteID, true);
+        }
+
+        /// <summary>
+        /// Select a page inherited child
+        /// </summary>
+        /// <param name="pageID">The page ID.</param>
+        /// <param name="siteID">The site ID.</param>
+        /// <param name="returnOnlyPublishedPage">Only return published pages</param>
+        /// <returns></returns>
+        public static Page SelectOneChild(int pageID, int siteID, bool returnOnlyPublishedPage)
+        {
+            var connector = ConnectorFactory.CreateConnector<Page>();
+            var filter = connector.CreateDataFilter();
+            filter.AddSql("Page_Master_Key = @Page OR Page_Key = @Page");
+            filter.AddParameter<int>("Page", pageID);
+            filter.Add(x => x.SiteID, siteID);
+            if (returnOnlyPublishedPage)
+                filter.Add(x => x.IsPublished, true);
+
+            var result = connector.FetchSingle(filter);
+            return result;
         }
 
         /// <summary>

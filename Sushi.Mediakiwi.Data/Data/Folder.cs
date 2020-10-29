@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Sushi.Mediakiwi.Data.MircoORM;
+using Sushi.Mediakiwi.Data.MicroORM;
 
 namespace Sushi.Mediakiwi.Data
 {
@@ -417,7 +417,7 @@ FROM [Wim_ComponentLists] WHERE [ComponentList_Folder_Key] in (SELECT [Folder_Ke
                 WHERE [Folder_Type] = @typeId AND [Folder_CompletePath] like '@completePath%'
                     and Folder_Site_Key = @siteId"
                 , filter);
-		    connector.Cache.FlushRegion(connector.CacheRegion);
+		    connector.Cache?.FlushRegion(connector.CacheRegion);
             return true;
         }
 
@@ -442,7 +442,7 @@ FROM [Wim_ComponentLists] WHERE [ComponentList_Folder_Key] in (SELECT [Folder_Ke
                 WHERE [Folder_Type] = @typeId AND [Folder_CompletePath] like '@completePath%'
                     and Folder_Site_Key = @siteId"
                  , filter);
-			connector.Cache.FlushRegion(connector.CacheRegion);
+			connector.Cache?.FlushRegion(connector.CacheRegion);
             return true;
         }
 

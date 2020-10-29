@@ -4,7 +4,7 @@ using System;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
-using Sushi.Mediakiwi.Data.MircoORM;
+using Sushi.Mediakiwi.Data.MicroORM;
 
 namespace Sushi.Mediakiwi.Data
 {
@@ -593,7 +593,7 @@ namespace Sushi.Mediakiwi.Data
                   DELETE FROM [wim_ComponentVersions] WHERE [ComponentVersion_ComponentTemplate_Key] = @componentTemplateID
                   DELETE FROM [wim_AvailableTemplates] WHERE [AvailableTemplates_ComponentTemplate_Key] = @componentTemplateID",
                 filter);
-			connector.Cache.FlushRegion(connector.CacheRegion);
+			connector.Cache?.FlushRegion(connector.CacheRegion);
 
             connector.Delete(this);
         }
@@ -614,7 +614,7 @@ namespace Sushi.Mediakiwi.Data
                   DELETE FROM [wim_ComponentVersions] WHERE [ComponentVersion_ComponentTemplate_Key] = @componentTemplateID
                   DELETE FROM [wim_AvailableTemplates] WHERE [AvailableTemplates_ComponentTemplate_Key] = @componentTemplateID",
                 filter);
-			connector.Cache.FlushRegion(connector.CacheRegion);
+			connector.Cache?.FlushRegion(connector.CacheRegion);
 
             await connector.DeleteAsync(this);
         }

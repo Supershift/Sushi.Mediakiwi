@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Sushi.Mediakiwi.Data.MircoORM;
+using Sushi.Mediakiwi.Data.MicroORM;
 
 namespace Sushi.Mediakiwi.Data
 {
@@ -37,6 +37,27 @@ namespace Sushi.Mediakiwi.Data
                 Map(x => x.GUID, "Gallery_GUID");
                 Map(x => x.Created, "Gallery_Created");
             }
+        }
+
+        public void Save()
+        {
+            var connector = ConnectorFactory.CreateConnector<Gallery>();
+            connector.Save(this);
+        }
+
+        /// <summary>
+        /// Identifies the specified identifier.
+        /// </summary>
+        /// <param name="identifier">The identifier, this can be numerical, GUID or a relative path.</param>
+        /// <returns></returns>
+        internal static Gallery Identify(string identifier)    
+        {
+            if (Utility.IsGuid(identifier))
+                return SelectOne(new Guid(identifier));
+            if (Utility.IsNumeric(identifier))
+                return SelectOne(Convert.ToInt32(identifier));
+            else
+                return SelectOne(identifier);
         }
 
         /// <summary>
@@ -446,6 +467,55 @@ namespace Sushi.Mediakiwi.Data
             filter.Add(x => x.IsActive, true);
 
             return connector.FetchSingle(filter);
+        }
+
+        public static Gallery SelectOne(string relativePath, bool onlyReturnActive = false)
+        {
+            var connector = ConnectorFactory.CreateConnector<Gallery>();
+            var filter = connector.CreateDataFilter();
+
+            filter.Add(x => x.CompletePath, relativePath);
+            if (onlyReturnActive)
+                filter.Add(x => x.IsActive, true);
+
+            return connector.FetchSingle(filter);
+        }
+
+        /// <summary>
+        /// Select a lower level gallery
+        /// </summary>
+        /// <param name="gallery">The gallery.</param>
+        /// <param name="level">The level.</param>
+        /// <returns></returns>
+        public static Gallery SelectOne(Sushi.Mediakiwi.Data.Gallery gallery, int level)
+        {
+            if (level < 1) return new Gallery();
+            if (gallery == null || gallery.ID == 0) return new Gallery();
+            if (gallery.Name == CommonConfiguration.siteRoot) return gallery;
+
+            //  Exception from folder
+            string[] split = gallery.CompletePath.Split('/');
+            int splitcount = split.Length;
+            //  / = 2
+            //  /level_01/ = 3
+            //  /level_01/level_02/ = 4
+
+            //  Is root
+            if (splitcount == 1) return new Gallery();
+            //  Non existant level
+            if ((level - (splitcount - 1)) > 0) return new Gallery();
+            //  Same level
+            if ((level - (splitcount - 1)) == 0) return gallery;
+
+            string searchPath = string.Format("/{0}", split[level]);
+            while (level > 1)
+            {
+                level--;
+                searchPath = string.Format("/{0}{1}", split[level], searchPath);
+            }
+            searchPath = searchPath.Replace("//", "/");
+
+            return SelectOne(searchPath, true);
         }
 
         /// <summary>
@@ -930,7 +1000,7 @@ namespace Sushi.Mediakiwi.Data
 UPDATE [wim_Galleries]
 SET [Gallery_Count] = (SELECT COUNT(*) FROM [wim_Assets] WHERE [Asset_Gallery_Key] = [Gallery_Key])
 WHERE [Gallery_Key] = @thisId", filter);
-			connector.Cache.FlushRegion(connector.CacheRegion);
+			connector.Cache?.FlushRegion(connector.CacheRegion);
 			
             this.AssetCount = connector.ExecuteScalar<int>("SELECT COUNT(*) FROM [dbo].[wim_Assets] WHERE [Asset_Gallery_Key] = @thisId", filter);
         }
@@ -948,7 +1018,7 @@ WHERE [Gallery_Key] = @thisId", filter);
 UPDATE [wim_Galleries]
 SET [Gallery_Count] = (SELECT COUNT(*) FROM [dbo].[wim_Assets] WHERE [Asset_Gallery_Key] = [Gallery_Key])
 WHERE [Gallery_Key] = @thisId", filter);
-			connector.Cache.FlushRegion(connector.CacheRegion);
+			connector.Cache?.FlushRegion(connector.CacheRegion);
 
             this.AssetCount = await connector.ExecuteScalarAsync<int>("SELECT COUNT(*) FROM [wim_Assets] WHERE [Asset_Gallery_Key] = @thisId", filter);
         }
@@ -985,7 +1055,7 @@ WHERE [Gallery_Key] = @thisId", filter);
 
             connector.ExecuteNonQuery("UPDATE [dbo].[wim_Galleries] SET [Gallery_IsActive] = 0 WHERE [Gallery_CompletePath] LIKE @completePath + '%'", filter);
             connector.ExecuteNonQuery("UPDATE [dbo].[wim_Assets] SET [Asset_IsActive] = 0 WHERE [Asset_Gallery_Key] IN (SELECT [Gallery_Key] FROM [wim_Galleries] WHERE [Gallery_CompletePath] LIKE @completePath + '%')", filter);
-            connector.Cache.FlushRegion(connector.CacheRegion);
+            connector.Cache?.FlushRegion(connector.CacheRegion);
         }
 
         /// <summary>
@@ -1000,7 +1070,7 @@ WHERE [Gallery_Key] = @thisId", filter);
 
             await connector.ExecuteNonQueryAsync("UPDATE [dbo].[wim_Galleries] SET [Gallery_IsActive] = 0 WHERE [Gallery_CompletePath] LIKE @completePath + '%'", filter);
             await connector.ExecuteNonQueryAsync("UPDATE [dbo].[wim_Assets] SET [Asset_IsActive] = 0 WHERE [Asset_Gallery_Key] IN (SELECT [Gallery_Key] FROM [wim_Galleries] WHERE [Gallery_CompletePath] LIKE @completePath + '%')", filter);
-            connector.Cache.FlushRegion(connector.CacheRegion);
+            connector.Cache?.FlushRegion(connector.CacheRegion);
         }
 
         /// <summary>
@@ -1018,7 +1088,7 @@ WHERE [Gallery_Key] = @thisId", filter);
             try
             {
                 connector.ExecuteNonQuery("UPDATE [dbo].[wim_Galleries] SET [Gallery_CompletePath] = REPLACE (Gallery_CompletePath, @oldCompletePath , @newCompletePath) WHERE [Gallery_CompletePath] LIKE @oldCompletePath + '%'", filter);
-                connector.Cache.FlushRegion(connector.CacheRegion);
+                connector.Cache?.FlushRegion(connector.CacheRegion);
                 return true;
             }
             catch (Exception ex)
@@ -1042,7 +1112,7 @@ WHERE [Gallery_Key] = @thisId", filter);
             try
             {
                 await connector.ExecuteNonQueryAsync("UPDATE [wim_Galleries] SET [Gallery_CompletePath] = REPLACE (Gallery_CompletePath, @oldCompletePath , @newCompletePath) WHERE [Gallery_CompletePath] LIKE @oldCompletePath + '%'", filter);
-                connector.Cache.FlushRegion(connector.CacheRegion);
+                connector.Cache?.FlushRegion(connector.CacheRegion);
                 return true;
             }
             catch (Exception ex)
@@ -1066,7 +1136,7 @@ WHERE [Gallery_Key] = @thisId", filter);
             {
                 // Delete the assests
                 connector.ExecuteNonQuery("DELETE FROM [dbo].[wim_Assets] where [Asset_Gallery_Key] IN (SELECT [Gallery_Key] FROM [dbo].[wim_Galleries] WHERE [Gallery_CompletePath] LIKE @oldCompletePath  + '%')", filter);
-				connector.Cache.FlushRegion(connector.CacheRegion);
+				connector.Cache?.FlushRegion(connector.CacheRegion);
 
                 // Delete the gallery
                 connector.Delete(this);

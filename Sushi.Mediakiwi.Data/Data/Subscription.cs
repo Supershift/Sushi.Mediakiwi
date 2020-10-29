@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Sushi.Mediakiwi.Data.MircoORM;
+using Sushi.Mediakiwi.Data.MicroORM;
 using Sushi.Mediakiwi.Data.Interfaces;
 
 namespace Sushi.Mediakiwi.Data
@@ -134,7 +134,7 @@ namespace Sushi.Mediakiwi.Data
         {
             var connector = ConnectorFactory.CreateConnector<Subscription>();
             connector.ExecuteNonQuery("DELETE FROM [wim_Subscriptions]");
-			connector.Cache.FlushRegion(connector.CacheRegion);
+			connector.Cache?.FlushRegion(connector.CacheRegion);
         }
 
         /// <summary>
@@ -144,7 +144,7 @@ namespace Sushi.Mediakiwi.Data
         {
             var connector = ConnectorFactory.CreateConnector<Subscription>();
             await connector.ExecuteNonQueryAsync("DELETE FROM [wim_Subscriptions]");
-			connector.Cache.FlushRegion(connector.CacheRegion);
+			connector.Cache?.FlushRegion(connector.CacheRegion);
         }
 
         /// <summary>

@@ -11,6 +11,13 @@ namespace Sushi.Mediakiwi.Data.Configuration
     [DataContract]
     public class WimServerConfiguration 
     {
+        public static WimServerConfiguration GetConfig()
+        {
+            if (Instance == null)
+                LoadJsonConfig();
+            return Instance;
+        }
+
         public static WimServerConfiguration Instance { get; set; }
 
         /// <summary>

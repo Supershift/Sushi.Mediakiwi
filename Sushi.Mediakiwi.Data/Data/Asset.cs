@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Threading.Tasks;
-using Sushi.Mediakiwi.Data.MircoORM;
+using Sushi.Mediakiwi.Data.MicroORM;
 
 namespace Sushi.Mediakiwi.Data
 {
@@ -69,6 +69,12 @@ namespace Sushi.Mediakiwi.Data
         }
 
         #region properties
+        public bool Exists { get; set; } = true;
+        public string Path { get; set; }
+        public string DownloadUrl { get; set; }
+        public string DownloadFullUrl { get; set; }
+        public string LocalFilePath { get; set; }
+
 
         public string RemoteLocation { get; set; }
         
@@ -369,6 +375,42 @@ namespace Sushi.Mediakiwi.Data
             var filter = connector.CreateDataFilter();
             filter.Add(x => x.RemoteLocation, null);
             filter.Add(x => x.ParentID, null);
+
+            return connector.FetchAll(filter);
+        }
+
+        public static List<Asset> SelectAll(int galleryID, int? assetTypeID = null, bool onlyReturnActiveAssets = false)
+        {
+            var connector = ConnectorFactory.CreateConnector<Asset>();
+            var filter = connector.CreateDataFilter();
+            filter.Add(x => x.GalleryID, galleryID);
+            filter.Add(x => x.ParentID, null);
+
+            if (onlyReturnActiveAssets)
+                filter.Add(x => x.IsActive, true);
+
+            if (assetTypeID.HasValue)
+                filter.Add(x => x.AssetTypeID, assetTypeID.Value);
+
+            return connector.FetchAll(filter);
+        }
+
+        public static List<Asset> SearchAll(string searchCandidate, int? galleryID = null, bool onlyReturnActiveAssets = false)
+        {
+            var connector = ConnectorFactory.CreateConnector<Asset>();
+            var filter = connector.CreateDataFilter();
+            filter.Add(x => x.ParentID, null);
+
+            searchCandidate = string.Concat("%", searchCandidate.Trim().Replace(" ", "%"), "%");
+            filter.AddParameter("search", searchCandidate);
+            
+            filter.AddSql("(Asset_Title like @search or Asset_Description like @search)");
+
+            if (onlyReturnActiveAssets)
+                filter.Add(x => x.IsActive, true);
+
+            if (galleryID.HasValue)
+                filter.Add(x => x.GalleryID, galleryID.Value);
 
             return connector.FetchAll(filter);
         }

@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
-using Sushi.Mediakiwi.Data.MircoORM;
+using Sushi.Mediakiwi.Data.MicroORM;
 
 namespace Sushi.Mediakiwi.Data
 {
@@ -64,6 +64,12 @@ namespace Sushi.Mediakiwi.Data
                 Map(x => x.AssetTypeTag, "AssetType_Tag").ReadOnly();
             }
         }
+
+        /// <summary>
+        /// Gets or sets the URL
+        /// </summary>
+        public string Url { get; set; }
+
         /// <summary>
         /// Gets or sets the format.
         /// </summary>

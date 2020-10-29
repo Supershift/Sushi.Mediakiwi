@@ -28,6 +28,8 @@ namespace Sushi.Mediakiwi.Data
         string SmtpServerUser { get; set; }
         string Timezone { get; set; }
         string Title { get; set; }
+        string LogoHrefFull { get; set; }
+
         DateTime UpdateInfo { get; set; }
         string Url { get; }
         decimal Version { get; set; }

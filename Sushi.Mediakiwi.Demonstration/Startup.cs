@@ -27,8 +27,8 @@ namespace Sushi.Mediakiwi.Demonstration
                 app.UseDeveloperExceptionPage();
             }
 
-            string connectionString = "Server=testing-mediakiwi.database.windows.net,1433;Database=testing-mediakiwi;Uid=mediakiwi;Pwd=tMAX28KozCCXt0HUVDCg";
-            DatabaseConfiguration.SetDefaultConnectionString(connectionString);
+            //string connectionString = "Server=testing-mediakiwi.database.windows.net,1433;Database=testing-mediakiwi;Uid=mediakiwi;Pwd=tMAX28KozCCXt0HUVDCg";
+            //DatabaseConfiguration.SetDefaultConnectionString(connectionString);
 
             app.UseMediakiwi();
             app.UseRouting();
@@ -42,13 +42,13 @@ namespace Sushi.Mediakiwi.Demonstration
             //        appBranch.UseMediakiwi();
             //    });
 
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapGet("/", async context =>
-                {
-                    await context.Response.WriteAsync("Hello World!");
-                });
-            });
+            //app.UseEndpoints(endpoints =>
+            //{
+            //    endpoints.MapGet("/", async context =>
+            //    {
+            //        await context.Response.WriteAsync(string.Empty);
+            //    });
+            //});
         }
     }
 }

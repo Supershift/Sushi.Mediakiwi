@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Sushi.Mediakiwi.Data.MircoORM;
+using Sushi.Mediakiwi.Data.MicroORM;
 using Sushi.Mediakiwi.Data.Interfaces;
 
 namespace Sushi.Mediakiwi.Data
@@ -385,7 +385,7 @@ delete from wim_ComponentVersions where ComponentVersion_Page_Key in
                 folder.Delete();
 
             connector.Delete(this);
-			connector.Cache.FlushRegion(connector.CacheRegion);
+			connector.Cache?.FlushRegion(connector.CacheRegion);
         }
 
         /// <summary>
@@ -426,7 +426,7 @@ delete from wim_ComponentVersions where ComponentVersion_Page_Key in
                 await folder.DeleteAsync();
 
             await connector.DeleteAsync(this);
-			connector.Cache.FlushRegion(connector.CacheRegion);
+			connector.Cache?.FlushRegion(connector.CacheRegion);
         }
 
         /// <summary>

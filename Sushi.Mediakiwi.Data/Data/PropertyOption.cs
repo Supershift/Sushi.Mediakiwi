@@ -1,7 +1,7 @@
 ﻿using Sushi.MicroORM;
 using Sushi.MicroORM.Mapping;
 using System.Threading.Tasks;
-using Sushi.Mediakiwi.Data.MircoORM;
+using Sushi.Mediakiwi.Data.MicroORM;
 
 namespace Sushi.Mediakiwi.Data
 {
@@ -74,7 +74,7 @@ namespace Sushi.Mediakiwi.Data
                 filter.AddParameter("@thisID", ID);
 
                 connector.ExecuteNonQuery("UPDATE [wim_PropertyOptions] SET [PropertyOption_SortOrder] = [PropertyOption_Key] WHERE [PropertyOption_Key] = @thisID", filter);
-                connector.Cache.FlushRegion(connector.CacheRegion);
+                connector.Cache?.FlushRegion(connector.CacheRegion);
             }
 
             return true;
@@ -99,7 +99,7 @@ namespace Sushi.Mediakiwi.Data
                 filter.AddParameter("@thisID", ID);
 
                 await connector.ExecuteNonQueryAsync("UPDATE [wim_PropertyOptions] SET [PropertyOption_SortOrder] = [PropertyOption_Key] WHERE [PropertyOption_Key] = @thisID", filter);
-                connector.Cache.FlushRegion(connector.CacheRegion);
+                connector.Cache?.FlushRegion(connector.CacheRegion);
             }
 
             return true;
@@ -120,7 +120,7 @@ namespace Sushi.Mediakiwi.Data
             filter.AddParameter("@formElementID", formElementID);
 
             connector.ExecuteNonQuery("DELETE FROM [wim_PropertyOptions] WHERE [PropertyOption_Property_Key] = @formElementID", filter);
-            connector.Cache.FlushRegion(connector.CacheRegion);
+            connector.Cache?.FlushRegion(connector.CacheRegion);
 
             return true;
         }
@@ -140,7 +140,7 @@ namespace Sushi.Mediakiwi.Data
             filter.AddParameter("@formElementID", formElementID);
 
             await connector.ExecuteNonQueryAsync("DELETE FROM [wim_PropertyOptions] WHERE [PropertyOption_Property_Key] = @formElementID", filter);
-            connector.Cache.FlushRegion(connector.CacheRegion);
+            connector.Cache?.FlushRegion(connector.CacheRegion);
 
             return true;
         }

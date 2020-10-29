@@ -1,0 +1,38 @@
+using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Text.RegularExpressions;
+
+namespace Sushi.Mediakiwi.Framework.ContentListItem
+{
+    /// <summary>
+    /// Possible return types: System.DateTime
+    /// </summary>
+    public class DateAttribute : ContentInfoItem.DateAttribute, IContentInfo, IListContentInfo
+    {
+        /// <summary>
+        /// Possible return types: System.DateTime
+        /// </summary>
+        /// <param name="title"></param>
+        public DateAttribute(string title)
+            : base(title, false) { }
+
+        /// <summary>
+        /// Possible return types: System.DateTime
+        /// </summary>
+        /// <param name="title"></param>
+        /// <param name="mandatory"></param>
+        public DateAttribute(string title, bool mandatory)
+            : base(title, mandatory) { }
+
+
+        /// <summary>
+        /// Possible return types: System.DateTime
+        /// </summary>
+        /// <param name="title"></param>
+        /// <param name="mandatory"></param>
+        /// <param name="interactiveHelp"></param>
+        public DateAttribute(string title, bool mandatory, string interactiveHelp)
+            : base(title, mandatory, interactiveHelp) { }
+    }
+}

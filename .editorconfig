@@ -131,16 +131,16 @@ dotnet_style_qualification_for_property = false:suggestion
 # https://docs.microsoft.com/en-us/dotnet/fundamentals/code-analysis/code-style-rule-options?view=vs-2019
 # https://docs.microsoft.com/en-us/dotnet/fundamentals/code-analysis/style-rules/
 
-dotnet_code_quality_unused_parameters = error
+dotnet_code_quality_unused_parameters = none
 #dotnet_code_quality.api_surface = all:error
 
 #This async method lacks await operator
-dotnet_diagnostic.CS1998.severity = error
+dotnet_diagnostic.CS1998.severity = none
 #The variable 'var'/field is declared but never used
-dotnet_diagnostic.CS0168.severity = error
-dotnet_diagnostic.CS0169.severity = error
+dotnet_diagnostic.CS0168.severity = none
+dotnet_diagnostic.CS0169.severity = none
 #Unreachable code detected
-dotnet_diagnostic.CS0162.severity = error
+dotnet_diagnostic.CS0162.severity = none
 
 #Name can be simplified.
 dotnet_diagnostic.IDE0049.severity = none

@@ -3,7 +3,7 @@ using Sushi.MicroORM.Mapping;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Sushi.Mediakiwi.Data.MircoORM;
+using Sushi.Mediakiwi.Data.MicroORM;
 
 namespace Sushi.Mediakiwi.Data
 {
@@ -396,7 +396,7 @@ namespace Sushi.Mediakiwi.Data
             filter.AddParameter("@version", Version);
 
             connector.ExecuteNonQuery("UPDATE [wim_ComponentListVersions] SET [ComponentListVersion_IsActive] = 0 WHERE [ComponentListVersion_Site_Key] = @siteId AND [ComponentListVersion_ComponentList_Key] = @componentListId AND [ComponentListVersion_Listitem_Key] = @componentListItemId AND [ComponentListVersion_Version] < @version", filter);
-			connector.Cache.FlushRegion(connector.CacheRegion);
+			connector.Cache?.FlushRegion(connector.CacheRegion);
             return isSaved;
         }
 
@@ -432,7 +432,7 @@ namespace Sushi.Mediakiwi.Data
             filter.AddParameter("@version", Version);
 
             await connector.ExecuteNonQueryAsync("UPDATE [wim_ComponentListVersions] SET [ComponentListVersion_IsActive] = 0 WHERE [ComponentListVersion_Site_Key] = @siteId AND [ComponentListVersion_ComponentList_Key] = @componentListId AND [ComponentListVersion_Listitem_Key] = @componentListItemId AND [ComponentListVersion_Version] < @version", filter);
-			connector.Cache.FlushRegion(connector.CacheRegion);
+			connector.Cache?.FlushRegion(connector.CacheRegion);
             return isSaved;
         }
 

@@ -1,4 +1,4 @@
-﻿namespace Wim.Data.Interfaces
+﻿namespace Sushi.Mediakiwi.Data
 {
     public interface ISubList
     {

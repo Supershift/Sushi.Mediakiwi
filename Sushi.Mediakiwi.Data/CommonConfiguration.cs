@@ -466,24 +466,6 @@ namespace Sushi.Mediakiwi.Data
             get { return string.Format("{0}/wim/", RelativeRepositoryBase); }
         }
 
-        ///// <summary>
-        ///// 
-        ///// </summary>
-        //public static string LocalConfigurationFolder
-        //{
-        //    get
-        //    {
-        //        return HttpContext.Current.Server.MapPath(LocalConfigurationRelativeFolder);
-        //    }
-        //}
-
-        public static string LocalConfigurationRelativeFolder
-        {
-            get
-            {
-                return Utility.AddApplicationPath(string.Concat(RelativeRepositoryWimUrl, "/config/"));
-            }
-        }
 
         public static bool USE_CSS_TICKS_FOR_PATHCONTROL
         {

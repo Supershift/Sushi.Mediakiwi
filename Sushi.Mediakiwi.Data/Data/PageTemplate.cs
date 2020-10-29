@@ -2,7 +2,7 @@
 using Sushi.MicroORM.Mapping;
 using System;
 using System.Threading.Tasks;
-using Sushi.Mediakiwi.Data.MircoORM;
+using Sushi.Mediakiwi.Data.MicroORM;
 
 namespace Sushi.Mediakiwi.Data
 {
@@ -417,7 +417,7 @@ namespace Sushi.Mediakiwi.Data
             {
                 connector.ExecuteNonQuery("DELETE FROM [wim_AvailableTemplates] WHERE [AvailableTemplates_PageTemplate_Key] = @thisId", filter);
                 connector.Delete(this);
-				connector.Cache.FlushRegion(connector.CacheRegion);
+				connector.Cache?.FlushRegion(connector.CacheRegion);
                 return true;
             }
             catch (Exception ex)
@@ -439,7 +439,7 @@ namespace Sushi.Mediakiwi.Data
             {
                 await connector.ExecuteNonQueryAsync("DELETE FROM [wim_AvailableTemplates] WHERE [AvailableTemplates_PageTemplate_Key] = @thisId", filter);
                 await connector.DeleteAsync(this);
-				connector.Cache.FlushRegion(connector.CacheRegion);
+				connector.Cache?.FlushRegion(connector.CacheRegion);
                 return true;
             }
             catch (Exception ex)

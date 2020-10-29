@@ -3,7 +3,7 @@ using Sushi.MicroORM.Mapping;
 using System;
 using System.Data;
 using System.Threading.Tasks;
-using Sushi.Mediakiwi.Data.MircoORM;
+using Sushi.Mediakiwi.Data.MicroORM;
 
 namespace Sushi.Mediakiwi.Data
 {
@@ -358,22 +358,32 @@ namespace Sushi.Mediakiwi.Data
         /// Select a Application User based on its primary key
         /// </summary>
         /// <param name="ID">Uniqe identifier of the Menu</param>
-        public static IApplicationUser SelectOne(int ID)
+        public static async Task<IApplicationUser> SelectOneAsync(int ID, bool onlyReturnActive = false)
         {
             var connector = ConnectorFactory.CreateConnector<ApplicationUser>();
-            
-            return connector.FetchSingle(ID);
+            var filter = connector.CreateDataFilter();
+
+            filter.Add(x => x.ID, ID);
+            if (onlyReturnActive)
+                filter.Add(x => x.IsActive, true);
+
+            return await connector.FetchSingleAsync(filter);
         }
 
         /// <summary>
         /// Select a Application User based on its primary key
         /// </summary>
         /// <param name="ID">Uniqe identifier of the Menu</param>
-        public static async Task<IApplicationUser> SelectOneAsync(int ID)
+        public static IApplicationUser SelectOne(int ID, bool onlyReturnActive = false)
         {
             var connector = ConnectorFactory.CreateConnector<ApplicationUser>();
-            
-            return await connector.FetchSingleAsync(ID);
+            var filter = connector.CreateDataFilter();
+
+            filter.Add(x => x.ID, ID);
+            if (onlyReturnActive)
+                filter.Add(x => x.IsActive, true);
+
+            return connector.FetchSingle(filter);
         }
 
         /// <summary>
@@ -586,7 +596,10 @@ namespace Sushi.Mediakiwi.Data
         {
             var connector = ConnectorFactory.CreateConnector<ApplicationUser>();
             var filter = connector.CreateDataFilter();
-            filter.Add(x => x.Displayname, username);
+
+            if (!string.IsNullOrWhiteSpace(username))
+                filter.Add(x => x.Displayname, username);
+            
             if (role > 0)
                 filter.Add(x => x.RoleID, role);
             

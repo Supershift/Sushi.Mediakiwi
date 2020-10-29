@@ -2,7 +2,7 @@
 using Sushi.MicroORM.Mapping;
 using System;
 using System.Threading.Tasks;
-using Sushi.Mediakiwi.Data.MircoORM;
+using Sushi.Mediakiwi.Data.MicroORM;
 
 namespace Sushi.Mediakiwi.Data
 {
@@ -87,7 +87,7 @@ namespace Sushi.Mediakiwi.Data
                         connector.ExecuteNonQuery("INSERT INTO [Wim_RoleRights] ([RoleRight_Role_Key], [RoleRight_Child_Key], [RoleRight_Child_Type], [RoleRight_Update], [RoleRight_SortOrder], [RoleRight_Type]) VALUES (@itemID, @folderID, @typeID, 1, @sortOrder, 1)", filter);
                     else
                         connector.ExecuteNonQuery("UPDATE [Wim_RoleRights] SET [RoleRight_Update] = 1, [RoleRight_SortOrder] = @sortOrder, [RoleRight_Type] = 1 WHERE [RoleRight_Role_Key] = @itemID AND [RoleRight_Child_Key] = @folderID AND [RoleRight_Child_Type] = @typeID", filter);
-                    connector.Cache.FlushRegion(connector.CacheRegion);
+                    connector.Cache?.FlushRegion(connector.CacheRegion);
                 }
             }
             CleanUpFolder(folderID);
@@ -125,7 +125,7 @@ namespace Sushi.Mediakiwi.Data
                         await connector.ExecuteNonQueryAsync("INSERT INTO [Wim_RoleRights] ([RoleRight_Role_Key], [RoleRight_Child_Key], [RoleRight_Child_Type], [RoleRight_Update], [RoleRight_SortOrder], [RoleRight_Type]) VALUES (@itemID, @folderID, @typeID, 1, @sortOrder, 1)", filter);
                     else
                         await connector.ExecuteNonQueryAsync("UPDATE [Wim_RoleRights] SET [RoleRight_Update] = 1, [RoleRight_SortOrder] = @sortOrder, [RoleRight_Type] = 1 WHERE [RoleRight_Role_Key] = @itemID AND [RoleRight_Child_Key] = @folderID AND [RoleRight_Child_Type] = @typeID", filter);
-                    connector.Cache.FlushRegion(connector.CacheRegion);
+                    connector.Cache?.FlushRegion(connector.CacheRegion);
                 }
             }
             await CleanUpFolderAsync(folderID);
@@ -163,7 +163,7 @@ namespace Sushi.Mediakiwi.Data
                         connector.ExecuteNonQuery("INSERT INTO [Wim_RoleRights] ([RoleRight_Role_Key], [RoleRight_Child_Key], [RoleRight_Child_Type], [RoleRight_Update], [RoleRight_SortOrder], [RoleRight_Type]) VALUES (@itemID, @folderID, @typeID, 1, @sortOrder, 1)", filter);
                     else
                         connector.ExecuteNonQuery("UPDATE [Wim_RoleRights] SET [RoleRight_Update] = 1, [RoleRight_SortOrder] = @sortOrder, [RoleRight_Type] = 1 WHERE [RoleRight_Role_Key] = @itemID AND [RoleRight_Child_Key] = @folderID AND [RoleRight_Child_Type] = @typeID", filter);
-                    connector.Cache.FlushRegion(connector.CacheRegion);
+                    connector.Cache?.FlushRegion(connector.CacheRegion);
                 }
             }
             CleanUp(type, roleID);
@@ -201,7 +201,7 @@ namespace Sushi.Mediakiwi.Data
                         await connector.ExecuteNonQueryAsync("INSERT INTO [Wim_RoleRights] ([RoleRight_Role_Key], [RoleRight_Child_Key], [RoleRight_Child_Type], [RoleRight_Update], [RoleRight_SortOrder], [RoleRight_Type]) VALUES (@itemID, @folderID, @typeID, 1, @sortOrder, 1)", filter);
                     else
                         await connector.ExecuteNonQueryAsync("UPDATE [Wim_RoleRights] SET [RoleRight_Update] = 1, [RoleRight_SortOrder] = @sortOrder, [RoleRight_Type] = 1 WHERE [RoleRight_Role_Key] = @itemID AND [RoleRight_Child_Key] = @folderID AND [RoleRight_Child_Type] = @typeID", filter);
-                    connector.Cache.FlushRegion(connector.CacheRegion);
+                    connector.Cache?.FlushRegion(connector.CacheRegion);
                 }
             }
             await CleanUpAsync(type, roleID);
@@ -237,7 +237,7 @@ namespace Sushi.Mediakiwi.Data
                         connector.ExecuteNonQuery("INSERT INTO [Wim_RoleRights] ([RoleRight_Role_Key], [RoleRight_Child_Key], [RoleRight_Child_Type], [RoleRight_Update], [RoleRight_SortOrder], [RoleRight_Type]) VALUES (@itemID, @folderID, @typeID, 1, @sortOrder, 1)", filter);
                     else
                         connector.ExecuteNonQuery("UPDATE [Wim_RoleRights] SET [RoleRight_Update] = 1, [RoleRight_SortOrder] = @sortOrder, [RoleRight_Type] = 1 WHERE [RoleRight_Role_Key] = @itemID AND [RoleRight_Child_Key] = @folderID AND [RoleRight_Child_Type] = @typeID", filter);
-                    connector.Cache.FlushRegion(connector.CacheRegion);
+                    connector.Cache?.FlushRegion(connector.CacheRegion);
                 }
             }
             CleanUp(type, roleID);
@@ -273,7 +273,7 @@ namespace Sushi.Mediakiwi.Data
                         await connector.ExecuteNonQueryAsync("INSERT INTO [Wim_RoleRights] ([RoleRight_Role_Key], [RoleRight_Child_Key], [RoleRight_Child_Type], [RoleRight_Update], [RoleRight_SortOrder], [RoleRight_Type]) VALUES (@itemID, @folderID, @typeID, 1, @sortOrder, 1)", filter);
                     else
                         await connector.ExecuteNonQueryAsync("UPDATE [Wim_RoleRights] SET [RoleRight_Update] = 1, [RoleRight_SortOrder] = @sortOrder, [RoleRight_Type] = 1 WHERE [RoleRight_Role_Key] = @itemID AND [RoleRight_Child_Key] = @folderID AND [RoleRight_Child_Type] = @typeID", filter);
-                    connector.Cache.FlushRegion(connector.CacheRegion);
+                    connector.Cache?.FlushRegion(connector.CacheRegion);
                 }
             }
             await CleanUpAsync(type, roleID);
@@ -313,7 +313,7 @@ namespace Sushi.Mediakiwi.Data
                         connector.ExecuteNonQuery("INSERT INTO [Wim_RoleRights] ([RoleRight_Role_Key], [RoleRight_Child_Key], [RoleRight_Child_Type], [RoleRight_Update], [RoleRight_SortOrder], [RoleRight_Type]) VALUES (@itemID, @folderID, @typeID, 1, @sortOrder, @value)", filter);
                     else
                         connector.ExecuteNonQuery("UPDATE [Wim_RoleRights] SET [RoleRight_Update] = 1, [RoleRight_SortOrder] = @sortOrder, [RoleRight_Type] = @value WHERE [RoleRight_Role_Key] = @itemID AND [RoleRight_Child_Key] = @folderID AND [RoleRight_Child_Type] = @typeID", filter);
-                    connector.Cache.FlushRegion(connector.CacheRegion);
+                    connector.Cache?.FlushRegion(connector.CacheRegion);
                 }
             }
             CleanUp(type, userOrRoleID);
@@ -353,7 +353,7 @@ namespace Sushi.Mediakiwi.Data
                         await connector.ExecuteNonQueryAsync("INSERT INTO [Wim_RoleRights] ([RoleRight_Role_Key], [RoleRight_Child_Key], [RoleRight_Child_Type], [RoleRight_Update], [RoleRight_SortOrder], [RoleRight_Type]) VALUES (@itemID, @folderID, @typeID, 1, @sortOrder, @value)", filter);
                     else
                         await connector.ExecuteNonQueryAsync("UPDATE [Wim_RoleRights] SET [RoleRight_Update] = 1, [RoleRight_SortOrder] = @sortOrder, [RoleRight_Type] = @value WHERE [RoleRight_Role_Key] = @itemID AND [RoleRight_Child_Key] = @folderID AND [RoleRight_Child_Type] = @typeID", filter);
-                    connector.Cache.FlushRegion(connector.CacheRegion);
+                    connector.Cache?.FlushRegion(connector.CacheRegion);
                 }
             }
             await CleanUpAsync(type, userOrRoleID);
@@ -470,7 +470,7 @@ namespace Sushi.Mediakiwi.Data
             filter.AddParameter("@childTypeID", (int)type);
 
             connector.ExecuteNonQuery("UPDATE [Wim_RoleRights] SET [RoleRight_Update] = 0 WHERE [RoleRight_Role_Key] = @roleID and [RoleRight_Child_Type] = @childTypeID", filter);
-            connector.Cache.FlushRegion(connector.CacheRegion);
+            connector.Cache?.FlushRegion(connector.CacheRegion);
         }
 
         /// <summary>
@@ -486,7 +486,7 @@ namespace Sushi.Mediakiwi.Data
             filter.AddParameter("@childTypeID", (int)type);
 
             await connector.ExecuteNonQueryAsync("UPDATE [Wim_RoleRights] SET [RoleRight_Update] = 0 WHERE [RoleRight_Role_Key] = @roleID AND [RoleRight_Child_Type] = @childTypeID", filter);
-            connector.Cache.FlushRegion(connector.CacheRegion);
+            connector.Cache?.FlushRegion(connector.CacheRegion);
         }
 
         /// <summary>
@@ -503,7 +503,7 @@ namespace Sushi.Mediakiwi.Data
             filter.AddParameter("@childTypeID", (int)type);
 
             connector.ExecuteNonQuery("UPDATE [Wim_RoleRights] set [RoleRight_Update] = 0 where [RoleRight_Child_Key] = @childID AND [RoleRight_Child_Type] = @childTypeID", filter);
-            connector.Cache.FlushRegion(connector.CacheRegion);
+            connector.Cache?.FlushRegion(connector.CacheRegion);
         }
 
         /// <summary>
@@ -520,7 +520,7 @@ namespace Sushi.Mediakiwi.Data
             filter.AddParameter("@childTypeID", (int)type);
 
             await connector.ExecuteNonQueryAsync("UPDATE [Wim_RoleRights] set [RoleRight_Update] = 0 where [RoleRight_Child_Key] = @childID AND [RoleRight_Child_Type] = @childTypeID", filter);
-            connector.Cache.FlushRegion(connector.CacheRegion);
+            connector.Cache?.FlushRegion(connector.CacheRegion);
         }
 
         /// <summary>
@@ -537,7 +537,7 @@ namespace Sushi.Mediakiwi.Data
             filter.AddParameter("@childTypeID", (int)type);
 
             connector.ExecuteNonQuery("DELETE FROM [Wim_RoleRights] WHERE [RoleRight_Update] = 0 AND [RoleRight_Child_Key] = @childID AND [RoleRight_Child_Type] = @childTypeID", filter);
-            connector.Cache.FlushRegion(connector.CacheRegion);
+            connector.Cache?.FlushRegion(connector.CacheRegion);
         }
 
         /// <summary>
@@ -554,7 +554,7 @@ namespace Sushi.Mediakiwi.Data
             filter.AddParameter("@childTypeID", (int)type);
 
             await connector.ExecuteNonQueryAsync("DELETE FROM [Wim_RoleRights] WHERE [RoleRight_Update] = 0 AND [RoleRight_Child_Key] = @childID AND [RoleRight_Child_Type] = @childTypeID", filter);
-            connector.Cache.FlushRegion(connector.CacheRegion);
+            connector.Cache?.FlushRegion(connector.CacheRegion);
         }
 
         /// <summary>
@@ -570,7 +570,7 @@ namespace Sushi.Mediakiwi.Data
             filter.AddParameter("@childTypeID", (int)type);
 
             connector.ExecuteNonQuery("DELETE FROM [Wim_RoleRights] WHERE [RoleRight_Update] = 0 AND [RoleRight_Role_Key] = @roleID AND [RoleRight_Child_Type] = @childTypeID", filter);
-            connector.Cache.FlushRegion(connector.CacheRegion);
+            connector.Cache?.FlushRegion(connector.CacheRegion);
         }
 
         /// <summary>
@@ -586,7 +586,7 @@ namespace Sushi.Mediakiwi.Data
             filter.AddParameter("@childTypeID", (int)type);
 
             await connector.ExecuteNonQueryAsync("DELETE FROM [Wim_RoleRights] WHERE [RoleRight_Update] = 0 AND [RoleRight_Role_Key] = @roleID AND [RoleRight_Child_Type] = @childTypeID", filter);
-            connector.Cache.FlushRegion(connector.CacheRegion);
+            connector.Cache?.FlushRegion(connector.CacheRegion);
         }
 
     }

@@ -3,7 +3,7 @@ using Sushi.MicroORM.Mapping;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Sushi.Mediakiwi.Data.MircoORM;
+using Sushi.Mediakiwi.Data.MicroORM;
 
 namespace Sushi.Mediakiwi.Data
 {
@@ -424,6 +424,55 @@ namespace Sushi.Mediakiwi.Data
         }
 
         /// <summary>
+        /// Selects all.
+        /// </summary>
+        /// <param name="listID">The list ID.</param>
+        /// <param name="listTypeID">The list type ID.</param>
+        /// <param name="showEmptyTypes">if set to <c>true</c> [show empty types].</param>
+        /// <param name="onlyReturnFlexibleProperties">if set to <c>true</c> [only return flexible properties].</param>
+        /// <param name="cacheresult">if set to <c>true</c> [cacheresult].</param>
+        /// <returns></returns>
+        public static Property[] SelectAll(int listID, int? listTypeID, bool showEmptyTypes, bool onlyReturnFlexibleProperties = false)
+        {
+            var connector = ConnectorFactory.CreateConnector<Property>();
+            var filter = connector.CreateDataFilter();
+        
+            filter.Add(x => x.ListID, listID);
+
+            if (listTypeID.HasValue && listTypeID.Value > 0)
+            {
+                filter.AddOrder(x => x.ListTypeID, Sushi.MicroORM.SortOrder.ASC);
+                filter.AddOrder(x => x.SortOrder, Sushi.MicroORM.SortOrder.ASC);
+
+                if (showEmptyTypes)
+                {
+                    filter.AddSql("Property_List_Type_Key = @Type OR Property_List_Type_Key is null");
+                    filter.AddParameter<int>("Type", listTypeID.Value);
+                }
+                else
+                    filter.Add(x => x.ListTypeID, listTypeID);
+
+            }
+            else
+                filter.Add(x => x.ListTypeID, null);
+
+            if (onlyReturnFlexibleProperties)
+                filter.Add(x => x.IsFixed, false);
+
+            var result = connector.FetchAll(filter);
+            return result.ToArray();
+        }
+
+        public static Property[] SelectAll(int listID)
+        {
+            var connector = ConnectorFactory.CreateConnector<Property>();
+            var filter = connector.CreateDataFilter();
+            filter.Add(x => x.ListID, listID);
+
+            return connector.FetchAll(filter).ToArray();
+        }
+
+        /// <summary>
         /// Selects all in the supplied ID array.
         /// </summary>
         /// <param name="IDs">The IDs.</param>
@@ -457,7 +506,7 @@ namespace Sushi.Mediakiwi.Data
                 filter.AddParameter("@thisID", ID);
 
                 connector.ExecuteNonQuery("UPDATE [wim_Properties] SET [Property_SortOrder] = [Property_Key] WHERE [Property_Key] = @thisID", filter);
-				connector.Cache.FlushRegion(connector.CacheRegion);
+				connector.Cache?.FlushRegion(connector.CacheRegion);
             }
 
             return true;
@@ -482,7 +531,7 @@ namespace Sushi.Mediakiwi.Data
                 filter.AddParameter("@thisID", ID);
 
                 await connector.ExecuteNonQueryAsync("UPDATE [wim_Properties] SET [Property_SortOrder] = [Property_Key] WHERE [Property_Key] = @thisID", filter);
-				connector.Cache.FlushRegion(connector.CacheRegion);
+				connector.Cache?.FlushRegion(connector.CacheRegion);
             }
 
             return true;

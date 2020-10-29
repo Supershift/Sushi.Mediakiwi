@@ -19,9 +19,10 @@ namespace Sushi.Mediakiwi.Data
         DateTime LastRequestDone { get; }
         int LastUpdateMinutes { get; }
         DateTime LastVisit { get; set; }
-        Page LastVisitedPage { get; }
+        //Page LastVisitedPage { get; }
         int? ProfileID { get; set; }
         bool RememberMe { get; set; }
         DateTime Updated { get; set; }
+        bool Save();
     }
 }

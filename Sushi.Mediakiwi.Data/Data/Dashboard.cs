@@ -2,7 +2,7 @@
 using Sushi.MicroORM.Mapping;
 using System;
 using System.Threading.Tasks;
-using Sushi.Mediakiwi.Data.MircoORM;
+using Sushi.Mediakiwi.Data.MicroORM;
 
 namespace Sushi.Mediakiwi.Data
 {
@@ -163,7 +163,7 @@ namespace Sushi.Mediakiwi.Data
                         connector.ExecuteNonQuery("INSERT INTO [wim_DashboardLists]([DashboardList_Dashboard_Key], [DashboardList_List_Key], [DashboardList_Column], [DashboardList_Update], [DashboardList_SortOrder]) VALUES (@dashboardId, @thisId, @columnId, 1, @sortOrder)", filter);
                     else
                         connector.ExecuteNonQuery("UPDATE [wim_DashboardLists] SET [DashboardList_Update] = 1, [DashboardList_SortOrder] = @sortOrder WHERE [DashboardList_Dashboard_Key] = @dashboardId AND [DashboardList_List_Key] = @thisId AND [DashboardList_Column] = @columnId", filter);
-					connector.Cache.FlushRegion(connector.CacheRegion);
+					connector.Cache?.FlushRegion(connector.CacheRegion);
                 }
             }
             CleanUp(dashboard, column);
@@ -197,7 +197,7 @@ namespace Sushi.Mediakiwi.Data
                         await connector.ExecuteNonQueryAsync("INSERT INTO [wim_DashboardLists]([DashboardList_Dashboard_Key], [DashboardList_List_Key], [DashboardList_Column], [DashboardList_Update], [DashboardList_SortOrder]) VALUES (@dashboardId, @thisId, @columnId, 1, @sortOrder)", filter);
                     else
                         await connector.ExecuteNonQueryAsync("UPDATE [wim_DashboardLists] SET [DashboardList_Update] = 1, [DashboardList_SortOrder] = @sortOrder WHERE [DashboardList_Dashboard_Key] = @dashboardId AND [DashboardList_List_Key] = @thisId AND [DashboardList_Column] = @columnId", filter);
-					connector.Cache.FlushRegion(connector.CacheRegion);
+					connector.Cache?.FlushRegion(connector.CacheRegion);
                 }
             }
             await CleanUpAsync(dashboard, column);
@@ -216,7 +216,7 @@ namespace Sushi.Mediakiwi.Data
             filter.AddParameter("@dashboardId", dashboard);
 
             connector.ExecuteNonQuery("UPDATE [wim_DashboardLists] SET [DashboardList_Update] = 0 WHERE [DashboardList_Dashboard_Key] = @dashboardId AND [DashboardList_Column] = @columnId", filter);
-			connector.Cache.FlushRegion(connector.CacheRegion);
+			connector.Cache?.FlushRegion(connector.CacheRegion);
         }
 
         /// <summary>
@@ -232,7 +232,7 @@ namespace Sushi.Mediakiwi.Data
             filter.AddParameter("@dashboardId", dashboard);
 
             await connector.ExecuteNonQueryAsync("UPDATE [wim_DashboardLists] SET [DashboardList_Update] = 0 WHERE [DashboardList_Dashboard_Key] = @dashboardId AND [DashboardList_Column] = @columnId", filter);
-			connector.Cache.FlushRegion(connector.CacheRegion);
+			connector.Cache?.FlushRegion(connector.CacheRegion);
         }
 
         /// <summary>
@@ -248,7 +248,7 @@ namespace Sushi.Mediakiwi.Data
             filter.AddParameter("@dashboardId", dashboard);
 
             connector.ExecuteNonQuery("DELETE FROM [wim_DashboardLists] WHERE [DashboardList_Update] = 0 AND [DashboardList_Dashboard_Key] = @dashboardId AND [DashboardList_Column] = @columnId", filter);
-			connector.Cache.FlushRegion(connector.CacheRegion);
+			connector.Cache?.FlushRegion(connector.CacheRegion);
         }
 
         /// <summary>
@@ -264,7 +264,7 @@ namespace Sushi.Mediakiwi.Data
             filter.AddParameter("@dashboardId", dashboard);
 
             await connector.ExecuteNonQueryAsync("DELETE FROM [wim_DashboardLists] WHERE [DashboardList_Update] = 0 AND [DashboardList_Dashboard_Key] = @dashboardId AND [DashboardList_Column] = @columnId", filter);
-			connector.Cache.FlushRegion(connector.CacheRegion);
+			connector.Cache?.FlushRegion(connector.CacheRegion);
         }
 
         private IComponentList[] _DashboardTarget;

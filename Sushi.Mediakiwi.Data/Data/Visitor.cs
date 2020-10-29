@@ -3,7 +3,7 @@ using Sushi.MicroORM.Mapping;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Sushi.Mediakiwi.Data.MircoORM;
+using Sushi.Mediakiwi.Data.MicroORM;
 
 namespace Sushi.Mediakiwi.Data
 {
@@ -40,15 +40,15 @@ namespace Sushi.Mediakiwi.Data
         /// Gets the last visited page (if none present an empty Page object is returned).
         /// </summary>
         /// <value>The last visited page.</value>
-        public Page LastVisitedPage
-        {
-            get
-            {
-                int lastPageID = this.Data["wim_lastpageid"].ParseInt().GetValueOrDefault();
-                Page page = Page.SelectOne(lastPageID);
-                return page;
-            }
-        }
+        //public Page LastVisitedPage
+        //{
+        //    get
+        //    {
+        //        int lastPageID = this.Data["wim_lastpageid"].ParseInt().GetValueOrDefault();
+        //        Page page = Page.SelectOne(lastPageID);
+        //        return page;
+        //    }
+        //}
 
         /// <summary>
         /// Gets or sets the ID.
@@ -66,7 +66,7 @@ namespace Sushi.Mediakiwi.Data
         /// Gets or sets the created.
         /// </summary>
         /// <value>The created.</value>
-        public DateTime Updated { get; set; }
+        public DateTime Updated { get; set; } = DateTime.UtcNow;
 
         /// <summary>
         /// Timestamp (UTC) obtained exclusively from the cookie
@@ -160,7 +160,7 @@ namespace Sushi.Mediakiwi.Data
         {
             get
             {
-                return Convert.ToInt32(new TimeSpan(DateTime.Now.Ticks - Updated.Ticks).TotalMinutes);
+                return Convert.ToInt32(new TimeSpan(DateTime.UtcNow.Ticks - Updated.Ticks).TotalMinutes);
             }
         }
 
@@ -186,7 +186,6 @@ namespace Sushi.Mediakiwi.Data
             {
                 if (m_Data == null)
                     m_Data = new CustomData(DataString);
-
                 return m_Data;
             }
             set
@@ -270,6 +269,18 @@ namespace Sushi.Mediakiwi.Data
             var connector = ConnectorFactory.CreateConnector<Visitor>();
 
             return connector.FetchSingle(ID);
+        }
+
+        public static void Save(Visitor entity)
+        {
+            var connector = ConnectorFactory.CreateConnector<Visitor>();
+            connector.Save(entity);
+        }
+
+        public bool Save()
+        {
+            Save(this);
+            return true;
         }
 
         /// <summary>

@@ -4,7 +4,7 @@ using System;
 using System.Linq;
 using System.Data;
 using System.Threading.Tasks;
-using Sushi.Mediakiwi.Data.MircoORM;
+using Sushi.Mediakiwi.Data.MicroORM;
 
 namespace Sushi.Mediakiwi.Data
 {
@@ -28,7 +28,7 @@ namespace Sushi.Mediakiwi.Data
                 Map(x => x.CanSeeList, "Role_CanSeeList").SqlType(SqlDbType.Bit);
                 Map(x => x.CanSeeAdmin, "Role_CanSeeAdmin").SqlType(SqlDbType.Bit);
                 Map(x => x.CanSeeGallery, "Role_CanSeeGallery").SqlType(SqlDbType.Bit);
-                Map(x => x.CanSeeFolder, "Role_CanSeeGallery").SqlType(SqlDbType.Bit);
+                Map(x => x.CanSeeFolder, "Role_CanSeeFolder").SqlType(SqlDbType.Bit);
                 Map(x => x.CanChangePage, "Role_Page_CanChange").SqlType(SqlDbType.Bit);
                 Map(x => x.CanCreatePage, "Role_Page_CanCreate").SqlType(SqlDbType.Bit);
                 Map(x => x.CanPublishPage, "Role_Page_CanPublish").SqlType(SqlDbType.Bit);

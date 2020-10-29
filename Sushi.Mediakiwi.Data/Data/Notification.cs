@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Xml;
-using Sushi.Mediakiwi.Data.MircoORM;
+using Sushi.Mediakiwi.Data.MicroORM;
 
 namespace Sushi.Mediakiwi.Data
 {
@@ -142,7 +142,7 @@ namespace Sushi.Mediakiwi.Data
         {
             var connector = ConnectorFactory.CreateConnector<Notification>();
             connector.ExecuteNonQuery("TRUNCATE TABLE [wim_Notifications]");
-			connector.Cache.FlushRegion(connector.CacheRegion);
+			connector.Cache?.FlushRegion(connector.CacheRegion);
         }
 
         /// <summary>
@@ -152,7 +152,7 @@ namespace Sushi.Mediakiwi.Data
         {
             var connector = ConnectorFactory.CreateConnector<Notification>();
             await connector.ExecuteNonQueryAsync("TRUNCATE TABLE [wim_Notifications]");
-			connector.Cache.FlushRegion(connector.CacheRegion);
+			connector.Cache?.FlushRegion(connector.CacheRegion);
         }
 
         /// <summary>
@@ -166,7 +166,7 @@ namespace Sushi.Mediakiwi.Data
             filter.AddParameter("@type", group);
 
             connector.ExecuteNonQuery("DELETE FROM [wim_Notifications] WHERE [Notification_Type] = @TYPE", filter);
-			connector.Cache.FlushRegion(connector.CacheRegion);
+			connector.Cache?.FlushRegion(connector.CacheRegion);
         }
 
         /// <summary>
@@ -180,7 +180,7 @@ namespace Sushi.Mediakiwi.Data
             filter.AddParameter("@type", group);
 
             await connector.ExecuteNonQueryAsync("DELETE FROM [wim_Notifications] WHERE [Notification_Type] = @TYPE", filter);
-			connector.Cache.FlushRegion(connector.CacheRegion);
+			connector.Cache?.FlushRegion(connector.CacheRegion);
         }
 
         /// <summary>
@@ -400,6 +400,19 @@ namespace Sushi.Mediakiwi.Data
         public static async Task<int> InsertOneAsync(string groupName, NotificationType type, string notification)
         {
             return await InsertOneAsync(groupName, type, null, notification);
+        }
+
+        /// <summary>
+        /// Insert a notification
+        /// </summary>
+        /// <param name="groupName">Name of the group.</param>
+        /// <param name="type">The type.</param>
+        /// <param name="notification">The notification.</param>
+        /// <returns></returns>
+        public static async Task<int> InsertOneAsync(string groupName, Exception ex)
+        {
+            var body = Utility.GetHtmlFormattedLastServerError(ex);
+            return await InsertOneAsync(groupName, NotificationType.Error, null, body);
         }
 
         /// <summary>

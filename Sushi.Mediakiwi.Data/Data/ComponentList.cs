@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using Sushi.Mediakiwi.Data.MircoORM;
+using Sushi.Mediakiwi.Data.MicroORM;
 
 namespace Sushi.Mediakiwi.Data
 {
@@ -615,7 +615,7 @@ namespace Sushi.Mediakiwi.Data
             try
             {
                 connector.ExecuteNonQuery("UPDATE [wim_ComponentLists] SET [ComponentList_SortOrder] = @sortOrder WHERE [ComponentList_Key] = @listId", filter);
-                connector.Cache.FlushRegion(connector.CacheRegion);
+                connector.Cache?.FlushRegion(connector.CacheRegion);
                 return true;
             }
             catch (Exception ex)
@@ -641,7 +641,7 @@ namespace Sushi.Mediakiwi.Data
             try
             {
                 await connector.ExecuteNonQueryAsync("UPDATE [wim_ComponentLists] SET [ComponentList_SortOrder] = @sortOrder WHERE [ComponentList_Key] = @listId", filter);
-                connector.Cache.FlushRegion(connector.CacheRegion);
+                connector.Cache?.FlushRegion(connector.CacheRegion);
                 return true;
             }
             catch (Exception ex)
@@ -1315,6 +1315,9 @@ namespace Sushi.Mediakiwi.Data
         /// <returns></returns>
         public int Save()
         {
+            if (m_Data != null)
+                DataString = m_Data.Serialized;
+
             var connector = ConnectorFactory.CreateConnector<ComponentList>();
             connector.Save(this);
 
@@ -1327,6 +1330,9 @@ namespace Sushi.Mediakiwi.Data
         /// <returns></returns>
         public async Task<int> SaveAsync()
         {
+            if (m_Data != null)
+                DataString = m_Data.Serialized;
+
             var connector = ConnectorFactory.CreateConnector<ComponentList>();
             await connector.SaveAsync(this);
 
