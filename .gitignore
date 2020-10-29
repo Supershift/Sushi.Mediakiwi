@@ -23,3 +23,4 @@
 /Sushi.Mediakiwi.Tests/bin/Release/netcoreapp3.1
 *.testlog
 /Sushi.Mediakiwi.CDN.Files/obj
+/Sushi.Mediakiwi.Files/obj/Debug/netcoreapp3.1
