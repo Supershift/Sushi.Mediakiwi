@@ -7,7 +7,8 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <Company>Supershift</Company>
     <Authors>Marc Molenwijk</Authors>
-    <Copyright>2020 Supershift B.V.</Copyright>
+    <Copyright>2005-2020 Supershift B.V.</Copyright>
+    <Description>Rapid Portal Development Framework including a Headless Content Management System component build and optimized for Microsoft Azure (cloud)</Description>
   </PropertyGroup>
 
   <ItemGroup>
