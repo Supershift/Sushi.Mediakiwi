@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using System;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration.UserSecrets;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
@@ -20,11 +22,13 @@ namespace Sushi.Mediakiwi
     {
         private IHostingEnvironment _env;
         private readonly RequestDelegate _next;
+        private readonly IConfiguration _configuration;
 
-        public Portal(RequestDelegate next, IHostingEnvironment env)
+        public Portal(RequestDelegate next, IHostingEnvironment env, IConfiguration configuration)
         {
             _env = env;
             _next = next;
+            _configuration = configuration;
         }
 
         internal static ConcurrentDictionary<string, ICacheManager> Caches;
@@ -47,9 +51,12 @@ namespace Sushi.Mediakiwi
                 // Assign json section to config
                 WimServerConfiguration.LoadJsonConfig(AppDomain.CurrentDomain.BaseDirectory + "appsettings.json");
 
+                //portal.Connection
                 // retrieve default portal and set connectionstring
                 WimServerPortal portal = WimServerConfiguration.Instance.Portals.Where(x => x.Name == WimServerConfiguration.Instance.DefaultPortal).FirstOrDefault();
-                DatabaseConfiguration.SetDefaultConnectionString(portal.Connection);
+                
+                var connection = _configuration.GetConnectionString("SQL");
+                DatabaseConfiguration.SetDefaultConnectionString(connection);
             }
         }
 

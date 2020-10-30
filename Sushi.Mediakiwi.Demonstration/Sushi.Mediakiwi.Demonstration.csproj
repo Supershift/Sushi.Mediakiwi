@@ -2,8 +2,11 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
+    <UserSecretsId>f68e663d-31b5-4d3b-82e0-bed96bdc7b85</UserSecretsId>
   </PropertyGroup>
-
+ <PropertyGroup Condition=" '$(Configuration)' == '' Or '$(Configuration)' == 'Debug'">
+    <EnvironmentName>Development</EnvironmentName>
+  </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\Sushi.Mediakiwi\Sushi.Mediakiwi.csproj" />
   </ItemGroup>
