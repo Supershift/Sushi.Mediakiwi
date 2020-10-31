@@ -20,6 +20,26 @@ namespace Sushi.Mediakiwi.Data.Configuration
 
         public static WimServerConfiguration Instance { get; set; }
 
+        public static void LoadJsonConfig(IConfiguration configuration)
+        {
+            // Assign json section to config
+            Instance = configuration.GetSection("mediakiwi").Get<WimServerConfiguration>();
+
+            Instance.DefaultPortal = Instance.Connection;
+
+            Instance.Portals = new List<WimServerPortal>();
+
+            var portals = configuration.GetSection("ConnectionStrings");
+
+            foreach (var portal in portals.GetChildren())
+            {
+                Instance.Portals.Add(new WimServerPortal() {
+                    Connection = configuration.GetConnectionString(portal.Key),
+                    Name = portal.Key
+                });
+            }
+        }
+
         /// <summary>
         /// Will load the supplied Json filename, or the default 'appsettings.json'
         /// when no filename is supplied
@@ -37,9 +57,39 @@ namespace Sushi.Mediakiwi.Data.Configuration
                  .AddJsonFile(fileName, false)
                  .Build();
 
-            // Assign json section to config
-            Instance = configuration.GetSection("wimServerConfiguration").Get<WimServerConfiguration>();
+            LoadJsonConfig(configuration);
         }
+        public string Portal_Path { get; set; }
+
+        public string Connection { get; set; }
+        public string Azure_Storage { get; set; }
+
+        public string Encryption_key { get; set; }
+
+        /// <summary>
+        /// Is the environment load balanced? if so caching across nodes needs to be controlled.
+        /// </summary>
+        public bool Is_Load_Balanced { get; set; }
+
+        /// <summary>
+        /// Is the current environment the local development environment?
+        /// </summary>
+        public bool Is_Local_Development { get; set; }
+
+        /// <summary>
+        /// HTML Encode in for a textarea
+        /// </summary>
+        public bool Html_Encode_Textarea_iInput { get; set; }
+
+        public string Login_Background_Url { get; set; }
+
+        public string Loginbox_Logo_Url { get; set; }
+
+        public string Stylesheet { get; set; }
+        
+        public string Local_File_Path { get; set; }
+
+        public bool Disable_Caching { get; set; }
 
         /// <summary>
         /// Gets the portal collection.
@@ -47,7 +97,6 @@ namespace Sushi.Mediakiwi.Data.Configuration
         /// <value>
         /// The portal collection.
         /// </value>
-        [DataMember(Name ="portals")]
         public List<WimServerPortal> Portals { get; set; }
 
         /// <summary>
@@ -78,8 +127,7 @@ namespace Sushi.Mediakiwi.Data.Configuration
         /// <value>
         /// The general.
         /// </value>
-        [DataMember(Name = "general")]
-        public List<WimServerGeneral> General { get; set; }
+        //public List<WimServerGeneral> General { get; set; }
 
         /// <summary>
         /// Gets the default portal.
@@ -87,7 +135,6 @@ namespace Sushi.Mediakiwi.Data.Configuration
         /// <value>
         /// The default portal.
         /// </value>
-        [DataMember(Name = "defaultPortal")]
         public string DefaultPortal { get; set; }
     }
 }

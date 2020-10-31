@@ -84,14 +84,6 @@ namespace Sushi.Mediakiwi.Tests.Config
         }
 
         [TestMethod]
-        public void GetGeneral_LIVETRACK_INTERVAL()
-        {
-            var item = Common.GetGeneral("LIVETRACK_INTERVAL");
-            Console.WriteLine(item);
-            Assert.IsNotNull(item);
-        }
-
-        [TestMethod]
         public void GetPortal()
         {
             var portal = Common.GetPortal("CENTRAAL");

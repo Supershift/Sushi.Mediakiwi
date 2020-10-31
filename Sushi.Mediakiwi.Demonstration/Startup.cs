@@ -28,32 +28,15 @@ namespace Sushi.Mediakiwi.Demonstration
             {
                 app.UseDeveloperExceptionPage();
             }
-
-
-            var connectionstring = configuration.GetConnectionString("SQL");
-
-            //string connectionString = "Server=testing-mediakiwi.database.windows.net,1433;Database=testing-mediakiwi;Uid=mediakiwi;Pwd=tMAX28KozCCXt0HUVDCg";
-            //DatabaseConfiguration.SetDefaultConnectionString(connectionString);
-
-            app.UseMediakiwi();
-            app.UseRouting();
+            app.UseStaticFiles();
 
             // All requests ending in .html will follow this branch.
-            //app.MapWhen(
-            //    context => context.Request.Path.ToString().EndsWith(".html"),
-            //    appBranch =>
-            //    {
-            //        // ... optionally add more middleware to this branch
-            //        appBranch.UseMediakiwi();
-            //    });
-
-            //app.UseEndpoints(endpoints =>
-            //{
-            //    endpoints.MapGet("/", async context =>
-            //    {
-            //        await context.Response.WriteAsync(string.Empty);
-            //    });
-            //});
+            app.MapWhen(
+                context => context.Request.Path.ToString().EndsWith(
+                    configuration.GetValue<string>("mediakiwi:portal_path")),
+                appBranch => {
+                    appBranch.UseMediakiwi();
+                });
         }
     }
 }

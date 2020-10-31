@@ -22,8 +22,6 @@ namespace Sushi.Mediakiwi.Data
                 Map(x => x.DisplayName, "Environment_Title").Length(25);
                 Map(x => x.Title, "Environment_Name").Length(50);
                 Map(x => x.Timezone, "Environment_Timezone").Length(30);
-                Map(x => x.Domain, "Environment_Url").Length(255);
-                Map(x => x.RelativePath, "Environment_Path").Length(50);
                 Map(x => x.Repository, "Environment_Repository").Length(255);
                 Map(x => x.RepositoryFolder, "Environment_RepositoryFolder").Length(255);
                 Map(x => x.DefaultSiteID, "Environment_Default_Site_Key");
@@ -122,55 +120,9 @@ namespace Sushi.Mediakiwi.Data
         /// </value>
         public virtual string Timezone { get; set; }
 
-        /// <summary>
-        /// Gets the URL.
-        /// </summary>
-        /// <value>The URL.</value>
-        public virtual string Url
-        {
-            get
-            {
-                string tmp = string.Concat(this.Domain, this.RelativePath);
-                return tmp;
-            }
-        }
-
         public virtual string Secret
         {
             get { return "secret"; }
-        }
-
-        private string m_Domain;
-
-        /// <summary>
-        /// Main Wim access URL. Used for reference in mail.
-        /// </summary>
-        public virtual string Domain
-        {
-            get
-            {
-                if (m_Domain != null && m_Domain.Contains("wim.ashx"))
-                    m_Domain = m_Domain.Replace("wim.ashx", string.Empty);
-                return m_Domain;
-            }
-            set { m_Domain = value; }
-        }
-
-        private string m_RelativePath;
-
-        /// <summary>
-        /// Main Wim access URL.
-        /// </summary>
-        /// <value>The relative path.</value>
-        public virtual string RelativePath
-        {
-            get
-            {
-                if (string.IsNullOrEmpty(m_RelativePath))
-                    m_RelativePath = "/repository/wim/portal.ashx";
-                return m_RelativePath;
-            }
-            set { m_RelativePath = value; }
         }
 
         /// <summary>

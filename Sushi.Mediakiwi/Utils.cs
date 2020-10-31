@@ -1123,23 +1123,23 @@ namespace Sushi.Mediakiwi
 
 
                     case IconImage.Note:
-                        return string.Format("<img src=\"{2}{0}\" title=\"{1}\" height=\"{4}\" width=\"{3}\">",
-                            container.AddApplicationPath(string.Format("/repository/wim/images/icons/note_{0}.png", (int)size)), tooltip, Utility.GetCurrentHost(), width, height);
+                        return string.Format("<img src=\"{0}\" title=\"{1}\" height=\"10\" width=\"21\">",
+                            container.AddApplicationPath(string.Format("/repository/wim/images/icons/note_{0}.png", (int)size), true), tooltip);
                     case IconImage.New:
-                        return string.Format("<img src=\"{2}{0}\" title=\"{1}\" height=\"10\" width=\"21\">",
-                            container.AddApplicationPath(string.Format("/repository/wim/images/icons/new_10.png", (int)size)), tooltip, Utility.GetCurrentHost(), width, height);
+                        return string.Format("<img src=\"{0}\" title=\"{1}\" height=\"10\" width=\"21\">",
+                            container.AddApplicationPath(string.Format("/repository/wim/images/icons/new_10.png", (int)size), true), tooltip);
                     case IconImage.Rfc_Green:
-                        return string.Format("<img src=\"{2}{0}\" title=\"{1}\" height=\"10\" width=\"21\">",
-                            container.AddApplicationPath(string.Format("/repository/wim/images/icons/rfc_green_10.png", (int)size)), tooltip, Utility.GetCurrentHost(), width, height);
+                        return string.Format("<img src=\"{0}\" title=\"{1}\" height=\"10\" width=\"21\">",
+                            container.AddApplicationPath(string.Format("/repository/wim/images/icons/rfc_green_10.png", (int)size), true), tooltip);
                     case IconImage.Rfc_Orange:
-                        return string.Format("<img src=\"{2}{0}\" title=\"{1}\" height=\"10\" width=\"21\">",
-                            container.AddApplicationPath(string.Format("/repository/wim/images/icons/rfc_orange_10.png", (int)size)), tooltip, Utility.GetCurrentHost(), width, height);
+                        return string.Format("<img src=\"{0}\" title=\"{1}\" height=\"10\" width=\"21\">",
+                            container.AddApplicationPath(string.Format("/repository/wim/images/icons/rfc_orange_10.png", (int)size), true), tooltip);
                     case IconImage.Rfc_Red:
-                        return string.Format("<img src=\"{2}{0}\" title=\"{1}\" height=\"10\" width=\"21\">",
-                            container.AddApplicationPath(string.Format("/repository/wim/images/icons/rfc_red_10.png", (int)size)), tooltip, Utility.GetCurrentHost(), width, height);
+                        return string.Format("<img src=\"{0}\" title=\"{1}\" height=\"10\" width=\"21\">",
+                            container.AddApplicationPath(string.Format("/repository/wim/images/icons/rfc_red_10.png", (int)size), true), tooltip);
                     case IconImage.Rfc_Purple:
-                        return string.Format("<img src=\"{2}{0}\" title=\"{1}\" height=\"10\" width=\"21\">",
-                            container.AddApplicationPath(string.Format("/repository/wim/images/icons/rfc_purple_10.png", (int)size)), tooltip, Utility.GetCurrentHost(), width, height);
+                        return string.Format("<img src=\"{0}\" title=\"{1}\" height=\"10\" width=\"21\">",
+                            container.AddApplicationPath(string.Format("/repository/wim/images/icons/rfc_purple_10.png", (int)size), true), tooltip);
                     case IconImage.File:
                         className = "flaticon solid paperclip-2 icon green";
                         break;
@@ -1148,8 +1148,8 @@ namespace Sushi.Mediakiwi
                         className = "flaticon solid paperclip-2 icon red";
                         break;
                     default:
-                        return string.Format("<img src=\"{2}{0}\" title=\"{1}\" height=\"{4}\" width=\"{3}\">",
-                            container.AddApplicationPath(string.Format("/repository/wim/images/icons/{0}.png", icon.ToString())), tooltip, Utility.GetCurrentHost(), width, height);
+                        return string.Format("<img src=\"{0}\" title=\"{1}\" height=\"10\" width=\"21\">",
+                            container.AddApplicationPath(string.Format("/repository/wim/images/icons/{0}.png", icon.ToString()), true), tooltip);
                 }
 
                 if (!string.IsNullOrEmpty(className))

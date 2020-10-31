@@ -13,12 +13,10 @@ namespace Sushi.Mediakiwi.Data
         string DefaultMailAddress { get; set; }
         int? DefaultSiteID { get; set; }
         string DisplayName { get; set; }
-        string Domain { get; set; }
         string ErrorMailAddress { get; set; }
         int ID { get; set; }
         int? LogoLight { get; set; }
         string Password { get; set; }
-        string RelativePath { get; set; }
         string Repository { get; set; }
         string RepositoryFolder { get; set; }
         string Secret { get; }
@@ -31,7 +29,6 @@ namespace Sushi.Mediakiwi.Data
         string LogoHrefFull { get; set; }
 
         DateTime UpdateInfo { get; set; }
-        string Url { get; }
         decimal Version { get; set; }
 
         string GetRegistryValue(string registry, string defaultValue);

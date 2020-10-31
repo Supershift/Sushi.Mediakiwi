@@ -1408,7 +1408,7 @@ ORDER BY [Site_Master_Key] ASC, [Site_Displayname] ASC, [Folder_CompletePath] AS
             if (level < 1) 
                 return new Folder();
 
-            if (folder.Name == Sushi.Mediakiwi.Data.CommonConfiguration.siteRoot) 
+            if (folder.Name == CommonConfiguration.ROOT_FOLDER) 
                 return folder;
 
             string[] split = folder.CompletePath.Split('/');
@@ -1453,7 +1453,7 @@ ORDER BY [Site_Master_Key] ASC, [Site_Displayname] ASC, [Folder_CompletePath] AS
             if (level < 1)
                 return new Folder();
 
-            if (folder.Name == Sushi.Mediakiwi.Data.CommonConfiguration.siteRoot)
+            if (folder.Name == CommonConfiguration.ROOT_FOLDER)
                 return folder;
 
             string[] split = folder.CompletePath.Split('/');

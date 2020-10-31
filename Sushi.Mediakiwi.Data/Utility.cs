@@ -41,10 +41,6 @@ namespace Sushi.Mediakiwi.Data
             }
             return error;
         }
-        public static string GetCurrentHost()
-        {
-            return Common.GetGeneral("host");
-        }
 
         /// <summary>
         /// Converts a datetime to Epoch. Note that if the dateTime is UTC that is has that kind set.

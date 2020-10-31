@@ -224,7 +224,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                     //if candidate is user input it needs to cleaned
                     if (isCandidateUserInput && candidate != null && candidate is string candidateString)
                     {
-                        if (CommonConfiguration.HTML_ENCODE_LIST_PROPERTIES && !AllowHtmlTags)
+                        if (CommonConfiguration.HTML_ENCODE_TEXTAREA_INPUT && !AllowHtmlTags)
                         {
                             //encode html
                             candidateString = WebUtility.HtmlEncode(candidateString);
@@ -365,7 +365,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
 
             //get the value of the property
             string outputValue = this.OutputText;
-            if (Property?.PropertyType == typeof(String) && CommonConfiguration.HTML_ENCODE_LIST_PROPERTIES && !AllowHtmlTags)
+            if (Property?.PropertyType == typeof(String) && CommonConfiguration.HTML_ENCODE_TEXTAREA_INPUT && !AllowHtmlTags)
             {
                 //in this case the user input was HTML encoded. it needs to be decoded again to get back to its orignal value
                 outputValue = WebUtility.HtmlDecode(outputValue);

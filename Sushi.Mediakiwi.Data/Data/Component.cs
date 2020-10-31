@@ -386,8 +386,8 @@ namespace Sushi.Mediakiwi.Data
             string legacyContentTab, legacyServiceTab;
             if (template != null)
             {
-                legacyContentTab = template.Data["TAB.LCT"].Value ?? Sushi.Mediakiwi.Data.CommonConfiguration.DEFAULT_CONTENT_TAB;
-                legacyServiceTab = template.Data["TAB.LST"].Value ?? Sushi.Mediakiwi.Data.CommonConfiguration.DEFAULT_SERVICE_TAB;
+                legacyContentTab = template.Data["TAB.LCT"].Value ?? CommonConfiguration.DEFAULT_CONTENT_TAB;
+                legacyServiceTab = template.Data["TAB.LST"].Value ?? CommonConfiguration.DEFAULT_SERVICE_TAB;
 
                 if (!string.IsNullOrEmpty(legacyServiceTab) && section == legacyServiceTab)
                     isSecundaryContentContainer = true;

@@ -41,13 +41,10 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             if (!Implement.Password.Equals(m_PasswordAtStart))
                 this.Implement.Password = Utility.HashStringByMD5(Implement.Password);
 
-            if (!Implement.RelativePath.StartsWith("/"))
-                Implement.RelativePath = string.Concat("/", Implement.RelativePath);
-
             this.Implement.Save();
 
             //  Redirect as path could be changed!
-            string url = wim.AddApplicationPath(this.Implement.RelativePath);
+            string url = wim.AddApplicationPath(CommonConfiguration.PORTAL_PATH);
             Response.Redirect(string.Concat(url, "?list=", wim.CurrentList.ID));
         }
 

@@ -288,22 +288,6 @@ namespace Sushi.Mediakiwi.Data
         }
 
         /// <summary>
-        /// Gets the general.
-        /// </summary>
-        /// <param name="name">The name.</param>
-        /// <returns></returns>
-        public static string GetGeneral(string name)
-        {
-            var config = WimServerConfiguration.GetConfig();
-            if (config != null && config.General != null)
-            {
-                foreach (var map in config.General)
-                    if (map.Name == name) return map.Value;
-            }
-            return string.Empty;
-        }
-
-        /// <summary>
         /// Gets the portal.
         /// </summary>
         /// <param name="name">The name.</param>

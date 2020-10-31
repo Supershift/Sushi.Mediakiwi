@@ -152,7 +152,7 @@ public static class ApplicationUserExtention
         inUser.ResetKey = Guid.NewGuid();
         inUser.Save();
 
-        string wimPath = Sushi.Mediakiwi.Data.Environment.Current.RelativePath;
+        string wimPath = Sushi.Mediakiwi.CommonConfiguration.PORTAL_PATH;
 
         string url;
         ResetPassword(inUser, container, out url);
@@ -194,7 +194,7 @@ public static class ApplicationUserExtention
             auth.Password = "urlinfo";
             string urlAddition = string.Concat("&u=", WebUtility.UrlEncode(auth.Encrypt(inUser.Name)));
 
-            string wimPath = Sushi.Mediakiwi.Data.Environment.Current.RelativePath;
+            string wimPath = Sushi.Mediakiwi.CommonConfiguration.PORTAL_PATH;
 
             url = container.AddApplicationPath(string.Concat(wimPath, "?reset=", inUser.ResetKey, urlAddition), true);
 
@@ -222,7 +222,7 @@ public static class ApplicationUserExtention
         user.ResetKey = Guid.NewGuid();
         user.Save();
 
-        string wimPath = Sushi.Mediakiwi.Data.Environment.Current.RelativePath;
+        string wimPath = Sushi.Mediakiwi.CommonConfiguration.PORTAL_PATH;
         resetLink = container.AddApplicationPath(string.Concat(wimPath, "?reset=", user.ResetKey, $"&u={user.Email}"), true);
     }
 

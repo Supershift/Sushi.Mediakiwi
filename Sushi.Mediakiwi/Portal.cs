@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Http;
 using System;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Configuration.UserSecrets;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
@@ -49,14 +48,9 @@ namespace Sushi.Mediakiwi
                 };
 
                 // Assign json section to config
-                WimServerConfiguration.LoadJsonConfig(AppDomain.CurrentDomain.BaseDirectory + "appsettings.json");
-
-                //portal.Connection
-                // retrieve default portal and set connectionstring
-                WimServerPortal portal = WimServerConfiguration.Instance.Portals.Where(x => x.Name == WimServerConfiguration.Instance.DefaultPortal).FirstOrDefault();
+                WimServerConfiguration.LoadJsonConfig(_configuration);
                 
-                var connection = _configuration.GetConnectionString("SQL");
-                DatabaseConfiguration.SetDefaultConnectionString(connection);
+                DatabaseConfiguration.SetDefaultConnectionString(Common.DatabaseConnectionString);
             }
         }
 

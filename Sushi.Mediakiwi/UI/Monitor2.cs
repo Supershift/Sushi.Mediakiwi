@@ -60,18 +60,20 @@ namespace Sushi.Mediakiwi.UI
 
         internal async Task StartAsync(bool reStartWithNotificationList)
         {
-            if (_Console.Request.Path.Value.EndsWith(".ico"))
+            //  Set the current environment
+            _Console.CurrentEnvironment = Data.Environment.Current;
+
+            var path = _Console.AddApplicationPath(CommonConfiguration.PORTAL_PATH);
+            if (!_Console.Request.Path.Value.EndsWith(path))
                 return;
 
             _Console.IsNewDesign = true;
-
-            //  Set the current environment
-            _Console.CurrentEnvironment = Data.Environment.Current;
             _Console.SetDateFormat();
 
-            bool forcelogin = _Console.Request.Path.Equals($"{Data.Environment.Current.RelativePath}/login", StringComparison.CurrentCultureIgnoreCase)
-                || _Console.Url.Contains($"{Data.Environment.Current.RelativePath}?reset=", StringComparison.CurrentCultureIgnoreCase)
-                || _Console.Url.EndsWith($"{Data.Environment.Current.RelativePath}?reminder", StringComparison.CurrentCultureIgnoreCase)
+            bool forcelogin = 
+                //_Console.Request.Path.Equals($"{Data.Environment.Current.RelativePath}/login", StringComparison.CurrentCultureIgnoreCase)
+                _Console.Url.Contains($"{path}?reset=", StringComparison.CurrentCultureIgnoreCase)
+                || _Console.Url.EndsWith($"{path}?reminder", StringComparison.CurrentCultureIgnoreCase)
                 ;
 
             if (!await CheckRoamingApplicationUserAsync(forcelogin))
@@ -900,7 +902,7 @@ namespace Sushi.Mediakiwi.UI
                     _Console.CurrentVisitor.ApplicationUserID = null;
                     _Console.CurrentVisitor.Save();
 
-                    string wimPath = Data.Environment.Current.RelativePath;
+                    string wimPath = CommonConfiguration.PORTAL_PATH;
 
                     _Console.Response.Redirect(_Console.AddApplicationPath(wimPath), true);
 

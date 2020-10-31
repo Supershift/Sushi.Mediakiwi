@@ -1127,9 +1127,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                 , file == null ? null : string.Format("<img src=\"{0}\" />", file) // 17
                 , containsSublist ? null : bottomnavigation //18
                 , downloadUrl // 19
-                , CommonConfiguration.NEW_NAVIGATION
-                    ? @" class=""fullContent"""
-                    : container.CurrentListInstance.wim.ShowInFullWidthMode ? @" class=""fullContent""" : null //20
+                , @" class=""fullContent""" //20
                 , Labels.ResourceManager.GetString("no_link_selected", new CultureInfo(container.CurrentApplicationUser.LanguageCulture)) //21
                 , container.CurrentListInstance.wim.XHtmlDataBottom == null ? null : container.CurrentListInstance.wim.XHtmlDataBottom.ToString() // 22
                 , !showNew
@@ -1186,7 +1184,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                     Utilities.Mail.Send(new System.Net.Mail.MailAddress(appUser.Email, appUser.Displayname)
                         , "Forgotten password"
                         , string.Format("You have requested your password through the Forgotten password page. Your password is: <b>{0}</b>", appUser.Password)
-                        , string.Concat(container.CurrentEnvironment.Url.ToString(), urlAddition));
+                        , string.Concat(container.AddApplicationPath(CommonConfiguration.PORTAL_PATH, true), urlAddition));
 
                     //container.CurrentEnvironment.LoginBody = string.Concat(container.CurrentEnvironment.LoginBody, "<br/><br/><b>Your credentials have been send to the applied e-mail address.</b>");
 

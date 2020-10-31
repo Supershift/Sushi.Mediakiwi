@@ -491,7 +491,7 @@ namespace Sushi.Mediakiwi.Data
         {
             if (level < 1) return new Gallery();
             if (gallery == null || gallery.ID == 0) return new Gallery();
-            if (gallery.Name == CommonConfiguration.siteRoot) return gallery;
+            if (gallery.Name == CommonConfiguration.ROOT_FOLDER) return gallery;
 
             //  Exception from folder
             string[] split = gallery.CompletePath.Split('/');

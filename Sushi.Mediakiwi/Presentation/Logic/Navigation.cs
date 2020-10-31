@@ -869,7 +869,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                     if (Sushi.Mediakiwi.Data.Environment.Current["HIDE_BREADCRUMB", true, "0", "Hide breadcrumb"] == "0")
                     {
                         build.AppendFormat(@"<li class=""back""><span class=""icon-arrow-left-04""></span><a href=""{0}"">Home</a></li>"
-                            , container.AddApplicationPath(container.CurrentEnvironment.RelativePath)
+                            , container.AddApplicationPath(CommonConfiguration.PORTAL_PATH)
                             );
                     }
                 }
@@ -1382,7 +1382,6 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
             bool isTextMode = !isEditMode;
             bool isListMode = container.View == 2;
             bool isBrowseMode = container.CurrentList.Type == Sushi.Mediakiwi.Data.ComponentListType.Browsing && !container.Item.HasValue;
-            bool showNewNavigation = CommonConfiguration.NEW_NAVIGATION && !true;
 
             string className = null;
             //  Lists

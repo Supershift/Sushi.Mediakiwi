@@ -16,7 +16,7 @@ public static class EnvironmentExtension
     /// <value>The path.</value>
     public static string GetPath(this Sushi.Mediakiwi.Data.IEnvironment inEnvironment, Sushi.Mediakiwi.Beta.GeneratedCms.Console container)
     {
-        return container.AddApplicationPath(inEnvironment.RelativePath); 
+        return container.AddApplicationPath(Sushi.Mediakiwi.CommonConfiguration.PORTAL_PATH); 
     }
 
     static ConcurrentBag<IPageModule> _registeredPageModules = new ConcurrentBag<IPageModule>();

@@ -33,29 +33,6 @@ namespace Sushi.Mediakiwi.Tests.Config
             Assert.AreEqual("OTAP-P", sets.DefaultPortal);
         }
 
-        [TestMethod]
-        public void ReadJsonGenerals()
-        {
-            WimServerConfiguration.LoadJsonConfig();
-            var sets = WimServerConfiguration.Instance;
-            foreach (var item in sets.General)
-                Console.WriteLine($"{item.Name} : {item.Value}");
-
-            Assert.IsTrue(sets.General.Count > 0);
-        }
-
-
-        [TestMethod]
-        public void ReadJsonDBMappings()
-        {
-            WimServerConfiguration.LoadJsonConfig();
-            var sets = WimServerConfiguration.Instance;
-            foreach (var item in sets.DatabaseMappings)
-                Console.WriteLine($"{item.Name} : {item.Portal}");
-
-            Assert.IsTrue(sets.DatabaseMappings.Count > 0);
-        }
-
 
         [TestMethod]
         public void ReadJsonGalleryMappings()

@@ -1890,7 +1890,7 @@ namespace Sushi.Mediakiwi.Framework
             if (path.StartsWith("?", StringComparison.OrdinalIgnoreCase))
                 path = string.Concat("wim.ashx", path);
             
-            return string.Format("href=\"{1}{0}\"", this.Console.AddApplicationPath(path), Utility.GetCurrentHost());
+            return string.Format("href=\"{0}\"", this.Console.AddApplicationPath(path, true));
         }
 
 

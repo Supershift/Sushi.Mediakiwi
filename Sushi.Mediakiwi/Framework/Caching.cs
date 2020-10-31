@@ -178,7 +178,7 @@ namespace Sushi.Mediakiwi.Framework
             {
                 Memory.Remove(cacheKey);
 
-                if (CommonConfiguration.IS_LOAD_BALANCED && !igNoreLoadBalancedCacheCheck)
+                if (Data.CommonConfiguration.IS_LOAD_BALANCED && !igNoreLoadBalancedCacheCheck)
                     CacheItemLogic.ApplyLoadBalancedCacheCheckItem(cacheKey, false);
 
                 return true;
@@ -205,7 +205,7 @@ namespace Sushi.Mediakiwi.Framework
                     }
                 }
             }
-            if (CommonConfiguration.IS_LOAD_BALANCED && hasFoundCachedItem)
+            if (Data.CommonConfiguration.IS_LOAD_BALANCED && hasFoundCachedItem)
                 CacheItemLogic.ApplyLoadBalancedCacheCheckItem(cacheKey, true);
         }
 

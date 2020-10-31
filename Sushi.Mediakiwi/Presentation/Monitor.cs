@@ -68,16 +68,16 @@ namespace Sushi.Mediakiwi.Framework.Presentation
             if (_FolderVersion == null)
             {
                 // CDN
-                if (string.IsNullOrEmpty(CommonConfiguration.LOCAL_COPY_PATH))
+                if (string.IsNullOrEmpty(CommonConfiguration.LOCAL_FILE_PATH))
                 {
                     _FolderVersion = string.Concat(_Domain, Utils.Version.Replace(".", "-"), "/");
                 }
                 else
                 {
-                    if (CommonConfiguration.LOCAL_COPY_PATH.IndexOf("http", StringComparison.InvariantCultureIgnoreCase) > -1)
-                        _FolderVersion = CommonConfiguration.LOCAL_COPY_PATH;
+                    if (CommonConfiguration.LOCAL_FILE_PATH.IndexOf("http", StringComparison.InvariantCultureIgnoreCase) > -1)
+                        _FolderVersion = CommonConfiguration.LOCAL_FILE_PATH;
                     else
-                        _FolderVersion = m_container.AddApplicationPath(string.Concat(CommonConfiguration.LOCAL_COPY_PATH));
+                        _FolderVersion = m_container.AddApplicationPath(string.Concat(CommonConfiguration.LOCAL_FILE_PATH), true);
                 }
             }
 
@@ -381,7 +381,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation
 	    </menu>
 	</div>
 "
-                                , container.AddApplicationPath(container.CurrentEnvironment.RelativePath)
+                                , container.AddApplicationPath(CommonConfiguration.PORTAL_PATH)
                                 , container.Group.GetValueOrDefault() // 1
                                 , container.GroupItem.GetValueOrDefault() //2
                                 , c.Name //3
@@ -415,7 +415,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation
 	    </menu>
 	</div>
 "
-                                , container.AddApplicationPath(container.CurrentEnvironment.RelativePath)
+                                , container.AddApplicationPath(CommonConfiguration.PORTAL_PATH)
                                 , container.CurrentListInstance.wim.CurrentFolder.ID //1
                                 , currentFolderName //2
                                 , back
@@ -448,7 +448,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation
 	    </menu>
 	</div>
 "
-                                    , container.AddApplicationPath(container.CurrentEnvironment.RelativePath)
+                                    , container.AddApplicationPath(CommonConfiguration.PORTAL_PATH)
                                     , f.ID //1
                                     , currentFolderName //2
                                     , back
@@ -480,7 +480,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation
 	    </menu>
 	</div>
 "
-                                    , container.AddApplicationPath(container.CurrentEnvironment.RelativePath)
+                                    , container.AddApplicationPath(CommonConfiguration.PORTAL_PATH)
                                     , p.Folder.ID //1
                                     , currentFolderName //2
                                     , back
@@ -513,7 +513,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation
 	    </menu>
 	</div>
 "
-                                , container.AddApplicationPath(container.CurrentEnvironment.RelativePath)
+                                , container.AddApplicationPath(CommonConfiguration.PORTAL_PATH)
                                 , container.CurrentList.ID
                                 , container.CurrentList.Name
                                 , container.CurrentList.SingleItemName
@@ -537,7 +537,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation
 	    </menu>
 	</div>
 "
-                                        , container.AddApplicationPath(container.CurrentEnvironment.RelativePath)
+                                        , container.AddApplicationPath(CommonConfiguration.PORTAL_PATH)
                                         );
                                 }
                                 else
@@ -551,7 +551,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation
 	    </menu>
 	</div>
 "
-                                        , container.AddApplicationPath(container.CurrentEnvironment.RelativePath)
+                                        , container.AddApplicationPath(CommonConfiguration.PORTAL_PATH)
                                         , container.CurrentListInstance.wim.CurrentFolder.Name //1
                                         , container.CurrentListInstance.wim.CurrentFolder.ParentID.GetValueOrDefault(0) //2
                                         );
@@ -576,7 +576,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation
 	    </menu>
 	</div>
 "
-                                    , container.AddApplicationPath(container.CurrentEnvironment.RelativePath)
+                                    , container.AddApplicationPath(CommonConfiguration.PORTAL_PATH)
                                     , container.CurrentList.Name
                                     , container.CurrentListInstance.wim.CurrentFolder.ID //2
                                     , currentFolderName //3
@@ -615,7 +615,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation
                         addpageComponent.StartOpen = visibleComponents.Length == 0; //handig voor dev, hoef je dat ding niet steeds te openen
 
                         int slot = 0;
-                        if (target == CommonConfiguration.DEFAULT_CONTENT_TAB)
+                        if (target == Data.CommonConfiguration.DEFAULT_CONTENT_TAB)
                         {
                             slot = 1;
                             target = null;
@@ -1014,7 +1014,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation
         <input type=""hidden"" name=""autopostback"" id=""autopostback"" value="""" />
 		<section id=""bodySection"">
 			<header id=""bodyHeader"">
-				<a id=""logo"" href=""" + container.AddApplicationPath(container.CurrentEnvironment.RelativePath) + @"""><img src=""" + m_container.CurrentListInstance.wim.Page.Head.Logo + @""" /></a>
+				<a id=""logo"" href=""" + container.AddApplicationPath(CommonConfiguration.PORTAL_PATH) + @"""><img src=""" + m_container.CurrentListInstance.wim.Page.Head.Logo + @""" /></a>
 			</header>" + homeContent + @"
 		    <nav id=""bodyNav"">
 			    " + Get_component_mainMenu(builder.TopNavigation) + @"
@@ -1317,8 +1317,6 @@ namespace Sushi.Mediakiwi.Framework.Presentation
                         : m_container.AddApplicationPath(CommonConfiguration.STYLE_INCLUDE)
                         ));
 
-                if (CommonConfiguration.STYLE_COMPLEMENT)
-                    return $"{style}{custom}";
                 return custom;
             }
             return style;
@@ -1469,7 +1467,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation
 
         string GetDefaultLoginElements(Beta.GeneratedCms.Console container, bool hasError, string username, string form, string intro)
         {
-            string wimPath = Sushi.Mediakiwi.Data.Environment.Current.RelativePath;
+            string wimPath = CommonConfiguration.PORTAL_PATH;
 
             var markup = Markup.login;
             var inputclass = (hasError ? " error" : string.Empty);
@@ -1538,13 +1536,13 @@ namespace Sushi.Mediakiwi.Framework.Presentation
         string GetResetScreen(Beta.GeneratedCms.Console container, string username2, bool hasError)
         {
             var markup = GetDefaultLoginElements(container, hasError, username2, Markup.component_applypassword, null);
-            string wimPath = Sushi.Mediakiwi.Data.Environment.Current.RelativePath;
+            string wimPath = CommonConfiguration.PORTAL_PATH;
             return markup;
         }
 
         string GetForgetPasswordScreen(Beta.GeneratedCms.Console container, string username2, bool hasError, bool hasSend)
         {
-            string wimPath = Sushi.Mediakiwi.Data.Environment.Current.RelativePath;
+            string wimPath = CommonConfiguration.PORTAL_PATH;
 
             if (hasSend)
                 container.Response.Redirect($"{container.AddApplicationPath(wimPath)}?send");

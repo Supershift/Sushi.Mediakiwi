@@ -308,7 +308,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
         {
             get
             {
-                return AddApplicationPath(CurrentEnvironment.RelativePath, true);
+                return AddApplicationPath(CommonConfiguration.PORTAL_PATH, true);
             }
         }
 
@@ -426,7 +426,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
             Request = m_Application.Request;
             Context = m_Application;
 
-            this.WimPagePath = AddApplicationPath(string.Concat("/", ChannelIndentifier, Sushi.Mediakiwi.Data.Environment.Current.RelativePath));
+            this.WimPagePath = AddApplicationPath(string.Concat("/", ChannelIndentifier, CommonConfiguration.PORTAL_PATH));
 
             string localRequestHost = CurrentHost;
 
@@ -482,7 +482,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
 
                     if (string.IsNullOrEmpty(Request.Query["channel"]))
                     {
-                        string wim = Sushi.Mediakiwi.Data.Environment.Current.RelativePath.ToLower();
+                        string wim = CommonConfiguration.PORTAL_PATH.ToLower();
                         string url = Request.Path.Value.ToLower();
                         string[] split = 
                             wim == "/" 
@@ -857,8 +857,6 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
 
             this.ValidateChannelSwitchPageInheritance(currentChannel, requestedChannel);
 
-            this.CurrentApplicationUser = Data.ApplicationUserLogic.Select(this.m_Application);
-
             //  [16 nov 14:MM] Validate inherited pages, folder
             Response.Redirect(string.Concat(this.GetWimPagePath(requestedChannel.ID)));
         }
@@ -1106,8 +1104,8 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
         public string GetWimPagePath(int? channel)
         {
             if (channel.HasValue)
-                return string.Concat(Data.Utility.GetCurrentHost(), AddApplicationPath(string.Concat("/", channel, "/", Sushi.Mediakiwi.Data.Environment.Current.RelativePath)));
-            return string.Concat(Data.Utility.GetCurrentHost(), AddApplicationPath(string.Concat("/", Sushi.Mediakiwi.Data.Environment.Current.RelativePath)));
+                return AddApplicationPath(string.Concat("/", channel, "/", CommonConfiguration.PORTAL_PATH), true);
+            return AddApplicationPath(string.Concat("/", CommonConfiguration.PORTAL_PATH), true);
         }
 
         string m_WimRepository;
