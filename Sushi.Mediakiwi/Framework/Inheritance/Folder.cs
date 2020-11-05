@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Sushi.Mediakiwi.Data;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -100,7 +101,7 @@ namespace Sushi.Mediakiwi.Framework.Inheritance
                 return null;
 
             childFolder = new Sushi.Mediakiwi.Data.Folder();
-            Wim.Utility.ReflectProperty(folder, childFolder);
+            Utility.ReflectProperty(folder, childFolder);
             childFolder.ID = 0;
             childFolder.GUID = Guid.NewGuid();
             childFolder.SiteID = siteID;
@@ -125,7 +126,7 @@ namespace Sushi.Mediakiwi.Framework.Inheritance
         public static void CreateFolder(Sushi.Mediakiwi.Data.Folder folder, Sushi.Mediakiwi.Data.Site currentSite)
         {
             if (!currentSite.HasChildren) return;
-            CreateFolder(folder, currentSite, Sushi.Mediakiwi.Data.Site.SelectAll());
+            CreateFolder(folder, currentSite, Site.SelectAll());
         }
 
         /// <summary>
@@ -134,7 +135,7 @@ namespace Sushi.Mediakiwi.Framework.Inheritance
         /// <param name="folder">The folder.</param>
         /// <param name="currentSite">The current site.</param>
         /// <param name="sites">The sites.</param>
-        static void CreateFolder(Sushi.Mediakiwi.Data.Folder folder, Sushi.Mediakiwi.Data.Site currentSite, Sushi.Mediakiwi.Data.Site[] sites)
+        static void CreateFolder(Sushi.Mediakiwi.Data.Folder folder, Sushi.Mediakiwi.Data.Site currentSite, List<Site> sites)
         {
             if (!currentSite.HasChildren) return;
 

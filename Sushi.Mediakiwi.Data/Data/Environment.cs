@@ -35,7 +35,6 @@ namespace Sushi.Mediakiwi.Data
                 Map(x => x.Created, "Environment_Created");
                 Map(x => x.UpdateInfo, "Environment_Update");
                 Map(x => x.Version, "Environment_Version");
-                Map(x => x.LogoLight, "Environment_LogoL");
             }
         }
 
@@ -208,14 +207,6 @@ namespace Sushi.Mediakiwi.Data
         /// Current Wim version.
         /// </summary>
         public virtual decimal Version { get; set; }
-
-        /// <summary>
-        /// Gets or sets the logo light.
-        /// </summary>
-        /// <value>
-        /// The logo light.
-        /// </value>
-        public virtual int? LogoLight { get; set; }
 
         private static TimeZoneInfo m_CurrentTimeZone;
 

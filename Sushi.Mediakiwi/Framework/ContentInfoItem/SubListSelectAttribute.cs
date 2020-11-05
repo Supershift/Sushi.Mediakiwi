@@ -459,7 +459,8 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                         candidate = "<div class=\"optionInfo\">\n<ul>";
                         foreach (var item in m_Candidate.Items)
                         {
-                            candidate += string.Format("\n\t<li>{0}</li>", item.Description);
+                            if (!string.IsNullOrWhiteSpace(item.Description))
+                                candidate += string.Format("\n\t<li>{0}</li>", item.Description);
                         }
                         candidate += "\n</ul></div>";
                     }

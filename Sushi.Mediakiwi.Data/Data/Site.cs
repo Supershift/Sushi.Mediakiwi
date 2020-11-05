@@ -219,7 +219,7 @@ namespace Sushi.Mediakiwi.Data
         /// <summary>
         /// Is this site active (visible)?
         /// </summary>
-        public bool IsActive { get; set; }
+        public bool IsActive { get; set; } = true;
 
         /// <summary>
         /// Gets or sets the type of site.
@@ -234,7 +234,7 @@ namespace Sushi.Mediakiwi.Data
         /// <summary>
         /// Does this site have lists?
         /// </summary>
-        public bool HasLists { get; set; }
+        public bool HasLists { get; set; } = true;
 
         private DateTime m_Created;
 

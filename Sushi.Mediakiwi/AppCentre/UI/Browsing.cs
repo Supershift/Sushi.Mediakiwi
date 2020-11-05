@@ -488,7 +488,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                 else
                     selected_lists = (from x in allowed_lists where x.IsVisible select x).ToArray();
 
-                if (selected_lists.Length > 0)
+                if (entry.ParentID.HasValue || selected_lists.Length > 0)
                 {
                     _columns++;
                     build.AppendFormat("<div class=\"widget\">");

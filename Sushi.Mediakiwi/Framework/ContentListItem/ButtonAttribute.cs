@@ -358,32 +358,23 @@ namespace Sushi.Mediakiwi.Framework.ContentListItem
         /// <param name="isEditMode">if set to <c>true</c> [is edit mode].</param>
         public void SetCandidate(Field field, bool isEditMode)
         {
-            if (m_IsNewDesign)
-            {
-                var value = Console.Form("autopostback");
-                //  [MM:10.12.14] Addition actions (like save) can be set via [ID]$save, so strip it out
-                if (!string.IsNullOrEmpty(value))
-                    value = value.Split('$')[0];
+            var value = Console.Form("autopostback");
+            //  [MM:10.12.14] Addition actions (like save) can be set via [ID]$save, so strip it out
+            if (!string.IsNullOrEmpty(value))
+                value = value.Split('$')[0];
 
-                m_IsClicked = value == this.ID;
+            m_IsClicked = value == this.ID;
 
-                if (m_TriggerState && !m_IsClicked && string.IsNullOrWhiteSpace(value) && !string.IsNullOrWhiteSpace(Console.CurrentListInstance.FormState))
-                    m_IsClicked = (Console.CurrentListInstance.FormState == this.ID);
+            if (m_TriggerState && !m_IsClicked && string.IsNullOrWhiteSpace(value) && !string.IsNullOrWhiteSpace(Console.CurrentListInstance.FormState))
+                m_IsClicked = (Console.CurrentListInstance.FormState == this.ID);
 
-                Property.SetValue(SenderInstance, m_IsClicked, null);
+            Property.SetValue(SenderInstance, m_IsClicked, null);
 
-                if (m_TriggerState && m_IsClicked)
-                    Console.CurrentListInstance.FormState = this.ID;
+            if (m_TriggerState && m_IsClicked)
+                Console.CurrentListInstance.FormState = this.ID;
 
-                if (m_TriggerValidation && m_IsClicked)
-                    Console.CurrentListInstance.wim.ShouldValidate = true;
-
-            }
-            else
-            {
-                m_IsClicked = Console.Form(this.ID) == "1";
-                Property.SetValue(SenderInstance, m_IsClicked, null);
-            }
+            if (m_TriggerValidation && m_IsClicked)
+                Console.CurrentListInstance.wim.ShouldValidate = true;
         }
 
         /// <summary>

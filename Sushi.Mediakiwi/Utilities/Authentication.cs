@@ -118,14 +118,13 @@ namespace Sushi.Mediakiwi.Utilities
 
                         foreach (var nv in decrypted.Split('&'))
                             CookieSettings.Add(nv.Split('=')[0], WebUtility.UrlDecode(nv.Split('=')[1]));
-
-                        return CookieSettings[key];
                     }
                     catch(Exception)
                     {
                         return null;
                     }
                 }
+                return CookieSettings[key];
             }
             return null;
         }
@@ -158,7 +157,7 @@ namespace Sushi.Mediakiwi.Utilities
         {
             get
             {
-                return m_Context?.Request.Host.Value;
+                return m_Context?.Request.Host.Host;
             }
         }
 
@@ -200,7 +199,9 @@ namespace Sushi.Mediakiwi.Utilities
                         return Task.CompletedTask;
                     }, m_Context);
                 }
-                catch (Exception) { }
+                catch (Exception ex) {
+                    throw ex;
+                }
             }
         }
 

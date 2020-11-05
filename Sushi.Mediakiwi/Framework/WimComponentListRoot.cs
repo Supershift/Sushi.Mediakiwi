@@ -4894,7 +4894,13 @@ namespace Sushi.Mediakiwi.Framework
                             {
                                 if (this.CurrentSite.ID > 0)
                                 {
+
                                     int top = Utility.ConvertToInt(Context.Request.Query["top"]);
+
+                                    if (top == 0 && this.CurrentSite.HasLists)
+                                        top = 2;
+                                    else if (top == 0 && this.CurrentSite.HasPages)
+                                        top = 1;
 
                                     if (top == 1 && !CurrentApplicationUserRole.CanSeePage)
                                         top = 2;

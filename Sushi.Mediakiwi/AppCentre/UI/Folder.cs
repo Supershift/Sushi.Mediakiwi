@@ -1,12 +1,11 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
 using System.Web;
-using System.Web.UI.WebControls;
-using System.Web.UI.HtmlControls;
+using Sushi.Mediakiwi.Data;
 using Sushi.Mediakiwi.Framework;
+using Sushi.Mediakiwi.UI;
 
 namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
 {
@@ -147,14 +146,14 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                 m_Implement.Save();
                 if (wim.CurrentFolder.Type == Sushi.Mediakiwi.Data.FolderType.Page && completePath != oldPath)
                 {
-                    Sushi.Mediakiwi.Framework.Functions.FolderPath.UpdateCompletePath();
+                    Framework.Functions.FolderPathLogic.UpdateCompletePath();
                 }
                 Sushi.Mediakiwi.Data.Folder.VerifyCompletePath();
                 wim.FlushCache();
             }
 
             //Sushi.Mediakiwi.Data.RoleRight.UpdateFolder(m_Roles, m_Implement.ID);
-            Sushi.Mediakiwi.Data.EnvironmentVersionLogic.Flush();
+            wim.FlushCache();
 
             if (wim.IsLayerMode)
                 wim.OnSaveScript = string.Format(@"<input type=""hidden"" class=""postParent"">");
@@ -187,8 +186,8 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             }
 
             var url = wim.GetCurrentQueryUrl(true
-                , new Framework.KeyValue() { Key = "item", Value = ImplementGallery.ID }
-                , new Framework.KeyValue() { Key = "gallery", Value = ImplementGallery.ID });
+                , new KeyValue() { Key = "item", Value = ImplementGallery.ID }
+                , new KeyValue() { Key = "gallery", Value = ImplementGallery.ID });
             Response.Redirect(url);
         }
 
@@ -218,7 +217,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
 
             wim.ListTitle = this.Implement.Name;
 
-            Wim.Utility.ReflectProperty(m_Implement, this);
+            Utility.ReflectProperty(m_Implement, this);
 
             //  Only lists can be reassigned
             if (wim.CurrentFolder.Type != Sushi.Mediakiwi.Data.FolderType.List)
@@ -232,7 +231,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
 
             if (wim.CurrentFolder.Type == Sushi.Mediakiwi.Data.FolderType.Page)
             {
-                Sushi.Mediakiwi.Data.Page[] list = null;
+                List<Sushi.Mediakiwi.Data.Page> list = null;
                 Sushi.Mediakiwi.Data.PageSortBy sortOrder = Sushi.Mediakiwi.Data.PageSortBy.SortOrder;
                 if (Implement.SortOrderMethod.HasValue)
                 {
@@ -294,7 +293,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
 
             this.ImplementGallery = Sushi.Mediakiwi.Data.Gallery.SelectOne(e.SelectedKey);
             this.GUID = this.ImplementGallery.GUID.ToString();
-            Wim.Utility.ReflectProperty(ImplementGallery, this);
+            Utility.ReflectProperty(ImplementGallery, this);
 
             this.Name = ImplementGallery.Name;
             this.IsVisible = !ImplementGallery.IsHidden;
@@ -396,7 +395,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// </summary>
         /// <value>The folder title.</value>
         [Sushi.Mediakiwi.Framework.OnlyVisibleWhenTrue("IsNotRoot")]
-        [Sushi.Mediakiwi.Framework.ContentListItem.TextField("Title", 25, true, "", Wim.Utility.GlobalRegularExpression.NotAcceptableFilenameCharacter)]
+        [Sushi.Mediakiwi.Framework.ContentListItem.TextField("Title", 25, true, "", Utility.GlobalRegularExpression.NotAcceptableFilenameCharacter)]
         public string Name { get; set; }
 
         [Sushi.Mediakiwi.Framework.ContentListItem.FolderSelect("Parent", true, Sushi.Mediakiwi.Data.FolderType.List, "")]
@@ -438,40 +437,9 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         public bool IsGalleryAndNotNew
         {
             get { 
-                return (wim.CurrentFolder.Type == Sushi.Mediakiwi.Data.FolderType.Gallery && !ImplementGallery.IsNewInstance ); 
+                return (wim.CurrentFolder.Type == Sushi.Mediakiwi.Data.FolderType.Gallery && !(ImplementGallery == null || ImplementGallery.ID == 0)); 
             }
         }
-
-        ///// <summary>
-        ///// Gets the type collection.
-        ///// </summary>
-        ///// <value>The type collection.</value>
-        //public ListItemCollection TypeCollection
-        //{
-        //    get
-        //    {
-        //        ListItemCollection col = new ListItemCollection();
-        //        ListItem li = new ListItem("Images", "1");
-        //        li.Selected = true;
-        //        col.Add(li);
-        //        col.Add(new ListItem("Documents", "2"));
-        //        return col;
-        //    }
-        //}
-
-        //private short m_TypeID;
-        ///// <summary>
-        ///// Gets or sets the type id.
-        ///// </summary>
-        ///// <value>The type id.</value>
-        //[Sushi.Mediakiwi.Framework.OnlyVisibleWhenTrue("IsGallery")]
-        //[Sushi.Mediakiwi.Framework.ContentListItem.Choice_Radio("Type", "TypeCollection", "GalType", true, true)]
-        //public short TypeID
-        //{
-        //    get { return m_TypeID; }
-        //    set { m_TypeID = value; }
-        //}
-
 
         private ListItemCollection m_SortTypes;
         /// <summary>
@@ -523,21 +491,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         }
 
         [Sushi.Mediakiwi.Framework.ContentListItem.Choice_Checkbox("Visible")]
-        public bool IsVisible { get; set; }
-
-
-        //private Sushi.Mediakiwi.Data.SubList m_Roles;
-        ///// <summary>
-        ///// Gets or sets the roles.
-        ///// </summary>
-        ///// <value>The roles.</value>
-        //[Sushi.Mediakiwi.Framework.OnlyVisibleWhenTrue("ShowRoles")]
-        //[Sushi.Mediakiwi.Framework.ContentListItem.SubListSelect("Access roles", "770dbaea-19a9-48e0-b3d0-b2e8630c4f99", false, "Select the roles that have access to this folder. If none are applied everyone has access.")]
-        //public Sushi.Mediakiwi.Data.SubList Roles
-        //{
-        //    get { return m_Roles; }
-        //    set { m_Roles = value; }
-        //}
+        public bool IsVisible { get; set; } = true;
 
         public bool IsWebPageFolder
         {
@@ -548,7 +502,6 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// Gets or sets the GUID.
         /// </summary>
         /// <value>The GUID.</value>
-        [Sushi.Mediakiwi.Framework.ContentListItem.TextLine("GUID")]
         public string GUID { get; set; }
     }
 }

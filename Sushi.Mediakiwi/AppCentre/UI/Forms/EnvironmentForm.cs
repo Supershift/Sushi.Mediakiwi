@@ -15,7 +15,6 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation.Forms
             Map(x => x.Title).TextField("Name", 50, true);
             Map(x => x.DisplayName).TextField("Displayname", 50, true);
             Map(x => x.Timezone).Dropdown("Dropdown", "AvailableTimeZones", true);
-            Map(x => x.LogoLight).Image("Logo");
             Map(x => x.Version).TextLine("Version");
 
             Map<EnvironmentForm>(x => x.Section1, this).Section("SMTP Settings");

@@ -173,39 +173,12 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
             }
             else
             {
-                if (m_IsNewDesign)
+                var candidate = SelectedID;
+                if (candidate.HasValue)
                 {
-                    var candidate = SelectedID;
-                    if (candidate.HasValue)
-                    {
-                        //// CB 01-09-2014; dit lost het probleem op dat assets uit een andere database niet getoond werden; Zoals artikelbeheer ETL ImagesPageImagesList.cs
-                        //if (gallery != null && gallery.DatabaseMappingPortal != null)
-                        //{
-                        //    m_Candidate = Data.Image.SelectOneByPortal(candidate.Value, gallery.DatabaseMappingPortal.Name);
-                        //}
-                        //    else
-                        m_Candidate = Data.Image.SelectOne(candidate.Value);
-                    }
+                    m_Candidate = Data.Image.SelectOne(candidate.Value);
+                }
 
-                }
-                else
-                {
-                    string candidateSplit = Console.Form(this.ID);
-                    if (!string.IsNullOrEmpty(candidateSplit))
-                    {
-                        int candidate = Data.Utility.ConvertToInt(candidateSplit.Split('|')[0]);
-                        if (candidate > 0)
-                        {
-                            // CB 01-09-2014; dit lost het probleem op dat assets uit een andere database niet getoond werden; Zoals artikelbeheer ETL ImagesPageImagesList.cs
-                            //if (gallery != null && gallery.DatabaseMappingPortal != null)
-                            //{ 
-                            //    m_Candidate = Data.Image.SelectOneByPortal(candidate, gallery.DatabaseMappingPortal.Name);
-                            // }
-                            //else
-                            m_Candidate = Data.Image.SelectOne(candidate);
-                        }
-                    }
-                }
             }
 
             if (!IsBluePrint && Property != null && Property.CanWrite)
@@ -231,15 +204,10 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
 
             if (m_Candidate.ID > 0)
             {
-                if (m_IsNewDesign)
-                {
-                    if (m_Candidate.IsImage)
-                        OutputText = string.Format("{0} <span>({1}px / {2}px)</span>", m_Candidate.Title, m_Candidate.Width, m_Candidate.Height);
-                    else
-                        OutputText = string.Format("{0} <span>({1} KB)</span>", m_Candidate.Title, m_Candidate.Size > 0 ? (m_Candidate.Size / 1024) : 0);
-                }
+                if (m_Candidate.IsImage)
+                    OutputText = string.Format("{0} <span>({1}px / {2}px)</span>", m_Candidate.Title, m_Candidate.Width, m_Candidate.Height);
                 else
-                    OutputText = string.Format("{0} ({1} KB)", m_Candidate.Title, m_Candidate.Size > 0 ? (m_Candidate.Size / 1024) : 0);
+                    OutputText = string.Format("{0} <span>({1} KB)</span>", m_Candidate.Title, m_Candidate.Size > 0 ? (m_Candidate.Size / 1024) : 0);
             }
 
             //  Inherited content section

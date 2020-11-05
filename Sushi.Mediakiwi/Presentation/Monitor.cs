@@ -1014,7 +1014,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation
         <input type=""hidden"" name=""autopostback"" id=""autopostback"" value="""" />
 		<section id=""bodySection"">
 			<header id=""bodyHeader"">
-				<a id=""logo"" href=""" + container.AddApplicationPath(CommonConfiguration.PORTAL_PATH) + @"""><img src=""" + m_container.CurrentListInstance.wim.Page.Head.Logo + @""" /></a>
+				<a id=""logo"" href=""" + container.AddApplicationPath(CommonConfiguration.PORTAL_PATH) + @"""><img src=""" + LogoUrl(container) + @""" /></a>
 			</header>" + homeContent + @"
 		    <nav id=""bodyNav"">
 			    " + Get_component_mainMenu(builder.TopNavigation) + @"
@@ -1419,7 +1419,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation
         <input type=""hidden"" name=""autopostback"" id=""autopostback"" value="""" />
 		<section id=""bodySection"">
 			<header id=""bodyHeader"">
-				<a><img src=""" + container.CurrentEnvironment.LogoHrefFull + @""" id=""logo"" /></a>
+				<a><img src=""" + LogoUrl(container) + @""" id=""logo"" /></a>
 			</header>
             <section id=""loginContent"">" + html + @"
             </section>
@@ -1429,6 +1429,14 @@ namespace Sushi.Mediakiwi.Framework.Presentation
 </html>";
             return candidate;
         }
+
+        public string LogoUrl(Beta.GeneratedCms.Console container)
+        {
+            if (string.IsNullOrEmpty(CommonConfiguration.LOGO_URL))
+                return FolderVersion("images") + @"MK_logo.png";
+            return container.AddApplicationPath(CommonConfiguration.LOGO_URL, true);
+        }
+
 
         Sushi.Mediakiwi.Data.CustomData _UserData;
         Sushi.Mediakiwi.Data.CustomData UserData

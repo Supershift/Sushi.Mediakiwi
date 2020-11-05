@@ -1495,11 +1495,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                 string note = container.CurrentListInstance.wim.CurrentVisitor.Data["wim.note"].Value;
                 container.CurrentListInstance.wim.CurrentVisitor.Data.Apply("wim.note", null);
                 container.CurrentListInstance.wim.CurrentVisitor.Save();
-                if (container.IsNewDesign)
-                    container.CurrentListInstance.wim.Notification.AddNotificationAlert(note);
-                else
-                    container.CurrentListInstance.wim.Notification.AddNotification(note);
-
+                container.CurrentListInstance.wim.Notification.AddNotificationAlert(note);
             }
         }
 
@@ -1764,7 +1760,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                         }
                     }
 
-                    if (container.IsNewDesign && string.IsNullOrEmpty(container.CurrentListInstance.wim.OnSaveScript))
+                    if (string.IsNullOrEmpty(container.CurrentListInstance.wim.OnSaveScript))
                     {
                         if (container.Form("saveNew") == "1" || container.IsPostBack("saveNew"))
                         {
@@ -1774,7 +1770,6 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                         else
                             container.CurrentListInstance.wim.OnSaveScript = @"<input type=""hidden"" name=""close"" class=""postParent"">";
                     }
-                    //build.Append(container.CurrentListInstance.wim.OnSaveScript);
                 }
                 if (!container.CurrentListInstance.wim.HasListPreRender)
                     ScanClass(container, build, true, false, ref isValidInput);

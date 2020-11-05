@@ -61,6 +61,24 @@ namespace Sushi.Mediakiwi.Data
             }
         }
 
+        internal static List<Page> SelectAllUninherited(int masterID, int siteID)
+        {
+            // do with pages!
+            return new List<Page>();
+
+            //List<Page> list = new List<Page>();
+            //Page page = new Page();
+            //page.SqlTable = "wim_Pages x";
+
+            //List<DatabaseDataValueColumn> where = new List<DatabaseDataValueColumn>();
+            //where.Add(new DatabaseDataValueColumn("Folder_Site_Key", SqlDbType.Int, masterID));
+            //where.Add(new DatabaseDataValueColumn(
+            //    string.Format("(select COUNT(*) from wim_Pages left join wim_Folders on Page_Folder_Key = Folder_Key where Folder_Site_Key = {0} and Page_Master_Key = x.Page_Key) = 0", siteID)));
+
+            //foreach (object o in page._SelectAll(where)) list.Add((Page)o);
+            //return list.ToArray();
+        }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="Page"/> class.
         /// </summary>

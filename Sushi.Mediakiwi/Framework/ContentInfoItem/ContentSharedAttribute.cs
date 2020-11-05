@@ -47,24 +47,10 @@ namespace Sushi.Mediakiwi.Framework
         }
         protected string GetStart()
         {
-            if (m_IsNewDesign)
-            {
-                Console.RowCount++;
-                return "\t\t\t\t\t\t<tr>\n";
-            }
-
             Console.RowCount++;
-            if (Console.RowCount == 1)
-                return "<tr class=\"first\">";
-            //    return string.Format("<tr><td colspan=\"{0}\"><hr/></td></tr><tr>", Console.HasDoubleCols ? 4 : 2);
-
-            return "<tr>";
+            return "\t\t\t\t\t\t<tr>\n";
         }
 
-        internal bool m_IsNewDesign
-        {
-            get { return true; }
-        }
 
         /// <summary>
         /// Gets the post back value.
@@ -74,8 +60,6 @@ namespace Sushi.Mediakiwi.Framework
         {
             get
             {
-                //if (Wim.CommonConfiguration.IS_AJAX_ENABLED)
-                //    return "_ReloadFromUrl target_main";
                 return "postBack";
             }
         }
@@ -284,19 +268,12 @@ namespace Sushi.Mediakiwi.Framework
 
         protected internal void SetWriteEnvironment()
         {
-            if (!this.m_IsNewDesign)
-                return;
-            
             //  TEMPORARY!
             if (ShowInheritedData)
             {
                 Console.HasDoubleCols = true;
                 Expression = OutputExpression.Right;
             }
-
-            //
-            //    Console.ExpressionPrevious = OutputExpression.Right;
-            //ShowInheritedData = false;
         }
 
         protected bool IsInitialLoaded
@@ -1008,132 +985,59 @@ namespace Sushi.Mediakiwi.Framework
         /// <returns></returns>
         protected string GetSimpleTextElement(string title, bool isMandatory, string candidate, string interactiveHelp, bool isShort = false, string inputPostHTML = null)
         {
-            
+            StringBuilder build = new StringBuilder();
 
-            if (m_IsNewDesign)
-            {
-                StringBuilder build = new StringBuilder();
-
-              //  If set all table cell/row creation will be ignored
-                if (!OverrideTableGeneration)
-                {
-                    if (ShowInheritedData)
-                    {
-                        ApplyTranslation(build);
-                    }
-                    else
-                    {
-                        if ((Console.ExpressionPrevious == OutputExpression.Left && Expression == OutputExpression.FullWidth) 
-                            || (Console.ExpressionPrevious == OutputExpression.Left && Expression == OutputExpression.Left))
-                            build.Append("\t\t\t\t\t\t\t<th class=\"half\"><label>&nbsp;</label></th><td>&nbsp;</td></tr>");
-
-                        if ((Console.ExpressionPrevious == OutputExpression.FullWidth && Expression == OutputExpression.Right) 
-                            || (Console.ExpressionPrevious == OutputExpression.Right && Expression == OutputExpression.Right))
-                            build.Append("\t\t\t\t\t\t<tr><th class=\"half\"><label>&nbsp;</label></th>\n\t\t\t\t\t\t\t<td>&nbsp;</td>");
-
-                        if (Expression == OutputExpression.FullWidth || Expression == OutputExpression.Left)
-                            build.Append("\t\t\t\t\t\t<tr>");
-                    }
-
-                    if (Expression == OutputExpression.FullWidth)
-                        build.AppendFormat("\n\t\t\t\t\t\t\t<th class=\"full\"><label class=\"input-text{2}\">{1}</label></th>", this.ID, this.TitleLabel, isShort ? " short" : null);
-                    else
-                        build.AppendFormat("\n\t\t\t\t\t\t\t<th class=\"half\"><label class=\"input-text{2}\">{1}</label></th>", this.ID, this.TitleLabel, isShort ? " short" : null);
-
-                    //build.AppendFormat("\n\t\t\t\t\t\t\t<th><label for=\"{0}\">{1}</label></th>", this.ID, this.TitleLabel);
-
-
-                    //if (ShowInheritedData)
-                    //    build.AppendFormat("\t\t\t\t\t\t\t<th class=\"local\"><label>{0}:</label></th>\t\t\t\t\t\t</tr>\t\t\t\t\t\t<tr>\t\t\t\t\t\t\t<td><div class=\"description\">{1}</div></td>\n", this.ID, this.TitleLabel);
-
-                    build.AppendFormat("\n\t\t\t\t\t\t\t<td{0}{1}>"
-                        , (Expression == OutputExpression.FullWidth && Console.HasDoubleCols) ? " colspan=\"3\"" : null
-                        , (Expression == OutputExpression.FullWidth) ? " class=\"full\"" : " class=\"half\""
-                        );
-                }
-
-                //build.AppendFormat("\n\t\t\t\t\t\t\t\t<div class=\"{0}\">", (Expression == OutputExpression.FullWidth) ? this.Class_Wide
-                //    : (OverrideTableGeneration ? "halfer" : "half")
-                //);
-                build.AppendFormat("\n\t\t\t\t\t\t\t\t<label class=\"input-text{0}\">", isShort ? " short" : null);
-
-                if (string.IsNullOrEmpty(candidate))
-                    candidate = "&nbsp;";
-
-                build.AppendFormat("\n\t\t\t\t\t\t\t\t\t{0}", candidate);
-
-                build.AppendFormat("\n\t\t\t\t\t\t\t\t</label>{0}", inputPostHTML);
-
-                 //  If set all table cell/row creation will be ignored
-                if (!OverrideTableGeneration)
-                {
-                    build.Append("\n\t\t\t\t\t\t\t</td>");
-
-                    if (Expression == OutputExpression.FullWidth || Expression == OutputExpression.Right)
-                        build.Append("\n\t\t\t\t\t\t</tr>\n");
-                }
-
-                return build.ToString();
-            }
-            else
+            //  If set all table cell/row creation will be ignored
+            if (!OverrideTableGeneration)
             {
                 if (ShowInheritedData)
                 {
-                    return string.Format(@"
-<tr>
-	<th><label>{0}:</label></th><th class=""local""><label>{0}:</label></th>
-</tr>
-	<td>
-		<div class=""description"">
-			{2}
-		</div>
-	</td>
-    <td>
-		<fieldset class=""staticText"">
-			{1}&nbsp;
-		</fieldset>
-	</td>
-</tr>
-"
-                        , string.Concat(Title, Mandatory ? "<em>*</em>" : "")
-                        , candidate
-                        , InhertitedOutputText
-                        );
+                    ApplyTranslation(build);
+                }
+                else
+                {
+                    if ((Console.ExpressionPrevious == OutputExpression.Left && Expression == OutputExpression.FullWidth) 
+                        || (Console.ExpressionPrevious == OutputExpression.Left && Expression == OutputExpression.Left))
+                        build.Append("\t\t\t\t\t\t\t<th class=\"half\"><label>&nbsp;</label></th><td>&nbsp;</td></tr>");
+
+                    if ((Console.ExpressionPrevious == OutputExpression.FullWidth && Expression == OutputExpression.Right) 
+                        || (Console.ExpressionPrevious == OutputExpression.Right && Expression == OutputExpression.Right))
+                        build.Append("\t\t\t\t\t\t<tr><th class=\"half\"><label>&nbsp;</label></th>\n\t\t\t\t\t\t\t<td>&nbsp;</td>");
+
+                    if (Expression == OutputExpression.FullWidth || Expression == OutputExpression.Left)
+                        build.Append("\t\t\t\t\t\t<tr>");
                 }
 
-                string candidate2 = string.Format(@"{5}{6}{2}
-	<th><label>{0}:</label></th>
-	<td{4}>
-		<fieldset class=""staticText{7}"">
-			{1}
-		</fieldset>
-	</td>{3}
-"
-                    , string.Concat(Title, Mandatory ? "<em>*</em>" : "") // 0
-                    , candidate //Data.Utility.CleanParagraphWrap(Data.Utility.ConvertToFixedLengthWord(candidate, 100, " ")) // 1
-                    , (Expression == OutputExpression.FullWidth || Expression == OutputExpression.Left) ? "<tr>" : null // 2
-                    , (Expression == OutputExpression.FullWidth || Expression == OutputExpression.Right) ? "</tr>" : null // 3
-                    , (Expression == OutputExpression.FullWidth && Console.HasDoubleCols) ? " colspan=\"3\" class=\"triple\"" : null // 4
-                    , ((Console.ExpressionPrevious == OutputExpression.Left && Expression == OutputExpression.FullWidth) || (Console.ExpressionPrevious == OutputExpression.Left && Expression == OutputExpression.Left)) ? "<th><label>&nbsp;</label></th><td>&nbsp;</td></tr>" : null // 5
-                    , ((Console.ExpressionPrevious == OutputExpression.FullWidth && Expression == OutputExpression.Right) || (Console.ExpressionPrevious == OutputExpression.Right && Expression == OutputExpression.Right)) ? "<tr><th><label>&nbsp;</label></th><td>&nbsp;</td>" : null // 6
-                    , (Expression == OutputExpression.FullWidth) ? " full" : null // 7
+                if (Expression == OutputExpression.FullWidth)
+                    build.AppendFormat("\n\t\t\t\t\t\t\t<th class=\"full\"><label class=\"input-text{2}\">{1}</label></th>", this.ID, this.TitleLabel, isShort ? " short" : null);
+                else
+                    build.AppendFormat("\n\t\t\t\t\t\t\t<th class=\"half\"><label class=\"input-text{2}\">{1}</label></th>", this.ID, this.TitleLabel, isShort ? " short" : null);
+
+                build.AppendFormat("\n\t\t\t\t\t\t\t<td{0}{1}>"
+                    , (Expression == OutputExpression.FullWidth && Console.HasDoubleCols) ? " colspan=\"3\"" : null
+                    , (Expression == OutputExpression.FullWidth) ? " class=\"full\"" : " class=\"half\""
                     );
-                return candidate2;
             }
 
-//            Controls.LiteralControl literal = null;
-//            literal = new Controls.LiteralControl(string.Format(@"
-//			<tr class=""focusRow link"">
-//				<th class=""local""><label>{0}:</label></th>
-//				<td class=""control"">
-//					<div class=""staticText"">{1}</div>
-//				</td>
-//				<td class=""help"">
-//					<div>{2}</div>
-//				</td>
-//			</tr>"
-//                    , string.Concat(Title, Mandatory ? "<em>*</em>" : ""), candidate, this.InteractiveHelp));
-//            return literal;
+            build.AppendFormat("\n\t\t\t\t\t\t\t\t<label class=\"input-text{0}\">", isShort ? " short" : null);
+
+            if (string.IsNullOrEmpty(candidate))
+                candidate = "&nbsp;";
+
+            build.AppendFormat("\n\t\t\t\t\t\t\t\t\t{0}", candidate);
+
+            build.AppendFormat("\n\t\t\t\t\t\t\t\t</label>{0}", inputPostHTML);
+
+                //  If set all table cell/row creation will be ignored
+            if (!OverrideTableGeneration)
+            {
+                build.Append("\n\t\t\t\t\t\t\t</td>");
+
+                if (Expression == OutputExpression.FullWidth || Expression == OutputExpression.Right)
+                    build.Append("\n\t\t\t\t\t\t</tr>\n");
+            }
+
+            return build.ToString();
         }
 
         private string m_Title;
@@ -1320,7 +1224,7 @@ namespace Sushi.Mediakiwi.Framework
             }
             get {
                 
-                if (this.m_IsNewDesign && !string.IsNullOrEmpty(this.m_InteractiveHelp))
+                if (!string.IsNullOrEmpty(this.m_InteractiveHelp))
                     return string.Format("<label for=\"{1}\">{0}</label>", m_InteractiveHelp, this.ID);
                 return m_InteractiveHelp;
             }
@@ -1332,11 +1236,6 @@ namespace Sushi.Mediakiwi.Framework
         {
             get
             {
-                //if (this.Console?.CurrentListInstance?.RenameInteractiveHelp != null && this.Property != null)
-                //{
-                //    var output = this.Console.CurrentListInstance.RenameInteractiveHelp.Invoke(Property.Name, m_InteractiveHelp);
-                //    return output == null ? null : output.Replace("\"", "&#34;");
-                //}
                 return m_InteractiveHelp;
             }
         }
@@ -1349,7 +1248,7 @@ namespace Sushi.Mediakiwi.Framework
             set { m_InputPostText = value; }
             get
             {
-                if (this.m_IsNewDesign && !string.IsNullOrEmpty(this.m_InputPostText))
+                if (!string.IsNullOrEmpty(this.m_InputPostText))
                     return string.Format("<label for=\"{1}\">{0}</label>", m_InputPostText, this.ID);
                 return m_InputPostText;
             }

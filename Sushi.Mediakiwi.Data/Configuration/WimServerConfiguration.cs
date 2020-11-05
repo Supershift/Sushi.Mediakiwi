@@ -84,12 +84,15 @@ namespace Sushi.Mediakiwi.Data.Configuration
         public string Login_Background_Url { get; set; }
 
         public string Loginbox_Logo_Url { get; set; }
+        public string Logo_Url { get; set; }
 
         public string Stylesheet { get; set; }
         
         public string Local_File_Path { get; set; }
 
         public bool Disable_Caching { get; set; }
+        public int Authentication_Timeout { get; set; }
+        public string Authentication_Cookie { get; set; }
 
         /// <summary>
         /// Gets the portal collection.

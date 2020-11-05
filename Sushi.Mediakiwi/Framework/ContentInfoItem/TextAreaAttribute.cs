@@ -222,7 +222,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                 outputValue = WebUtility.HtmlDecode(outputValue);
             }
 
-            if (isEditMode || (m_IsNewDesign && this.IsSourceCode))
+            if (isEditMode || (this.IsSourceCode))
             {
                 #region Element creation
                 StringBuilder element = new StringBuilder();

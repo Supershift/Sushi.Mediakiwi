@@ -15,7 +15,6 @@ namespace Sushi.Mediakiwi.Data
         string DisplayName { get; set; }
         string ErrorMailAddress { get; set; }
         int ID { get; set; }
-        int? LogoLight { get; set; }
         string Password { get; set; }
         string Repository { get; set; }
         string RepositoryFolder { get; set; }

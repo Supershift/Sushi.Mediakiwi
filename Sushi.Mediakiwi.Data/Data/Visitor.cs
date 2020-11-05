@@ -173,7 +173,18 @@ namespace Sushi.Mediakiwi.Data
         /// <summary>
         /// XML representation of the DATA property
         /// </summary>
-        public virtual string DataString { get; set; }
+        public virtual string DataString {
+            get
+            {
+                if (m_Data == null)
+                    return null;
+                return m_Data.Serialized;
+            }
+            set
+            {
+                m_Data = new CustomData(value);
+            }
+        }
 
         private CustomData m_Data;
 

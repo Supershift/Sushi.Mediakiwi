@@ -39,6 +39,12 @@ namespace Sushi.Mediakiwi.Data
             }
         }
 
+        public void Delete()
+        {
+            var connector = ConnectorFactory.CreateConnector<Gallery>();
+            connector.Delete(this);
+        }
+
         public void Save()
         {
             var connector = ConnectorFactory.CreateConnector<Gallery>();

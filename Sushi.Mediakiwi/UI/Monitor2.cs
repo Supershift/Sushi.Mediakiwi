@@ -30,7 +30,7 @@ namespace Sushi.Mediakiwi.UI
         {
             _env = env;
             _Context = context;
-            _Console = new Sushi.Mediakiwi.Beta.GeneratedCms.Console(context, _env, true);
+            _Console = new Sushi.Mediakiwi.Beta.GeneratedCms.Console(context, _env);
 
             //Console.CurrentApplicationUser = user;
 
@@ -47,14 +47,7 @@ namespace Sushi.Mediakiwi.UI
             catch (Exception ex)
             {
                 await Notification.InsertOneAsync("Uncaught exception", ex);
-
-                if (_env.IsDevelopment() || true)
-                {
-                    await AddToResponseAsync($"<b>{ex.Message}</b><br/>");
-                    await AddToResponseAsync(ex.StackTrace);
-                }
-                else
-                    throw ex;
+                throw ex;
             }
         }
 
@@ -67,7 +60,6 @@ namespace Sushi.Mediakiwi.UI
             if (!_Console.Request.Path.Value.EndsWith(path))
                 return;
 
-            _Console.IsNewDesign = true;
             _Console.SetDateFormat();
 
             bool forcelogin = 
@@ -80,6 +72,8 @@ namespace Sushi.Mediakiwi.UI
             {
                 return;
             }
+            _Console.SaveVisit();
+
             //  Obtain querystring requests
             this.SetRequestType();
             //  Apply the current component list based on the roaming environment settings
@@ -105,7 +99,7 @@ namespace Sushi.Mediakiwi.UI
 
             await HandleRequestAsync(grid, component, isDeleteTriggered);
 
-            _Console.SaveVisit();
+          
         }
 
         /// <summary>
@@ -797,8 +791,6 @@ namespace Sushi.Mediakiwi.UI
         {
             if (!string.IsNullOrEmpty(_Console.Request.Query["xml"]))
             {
-
-                _Console.IsNewDesign = true;
                 _Console.Response.ContentType = "text/xml";
                 //_Console.Response.Cache.SetCacheability(HttpCacheability.NoCache);
                 //_Console.Response.Cache.SetAllowResponseInBrowserHistory(false);
@@ -916,19 +908,12 @@ namespace Sushi.Mediakiwi.UI
             }
             else
             {
-                //  Verify if the call is JSON, XML, CSV, ..
-                //VerifyFormatRequest();
-
                 string reaction = _PresentationMonitor.GetLoginWrapper(_Console, _Placeholders, _Callbacks);
-                if (string.IsNullOrEmpty(reaction))
-                {
-                    _Console.Response.Redirect(_Console.GetSafeUrl());
-                }
-                else
+                if (!string.IsNullOrEmpty(reaction))
                 {
                     await AddToResponseAsync(reaction);
+                    return false;
                 }
-                return false;
             }
             return true;
         }

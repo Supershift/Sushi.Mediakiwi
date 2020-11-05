@@ -100,6 +100,36 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             ResetDefaultFolder();
 
             this.Implement.Save();
+
+            if (this.Implement.HasLists)
+            {
+                var listsite = Sushi.Mediakiwi.Data.Folder.SelectOneBySite(this.Implement.ID, FolderType.List);
+                if (listsite == null || listsite.ID == 0)
+                {
+                    var folder = new Mediakiwi.Data.Folder();
+                    folder.IsVisible = true;
+                    folder.Type = FolderType.List;
+                    folder.Name = Common.FolderRoot;
+                    folder.CompletePath = Common.FolderRoot;
+                    folder.SiteID = this.Implement.ID;
+                    folder.Save();
+                }
+            }
+            if (this.Implement.HasPages)
+            {
+                var listsite = Sushi.Mediakiwi.Data.Folder.SelectOneBySite(this.Implement.ID, FolderType.Page);
+                if (listsite == null || listsite.ID == 0)
+                {
+                    var folder = new Mediakiwi.Data.Folder();
+                    folder.IsVisible = true;
+                    folder.Type = FolderType.Page;
+                    folder.Name = Common.FolderRoot;
+                    folder.CompletePath = Common.FolderRoot;
+                    folder.SiteID = this.Implement.ID;
+                    folder.Save();
+                }
+            }
+
             Response.Redirect(wim.GetCurrentQueryUrl(true, new KeyValue() { Key = "item", Value = this.Implement.ID }));
         }
 
@@ -172,7 +202,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             wim.ListDataColumns.Add("ID", "ID", ListDataColumnType.UniqueIdentifier);
             wim.ListDataColumns.Add("Site", "Name", ListDataColumnType.HighlightPresent);
             wim.ListDataColumns.Add("Inherits from", "Master");
-            wim.ListDataColumns.Add("Is active", "IsActive", 60);
+            wim.ListDataColumns.Add("Active", "IsActive", 60);
             wim.ListDataColumns.Add("Pages", "PageCount", 60);
             wim.ListDataColumns.Add("Lists", "ListCount", 60);
             wim.ListDataColumns.Add("Created", "Created", 100);

@@ -186,110 +186,43 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                 else
                 {
                     #region Wrapper
-                    if (this.m_IsNewDesign)
+                    if (ShowInheritedData)
                     {
-                        if (ShowInheritedData)
-                        {
-                            this.ApplyTranslation(build);
-                        }
-                        else
-                        {
-                            if ((Console.ExpressionPrevious == OutputExpression.Left && Expression == OutputExpression.FullWidth) || (Console.ExpressionPrevious == OutputExpression.Left && Expression == OutputExpression.Left))
-                                build.Append("\t\t\t\t\t\t\t<th><label>&nbsp;</label></th><td>&nbsp;</td></tr>");
-
-                            if ((Console.ExpressionPrevious == OutputExpression.FullWidth && Expression == OutputExpression.Right) || (Console.ExpressionPrevious == OutputExpression.Right && Expression == OutputExpression.Right))
-                                build.Append("\t\t\t\t\t\t<tr><th><label>&nbsp;</label></th>\n\t\t\t\t\t\t\t<td>&nbsp;</td>");
-
-                            if (Expression == OutputExpression.FullWidth || Expression == OutputExpression.Left)
-                                build.Append("\t\t\t\t\t\t<tr>");
-                        }
-
-                        build.AppendFormat("\n\t\t\t\t\t\t\t<th><label for=\"{0}\">{1}</label></th>", this.ID, this.TitleLabel);
-
-                        //if (ShowInheritedData)
-                        //    build.AppendFormat("\t\t\t\t\t\t\t<th class=\"local\"><label>{0}:</label></th>\t\t\t\t\t\t</tr>\t\t\t\t\t\t<tr>\t\t\t\t\t\t\t<td><div class=\"description\">{1}</div></td>\n", this.ID, this.TitleLabel);
-
-                        build.AppendFormat("\n\t\t\t\t\t\t\t<td{0}{1}>{2}"
-                            , (Expression == OutputExpression.FullWidth && Console.HasDoubleCols) ? " colspan=\"3\"" : null
-                            , this.InputCellClassName(this.IsValid(isRequired))
-                            , CustomErrorText
-                            );
-
-                        build.AppendFormat("\n\t\t\t\t\t\t\t\t<div class=\"{0}\">", (Expression == OutputExpression.FullWidth) ? this.Class_Wide : "half");
-
-                        build.Append(element.ToString());
-
-                        build.Append("\n\t\t\t\t\t\t\t\t</div>");
-                        build.Append("\n\t\t\t\t\t\t\t</td>");
-
-                        if (Expression == OutputExpression.FullWidth || Expression == OutputExpression.Right)
-                            build.Append("\n\t\t\t\t\t\t</tr>\n");
-
-                        //                    build.Append(string.Format(@"{10}{11}{7}							<th><label for=""{1}"">{0}</label></th>{6}
-                        //							<td{9}{13}>{5}
-                        //	                            <div class=""{14}"">
-                        //                                    <input type=""checkbox"" class=""radio{4}"" value=""1"" name=""{1}"" id=""{1}""{3}{12}/>{2}
-                        //                                </div>
-                        //	                        </td>{8}"
-                        //                        , this.TitleLabel // 0
-                        //                        , this.ID // 1
-                        //                        , string.IsNullOrEmpty(this.InputPostText) ? null : this.InputPostText // 2
-                        //                        , m_Candidate ? " checked=\"checked\"" : string.Empty // 3
-                        //                        , AutoPostBack ? string.Concat(" ", PostBackValue) : string.Empty // 4
-                        //                        , CustomErrorText // 5
-                        //                        , ShowInheritedData
-                        //                            ? string.Format(@"							<th class=""local""><label>{0}:</label></th>
-                        //						</tr>
-                        //						<tr>
-                        //							<td><div class=""description"">{1}</div></td>
-                        //"
-                        //                            , titleTag, InhertitedOutputText)
-                        //                            : null // 6
-
-                        //                        , (Expression == OutputExpression.FullWidth || Expression == OutputExpression.Left) ? GetStart() : null // 7
-                        //                        , (Expression == OutputExpression.FullWidth || Expression == OutputExpression.Right) ? GetClose() : null // 8
-                        //                        , (Expression == OutputExpression.FullWidth && Console.HasDoubleCols) ? " colspan=\"3\"" : null // 9
-                        //                        , ((Console.ExpressionPrevious == OutputExpression.Left && Expression == OutputExpression.FullWidth) || (Console.ExpressionPrevious == OutputExpression.Left && Expression == OutputExpression.Left)) ? "<th><label>&nbsp;</label></th><td>&nbsp;</td></tr>" : null // 10
-                        //                        , ((Console.ExpressionPrevious == OutputExpression.FullWidth && Expression == OutputExpression.Right) || (Console.ExpressionPrevious == OutputExpression.Right && Expression == OutputExpression.Right)) ? "<tr><th><label>&nbsp;</label></th><td>&nbsp;</td>" : null // 11
-                        //                        , isEnabled ? null : " disabled=\"disabled\"" //12
-                        //                        , this.InputCellClassName(this.IsValid(isRequired)) // 13
-                        //                        , Console.HasDoubleCols && Expression != OutputExpression.FullWidth ? "half" : "long" //14
-                        //                        )
-                        //                    );
+                        this.ApplyTranslation(build);
                     }
                     else
                     {
-                        build.Append(string.Format(@"{10}{11}{7}
-	<th><label for=""{1}"" class=""abbr"">{0}:</label></th>{6}
-	<td{9}>{5}
-		<fieldset class=""isSearchable"">
-			<input type=""checkbox"" class=""radio{4}"" value=""1"" name=""{1}"" id=""{1}""{3}{12}/>{2}
-		</fieldset>
-	</td>{8}"
-                            , titleTag // 0
-                            , this.ID // 1
-                            , string.IsNullOrEmpty(this.InteractiveHelp) ? null : string.Concat(" (", this.InteractiveHelp, ")") // 2
-                            , m_Candidate ? " checked=\"checked\"" : string.Empty // 3
-                            , AutoPostBack ? string.Concat(" ", PostBackValue) : string.Empty // 4
-                            , CustomErrorText // 5
-                            , ShowInheritedData
-                                ? string.Format(@"<th class=""local""><label>{0}:</label></th>
-</tr>
-<tr>
-    <td><div class=""description"">{1}</div></td>
-"
-                                , titleTag, InhertitedOutputText)
-                                : null // 6
+                        if ((Console.ExpressionPrevious == OutputExpression.Left && Expression == OutputExpression.FullWidth) || (Console.ExpressionPrevious == OutputExpression.Left && Expression == OutputExpression.Left))
+                            build.Append("\t\t\t\t\t\t\t<th><label>&nbsp;</label></th><td>&nbsp;</td></tr>");
 
-                            , (Expression == OutputExpression.FullWidth || Expression == OutputExpression.Left) ? "<tr>" : null // 7
-                            , (Expression == OutputExpression.FullWidth || Expression == OutputExpression.Right) ? "</tr>" : null // 8
-                            , (Expression == OutputExpression.FullWidth && Console.HasDoubleCols) ? " colspan=\"3\" class=\"triple\"" : null // 9
-                            , ((Console.ExpressionPrevious == OutputExpression.Left && Expression == OutputExpression.FullWidth) || (Console.ExpressionPrevious == OutputExpression.Left && Expression == OutputExpression.Left)) ? "<th><label>&nbsp;</label></th><td>&nbsp;</td></tr>" : null // 10
-                            , ((Console.ExpressionPrevious == OutputExpression.FullWidth && Expression == OutputExpression.Right) || (Console.ExpressionPrevious == OutputExpression.Right && Expression == OutputExpression.Right)) ? "<tr><th><label>&nbsp;</label></th><td>&nbsp;</td>" : null // 11
-                            , isEnabled ? null : " disabled=\"disabled\"" //12
-                            )
-                        );
+                        if ((Console.ExpressionPrevious == OutputExpression.FullWidth && Expression == OutputExpression.Right) || (Console.ExpressionPrevious == OutputExpression.Right && Expression == OutputExpression.Right))
+                            build.Append("\t\t\t\t\t\t<tr><th><label>&nbsp;</label></th>\n\t\t\t\t\t\t\t<td>&nbsp;</td>");
+
+                        if (Expression == OutputExpression.FullWidth || Expression == OutputExpression.Left)
+                            build.Append("\t\t\t\t\t\t<tr>");
                     }
+
+                    build.AppendFormat("\n\t\t\t\t\t\t\t<th><label for=\"{0}\">{1}</label></th>", this.ID, this.TitleLabel);
+
+                    //if (ShowInheritedData)
+                    //    build.AppendFormat("\t\t\t\t\t\t\t<th class=\"local\"><label>{0}:</label></th>\t\t\t\t\t\t</tr>\t\t\t\t\t\t<tr>\t\t\t\t\t\t\t<td><div class=\"description\">{1}</div></td>\n", this.ID, this.TitleLabel);
+
+                    build.AppendFormat("\n\t\t\t\t\t\t\t<td{0}{1}>{2}"
+                        , (Expression == OutputExpression.FullWidth && Console.HasDoubleCols) ? " colspan=\"3\"" : null
+                        , this.InputCellClassName(this.IsValid(isRequired))
+                        , CustomErrorText
+                        );
+
+                    build.AppendFormat("\n\t\t\t\t\t\t\t\t<div class=\"{0}\">", (Expression == OutputExpression.FullWidth) ? this.Class_Wide : "half");
+
+                    build.Append(element.ToString());
+
+                    build.Append("\n\t\t\t\t\t\t\t\t</div>");
+                    build.Append("\n\t\t\t\t\t\t\t</td>");
+
+                    if (Expression == OutputExpression.FullWidth || Expression == OutputExpression.Right)
+                        build.Append("\n\t\t\t\t\t\t</tr>\n");
+
                     #endregion Wrapper
                 }
             }

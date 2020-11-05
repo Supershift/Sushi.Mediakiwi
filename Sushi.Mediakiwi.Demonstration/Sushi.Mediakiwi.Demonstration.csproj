@@ -53,5 +53,8 @@
     <None Include="wwwroot\Styles\fonts\sourceSansPro.scss" />
     <None Include="wwwroot\Styles\override.css" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="wwwroot\Images\" />
+  </ItemGroup>
 
 </Project>

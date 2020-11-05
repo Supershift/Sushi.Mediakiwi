@@ -65,7 +65,7 @@ namespace Sushi.Mediakiwi
             IVisitor visitor = null;
             using (var auth = new Authentication(Context))
             {
-                auth.TicketName = this.TicketName;
+                auth.TicketName = CommonConfiguration.AUTHENTICATION_COOKIE;
                 auth.Password = Context.Request.Headers["User-Agent"];
 
                 if (Context != null)
@@ -137,7 +137,6 @@ namespace Sushi.Mediakiwi
             }
 
             Visitor.Save((Visitor)entity);
-
            
             if (entity.GUID == Guid.Empty)
                 throw new Exception("Something went wrong with saving the current visitor");
@@ -153,23 +152,6 @@ namespace Sushi.Mediakiwi
         string m_Attribute_IdentityVersion = "iv";
         string m_Attribute_TimeStamp = "TimeStamp";
 
-        string m_TicketName;
-        /// <summary>
-        /// Gets the name of the ticket.
-        /// </summary>
-        /// <value>The name of the ticket.</value>
-        public string TicketName
-        {
-            get
-            {
-
-                if (string.IsNullOrEmpty(m_TicketName))
-                {
-                    m_TicketName = string.Concat("v_", Sushi.Mediakiwi.Data.Environment.Current.Title.Replace(" ", "_"));
-                }
-                return m_TicketName;
-            }
-        }
 
         /// <summary>
         /// Sets the cookie.
@@ -192,16 +174,13 @@ namespace Sushi.Mediakiwi
             using (var auth = new Authentication(Context))
             {
                 auth.Password = Context.Request.Headers["User-Agent"];
-                auth.TicketName = m_TicketName;
+                auth.TicketName = CommonConfiguration.AUTHENTICATION_COOKIE;
 
-                auth.AddValue(m_Attribute_TimeStamp, Common.DatabaseDateTime.Ticks.ToString());
+                auth.AddValue(m_Attribute_TimeStamp, DateTime.UtcNow.Ticks.ToString());
                 auth.AddValue(m_Attribute_Id, guid.ToString());
                 auth.AddValue(m_Attribute_IdentityVersion, "3");
+                auth.LifeTime = DateTime.UtcNow.AddMinutes(CommonConfiguration.AUTHENTICATION_TIMEOUT);
 
-                int minutes = Data.Utility.ConvertToInt(Sushi.Mediakiwi.Data.Environment.Current["EXPIRATION_COOKIE_VISITOR"], 0);
-
-                if (minutes > 0 && shouldRememberProfileForNextVisit)
-                    auth.LifeTime = Common.DatabaseDateTime.AddMinutes(minutes);
                 auth.CreateTicket();
             }
         }
@@ -222,7 +201,7 @@ namespace Sushi.Mediakiwi
         internal void RemoveCookie()
         {
             using (var auth = new Authentication())
-                auth.RemoveTicket(m_TicketName);
+                auth.RemoveTicket(CommonConfiguration.AUTHENTICATION_COOKIE);
         }
 
         IVisitor Reset()

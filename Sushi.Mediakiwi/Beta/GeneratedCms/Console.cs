@@ -53,7 +53,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
                 return null;
 
             var referer = new Uri(Context.Request.Headers["Referer"]);
-            if (referer.Host != Context.Request.Host.Value)
+            if (!referer.Host.Equals(Context.Request.Host.Host, StringComparison.CurrentCultureIgnoreCase))
                 return null;
 
             if (allowHTML)
@@ -290,9 +290,19 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
 
         public string AddApplicationPath(string path, bool appendUrl = false)
         {
+            if (path.StartsWith("http", StringComparison.CurrentCultureIgnoreCase))
+                return path;
+
+            if (path.StartsWith("~"))
+            {
+                path = path.Replace("~", Request.PathBase);
+                if (appendUrl)
+                    return String.Concat(CurrentHost, path);
+                return path;
+            }
+
             if (appendUrl)
                 return String.Concat(CurrentHost, Request.PathBase, path);
-
             return String.Concat(Request.PathBase, path);
         }
 
@@ -384,7 +394,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
         /// <returns></returns>
         internal Console ReplicateInstance(Data.IComponentList list)
         {
-            Console candidate = new Console(m_Application, _env, this.IsNewDesign);
+            Console candidate = new Console(m_Application, _env);
 
             candidate.CurrentList = list;
 
@@ -404,7 +414,6 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
             return candidate;
         }
 
-        bool m_isNewDesignOutput;
         public string MapPath(string path)
         {
             var webRoot = _env.ContentRootPath;
@@ -417,11 +426,10 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
         /// Initializes a new instance of the <see cref="Console"/> class.
         /// </summary>
         /// <param name="application">The application.</param>
-        public Console(HttpContext application, IHostingEnvironment env, bool isNewDesignOutput)
+        public Console(HttpContext application, IHostingEnvironment env)
         {
             _env = env;
             m_Application = application;
-            m_isNewDesignOutput = isNewDesignOutput;
             Response = m_Application.Response;
             Request = m_Application.Request;
             Context = m_Application;
@@ -430,11 +438,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
 
             string localRequestHost = CurrentHost;
 
-            if (m_isNewDesignOutput)
-                this.WimRepository = string.Concat(this.CurrentHost, AddApplicationPath("testdrive/files"));
-            else
-                this.WimRepository = string.Concat(this.CurrentHost, AddApplicationPath("repository/wim"));
-
+            this.WimRepository = string.Concat(this.CurrentHost, AddApplicationPath("testdrive/files"));
             this.BaseRepository = string.Concat(this.CurrentHost, AddApplicationPath("repository"));
 
             _VisitorManager = new VisitorManager(application);
@@ -477,7 +481,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
                 if (m_ChannelIndentifier == 0)
                 {
                     bool isChanged = !string.IsNullOrEmpty(Form("channel"));
-                    if (this.m_isNewDesignOutput && isChanged)
+                    if (isChanged)
                         isChanged = Form("autopostback") == "channel";
 
                     if (string.IsNullOrEmpty(Request.Query["channel"]))
@@ -965,8 +969,6 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
             set { m_ListPagingValue = value; }
         }
 
-        public bool IsNewDesign { get; set; }
-
         int? m_OpenInFrame;
         /// <summary>
         /// Gets the open in frame.
@@ -1104,8 +1106,8 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
         public string GetWimPagePath(int? channel)
         {
             if (channel.HasValue)
-                return AddApplicationPath(string.Concat("/", channel, "/", CommonConfiguration.PORTAL_PATH), true);
-            return AddApplicationPath(string.Concat("/", CommonConfiguration.PORTAL_PATH), true);
+                return AddApplicationPath(string.Concat("/", channel, CommonConfiguration.PORTAL_PATH), true);
+            return AddApplicationPath(string.Concat(CommonConfiguration.PORTAL_PATH), true);
         }
 
         string m_WimRepository;

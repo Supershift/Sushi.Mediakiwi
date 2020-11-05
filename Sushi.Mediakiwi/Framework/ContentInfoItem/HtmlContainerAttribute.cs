@@ -62,52 +62,24 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
             if (string.IsNullOrEmpty(OutputText)) return null;
             if (string.IsNullOrEmpty(OutputText.Trim())) return null;
 
-            //string html = string.Format("<td colspan=\"{1}\"><fieldset class=\"html\">{0}</fieldset></td>", OutputText, Console.HasDoubleCols ? 4 : 2);
-            if (this.m_IsNewDesign)
+            if (HasNoPadding)
             {
-                //string html = string.Format("							<td colspan=\"{1}\"{2}><div class=\"{3}\">{0}</div></td>"
-                //    , OutputText
-                //    , Console.HasDoubleCols ? 4 : 2
-                //    , HasNoPadding ? " class=\"clear\"" : ""
-                //    , Console.HasDoubleCols && Expression != OutputExpression.FullWidth ? "half" : "long"  // 3
-                //    );
-                //build.AppendFormat("\t\t\t\t\t\t\t<td colspan=\"{1}\"{2}><div class=\"{3}\">{0}</div></td>"
-                //    , OutputText
-                //    , Console.HasDoubleCols ? "4" : "2"
-                //    , HasNoPadding ? " class=\"clear\"" : ""
-                //    , Console.HasDoubleCols && Expression != OutputExpression.FullWidth ? "half" : "long"  // 3                    
-                //    );
-
-                if (HasNoPadding)
-                {
-                    build.AppendFormat("\t\t\t\t\t\t\t<td colspan=\"{1}\"{2}>{0}</td>"
+                build.AppendFormat("\t\t\t\t\t\t\t<td colspan=\"{1}\"{2}>{0}</td>"
+                            , OutputText
+                            , Console.HasDoubleCols ? "4" : "2"
+                            , HasNoPadding ? " class=\"clear\"" : ""
+                            , Console.HasDoubleCols && Expression != OutputExpression.FullWidth ? "half" : "long"  // 3                    
+                            );
+            }
+            else
+            {
+                build.AppendFormat("\t\t\t\t\t\t\t<td colspan=\"{1}\"{2}><div class=\"{3}\">{0}</div></td>"
                                 , OutputText
                                 , Console.HasDoubleCols ? "4" : "2"
                                 , HasNoPadding ? " class=\"clear\"" : ""
                                 , Console.HasDoubleCols && Expression != OutputExpression.FullWidth ? "half" : "long"  // 3                    
                                 );
-                }
-                else
-                {
-                    build.AppendFormat("\t\t\t\t\t\t\t<td colspan=\"{1}\"{2}><div class=\"{3}\">{0}</div></td>"
-                                  , OutputText
-                                  , Console.HasDoubleCols ? "4" : "2"
-                                  , HasNoPadding ? " class=\"clear\"" : ""
-                                  , Console.HasDoubleCols && Expression != OutputExpression.FullWidth ? "half" : "long"  // 3                    
-                                  );
-                }
-
             }
-            else
-            {
-                string html = string.Format("<td colspan=\"{1}\"{2}>{0}</td>", OutputText, Console.HasDoubleCols ? 4 : 2
-                    , HasNoPadding ? " class=\"clear\"" : ""
-                    );
-                build.Append(html);
-            }
-
-            
-
             return null;
         }
 

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Sushi.Mediakiwi.Data;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -16,7 +17,7 @@ namespace Sushi.Mediakiwi.Framework.Inheritance
         /// <param name="siteID">The site ID.</param>
         public static void CreatePageTree(int masterSiteID, int siteID)
         {
-            Sushi.Mediakiwi.Data.Page[] masterPages = Sushi.Mediakiwi.Data.Page.SelectAllUninherited(masterSiteID, siteID);
+            var masterPages = Sushi.Mediakiwi.Data.Page.SelectAllUninherited(masterSiteID, siteID);
 
             foreach (Sushi.Mediakiwi.Data.Page page in masterPages)
             {
@@ -48,7 +49,7 @@ namespace Sushi.Mediakiwi.Framework.Inheritance
         static Sushi.Mediakiwi.Data.Page SetChildPage(Sushi.Mediakiwi.Data.Page page, int siteID)
         {
             Sushi.Mediakiwi.Data.Page childPage = new Sushi.Mediakiwi.Data.Page();
-            Wim.Utility.ReflectProperty(page, childPage);
+            Utility.ReflectProperty(page, childPage);
             childPage.ID = 0;
             childPage.MasterID = page.ID;
 
@@ -67,7 +68,7 @@ namespace Sushi.Mediakiwi.Framework.Inheritance
             childPage.Updated = DateTime.MinValue;
             childPage.Save();
             
-            Sushi.Mediakiwi.Framework.Functions.FolderPath.UpdateCompletePath(childPage.FolderID);
+            Functions.FolderPathLogic.UpdateCompletePath(childPage.FolderID);
             
             return childPage;
         }
@@ -80,7 +81,7 @@ namespace Sushi.Mediakiwi.Framework.Inheritance
         public static void CreatePage(Sushi.Mediakiwi.Data.Page page, Sushi.Mediakiwi.Data.Site currentSite)
         {
             if (!currentSite.HasChildren) return;
-            CreatePage(page, currentSite, Sushi.Mediakiwi.Data.Site.SelectAll());
+            CreatePage(page, currentSite, Site.SelectAll());
         }
 
         /// <summary>
@@ -89,7 +90,7 @@ namespace Sushi.Mediakiwi.Framework.Inheritance
         /// <param name="page">The page.</param>
         /// <param name="currentSite">The current site.</param>
         /// <param name="sites">The sites.</param>
-        static void CreatePage(Sushi.Mediakiwi.Data.Page page, Sushi.Mediakiwi.Data.Site currentSite, Sushi.Mediakiwi.Data.Site[] sites)
+        static void CreatePage(Sushi.Mediakiwi.Data.Page page, Sushi.Mediakiwi.Data.Site currentSite, List<Site> sites)
         {
             if (!currentSite.HasChildren) return;
 
@@ -122,38 +123,6 @@ namespace Sushi.Mediakiwi.Framework.Inheritance
                 if (child.FolderID > 0)
                     child.Save();
             }
-            //MovePage(page, currentSite, Sushi.Mediakiwi.Data.Site.SelectAll());
-
         }
-
-        ///// <summary>
-        ///// Moves the page.
-        ///// </summary>
-        ///// <param name="page">The page.</param>
-        ///// <param name="currentSite">The current site.</param>
-        ///// <param name="sites">The sites.</param>
-        //public static void MovePage(Sushi.Mediakiwi.Data.Page page, Sushi.Mediakiwi.Data.Site currentSite, Sushi.Mediakiwi.Data.Site[] sites)
-        //{
-        //    if (!currentSite.HasChildren) return;
-
-            
-
-        //    foreach (Sushi.Mediakiwi.Data.Site site in Sushi.Mediakiwi.Data.Site.SelectAll())
-        //    {
-        //        if (!site.HasPages) continue;
-
-        //        if (site.MasterID.GetValueOrDefault() == currentSite.ID)
-        //        {
-        //            Sushi.Mediakiwi.Data.Page candidate = Sushi.Mediakiwi.Data.Page.SelectOneChild(page.ID, site.ID, false);
-        //            if (!candidate.IsNewInstance)
-        //            {
-        //                candidate.FolderID = Sushi.Mediakiwi.Data.Folder.SelectOneChild(page.FolderID, site.ID).ID;
-        //                candidate.Save();
-
-        //                MovePage(candidate, site, sites);
-        //            }
-        //        }
-        //    }
-        //}
     }
 }

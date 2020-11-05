@@ -11,7 +11,6 @@ namespace Sushi.Mediakiwi.Data
     /// <summary>
     /// Represents a Folder entity.
     /// </summary>
-    [DataMap(typeof(FolderPath))]
     public class FolderPath 
     {
         public class FolderPathMap : DataMap<FolderPath>
@@ -22,7 +21,7 @@ namespace Sushi.Mediakiwi.Data
              
                 Id(x => x.ID, "Folder_Key").Identity();
                 Map(x => x.CompletePath, "Folder_CompletePath").Length(1000);
-                Map(x => x.DefaultFolder, "Site_DefaultFolder");
+                Map(x => x.DefaultFolder, "Site_DefaultFolder").ReadOnly();
             }
         }
 

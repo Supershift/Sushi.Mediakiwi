@@ -15,14 +15,19 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation.Forms
         public SiteForm(Mediakiwi.Data.Site implement)
         {
             Load(implement as Mediakiwi.Data.Site);
-            Map(x => x.Name).TextField("Title", 50, true);
-            Map(x => x.TimeZone).Dropdown("Country", nameof(SiteForm.AvailableCountries), false);
-            Map(x => x.Language).Dropdown("Language", nameof(SiteForm.AvailableCulturesCollection), false);
-            Map(x => x.TimeZone).Dropdown("Timezone", nameof(SiteForm.AvailableTimeZones), false);
-            Map(x => x.Culture).Dropdown("Culture", nameof(SiteForm.AvailableCulturesCollection), false);
-            Map(x => x.MasterID).Dropdown("Inherit from", nameof(SiteForm.AvailableSitesCollection), false);
-            //Map<SiteForm>(x => x.Section1, this).Section("SMTP Settings");
 
+            Map(x => x.Name).TextField("Title", 50, true).Expression(OutputExpression.Alternating);
+            Map(x => x.IsActive).Checkbox("Active").Expression(OutputExpression.Alternating);
+            Map(x => x.CountryID).Dropdown("Country", nameof(SiteForm.AvailableCountries), false).Expression(OutputExpression.Alternating); ;
+            Map(x => x.TimeZoneIndex).Dropdown("Timezone", nameof(SiteForm.AvailableTimeZones), false).Expression(OutputExpression.Alternating); ;
+            Map(x => x.Language).Dropdown("Language", nameof(SiteForm.AvailableCulturesCollection), false).Expression(OutputExpression.Alternating); ;
+            Map(x => x.Culture).Dropdown("Culture", nameof(SiteForm.AvailableCulturesCollection), false).Expression(OutputExpression.Alternating); ;
+            Map(x => x.MasterID).Dropdown("Inherit from", nameof(SiteForm.AvailableSitesCollection), false);
+            
+            Map<SiteForm>(x => x.Section1, this).Section("Settings");
+
+            Map(x => x.HasLists).Checkbox("Lists").Expression(OutputExpression.Alternating);
+            Map(x => x.HasPages).Checkbox("Pages").Expression(OutputExpression.Alternating);
         }
 
         public string Section1 { get; set; }
@@ -189,6 +194,11 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation.Forms
                     {
                         if (site.ID == this.Instance.ID)
                             continue;
+
+                        // do not include administration
+                        if (site.Type == 1)
+                            continue;
+
 
                         m_AvailableSites.Add(new ListItem(site.Name, site.ID.ToString()));
                     }

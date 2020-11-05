@@ -395,14 +395,12 @@ h4 {
 }
 
     #bodyHeader a {
-        background-image: url("../images/logo-2.png") !important;
         background-repeat: no-repeat !important;
         background-position: center !important;
-        background-color: #FFF;
+        background-color: #519d91;
     }
 
         #bodyHeader a img {
-            display: none;
             height: 70%;
             width: auto;
         }

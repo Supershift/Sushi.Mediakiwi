@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <Version>7.14</Version>
+    <Version>7.14.1</Version>
     <Product>Mediakiwi</Product>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <Company>Supershift</Company>
@@ -77,6 +77,7 @@
     <Compile Include="AppCentre\UI\ComponentListSense.cs" />
     <Compile Include="AppCentre\UI\ComponentListSettings.cs" />
     <Compile Include="AppCentre\UI\Environment.cs" />
+    <Compile Include="AppCentre\UI\Folder.cs" />
     <Compile Include="AppCentre\UI\Forms\SiteForm.cs" />
     <Compile Include="AppCentre\UI\Forms\EnvironmentForm.cs" />
     <Compile Include="AppCentre\UI\Forms\ComponentListForm.cs" />
@@ -111,6 +112,8 @@
     <Compile Include="Framework\CacheManager.cs" />
     <Compile Include="Framework\ErrorCode.cs" />
     <Compile Include="Framework\Functions\FolderPath.cs" />
+    <Compile Include="Framework\Inheritance\Folder.cs" />
+    <Compile Include="Framework\Inheritance\Page.cs" />
     <Compile Include="Framework\Interfaces\IPageModule.cs" />
     <Compile Include="Framework\ModuleExecutionResult.cs" />
     <Compile Include="Framework\PagePreview.cs" />

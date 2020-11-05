@@ -7,3 +7,4 @@ drop table [dbo].[wim_TaskNotes]
 
 alter table wim_Environments drop column Environment_Path;
 alter table wim_Environments drop column Environment_Url;
+alter table wim_Environments drop column Environment_LogoL;

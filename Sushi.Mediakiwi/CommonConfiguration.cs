@@ -16,6 +16,22 @@ namespace Sushi.Mediakiwi
                 return WimServerConfiguration.Instance.Portal_Path;
             }
         }
+        public static int AUTHENTICATION_TIMEOUT
+        {
+            get
+            {
+                return Data.Utility.ConvertToInt(WimServerConfiguration.Instance.Authentication_Timeout, 15);
+            }
+        }
+        public static string AUTHENTICATION_COOKIE
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(WimServerConfiguration.Instance.Authentication_Cookie))
+                    return "mediakiwi";
+                return WimServerConfiguration.Instance.Authentication_Cookie;
+            }
+        }
         public static bool RIGHTS_GALLERY_SUBS_ARE_ALLOWED { get { return true; } }
         public static string LOGIN_BACKGROUND { 
             get { 
@@ -27,6 +43,13 @@ namespace Sushi.Mediakiwi
             get
             {
                 return WimServerConfiguration.Instance.Loginbox_Logo_Url;
+            }
+        }
+        public static string LOGO_URL
+        {
+            get
+            {
+                return WimServerConfiguration.Instance.Logo_Url;
             }
         }
 
