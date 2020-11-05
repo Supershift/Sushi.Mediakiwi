@@ -25,3 +25,4 @@
 /Sushi.Mediakiwi.CDN.Files/obj
 /Sushi.Mediakiwi.Files/obj/Debug/netcoreapp3.1
 **/node_modules
+/Sushi.Mediakiwi.Files/bin/Debug/netcoreapp3.1
