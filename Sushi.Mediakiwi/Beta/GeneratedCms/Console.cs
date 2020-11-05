@@ -739,12 +739,16 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
         internal bool ApplyList(System.Type classname)
         {
             m_CurrentList = Data.ComponentList.SelectOne(classname.ToString());
-            if (m_CurrentList == null)
+            if (m_CurrentList == null || m_CurrentList.ID == 0)
             {
                 //TMP REMOVE!
                 var find = classname.ToString().Replace("Sushi.Mediakiwi", "Wim");
                 m_CurrentList = Data.ComponentList.SelectOne(find);
 
+            }
+            if (m_CurrentList == null || m_CurrentList.ID == 0)
+            {
+                throw new Exception($"Mediakiwi - Could not initialize {classname}");
             }
             return ApplyList();
         }

@@ -985,14 +985,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation
                     : string.Concat(" ", container.CurrentListInstance.wim.Page.Body.ClassName);
 
                 //  [30.okt.14:MM] Added full width support
-                var full_width = Sushi.Mediakiwi.Data.Environment.Current["FULL_WIDTH", true, "0", "Show full width"];
-
-                string fixedWidthClass = container.CurrentApplicationUser.ShowFullWidth || full_width == "1" ? string.Empty : "fixed";
-
-
-
                 //<link rel=""stylesheet"" href=""" + FolderVersion("styles") + @"jquery-ui-1.8.16.custom.css"" type=""text/css"" media=""all"" />
-
 
                 candidate = @"<!DOCTYPE html>
 <html>
@@ -1008,7 +1001,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation
 		<meta http-equiv=""Content-Type"" content=""text/html; charset=UTF-8"" />" 
         + GetHeader(styleAddition, (container.View == (int)ContainerView.ItemSelect && container.CurrentList.Option_FormAsync)) + addedHead + m_container.CurrentListInstance.wim.HeaderScript + container.CurrentListInstance.wim.Page.Body.Form.Elements.GetHeaderStyle() + @"
 	</head>
-	<body class=""" + (builder.Canvas.LeftNavigation.Hide || builder.Canvas.Type == CanvasType.Dashboard ? string.Concat(fixedWidthClass, " full") : fixedWidthClass) + addedBodyClass
+	<body class=""" + (builder.Canvas.LeftNavigation.Hide || builder.Canvas.Type == CanvasType.Dashboard ? "full" : null) + addedBodyClass
                     + @""">
     <form id=""uxForm"" method=""post"" action="""+url+@""" enctype=""multipart/form-data"">
         <input type=""hidden"" name=""autopostback"" id=""autopostback"" value="""" />
