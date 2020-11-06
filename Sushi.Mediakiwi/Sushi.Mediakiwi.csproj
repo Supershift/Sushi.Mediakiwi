@@ -76,11 +76,15 @@
     <Compile Include="AppCentre\UI\ComponentListProperties.cs" />
     <Compile Include="AppCentre\UI\ComponentListSense.cs" />
     <Compile Include="AppCentre\UI\ComponentListSettings.cs" />
+    <Compile Include="AppCentre\UI\Demonstration.cs" />
     <Compile Include="AppCentre\UI\Environment.cs" />
     <Compile Include="AppCentre\UI\Folder.cs" />
+    <Compile Include="AppCentre\UI\Forms\LinkForm.cs" />
+    <Compile Include="AppCentre\UI\Forms\DemonstrationForm.cs" />
     <Compile Include="AppCentre\UI\Forms\SiteForm.cs" />
     <Compile Include="AppCentre\UI\Forms\EnvironmentForm.cs" />
     <Compile Include="AppCentre\UI\Forms\ComponentListForm.cs" />
+    <Compile Include="AppCentre\UI\Link.cs" />
     <Compile Include="AppCentre\UI\MenuList.cs" />
     <Compile Include="AppCentre\UI\NoteList.cs" />
     <Compile Include="AppCentre\Implementation\Copy.cs" />

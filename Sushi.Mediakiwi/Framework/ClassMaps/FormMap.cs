@@ -89,7 +89,7 @@ namespace Sushi.Mediakiwi.Framework
         }
 
         /// <summary>
-        /// Is always called, work simular to PreRender Event.
+        /// Is always called, work simular to PreRender Event and can be overriden
         /// </summary>
         public virtual void Evaluate()
         {
@@ -99,8 +99,6 @@ namespace Sushi.Mediakiwi.Framework
         public FormMap()
         {
             Elements = new List<IContentInfo>();
-
-           
         }
 
         internal Type EntityType
@@ -119,6 +117,9 @@ namespace Sushi.Mediakiwi.Framework
 
         public void Load(T entity, object uniqueId = null)
         {
+            if (entity == null)
+                entity = CreateInstance();
+
             Instance = entity;
             SenderInstance = entity;
 

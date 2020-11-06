@@ -48,13 +48,17 @@ namespace Sushi.Mediakiwi.Framework.ContentListItem
             this.IsCloaked = isCloaked;
             this.Mandatory = isRequired;
             //6233
-            Console.Item = m_PageInstance.ID;
-            Console.ItemType = RequestItemType.Page;
 
-            Sushi.Mediakiwi.Beta.GeneratedCms.Source.Component component = new Sushi.Mediakiwi.Beta.GeneratedCms.Source.Component();
+            if (m_PageInstance != null && m_PageInstance.ID > 0)
+            {
+                Console.Item = m_PageInstance.ID;
+                Console.ItemType = RequestItemType.Page;
 
-            WimControlBuilder createdList2 = component.CreateContentList(this.Console, 0, false, out m_PageInstance, null, true);
-            build.Append(createdList2.ToString());
+                Sushi.Mediakiwi.Beta.GeneratedCms.Source.Component component = new Sushi.Mediakiwi.Beta.GeneratedCms.Source.Component();
+
+                WimControlBuilder createdList2 = component.CreateContentList(this.Console, 0, false, out m_PageInstance, null, true);
+                build.Append(createdList2.ToString());
+            }
 
             return null;
         }

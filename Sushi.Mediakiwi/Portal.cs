@@ -57,16 +57,24 @@ namespace Sushi.Mediakiwi
         public async Task Invoke(HttpContext context)
         {
             // Do something with context near the beginning of request processing.
-            try
+            if (_env.IsDevelopment())
             {
+                Configure(context);
+                Monitor monitor = new Monitor(context, _env);
+                await monitor.StartAsync();
+            }
+            else
+            {
+                try { 
                 Configure(context);
 
                 Monitor monitor = new Monitor(context, _env);
                 await monitor.StartAsync();
-            }
-            catch(Exception ex)
-            {
-                throw ex;
+                }
+                catch (Exception ex)
+                {
+                    throw ex;
+                }
             }
             await _next.Invoke(context);
         }

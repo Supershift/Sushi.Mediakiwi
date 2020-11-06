@@ -40,14 +40,21 @@ namespace Sushi.Mediakiwi.UI
 
         internal async Task StartAsync()
         {
-            try
+            if (_env.IsDevelopment())
             {
                 await StartAsync(false);
             }
-            catch (Exception ex)
+            else
             {
-                await Notification.InsertOneAsync("Uncaught exception", ex);
-                throw ex;
+                try
+                {
+                    await StartAsync(false);
+                }
+                catch (Exception ex)
+                {
+                    await Notification.InsertOneAsync("Uncaught exception", ex);
+                    throw ex;
+                }
             }
         }
 

@@ -14,18 +14,23 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation.Forms
             Load(implement as Mediakiwi.Data.ComponentList);
             Map(x => x.Name).TextField("Name", 50, true).Expression(OutputExpression.Alternating);
             Map(x => x.SingleItemName).TextField("Form name", 30, true).Expression(OutputExpression.Alternating);
-
-            Map(x => x.AssemblyName).Dropdown("Assembly", "Assemblies", true, true);
-            Map(x => x.ClassName).Dropdown("Class", "Classes", true);
-
-            Map(x => x.Icon).TextField("Icon", 50);
             Map(x => x.Description).TextArea("Description", 250);
-            Map(x => x.GUID).TextField("GUID", 36, true).Expression(OutputExpression.Alternating);
-            Map(x => x.IsInherited).Checkbox("Is inherited").Expression(OutputExpression.Alternating);
+
+            Map<ComponentListForm>(x => x.Section0, this).Section("Settings");
 
             Map(x => x.SiteID).Dropdown("Channel", "Sites", true, true).Expression(OutputExpression.Alternating);
+
+            Map(x => x.AssemblyName).Dropdown("Assembly", "Assemblies", true, true).Expression(OutputExpression.Alternating);
             Map(x => x.FolderID).FolderSelect("Folder", true, Mediakiwi.Data.FolderType.Administration_Or_List).Expression(OutputExpression.Alternating);
-      
+
+            Map(x => x.ClassName).Dropdown("Class", "Classes", true).Expression(OutputExpression.Alternating);
+
+            Map(x => x.Icon).TextField("Icon", 50).Expression(OutputExpression.Alternating);
+            Map(x => x.GUID).TextField("GUID", 36, true).Expression(OutputExpression.Alternating);
+            Map(x => x.IsInherited).Checkbox("Is inherited").Expression(OutputExpression.Alternating);
+            Map(x => x.IsVisible).Checkbox("Is visible").Expression(OutputExpression.Alternating);
+
+           
             Map<ComponentListForm>(x => x.Section1, this).Section("Search grid");
             Map(x => x.Option_Search_MaxResult).TextField("Maximum pages", 3, true).Expression(OutputExpression.Alternating);
             Map(x => x.Option_Search_MaxResultPerPage).TextField("Result per page", 3, true).Expression(OutputExpression.Alternating);
@@ -59,6 +64,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation.Forms
             Map(x => x.Option_HasDataReport).Checkbox("Has datareport").Expression(OutputExpression.Alternating);
         }
 
+        public string Section0 { get; set; }
         public string Section1 { get; set; }
         public string Section2 { get; set; }
         public string Section3 { get; set; }
