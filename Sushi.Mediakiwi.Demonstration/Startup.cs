@@ -23,7 +23,6 @@ namespace Sushi.Mediakiwi.Demonstration
             // configure basic authentication 
             services.AddAuthentication("BasicAuthentication")
                 .AddScheme<AuthenticationSchemeOptions, PromptHandler>("BasicAuthentication", null);
-
      
             // configure DI for application services
             services.AddScoped<IUserService, UserService>();
