@@ -30,7 +30,6 @@ namespace Sushi.Mediakiwi.Demonstration
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IConfiguration configuration)
         {
-            UserService.Add(configuration.GetValue<string>("basic_user"), configuration.GetValue<string>("basic_password"));
 
             app.UseRouting();
 
@@ -43,6 +42,8 @@ namespace Sushi.Mediakiwi.Demonstration
 
             if (configuration.GetValue<bool>("authentication"))
             {
+                UserService.Add(configuration.GetValue<string>("basic_user"), configuration.GetValue<string>("basic_password"));
+
                 app.Use(async (context, next) => {
                     var authenticationresult = await context.AuthenticateAsync("BasicAuthentication");
                     if (!authenticationresult.Succeeded)

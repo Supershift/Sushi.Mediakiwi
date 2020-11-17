@@ -27,7 +27,7 @@ namespace Sushi.Mediakiwi.Headless.BasicPrompt
 
         void Prompt()
         {
-            Context.Response.StatusCode = 401;
+            Context.Response.StatusCode = 403;
             Context.Response.Headers["WWW-Authenticate"] = @"Basic";
         }
 
@@ -36,7 +36,7 @@ namespace Sushi.Mediakiwi.Headless.BasicPrompt
             if (!Request.Headers.ContainsKey("Authorization"))
             {
                 Prompt();
-                return AuthenticateResult.Fail("Missing Authorization Header");
+                return AuthenticateResult.NoResult();
             }
 
             User user = null;
@@ -56,7 +56,10 @@ namespace Sushi.Mediakiwi.Headless.BasicPrompt
             }
 
             if (user == null)
+            {
+                Prompt();
                 return AuthenticateResult.Fail("Invalid Username or Password");
+            }
 
             var claims = new[] {
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
