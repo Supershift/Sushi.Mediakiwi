@@ -21,8 +21,7 @@ namespace Sushi.Mediakiwi.Demonstration
         public void ConfigureServices(IServiceCollection services)
         {
             // configure basic authentication 
-            services.AddAuthentication("BasicAuthentication")
-                .AddScheme<AuthenticationSchemeOptions, PromptHandler>("BasicAuthentication", null);
+            services.AddAuthentication().AddScheme<AuthenticationSchemeOptions, PromptHandler>("BasicAuthentication", null);
      
             // configure DI for application services
             services.AddScoped<IUserService, UserService>();
@@ -33,18 +32,30 @@ namespace Sushi.Mediakiwi.Demonstration
         {
             UserService.Add(configuration.GetValue<string>("basic_user"), configuration.GetValue<string>("basic_password"));
 
+            app.UseRouting();
+
             if (env.IsDevelopment())
             {
-                //app.UseAuthentication();
                 app.UseDeveloperExceptionPage();
+             
             }
             app.UseStaticFiles();
+
+            if (configuration.GetValue<bool>("authentication"))
+            {
+                app.Use(async (context, next) => {
+                    var authenticationresult = await context.AuthenticateAsync("BasicAuthentication");
+                    if (!authenticationresult.Succeeded)
+                        await context.Response.WriteAsync("unauthenticated");
+                    else
+                        await next.Invoke();
+                });
+            }
 
             app.MapWhen(
                 context => context.Request.Path.ToString().EndsWith(
                     configuration.GetValue<string>("mediakiwi:portal_path")),
                 appBranch => {
-                    appBranch.UseAuthentication();
                     appBranch.UseMediakiwi();
                 });
         }

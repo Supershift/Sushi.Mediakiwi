@@ -25,17 +25,18 @@ namespace Sushi.Mediakiwi.Headless.BasicPrompt
             _userService = userService;
         }
 
+        void Prompt()
+        {
+            Context.Response.StatusCode = 401;
+            Context.Response.Headers["WWW-Authenticate"] = @"Basic";
+        }
+
         protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
         {
             if (!Request.Headers.ContainsKey("Authorization"))
             {
-
-                if (Context.User.Identity.AuthenticationType == null)
-                {
-                    Context.Response.StatusCode = 401;
-                    Context.Response.Headers["WWW-Authenticate"] = @"Basic";
-                    return AuthenticateResult.Fail("Missing Authorization Header");
-                }
+                Prompt();
+                return AuthenticateResult.Fail("Missing Authorization Header");
             }
 
             User user = null;
@@ -50,6 +51,7 @@ namespace Sushi.Mediakiwi.Headless.BasicPrompt
             }
             catch
             {
+                Prompt();
                 return AuthenticateResult.Fail("Invalid Authorization Header");
             }
 
