@@ -7,11 +7,11 @@ namespace Sushi.Mediakiwi.Framework
 {
     public class ContentInfo
     {
-        public bool? IsHidden { get; set; }
-        public bool? IsCloaked { get; set; }
-        public bool? IsReadOnly { get; set; }
-        public System.Reflection.PropertyInfo Property { get; set; }
-        public object SenderInstance { get; set; }
+        protected bool? IsHidden { get; set; }
+        protected bool? IsCloaked { get; set; }
+        protected bool? IsReadOnly { get; set; }
+        internal System.Reflection.PropertyInfo Property { get; set; }
+        internal object SenderInstance { get; set; }
 
         List<IContentInfo> _Elements;
         internal ContentInfo(System.Reflection.PropertyInfo property, bool? isHidden, bool? isReadOnly, bool? isCloaked, List<IContentInfo> Elements)
@@ -107,6 +107,14 @@ namespace Sushi.Mediakiwi.Framework
             Add(element);
             return new ContentSettings(element);
         }
+
+        public ContentSettings FileUpload(string title, bool mandatory = false, string interactiveHelp = null)
+        {
+            var element = new FileUploadAttribute(title, mandatory, interactiveHelp);
+            Add(element);
+            return new ContentSettings(element);
+        }
+
         /// <summary>
         /// Possible return types: System.String
         /// </summary>

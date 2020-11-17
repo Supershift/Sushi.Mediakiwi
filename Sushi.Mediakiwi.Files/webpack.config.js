@@ -9,6 +9,8 @@ const VueLoaderPlugin = require('vue-loader/lib/plugin');
 // All files to compile
 const vueBundles = [
     { source: './app/main.js', target: "./app/dist/bundle.js", targetMin: "./app/dist/bundle.min.js" },
+    { source: "./app/document-type-app/main.js", target: "./app/dist/document-type-app.js", targetMin: "./app/dist/document-type-app.min.js" },
+    { source: "./app/file-upload-app/main.js", target: "./app/dist/file-upload-app.js", targetMin: "./app/dist/file-upload-app.min.js" },
 ];
 
 const minify = [

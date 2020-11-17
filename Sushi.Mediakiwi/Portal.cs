@@ -59,6 +59,19 @@ namespace Sushi.Mediakiwi
             // Do something with context near the beginning of request processing.
             if (_env.IsDevelopment())
             {
+                if (context.User.Identity.AuthenticationType != "BasicAuthentication")
+                {
+                    if (context.Items.ContainsKey("AuthenticationType") && context.Items["AuthenticationType"].Equals("Basic"))
+                    {
+                        context.Response.StatusCode = 401;
+                        context.Response.Headers["WWW-Authenticate"] = @"Basic";
+                        await context.Response.WriteAsync("No access");
+                        await _next.Invoke(context);
+                        return;
+                    }
+                }
+
+
                 Configure(context);
                 Monitor monitor = new Monitor(context, _env);
                 await monitor.StartAsync();

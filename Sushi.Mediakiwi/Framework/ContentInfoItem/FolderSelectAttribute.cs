@@ -178,11 +178,22 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
             m_ListItemCollection.Add(new ListItem(""));
 
 
-            Data.Folder[] folders = Data.Folder.SelectAll(m_FolderType, this.Console.CurrentListInstance.wim.CurrentSite.ID);
-            folders = Data.Folder.ValidateAccessRight(folders, this.Console.CurrentApplicationUser);
-            foreach (Data.Folder item in folders)
+            if (m_FolderType == FolderType.Gallery)
             {
-                m_ListItemCollection.Add(new ListItem(item.CompletePath, item.ID.ToString()));
+                var galleries = Data.Gallery.SelectAllAccessible(this.Console.CurrentApplicationUser);
+                foreach (var item in galleries)
+                {
+                    m_ListItemCollection.Add(new ListItem(item.CompletePath, item.ID.ToString()));
+                }
+            }
+            else
+            {
+                Data.Folder[] folders = Data.Folder.SelectAll(m_FolderType, this.Console.CurrentListInstance.wim.CurrentSite.ID);
+                folders = Data.Folder.ValidateAccessRight(folders, this.Console.CurrentApplicationUser);
+                foreach (Data.Folder item in folders)
+                {
+                    m_ListItemCollection.Add(new ListItem(item.CompletePath, item.ID.ToString()));
+                }
             }
 
             //  If this folder is not in the default list (list for Administration section, clear the list and only add the selected value

@@ -26,3 +26,6 @@
 /Sushi.Mediakiwi.Files/obj/Debug/netcoreapp3.1
 **/node_modules
 /Sushi.Mediakiwi.Files/bin/Debug/netcoreapp3.1
+/Sushi.Mediakiwi.Headless/obj/Debug/netcoreapp3.1
+/Sushi.Utilities.BasicAuthentication/bin/Debug/netcoreapp3.1
+/Sushi.Utilities.BasicAuthentication/obj/Debug/netcoreapp3.1

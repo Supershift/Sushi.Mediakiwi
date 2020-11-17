@@ -1,6 +1,7 @@
 {
   "iisSettings": {
     "windowsAuthentication": false,
+    "basicAuthentication": true,
     "anonymousAuthentication": true,
     "iis": {
       "applicationUrl": "https://localhost/Sushi.Mediakiwi.Demonstration",

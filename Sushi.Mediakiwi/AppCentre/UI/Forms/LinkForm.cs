@@ -14,7 +14,6 @@ namespace Sushi.Mediakiwi.AppCentre.UI.Forms
         {
             Load(link);
 
-
             Map(x => x.Text).TextField("Text", 500, false, false, "If no title is applied the external URL or linktext of the page will be used.").Show(HasCustomTitle);
             Map(x => x.Alt).TextField("Description", 500, false, false, "The alternative (alt) text of the link");
             Map(x => x.Target).Dropdown("Open in", "ListChoice");
@@ -23,8 +22,6 @@ namespace Sushi.Mediakiwi.AppCentre.UI.Forms
             Map(x => x.AssetID).Document("Document", true);
             Map(x => x.PageID).PageSelect("Internal URL", true);
             Map(x => x.ExternalUrl).TextField("External URL", 500, true, false, "Any external URL");
-
-            this.MapHeader("Hyperlink");
         }
 
         public override void Evaluate()
