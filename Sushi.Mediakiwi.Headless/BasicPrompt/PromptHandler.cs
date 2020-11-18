@@ -27,7 +27,7 @@ namespace Sushi.Mediakiwi.Headless.BasicPrompt
 
         void Prompt()
         {
-            Context.Response.StatusCode = 403;
+            Context.Response.StatusCode = 401;
             Context.Response.Headers["WWW-Authenticate"] = @"Basic";
         }
 

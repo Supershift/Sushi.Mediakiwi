@@ -1,6 +1,6 @@
 {
   "iisSettings": {
-    "basicAuthentication": false,
+    "basicAuthentication": true,
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
     "iis": {
