@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Sushi.Mediakiwi.Headless.BasicPrompt;
+using Sushi.Mediakiwi.Headless.BasicAuthentication;
 using Sushi.MicroORM;
 
 namespace Sushi.Mediakiwi.Demonstration
@@ -20,11 +20,8 @@ namespace Sushi.Mediakiwi.Demonstration
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            // configure basic authentication 
-            services.AddAuthentication().AddScheme<AuthenticationSchemeOptions, PromptHandler>("BasicAuthentication", null);
-     
-            // configure DI for application services
-            services.AddScoped<IUserService, UserService>();
+            services.AddTransient<LoginPrompt>();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -40,17 +37,15 @@ namespace Sushi.Mediakiwi.Demonstration
             }
             app.UseStaticFiles();
 
-            if (configuration.GetValue<bool>("authentication"))
+            if (env.IsStaging() || env.IsDevelopment())
             {
-                UserService.Add(configuration.GetValue<string>("basic_user"), configuration.GetValue<string>("basic_password"));
-
-                app.Use(async (context, next) => {
-                    var authenticationresult = await context.AuthenticateAsync("BasicAuthentication");
-                    if (!authenticationresult.Succeeded)
-                        await context.Response.WriteAsync("unauthenticated");
-                    else
-                        await next.Invoke();
-                });
+                if (configuration.GetValue<bool>("authentication"))
+                {
+                    app.UseLoginPrompt(credential => {
+                        credential.Username = configuration.GetValue<string>("basic_user");
+                        credential.Password = configuration.GetValue<string>("basic_password");
+                    });
+                }
             }
 
             app.MapWhen(
