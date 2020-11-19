@@ -30,7 +30,7 @@ namespace Sushi.Mediakiwi.Headless.BasicAuthentication
         {
             // exclude Microsoft Frontdoor health check (extend with frontdoor identification
             // https://docs.microsoft.com/bs-cyrl-ba/azure/frontdoor/front-door-http-headers-protocol
-            bool isexcluded = context.Request.Headers["X-FD-HealthProbe"] == "1";
+            bool isexcluded = context.Request.Headers["X-FD-HealthProbe"] == "1" || context.Request.Method == "HEAD";
             if (!isexcluded)
             {
                 //Only do the secondary auth if the user is already authenticated
