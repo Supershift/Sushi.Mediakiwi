@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace Sushi.Mediakiwi.UI
 {
-    internal class Monitor
+    public class Monitor
     {
         private IHostingEnvironment _env;
         private HttpContext _Context;
@@ -64,8 +64,8 @@ namespace Sushi.Mediakiwi.UI
             _Console.CurrentEnvironment = Data.Environment.Current;
 
             var path = _Console.AddApplicationPath(CommonConfiguration.PORTAL_PATH);
-            if (!_Console.Request.Path.Value.EndsWith(path))
-                return;
+            //if (!_Console.Request.Path.Value.EndsWith(path))
+            //    return;
 
             _Console.SetDateFormat();
 
@@ -943,9 +943,12 @@ namespace Sushi.Mediakiwi.UI
                     var split = output.Split(new string[] { @"<article id=""homeArticle"">", "</article>" }, StringSplitOptions.RemoveEmptyEntries);
                     output = split[1];
                 }
+                Body = output;
                 await _Console.Response.WriteAsync(output);
             }
         }
+
+        public string Body { get; set; }
     }
 
 }

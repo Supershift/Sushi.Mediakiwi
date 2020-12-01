@@ -25,6 +25,12 @@ namespace Sushi.Mediakiwi.AppCentre.UI
 
         private void Demonstration_ListSave(IComponentListTemplate sender, ComponentListEventArgs e)
         {
+            var file = Implement.Upload.ReadToEnd();
+            Console.WriteLine(file);
+
+            //var size = file.OpenReadStream
+
+
         }
 
         private void Demonstration_ListLoad(IComponentListTemplate sender, ComponentListEventArgs e)

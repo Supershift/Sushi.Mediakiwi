@@ -1,4 +1,5 @@
-﻿using Sushi.Mediakiwi.Framework;
+﻿using Microsoft.AspNetCore.Http;
+using Sushi.Mediakiwi.Framework;
 using Sushi.Mediakiwi.UI;
 using System;
 using System.Collections.Generic;
@@ -13,43 +14,47 @@ namespace Sushi.Mediakiwi.AppCentre.UI.Forms
         {
             Load(this);
 
-            Map(x => x.TextField).TextField("TextField", 50, true, true, "Interactive help");
-            Map(x => x.TextArea).TextArea("TextArea", 500, true, "Interactive help");
-            Map(x => x.Richtext).RichText("Richtext", 500, true, "Interactive help");
+            bool mandatory = false;
 
-            Map(x => x.Sourcecode).TextArea("Sourcecode", 500, true, "Interactive help", null, true);
+            Map(x => x.TextField).TextField("TextField", 50, mandatory, true, "Interactive help");
+            Map(x => x.TextArea).TextArea("TextArea", 500, mandatory, "Interactive help");
+            Map(x => x.Richtext).RichText("Richtext", 500, mandatory, "Interactive help");
+
+            Map(x => x.Sourcecode).TextArea("Sourcecode", 500, mandatory, "Interactive help", null, true);
             Map(x => x.TextLine).TextLine("TextLine", false, "Interactive help");
             Map(x => x.Section).Section("Section", false, true, true);
 
-            Map(x => x.Date).Date("Date", true, "Interactive help").Expression(OutputExpression.Alternating);
-            Map(x => x.DateTime).DateTime("DateTime", true, false, "Interactive help").Expression(OutputExpression.Alternating);
+            Map(x => x.Date).Date("Date", mandatory, "Interactive help").Expression(OutputExpression.Alternating);
+            Map(x => x.DateTime).DateTime("DateTime", mandatory, false, "Interactive help").Expression(OutputExpression.Alternating);
 
             List = new ListItemCollection();
             List.Add(new ListItem("A"));
             List.Add(new ListItem("B"));
             List.Add(new ListItem("C"));
 
-            Map(x => x.Radio).Radio("Radio", "List", "Radio", true, true, "Interactive help").Expression(OutputExpression.Alternating); ;
-            Map(x => x.Checkbox).Checkbox("Checkbox", true, "Interactive help").Expression(OutputExpression.Alternating);
-            Map(x => x.Dropdown1).Dropdown("Dropdown", "List", true, true, false, "Interactive help");
-            Map(x => x.Dropdown2).Dropdown("Dropdown-multi", "List", true, false, true, "Interactive help");
-            Map(x => x.Tagging).Tagging("Tagging", "List", true, false, "Interactive help");
-            Map(x => x.SubListSelect).SubListSelect("SubListSelect", typeof(Sushi.Mediakiwi.AppCentre.Data.Implementation.ComponentList), true, false, "Interactive help");
+            Map(x => x.Radio).Radio("Radio", "List", "Radio", mandatory, true, "Interactive help").Expression(OutputExpression.Alternating); ;
+            Map(x => x.Checkbox).Checkbox("Checkbox", mandatory, "Interactive help").Expression(OutputExpression.Alternating);
+            Map(x => x.Dropdown1).Dropdown("Dropdown", "List", mandatory, true, false, "Interactive help");
+            Map(x => x.Dropdown2).Dropdown("Dropdown-multi", "List", mandatory, false, true, "Interactive help");
+            Map(x => x.Tagging).Tagging("Tagging", "List", mandatory, false, "Interactive help");
+            Map(x => x.SubListSelect).SubListSelect("SubListSelect", typeof(Sushi.Mediakiwi.AppCentre.Data.Implementation.ComponentList), mandatory, false, "Interactive help");
 
             Map(x => x.MultiField).MultiField("MultiField", "Interactive help");
 
-            Map(x => x.Image).Image("Image", true, null, "Interactive help");
-            Map(x => x.Document).Document("Document", true, null, "Interactive help");
-            Map(x => x.PageSelect).PageSelect("PageSelect", true, "Interactive help");
-            Map(x => x.FolderSelect).FolderSelect("FolderSelect", true, Mediakiwi.Data.FolderType.Administration_Or_List, "Interactive help");
+            Map(x => x.Image).Image("Image", mandatory, null, "Interactive help");
+            Map(x => x.Document).Document("Document", mandatory, null, "Interactive help");
+            Map(x => x.PageSelect).PageSelect("PageSelect", mandatory, "Interactive help");
+            Map(x => x.FolderSelect).FolderSelect("FolderSelect", mandatory, Mediakiwi.Data.FolderType.Administration_Or_List, "Interactive help");
 
-            Map(x => x.ListItemSelect).ListItemSelect("ListItemSelect", "List", true, "Interactive help");
+            Map(x => x.ListItemSelect).ListItemSelect("ListItemSelect", "List", mandatory, "Interactive help");
 
-            Map(x => x.Hyperlink).Hyperlink("Hyperlink", true, "Interactive help");
+            Map(x => x.Hyperlink).Hyperlink("Hyperlink", mandatory, "Interactive help");
             Map(x => x.HtmlContainer).HtmlContainer(true);
             HtmlContainer = "<b>HtmlContainer</b>";
 
             Map(x => x.PageContainer).PageContainer();
+
+            Map(x => x.Upload).FileUpload("FileUpload", mandatory, "Interactive help");
 
             Map(x => x.Button1).Button("Button BL", true, true, true, ButtonTarget.BottomLeft, false);
             Map(x => x.Button1).Button("Button BR", true, true, true, ButtonTarget.BottomRight, false);
@@ -62,6 +67,7 @@ namespace Sushi.Mediakiwi.AppCentre.UI.Forms
         public int Hyperlink { get; set; }
         public int Image { get; set; }
         public int Document { get; set; }
+        public FileUpload Upload { get; set; }
         public int PageSelect { get; set; }
         public int FolderSelect { get; set; }
         public string MultiField { get; set; }

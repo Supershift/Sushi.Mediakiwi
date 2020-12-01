@@ -1,6 +1,5 @@
 {
   "iisSettings": {
-    "basicAuthentication": true,
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
     "iis": {
@@ -16,7 +15,7 @@
     "IIS Express": {
       "commandName": "IISExpress",
       "launchBrowser": true,
-      "launchUrl": "https://localhost:44367/2/cms?top=2",
+      "launchUrl": "https://localhost:44367/mediakiwi",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }

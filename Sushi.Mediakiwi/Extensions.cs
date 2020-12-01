@@ -9,9 +9,9 @@ namespace Sushi.Mediakiwi
 {
     public static class Extensions
     {
-        public static IApplicationBuilder UseMediakiwi(this IApplicationBuilder builder)
+        public static IApplicationBuilder UseMediakiwi(this IApplicationBuilder app)
         {
-            return builder.UseMiddleware<Portal>();
+            return app.UseMiddleware<Portal>();
         }
     }
 }

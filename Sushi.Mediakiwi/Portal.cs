@@ -59,19 +59,6 @@ namespace Sushi.Mediakiwi
             // Do something with context near the beginning of request processing.
             if (_env.IsDevelopment())
             {
-                if (context.User.Identity.AuthenticationType != "BasicAuthentication")
-                {
-                    if (context.Items.ContainsKey("AuthenticationType") && context.Items["AuthenticationType"].Equals("Basic"))
-                    {
-                        context.Response.StatusCode = 401;
-                        context.Response.Headers["WWW-Authenticate"] = @"Basic";
-                        await context.Response.WriteAsync("No access");
-                        await _next.Invoke(context);
-                        return;
-                    }
-                }
-
-
                 Configure(context);
                 Monitor monitor = new Monitor(context, _env);
                 await monitor.StartAsync();
@@ -90,6 +77,69 @@ namespace Sushi.Mediakiwi
                 }
             }
             await _next.Invoke(context);
+        }
+    }
+
+    public class Portal2
+    {
+        private IHostingEnvironment _env;
+        private readonly IConfiguration _configuration;
+
+        public Portal2(IHostingEnvironment env, IConfiguration configuration)
+        {
+            _env = env;
+            _configuration = configuration;
+        }
+
+        internal static ConcurrentDictionary<string, ICacheManager> Caches;
+
+        void Configure(HttpContext context)
+        {
+            if (Caches == null)
+            {
+                Caches = new ConcurrentDictionary<string, ICacheManager>();
+
+                //set cache provider
+                Configuration.CacheManagerProvider = () => {
+                    //this serves a new instance of the cache for each unit test
+                    //this ensures different unit tests running in the same application context don't share a cache
+                    string key = "mediakiwi_cache";
+                    var result = Caches.GetOrAdd(key, (string s) => { return new CacheManager(); });
+                    return result;
+                };
+
+                // Assign json section to config
+                WimServerConfiguration.LoadJsonConfig(_configuration);
+
+                DatabaseConfiguration.SetDefaultConnectionString(Common.DatabaseConnectionString);
+            }
+        }
+
+        public async Task<string> Invoke(HttpContext context)
+        {
+            // Do something with context near the beginning of request processing.
+            if (_env.IsDevelopment())
+            {
+                Configure(context);
+                Monitor monitor = new Monitor(context, _env);
+                await monitor.StartAsync();
+                return monitor.Body;
+            }
+            else
+            {
+                try
+                {
+                    Configure(context);
+
+                    Monitor monitor = new Monitor(context, _env);
+                    await monitor.StartAsync();
+                    return monitor.Body;
+                }
+                catch (Exception ex)
+                {
+                    throw ex;
+                }
+            }
         }
     }
 }

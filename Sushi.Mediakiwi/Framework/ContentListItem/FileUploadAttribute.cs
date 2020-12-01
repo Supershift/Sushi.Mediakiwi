@@ -59,14 +59,14 @@ namespace Sushi.Mediakiwi.Framework.ContentListItem
         {
             m_Candidate = null;
             if (Context.Request.HasFormContentType &&  Context.Request.Form.Files.Count > 0)
-                m_Candidate = Context.Request.Form.Files[this.ID];
+                m_Candidate = new FileUpload(Context.Request.Form.Files[this.ID]);
 
             //  Possible return types: System.Web.HttpPostedFile
 
             Property.SetValue(SenderInstance, m_Candidate, null);
         }
 
-        IFormFile m_Candidate;
+        FileUpload m_Candidate;
 
         /// <summary>
         /// Writes the candidate.
@@ -152,7 +152,7 @@ namespace Sushi.Mediakiwi.Framework.ContentListItem
                     if (!base.IsValid(isRequired))
                         return false;
 
-                    if (Mandatory && (m_Candidate == null || m_Candidate.Length == 0))
+                    if (Mandatory && (m_Candidate == null || m_Candidate.File.Length == 0))
                         return false;
                 }
                 return true;
