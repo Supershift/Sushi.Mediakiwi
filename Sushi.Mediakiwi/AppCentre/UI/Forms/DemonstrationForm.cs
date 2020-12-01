@@ -54,7 +54,7 @@ namespace Sushi.Mediakiwi.AppCentre.UI.Forms
 
             Map(x => x.PageContainer).PageContainer();
 
-            Map(x => x.Upload).FileUpload("FileUpload", mandatory, "Interactive help");
+            Map(x => x.Upload).FileUpload("FileUpload", mandatory, ".txt", "Interactive help");
 
             Map(x => x.Button1).Button("Button BL", true, true, true, ButtonTarget.BottomLeft, false);
             Map(x => x.Button1).Button("Button BR", true, true, true, ButtonTarget.BottomRight, false);

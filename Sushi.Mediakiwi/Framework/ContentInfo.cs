@@ -114,9 +114,9 @@ namespace Sushi.Mediakiwi.Framework
         /// <param name="mandatory"></param>
         /// <param name="interactiveHelp"></param>
         /// <returns>Sushi.Mediakiwi.Framework.FileUpload</returns>
-        public ContentSettings FileUpload(string title, bool mandatory = false, string interactiveHelp = null)
+        public ContentSettings FileUpload(string title, bool mandatory = false, string accept = null, string interactiveHelp = null)
         {
-            var element = new FileUploadAttribute(title, mandatory, interactiveHelp);
+            var element = new FileUploadAttribute(title, mandatory, accept, interactiveHelp);
             Add(element);
             return new ContentSettings(element);
         }

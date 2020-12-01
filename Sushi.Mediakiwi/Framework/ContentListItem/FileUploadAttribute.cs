@@ -20,20 +20,26 @@ namespace Sushi.Mediakiwi.Framework.ContentListItem
         public FileUploadAttribute(string title, bool mandatory)
             : this(title, mandatory, null) { }
 
+        public FileUploadAttribute(string title, bool mandatory, string accept)
+            : this(title, mandatory, accept, null) { }
+
         /// <summary>
         ///  Possible return types: System.Web.HttpPostedFile
         /// </summary>
         /// <param name="title">The title.</param>
         /// <param name="mandatory">if set to <c>true</c> [mandatory].</param>
         /// <param name="interactiveHelp">The interactive help.</param>
-        public FileUploadAttribute(string title, bool mandatory, string interactiveHelp)
+        public FileUploadAttribute(string title, bool mandatory, string accept, string interactiveHelp)
         {
             m_CanHaveExpression = true;
             ContentTypeSelection = ContentType.FileUpload;
             Title = title;
             Mandatory = mandatory;
+            Accept = accept;
             InteractiveHelp = interactiveHelp;
         }
+
+        public string Accept { get; set; }
 
         public bool AutoPostBack
         {
@@ -83,6 +89,9 @@ namespace Sushi.Mediakiwi.Framework.ContentListItem
 
             if (true)//this.Console.CurrentApplicationUser.ShowNewDesign2)
             {
+                string accept = null;
+                if (!string.IsNullOrWhiteSpace(this.Accept))
+                    accept = $"accept=\"{Accept}\" ";
                 build.Append(string.Format(@"{8}{9}{5}
 	<th><label for=""{1}"">{0}:</label></th>
 	<td{7}>{4}
@@ -91,7 +100,7 @@ namespace Sushi.Mediakiwi.Framework.ContentListItem
 				<input name=""info_{1}"" id=""info_{1}"" value=""Browse for file"" class=""big uploadFile"" disabled=""disabled"">
 				<div class=""fileUpload submit"">
 					<span>Select file</span>
-					<input type=""file"" name=""{1}"" id=""{1}"" class=""upload{10}"">
+					<input type=""file"" name=""{1}"" id=""{1}"" {11}class=""upload{10}"">
 				</div>
 			</fieldset>{2}
 	</td>{6}
@@ -107,6 +116,7 @@ namespace Sushi.Mediakiwi.Framework.ContentListItem
                       , ((Console.ExpressionPrevious == OutputExpression.Left && Expression == OutputExpression.FullWidth) || (Console.ExpressionPrevious == OutputExpression.Left && Expression == OutputExpression.Left)) ? "<th><label>&nbsp;</label></th><td>&nbsp;</td></tr>" : null // 8
                       , ((Console.ExpressionPrevious == OutputExpression.FullWidth && Expression == OutputExpression.Right) || (Console.ExpressionPrevious == OutputExpression.Right && Expression == OutputExpression.Right)) ? "<tr><th><label>&nbsp;</label></th><td>&nbsp;</td>" : null // 9
                       , AutoPostBack ? " autoupload" : null // 10
+                      , accept //11
                       )
                   );//<br class=""clear"">
             }
