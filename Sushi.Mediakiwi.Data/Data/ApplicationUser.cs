@@ -216,7 +216,7 @@ namespace Sushi.Mediakiwi.Data
         /// Gets or sets the last logged visit.
         /// </summary>
         /// <value>The last logged visit.</value>
-        public DateTime LastLoggedVisit { get; set; }
+        public DateTime? LastLoggedVisit { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether [remember me].

@@ -43,7 +43,6 @@ namespace Sushi.Mediakiwi.AppCentre.UI
             Map<Demonstration>(x => x.TitleTest, this).TextField("Title");
             Map<DemonstrationForm>(x => x.OuterTextField, Implement).TextField("Title (outer)");
 
-            //SenderInstance = this;
             this.FormMaps.Add(this);
             this.FormMaps.Add(Implement);
         }

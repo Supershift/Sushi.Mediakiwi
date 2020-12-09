@@ -17,7 +17,7 @@ namespace Sushi.Mediakiwi.Data
         bool IsDeveloper { get; set; }
         int Language { get; set; }
         string LanguageCulture { get; }
-        DateTime LastLoggedVisit { get; set; }
+        DateTime? LastLoggedVisit { get; set; }
         string Name { get; set; }
         string NetworkIdentification { get; set; }
         string Password { get; set; }

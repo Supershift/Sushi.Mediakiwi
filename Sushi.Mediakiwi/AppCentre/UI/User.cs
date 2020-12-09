@@ -124,10 +124,6 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             m_Implement.ShowFullWidth = this.ShowFullWidth;
             m_Implement.IsDeveloper = this.IsDeveloper;
             m_Implement.ShowSiteNavigation = this.ShowSiteNavigation;
-            if (string.IsNullOrWhiteSpace(this.UID))
-                m_Implement.GUID = Guid.NewGuid();
-            else
-                m_Implement.GUID = new Guid(this.UID);
 
             if (m_Implement.GUID == Guid.Empty)
                 m_Implement.GUID = Guid.NewGuid();
