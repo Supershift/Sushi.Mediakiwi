@@ -10,7 +10,7 @@ namespace Sushi.Mediakiwi.AppCentre.UI.Forms
 {
     public class DemonstrationForm : FormMap<DemonstrationForm>
     {
-        public DemonstrationForm()
+        public DemonstrationForm(bool isLayerMode = false)
         {
             Load(this);
 
@@ -38,6 +38,12 @@ namespace Sushi.Mediakiwi.AppCentre.UI.Forms
             Map(x => x.Dropdown2).Dropdown("Dropdown-multi", "List", mandatory, false, true, "Interactive help");
             Map(x => x.Tagging).Tagging("Tagging", "List", mandatory, false, "Interactive help");
             Map(x => x.SubListSelect).SubListSelect("SubListSelect", typeof(Sushi.Mediakiwi.AppCentre.Data.Implementation.ComponentList), mandatory, false, "Interactive help");
+            Map(x => x.Sortable).SortList("Sortable", "Interactive help");
+
+            this.Sortable = new Mediakiwi.Data.SubList();
+            
+            for(var i = 0; i < 10; i ++)
+                this.Sortable.Add(i, $"test {i}");
 
             Map(x => x.MultiField).MultiField("MultiField", "Interactive help");
 
@@ -56,10 +62,23 @@ namespace Sushi.Mediakiwi.AppCentre.UI.Forms
 
             Map(x => x.Upload).FileUpload("FileUpload", mandatory, ".txt", "Interactive help");
 
-            Map(x => x.Button1).Button("Button BL", true, true, true, ButtonTarget.BottomLeft, false);
-            Map(x => x.Button1).Button("Button BR", true, true, true, ButtonTarget.BottomRight, false);
-            Map(x => x.Button1).Button("Button TL", true, true, true, ButtonTarget.TopLeft, false);
-            Map(x => x.Button1).Button("Button TR", true, true, true, ButtonTarget.TopRight, false);
+            Map(x => x.Button1).Button("Button Primairy", ButtonTarget.BottomLeft).Primary().Hide(isLayerMode);
+            
+            Map(x => x.Button2).Button("Button Confirmation", ButtonTarget.TopRight)
+                .Confirmation("Confirmation", "Can you confirm?", "Yes i accept", "No, i reject");
+
+            Map(x => x.Button3).Button("Button list with custom layersize", ButtonTarget.TopLeft)
+                .OpenList(typeof(Demonstration)).Hide(isLayerMode)
+                .Title("test 1234")
+                .Width(90, true)
+                .ScrollBar(true)
+                ;
+            
+            Map(x => x.Button4).Button("External URL tab", ButtonTarget.TopRight)
+                .OpenUrl(new Uri("https://www.google.com"), false).Hide(isLayerMode);
+
+            Map(x => x.Button4).Button("External URL (layer)", ButtonTarget.BottomRight)
+          .OpenUrl(new Uri("https://www.google.com"), true).Hide(isLayerMode);
 
         }
         public Mediakiwi.Data.Page PageContainer { get; set; }
@@ -82,6 +101,7 @@ namespace Sushi.Mediakiwi.AppCentre.UI.Forms
         public string Tagging { get; set; }
 
         public Mediakiwi.Data.SubList SubListSelect { get; set; }
+        public Mediakiwi.Data.SubList Sortable { get; set; }
 
         public string TextField { get; set; }
         public string TextArea { get; set; }
@@ -93,5 +113,8 @@ namespace Sushi.Mediakiwi.AppCentre.UI.Forms
         public bool Button2 { get; set; }
         public bool Button3 { get; set; }
         public bool Button4 { get; set; }
+        public bool Button5 { get; set; }
+
+        public string OuterTextField { get; set; }
     }
 }

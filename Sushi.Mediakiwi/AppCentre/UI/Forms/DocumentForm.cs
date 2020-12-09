@@ -16,6 +16,8 @@ namespace Sushi.Mediakiwi.AppCentre.UI.Forms
             if (asset.ID == 0)
             {
                 Map<DocumentForm>(x => x.File, this).FileUpload("Upload");
+
+
                 Map(x => x.Title).TextField("Name", 255, true);
                 Map(x => x.Description).TextArea("Description");
             }
@@ -31,19 +33,19 @@ namespace Sushi.Mediakiwi.AppCentre.UI.Forms
 
         public override void Evaluate()
         {
-            if (this.File != null)
+            if (this.File != null && this.File.File != null)
             {
-                this.Instance.Type = this.File.ContentType;
-                this.Instance.Extention = this.File.FileName.Substring(this.File.FileName.LastIndexOf("."));
-                this.Instance.FileName = this.File.FileName;
-                this.Instance.Size = this.File.Length;
+                this.Instance.Type = this.File.File.ContentType;
+                this.Instance.Extention = this.File.File.FileName.Substring(this.File.File.FileName.LastIndexOf("."));
+                this.Instance.FileName = this.File.File.FileName;
+                this.Instance.Size = this.File.File.Length;
                 
                 if (string.IsNullOrWhiteSpace(this.Instance.Title))
                     this.Instance.Title = this.Instance.FileName;
             }
         }
 
-        public IFormFile File { get; set; }
+        public FileUpload File { get; set; }
         public string Section { get; set; }
     }
 }

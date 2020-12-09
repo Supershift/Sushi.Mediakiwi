@@ -116,7 +116,7 @@ namespace Sushi.Mediakiwi.Framework.ContentListItem
             m_CanHaveExpression = true;
             ContentTypeSelection = ContentType.Button;
             m_TriggerState = persistState;
-            m_TriggerSaveEvent = triggerSave;
+            TriggerSaveEvent = triggerSave;
             m_TriggerValidation = triggerValidation;
             Title = title;
         }
@@ -202,7 +202,7 @@ namespace Sushi.Mediakiwi.Framework.ContentListItem
         {
             m_CanHaveExpression = true;
             ContentTypeSelection = ContentType.Button;
-            m_TriggerSaveEvent = triggerSave;
+            TriggerSaveEvent = triggerSave;
             m_IsFormElement = isFormElement;
             this.Width = width;
             this.InteractiveHelp = interactiveHelp;
@@ -224,15 +224,11 @@ namespace Sushi.Mediakiwi.Framework.ContentListItem
             get { return m_TriggerState; }
         }
 
-        bool m_TriggerSaveEvent;
         /// <summary>
         /// Gets a value indicating whether [trigger save event].
         /// </summary>
         /// <value><c>true</c> if [trigger save event]; otherwise, <c>false</c>.</value>
-        public bool TriggerSaveEvent
-        {
-            get { return m_TriggerSaveEvent; }
-        }
+        public bool TriggerSaveEvent { get; internal set; }
 
         internal bool OpenUrl
         {
@@ -252,7 +248,8 @@ namespace Sushi.Mediakiwi.Framework.ContentListItem
                 return !string.IsNullOrEmpty(this.ListInPopupLayer); }
             set { m_OpenInPopupLayer = value; m_OpenInPopupLayerIsSet = true; }
         }
-
+        public string CustomUrl { get; set; }
+        [Obsolete("Obsolete, please use CustomUrl", false)]
         public string CustomUrlProperty { get; set; }
         public string ListInPopupLayer { get; set; }
         public bool AskConfirmation { get; set; }
@@ -394,7 +391,7 @@ namespace Sushi.Mediakiwi.Framework.ContentListItem
 	<th></th>
 	<td{7}>
         <input type=""hidden"" id=""{1}"" name=""{1}"" value=""""/>
-		<button class=""postBack{10}""{4}><span>{0}</span></button><div class=""clear""></div>{2}
+		<button class=""{12}{10}""{4}><span>{0}</span></button><div class=""clear""></div>{2}
 	</td>{6}
 "
                 , Title // 0
@@ -409,6 +406,7 @@ namespace Sushi.Mediakiwi.Framework.ContentListItem
                 , ((Console.ExpressionPrevious == OutputExpression.FullWidth && Expression == OutputExpression.Right) || (Console.ExpressionPrevious == OutputExpression.Right && Expression == OutputExpression.Right)) ? "<tr><th><label>&nbsp;</label></th><td>&nbsp;</td>" : null // 9
                 , this.AskConfirmation ? " type_confirm" : null //10
                 , Width > 0 ? string.Format(" style=\"width:{0}px\"", this.Width) : null //11 
+                , string.IsNullOrWhiteSpace(CustomUrl) ? "postBack" : null //12
 
                 )
             );

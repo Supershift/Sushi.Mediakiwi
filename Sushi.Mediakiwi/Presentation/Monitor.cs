@@ -623,14 +623,14 @@ namespace Sushi.Mediakiwi.Framework.Presentation
 
                         Sushi.Mediakiwi.Data.IAvailableTemplate[] availableComponentTemplates = null;
 
-                        if (container.CurrentPage.Template.IsSourceBased)
-                        {
-                            availableComponentTemplates = Sushi.Mediakiwi.Data.AvailableTemplate.SelectAllBySlot(slot);
-                        }
-                        else
-                        {
+                        //if (container.CurrentPage.Template.IsSourceBased)
+                        //{
+                        //    availableComponentTemplates = Sushi.Mediakiwi.Data.AvailableTemplate.SelectAllBySlot(slot);
+                        //}
+                        //else
+                        //{
                             availableComponentTemplates = Sushi.Mediakiwi.Data.AvailableTemplate.SelectAll(container.CurrentPage.TemplateID);
-                        }
+                        //}
 
                         var visibleAvailableComponents = Sushi.Mediakiwi.Data.Component.VerifyVisualisation(container.CurrentPage.Template, availableComponentTemplates, target, ref isSecundary, true);
 

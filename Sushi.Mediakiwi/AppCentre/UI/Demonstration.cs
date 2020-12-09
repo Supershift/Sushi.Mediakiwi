@@ -25,18 +25,29 @@ namespace Sushi.Mediakiwi.AppCentre.UI
 
         private void Demonstration_ListSave(IComponentListTemplate sender, ComponentListEventArgs e)
         {
-            var file = Implement.Upload.ReadToEnd();
-            Console.WriteLine(file);
+            if (Implement.Upload != null)
+            {
+                var file = Implement.Upload.ReadToEnd();
+                wim.Notification.AddNotificationAlert(file, true);
+            }
+            wim.FlushCache();
 
-            //var size = file.OpenReadStream
-
-
+            if (!string.IsNullOrWhiteSpace(TitleTest))
+                wim.Notification.AddNotificationAlert($"Saved [Title]: {this.TitleTest}", true);
         }
 
         private void Demonstration_ListLoad(IComponentListTemplate sender, ComponentListEventArgs e)
         {
-            Implement = new DemonstrationForm();
+            Implement = new DemonstrationForm(wim.IsLayerMode);
+
+            Map<Demonstration>(x => x.TitleTest, this).TextField("Title");
+            Map<DemonstrationForm>(x => x.OuterTextField, Implement).TextField("Title (outer)");
+
+            //SenderInstance = this;
+            this.FormMaps.Add(this);
             this.FormMaps.Add(Implement);
         }
+
+        public string TitleTest { get; set; }
     }
 }

@@ -24,15 +24,70 @@ namespace Sushi.Mediakiwi.Framework
     {
     }
 
-    public class FormMap<T, Y> : FormMap<T>
+    public class FormMapList : IFormMap
     {
-        public ContentInfo Map2(Expression<Func<Y, object>> memberExpression, Y sender)
+        public FormMapList()
+        {
+            Elements = new List<IContentInfo>();
+        }
+
+        public ContentInfo Map<Y>(Expression<Func<Y, object>> memberExpression, Y sender)
         {
             PropertyInfo property = ReflectionHelper.GetMember(memberExpression.Body);
             var result = new ContentInfo(property, IsHidden, IsReadOnly, IsCloacked, Elements);
             result.SenderInstance = sender;
             return result;
         }
+
+        public void Evaluate()
+        {
+        }
+
+        public void Init(WimComponentListRoot wim)
+        {
+            if (this.Elements == null) return;
+
+            foreach (var element in this.Elements)
+            {
+                //  SET IT FROM POSTBACK INSTANT!
+                if (element.Property != null)
+                {
+                    element.InfoItem = new ListInfoItem();
+                    element.InfoItem.ContentAttribute = element;
+                    element.InfoItem.Info = element.Property;
+
+                    if (element.HasSenderInstance)
+                        element.InfoItem.SenderInstance = element.SenderInstance;
+                    else
+                        element.InfoItem.SenderInstance = SenderInstance;
+
+                    element.InfoItem.SenderSponsorInstance = this;
+                    if (string.IsNullOrWhiteSpace(UniqueId))
+                        element.InfoItem.ContentAttribute.ID = element.Property.Name;
+                    else
+                        element.InfoItem.ContentAttribute.ID = $"{UniqueId}_{element.Property.Name}";
+
+                    //  Set
+                    if (element is IContentInfo)
+                    {
+                        if (wim.Console != null)
+                        {
+                            ((IContentInfo)element).Init(wim);
+                            if (wim.Console.IsPosted(element.InfoItem.ContentAttribute.ID))
+                                ((IContentInfo)element).SetCandidate(wim.IsEditMode);
+                            ((IContentInfo)element).Chain(element.InfoItem.ContentAttribute.ID);
+                        }
+                    }
+                }
+            }
+        }
+        public List<IContentInfo> Elements { get; set; }
+        public string UniqueId { get; set; }
+        List<IFormMap> IFormMap.FormMaps { get; set; }
+        public object SenderInstance { get;set; }
+        public bool? IsHidden { get; set; }
+        public bool? IsCloacked { get; set; }
+        public bool? IsReadOnly { get; set; }
     }
 
     public class FormMap<T> : FormMap, IFormMap

@@ -329,6 +329,16 @@ namespace Sushi.Mediakiwi.Data
             else
                 m_List.Add(new SubListitem(item.TextID, item.Description));
         }
+        public void Add(string id, string description)
+        {
+            InitializeList();
+            m_List.Add(new SubListitem(id, description));
+        }
+        public void Add(int id, string description)
+        {
+            InitializeList();
+            m_List.Add(new SubListitem(id, description));
+        }
 
         /// <summary>
         /// Gets the id of a particular index. If the index is not present a 0 is returned.

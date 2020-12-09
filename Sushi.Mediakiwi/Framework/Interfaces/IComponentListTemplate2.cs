@@ -8,6 +8,8 @@ namespace Sushi.Mediakiwi.Framework
 {
     public interface IComponentListTemplate
     {
+        Object SenderInstance { get; set; }
+
         void Init(HttpContext context);
         string FormState { get; set; }
         FormList FormMaps { get; set; }

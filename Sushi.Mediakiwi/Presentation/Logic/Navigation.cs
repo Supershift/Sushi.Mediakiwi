@@ -1177,7 +1177,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                             , button.AskConfirmation ? " type_confirm" : null // 3
                             //, button.OpenInPopupLayer ? string.Concat(" ", button.PopupLayerSize.ToString()) : null //4
                             , TargetInfo(button, container) // 4
-                            , button.OpenUrl ? null : button.AskConfirmation ? null : " postBack" // 5
+                            , button.OpenUrl ? null : button.AskConfirmation ? null : !string.IsNullOrWhiteSpace(button.CustomUrl) ? null : " postBack" // 5
                             , url == "#" ? string.Empty : string.Format(" data-link=\"{0}\"", url) // 6
                             , button.IconTarget == Sushi.Mediakiwi.Framework.ButtonTarget.BottomLeft ? " left" : " right" //7
                             , button.IsPrimary ? " action" : null // 8
@@ -1278,6 +1278,10 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
             if (!string.IsNullOrEmpty(button.CustomUrlProperty))
             {
                 return container.CurrentListInstance.GetType().GetProperty(button.CustomUrlProperty).GetValue(container.CurrentListInstance, null) as string;
+            }
+            if (!string.IsNullOrEmpty(button.CustomUrl))
+            {
+                return button.CustomUrl;
             }
 
             if (!string.IsNullOrEmpty(button.ListInPopupLayer))
@@ -1400,7 +1404,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                         , button.AskConfirmation ? " type_confirm" : null // 3
                         //, button.OpenInPopupLayer ? string.Concat(" ", button.PopupLayerSize.ToString()) : null //4
                         , TargetInfo(button, container) // 4
-                        , button.OpenUrl ? null : button.AskConfirmation ? null : " postBack" // 5
+                        , button.OpenUrl ? null : button.AskConfirmation ? null : !string.IsNullOrWhiteSpace(button.CustomUrl) ? null : " postBack" // 5
                         , LayerList(button, container) // 6
                         , string.IsNullOrEmpty(button.ButtonClassName) ? "submit" : button.ButtonClassName // 7
                         , GetDataLayer(button.PopupLayerSize, button, out layerclass) //8
@@ -1422,7 +1426,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                         , button.AskConfirmation ? " type_confirm" : null // 3
                         //, button.OpenInPopupLayer ? string.Concat(" ", button.PopupLayerSize.ToString()) : null //4
                         , TargetInfo(button, container) // 4
-                        , button.OpenUrl ? null : button.AskConfirmation ? null : " postBack" // 5
+                        , button.OpenUrl ? null : button.AskConfirmation ? null : !string.IsNullOrWhiteSpace(button.CustomUrl) ? null : " postBack" // 5
                         , LayerList(button, container) // 6
                         , string.IsNullOrEmpty(button.ButtonClassName) ? "submit" : button.ButtonClassName // 7
                         , container.CurrentListInstance.wim.Page.Body.Form.IsPrimairyAction(button) ? " action" : null //8

@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
+using System.Reflection;
 using System.Text;
 using Microsoft.AspNetCore.Http;
 using Sushi.Mediakiwi.Data;
@@ -35,7 +37,7 @@ namespace Sushi.Mediakiwi.Framework
     /// <summary>
     /// 
     /// </summary>
-    public class ComponentListTemplate : IComponentListTemplate
+    public class ComponentListTemplate : FormMapList, IComponentListTemplate
     {
         public string FormState { get; set; }
 
@@ -226,8 +228,6 @@ namespace Sushi.Mediakiwi.Framework
         {
             get { return (ListDataReport == null) ? false : true; }
         }
-
-
 
         internal void OnListLoad(ComponentListEventArgs e)
         {

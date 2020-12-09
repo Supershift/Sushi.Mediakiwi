@@ -287,7 +287,8 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                         build.AppendFormat(@"<li class=""isSortable""><a href="""" onclick=""return mediakiwi.pageComponentControl.moveComponentUp(this, {0})"" >Up</a></li>
                                         <li><a href="""" onclick=""return mediakiwi.pageComponentControl.moveComponentDown(this, {0})"" >Down</a>", component.ID.ToString());
                     }
-                    if (!component.Template.IsFixedOnPage && !component.IsFixed)
+                    // MM:02-12-20 Headless
+                    if (!component.Template.IsFixedOnPage)// && !component.IsFixed)
                     {
                         build.AppendFormat(@"<li><a href="""" onclick=""return mediakiwi.pageComponentControl.moveComponentDelete(this, {0}, '{1}', {2})"" class=""flaticon icon-trash-o""> </a></li>", component.ID.ToString(), component.Template.Name.Replace("'", "\\'"), component.TemplateID.ToString());
                     }
@@ -1568,6 +1569,8 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                 container.CurrentListInstance.wim.IsCurrentList = true;
                 System.Diagnostics.Trace.WriteLine("DoListLoad");
 
+                container.CurrentListInstance.SenderInstance = container.CurrentListInstance;
+                //container.CurrentListInstance.FormMaps.Add((IFormMap)container.CurrentListInstance);
                 container.CurrentListInstance.wim.DoListLoad(container.Item.GetValueOrDefault(0), currentVersion.ID, Data.Utility.ConvertToInt(container.Request.Query["pitem"]), isValidInput);
             }
 

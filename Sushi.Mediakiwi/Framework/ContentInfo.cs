@@ -169,13 +169,12 @@ namespace Sushi.Mediakiwi.Framework
         /// <param name="title"></param>
         /// <param name="triggerSave"></param>
         /// <returns></returns>
-        public ContentSettings Button(string title, bool triggerSave = false, bool triggerValidation = false, bool persistState = false, ButtonTarget position = ButtonTarget.TopRight, bool isPrimary = false)
+        public ButtonSettings Button(string title, ButtonTarget position = ButtonTarget.TopRight, bool triggerSave = true, bool triggerValidation = false, bool persistState = false)
         {
             var element = new Sushi.Mediakiwi.Framework.ContentListItem.ButtonAttribute(title, triggerSave, triggerValidation, persistState);
-            element.IsPrimary = isPrimary;
             element.IconTarget = position;
             Add(element);
-            return new ContentSettings(element);
+            return new ButtonSettings(element);
         }
         /// <summary>
         /// Possible return types: System.Int32, System.String, Sushi.Mediakiwi.Data.Document, Sushi.Mediakiwi.Data.AssetInfo
@@ -317,6 +316,18 @@ namespace Sushi.Mediakiwi.Framework
         public ContentSettings RichText(string title, int? maxlength = null, bool mandatory = false, string interactiveHelp = null)
         {
             var element = new Sushi.Mediakiwi.Framework.ContentListItem.RichTextAttribute(title, maxlength.GetValueOrDefault(), mandatory, interactiveHelp);
+            Add(element);
+            return new ContentSettings(element);
+        }
+        /// <summary>
+        /// Possible return types: Sushi.Mediakiwi.Data.SubList, Sushi.Mediakiwi.Data.iSubList
+        /// </summary>
+        /// <param name="title"></param>
+        /// <param name="interactiveHelp"></param>
+        /// <returns></returns>
+        public ContentSettings SortList(string title, string interactiveHelp = null)
+        {
+            var element = new Sushi.Mediakiwi.Framework.ContentListItem.SubListSelectAttribute(title, null, false, true, interactiveHelp);
             Add(element);
             return new ContentSettings(element);
         }
