@@ -938,11 +938,10 @@ namespace Sushi.Mediakiwi.UI
         {
             if (_configuration.GetValue<bool>("authentication"))
             {
-                var uriString = _Console.GetWimPagePath(null);
                 if (!_Context.User.Identity.IsAuthenticated)
                 {
-                    if (!await IsValidIdentityAsync(_Context, uriString))
-                        _Context.Response.Redirect($"{uriString}/.auth/login/aad?post_login_redirect_url={uriString}");
+                    if (!await IsValidIdentityAsync(_Context, _Console.CurrentHost))
+                        _Context.Response.Redirect($"{_Console.CurrentHost}/.auth/login/aad?post_login_redirect_url={_Console.GetWimPagePath(null)}");
                 }
             }
         }
