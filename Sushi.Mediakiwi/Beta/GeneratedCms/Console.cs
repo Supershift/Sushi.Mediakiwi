@@ -671,7 +671,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
                                 var email = claim.Value;
                                 if (email.Contains("@"))
                                 {
-                                    m_CurrentApplicationUser = Data.ApplicationUser.SelectOne(CurrentVisitor.ApplicationUserID.Value, true);
+                                    m_CurrentApplicationUser = Data.ApplicationUser.SelectOne(email, true);
                                 }
                             }
                         }
