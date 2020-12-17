@@ -340,18 +340,16 @@ namespace Sushi.Mediakiwi.Framework
         /// <param name="canOnlyOrderSort"></param>
         /// <param name="interactiveHelp"></param>
         /// <returns></returns>
-        public ContentSettings SubListSelect(string title, Type componentlist, bool mandatory = false, bool canOnlyOrderSort = false, string interactiveHelp = null)
+        public SublistSettings SubListSelect(string title, Type componentlist, bool mandatory = false, bool canOnlyOrderSort = false, string interactiveHelp = null)
         {
             var data = Data.ComponentList.SelectOne(componentlist.ToString());
             if (data != null && data.ID > 0)
             {
                 var element = new Sushi.Mediakiwi.Framework.ContentListItem.SubListSelectAttribute(title, data.GUID.ToString(), mandatory, canOnlyOrderSort, interactiveHelp);
                 Add(element);
-                return new ContentSettings(element);
-            }else
-            {
-                return Section("could not find list");
+                return new SublistSettings(element);
             }
+            return null;
         }
         /// <summary>
         /// Possible return types: System.String

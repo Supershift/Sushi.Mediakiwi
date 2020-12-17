@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json.Linq;
 using Sushi.Mediakiwi.Beta.GeneratedCms.Source;
 using Sushi.Mediakiwi.Data;
 using Sushi.Mediakiwi.Framework;
@@ -8,6 +10,10 @@ using Sushi.Mediakiwi.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Security.Claims;
+using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -25,11 +31,13 @@ namespace Sushi.Mediakiwi.UI
         bool IsLoadedInThinLayer;
         public StringBuilder outputHTML;
         internal WimControlBuilder GlobalWimControlBuilder;
+        private readonly IConfiguration _configuration;
 
-        public Monitor(HttpContext context, IHostingEnvironment env)
+        public Monitor(HttpContext context, IHostingEnvironment env, IConfiguration configuration)
         {
             _env = env;
             _Context = context;
+            _configuration = configuration;
             _Console = new Sushi.Mediakiwi.Beta.GeneratedCms.Console(context, _env);
 
             //Console.CurrentApplicationUser = user;
@@ -915,6 +923,7 @@ namespace Sushi.Mediakiwi.UI
             }
             else
             {
+                await AuthenticateViaSingleSignOnAsyc();
                 string reaction = _PresentationMonitor.GetLoginWrapper(_Console, _Placeholders, _Callbacks);
                 if (!string.IsNullOrEmpty(reaction))
                 {
@@ -924,7 +933,74 @@ namespace Sushi.Mediakiwi.UI
             }
             return true;
         }
-  
+
+        async Task AuthenticateViaSingleSignOnAsyc()
+        {
+            if (_configuration.GetValue<bool>("authentication"))
+            {
+                var uriString = _configuration.GetValue<string>("webroot");
+                if (!_Context.User.Identity.IsAuthenticated)
+                {
+                    if (!await IsValidIdentityAsync(_Context, uriString))
+                        _Context.Response.Redirect($"{uriString}/.auth/login/aad?post_login_redirect_url={uriString}");
+                }
+            }
+        }
+
+        async Task<bool> IsValidIdentityAsync(HttpContext context, string uriString)
+        {
+            var cookieContainer = new CookieContainer();
+            var handler = new HttpClientHandler() {
+                CookieContainer = cookieContainer
+            };
+
+            if (context.Request.Cookies.ContainsKey("AppServiceAuthSession"))
+            {
+                cookieContainer.Add(new Uri(uriString)
+                , new Cookie("AppServiceAuthSession", context.Request.Cookies["AppServiceAuthSession"]));
+            }
+
+            var jsonResult = string.Empty;
+            using (var client = new HttpClient(handler))
+            {
+                client.DefaultRequestHeaders.Add("Accept", "application/json");
+                client.DefaultRequestHeaders.Add("Accept-Charset", "UTF-8");
+                client.DefaultRequestHeaders.Add("Cache-Control", "no-cache");
+
+                var res = await client.GetAsync($"{uriString}/.auth/me");
+                jsonResult = await res.Content.ReadAsStringAsync();
+            }
+
+            if (!string.IsNullOrWhiteSpace(jsonResult))
+            {
+                if ((jsonResult.StartsWith("{") && jsonResult.EndsWith("}")) || //For object
+                    (jsonResult.StartsWith("[") && jsonResult.EndsWith("]"))) //For array
+                {
+                    try
+                    {
+                        var obj = JArray.Parse(jsonResult);
+
+                        var claims = new List<Claim>();
+                        foreach (var claim in obj[0]["user_claims"])
+                        {
+                            claims.Add(new Claim(claim["typ"].ToString(), claim["val"].ToString()));
+                        }
+
+                        var identity = new GenericIdentity("DefaultUser");
+                        identity.AddClaims(claims);
+
+                        context.User = new GenericPrincipal(identity, null);
+                        return true;
+                    }
+                    catch
+                    {
+                        return false;
+                    }
+                }
+            }
+            return false;
+        }
+
         /// <summary>
         /// Adds to response.
         /// </summary>

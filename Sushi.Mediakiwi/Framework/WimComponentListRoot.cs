@@ -5304,10 +5304,15 @@ namespace Sushi.Mediakiwi.Framework
         public void FlushCache(bool redirectToSelf = false)
         {
             var environment = EnvironmentVersion.Select();
+            environment.Updated = DateTime.UtcNow;
+            environment.Save();
+
             Caching.FlushAll(true);
 
-            //if (redirectToSelf && this.Console != null && this.Console.Context != null)
-            //    this.Console.Context.Response.Redirect(Utility.GetSafeUrl(this.Console.Context.Request).Replace("?flush=me", string.Empty).Replace("&flush=me", string.Empty), true);
+            if (redirectToSelf && this.Console != null && this.Console.Context != null)
+                this.Console.Context.Response.Redirect(GetCurrentQueryUrl(true));
+
+            //this.Console.Context.Response.Redirect(Utility.GetSafeUrl(this.Console.Context.Request).Replace("?flush=me", string.Empty).Replace("&flush=me", string.Empty), true);
 
         }
 

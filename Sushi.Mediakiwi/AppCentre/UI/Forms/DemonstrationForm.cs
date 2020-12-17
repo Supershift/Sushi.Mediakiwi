@@ -37,13 +37,16 @@ namespace Sushi.Mediakiwi.AppCentre.UI.Forms
             Map(x => x.Dropdown1).Dropdown("Dropdown", "List", mandatory, true, false, "Interactive help");
             Map(x => x.Dropdown2).Dropdown("Dropdown-multi", "List", mandatory, false, true, "Interactive help");
             Map(x => x.Tagging).Tagging("Tagging", "List", mandatory, false, "Interactive help");
-            Map(x => x.SubListSelect).SubListSelect("SubListSelect", typeof(Sushi.Mediakiwi.AppCentre.Data.Implementation.ComponentList), mandatory, false, "Interactive help");
-Map(x => x.Sortable).SortList("Sortable", "Interactive help");
+            Map(x => x.SubListSelect).SubListSelect("SubListSelect"
+                , typeof(Sushi.Mediakiwi.AppCentre.Data.Implementation.ComponentList)
+                , mandatory, false, "Interactive help");
+           
+            Map(x => x.Sortable).SortList("Sortable", "Interactive help");
 
-this.Sortable = new Mediakiwi.Data.SubList();
+            this.Sortable = new Mediakiwi.Data.SubList();
             
-for(var i = 0; i < 10; i ++)
-    this.Sortable.Add(i, $"test {i}");
+            for(var i = 0; i < 10; i ++)
+                this.Sortable.Add(i, $"test {i}");
 
             Map(x => x.MultiField).MultiField("MultiField", "Interactive help");
 
@@ -57,6 +60,12 @@ for(var i = 0; i < 10; i ++)
             Map(x => x.Hyperlink).Hyperlink("Hyperlink", mandatory, "Interactive help");
             Map(x => x.HtmlContainer).HtmlContainer(true);
             HtmlContainer = "<b>HtmlContainer</b>";
+
+            SubListSelect = new Mediakiwi.Data.SubList();
+
+            System.Collections.Specialized.NameValueCollection nv = new System.Collections.Specialized.NameValueCollection();
+            nv.Add("test", "1");
+            SubListSelect.ApplyQueryStringParameter(nv);
 
             Map(x => x.PageContainer).PageContainer();
 
@@ -78,7 +87,7 @@ for(var i = 0; i < 10; i ++)
                 .OpenUrl(new Uri("https://www.google.com"), false).Hide();
 
             Map(x => x.Button4).Button("External URL (layer)", ButtonTarget.BottomRight)
-          .OpenUrl(new Uri("https://www.google.com"), true).Hide();
+                .OpenUrl(new Uri("https://www.google.com"), true).Hide();
 
         }
         public Mediakiwi.Data.Page PageContainer { get; set; }

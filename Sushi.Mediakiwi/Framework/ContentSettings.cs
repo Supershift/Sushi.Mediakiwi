@@ -5,6 +5,38 @@ using System.Text;
 
 namespace Sushi.Mediakiwi.Framework
 {
+    public class SublistSettings
+    {
+        public event ContentInfoEventHandler OnChange
+        {
+            add { _element.OnChange += value; }
+            remove { _element.OnChange -= value; }
+        }
+
+        public SublistSettings()
+        {
+        }
+        protected SubListSelectAttribute _element;
+        public SublistSettings(SubListSelectAttribute element)
+        {
+            _element = element;
+        }
+        public SublistSettings Expression(OutputExpression setting)
+        {
+            _element.Expression = setting;
+            return new SublistSettings(_element);
+        }
+        public SublistSettings Hide(bool isHidden = true)
+        {
+            _element.IsHidden = isHidden;
+            return new SublistSettings(_element);
+        }
+        public SublistSettings FieldName(string fieldName)
+        {
+            _element.FieldName = fieldName;
+            return new SublistSettings(_element);
+        }
+    }
     public class ButtonSettings
     {
         public event ContentInfoEventHandler OnChange

@@ -60,7 +60,7 @@ namespace Sushi.Mediakiwi
             if (_env.IsDevelopment())
             {
                 Configure(context);
-                Monitor monitor = new Monitor(context, _env);
+                Monitor monitor = new Monitor(context, _env, _configuration);
                 await monitor.StartAsync();
             }
             else
@@ -68,7 +68,7 @@ namespace Sushi.Mediakiwi
                 try { 
                 Configure(context);
 
-                Monitor monitor = new Monitor(context, _env);
+                Monitor monitor = new Monitor(context, _env, _configuration);
                 await monitor.StartAsync();
                 }
                 catch (Exception ex)
@@ -121,7 +121,7 @@ namespace Sushi.Mediakiwi
             if (_env.IsDevelopment())
             {
                 Configure(context);
-                Monitor monitor = new Monitor(context, _env);
+                Monitor monitor = new Monitor(context, _env, _configuration);
                 await monitor.StartAsync();
                 return monitor.Body;
             }
@@ -131,7 +131,7 @@ namespace Sushi.Mediakiwi
                 {
                     Configure(context);
 
-                    Monitor monitor = new Monitor(context, _env);
+                    Monitor monitor = new Monitor(context, _env, _configuration);
                     await monitor.StartAsync();
                     return monitor.Body;
                 }
