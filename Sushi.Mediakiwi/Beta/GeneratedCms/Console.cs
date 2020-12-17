@@ -666,13 +666,9 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
                             if (claim != null 
                                 && !string.IsNullOrWhiteSpace(claim.Type)
                                 && !string.IsNullOrWhiteSpace(claim.Value)
-                                && claim.Type.EndsWith("upn", StringComparison.CurrentCultureIgnoreCase))
+                                && claim.Value.Contains("@"))
                             {
-                                var email = claim.Value;
-                                if (email.Contains("@"))
-                                {
-                                    m_CurrentApplicationUser = Data.ApplicationUser.SelectOne(email, true);
-                                }
+                                m_CurrentApplicationUser = Data.ApplicationUser.SelectOne(claim.Value, true);
                             }
                         }
                     }
