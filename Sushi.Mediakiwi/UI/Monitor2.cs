@@ -915,6 +915,10 @@ namespace Sushi.Mediakiwi.UI
 
                 }
             }
+
+            //  Check SSO
+            await AuthenticateViaSingleSignOnAsyc();
+
             //  Check roaming profile
             if (!showLogin && _Console.CurrentApplicationUser != null)
             {
@@ -923,7 +927,6 @@ namespace Sushi.Mediakiwi.UI
             }
             else
             {
-                await AuthenticateViaSingleSignOnAsyc();
                 string reaction = _PresentationMonitor.GetLoginWrapper(_Console, _Placeholders, _Callbacks);
                 if (!string.IsNullOrEmpty(reaction))
                 {
@@ -936,7 +939,7 @@ namespace Sushi.Mediakiwi.UI
 
         async Task AuthenticateViaSingleSignOnAsyc()
         {
-            if (_configuration.GetValue<bool>("authentication"))
+            if (_configuration.GetValue<bool>("mediakiwi:authentication"))
             {
                 if (!_Context.User.Identity.IsAuthenticated)
                 {
@@ -987,6 +990,8 @@ namespace Sushi.Mediakiwi.UI
 
                         var identity = new GenericIdentity("DefaultUser");
                         identity.AddClaims(claims);
+
+                     
 
                         context.User = new GenericPrincipal(identity, null);
                         return true;
