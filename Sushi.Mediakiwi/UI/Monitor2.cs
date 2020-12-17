@@ -938,7 +938,7 @@ namespace Sushi.Mediakiwi.UI
         {
             if (_configuration.GetValue<bool>("authentication"))
             {
-                var uriString = _configuration.GetValue<string>("webroot");
+                var uriString = _Console.GetWimPagePath(null);
                 if (!_Context.User.Identity.IsAuthenticated)
                 {
                     if (!await IsValidIdentityAsync(_Context, uriString))

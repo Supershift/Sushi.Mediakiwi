@@ -1073,7 +1073,11 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
         public string CurrentHost
         {
             get {
-                return string.Concat(Request.Scheme, "://", Request.Host.ToString());
+
+                if (string.IsNullOrWhiteSpace(Request.Headers["X-Forwarded-Host"]))
+                    return string.Concat(Request.Scheme, "://", Request.Host.ToString());
+
+                return string.Concat(Request.Scheme, "://", Request.Headers["X-Forwarded-Host"]);
             }
         }
 
