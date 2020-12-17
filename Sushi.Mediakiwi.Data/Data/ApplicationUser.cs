@@ -374,6 +374,22 @@ namespace Sushi.Mediakiwi.Data
         /// Select a Application User based on its primary key
         /// </summary>
         /// <param name="ID">Uniqe identifier of the Menu</param>
+        public static IApplicationUser SelectOne(string email, bool onlyReturnActive = false)
+        {
+            var connector = ConnectorFactory.CreateConnector<ApplicationUser>();
+            var filter = connector.CreateDataFilter();
+
+            filter.Add(x => x.Email, email);
+            if (onlyReturnActive)
+                filter.Add(x => x.IsActive, true);
+
+            return connector.FetchSingle(filter);
+        }
+
+        /// <summary>
+        /// Select a Application User based on its primary key
+        /// </summary>
+        /// <param name="ID">Uniqe identifier of the Menu</param>
         public static IApplicationUser SelectOne(int ID, bool onlyReturnActive = false)
         {
             var connector = ConnectorFactory.CreateConnector<ApplicationUser>();
