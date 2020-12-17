@@ -652,21 +652,26 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
         {
             get {
 
-                 if (m_CurrentApplicationUser == null && this.Context.User.Identity.IsAuthenticated)
+                 if (m_CurrentApplicationUser == null 
+                    && this.Context != null
+                    && this.Context.User != null
+                    && this.Context.User.Identity != null
+                    && this.Context.User.Identity.IsAuthenticated
+                    )
                 {
                     if (this.Context.User.Claims != null)
                     {
                         foreach (var claim in this.Context.User.Claims)
                         {
-                            if (claim.Type.EndsWith("upn", StringComparison.CurrentCultureIgnoreCase))
+                            if (claim != null 
+                                && !string.IsNullOrWhiteSpace(claim.Type)
+                                && !string.IsNullOrWhiteSpace(claim.Value)
+                                && claim.Type.EndsWith("upn", StringComparison.CurrentCultureIgnoreCase))
                             {
                                 var email = claim.Value;
                                 if (email.Contains("@"))
                                 {
                                     m_CurrentApplicationUser = Data.ApplicationUser.SelectOne(CurrentVisitor.ApplicationUserID.Value, true);
-                                    if (m_CurrentApplicationUser != null)
-                                        return m_CurrentApplicationUser;
-
                                 }
                             }
                         }
