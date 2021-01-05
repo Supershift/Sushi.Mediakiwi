@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Sushi.Mediakiwi.Data;
 using Sushi.Mediakiwi.UI;
@@ -186,22 +187,41 @@ namespace Sushi.Mediakiwi.Framework
             set { m_wim = value; }
         }
 
-        public event ComponentSearchEventHandler ListSearch;
-        [Obsolete("MEDIAKIWI: Please use ListAction, this will be removed later on")]
-        public event ComponentActionEventHandler ListSearchedAction;
-        public event ComponentListEventHandler ListLoad;
-        public event ComponentListEventHandler ListPreRender;
-        public event ComponentListEventHandler ListSave;
-        public event ComponentListEventHandler ListDelete;
-        public event ComponentActionEventHandler ListAction;
+        //public event ComponentSearchEventHandler ListSearch;
+        //[Obsolete("MEDIAKIWI: Please use ListAction, this will be removed later on")]
+        //public event ComponentActionEventHandler ListSearchedAction;
+        //public event ComponentListEventHandler ListLoad;
+        public event Func<ComponentListEventArgs, Task> ListPreRender;
+        public event Func<ComponentListEventArgs, Task> ListSave;
+        public event Func<ComponentListEventArgs, Task> ListDelete;
+        public event Func<ComponentActionEventArgs, Task> ListAction;
         public event ComponentAsyncEventHandler ListAsync;
         public event ComponentDataReportEventHandler ListDataReport;
         public event EventHandler ListSense;
-        public event EventHandler ListInit;
+        public event Func<Task> ListInit;
+        public event Func<ComponentListSearchEventArgs, Task> ListSearch;
+        public event Func<ComponentListEventArgs, Task> ListLoad;
 
-        internal void OnListInit()
+
+        internal async Task OnListInit()
         {
-            if (ListInit != null) ListInit(this, null);
+            Func<Task> handler = ListInit;
+
+            if (handler == null)
+            {
+                return;
+            }
+
+            m_IsSearched = true;
+            Delegate[] invocationList = handler.GetInvocationList();
+            Task[] handlerTasks = new Task[invocationList.Length];
+
+            for (int i = 0; i < invocationList.Length; i++)
+            {
+                handlerTasks[i] = ((Func<Task>)invocationList[i])();
+            }
+
+            await Task.WhenAll(handlerTasks);
         }
 
         internal void OnListAsync(ComponentAsyncEventArgs e)
@@ -229,10 +249,25 @@ namespace Sushi.Mediakiwi.Framework
             get { return (ListDataReport == null) ? false : true; }
         }
 
-        internal void OnListLoad(ComponentListEventArgs e)
+        internal async Task OnListLoad(ComponentListEventArgs c)
         {
-            if (ListLoad != null)
-                ListLoad(this, e);
+            Func<ComponentListEventArgs, Task> handler = ListLoad;
+
+            if (handler == null)
+            {
+                return;
+            }
+
+            m_IsSearched = true;
+            Delegate[] invocationList = handler.GetInvocationList();
+            Task[] handlerTasks = new Task[invocationList.Length];
+
+            for (int i = 0; i < invocationList.Length; i++)
+            {
+                handlerTasks[i] = ((Func<ComponentListEventArgs, Task>)invocationList[i])(c);
+            }
+
+            await Task.WhenAll(handlerTasks);
         }
 
         internal bool HasListLoad
@@ -242,31 +277,50 @@ namespace Sushi.Mediakiwi.Framework
 
 
 
-        internal void OnListAction(ComponentActionEventArgs e)
+        internal async Task OnListAction(ComponentActionEventArgs e)
         {
-            if (ListAction != null) ListAction(this, e);
+            Func<ComponentActionEventArgs, Task> handler = ListAction;
+
+            if (handler == null)
+            {
+                return;
+            }
+
+            m_IsSearched = true;
+            Delegate[] invocationList = handler.GetInvocationList();
+            Task[] handlerTasks = new Task[invocationList.Length];
+
+            for (int i = 0; i < invocationList.Length; i++)
+            {
+                handlerTasks[i] = ((Func<ComponentActionEventArgs, Task>)invocationList[i])(e);
+            }
+
+            await Task.WhenAll(handlerTasks);
         }
         internal bool HasListAction
         {
             get { return (ListAction == null) ? false : true; }
         }
 
-
-
-        internal void OnListSearchedAction(ComponentActionEventArgs e)
+        internal async Task OnListPreRender(ComponentListEventArgs e)
         {
-            if (ListSearchedAction != null) ListSearchedAction(this, e);
-        }
-        internal bool HasListSearchedAction
-        {
-            get { return (ListSearchedAction == null) ? false : true; }
-        }
+            Func<ComponentListEventArgs, Task> handler = ListPreRender;
 
+            if (handler == null)
+            {
+                return;
+            }
 
-        internal void OnListPreRender(ComponentListEventArgs e)
-        {
-            if (ListPreRender != null)
-                ListPreRender(this, e);
+            m_IsSearched = true;
+            Delegate[] invocationList = handler.GetInvocationList();
+            Task[] handlerTasks = new Task[invocationList.Length];
+
+            for (int i = 0; i < invocationList.Length; i++)
+            {
+                handlerTasks[i] = ((Func<ComponentListEventArgs, Task>)invocationList[i])(e);
+            }
+
+            await Task.WhenAll(handlerTasks);
         }
         internal bool HasListPreRender
         {
@@ -278,18 +332,50 @@ namespace Sushi.Mediakiwi.Framework
         /// 
         /// </summary>
         /// <param name="e"></param>
-        internal void OnListSave(ComponentListEventArgs e)
+        internal async Task OnListSave(ComponentListEventArgs e)
         {
-            if (ListSave != null) ListSave(this, e);
+            Func<ComponentListEventArgs, Task> handler = ListSave;
+
+            if (handler == null)
+            {
+                return;
+            }
+
+            m_IsSearched = true;
+            Delegate[] invocationList = handler.GetInvocationList();
+            Task[] handlerTasks = new Task[invocationList.Length];
+
+            for (int i = 0; i < invocationList.Length; i++)
+            {
+                handlerTasks[i] = ((Func<ComponentListEventArgs, Task>)invocationList[i])(e);
+            }
+
+            await Task.WhenAll(handlerTasks);
         }
         internal bool HasListSave
         {
             get { return (ListSave == null) ? false : true; }
         }
 
-        internal void OnListDelete(ComponentListEventArgs e)
+        internal async Task OnListDelete(ComponentListEventArgs e)
         {
-            if (ListDelete != null) ListDelete(this, e);
+            Func<ComponentListEventArgs, Task> handler = ListDelete;
+
+            if (handler == null)
+            {
+                return;
+            }
+
+            m_IsSearched = true;
+            Delegate[] invocationList = handler.GetInvocationList();
+            Task[] handlerTasks = new Task[invocationList.Length];
+
+            for (int i = 0; i < invocationList.Length; i++)
+            {
+                handlerTasks[i] = ((Func<ComponentListEventArgs, Task>)invocationList[i])(e);
+            }
+
+            await Task.WhenAll(handlerTasks);
         }
         internal bool HasListDelete
         {
@@ -300,12 +386,28 @@ namespace Sushi.Mediakiwi.Framework
 
         bool m_IsSearched;
 
-        internal void OnListSearch(ComponentListSearchEventArgs c)
+        internal async Task OnListSearch(ComponentListSearchEventArgs c)
         {
-            if (m_IsSearched) return;
+            Func<ComponentListSearchEventArgs, Task> handler = ListSearch;
+
+            if (handler == null)
+            {
+                return;
+            }
+
             m_IsSearched = true;
-            if (ListSearch != null) ListSearch(this, c);
+            Delegate[] invocationList = handler.GetInvocationList();
+            Task[] handlerTasks = new Task[invocationList.Length];
+
+            for (int i = 0; i < invocationList.Length; i++)
+            {
+                handlerTasks[i] = ((Func<ComponentListSearchEventArgs, Task>)invocationList[i])(c);
+            }
+
+            await Task.WhenAll(handlerTasks);
         }
+
+
         internal bool HasListSearch
         {
             get { return (ListSearch == null) ? false : true; }

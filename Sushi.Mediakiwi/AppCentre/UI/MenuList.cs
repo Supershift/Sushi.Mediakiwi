@@ -6,6 +6,7 @@ using System.Web;
 using Sushi.Mediakiwi.Framework;
 using Sushi.Mediakiwi.Data;
 using Sushi.Mediakiwi.UI;
+using System.Threading.Tasks;
 
 namespace Sushi.Mediakiwi.AppCentre.Data
 {
@@ -19,20 +20,20 @@ namespace Sushi.Mediakiwi.AppCentre.Data
         /// </summary>
         public MenuList()
         {
-            this.ListSave += new ComponentListEventHandler(MenuList_ListSave);
-            this.ListDelete += new ComponentListEventHandler(MenuList_ListDelete);
-            this.ListLoad += new ComponentListEventHandler(MenuList_ListLoad);
-            this.ListSearch += new ComponentSearchEventHandler(MenuList_ListSearch);
-            this.ListDelete += new ComponentListEventHandler(MenuList_ListDelete);
+            this.ListSave += MenuList_ListSave;
+            this.ListDelete += MenuList_ListDelete;
+            this.ListLoad += MenuList_ListLoad;
+            this.ListSearch += MenuList_ListSearch;
+            this.ListDelete += MenuList_ListDelete;
         }
 
-        void MenuList_ListSave(object sender, ComponentListEventArgs e)
+        async Task MenuList_ListSave(ComponentListEventArgs e)
         {
             Implement.Name = this.Name;
             Implement.RoleID = this.RoleID;
             Implement.SiteID = this.SiteID;
             Implement.IsActive = this.Active;
-            Implement.Save();
+            await Implement.SaveAsync();
 
             //var items = (from item in this.Items where item.Position == 1 select item).ToArray();
             SaveItem(0, this.MenuItem0);
@@ -75,18 +76,18 @@ namespace Sushi.Mediakiwi.AppCentre.Data
             }
         }
 
-        void MenuList_ListDelete(object sender, ComponentListEventArgs e)
+        async Task MenuList_ListDelete(ComponentListEventArgs e)
         {
             foreach (var item in this.Items)
-                item.Delete();
+                await item.DeleteAsync();
         }
 
         Sushi.Mediakiwi.Data.IMenu Implement { get; set; }
         Sushi.Mediakiwi.Data.IMenuItem[] Items { get; set; }
 
-        void MenuList_ListLoad(object sender, ComponentListEventArgs e)
+        async Task MenuList_ListLoad(ComponentListEventArgs e)
         {
-            Implement = Sushi.Mediakiwi.Data.Menu.SelectOne(e.SelectedKey);
+            Implement = await Menu.SelectOneAsync(e.SelectedKey);
             if (Implement == null) Implement = new Sushi.Mediakiwi.Data.Menu();
 
             this.Name = Implement.Name;
@@ -94,7 +95,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data
             this.SiteID = Implement.SiteID;
             this.Active = Implement.IsActive;
 
-            Items = Sushi.Mediakiwi.Data.MenuItem.SelectAll(Implement.ID);
+            Items = await MenuItem.SelectAllAsync(Implement.ID);
             this.MenuItem0 = new SubList();
             this.MenuItem1 = new SubList();
             this.MenuItem2 = new SubList();
@@ -134,7 +135,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data
             }
         }
 
-        void MenuList_ListSearch(object sender, ComponentListSearchEventArgs e)
+        async Task MenuList_ListSearch(ComponentListSearchEventArgs e)
         {
             wim.CanAddNewItem = true;
             wim.ListDataColumns.Add("ID", "ID", ListDataColumnType.UniqueIdentifier);
@@ -142,7 +143,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data
             wim.ListDataColumns.Add(new ListDataColumn("", "IsActive") { ColumnWidth = 30  });
 
             //if (wim.Grid.IsDataBinding)
-            wim.ListDataApply(Sushi.Mediakiwi.Data.Menu.SelectAll());
+            wim.ListDataAdd(await Sushi.Mediakiwi.Data.Menu.SelectAllAsync());
         }
 
         [Sushi.Mediakiwi.Framework.ContentListItem.TextField("Menu", 50, true, Expression = Sushi.Mediakiwi.Framework.OutputExpression.Alternating)]

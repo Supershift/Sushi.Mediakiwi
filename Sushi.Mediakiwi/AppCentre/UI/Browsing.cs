@@ -9,6 +9,8 @@ using Sushi.Mediakiwi.Framework;
 using System.Globalization;
 using System.Text;
 using Sushi.Mediakiwi.Data;
+using Sushi.Mediakiwi.Logic;
+using System.Threading.Tasks;
 
 namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
 {
@@ -90,15 +92,26 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             this.FilterPath = false;
             wim.HideProperties = true;
          
-
-            this.ListLoad += new ComponentListEventHandler(Browsing_ListLoad);
-            this.ListSearch += new ComponentSearchEventHandler(Browsing_ListSearch);
-            this.ListAction += new ComponentActionEventHandler(Browsing_ListAction);
+            this.ListLoad += Browsing_ListLoad;
+            this.ListAction += Browsing_ListAction;
             this.ListSave += Browsing_ListSave;
+            this.ListSearch += Browsing_ListSearch;
         }
 
-        void Browsing_ListSave(object sender, ComponentListEventArgs e)
+        private Task Browsing_ListSearch(ComponentListSearchEventArgs arg)
         {
+            wim.HideSearchButton = true;
+
+            wim.SetPropertyVisibility("Parent", false);
+
+            ShowBrowsing();
+            
+            return Task.CompletedTask;
+        }
+
+        Task Browsing_ListSave(ComponentListEventArgs e)
+        {
+            return Task.CompletedTask;
         }
 
         /// <summary>
@@ -106,10 +119,9 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="Sushi.Mediakiwi.Framework.ComponentListEventArgs"/> instance containing the event data.</param>
-        void Browsing_ListLoad(object sender, ComponentListEventArgs e)
+        Task Browsing_ListLoad(ComponentListEventArgs e)
         {
-       
-
+            return Task.CompletedTask;
         }
 
         /// <summary>
@@ -117,21 +129,19 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="Sushi.Mediakiwi.Framework.ComponentActionEventArgs"/> instance containing the event data.</param>
-        void Browsing_ListAction(object sender, ComponentActionEventArgs e)
+        async Task Browsing_ListAction(ComponentActionEventArgs e)
         {
             int galleryId = Utility.ConvertToInt(Request.Query["gallery"]);
             if (galleryId > 0)
             {
-                Sushi.Mediakiwi.Data.Gallery gallery = Sushi.Mediakiwi.Data.Gallery.SelectOne(galleryId);
+                Sushi.Mediakiwi.Data.Gallery gallery = await Sushi.Mediakiwi.Data.Gallery.SelectOneAsync(galleryId);
                 if (!(gallery != null && gallery.ID == 0))
                 {
-                    Sushi.Mediakiwi.Data.IComponentList list = Sushi.Mediakiwi.Data.ComponentList.SelectOne(Sushi.Mediakiwi.Data.ComponentListType.Documents);
+                    Sushi.Mediakiwi.Data.IComponentList list = await Sushi.Mediakiwi.Data.ComponentList.SelectOneAsync(Sushi.Mediakiwi.Data.ComponentListType.Documents);
                     Response.Redirect(wim.Console.GetSafeUrl() + "&item=0&list=" + list.ID);
                 }
             }
         }
-
- 
 
         /// <summary>
         /// Gets a value indicating whether [opened in popup].
@@ -183,7 +193,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             {
                 GetPageList(isSearchInitiate, list);
             }
-            wim.ListDataApply(list);
+            wim.ListDataAdd(list);
         }
 
         string GetStatus(bool isEdited, bool isPublished, bool isSearchable, bool hasMaster, bool isLocalisedEditMode, bool isLocalisedPublicationMode)
@@ -515,7 +525,9 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                         }
                         if (e == null || !e.ReportCount.HasValue)
                         {
-                            build.AppendFormat("<a href=\"{0}?list={1}\"{3}>{2}</a>", wim.Console.WimPagePath, i.ID, i.Name
+                            build.AppendFormat("<a href=\"{0}\"{2}>{1}</a>"
+                                , wim.Console.UrlBuild.GetListRequest(i)
+                                , i.Name
                                 , i.IsVisible ? string.Empty : " class=\"inactive\""
                                 );
                         }
@@ -525,8 +537,10 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                             if (e.ReportCount.Value > 99)
                                 count = "99+";
 
-                            build.AppendFormat("<a href=\"{0}?list={1}\"{3}>{2} <span class=\"items{5}\">{4}</span></a>", wim.Console.WimPagePath, i.ID, i.Name
-                                 , i.IsVisible ? string.Empty : " class=\"inactive\""
+                            build.AppendFormat("<a href=\"{0}{1}\"{3}>{2} <span class=\"items{5}\">{4}</span></a>"
+                                , wim.Console.UrlBuild.GetListRequest(i)
+                                , i.Name
+                                , i.IsVisible ? string.Empty : " class=\"inactive\""
                                 , count, e.IsAlert ? " attention" : null
                                  );
                         }
@@ -538,686 +552,6 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
 
                 FindList(arr, build, false);
             }
-        }
-
-        /// <summary>
-        /// Browsing_s the list search.
-        /// </summary>
-        /// <param name="sender">The sender.</param>
-        /// <param name="e">The <see cref="Sushi.Mediakiwi.Framework.ComponentListSearchEventArgs"/> instance containing the event data.</param>
-        void Browsing_ListSearch(object sender, ComponentListSearchEventArgs e)
-        {
-            wim.HideSearchButton = true;
-
-            wim.SetPropertyVisibility("Parent", false);
-            
-            ShowBrowsing();
-            //return;
-            
-            //if (wim.CurrentVisitor.Data["wim.showmulti"].ParseBoolean())
-            //{
-            //    wim.CurrentVisitor.Data.Apply("wim.showmulti", null);
-            //    wim.CurrentVisitor.Save();
-            //}
-
-            //if (!IsPostBack)
-            //    this.FilterTitle = null;
-            
-            //wim.ListTitle = wim.CurrentFolder.Name;
-            //wim.Page.HideTabs = true;
-
-            //string browserInfo = string.Concat(Request.Browser.Browser.ToLower(), Request.Browser.MajorVersion.ToString());
-            //bool isExplorer6 = browserInfo == "ie6";
-            //string ext = isExplorer6 ? "gif" : "png";
-
-            //wim.CanAddNewItem = true;
-            //wim.SearchResultItemPassthroughParameterProperty = "PassThrough";
-            //wim.CurrentList.Option_Search_MaxResultPerPage = 250;
-
-            //bool isThumbnailView = !wim.CurrentApplicationUser.ShowDetailView;
-            //bool isSearchInitiate = !string.IsNullOrEmpty(this.FilterTitle);
-
-            //wim.ListDataColumns.Add("ID", "ID", ListDataColumnType.UniqueIdentifier);
-
-            ////if (!wim.CurrentApplicationUser.ShowNewDesign2)
-            //    wim.ListDataColumns.Add("", "Icon", ListDataColumnType.Default, ListDataContentType.Default, null, ListDataTotalType.Default, 20);
-
-            //if (Utility.ConvertToInt(Request.Query["openinframe"]) == 0)
-            //{
-            //    wim.ListDataColumns.Add(Labels.ResourceManager.GetString("list_name", new CultureInfo(wim.CurrentApplicationUser.LanguageCulture)), "Title", ListDataColumnType.HighlightPresent);
-            //}
-            //else
-            //{
-            //    wim.ListDataColumns.Add("", "HiddenField", ListDataColumnType.Highlight);
-            //    wim.ListDataColumns.Add("", "Title");
-            //}
-
-            //if (!wim.ShowNewDesign2)
-            //    wim.ListDataColumns.Add("PassThrough", "PassThrough", ListDataColumnType.ExportOnly); 
-            //wim.ForceLoad = true;
-
-            //List<BrowseItem> list = new List<BrowseItem>();
-
-            //int type = Utility.ConvertToInt(Request.Query["type"]);
-            
-            //if (wim.CurrentFolder.Type != Sushi.Mediakiwi.Data.FolderType.Gallery)
-            //{
-            //    Sushi.Mediakiwi.Data.IComponentList list0 = Sushi.Mediakiwi.Data.ComponentList.SelectOne(Sushi.Mediakiwi.Data.ComponentListType.Folders);
-
-            //    bool showFolders = true;
-                
-            //    //if (wim.CurrentFolder.Type == Sushi.Mediakiwi.Data.FolderType.List)
-            //        //showFolders = wim.Console.CurrentWimNavigation.ShowFolders;
-
-            //    //if (wim.CurrentFolder.Level < 3)
-            //    //    showFolders = false;
-
-            //    if (showFolders)
-            //    {
-            //        if (wim.CurrentFolder.ParentID.GetValueOrDefault(0) > 0)
-            //        {
-            //            BrowseItem item = new BrowseItem();
-            //            item.ID = wim.CurrentFolder.ParentID.Value;
-            //            item.Title = "...";
-            //            item.PassThrough = "folder";
-                        
-
-            //            if (wim.CurrentApplicationUser.ShowDetailView)
-            //                item.Icon = string.Format("<img alt=\"\" src=\"{0}/images/icon_folder_link.png\"/>", wim.Console.WimRepository);
-            //            else
-            //            {
-            //                if (wim.ShowNewDesign)
-            //                {
-            //                    item.Info1 = string.Format("<a class=\"multiple\" href=\"{0}?folder={1}\"><figure class=\"icon-folder\"></figure></a>"
-            //                        , wim.Console.WimPagePath
-            //                        , item.ID
-            //                        );
-
-            //                    if (wim.CurrentFolder.Type == Sushi.Mediakiwi.Data.FolderType.List || wim.CurrentFolder.Type == Sushi.Mediakiwi.Data.FolderType.Administration)
-            //                        item.Icon = string.Concat(wim.Console.WimRepository, "/", "thumb_folder_logic.", ext);
-            //                    else
-            //                        item.Icon = string.Concat(wim.Console.WimRepository, "/", "thumb_folder.", ext);
-            //                }
-                         
-            //                else
-            //                {
-            //                    if (wim.CurrentFolder.Type == Sushi.Mediakiwi.Data.FolderType.List || wim.CurrentFolder.Type == Sushi.Mediakiwi.Data.FolderType.Administration)
-            //                        item.Icon = string.Concat(wim.Console.WimRepository, "/images/", "thumb_folder_logic.", ext);
-            //                    else
-            //                        item.Icon = string.Concat(wim.Console.WimRepository, "/images/", "thumb_folder.", ext);
-            //                }
-            //            }
-            //            list.Add(item);
-            //        }
-
-            //        Sushi.Mediakiwi.Data.Folder[] folders = null;
-
-            //        bool isRootLevelView = false;// wim.CurrentFolder.Level == 0;
-            //        if (isSearchInitiate || isRootLevelView)
-            //        {
-            //            isRootLevelView = true;
-            //            folders = Sushi.Mediakiwi.Data.Folder.SelectAll(wim.CurrentFolder.Type, wim.CurrentSite.ID, this.FilterTitle, this.FilterPath);
-            //        }
-            //        else
-            //            folders = Sushi.Mediakiwi.Data.Folder.SelectAllByParent(wim.CurrentFolder.ID, wim.CurrentFolder.Type, false);
-
-            //        //  ACL determination
-            //        folders = Sushi.Mediakiwi.Data.Folder.ValidateAccessRight(folders, wim.CurrentApplicationUser);
-
-            //        if (wim.CurrentFolder.Level == 0 && folders.Length == 0 && !isRootLevelView && !isSearchInitiate)
-            //        {
-            //            isRootLevelView = true;
-            //            folders = Sushi.Mediakiwi.Data.Folder.SelectAll(wim.CurrentFolder.Type, wim.CurrentSite.ID, this.FilterTitle, this.FilterPath);
-            //            //  ACL determination
-            //            folders = Sushi.Mediakiwi.Data.Folder.ValidateAccessRight(folders, wim.CurrentApplicationUser);
-            //        }
-
-            //        foreach (Sushi.Mediakiwi.Data.Folder entry in folders)
-            //        {
-            //            BrowseItem item = new BrowseItem();
-            //            item.ID = entry.ID;
-            //            item.Title = isRootLevelView ? entry.CompleteCleanPath() : entry.Name;
-
-
-            //            if (wim.Console.IsNewDesign)
-            //            {
-                            
-            //                item.Icon = "<figure class=\"icon-folder icon\"></figure>";
-            //                item.Info1 = string.Format("<a class=\"multiple\" href=\"{0}?folder={1}\"><figure class=\"icon-settings-02 icon\"></figure></a>"
-            //                 , wim.Console.WimPagePath
-            //                 , entry.ID
-            //                 );
-            //            }
-            //            else
-            //            {
-            //                //if (entry.Type == Sushi.Mediakiwi.Data.FolderType.Page)
-            //                item.Info1 = string.Format("<a href=\"{0}?list={1}&folder={2}&item={3}\"><img alt=\"\" title=\"{5}\" src=\"{4}/images/icon_folderOptions_link.png\"/></a>", wim.Console.WimPagePath, list0.ID, entry.ID, entry.ID, wim.Console.WimRepository
-            //                    , Labels.ResourceManager.GetString("list_properties", new CultureInfo(wim.CurrentApplicationUser.LanguageCulture))
-            //                    );
-            //            }
-            //            item.Info3 = entry.Changed;
-            //            item.Info4 = entry.CompletePath;
-
-
-            //            item.PassThrough = "folder";
-
-            //            string thumbcandidate = string.Concat("thumb_folder.", ext);
-            //            if (entry.Type == Sushi.Mediakiwi.Data.FolderType.List || entry.Type == Sushi.Mediakiwi.Data.FolderType.Administration)
-            //                thumbcandidate = string.Concat("thumb_folder_logic.", ext);
-
-            //            if (!wim.ShowNewDesign)
-            //            {
-            //                if (entry.MasterID.HasValue)
-            //                {
-            //                    thumbcandidate = string.Concat("thumb_folder_logic_inherit.", ext);
-            //                    if (wim.CurrentApplicationUser.ShowDetailView)
-            //                        item.Icon = string.Format("<img alt=\"\" src=\"{0}/images/icon_folder_iwhite.png\"/>", wim.Console.WimRepository);
-            //                    else
-            //                    {
-
-            //                        item.Icon = string.Concat(wim.Console.WimRepository, "/images/", thumbcandidate);
-            //                    }
-            //                }
-            //                else
-            //                {
-            //                    if (wim.CurrentApplicationUser.ShowDetailView)
-            //                        item.Icon = string.Format("<img alt=\"\" src=\"{0}/images/icon_folder_link.png\"/>", wim.Console.WimRepository);
-            //                    else
-            //                        if (wim.ShowNewDesign)
-            //                            item.Icon = string.Concat(wim.Console.WimRepository, "/", thumbcandidate);
-            //                        else
-            //                            item.Icon = string.Concat(wim.Console.WimRepository, "/images/", thumbcandidate);
-            //                }
-            //            }
-
-            //            list.Add(item);
-            //        }
-            //    }
-            //}
-            //else
-            //{
-            //    int baseGalleryID = wim.CurrentApplicationUserRole.GalleryRoot.GetValueOrDefault();
-
-            //    Sushi.Mediakiwi.Data.IComponentList list0 = Sushi.Mediakiwi.Data.ComponentList.SelectOne(Sushi.Mediakiwi.Data.ComponentListType.Folders);
-
-            //    wim.ListDataColumns.Add("", "Info1", 90, Align.Right);
-            //    //wim.ListDataColumns.Add("Type", "Info2");
-            //    wim.ListDataColumns.Add(Labels.ResourceManager.GetString("list_datemodified", new CultureInfo(wim.CurrentApplicationUser.LanguageCulture)), "Info3", 110, Align.Center);
-            //    wim.ListDataColumns.Add("", "Info4", 20, Align.Center);
-
-            //    Sushi.Mediakiwi.Data.Gallery[] galleries;
-            //    Sushi.Mediakiwi.Data.Gallery rootGallery = Sushi.Mediakiwi.Data.Gallery.SelectOne(Utility.ConvertToGuid(Request.Query["root"]));
-            //    if (!IsPostBack || string.IsNullOrEmpty(this.FilterTitle))
-            //    {
-            //        if (wim.CurrentFolder.ParentID.GetValueOrDefault(0) > 0 && wim.CurrentFolder.ID != rootGallery.ID && wim.CurrentFolder.ID != baseGalleryID)
-            //        {
-            //            BrowseItem item = new BrowseItem();
-            //            item.ID = wim.CurrentFolder.ParentID.Value;
-            //            item.Title = "...";
-            //            item.PassThrough = "gallery";
-
-            //            if (wim.Console.IsNewDesign)
-            //            {
-            //                item.Info1 = string.Format("<a class=\"multiple\" href=\"{0}?gallery={1}\"><figure class=\"flaticon solid B13\"></figure><strong>{2}</strong></a>"
-            //                 , wim.Console.WimPagePath
-            //                 , item.ID
-            //                 , item.Title
-            //                 );
-            //            }
-            //            else
-            //            {
-            //                if (wim.CurrentApplicationUser.ShowDetailView)
-            //                    item.Icon = string.Format("<img alt=\"\" src=\"{0}/images/icon_folder_link.png\"/>", wim.Console.WimRepository);
-            //                else
-            //                    item.Icon = string.Concat(wim.Console.WimRepository, "/images/", "thumb_folder.png");
-            //            }
-
-
-            //            list.Add(item);
-            //        }
-
-            //        Sushi.Mediakiwi.Data.Gallery current = Sushi.Mediakiwi.Data.Gallery.SelectOne(wim.CurrentFolder.ID);
-                    
-            //        //if (!Request.IsLocal)
-            //        //current.UpdateFiles();
-
-            //        galleries = Sushi.Mediakiwi.Data.Gallery.SelectAllByParent(wim.CurrentFolder.ID);
-            //    }
-            //    else
-            //        galleries = Sushi.Mediakiwi.Data.Gallery.SelectAll(this.FilterTitle);
-
-            //    //  [20110812:MM] Security turned off, takes to long.
-            //    //if (!Wim.CommonConfiguration.RIGHTS_GALLERY_SUBS_ARE_ALLOWED)
-            //    //    galleries = Sushi.Mediakiwi.Data.Gallery.ValidateAccessRight(galleries, wim.CurrentApplicationUser);
-
-            //    bool isRootLevelView = false;
-            //    if (wim.CurrentFolder.Level == 0 && galleries.Length == 0 && !isRootLevelView && !isSearchInitiate)
-            //    {
-            //        isRootLevelView = true;
-            //        //galleries = Sushi.Mediakiwi.Data.Gallery.SelectAll();
-            //        ////  ACL determination
-            //        //galleries = Sushi.Mediakiwi.Data.Gallery.ValidateAccessRight(galleries, wim.CurrentApplicationUser);
-            //    }
-
-            //    foreach (Sushi.Mediakiwi.Data.Gallery entry in galleries)
-            //    {
-            //        BrowseItem item = new BrowseItem();
-            //        item.ID = entry.ID;
-            //        item.Title = isRootLevelView ? entry.CompleteCleanPath() : entry.Name;
-            //        item.PassThrough = "gallery";
-            //        //item.Info1 = entry.AssetCount2.ToString();
-
-            //        if (wim.Console.IsNewDesign)
-            //        {
-            //            item.Info1 = string.Format("<a class=\"multiple\" href=\"{0}?gallery={1}\"><figure class=\"flaticon solid B13\"></figure><strong>{2}</strong></a>"
-            //             , wim.Console.WimPagePath
-            //             , entry.ID
-            //             , entry.Name
-            //             );
-            //        }
-            //        else
-            //        {
-            //            if (wim.CurrentApplicationUser.ShowDetailView)
-            //                item.Icon = string.Format("<img alt=\"\" src=\"{0}/images/icon_folder_link.png\"/>", wim.Console.WimRepository);
-            //            else
-            //                item.Icon = string.Concat(wim.Console.WimRepository, "/images/", "thumb_folder.", ext);
-            //        }
-
-            //        if (!OpenedInPopup)
-            //            item.Info4 = string.Format("<a href=\"{0}?list={1}&gallery={2}&item={3}\"><img alt=\"\" title=\"{5}\" src=\"{4}/images/icon_folderOptions_link.png\"/></a>", wim.Console.WimPagePath, list0.ID, entry.ID, entry.ID, wim.Console.WimRepository
-            //            , Labels.ResourceManager.GetString("list_properties", new CultureInfo(wim.CurrentApplicationUser.LanguageCulture))
-            //            );
-            //        item.Info3 = entry.Created;
-            //        list.Add(item);
-            //    }
-            //}
-
-            //if (wim.CurrentFolder.Type == Sushi.Mediakiwi.Data.FolderType.Page)
-            //{
-
-            //    wim.ListDataColumns.Add(Labels.ResourceManager.GetString("list_datemodified", new CultureInfo(wim.CurrentApplicationUser.LanguageCulture)), "Info3", 110, Align.Center);
-                
-            //    if (wim.CurrentApplicationUserRole.CanChangePage)
-            //        wim.ListDataColumns.Add("", "Info1", 20, Align.Center);
-
-            //    Sushi.Mediakiwi.Data.IComponentList list0 = Sushi.Mediakiwi.Data.ComponentList.SelectOne(Sushi.Mediakiwi.Data.ComponentListType.PageProperties);
-            //    Sushi.Mediakiwi.Data.PageSortBy sortBy = Sushi.Mediakiwi.Data.PageSortBy.SortOrder;
-                
-            //    switch ( wim.CurrentFolder.SortOrderMethod)
-            //    {
-            //        case 1:
-            //            sortBy = Sushi.Mediakiwi.Data.PageSortBy.CustomDate;
-            //            break;
-            //        case 2:
-            //            sortBy = Sushi.Mediakiwi.Data.PageSortBy.CustomDateDown;
-            //            break;
-            //        case 3:
-            //            sortBy = Sushi.Mediakiwi.Data.PageSortBy.LinkText;
-            //            break;
-            //        case 4:
-            //            sortBy = Sushi.Mediakiwi.Data.PageSortBy.Name;
-            //            break;
-            //        case 5:
-            //        default:
-            //            sortBy = Sushi.Mediakiwi.Data.PageSortBy.SortOrder;
-            //            break;
-            //    }
-
-            //    Sushi.Mediakiwi.Data.Page[] pages;
-            //    if (!isSearchInitiate)
-            //        pages = Sushi.Mediakiwi.Data.Page.SelectAll(wim.CurrentFolder.ID, Sushi.Mediakiwi.Data.PageFolderSortType.Folder, Sushi.Mediakiwi.Data.PageReturnProperySet.All, sortBy, false);
-            //    else
-            //    {
-            //        pages = Sushi.Mediakiwi.Data.Page.SelectAll(this.FilterTitle, FilterPath);
-            //    }
-
-            //    pages = Sushi.Mediakiwi.Data.Page.ValidateAccessRight(pages, wim.CurrentApplicationUser);
-            //    foreach (Sushi.Mediakiwi.Data.Page entry in pages)
-            //    {
-                    
-            //        string candidate;
-            //        if (entry.MasterID.HasValue)
-            //        {
-            //            if (entry.InheritContent)
-            //            {
-            //                if (!entry.IsPublished)
-            //                    candidate = string.Concat("thumb_page_inherit_unpub.", ext);
-            //                else if (entry.IsEdited)
-            //                    candidate = string.Concat("thumb_page_inherit_edit.", ext);
-            //                else
-            //                    candidate = string.Concat("thumb_page_inherit.", ext);
-            //            }
-            //            else
-            //            {
-            //                if (!entry.IsPublished)
-            //                    candidate = string.Concat("thumb_page_local_unpub.", ext);
-            //                else if (entry.IsEdited)
-            //                    candidate = string.Concat("thumb_page_local_edit.", ext);
-            //                else
-            //                    candidate = string.Concat("thumb_page_local.", ext);
-            //            }
-            //        }
-            //        else
-            //        {
-
-            //            if (!entry.IsPublished)
-            //                candidate = string.Concat("thumb_page_unpub.", ext);
-            //            else if (entry.IsEdited)
-            //                candidate = string.Concat("thumb_page_edit.", ext);
-            //            else
-            //                candidate = string.Concat("thumb_unknown.", ext);
-            //        }
-
-            //        BrowseItem item = new BrowseItem();
-            //        item.ID = entry.ID;
-
-            //        item.Title = 
-            //            isSearchInitiate
-            //                ? (entry.IsFolderDefault ? string.Concat("<b>", entry.CompletePath, "</b> (default)") : entry.CompletePath)
-            //                : (entry.IsFolderDefault ? string.Concat("<b>", entry.Name, "</b> (default)") : entry.Name);
-                    
-                    
-            //        item.PassThrough = "page";
-            //        item.Info1 = string.Format("<a href=\"{0}?list={1}&folder={2}&item={3}\"><img alt=\"\" title=\"{5}\" src=\"{4}/images/icon_properties_link.png\"/></a>", wim.Console.WimPagePath, list0.ID, entry.FolderID, entry.ID, wim.Console.WimRepository
-            //            , Labels.ResourceManager.GetString("list_properties", new CultureInfo(wim.CurrentApplicationUser.LanguageCulture))
-            //            );
-            //        item.Info3 = entry.Published;
-
-            //        if (wim.Console.IsNewDesign && !wim.ShowNewDesign2)
-            //        {
-            //            item.Info1 = string.Format("<a class=\"file\" href=\"{0}?page={1}\"><figure class=\"flaticon solid B9\"></figure><strong>{2}</strong></a>"
-            //                , wim.Console.WimPagePath
-            //                , entry.ID
-            //                , entry.Name
-            //                );
-            //        }
-
-            //        if (entry.IsPublished)
-            //        {
-            //            if (entry.MasterID.HasValue)
-            //            {
-            //                if (entry.InheritContent)
-            //                {
-            //                    //  Inherited content
-            //                    if (wim.CurrentApplicationUser.ShowDetailView)
-            //                    {
-            //                        if (entry.IsEdited)
-            //                            item.Icon = string.Format("<img alt=\"\" src=\"{0}/images/icon_ipage_edited.png\"/>", wim.Console.WimRepository);
-            //                        else
-            //                            item.Icon = string.Format("<img alt=\"\" src=\"{0}/images/icon_ipage.png\"/>", wim.Console.WimRepository);
-            //                    }
-
-            //                }
-            //                else
-            //                {
-            //                    if (wim.CurrentApplicationUser.ShowDetailView)
-            //                    {
-            //                        //  Localised content
-            //                        if (entry.IsEdited)
-            //                            item.Icon = string.Format("<img alt=\"\" src=\"{0}/images/icon_lpage_edited.png\"/>", wim.Console.WimRepository);
-            //                        else
-            //                            item.Icon = string.Format("<img alt=\"\" src=\"{0}/images/icon_lpage.png\"/>", wim.Console.WimRepository);
-            //                    }
-            //                }
-            //            }
-            //            else
-            //            {
-            //                if (wim.CurrentApplicationUser.ShowDetailView)
-            //                {
-            //                    if (entry.IsEdited)
-            //                        item.Icon = string.Format("<img alt=\"\" src=\"{0}/images/icon_page_edited.png\"/>", wim.Console.WimRepository);
-            //                    else
-            //                        item.Icon = string.Format("<img alt=\"\" src=\"{0}/images/icon_page_link.png\"/>", wim.Console.WimRepository);
-            //                }
-            //            }
-            //        }
-            //        else
-            //        {
-            //            if (entry.MasterID.HasValue)
-            //            {
-            //                if (entry.InheritContent)
-            //                {
-            //                    if (wim.CurrentApplicationUser.ShowDetailView)
-            //                    {
-
-            //                        //  Inherited content
-            //                        item.Icon = string.Format("<img alt=\"\" src=\"{0}/images/icon_ipage_unpublished.png\"/>", wim.Console.WimRepository);
-            //                    }
-            //                }
-            //                else
-            //                {
-            //                    if (wim.CurrentApplicationUser.ShowDetailView)
-            //                    {
-            //                        //  Localised content
-            //                        item.Icon = string.Format("<img alt=\"\" src=\"{0}/images/icon_lpage_unpublished.png\"/>", wim.Console.WimRepository);
-            //                    }
-            //                }
-            //            }
-            //            else
-            //            {
-            //                if (wim.CurrentApplicationUser.ShowDetailView)
-            //                {
-            //                    item.Icon = string.Format("<img alt=\"\" src=\"{0}/images/icon_page_unpublished.png\"/>", wim.Console.WimRepository);
-            //                }
-            //            }
-
-            //        }
-
-            //        if (wim.ShowNewDesign)
-            //            item.Icon = string.Concat(wim.Console.WimRepository, "/", candidate);
-            //        //else
-            //        //    item.Icon = string.Format("<img alt=\"\" src=\"{0}\"/>", string.Concat(wim.Console.WimRepository, "/images/", candidate));
-
-            //        //if (!wim.CurrentApplicationUser.ShowDetailView)
-            //        //    item.Icon = string.Concat(wim.Console.WimRepository, "/images/", candidate);
-                    
-            //        list.Add(item);
-            //    }
-            //}
-            //else if (wim.CurrentFolder.Type == Sushi.Mediakiwi.Data.FolderType.List || wim.CurrentFolder.Type == Sushi.Mediakiwi.Data.FolderType.Administration)
-            //{
-            //    wim.ListDataColumns.Add(Labels.ResourceManager.GetString("list_description", new CultureInfo(wim.CurrentApplicationUser.LanguageCulture)), "Info2");
-            //    if (wim.CurrentApplicationUserRole.CanChangeList || wim.Console.IsNewDesign)
-            //    {
-            //        if (!wim.ShowNewDesign2)
-            //            wim.ListDataColumns.Add("", "Info1", 20, Align.Center);
-            //    }
-            //    //Sushi.Mediakiwi.Data.ComponentList[] clist = Sushi.Mediakiwi.Data.ComponentList.SelectAll(wim.CurrentFolder.ID); 
-            //    //if (wim.CurrentApplicationUserRole.All_Lists || wim.CurrentFolder.Type == Sushi.Mediakiwi.Data.FolderType.Administration)
-            //    //    clist = Sushi.Mediakiwi.Data.ComponentList.SelectAll(wim.CurrentFolder.ID);
-            //    //else
-            //    Sushi.Mediakiwi.Data.IComponentList[] clist = Sushi.Mediakiwi.Data.ComponentList.SelectAll(wim.CurrentFolder.ID, wim.CurrentApplicationUser, false);
-
-            //    Sushi.Mediakiwi.Data.IComponentList list0 = Sushi.Mediakiwi.Data.ComponentList.SelectOne(Sushi.Mediakiwi.Data.ComponentListType.ComponentListProperties);
-
-            //    clist = Sushi.Mediakiwi.Data.ComponentList.ValidateAccessRight(clist, wim.CurrentApplicationUser, wim.CurrentSite.ID);
-            //    foreach (Sushi.Mediakiwi.Data.ComponentList entry in clist)
-            //    {
-
-            //        BrowseItem item = new BrowseItem();
-            //        item.ID = entry.ID;
-
-            //        //if (entry.Type != Sushi.Mediakiwi.Data.ComponentListType.Undefined)
-            //        //{
-            //        //    if (translation == null)
-            //        //        translation = new Sushi.Mediakiwi.Beta.GeneratedCms.Translation();
-            //        //    item.Title = translation.GetListTransation(entry.Type);
-            //        //}
-            //        //else
-            //            item.Title = entry.Name;
-                    
-            //        item.PassThrough = "list";
-            //        item.Info2 = entry.Description;
-
-            //        if (wim.Console.IsNewDesign)
-            //        {
-            //            item.Info1 = string.Format("<a class=\"file\" href=\"{0}?list={3}\"><figure class=\"flaticon solid B9\"></figure><strong>{5}</strong></a>"
-            //                , wim.Console.WimPagePath
-            //                , list0.ID
-            //                , wim.CurrentFolder.ID
-            //                , entry.ID
-            //                , wim.Console.WimRepository
-            //                , entry.Name
-            //                );
-            //        }
-            //        else
-            //        {
-            //            item.Info1 = string.Format("<a href=\"{0}?list={1}&folder={2}&item={3}\"><img alt=\"\" title=\"{5}\" src=\"{4}/images/icon_properties_link.png\"/></a>"
-            //                , wim.Console.WimPagePath
-            //                , list0.ID
-            //                , wim.CurrentFolder.ID
-            //                , entry.ID
-            //                , wim.Console.WimRepository
-            //                , Labels.ResourceManager.GetString("list_properties", new CultureInfo(wim.CurrentApplicationUser.LanguageCulture))
-            //                );
-
-            //            string candidate = string.Concat("thumb_logic.", ext);
-
-            //            if (wim.CurrentApplicationUser.ShowDetailView)
-            //                item.Icon = string.Format("<img alt=\"\" src=\"{0}/images/icon_logic_link.png\"/>", wim.Console.WimRepository);
-            //            else
-            //            {
-            //                if (wim.ShowNewDesign)
-            //                {
-            //                    item.Icon = string.Concat(wim.Console.WimRepository, "/", candidate);
-            //                }
-            //                else
-            //                    item.Icon = string.Concat(wim.Console.WimRepository, "/images/", candidate);
-            //            }
-            //        }
-
-            //        list.Add(item);
-            //    }
-            //}
-            //else if (wim.CurrentFolder.Type == Sushi.Mediakiwi.Data.FolderType.Gallery)
-            //{
-            //    Sushi.Mediakiwi.Data.Asset[] assets;
-
-            //    if (!IsPostBack || string.IsNullOrEmpty(this.FilterTitle))
-            //        assets = Sushi.Mediakiwi.Data.Asset.SelectAll(wim.CurrentFolder.ID);
-            //    else
-            //        assets = Sushi.Mediakiwi.Data.Asset.SearchAll(this.FilterTitle, null);
-
-            //    //assets = Sushi.Mediakiwi.Data.Asset.ValidateAccessRight(assets, wim.CurrentApplicationUser);
-
-            //    foreach (Sushi.Mediakiwi.Data.Asset entry in assets)
-            //    {
-            //        if (OpenedInPopup)
-            //        {
-            //            if (type == 1 && !entry.IsImage)
-            //                continue;
-
-            //            //if (type == 2 && entry.IsImage)
-            //            //    continue;
-            //        }
-
-            //        BrowseItem item = new BrowseItem();
-            //        item.ID = entry.ID;
-            //        item.Title = entry.Title;
-            //        item.PassThrough = "asset";
-
-                   
-
-            //        if (wim.CurrentApplicationUser.ShowDetailView)
-            //        {
-            //            string candidate = "undefined_16.png";
-
-            //            if (entry.Extention == null)
-            //                entry.Extention = "";
-
-            //            switch (entry.Extention.ToLower())
-            //            {
-            //                case "docx": 
-            //                case "doc": candidate = "doc_16.png"; break;
-            //                case "pdf": candidate = "pdf_16.png"; break;
-            //                case "jpeg":
-            //                case "jpg":
-            //                case "png":
-            //                case "bmp":
-            //                case "gif": candidate = "image_16.png"; break;
-            //                case "xls":
-            //                case "xlsx": candidate = "xls_16.png"; break;
-            //                case "ppt":
-            //                case "pptx": candidate = "ppt_16.png"; break;
-            //                case "zip":
-            //                case "rar": candidate = "zip_16.png"; break;
-            //                case "vsd": candidate = "vsd_16.png"; break;
-            //                case "eml":
-            //                case "msg": candidate = "msg_16.png"; break;
-            //                case "txt": candidate = "txt_16.png"; break;
-            //                //case "ppt": candidate = "thumb_powerpoint.png"; break;
-            //                //case "zip": candidate = "thumb_zip.png"; break;
-            //                //case "mov": candidate = "thumb_mov.png"; break;
-            //                //case "wmv": candidate = "thumb_wmv.png"; break;
-            //                default: item.Title = string.Format("{0} ({1})", item.Title, entry.Extention); break;
-            //            }
-            //            item.Icon = string.Format("<img alt=\"\" src=\"{0}/images/icons/{1}\"/>", wim.Console.WimRepository, candidate);
-            //        }
-            //        else
-            //        {
-            //            //if (!Sushi.Mediakiwi.Data.Asset.HasCloudSetting)
-            //            //    entry.CreateThumbnail();
-                        
-            //            string candidate = string.Concat("thumb_unknown.", ext);
-
-            //            if (entry.IsImage)
-            //            {
-            //                if (Sushi.Mediakiwi.Data.Asset.HasCloudSetting || entry.Exists || entry.IsRemote)
-            //                    item.Icon = entry.ThumbnailPath;
-            //                else
-            //                    item.Icon = string.Concat(wim.Console.WimRepository, "/images/", candidate);
-            //            }
-            //            else
-            //            {
-            //                if (!string.IsNullOrEmpty(entry.Extention))
-            //                {
-            //                    switch (entry.Extention.ToLower())
-            //                    {
-            //                        case "doc": candidate = "thumb_word.png"; break;
-            //                        case "pdf": candidate = "thumb_acrobat.png"; break;
-            //                        case "xls": candidate = "thumb_excel.png"; break;
-            //                        case "ppt": candidate = "thumb_powerpoint.png"; break;
-            //                        case "zip": candidate = "thumb_zip.png"; break;
-            //                        case "mov": candidate = "thumb_mov.png"; break;
-            //                        case "wmv": candidate = "thumb_wmv.png"; break;
-            //                    }
-            //                }
-            //                item.Icon = string.Concat(wim.Console.WimRepository, "/images/", candidate);
-            //            }
-            //        }
-
-            //        if (wim.Console.IsNewDesign)
-            //        {
-            //            item.Info1 = string.Format("<a class=\"file\" href=\"{0}?asset={1}\"><figure class=\"flaticon solid B9\"></figure><strong>{2}</strong></a>"
-            //                , wim.Console.WimPagePath
-            //                , entry.ID
-            //                , entry.Title
-            //                );
-            //        }
-            //        else
-            //        {
-            //            if (entry.Size > 0)
-            //                item.Info1 = string.Format("{0} KB", entry.Size / 1024);
-            //            else
-            //                item.Info1 = "0 KB";
-            //        }
-
-            //        item.Info2 = entry.Type;
-            //        item.Info3 = entry.Created;
-
-            //        if (entry.IsRemote || !string.IsNullOrEmpty(entry.RemoteLocation) || entry.Exists)
-            //            item.Info4 = Utility.GetIconImageString(Utility.IconImage.File, Utility.IconSize.Normal, null, entry.DownloadFullUrl);
-            //        else
-            //            item.Info4 = Utility.GetIconImageString(Utility.IconImage.NoFile, Utility.IconSize.Normal, null);
-
-            //        item.HiddenField = string.Format("{0} ({1})", item.Title, item.Info1);
-
-            //        list.Add(item);
-            //    }
-            //}
-
-            //wim.ListData = list;
-            //return;
         }
     }
 }

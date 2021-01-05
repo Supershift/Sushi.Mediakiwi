@@ -15,6 +15,8 @@ using Sushi.Mediakiwi.Data;
 using Microsoft.AspNetCore.Http;
 using Sushi.Mediakiwi.UI;
 using Sushi.Mediakiwi.AppCentre.UI.Forms;
+using System.Threading.Tasks;
+using Sushi.Mediakiwi.Framework;
 
 namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
 {
@@ -152,22 +154,20 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             wim.HideOpenCloseToggle = true;
             wim.OpenInEditMode = true;
 
-            this.ListAction += new Sushi.Mediakiwi.Framework.ComponentActionEventHandler(Document_ListAction);
-            this.ListPreRender += new Sushi.Mediakiwi.Framework.ComponentListEventHandler(Document_ListPreRender);
-            this.ListLoad += new Sushi.Mediakiwi.Framework.ComponentListEventHandler(Document_ListLoad);
-            this.ListSave += new Sushi.Mediakiwi.Framework.ComponentListEventHandler(Document_ListSave);
-            this.ListDelete += new Sushi.Mediakiwi.Framework.ComponentListEventHandler(Document_ListDelete);
-            this.ListPreRender += new Sushi.Mediakiwi.Framework.ComponentListEventHandler(Document_ListPreRender);
+            this.ListAction += Document_ListAction;
+            this.ListLoad += Document_ListLoad;
+            this.ListSave += Document_ListSave;
+            this.ListDelete += Document_ListDelete;
             this.ListSearch += Document_ListSearch;
         }
 
 
 
-        void Document_ListAction(object sender, Sushi.Mediakiwi.Framework.ComponentActionEventArgs e)
+        Task Document_ListAction(ComponentActionEventArgs e)
         {
             if (ButtonBack)
             {
-                string url = wim.GetCurrentQueryUrl(true, new KeyValue() { Key = "redo", Value = "1" });
+                string url = wim.GetUrl(new KeyValue() { Key = "redo", Value = "1" });
                 Response.Redirect(url, true);
             }
 
@@ -179,36 +179,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
 
             wim.CurrentVisitor.Save();
             //Response.Redirect(Request.Url.ToString());
-        }
-
-        /// <summary>
-        /// Handles the ListPreRender event of the Document control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="Sushi.Mediakiwi.Framework.ComponentListEventArgs"/> instance containing the event data.</param>
-        void Document_ListPreRender(object sender, Sushi.Mediakiwi.Framework.ComponentListEventArgs e)
-        {
-            if (Request.Query["ismulti"] == "1")
-            {
-                return;
-            }
-
-            //if (string.IsNullOrEmpty(Implement.Title))
-            //{
-            //    if (m_File != null && m_File.ContentLength > 0)
-            //    {
-            //        string[] split = m_File.FileName.Split('\\');
-
-            //        int index = m_File.FileName.LastIndexOf('.') + 1;
-            //        string[] fileSplit = m_File.FileName.Split('\\');
-
-            //        string extention = m_File.FileName.Substring(index, m_File.FileName.Length - index);
-            //        this.Implement.Title = split[split.Length - 1].Replace(string.Concat(".", extention), string.Empty);
-            //    }
-            //}
-
-            //if (IsPostBack && e.SelectedKey == 0 && (m_File == null || m_File.ContentLength == 0))
-            //    wim.Notification.AddError("Please select a file");
+            return Task.CompletedTask;
         }
 
         /// <summary>
@@ -216,10 +187,10 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="Sushi.Mediakiwi.Framework.ComponentListEventArgs"/> instance containing the event data.</param>
-        void Document_ListDelete(object sender, Sushi.Mediakiwi.Framework.ComponentListEventArgs e)
+        async Task Document_ListDelete(ComponentListEventArgs e)
         {
             if (m_Implement == null)
-                m_Implement = Sushi.Mediakiwi.Data.Document.SelectOne(e.SelectedKey);
+                m_Implement = await Sushi.Mediakiwi.Data.Document.SelectOneAsync(e.SelectedKey);
 
             //m_Implement.CloudDelete();
 
@@ -231,8 +202,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             if (wim.IsLayerMode)
             {
                 int rootAsset = Utility.ConvertToInt(Request.Query["base"]);
-                string redirect = wim.GetCurrentQueryUrl(true
-                , new KeyValue() { Key = "item", Value = rootAsset }
+                string redirect = wim.GetUrl(new KeyValue() { Key = "item", Value = rootAsset }
                 , new KeyValue() { Key = "base", RemoveKey = true }
                 , new KeyValue() { Key = "sat", RemoveKey = true }
                 );
@@ -242,8 +212,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             }
             else
             {
-                string redirect = wim.GetCurrentQueryUrl(true
-                    , new KeyValue() { Key = "gallery", Value = m_Implement.GalleryID }
+                string redirect = wim.GetUrl(new KeyValue() { Key = "gallery", Value = m_Implement.GalleryID }
                     , new KeyValue() { Key = "asset", RemoveKey = true }
                     , new KeyValue() { Key = "item", RemoveKey = true }
                     );
@@ -257,54 +226,10 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="Sushi.Mediakiwi.Framework.ComponentListEventArgs"/> instance containing the event data.</param>
-        void Document_ListSave(object sender, Sushi.Mediakiwi.Framework.ComponentListEventArgs e)
+        async Task Document_ListSave(ComponentListEventArgs e)
         {
             if (m_Implement == null)
-                m_Implement = Sushi.Mediakiwi.Data.Document.SelectOne(e.SelectedKey);
-
-            if (m_Implement.GalleryID > 0 && m_Implement.GalleryID != this.AssignedGalleryID)
-            {
-                //if (m_Implement.MoveFile(AssignedGalleryID))
-                //    m_Implement.GalleryID = this.AssignedGalleryID;
-
-                //Wim.Utilities.CacheItemManager.FlushIndexOfCacheObjects("Data_Sushi.Mediakiwi.Data.Asset");
-                //Wim.Utilities.CacheItemManager.FlushIndexOfCacheObjects("Data_Sushi.Mediakiwi.Data.Gallery");
-            }
-            //if (m_Implement.GalleryID == 0)
-            //{
-            //    //  [20140724:MM] Set DB mapping
-            //    m_Implement.DatabaseMappingPortal = wim.CurrentFolder.DatabaseMappingPortal;
-            //}
-
-            //bool hasUpload = m_File != null && m_File.ContentLength > 0;
-
-            ////  NEW DESIGN
-            //if (!hasUpload && e.SelectedKey == 0)
-            //    return;
-
-            //if (hasUpload && !m_Implement.IsNewInstance)
-            //{
-            //    // Delete existing asset!
-            //    // MarkR (20120807) : First check file existence.
-            //    if (System.IO.File.Exists(m_Implement.LocalFilePath))
-            //        System.IO.File.Delete(m_Implement.LocalFilePath);
-
-            //    m_Implement.CloudDelete();
-            //}
-
-            //if (hasUpload)
-            //{
-            //    bool doBlobInsert = false;
-            //    m_Implement = Create(m_Implement, doBlobInsert);
-            //    if (m_Implement.IsNewInstance)
-            //        return;
-
-            //    long kb = m_Implement.Size / 1024;
-
-            //    int? assetTypeID = Utility.ConvertToIntNullable(Request.Query["sat"]);
-            //    if (assetTypeID.HasValue)
-            //        m_Implement.AssetTypeID = assetTypeID.Value;
-            //}
+                m_Implement = await Sushi.Mediakiwi.Data.Document.SelectOneAsync(e.SelectedKey);
 
             int? parent = Utility.ConvertToIntNullable(Request.Query["base"]);
             if (parent.HasValue)
@@ -321,7 +246,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                 m_Implement.GalleryID = currentAsset.GalleryID;
             }
 
-            m_Implement.Save();
+            await m_Implement.SaveAsync();
 
             //if (e.SelectedKey == 0 || Request.Query["redo"] == "1")
             //{
@@ -768,15 +693,14 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             public string PassthroughParameter { get; set; }
         }
 
-        void Document_ListSearch(object sender, Framework.ComponentListSearchEventArgs e)
+        async Task Document_ListSearch(Framework.ComponentListSearchEventArgs e)
         {
             int rootAsset = Utility.ConvertToInt(Request.Query["base"]);
 
-            var url = wim.GetCurrentQueryUrl(false
-                , new KeyValue() { Key = "item", RemoveKey = true }
+            var url = wim.GetUrl(new KeyValue() { Key = "item", RemoveKey = true }
                 );
-            var types = Sushi.Mediakiwi.Data.AssetType.SelectAll(true);
-            var assets = Sushi.Mediakiwi.Data.Asset.SelectAll_Variant(rootAsset, Request.Query["gallery"]);
+            var types = await Sushi.Mediakiwi.Data.AssetType.SelectAllAsync(true);
+            var assets = await Sushi.Mediakiwi.Data.Asset.SelectAll_VariantAsync(rootAsset, Request.Query["gallery"]);
             AssetTypeMapper mapper = new AssetTypeMapper();
             var mapped = mapper.Map(types, assets, url);
 
@@ -784,7 +708,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             wim.ListDataColumns.Add(new Framework.ListDataColumn("Type", "AssetType", Framework.ListDataColumnType.HighlightPresent));
             wim.ListDataColumns.Add(new Framework.ListDataColumn("File", "DisplayName"));
             wim.ListDataColumns.Add(new Framework.ListDataColumn("", "HasAsset") { ColumnWidth = 30 });
-            wim.ListDataApply(mapped);
+            wim.ListDataAdd(mapped);
             wim.SearchResultItemPassthroughParameterProperty = "PassthroughParameter";
             wim.Page.Body.Grid.IgnoreInLayerSubSelect = true;
         }
@@ -796,7 +720,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="Sushi.Mediakiwi.Framework.ComponentListEventArgs"/> instance containing the event data.</param>
-        void Document_ListLoad(object sender, Sushi.Mediakiwi.Framework.ComponentListEventArgs e)
+        async Task Document_ListLoad(ComponentListEventArgs e)
         {
             this.AssetTypeSelectionList = new Sushi.Mediakiwi.Data.DataList();
 
@@ -813,13 +737,12 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
 
             if (e.SelectedKey > 0)
             {
-                var variantTypes = Sushi.Mediakiwi.Data.AssetType.SelectAll(true);
+                var variantTypes = await Sushi.Mediakiwi.Data.AssetType.SelectAllAsync(true);
                 if (variantTypes.Length > 0)
                     wim.SetPropertyVisibility("ButtonAlternative", true);
             }
 
-            ButtonBack2URL = wim.GetCurrentQueryUrl(true
-                    , new KeyValue() { Key = "base", RemoveKey = true }
+            ButtonBack2URL = wim.GetUrl(new KeyValue() { Key = "base", RemoveKey = true }
                     , new KeyValue() { Key = "item", Value = rootAsset }
                     , new KeyValue() { Key = "sat", RemoveKey = true }
                     , new KeyValue() { Key = "redo", RemoveKey = true }
@@ -831,8 +754,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                 wim.SetPropertyVisibility("ButtonBack2", true);
             }
 
-            AlternativeURL = wim.GetCurrentQueryUrl(true
-                , new KeyValue() { Key = "base", Value = rootAsset }
+            AlternativeURL = wim.GetUrl(new KeyValue() { Key = "base", Value = rootAsset }
                 , new KeyValue() { Key = "item", Value = 0 }
                 , new KeyValue() { Key = "sat", RemoveKey = true }
                 , new KeyValue() { Key = "redo", RemoveKey = true }
@@ -897,7 +819,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             //if (wim.CurrentFolder.DatabaseMappingPortal != null)
             //    Implement = Sushi.Mediakiwi.Data.Asset.SelectOneByPortal(e.SelectedKey, wim.CurrentFolder.DatabaseMappingPortal.Name);
             //else
-            Implement = Sushi.Mediakiwi.Data.Asset.SelectOne(e.SelectedKey);
+            Implement = await Sushi.Mediakiwi.Data.Asset.SelectOneAsync(e.SelectedKey);
             _Form = new DocumentForm(Implement);
             this.FormMaps.Add(_Form);
 

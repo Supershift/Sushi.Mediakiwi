@@ -194,18 +194,10 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
             return build.ToString();
         }
 
-
-        public string GetCurrentQueryUrl(HttpContext context, bool includeWimPath, int? channelID, params KeyValue[] keyvalues)
+        public string GetUrl(params KeyValue[] keyvalues)
         {
-            string build = GetCustomQueryString(context, keyvalues);
-            if (includeWimPath)
-            {
-                if (channelID.HasValue)
-                    return string.Concat(Console.GetWimPagePath(channelID.Value), build);
-                else
-                    return string.Concat(Console.WimPagePath, build);
-            }
-            return build;
+            string querystring = GetCustomQueryString(Console.Context, keyvalues);
+            return string.Concat(Console.UrlBuild.GetListRequest(Console.CurrentList), querystring);
         }
 
         /// <summary>
@@ -214,9 +206,18 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
         /// <returns></returns>
         public string GetListNewRecordRequest()
         {
-            string newItemRequest = string.Concat(Console.WimPagePath, "?", Console.CurrentListInstance.wim.SearchResultItemPassthroughParameter, "=0");
-            if (!newItemRequest.Contains("&item=0"))
-                return string.Concat(newItemRequest, "&item=0");
+            string newItemRequest = string.Concat(Console.CurrentListInstance.wim.SearchResultItemPassthroughParameter, "=0");
+            if (!newItemRequest.Contains("?item=0") && !newItemRequest.Contains("&item=0"))
+            {
+                if (newItemRequest.Contains("?"))
+                {
+                    return string.Concat(newItemRequest, "&item=0");
+                }
+                else
+                {
+                    return string.Concat(newItemRequest, "?item=0");
+                }
+            }
 
             if (!string.IsNullOrEmpty(Console.Request.Query["openinframe"]) && !newItemRequest.Contains("openinframe"))
                 newItemRequest += string.Concat("&openinframe=", Console.Request.Query["openinframe"]);
@@ -244,10 +245,12 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
         /// Gets the list request.
         /// </summary>
         /// <param name="list">The list.</param>
+        /// <param name="itemID">The item ID.</param>
         /// <returns></returns>
-        public string GetListRequest(Data.IComponentList list)
+        public string GetListRequest(int listID, int? itemID = null)
         {
-            return string.Concat(Console.WimPagePath, "?list=", list.ID);
+            var list = ComponentList.SelectOne(listID);
+            return GetListRequest(list, itemID);
         }
 
         /// <summary>
@@ -256,20 +259,25 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
         /// <param name="list">The list.</param>
         /// <param name="itemID">The item ID.</param>
         /// <returns></returns>
-        public string GetListRequest(Data.IComponentList list, int? itemID)
+        public string GetListRequest(IComponentList list, int? itemID = null)
         {
-            //if (list.SiteID.HasValue)
-            //{
-            //    if (itemID.HasValue)
-            //        return string.Concat(GetCurrentWimPath(list.SiteID.Value), "?list=", list.ID, "&item=", itemID);
+            var folder = Data.Folder.SelectOneChild(list.FolderID.GetValueOrDefault(), Console.ChannelIndentifier);
+            var path = list.Name;
 
-            //    return string.Concat(GetCurrentWimPath(list.SiteID.Value), "?list=", list.ID);
-            //}
+            if (folder != null && !folder.IsNewInstance)
+            {
+                path = $"{folder.CompletePath}{path}";
+            }
+            else
+            {
+                path = $"/{path}";
+            }
+
 
             if (itemID.HasValue)
-                return string.Concat(Console.WimPagePath, "?list=", list.ID, "&item=", itemID);
+                return string.Concat(Console.WimPagePath, Utils.ToUrl(path), "?item=", itemID);
 
-            return string.Concat(Console.WimPagePath, "?list=", list.ID);
+            return string.Concat(Console.WimPagePath, Utils.ToUrl(path));
         }
 
         /// <summary>

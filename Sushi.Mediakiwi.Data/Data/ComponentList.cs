@@ -1193,6 +1193,42 @@ namespace Sushi.Mediakiwi.Data
         }
 
         /// <summary>
+        /// Select a componentList based on it's name and it residing folder
+        /// </summary>
+        /// <returns></returns>
+        public static IComponentList SelectOne(string name, int? folder)
+        {
+            var connector = ConnectorFactory.CreateConnector<ComponentList>();
+            var filter = connector.CreateDataFilter();
+            filter.Add(x => x.Name, name);
+
+            if (folder.HasValue)
+            {
+                filter.Add(x => x.FolderID, folder);
+            }
+
+            return connector.FetchSingle(filter);
+        }
+
+        /// <summary>
+        /// Select a componentList based on it's name and it residing folder
+        /// </summary>
+        /// <returns></returns>
+        public static async Task<IComponentList> SelectOneAsync(string name, int? folder)
+        {
+            var connector = ConnectorFactory.CreateConnector<ComponentList>();
+            var filter = connector.CreateDataFilter();
+            filter.Add(x => x.Name, name);
+
+            if (folder.HasValue)
+            {
+                filter.Add(x => x.FolderID, folder);
+            }
+
+            return await connector.FetchSingleAsync(filter);
+        }
+
+        /// <summary>
         /// Select a componentList based on it's class Async
         /// </summary>
         /// <param name="className">Name of the class.</param>

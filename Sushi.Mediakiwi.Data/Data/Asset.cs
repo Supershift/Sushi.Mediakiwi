@@ -381,29 +381,20 @@ namespace Sushi.Mediakiwi.Data
 
         public static List<Asset> SelectAll_Variant(int parentID, string relativeGalleryPath = null)
         {
-            //List<Asset> list = new List<Asset>();
-            //Asset implement = new Asset();
-
-            //if (!string.IsNullOrEmpty(relativeGalleryPath))
-            //{
-            //    var mapping = Sushi.Mediakiwi.Data.Common.GetCurrentGalleryMappingUrl(relativeGalleryPath);
-            //    if (mapping != null)
-            //        implement.DatabaseMappingPortal = Sushi.Mediakiwi.Data.Common.GetPortal(mapping.Portal, false);
-            //}
-
-            //List<DatabaseDataValueColumn> whereClause = new List<DatabaseDataValueColumn>();
-            //whereClause.Add(new DatabaseDataValueColumn("Asset_Asset_Key", SqlDbType.Int, parentID));
-
-            //foreach (object o in implement._SelectAll(whereClause))
-            //{
-            //    var asset = (Asset)o;
-            //    list.Add(asset);
-            //}
             var connector = ConnectorFactory.CreateConnector<Asset>();
             var filter = connector.CreateDataFilter();
             filter.Add(x => x.ParentID, parentID);
 
             return connector.FetchAll(filter);
+        }
+
+        public static async Task<List<Asset>> SelectAll_VariantAsync(int parentID, string relativeGalleryPath = null)
+        {
+            var connector = ConnectorFactory.CreateConnector<Asset>();
+            var filter = connector.CreateDataFilter();
+            filter.Add(x => x.ParentID, parentID);
+
+            return await connector.FetchAllAsync(filter);
         }
 
 

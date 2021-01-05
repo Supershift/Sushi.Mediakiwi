@@ -54,28 +54,43 @@ namespace Sushi.Mediakiwi
             }
         }
 
+        string GetSafeUrl(HttpContext context)
+        {
+            return $"{context.Request.Path}";
+
+            return $"{context.Request.PathBase}{context.Request.Path}";
+        }
+
         public async Task Invoke(HttpContext context)
         {
-            // Do something with context near the beginning of request processing.
-            if (_env.IsDevelopment())
-            {
-                Configure(context);
-                Monitor monitor = new Monitor(context, _env, _configuration);
-                await monitor.StartAsync();
-            }
-            else
-            {
-                try { 
-                Configure(context);
+            var url = GetSafeUrl(context);
+            var portal = _configuration.GetValue<string>("mediakiwi:portal_path");
 
-                Monitor monitor = new Monitor(context, _env, _configuration);
-                await monitor.StartAsync();
-                }
-                catch (Exception ex)
+            if (url.StartsWith(portal, StringComparison.CurrentCultureIgnoreCase)
+                || url.EndsWith(portal, StringComparison.CurrentCultureIgnoreCase))
+            {
+                if (_env.IsDevelopment())
                 {
-                    throw ex;
+                    Configure(context);
+                    Monitor monitor = new Monitor(context, _env, _configuration);
+                    await monitor.StartAsync();
+                }
+                else
+                {
+                    try
+                    {
+                        Configure(context);
+
+                        Monitor monitor = new Monitor(context, _env, _configuration);
+                        await monitor.StartAsync();
+                    }
+                    catch (Exception ex)
+                    {
+                        throw ex;
+                    }
                 }
             }
+
             await _next.Invoke(context);
         }
     }

@@ -455,7 +455,7 @@ namespace Sushi.Mediakiwi.UI
 
         string GetUri(Sushi.Mediakiwi.Beta.GeneratedCms.Console container, int page)
         {
-            return container.CurrentListInstance.wim.GetCurrentQueryUrl(true, new KeyValue() { Key = "set", Value = page.ToString() });
+            return container.CurrentListInstance.wim.GetUrl(new KeyValue() { Key = "set", Value = page.ToString() });
         }
 
         string GetListPaging(Sushi.Mediakiwi.Beta.GeneratedCms.Console container, Utilities.Splitlist splitlist, int currentPage, bool knockout, bool isTop)
@@ -2762,6 +2762,14 @@ namespace Sushi.Mediakiwi.UI
                     }
 
                     //column.PropertyIndex = index;
+                    if (info.PropertyType != null && info.PropertyType.BaseType != null)
+                    {
+                        if (info.PropertyType.BaseType.Equals(typeof(System.Enum)))
+                        {
+                            return (int)info.GetValue(item, null);
+                        }
+                    }
+
                     return info.GetValue(item, null);
                 }
             }

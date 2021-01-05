@@ -18,6 +18,7 @@ namespace Sushi.Mediakiwi.Framework
     /// </summary>
     public delegate void ComponentListEventHandler(IComponentListTemplate sender, ComponentListEventArgs e);
 
+
     public delegate void ComponentAsyncEventHandler(object sender, ComponentAsyncEventArgs e);
 
     /// <summary>

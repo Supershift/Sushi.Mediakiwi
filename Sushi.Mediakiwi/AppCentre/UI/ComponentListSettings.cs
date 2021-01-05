@@ -4,6 +4,7 @@ using System.Configuration;
 using System.Web;
 using Sushi.Mediakiwi.Framework;
 using Sushi.Mediakiwi.Data;
+using System.Threading.Tasks;
 
 namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
 {
@@ -20,18 +21,19 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             //wim.ShowInFullWidthMode = true;
             wim.CanAddNewItem = false;
             
-            this.ListLoad += new ComponentListEventHandler(ComponentListSettings_ListLoad);
-            this.ListSave += new ComponentListEventHandler(ComponentListSettings_ListSave);
-            this.ListPreRender += new ComponentListEventHandler(ComponentListSettings_ListPreRender);
+            this.ListLoad += ComponentListSettings_ListLoad;
+            this.ListSave += ComponentListSettings_ListSave;
+            this.ListPreRender += ComponentListSettings_ListPreRender;
         }
 
-        void ComponentListSettings_ListPreRender(object sender, ComponentListEventArgs e)
+        Task ComponentListSettings_ListPreRender(ComponentListEventArgs e)
         {
             if (wim.Form.ListItemElementList.Count < 2)
             {
                 wim.Notification.AddNotification("This list has no custom settings.");    
             }
-            if (wim.Form.ListItemElementList == null || IsPostBack) return;
+            if (wim.Form.ListItemElementList == null || IsPostBack) 
+                return Task.CompletedTask;
 
             foreach (var item in wim.Form.ListItemElementList)
             {
@@ -40,9 +42,10 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
 
                 ComponenentListInstance.Settings[item.Name].Apply(item.SenderInstance);
             }
+            return Task.CompletedTask;
         }
 
-        void ComponentListSettings_ListSave(object sender, ComponentListEventArgs e)
+        async Task ComponentListSettings_ListSave(ComponentListEventArgs e)
         {
             if (wim.Form.ListItemElementList.Count < 2) return;
             if (wim.Form.ListItemElementList == null) return;
@@ -55,7 +58,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                 object value = item.GetValue();
                 ComponenentListInstance.Settings.ApplyObject(item.Name, value);
             }
-            ComponenentListInstance.Save();
+            await ComponenentListInstance.SaveAsync();
         }
 
         /// <summary>
@@ -63,9 +66,9 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="Sushi.Mediakiwi.Framework.ComponentListEventArgs"/> instance containing the event data.</param>
-        void ComponentListSettings_ListLoad(object sender, ComponentListEventArgs e)
+        async Task ComponentListSettings_ListLoad(ComponentListEventArgs e)
         {
-            this.ComponenentListInstance = Sushi.Mediakiwi.Data.ComponentList.SelectOne(e.SelectedGroupItemKey);
+            this.ComponenentListInstance = await Sushi.Mediakiwi.Data.ComponentList.SelectOneAsync(e.SelectedGroupItemKey);
             this.Implement = Utils.CreateInstance(ComponenentListInstance);
         }
 

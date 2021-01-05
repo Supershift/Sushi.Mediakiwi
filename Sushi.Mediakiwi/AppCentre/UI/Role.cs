@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
+using System.Threading.Tasks;
 using System.Web;
 using Sushi.Mediakiwi.Framework;
 using Sushi.Mediakiwi.UI;
@@ -22,22 +23,21 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             wim.OpenInEditMode = true;
             wim.HideOpenCloseToggle = true;
 
-            this.ListSearch += new ComponentSearchEventHandler(Role_ListSearch);
-            this.ListLoad += new ComponentListEventHandler(Role_ListLoad);
-            this.ListSave += new ComponentListEventHandler(Role_ListSave);
-            this.ListDelete += new ComponentListEventHandler(Role_ListDelete);
+            this.ListSearch += Role_ListSearch;
+            this.ListLoad += Role_ListLoad;
+            this.ListSave += Role_ListSave;
+            this.ListDelete += Role_ListDelete;
         }
 
-        void Role_ListDelete(object sender, ComponentListEventArgs e)
+        async Task Role_ListDelete(ComponentListEventArgs e)
         {
-            m_Implement.Delete();
+            await m_Implement.DeleteAsync();
         }
 
         Sushi.Mediakiwi.Data.IApplicationRole m_Implement;
 
-        void Role_ListSave(object sender, ComponentListEventArgs e)
+        async Task Role_ListSave(ComponentListEventArgs e)
         {
-
             m_Implement.Name = m_RoleName;
             m_Implement.Description = m_Description;
 
@@ -60,22 +60,22 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             if (AllSites || m_Implement.All_Sites)
             {
                 m_Implement.IsAccessSite = false;
-                Sushi.Mediakiwi.Data.RoleRight.Update(new int[0], Sushi.Mediakiwi.Data.RoleRightType.Site, m_Implement.ID);
+                await Sushi.Mediakiwi.Data.RoleRight.UpdateAsync(new int[0], Sushi.Mediakiwi.Data.RoleRightType.Site, m_Implement.ID);
             }
             if (AllLists || m_Implement.All_Lists)
             {
                 m_Implement.IsAccessList = false;
-                Sushi.Mediakiwi.Data.RoleRight.Update(new int[0], Sushi.Mediakiwi.Data.RoleRightType.List, m_Implement.ID);
+                await Sushi.Mediakiwi.Data.RoleRight.UpdateAsync(new int[0], Sushi.Mediakiwi.Data.RoleRightType.List, m_Implement.ID);
             }
             if (AllFolders || m_Implement.All_Folders)
             {
                 m_Implement.IsAccessFolder = false;
-                Sushi.Mediakiwi.Data.RoleRight.Update(new int[0], Sushi.Mediakiwi.Data.RoleRightType.Folder, m_Implement.ID);
+                await Sushi.Mediakiwi.Data.RoleRight.UpdateAsync(new int[0], Sushi.Mediakiwi.Data.RoleRightType.Folder, m_Implement.ID);
             }
             if (AllGalleries || m_Implement.All_Galleries)
             {
                 m_Implement.IsAccessGallery = false;
-                Sushi.Mediakiwi.Data.RoleRight.Update(new int[0], Sushi.Mediakiwi.Data.RoleRightType.Gallery, m_Implement.ID);
+                await Sushi.Mediakiwi.Data.RoleRight.UpdateAsync(new int[0], Sushi.Mediakiwi.Data.RoleRightType.Gallery, m_Implement.ID);
             }
 
             m_Implement.All_Sites = AllSites;
@@ -94,12 +94,12 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                 m_Implement.IsAccessSite = false;
             }
 
-            m_Implement.Save();
+            await m_Implement.SaveAsync();
         }
 
-        void Role_ListLoad(object sender, ComponentListEventArgs e)
+        async Task Role_ListLoad(ComponentListEventArgs e)
         {
-            m_Implement = Sushi.Mediakiwi.Data.ApplicationRole.SelectOne(e.SelectedKey);
+            m_Implement = await Mediakiwi.Data.ApplicationRole.SelectOneAsync(e.SelectedKey);
             if (e.SelectedKey == 0)
                 return;
 
@@ -140,7 +140,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                 wim.AddTab(new Guid("B502AA2C-8D85-4D2C-9470-DFC8A388AC72"));
         }
 
-        void Role_ListSearch(object sender, ComponentListSearchEventArgs e)
+        async Task Role_ListSearch(ComponentListSearchEventArgs e)
         {
             wim.CanAddNewItem = true;
             wim.Page.HideTabs = true;
@@ -157,7 +157,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             //wim.ListDataColumns.Add("Folder (all)", "All_Folders");
             //wim.ListDataColumns.Add("Gallery (all)", "All_Galleries");
 
-            wim.ListData = Sushi.Mediakiwi.Data.ApplicationRole.SelectAll();
+            wim.ListDataAdd(await Sushi.Mediakiwi.Data.ApplicationRole.SelectAllAsync());
         }
 
 

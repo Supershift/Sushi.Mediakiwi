@@ -14,7 +14,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation.Forms
             Load(implement as Mediakiwi.Data.Environment);
             Map(x => x.Title).TextField("Name", 50, true);
             Map(x => x.DisplayName).TextField("Displayname", 50, true);
-            Map(x => x.Timezone).Dropdown("Dropdown", "AvailableTimeZones", true);
+            Map(x => x.Timezone).Dropdown("Dropdown", nameof(AvailableTimeZones), true);
             Map(x => x.Version).TextLine("Version");
 
             Map<EnvironmentForm>(x => x.Section1, this).Section("SMTP Settings");
@@ -25,6 +25,8 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation.Forms
 
             Map(x => x.DefaultMailAddress).TextField("From email", 255, true).Expression(OutputExpression.Alternating);
             Map(x => x.ErrorMailAddress).TextField("Error email", 255, true).Expression(OutputExpression.Alternating);
+            
+            Map(x => x.DefaultSiteID).Dropdown("Default channel", nameof(Sites));
         }
 
         public string Section1 { get; set; }
@@ -69,8 +71,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation.Forms
                 m_Sites = new ListItemCollection();
                 foreach (Sushi.Mediakiwi.Data.Site site in Sushi.Mediakiwi.Data.Site.SelectAll())
                 {
-                    if (site.HasPages)
-                        m_Sites.Add(new ListItem(site.Name, site.ID.ToString()));
+                    m_Sites.Add(new ListItem(site.Name, site.ID.ToString()));
                 }
                 return m_Sites;
             }

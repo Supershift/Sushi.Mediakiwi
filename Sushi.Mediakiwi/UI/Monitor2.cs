@@ -91,8 +91,6 @@ namespace Sushi.Mediakiwi.UI
 
             //  Obtain querystring requests
             this.SetRequestType();
-            //  Apply the current component list based on the roaming environment settings
-            this.ApplyComponentList();
             //  If an xml (ajax) request comes in output a correct response.
             if (!await this.OutputAjaxRequestAsync()) return;
             //  Define internal event-check value types
@@ -265,7 +263,7 @@ namespace Sushi.Mediakiwi.UI
                 else if (_Console.CurrentList.Type == ComponentListType.Folders)
                     _Console.Response.Redirect(string.Concat(_Console.WimPagePath, "?folder=", _Console.CurrentListInstance.wim.CurrentFolder.ParentID));
                 else if (_Console.Group.HasValue)
-                    _Console.Response.Redirect(string.Concat(_Console.WimPagePath, "?", _Console.CurrentListInstance.wim.SearchResultItemPassthroughParameter, "=0"), true);
+                    _Console.Response.Redirect(string.Concat(_Console.CurrentListInstance.wim.SearchResultItemPassthroughParameter, "=0"), true);
                 else if (_Console.CurrentList.Type == ComponentListType.ComponentListProperties)
                     _Console.Response.Redirect(string.Concat(_Console.WimPagePath, "?folder=", _Console.CurrentListInstance.wim.CurrentFolder.ID));
                 else
@@ -361,7 +359,11 @@ namespace Sushi.Mediakiwi.UI
         }
 
 
-        bool IsFormatRequest_AJAX { get { return !string.IsNullOrEmpty(_Console.Form(Constants.AJAX_PARAM)); } }
+        bool IsFormatRequest_AJAX { 
+            get { 
+                return !string.IsNullOrEmpty(_Console.Form(Constants.AJAX_PARAM)); 
+            } 
+        }
         bool IsFormatRequest_JSON
         {
             get
@@ -464,10 +466,6 @@ namespace Sushi.Mediakiwi.UI
                             );
                     }
                 }
-
-                //  Legacy event, will be removed!
-                if (!string.IsNullOrEmpty(component.m_ClickedButton) && _Console.CurrentListInstance.wim.HasListSearchedAction)
-                    _Console.CurrentListInstance.wim.DoListSearchedAction(_Console.Item.GetValueOrDefault(0), 0, component.m_ClickedButton, null);
 
                 //  Replacement event of ListSearchedAction
                 if (!string.IsNullOrEmpty(component.m_ClickedButton) && _Console.CurrentListInstance.wim.HasListAction)
@@ -708,7 +706,7 @@ namespace Sushi.Mediakiwi.UI
                 if (_Console.CurrentList.IsInherited) return;
                 var site = Site.SelectOne(_Console.CurrentList.SiteID.Value);
                 if (site.Type.HasValue) return;
-                _Console.Response.Redirect(_Console.CurrentListInstance.wim.GetCurrentQueryUrl(true, _Console.CurrentList.SiteID.Value, null));
+                _Console.Response.Redirect(_Console.CurrentListInstance.wim.GetUrl());
             }
         }
 
@@ -726,7 +724,7 @@ namespace Sushi.Mediakiwi.UI
                 || _Console.CurrentListInstance.wim.OpenInEditMode
                 || _Console.Request.Query["item"] == "0"
                 || _Console.Request.Query["asset"] == "0"
-                || _Console.JsonReferrer.Equals("edit")
+                || (_Console.JsonReferrer != null && _Console.JsonReferrer.Equals("edit"))
                 || _Console.JsonForm != null;
 
             //  Create new page
@@ -762,10 +760,90 @@ namespace Sushi.Mediakiwi.UI
         }
 
         /// <summary>
-        /// Obtain querystring requests
+        /// Obtain request.path and querystring requests
         /// </summary>
         void SetRequestType()
         {
+            var folderId = default(int?);
+            var targetname = default(string);
+
+            // extract url details
+            var wim = CommonConfiguration.PORTAL_PATH.ToLower();
+            var url = _Console.Request.Path.Value.ToLower();
+            var split =
+                wim == "/"
+                    ? url.Split(new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries)
+                    : url.Replace(wim, string.Empty).Split(new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
+
+            // set the channel identifier
+            if (split.Any())
+            {
+                // position counter
+                int n = 0;
+
+                var candidate = split[0];
+                if (Data.Utility.IsNumeric(candidate))
+                {
+                    _Console.ChannelIndentifier = Data.Utility.ConvertToInt(candidate, Data.Environment.Current.DefaultSiteID.GetValueOrDefault());
+                }
+                else
+                {
+                    var selection = Site.SelectAll().Where(x => x.Name.Equals(candidate, StringComparison.CurrentCultureIgnoreCase)).FirstOrDefault();
+                    if (selection != null)
+                    {
+                        n++;
+                        _Console.ChannelIndentifier = selection.ID;
+                    }
+                }
+                if (_Console.ChannelIndentifier == 0)
+                {
+                    _Console.ChannelIndentifier = Data.Environment.Current.DefaultSiteID.GetValueOrDefault();
+                    if (_Console.ChannelIndentifier == 0)
+                    {
+                        _Console.ChannelIndentifier = Data.Site.SelectAll()[0].ID;
+                    }
+                }
+
+                // [wim-path]/[site:0]/[type:1]/[folder:x>y]/[list:y+1]
+                // type can be web or assets else it is a list
+                if (split.Length > 1)
+                {
+                    var typecandidate = split[1];
+                    if (typecandidate.Equals("web", StringComparison.CurrentCultureIgnoreCase))
+                    {
+                        n++;
+                        _Console.ItemType = RequestItemType.Page;
+                    }
+                    else if (typecandidate.Equals("assets", StringComparison.CurrentCultureIgnoreCase))
+                    {
+                        n++;
+                        _Console.ItemType = RequestItemType.Asset;
+                    }
+                    else
+                    {
+                        _Console.ItemType = RequestItemType.Item;
+                    }
+
+                }
+                
+                if (split.Length - n - 1 > 0)
+                {
+                    var completepath = string.Concat("/", string.Join("/", split.Skip(n).Take(split.Length - n - 1)), "/");
+                    var folder = Folder.SelectOne(completepath, _Console.ChannelIndentifier);
+                    
+                    if (folder != null)
+                    {
+                        folderId = folder.ID;
+                    }
+                }
+
+                if (split.Length - n > 0)
+                {
+                    targetname = split.Last();
+                }
+            }
+            _Console.ItemType = RequestItemType.Undefined;
+
             //  Verify paging page
             _Console.ListPagingValue = _Console.Request.Query["set"];
 
@@ -796,6 +874,9 @@ namespace Sushi.Mediakiwi.UI
             //  Verify list-item request
             _Console.Item = Utility.ConvertToIntNullable(_Console.Request.Query["item"], false);
             if (_Console.Item.HasValue) _Console.ItemType = RequestItemType.Item;
+
+            //  Apply the current component list based on the roaming environment settings
+            this.ApplyComponentList(folderId, targetname);
         }
 
         /// <summary>
@@ -878,8 +959,27 @@ namespace Sushi.Mediakiwi.UI
         /// <summary>
         /// Apply the current component list based on the roaming environment settings
         /// </summary>
-        private bool ApplyComponentList()
+        private bool ApplyComponentList(int? folderId, string name)
         {
+            //if (_Console.ItemType == RequestItemType.Undefined && !string.IsNullOrWhiteSpace(name))
+            //{
+            //    var urldecrypt = Utils.FromUrl(name);
+            //    var list = ComponentList.SelectOne(urldecrypt, null);
+            //    if (list != null && !list.IsNewInstance)
+            //    {
+            //        return _Console.ApplyList(list);
+            //    }
+            //}
+            if (!string.IsNullOrWhiteSpace(name))
+            {
+                var urldecrypt = Utils.FromUrl(name);
+                var list = ComponentList.SelectOne(urldecrypt, null);
+                if (list != null && !list.IsNewInstance)
+                {
+                    return _Console.ApplyList(list);
+                }
+            }
+
             //  If the list is not know, take the default list in stead (browsing)
             if (!string.IsNullOrEmpty(_Console.Request.Query["list"]))
             {

@@ -6,6 +6,7 @@ using Sushi.Mediakiwi.Framework;
 using Sushi.Mediakiwi.Data;
 using Sushi.Mediakiwi.UI;
 using Sushi.Mediakiwi.AppCentre.UI.Forms;
+using System.Threading.Tasks;
 
 namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
 {
@@ -26,14 +27,14 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             wim.ListDataDependendProperties.Add("External");
             wim.HideOpenCloseToggle = true;
 
-            this.ListLoad += new ComponentListEventHandler(Link_ListLoad);
-            this.ListPreRender += new ComponentListEventHandler(Link_ListPreRender);
-            this.ListSave += new ComponentListEventHandler(Link_ListSave);
-            this.ListDelete += new ComponentListEventHandler(Link_ListDelete);
-            this.ListAction += new ComponentActionEventHandler(Link_ListAction);
+            this.ListLoad += Link_ListLoad;
+            this.ListPreRender += Link_ListPreRender;
+            this.ListSave += Link_ListSave;
+            this.ListDelete += Link_ListDelete;
+            this.ListAction += Link_ListAction;
         }
 
-        void Link_ListAction(object sender, ComponentActionEventArgs e)
+        Task Link_ListAction(ComponentActionEventArgs e)
         {
             if (IsPostBack)
             {
@@ -54,9 +55,10 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                         break;
                 }
             }
+            return Task.CompletedTask;
         }
 
-        void Link_ListPreRender(object sender, ComponentListEventArgs e)
+        Task Link_ListPreRender(ComponentListEventArgs e)
         {
             if (IsPostBack)
             {
@@ -77,18 +79,20 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                         break;
                 }
             }
+            return Task.CompletedTask;
         }
 
-        void Link_ListDelete(object sender, ComponentListEventArgs e)
+        Task Link_ListDelete(ComponentListEventArgs e)
         {
             //  Do not remove
             //Sushi.Mediakiwi.Data.Link link = Sushi.Mediakiwi.Data.Implement.SelectOne(e.SelectedKey);
             //Implement.Delete();
 
             wim.OnDeleteScript = string.Format("<script type=\"text/javascript\">{0}</script>", "parent.removeLink();");
+            return Task.CompletedTask;
         }
 
-        void Link_ListSave(object sender, ComponentListEventArgs e)
+        async Task Link_ListSave(ComponentListEventArgs e)
         {
             if (Form.RichTextInnerlink) 
                 Implement.Text = "#";
@@ -105,27 +109,27 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                 switch (Form.Type)
                 {
                     case 1:
-                        Sushi.Mediakiwi.Data.Page page = Sushi.Mediakiwi.Data.Page.SelectOne(Implement.PageID.Value, false);
+                        Sushi.Mediakiwi.Data.Page page = await Sushi.Mediakiwi.Data.Page.SelectOneAsync(Implement.PageID.Value, false);
                         Implement.Text = page.LinkText; 
                         break;
                     //case 2: 
                     //    Implement.Text = Form.IsExternalLink; 
                     //    break;
                     case 3:
-                        Sushi.Mediakiwi.Data.Asset asset = Sushi.Mediakiwi.Data.Asset.SelectOne(Implement.AssetID.Value);
+                        Sushi.Mediakiwi.Data.Asset asset = await Sushi.Mediakiwi.Data.Asset.SelectOneAsync(Implement.AssetID.Value);
                         Implement.Text = asset.Title; 
                         break;
                 }
             }
 
-            Implement.Save();
+            await Implement.SaveAsync();
 
             string url = Implement.ExternalUrl;
             if (Implement.IsInternal)
             {
                 if (Implement.PageID.HasValue)
                 {
-                    Sushi.Mediakiwi.Data.Page page = Sushi.Mediakiwi.Data.Page.SelectOne(Implement.PageID.Value, false);
+                    Sushi.Mediakiwi.Data.Page page = await Sushi.Mediakiwi.Data.Page.SelectOneAsync(Implement.PageID.Value, false);
                     if (page != null)
                         url = string.Format("{0}{1}.aspx", page.CompletePath, page.Name);
                 }
@@ -154,9 +158,9 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         LinkForm Form { get; set; }
         Sushi.Mediakiwi.Data.Link Implement { get; set; }
 
-        void Link_ListLoad(object sender, ComponentListEventArgs e)
+        async Task Link_ListLoad(ComponentListEventArgs e)
         {
-            Implement = Sushi.Mediakiwi.Data.Link.SelectOne(e.SelectedKey);
+            Implement = await Mediakiwi.Data.Link.SelectOneAsync(e.SelectedKey);
 
             Form = new LinkForm(Implement);
             this.FormMaps.Add(Form);

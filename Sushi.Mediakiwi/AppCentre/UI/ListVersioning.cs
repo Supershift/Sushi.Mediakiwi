@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Threading.Tasks;
 using Sushi.Mediakiwi.Framework;
 
 namespace Sushi.Mediakiwi.AppCentre.UI
@@ -12,41 +13,42 @@ namespace Sushi.Mediakiwi.AppCentre.UI
             ListSearch += ListVersioning_ListSearch;
         }
 
-        private void ListVersioning_ListSearch(object sender, ComponentListSearchEventArgs e)
+        Task ListVersioning_ListSearch(ComponentListSearchEventArgs e)
         {
-    //        SqlEntityParser parser = new SqlEntityParser();
-    //        DataRequest data = new DataRequest();
+            //        SqlEntityParser parser = new SqlEntityParser();
+            //        DataRequest data = new DataRequest();
 
-    //        data.AddParam("LIST", e.SelectedItemKey, SqlDbType.Int);
+            //        data.AddParam("LIST", e.SelectedItemKey, SqlDbType.Int);
 
-    //        int selected = Wim.Utility.ConvertToInt(Request.QueryString["key"]);
-    //        data.AddParam("ITEM", selected, SqlDbType.Int);
+            //        int selected = Wim.Utility.ConvertToInt(Request.QueryString["key"]);
+            //        data.AddParam("ITEM", selected, SqlDbType.Int);
 
-    //        string sql = string.Concat(@"
-    //SELECT [ComponentListVersion_Key]
-	   //   ,[ComponentListVersion_Created]
-	   //   ,[User_Displayname]
-    //      ,ComponentListVersion_User_Key
-    //      ,[ComponentListVersion_Listitem_Key]
-    //      ,[ComponentListVersion_IsActive]
-    //      ,[ComponentListVersion_Version]
-    //      ,[ComponentListVersion_Type]
-	  
-    //  FROM [dbo].[wim_ComponentListVersions]
-    //  left join wim_Users on user_key = ComponentListVersion_User_Key
-    //  where
-	   // [ComponentListVersion_ComponentList_Key] = @LIST", selected > 0 ? " and ComponentListVersion_Listitem_Key = @ITEM" : null, @"
-    //order by 
-	   // [ComponentListVersion_Created] desc");
-    //        ;
+            //        string sql = string.Concat(@"
+            //SELECT [ComponentListVersion_Key]
+            //   ,[ComponentListVersion_Created]
+            //   ,[User_Displayname]
+            //      ,ComponentListVersion_User_Key
+            //      ,[ComponentListVersion_Listitem_Key]
+            //      ,[ComponentListVersion_IsActive]
+            //      ,[ComponentListVersion_Version]
+            //      ,[ComponentListVersion_Type]
 
-    //        wim.ListDataApply(parser.ExecuteList<ListVersionItem>(sql, data));
+            //  FROM [dbo].[wim_ComponentListVersions]
+            //  left join wim_Users on user_key = ComponentListVersion_User_Key
+            //  where
+            // [ComponentListVersion_ComponentList_Key] = @LIST", selected > 0 ? " and ComponentListVersion_Listitem_Key = @ITEM" : null, @"
+            //order by 
+            // [ComponentListVersion_Created] desc");
+            //        ;
+
+            //        wim.ListDataAdd(parser.ExecuteList<ListVersionItem>(sql, data));
 
             wim.ListDataColumns.Add(new ListDataColumn("Created", "Created") { ColumnWidth = 90 });
             wim.ListDataColumns.Add(new ListDataColumn("User", "User") { ColumnWidth = 150 });
             wim.ListDataColumns.Add(new ListDataColumn("Change", "Type") { ColumnWidth = 90 });
             wim.ListDataColumns.Add(new ListDataColumn("Version", "Version") { ColumnWidth = 90 });
             wim.ListDataColumns.Add(new ListDataColumn("Key", "itemID") { Alignment = Align.Left });
+            return Task.CompletedTask;
         }
 
         [Sushi.Mediakiwi.Framework.ContentListItem.DataList()]

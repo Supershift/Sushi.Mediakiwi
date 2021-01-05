@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
+using System.Threading.Tasks;
 using System.Web;
 using Sushi.Mediakiwi.Data;
 using Sushi.Mediakiwi.Framework;
@@ -29,27 +30,28 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
 
             this.IsVisible = true;
 
-            this.ListLoad += new ComponentListEventHandler(Folder_ListLoad);
-            this.ListSave += new ComponentListEventHandler(Folder_ListSave);
+            this.ListLoad += Folder_ListLoad;
+            this.ListSave += Folder_ListSave;
             this.ListPreRender += Folder_ListPreRender;
             this.ListAction += Folder_ListAction;
         }
 
-        private void Folder_ListAction(object sender, ComponentActionEventArgs e)
+        async Task Folder_ListAction(ComponentActionEventArgs e)
         {
-            var list = Sushi.Mediakiwi.Data.ComponentList.SelectOne(typeof(Sushi.Mediakiwi.AppCentre.Data.Implementation.Copy));
-            Response.Redirect(wim.GetCurrentQueryUrl(true, new KeyValue() { Key = "type", Value = "1" }, new KeyValue() { Key = "list", Value = list.ID.ToString() }));
+            var list = await Mediakiwi.Data.ComponentList.SelectOneAsync(typeof(Sushi.Mediakiwi.AppCentre.Data.Implementation.Copy));
+            Response.Redirect(wim.GetUrl(new KeyValue() { Key = "type", Value = "1" }, new KeyValue() { Key = "list", Value = list.ID.ToString() }));
         }
 
-        void Folder_ListPreRender(object sender, ComponentListEventArgs e)
+        Task Folder_ListPreRender(ComponentListEventArgs e)
         {
             if (this.Implement == null || this.Implement.Parent == null)
-                return;
+                return Task.CompletedTask;
 
             if (this.Implement.Type == Sushi.Mediakiwi.Data.FolderType.List && this.Implement.ParentID.GetValueOrDefault() == this.ParentFolder)
             {
                 wim.Notification.AddError("ParentID", "Can not assigned to self!");
             }
+            return Task.CompletedTask;
         }
 
         /// <summary>
@@ -57,7 +59,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="Sushi.Mediakiwi.Framework.ComponentListEventArgs"/> instance containing the event data.</param>
-        void Folder_ListSave(object sender, ComponentListEventArgs e)
+        async Task Folder_ListSave(ComponentListEventArgs e)
         {
             if (wim.CurrentFolder.Type == Sushi.Mediakiwi.Data.FolderType.Gallery)
             {
@@ -111,7 +113,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                 else
                     m_Implement.CompletePath = string.Concat(wim.CurrentFolder.CompletePath, this.Name, "/");
 
-                m_Implement.Save();
+                await m_Implement.SaveAsync();
                 int masterId = m_Implement.ID;
 
                 //  Replicate to children
@@ -185,8 +187,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                 ImplementGallery.Save();
             }
 
-            var url = wim.GetCurrentQueryUrl(true
-                , new KeyValue() { Key = "item", Value = ImplementGallery.ID }
+            var url = wim.GetUrl(new KeyValue() { Key = "item", Value = ImplementGallery.ID }
                 , new KeyValue() { Key = "gallery", Value = ImplementGallery.ID });
             Response.Redirect(url);
         }
@@ -196,7 +197,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="Sushi.Mediakiwi.Framework.ComponentListEventArgs"/> instance containing the event data.</param>
-        void Folder_ListLoad(object sender, ComponentListEventArgs e)
+        async Task Folder_ListLoad(ComponentListEventArgs e)
         {
             m_IsExistingFolder = !(e.SelectedKey == 0);
 
@@ -207,7 +208,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                 return;
             }
 
-            this.Implement = Sushi.Mediakiwi.Data.Folder.SelectOne(e.SelectedKey);
+            this.Implement = await Sushi.Mediakiwi.Data.Folder.SelectOneAsync(e.SelectedKey);
             this.ParentFolder = 
                 this.Implement.ParentID.GetValueOrDefault();
             
@@ -266,7 +267,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             }
             else if (wim.CurrentFolder.Type == Sushi.Mediakiwi.Data.FolderType.List)
             {
-                Sushi.Mediakiwi.Data.IComponentList[] list = Sushi.Mediakiwi.Data.ComponentList.SelectAll(e.SelectedKey);
+                var list = await Sushi.Mediakiwi.Data.ComponentList.SelectAllAsync(e.SelectedKey);
                 m_SortOrder = new Sushi.Mediakiwi.Data.SubList();
                 foreach (Sushi.Mediakiwi.Data.IComponentList item in list)
                 {
@@ -275,7 +276,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             }
 
             if (m_Implement.ChildCount == 0 && !m_Implement.MasterID.HasValue)
-                this.ListDelete += new ComponentListEventHandler(Folder_ListDelete);
+                this.ListDelete += Folder_ListDelete;
 
             if (m_Implement.Level > 0 && e.SelectedKey > 0)
                 m_ShowRoles = true;
@@ -298,7 +299,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             this.Name = ImplementGallery.Name;
             this.IsVisible = !ImplementGallery.IsHidden;
 
-            this.ListDelete += new ComponentListEventHandler(Gallery_ListDelete);
+            this.ListDelete += Gallery_ListDelete;
         }
 
         bool m_ShowRoles;
@@ -316,11 +317,11 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="Sushi.Mediakiwi.Framework.ComponentListEventArgs"/> instance containing the event data.</param>
-        void Folder_ListDelete(object sender, ComponentListEventArgs e)
+        async Task Folder_ListDelete(ComponentListEventArgs e)
         {
             if (m_Implement.ChildCount == 0 && !m_Implement.MasterID.HasValue)
             {
-                m_Implement.Delete();
+                await m_Implement.DeleteAsync();
             }
             if (wim.IsLayerMode)
                 wim.OnSaveScript = string.Format(@"<input type=""hidden"" class=""postParent"">");
@@ -331,11 +332,11 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="Sushi.Mediakiwi.Framework.ComponentListEventArgs"/> instance containing the event data.</param>
-        void Gallery_ListDelete(object sender, ComponentListEventArgs e)
+        async Task Gallery_ListDelete(ComponentListEventArgs e)
         {
             //if (m_ImplementGallery.AssetCount2 == 0)
             //{
-                m_ImplementGallery.Delete();
+                await m_ImplementGallery.DeleteAsync();
             //}
 
         }

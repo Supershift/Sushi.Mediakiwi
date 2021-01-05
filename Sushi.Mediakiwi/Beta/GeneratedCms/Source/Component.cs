@@ -7,6 +7,7 @@ using Sushi.Mediakiwi.Framework;
 using Sushi.Mediakiwi.Framework.ContentListItem;
 using Sushi.Mediakiwi.UI;
 using Sushi.Mediakiwi.Data;
+using System.Threading.Tasks;
 
 namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
 {
@@ -1346,12 +1347,9 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
         }
 
         #region ShouldActAsDataStore event subscriptions
-        void CurrentListInstance_ListSave(object sender, Sushi.Mediakiwi.Framework.ComponentListEventArgs e)
+        Task CurrentListInstance_ListLoad(ComponentListEventArgs e)
         {
-        }
-
-        void CurrentListInstance_ListLoad(object sender, Sushi.Mediakiwi.Framework.ComponentListEventArgs e)
-        {
+            return Task.CompletedTask;
         }
         #endregion
 
@@ -1524,8 +1522,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
 
                 System.Diagnostics.Trace.WriteLine("ShouldActAsDataStore");
 
-                container.CurrentListInstance.ListLoad += new Sushi.Mediakiwi.Framework.ComponentListEventHandler(CurrentListInstance_ListLoad);
-                container.CurrentListInstance.ListSave += new Sushi.Mediakiwi.Framework.ComponentListEventHandler(CurrentListInstance_ListSave);
+                container.CurrentListInstance.ListLoad += CurrentListInstance_ListLoad;
             }
 
             SetSavedInfo(container);
@@ -1690,19 +1687,24 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                         version.Save();
                     }
 
+                    var listurl = container.UrlBuild.GetListRequest(container.CurrentListInstance.wim.CurrentList);
                     if (openInFrame == 0)
                     {
                         int folderID = Data.Utility.ConvertToInt(container.Request.Query["folder"]);
                         string folderInfo = null;
                         if (folderID > 0)
-                            folderInfo = string.Concat("&folder=", folderID);
+                            folderInfo = string.Concat("folder=", folderID);
 
                         if (container.Form("saveNew") == "1" || container.IsPostBack("saveNew"))
                         {
                             if (container.CurrentListInstance.wim.CurrentFolder.Type == Sushi.Mediakiwi.Data.FolderType.Gallery)
-                                container.Redirect(string.Concat(container.WimPagePath, "?", container.CurrentListInstance.wim.SearchResultItemPassthroughParameter, "=0&gallery=", container.CurrentListInstance.wim.CurrentFolder.ID, "&pitem=", container.Item), true);
+                            {
+                                container.Redirect(string.Concat(container.CurrentListInstance.wim.SearchResultItemPassthroughParameter, "=0&gallery=", container.CurrentListInstance.wim.CurrentFolder.ID, "&pitem=", container.Item), true);
+                            }
                             else
-                                container.Redirect(string.Concat(container.WimPagePath, "?", container.CurrentListInstance.wim.SearchResultItemPassthroughParameter, "=0&pitem=", container.Item), true);
+                            {
+                                container.Redirect(string.Concat(container.CurrentListInstance.wim.SearchResultItemPassthroughParameter, "=0&pitem=", container.Item), true);
+                            }
                         }
 
                         if (container.CurrentListInstance.wim.CurrentFolder.Type == Sushi.Mediakiwi.Data.FolderType.Gallery)
@@ -1742,23 +1744,23 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
 
                             if (container.CurrentList.IsSingleInstance)
                             {
-                                container.Redirect(string.Concat(container.WimPagePath, "?list=", container.Logic));
+                                container.Redirect(listurl);
                             }
 
                             if (container.Item.GetValueOrDefault(0) == 0)
                             {
                                 if (container.Group.HasValue)
-                                    container.Redirect(string.Concat(container.WimGroupPagePath, "&list=", container.Logic, "&item=0", folderInfo));
+                                    container.Redirect(string.Concat(listurl, "?item=0&", folderInfo));
                                 else
-                                    container.Redirect(string.Concat(container.WimPagePath, "?list=", container.Logic, folderInfo));
+                                    container.Redirect(string.Concat(listurl, "?", folderInfo));
                             }
                             else
                             {
                                 //  Redirect to list view
                                 if (container.CurrentListInstance.wim.CurrentList.Data["wim_AfterSaveListView"].ParseBoolean())
-                                    container.Redirect(string.Concat(container.WimPagePath, "?list=", container.Logic), true);
+                                    container.Redirect(listurl, true);
                                 else if (!container.IsJson)
-                                    container.Redirect(string.Concat(container.WimPagePath, "?", container.CurrentListInstance.wim.SearchResultItemPassthroughParameter, "=", container.Item), true);
+                                    container.Redirect(string.Concat(container.CurrentListInstance.wim.SearchResultItemPassthroughParameter, "=", container.Item), true);
                             }
                         }
                     }
@@ -1767,7 +1769,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                     {
                         if (container.Form("saveNew") == "1" || container.IsPostBack("saveNew"))
                         {
-                            string url = container.CurrentListInstance.wim.GetCurrentQueryUrl(true, new KeyValue() { Key = "item", Value = "0" }, new KeyValue() { Key = "pitem", Value = container.Item });
+                            string url = container.CurrentListInstance.wim.GetUrl(new KeyValue() { Key = "item", Value = "0" }, new KeyValue() { Key = "pitem", Value = container.Item });
                             container.Redirect(url);
                         }
                         else

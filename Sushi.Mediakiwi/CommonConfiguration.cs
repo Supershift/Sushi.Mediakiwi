@@ -54,6 +54,17 @@ namespace Sushi.Mediakiwi
         }
 
         /// <summary>
+        /// Hide the breadcrumbs
+        /// </summary>
+        public static bool HIDE_BREADCRUMB
+        {   //
+            get
+            {
+                return WimServerConfiguration.Instance.Hide_Breadcrumbs;
+            }
+        }
+
+        /// <summary>
         /// Is the current environment the local development environment?
         /// </summary>
         public static bool IS_LOCAL_DEVELOPMENT

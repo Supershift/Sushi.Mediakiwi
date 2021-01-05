@@ -41,7 +41,7 @@ namespace Sushi.Mediakiwi.Framework.Functions
         {
             string replacement = Data.Environment.Current["SPACE_REPLACEMENT"];
 
-            foreach (FolderPath item in SelectAll())
+            foreach (var item in SelectAll())
                 UpdateCompletePagePath(item.ID, string.Concat(item.DefaultFolder, item.CompletePath), replacement);
         }
 

@@ -9,6 +9,7 @@ using Sushi.Mediakiwi.Framework;
 using Sushi.Mediakiwi.Data;
 using Sushi.Mediakiwi.Utilities;
 using Sushi.Mediakiwi.UI;
+using System.Threading.Tasks;
 
 namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
 {
@@ -20,22 +21,22 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         public User()
         {
             //wim.OpenInEditMode = true;
-            this.ListAction += new ComponentActionEventHandler(User_ListAction);
-            this.ListLoad += new ComponentListEventHandler(User_ListLoad);
-            this.ListSave += new ComponentListEventHandler(User_ListSave);
-            this.ListSearch += new ComponentSearchEventHandler(User_ListSearch);
-            this.ListPreRender += new ComponentListEventHandler(User_ListPreRender);
-            this.ListDelete += new ComponentListEventHandler(User_ListDelete);
+            this.ListAction += User_ListAction;
+            this.ListLoad += User_ListLoad;
+            this.ListSave += User_ListSave;
+            this.ListSearch += User_ListSearch;
+            this.ListPreRender += User_ListPreRender;
+            this.ListDelete += User_ListDelete;
         }
 
-        void User_ListAction(object sender, ComponentActionEventArgs e)
+        async Task User_ListAction(ComponentActionEventArgs e)
         {
             if (HijackUser)
             {
                 wim.CurrentVisitor.Data.Apply("Wim.Reset.Me", wim.CurrentApplicationUser.GUID.ToString());
                 wim.SaveVisit();
 
-                var tmp = ApplicationUser.SelectOne(m_Implement.GUID);
+                var tmp = await ApplicationUser.SelectOneAsync(m_Implement.GUID);
 
                 if (tmp?.ID > 0)
                 {
@@ -48,21 +49,23 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             }
         }
 
-        void User_ListDelete(object sender, ComponentListEventArgs e)
+        async Task User_ListDelete(ComponentListEventArgs e)
         {
-            m_Implement.Delete();
+            await m_Implement.DeleteAsync();
         }
 
-        void User_ListPreRender(object sender, ComponentListEventArgs e)
+        Task User_ListPreRender(ComponentListEventArgs e)
         {
             if (m_Implement?.HasUserName(this.Name) == true)
                 wim.Notification.AddError("Name", "The applied username already exists");
 
             if (m_Implement?.HasEmail(this.Email) == true)
                 wim.Notification.AddError("Email", "The applied email already exists");
+
+            return Task.CompletedTask;
         }
 
-        void User_ListSearch(object sender, ComponentListSearchEventArgs e)
+        async Task User_ListSearch(ComponentListSearchEventArgs e)
         {
             wim.CanAddNewItem = true;
             wim.Page.HideTabs = true;
@@ -77,14 +80,11 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             if (wim.IsCachedSearchResult)
                 return;
 
-            var data = Sushi.Mediakiwi.Data.ApplicationUser.SelectAll(m_SearchUserName, Utility.ConvertToInt(m_SearchRole));
-            wim.ListData = data;
-
-
+            var data = await Sushi.Mediakiwi.Data.ApplicationUser.SelectAllAsync(m_SearchUserName, Utility.ConvertToInt(m_SearchRole));
+            wim.ListDataAdd(data);
         }
 
-
-        void User_ListSave(object sender, ComponentListEventArgs e)
+        async Task User_ListSave(ComponentListEventArgs e)
         {
             string password = "";
             if (m_Implement?.ID > 0)
@@ -133,7 +133,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
 
             //Parser.Save(m_Implement);
             
-            m_Implement.Save();
+            await m_Implement.SaveAsync();
 
             if (this.SendCredentials)
             {
@@ -170,11 +170,11 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="ComponentListEventArgs"/> instance containing the event data.</param>
-        void User_ListLoad(object sender, ComponentListEventArgs e)
+        async Task User_ListLoad(ComponentListEventArgs e)
         {
             if (e.SelectedKey > 0)
             {
-                m_Implement = ApplicationUser.SelectOne(e.SelectedKey);
+                m_Implement = await ApplicationUser.SelectOneAsync(e.SelectedKey);
                 this.UID = m_Implement.GUID.ToString();
             }
 

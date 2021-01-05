@@ -75,6 +75,7 @@ namespace Sushi.Mediakiwi.Data.Configuration
         /// Is the current environment the local development environment?
         /// </summary>
         public bool Is_Local_Development { get; set; }
+        public bool Hide_Breadcrumbs { get; set; }
 
         /// <summary>
         /// HTML Encode in for a textarea

@@ -5,6 +5,7 @@ using System.Data;
 using System.Web;
 using Sushi.Mediakiwi.Framework;
 using Sushi.Mediakiwi.UI;
+using System.Threading.Tasks;
 
 namespace Sushi.Mediakiwi.AppCentre.Data
 {
@@ -76,7 +77,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data
             }
         }
 
-        void BasicSeachList_ListSearch(object sender, ComponentListSearchEventArgs e)
+        async Task BasicSeachList_ListSearch(ComponentListSearchEventArgs e)
         {
             wim.CanAddNewItem = true;
             wim.ListDataColumns.Add(new ListDataColumn("ID", "ID", ListDataColumnType.UniqueIdentifier));
@@ -89,7 +90,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data
             if (string.IsNullOrEmpty(this.FilterText) && this.FilterType == 0)
                 return;
 
-            wim.ListDataApply(Sushi.Mediakiwi.Data.SearchView.SelectAll(FilterSite, FilterType, FilterText));
+            wim.ListDataAdd(await Sushi.Mediakiwi.Data.SearchView.SelectAllAsync(FilterSite, FilterType, FilterText));
         }
     }
 }

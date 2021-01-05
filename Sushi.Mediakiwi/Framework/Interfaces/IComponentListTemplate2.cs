@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using System.Web;
 using Microsoft.AspNetCore.Http;
 using Sushi.Mediakiwi.Data;
@@ -23,23 +24,20 @@ namespace Sushi.Mediakiwi.Framework
         //HttpServerUtility Server { get; }
         WimComponentListRoot wim { get; set; }
 
-        event ComponentActionEventHandler ListAction;
+        event Func<ComponentActionEventArgs, Task> ListAction;
         event ComponentAsyncEventHandler ListAsync;
         event ComponentDataItemCreatedEventHandler ListDataItemCreated;
         event ComponentDataReportEventHandler ListDataReport;
-        event ComponentListEventHandler ListDelete;
-        event ComponentListEventHandler ListLoad;
-        event ComponentListEventHandler ListPreRender;
-        event ComponentListEventHandler ListSave;
-        event ComponentSearchEventHandler ListSearch;
-        event ComponentActionEventHandler ListSearchedAction;
+        event Func<ComponentListEventArgs, Task> ListDelete;
+        event Func<ComponentListEventArgs, Task> ListPreRender;
+        event Func<ComponentListEventArgs, Task> ListSave;
+        event Func<ComponentListSearchEventArgs, Task> ListSearch;
+        event Func<ComponentListEventArgs, Task> ListLoad;
         event EventHandler ListSense;
+        //event Func<Task> ListInit;
 
         bool ApplyContent(Guid componentlistGUID, Site site);
         bool ApplyContent(Guid componentlistGUID, Site site, bool exceptionAvoided);
         void ApplyListSettings(IComponentList list);
-
-        //Translator RenameTitle { get; set; }
-        //Translator RenameInteractiveHelp { get; set; }
     }
 }

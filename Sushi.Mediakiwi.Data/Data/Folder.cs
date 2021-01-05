@@ -351,6 +351,36 @@ FROM [Wim_ComponentLists] WHERE [ComponentList_Folder_Key] in (SELECT [Folder_Ke
         /// </summary>
         /// <param name="ID">The Folder Identifier.</param>
         /// <returns></returns>
+        public static Folder SelectOne(string path, int site)
+        {
+            var connector = ConnectorFactory.CreateConnector<Folder>();
+            var filter = connector.CreateDataFilter();
+            filter.Add(x => x.CompletePath, path);
+            filter.Add(x => x.SiteID, site);
+
+            return connector.FetchSingle(filter);
+        }
+
+        /// <summary>
+        /// Selects a single Folder by the complete path
+        /// </summary>
+        /// <param name="ID">The Folder Identifier.</param>
+        /// <returns></returns>
+        public static async Task<Folder> SelectOneAsync(string path, int site)
+        { 
+            var connector = ConnectorFactory.CreateConnector<Folder>();
+            var filter = connector.CreateDataFilter();
+            filter.Add(x => x.CompletePath, path);
+            filter.Add(x => x.SiteID, site);
+
+            return await connector.FetchSingleAsync(filter);
+        }
+
+        /// <summary>
+        /// Selects a single Folder by the Identifier.
+        /// </summary>
+        /// <param name="ID">The Folder Identifier.</param>
+        /// <returns></returns>
         public static Folder SelectOne(int ID)
         {
             var connector = ConnectorFactory.CreateConnector<Folder>();
@@ -1345,22 +1375,21 @@ FROM [Wim_ComponentLists] WHERE [ComponentList_Folder_Key] in (SELECT [Folder_Ke
         /// <param name="siteID">The site ID.</param>
         /// <param name="folderType">Type of the folder.</param>
         /// <returns></returns>
-        internal static Folder[] SelectAllUninherited(int masterID, int siteID, int folderType)
+        public static Folder[] SelectAllUninherited(int masterID, int siteID, int folderType)
         {
             var connector = ConnectorFactory.CreateConnector<Folder>();
             var filter = connector.CreateDataFilter();
             filter.AddParameter("@folderType", folderType);
             filter.AddParameter("@siteId", siteID);
             filter.AddParameter("@masterId", masterID);
-            filter.AddParameter("@folderType", folderType);
 
             List<Folder> list = connector.FetchAll($@"
-SELECT * FROM [wim_Folders] x 
-WHERE [Folder_Type] = @folderType 
-AND [Folder_Site_Key] = @masterId 
-AND NOT [Folder_Folder_Key] IS NULL 
-AND (SELECT COUNT(*) FROM [wim_Folders] WHERE [Folder_Site_Key] = @siteId AND [Folder_Master_Key] = x.[Folder_Key]) = 0
-ORDER BY [Site_Master_Key] ASC, [Site_Displayname] ASC, [Folder_CompletePath] ASC
+    SELECT x.* FROM [wim_Folders] x join wim_Sites on Site_Key = [Folder_Site_Key]
+    WHERE [Folder_Type] = @folderType 
+    AND [Folder_Site_Key] = @masterId 
+    AND NOT [Folder_Folder_Key] IS NULL 
+    AND (SELECT COUNT(*) FROM [wim_Folders] WHERE [Folder_Site_Key] = @siteId AND [Folder_Master_Key] = x.[Folder_Key]) = 0
+    ORDER BY [Site_Master_Key] ASC, [Site_Displayname] ASC, [Folder_CompletePath] ASC
 ", filter);
 
             return list.ToArray();

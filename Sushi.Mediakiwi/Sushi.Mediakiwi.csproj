@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <Version>7.14.14</Version>
+    <Version>7.14.15</Version>
     <Product>Mediakiwi</Product>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <Company>Supershift</Company>
@@ -126,6 +126,7 @@
     <Compile Include="Framework\PagePreview.cs" />
     <Compile Include="Framework\TopListPosition.cs" />
     <Compile Include="Logic\ApplicationUserLogic.cs" />
+    <Compile Include="Logic\FolderLogic.cs" />
     <Compile Include="Logic\PropertyLogic.cs" />
     <Compile Include="Presentation\Logic\Navigation.cs" />
     <Compile Include="Presentation\Monitor.cs" />

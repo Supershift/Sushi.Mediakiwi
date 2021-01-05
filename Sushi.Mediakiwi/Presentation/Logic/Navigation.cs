@@ -7,6 +7,7 @@ using Sushi.Mediakiwi.Data;
 using Sushi.Mediakiwi.Framework.Api;
 using Sushi.Mediakiwi.Data.Interfaces;
 using Sushi.Mediakiwi.Interfaces;
+using Sushi.Mediakiwi.Logic;
 
 namespace Sushi.Mediakiwi.Framework.Presentation.Logic
 {
@@ -276,7 +277,9 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
 
             switch (entity.TypeID)
             {
-                case 1: querystring = $"?list={entity.ItemID}"; break;
+                case 1:
+                    return container.UrlBuild.GetListRequest(Convert.ToInt32(entity.ItemID));
+
                 case 2: querystring = $"?folder={entity.ItemID}"; break;
                 case 3: querystring = $"?page={entity.ItemID}"; break;
                 case 4: querystring = $"?dashboard={entity.ItemID}"; break;
@@ -285,8 +288,8 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                 case 7: querystring = $"?top={entity.ItemID}"; break;
                 case 8: querystring = $"?folder={entity.ItemID}"; break;
             }
-
-            return string.Concat(container.GetWimPagePath(null), querystring);
+            
+            return container.UrlBuild.GetUrl();
         }
 
         public string GetUrl(Sushi.Mediakiwi.Beta.GeneratedCms.Console container, IMenuItemView entity, int channel)
@@ -295,7 +298,9 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
 
             switch (entity.TypeID)
             {
-                case 1: querystring = $"?list={entity.ItemID}"; break;
+                case 1:
+                    return container.UrlBuild.GetListRequest(Convert.ToInt32(entity.ItemID));
+
                 case 2: querystring = $"?folder={entity.ItemID}"; break;
                 case 3: querystring = $"?page={entity.ItemID}"; break;
                 case 4: querystring = $"?dashboard={entity.ItemID}"; break;
@@ -631,10 +636,9 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                     if (isSingleItemList)
                     {
                         tabTag = string.Format(@"
-                        <li{3}><a href=""{2}"">{4}</a></li>{5}"
+                        <li{2}><a href=""{1}"">{3}</a></li>{4}"
                             , title
-                            , string.Concat(container.WimPagePath, "?list=", currentListId)
-                            , tmp.Url
+                            , container.UrlBuild.GetListRequest(currentListId)
                             , selectedTab == 0 ? " class=\"active\"" : null
                             , itemTitle, tabulars
                             );
@@ -866,7 +870,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
 
                 if (!container.Item.HasValue)
                 {
-                    if (Sushi.Mediakiwi.Data.Environment.Current["HIDE_BREADCRUMB", true, "0", "Hide breadcrumb"] == "0")
+                    if (!CommonConfiguration.HIDE_BREADCRUMB)
                     {
                         build.AppendFormat(@"<li class=""back""><span class=""icon-arrow-left-04""></span><a href=""{0}"">Home</a></li>"
                             , container.AddApplicationPath(CommonConfiguration.PORTAL_PATH)
@@ -941,8 +945,9 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                     if (!string.IsNullOrEmpty(container.Request.Query["base"]))
                     {
                         var list = Sushi.Mediakiwi.Data.ComponentList.SelectOne(Convert.ToInt32(container.Request.Query["base"]));
-                        build.AppendFormat(@"<li class=""back""><span class=""icon-arrow-left-04""></span><a href=""?list={0}"">{2}{1}</a></li>"
-                            , list.ID, list.Name
+                        build.AppendFormat(@"<li class=""back""><span class=""icon-arrow-left-04""></span><a href=""{0}"">{2}{1}</a></li>"
+                            , container.UrlBuild.GetListRequest(list)
+                            , list.Name
                             , string.IsNullOrWhiteSpace(list.Icon) ? null : $"<i class=\"{list.Icon}\"></i> " //2
 
                             );
@@ -2236,7 +2241,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
 
                 if (container.CurrentListInstance.wim.CanAddNewItem && container.CurrentListInstance.wim.HasListLoad)
                 {
-                    build2.AppendFormat("<li><a href=\"{0}\" class=\"createPage\">New record</a></li>", string.Concat(container.WimPagePath, "?", container.CurrentListInstance.wim.SearchResultItemPassthroughParameter, "=0"));
+                    build2.AppendFormat("<li><a href=\"{0}\" class=\"createPage\">New record</a></li>", string.Concat(container.CurrentListInstance.wim.SearchResultItemPassthroughParameter, "=0"));
                 }
 
                 if (container.CurrentListInstance.wim.CurrentApplicationUserRole.CanChangeList)
@@ -2289,7 +2294,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                 {
                     if (container.CurrentListInstance.wim.CanAddNewItem && container.CurrentListInstance.wim.HasListLoad)
                     {
-                        build2.AppendFormat("<li><a href=\"{0}\" class=\"createPage\">New record</a></li>", string.Concat(container.WimPagePath, "?", container.CurrentListInstance.wim.SearchResultItemPassthroughParameter, "=0"));
+                        build2.AppendFormat("<li><a href=\"{0}\" class=\"createPage\">New record</a></li>", string.Concat(container.CurrentListInstance.wim.SearchResultItemPassthroughParameter, "=0"));
                     }
                 }
 
@@ -2356,7 +2361,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                 {
                     if (container.CurrentListInstance.wim.CanAddNewItem && container.CurrentListInstance.wim.HasListLoad)
                     {
-                        build2.AppendFormat("<li><a href=\"{0}\" class=\"createPage\">New record</a></li>", string.Concat(container.WimPagePath, "?", container.CurrentListInstance.wim.SearchResultItemPassthroughParameter, "=0"));
+                        build2.AppendFormat("<li><a href=\"{0}\" class=\"createPage\">New record</a></li>", string.Concat(container.CurrentListInstance.wim.SearchResultItemPassthroughParameter, "=0"));
                     }
                 }
 
@@ -2521,7 +2526,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
 
                 previousUrl = string.Concat(container.WimPagePath, "?", "folder=", container.CurrentListInstance.wim.CurrentFolder.ID);
                 //  Create new element
-                build.AppendFormat("<li><a href=\"{0}\" class=\"createPage\">New record</a></li>", string.Concat(container.WimPagePath, "?", container.CurrentListInstance.wim.SearchResultItemPassthroughParameter, "=0"));
+                build.AppendFormat("<li><a href=\"{0}\" class=\"createPage\">New record</a></li>", string.Concat(container.CurrentListInstance.wim.SearchResultItemPassthroughParameter, "=0"));
                 build.AppendFormat("<li><a href=\"{0}\" class=\"properties\">Properties</a></li>", string.Concat(container.WimPagePath, "?", "list=", list0.ID, "&folder=", container.CurrentListInstance.wim.CurrentFolder.ID, "&item=", container.CurrentList.ID));
 
                 //  Custom buttons

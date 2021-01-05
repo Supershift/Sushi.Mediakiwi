@@ -9,6 +9,7 @@ using System.IO;
 using System.Text;
 using Sushi.Mediakiwi.Data;
 using Sushi.Mediakiwi.UI;
+using System.Threading.Tasks;
 
 namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
 {
@@ -27,15 +28,14 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             this.FilterSelection = 1;
             //ShowInFullWidthMode = true;
 
-            this.ListSearch += new ComponentSearchEventHandler(Notification_ListSearch);
-            this.ListLoad += new ComponentListEventHandler(Notification_ListLoad);
-            this.ListDelete += new ComponentListEventHandler(Notification_ListDelete);
-            this.ListAction += new ComponentActionEventHandler(Notification_ListAction);
+            this.ListSearch += Notification_ListSearch;
+            this.ListLoad += Notification_ListLoad;
+            this.ListAction += Notification_ListAction;
         }
 
-        void Notification_ListAction(object sender, ComponentActionEventArgs e)
+        async Task Notification_ListAction(ComponentActionEventArgs e)
         {
-            Sushi.Mediakiwi.Data.Notification.DeleteAll(this.FilterGroup);
+            await Sushi.Mediakiwi.Data.Notification.DeleteAllAsync(this.FilterGroup);
             Response.Redirect(wim.Console.GetSafeUrl());
         }
 
@@ -59,34 +59,14 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             }
         }
 
-        void Notification_ListDelete(object sender, ComponentListEventArgs e)
-        {
-            //try
-            //{
-            //    _implement.de
-
-            //    using (Sushi.Mediakiwi.Data.Connection.DataCommander dac = new Sushi.Mediakiwi.Data.Connection.DataCommander(Sushi.Mediakiwi.Data.Common.DatabaseConnectionString))
-            //    {
-            //        dac.Text = "delete from wim_Notifications where Notification_Key = @Notification_Key";
-            //        dac.SetParameterInput("@Notification_Key", e.SelectedKey, SqlDbType.Int);
-            //        dac.ExecNonQuery();
-            //    }
-            //}
-            //catch (Exception ex)
-            //{
-            //    string notification = string.Format("Trying to delete wim_Notifications record (ID:{0}) resulted into the following error:<br/><br/>{1}", e.SelectedKey, ex.Message);
-            //    Sushi.Mediakiwi.Data.Notification.InsertOne(Sushi.Mediakiwi.Data.Notification.Tags.InternalWimError, Sushi.Mediakiwi.Data.NotificationType.Error, CurrentApplicationUser, notification);
-            //}
-        }
-
         INotification _implement;
 
-        void Notification_ListLoad(object sender, ComponentListEventArgs e)
+        async Task Notification_ListLoad(ComponentListEventArgs e)
         {
             if (e.SelectedKey == 0)
                 return;
 
-            _implement = Sushi.Mediakiwi.Data.Notification.SelectOne(e.SelectedKey);
+            _implement = await Mediakiwi.Data.Notification.SelectOneAsync(e.SelectedKey);
             m_Date = _implement.Created.ToString("dd-MM-yy hh:mm tt");
             m_Note = _implement.Text;
             m_Type = _implement.Group;
@@ -117,7 +97,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             return builder.ToString();
         }
 
-        void Notification_ListSearch(object sender, ComponentListSearchEventArgs e)
+        async Task Notification_ListSearch(ComponentListSearchEventArgs e)
         {
             //HighlightColumn = 0;
             wim.CanAddNewItem = false;
@@ -130,7 +110,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                 wim.ListDataColumns.Add("Type", "Type", ListDataColumnType.HighlightPresent);
                 wim.ListDataColumns.Add("", "Count", 50);
                 wim.ListDataColumns.Add("Last notification", "Last", 80, Align.Right);
-                wim.ListData = Sushi.Mediakiwi.Data.NotificationOverview.SelectAll(FilterSelection);
+                wim.ListDataAdd(Sushi.Mediakiwi.Data.NotificationOverview.SelectAll(FilterSelection));
                 wim.SearchResultItemPassthroughParameterProperty = "Deeplink";
             }
             else
@@ -141,10 +121,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                 
                 int page = Utility.ConvertToInt(Context.Request.Query["set"], 0) - 1;
                 int step = wim.CurrentList.Option_Search_MaxResultPerPage;
-
-                int max = 0;
-
-                wim.ListDataApply(Sushi.Mediakiwi.Data.Notification.SelectAll(this.FilterGroup, this.FilterSelection, null, out max));
+                wim.ListDataAdd(await Sushi.Mediakiwi.Data.Notification.SelectAllAsync(this.FilterGroup, this.FilterSelection, null));
             }
         }
 

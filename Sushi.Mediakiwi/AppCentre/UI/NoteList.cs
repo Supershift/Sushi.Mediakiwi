@@ -5,6 +5,7 @@ using System.Web;
 using Sushi.Mediakiwi.Framework;
 using System.Globalization;
 using Sushi.Mediakiwi.Data;
+using System.Threading.Tasks;
 
 namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
 {
@@ -21,13 +22,13 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             wim.HideProperties = true;
             //wim.ShowInFullWidthMode = true;
             wim.CanContainSingleInstancePerDefinedList = true;
-            this.ListLoad += new ComponentListEventHandler(NoteList_ListLoad);
+            ListLoad += NoteList_ListLoad;
         }
 
-        void NoteList_ListLoad(object sender, ComponentListEventArgs e)
+        async Task NoteList_ListLoad(ComponentListEventArgs e)
         {
             int lastError = wim.CurrentVisitor.Data["last.error"].ParseInt().GetValueOrDefault();
-            var note = Sushi.Mediakiwi.Data.Notification.SelectOne(lastError);
+            var note = await Mediakiwi.Data.Notification.SelectOneAsync(lastError);
             
             string errorShort = note.Text.Split(new string[] { "<b>Error:</b><br/>", "<br/><br/><b>Source:</b>" }, StringSplitOptions.RemoveEmptyEntries)[0];
             int errorCode = Utility.ConvertToInt(errorShort.Split(':')[0]);

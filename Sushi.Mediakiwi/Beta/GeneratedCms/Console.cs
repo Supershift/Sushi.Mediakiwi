@@ -434,9 +434,6 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
             Request = m_Application.Request;
             Context = m_Application;
 
-            this.WimPagePath = AddApplicationPath(string.Concat("/", ChannelIndentifier, CommonConfiguration.PORTAL_PATH));
-
-            string localRequestHost = CurrentHost;
 
             this.WimRepository = string.Concat(this.CurrentHost, AddApplicationPath("testdrive/files"));
             this.BaseRepository = string.Concat(this.CurrentHost, AddApplicationPath("repository"));
@@ -472,75 +469,46 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
             return null;
         }
 
+        string m_Channel;
+        internal string Channel
+        {
+            get
+            {
+                if (string.IsNullOrWhiteSpace(m_Channel))
+                {
+                    var candidate = Site.SelectOne(ChannelIndentifier);
+                    m_Channel = Utils.ToUrl(candidate.Name);
+                }
+                return m_Channel;
+            }
+        }
+
         int m_ChannelIndentifier;
         internal int ChannelIndentifier
         {
             get
             {
-               
-                if (m_ChannelIndentifier == 0)
+                bool isChanged = !string.IsNullOrEmpty(Form("channel"));
+                if (isChanged)
+                    isChanged = Form("autopostback") == "channel";
+
+                //  Topnavigation postback (channel change)
+                if (isChanged)
                 {
-                    bool isChanged = !string.IsNullOrEmpty(Form("channel"));
-                    if (isChanged)
-                        isChanged = Form("autopostback") == "channel";
-
-                    if (string.IsNullOrEmpty(Request.Query["channel"]))
+                    var postedChannel = Data.Utility.ConvertToInt(Form("channel"));
+                    if (postedChannel > 0)
                     {
-                        string wim = CommonConfiguration.PORTAL_PATH.ToLower();
-                        string url = Request.Path.Value.ToLower();
-                        string[] split = 
-                            wim == "/" 
-                                ? url.Split(new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries)
-                                : url.Replace(wim, string.Empty).Split(new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
-                        
-                        string candidate = null;
-
-                        /* CB: Dit heb ik moeten toevoegen voor nieuwe medtalks. Immers is deze url wat anders dan regulier en 
-                         * Kunnen we er niet van uitgaan dat de zoveelste onderdeel het site id nummer is.
-                         */
-                        if (split.Length > 0 && split.Length > 1)
-                        {
-                            foreach (string p in split)
-                            {
-                                if (Data.Utility.IsNumeric(p))
-                                {
-                                    candidate = p;
-                                    continue;
-                                }
-
-                            }
-                        }
-                        else if (split.Length > 0)
-                            candidate = split[split.Length - 1];
-                        else
-                            candidate = url.Replace(wim, string.Empty);
-
-                        int channel = Data.Utility.ConvertToInt(candidate, Data.Environment.Current.DefaultSiteID.GetValueOrDefault());
-                        if (channel == 0)
-                            channel = Sushi.Mediakiwi.Data.Site.SelectAll()[0].ID;
-
-                        m_ChannelIndentifier = channel;
+                        ValidateChannelSwitch(m_ChannelIndentifier, postedChannel);
+                        m_ChannelIndentifier = postedChannel;
                     }
-                    else
-                        m_ChannelIndentifier = Data.Utility.ConvertToInt(Request.Query["channel"]);
-
-
-                    //  Topnavigation postback (channel change)
-                    if (isChanged)
-                    {
-                        var postedChannel = Data.Utility.ConvertToInt(Form("channel"));
-                        if (postedChannel > 0)
-                        {
-                            ValidateChannelSwitch(m_ChannelIndentifier, postedChannel);
-                            m_ChannelIndentifier = postedChannel;
-                        }
-                    }
-                    //_Console.Response.Flush();
-                    //_Console.Response.End();
-                    //return candidate;
                 }
                 return m_ChannelIndentifier;
             }
+            set
+            {
+                m_ChannelIndentifier = value;
+            }
+
         }
 
         internal bool IsPostBack(string postBackValue)
@@ -926,12 +894,12 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
         /// Applies the list.
         /// </summary>
         /// <param name="list">The list.</param>
-        internal void ApplyList(Data.IComponentList list)
+        internal bool ApplyList(Data.IComponentList list)
         {
             m_CurrentList = list;
             this.Logic = m_CurrentList.ID;
             this.Title = m_CurrentList.Name;
-            ApplyList();
+            return ApplyList();
         }
 
         /// <summary>
@@ -940,20 +908,32 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
         /// <param name="listInformation">The list information (can be GUID or ID).</param>
         internal bool ApplyList(string listInformation)
         {
+            var list = default(Data.IComponentList);
+
             int candidate1;
             if (Data.Utility.IsNumeric(listInformation, out candidate1))
-                m_CurrentList = Data.ComponentList.SelectOne(candidate1);
+                list = Data.ComponentList.SelectOne(candidate1);
             else
             {
                 Guid candidate2;
                 if (Data.Utility.IsGuid(listInformation, out candidate2))
-                    m_CurrentList = Data.ComponentList.SelectOne(candidate2);
+                    list = Data.ComponentList.SelectOne(candidate2);
                 else
-                    m_CurrentList = Data.ComponentList.SelectOne(listInformation);
+                    list = Data.ComponentList.SelectOne(listInformation);
             }
 
-            if (m_CurrentList.IsNewInstance)
+            if (list == null && list.IsNewInstance)
                 throw new Exception($"Could not find the requested list with information [{listInformation}]");
+
+            return ApplyList(list);
+        }
+
+        /// <summary>
+        /// Applies the list.
+        /// </summary>
+        internal bool ApplyList(Data.ComponentList list)
+        {
+            m_CurrentList = list;
 
             this.Logic = m_CurrentList.ID;
             this.Title = m_CurrentList.Name;
@@ -1126,7 +1106,15 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
         /// Gets or sets the wim page path.
         /// </summary>
         /// <value>The wim page path.</value>
-        public string WimPagePath { get; set; }
+        public string WimPagePath {
+            get
+            {
+                // set the correct wim page
+                return Channel == null
+                    ? AddApplicationPath(CommonConfiguration.PORTAL_PATH)
+                    : AddApplicationPath(string.Concat(CommonConfiguration.PORTAL_PATH, "/", Channel));
+            }
+        }
 
         /// <summary>
         /// Gets the wim page path.
@@ -1136,7 +1124,13 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
         public string GetWimPagePath(int? channel)
         {
             if (channel.HasValue)
-                return AddApplicationPath(string.Concat("/", channel, CommonConfiguration.PORTAL_PATH), true);
+            {
+                var candidate = Site.SelectOne(channel.Value);
+                if (candidate != null)
+                {
+                    return AddApplicationPath(string.Concat(CommonConfiguration.PORTAL_PATH, "/", Utils.ToUrl(candidate.Name)), true);
+                }
+            }
             return AddApplicationPath(string.Concat(CommonConfiguration.PORTAL_PATH), true);
         }
 

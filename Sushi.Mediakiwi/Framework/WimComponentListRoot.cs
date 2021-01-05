@@ -1082,8 +1082,9 @@ namespace Sushi.Mediakiwi.Framework
 
             long start = DateTime.Now.Ticks;
 
-            _origin.OnListLoad(new ComponentListEventArgs(selectedKey, previousSelectedKey, componentVersionKey, groupID, groupItemID, isValidForm));
+            Utils.RunSync(() => _origin.OnListLoad(new ComponentListEventArgs(selectedKey, previousSelectedKey, componentVersionKey, groupID, groupItemID, isValidForm)));
         }
+
         internal bool HasListLoad
         {
             get { return _origin.HasListLoad;  }
@@ -1094,25 +1095,13 @@ namespace Sushi.Mediakiwi.Framework
             int groupItemID = Utility.ConvertToInt(Context.Request.Query["groupitem"]);
 
             long start = DateTime.Now.Ticks;
-            _origin.OnListAction(new ComponentActionEventArgs(selectedKey, componentVersionKey, propertyName, groupID, groupItemID, isValidForm));
+            Utils.RunSync(() => _origin.OnListAction(new ComponentActionEventArgs(selectedKey, componentVersionKey, propertyName, groupID, groupItemID, isValidForm)));
         }
         internal bool HasListAction
         {
             get { return _origin.HasListAction; }
         }
-        internal void DoListSearchedAction(int selectedKey, int componentVersionKey, string propertyName, bool? isValidForm)
-        {
-            int groupID = Utility.ConvertToInt(Context.Request.Query["group"]);
-            int groupItemID = Utility.ConvertToInt(Context.Request.Query["groupitem"]);
-
-            long start = DateTime.Now.Ticks;
-
-            _origin.OnListSearchedAction(new ComponentActionEventArgs(selectedKey, componentVersionKey, propertyName, groupID, groupItemID, isValidForm));
-        }
-        internal bool HasListSearchedAction
-        {
-            get { return _origin.HasListSearchedAction; }
-        }
+   
         internal void DoListPreRender(int selectedKey, int componentVersionKey, bool? isValidForm)
         {
             int groupID = Utility.ConvertToInt(Context.Request.Query["group"]);
@@ -1121,7 +1110,7 @@ namespace Sushi.Mediakiwi.Framework
 
             long start = DateTime.Now.Ticks;
 
-            _origin.OnListPreRender(new ComponentListEventArgs(selectedKey, componentVersionKey, 0, groupID, groupItemID, isValidForm));
+            Utils.RunSync(() => _origin.OnListPreRender(new ComponentListEventArgs(selectedKey, componentVersionKey, 0, groupID, groupItemID, isValidForm)));
         }
         internal bool HasListPreRender
         {
@@ -1138,7 +1127,7 @@ namespace Sushi.Mediakiwi.Framework
             if (Context?.Items["wim.Saved.ID"] != null)
                 AfterSaveElementIdentifier = null;
 
-            _origin.OnListSave(new ComponentListEventArgs(selectedKey, previousItemID, componentVersionKey, groupID, groupItemID, isValidForm));
+            Utils.RunSync(() => _origin.OnListSave(new ComponentListEventArgs(selectedKey, previousItemID, componentVersionKey, groupID, groupItemID, isValidForm)));
             //Sushi.Mediakiwi.Framework2.Functions.AuditTrail.Insert(wim.CurrentApplicationUser, wim.CurrentList, selectedKey, selectedKey == 0 ? Sushi.Mediakiwi.Framework2.Functions.Auditing.ActionType.Add : Sushi.Mediakiwi.Framework2.Functions.Auditing.ActionType.Update, componentVersionKey);
         }
         internal bool HasListSave
@@ -1152,7 +1141,7 @@ namespace Sushi.Mediakiwi.Framework
 
             long start = DateTime.Now.Ticks;
 
-            _origin.OnListDelete(new ComponentListEventArgs(selectedKey, componentVersionKey, 0, groupID, groupItemID, isValidForm));
+            Utils.RunSync(() => _origin.OnListDelete(new ComponentListEventArgs(selectedKey, componentVersionKey, 0, groupID, groupItemID, isValidForm)));
 
             //Sushi.Mediakiwi.Framework2.Functions.AuditTrail.Insert(wim.CurrentApplicationUser, wim.CurrentList, selectedKey, Sushi.Mediakiwi.Framework2.Functions.Auditing.ActionType.Remove, componentVersionKey);
         }
@@ -1193,7 +1182,11 @@ namespace Sushi.Mediakiwi.Framework
                     return;
             }
 
-            _origin.OnListSearch(new ComponentListSearchEventArgs(itemID.GetValueOrDefault(), groupID, groupItemID));
+            if (_origin.wim._Grids == null)
+            {
+                // should be replaced with await (async all the way).
+                Utils.RunSync(() => _origin.OnListSearch(new ComponentListSearchEventArgs(itemID.GetValueOrDefault(), groupID, groupItemID)));
+            }
             //Context.Trace.Write("Wim.Event", "Begin ListSearch");
         }
         internal bool HasListSearch
@@ -1241,7 +1234,7 @@ namespace Sushi.Mediakiwi.Framework
             _origin.ApplyListSettings();
 
             long start = DateTime.Now.Ticks;
-            _origin.OnListInit();
+            Utils.RunSync(() => _origin.OnListInit());
         }
 
         internal void DoListSense()
@@ -1280,6 +1273,7 @@ namespace Sushi.Mediakiwi.Framework
                 return e;
             }
         }
+
         internal bool HasListDataReport
         {
             get { return _origin.HasListDataReport; }
@@ -3661,7 +3655,7 @@ namespace Sushi.Mediakiwi.Framework
         /// <summary>
         /// Class for multiple grids
         /// </summary>
-        class GridInstance
+        internal class GridInstance
         {
             public GridInstance()
             { }
@@ -3709,7 +3703,7 @@ namespace Sushi.Mediakiwi.Framework
             this.ListDataColumns = this.m_ListDataColumnsBackup;
         }
 
-        internal int _index = -1;
+        internal int _index = 0;
 
         /// <summary>
         /// When having multiple grids on one page, this method forces the load of the next grid.
@@ -3743,7 +3737,7 @@ namespace Sushi.Mediakiwi.Framework
             return false;
         }
 
-        List<GridInstance> _Grids;
+        internal List<GridInstance> _Grids;
 
         // [MR:010713] Returns the number of items in the Grid.
         /// <summary>
@@ -3778,8 +3772,8 @@ namespace Sushi.Mediakiwi.Framework
         /// <summary>
         /// The search result. Add columns by using ListDataColumns.Add
         /// </summary>
-        [Obsolete("[20120715:MM] Please use ListDataApply", false)]
-        public IList ListData { get; set; }
+        //[Obsolete("[20120715:MM] Please use ListDataApply", false)]
+        internal IList ListData { get; set; }
 
         internal bool m_IsListDataScrollable;
         internal string m_DataTitle;
@@ -3860,138 +3854,138 @@ namespace Sushi.Mediakiwi.Framework
             _Grids.Add(grid);
         }
 
-        /// <summary>
-        /// Add an IEnumerable list of data entities to the grid
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="source">The source.</param>
-        public void ListDataApply<T>(IEnumerable<T> source)
-        {
-            ListDataApply<T>(source, null);
-        }
+        ///// <summary>
+        ///// Add an IEnumerable list of data entities to the grid
+        ///// </summary>
+        ///// <typeparam name="T"></typeparam>
+        ///// <param name="source">The source.</param>
+        //public void ListDataApply<T>(IEnumerable<T> source)
+        //{
+        //    ListDataApply<T>(source, null);
+        //}
 
-        /// <summary>
-        /// Lists the data apply.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="source">The source.</param>
-        /// <param name="isScrollable">if set to <c>true</c> [is scrollable].</param>
-        public void ListDataApply<T>(IEnumerable<T> source, bool isScrollable)
-        {
-            ListDataApply<T>(source, null, isScrollable);
-        }
+        ///// <summary>
+        ///// Lists the data apply.
+        ///// </summary>
+        ///// <typeparam name="T"></typeparam>
+        ///// <param name="source">The source.</param>
+        ///// <param name="isScrollable">if set to <c>true</c> [is scrollable].</param>
+        //public void ListDataApply<T>(IEnumerable<T> source, bool isScrollable)
+        //{
+        //    ListDataApply<T>(source, null, isScrollable);
+        //}
 
-        /// <summary>
-        /// Lists the data apply.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="source">The source.</param>
-        /// <param name="title">The title.</param>
-        public void ListDataApply<T>(IEnumerable<T> source, string title)
-        {
-            ListDataApply<T>(source, title, false);
-        }
+        ///// <summary>
+        ///// Lists the data apply.
+        ///// </summary>
+        ///// <typeparam name="T"></typeparam>
+        ///// <param name="source">The source.</param>
+        ///// <param name="title">The title.</param>
+        //public void ListDataApply<T>(IEnumerable<T> source, string title)
+        //{
+        //    ListDataApply<T>(source, title, false);
+        //}
 
-        /// <summary>
-        /// Add an IEnumerable list of data entities to the grid
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="source">The source.</param>
-        /// <param name="title">The title of the datagrid.</param>
-        public void ListDataApply<T>(IEnumerable<T> source, string title, bool isScrollable)
-        {
-            if (source == null) return;
+        ///// <summary>
+        ///// Add an IEnumerable list of data entities to the grid
+        ///// </summary>
+        ///// <typeparam name="T"></typeparam>
+        ///// <param name="source">The source.</param>
+        ///// <param name="title">The title of the datagrid.</param>
+        //public void ListDataApply<T>(IEnumerable<T> source, string title, bool isScrollable)
+        //{
+        //    if (source == null) return;
 
-            if (this.ListData != null)
-                this.Notification.AddError(string.Format("The method [ListDataApply<T>(IEnumerable)] is called multiple times; this should only be called once, please correct this."));
+        //    if (this.ListData != null)
+        //        this.Notification.AddError(string.Format("The method [ListDataApply<T>(IEnumerable)] is called multiple times; this should only be called once, please correct this."));
 
-            int step = GridDataCommunication.PageSize;// this.CurrentList.Option_Search_MaxResultPerPage;
+        //    int step = GridDataCommunication.PageSize;// this.CurrentList.Option_Search_MaxResultPerPage;
 
-            this.m_IsListDataScrollable = isScrollable;
-            this.m_DataTitle = title;
-            this.m_IsLinqUsed = true;
+        //    this.m_IsListDataScrollable = isScrollable;
+        //    this.m_DataTitle = title;
+        //    this.m_IsLinqUsed = true;
 
-            this.m_ListDataRecordCount = GridDataCommunication.ResultCount.HasValue ? GridDataCommunication.ResultCount.Value : source.Count();
+        //    this.m_ListDataRecordCount = GridDataCommunication.ResultCount.HasValue ? GridDataCommunication.ResultCount.Value : source.Count();
 
-            this.m_ListDataRecordPageCount = this.m_ListDataRecordCount == 0 ? 0 : Convert.ToInt32(decimal.Ceiling(((Decimal)this.m_ListDataRecordCount / (Decimal)step)));
+        //    this.m_ListDataRecordPageCount = this.m_ListDataRecordCount == 0 ? 0 : Convert.ToInt32(decimal.Ceiling(((Decimal)this.m_ListDataRecordCount / (Decimal)step)));
 
-            if (!GridDataCommunication.ResultCount.HasValue)
-            {
-                int page = CurrentPage - 1;
-                if (page < 0)
-                {
-                    this.ListData = source.ToArray();
-                }
-                else if (page > 0)
-                {
-                    int start = (page * step);
-                    if (start >= this.m_ListDataRecordCount)
-                        this.ListData = source.Take(step).ToArray();
-                    else
-                        this.ListData = source.Skip(start).Take(step).ToArray();
-                }
-                else
-                    this.ListData = source.Take(step).ToArray();
-            }
-            else
-            {
-                if (GridDataCommunication.ShowAll)
-                    this.ListData = source.ToArray();
-                else
-                    this.ListData = source.Take(step).ToArray();
-            }
+        //    if (!GridDataCommunication.ResultCount.HasValue)
+        //    {
+        //        int page = CurrentPage - 1;
+        //        if (page < 0)
+        //        {
+        //            this.ListData = source.ToArray();
+        //        }
+        //        else if (page > 0)
+        //        {
+        //            int start = (page * step);
+        //            if (start >= this.m_ListDataRecordCount)
+        //                this.ListData = source.Take(step).ToArray();
+        //            else
+        //                this.ListData = source.Skip(start).Take(step).ToArray();
+        //        }
+        //        else
+        //            this.ListData = source.Take(step).ToArray();
+        //    }
+        //    else
+        //    {
+        //        if (GridDataCommunication.ShowAll)
+        //            this.ListData = source.ToArray();
+        //        else
+        //            this.ListData = source.Take(step).ToArray();
+        //    }
 
-            this.m_AppliedSearchGridItem = this.ListData;
-            this.ApplyListDataColumnBackup();
-        }
+        //    this.m_AppliedSearchGridItem = this.ListData;
+        //    this.ApplyListDataColumnBackup();
+        //}
 
-        /// <summary>
-        /// Add an IQueryable list of data entities to the grid
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="source">The source.</param>
-        public void ListDataApply<T>(IQueryable<T> source)
-        {
-            ListDataApply<T>(source, null);
-        }
+        ///// <summary>
+        ///// Add an IQueryable list of data entities to the grid
+        ///// </summary>
+        ///// <typeparam name="T"></typeparam>
+        ///// <param name="source">The source.</param>
+        //public void ListDataApply<T>(IQueryable<T> source)
+        //{
+        //    ListDataApply<T>(source, null);
+        //}
 
-        /// <summary>
-        /// Add an IQueryable list of data entities to the grid
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="source">The source.</param>
-        public void ListDataApply<T>(IQueryable<T> source, string title)
-        {
-            if (source == null) return;
-            if (this.ListData != null)
-                this.Notification.AddError(string.Format("The method [ListDataApply<T>(IQueryable)] is called multiple times; this should only be called once, please correct this."));
+        ///// <summary>
+        ///// Add an IQueryable list of data entities to the grid
+        ///// </summary>
+        ///// <typeparam name="T"></typeparam>
+        ///// <param name="source">The source.</param>
+        //public void ListDataApply<T>(IQueryable<T> source, string title)
+        //{
+        //    if (source == null) return;
+        //    if (this.ListData != null)
+        //        this.Notification.AddError(string.Format("The method [ListDataApply<T>(IQueryable)] is called multiple times; this should only be called once, please correct this."));
 
-            int step = this.CurrentList.Option_Search_MaxResultPerPage;
+        //    int step = this.CurrentList.Option_Search_MaxResultPerPage;
 
-            //context.Log = Context.Response.Output;
-            this.m_DataTitle = title;
-            this.m_IsLinqUsed = true;
-            this.m_ListDataRecordCount = source.Count();
-            this.m_ListDataRecordPageCount = this.m_ListDataRecordCount == 0 ? 0 : Convert.ToInt32(decimal.Ceiling(((Decimal)this.m_ListDataRecordCount / (Decimal)step)));
+        //    //context.Log = Context.Response.Output;
+        //    this.m_DataTitle = title;
+        //    this.m_IsLinqUsed = true;
+        //    this.m_ListDataRecordCount = source.Count();
+        //    this.m_ListDataRecordPageCount = this.m_ListDataRecordCount == 0 ? 0 : Convert.ToInt32(decimal.Ceiling(((Decimal)this.m_ListDataRecordCount / (Decimal)step)));
 
-            int page = CurrentPage - 1;
-            if (page < 0)
-            {
-                this.ListData = source.ToArray();
-            }
-            else if (page > 0)
-            {
-                int start = (page * step);
-                if (start >= this.m_ListDataRecordCount)
-                    this.ListData = source.Take(step).ToArray();
-                else
-                    this.ListData = source.Skip(start).Take(step).ToArray();
-            }
-            else
-                this.ListData = source.Take(step).ToArray();
+        //    int page = CurrentPage - 1;
+        //    if (page < 0)
+        //    {
+        //        this.ListData = source.ToArray();
+        //    }
+        //    else if (page > 0)
+        //    {
+        //        int start = (page * step);
+        //        if (start >= this.m_ListDataRecordCount)
+        //            this.ListData = source.Take(step).ToArray();
+        //        else
+        //            this.ListData = source.Skip(start).Take(step).ToArray();
+        //    }
+        //    else
+        //        this.ListData = source.Take(step).ToArray();
 
-            this.m_AppliedSearchGridItem = this.ListData;
-        }
+        //    this.m_AppliedSearchGridItem = this.ListData;
+        //}
 
         /// <summary>
         /// Add another IQueryable list of data entities to the grid
@@ -4485,68 +4479,15 @@ namespace Sushi.Mediakiwi.Framework
         //    return path;
         //}
 
-
         /// <summary>
-        /// Gets the current query URL.
+        /// Gets the current query URL with a certain keys replaced.
         /// </summary>
-        /// <param name="includeWimPath">if set to <c>true</c> [include wim path].</param>
-        /// <param name="keyvalues">The keyvalues.</param>
+        /// <param name="keyvalues"></param>
         /// <returns></returns>
-        public string GetCurrentQueryUrl(bool includeWimPath, params KeyValue[] keyvalues)
+        public string GetUrl(params KeyValue[] keyvalues)
         {
-            return GetCurrentQueryUrl(includeWimPath, null, keyvalues);
+            return Console.UrlBuild.GetUrl(keyvalues);
         }
-
-        public string GetCurrentHomeUrl()
-        {
-            return Console.WimPagePath;
-        }
-
-
-        /// <summary>
-        /// Gets the current query URL with a certail key replaced.
-        /// </summary>
-        /// <param name="includeWimPath">if set to <c>true</c> [include wim path].</param>
-        /// <param name="channelID">The channel ID.</param>
-        /// <param name="keyvalues">The keyvalues.</param>
-        /// <returns></returns>
-        public string GetCurrentQueryUrl(bool includeWimPath, int? channelID, params KeyValue[] keyvalues)
-        {
-            string build = UrlBuilder.GetCustomQueryString(Context, keyvalues);
-            if (includeWimPath)
-            {
-                if (channelID.HasValue)
-                    return string.Concat(Console.GetWimPagePath(channelID.Value), build);
-                else
-                    return string.Concat(Console.WimPagePath, build);
-            }
-            return build;
-        }
-
-        /// <summary>
-        /// Gets the temporary file path for storing files in the temporary folder.
-        /// </summary>
-        /// <param name="filename">The filename.</param>
-        /// <param name="addToAutoDownloadUrl">if set to <c>true</c> [add to auto download URL].</param>
-        /// <param name="newFileName">New name of the file.</param>
-        /// <returns></returns>
-        //public string GetTemporaryFilePath(string filename, bool addToAutoDownloadUrl, out string newFileName)
-        //{
-        //    Regex clean = new Regex(@"[^A-Z0-9_\.]", RegexOptions.IgnoreCase);
-        //    string candidate = clean.Replace(filename.Replace(" ", "_"), string.Empty);
-
-        //    string folder = _Console.Request.MapPath(Utility.AddApplicationPath(Wim.CommonConfiguration.RelativeRepositoryTmpUrl));
-        //    if (!System.IO.Directory.Exists(folder))
-        //        System.IO.Directory.CreateDirectory(folder);
-
-        //    string path = _Console.Request.MapPath(Utility.AddApplicationPath(string.Concat(Wim.CommonConfiguration.RelativeRepositoryTmpUrl, candidate)));
-            
-        //    if (addToAutoDownloadUrl)
-        //        this.CurrentVisitor.Data.Apply("wim_export", candidate);
-        //    newFileName = candidate;
-
-        //    return path;
-        //}
 
         /// <summary>
         /// Gets a value indicating whether this instance has export option XLS.
@@ -4645,44 +4586,12 @@ namespace Sushi.Mediakiwi.Framework
             get {
                 if (string.IsNullOrEmpty(m_SearchResultItemPassthroughParameter))
                 {
-                    m_SearchResultItemPassthroughParameter = GetCurrentQueryUrl(false, Console.ChannelIndentifier, new KeyValue() { Key = "item", RemoveKey = true });
-                    m_SearchResultItemPassthroughParameter += "&item";
-
-                    //int folderId = Utility.ConvertToInt(Console.Request.Query["folder"]);
-                    //int baseId = Utility.ConvertToInt(Console.Request.Query["base"]);
-                    
-                    //string paging = Console.Request.Params["set"];
-
-                    //string addition = "";
-                    //if (folderId > 0)
-                    //    addition += string.Concat("&base=", baseId == 0 ? this.AfterSaveElementIdentifier : baseId);
-
-                    //if (folderId > 0)
-                    //    addition += string.Concat("&folder=", folderId);
-
-                    //if (!string.IsNullOrEmpty(paging))
-                    //    addition += string.Concat("&set=", paging);
-
-                    //if (!string.IsNullOrEmpty(Console.Request.Query["group"]))
-                    //{
-                    //    int groupId = Utility.ConvertToInt(Console.Request.Query["group"]);
-                    //    int groupElementId = Utility.ConvertToInt(Console.Request.Query["groupitem"]);
-                    //    int group2Id = Utility.ConvertToInt(Console.Request.Query["group2"]);
-
-                    //    if (group2Id > 0)
-                    //    {
-                    //        int group2ElementId = Utility.ConvertToInt(Console.Request.Query["group2item"]);
-                    //        m_SearchResultItemPassthroughParameter = string.Concat("group=", groupId, "&groupitem=", groupElementId, "&group2=", group2Id, "&group2item=", group2ElementId, "&list=", CurrentList.ID, addition, "&item");
-                    //    }
-                    //    else
-                    //        m_SearchResultItemPassthroughParameter = string.Concat("group=", groupId, "&groupitem=", groupElementId, "&list=", CurrentList.ID, addition, "&item");
-                    //}
-                    //else
-                    //    m_SearchResultItemPassthroughParameter = string.Concat("list=", CurrentList.ID, addition, "&item");
+                    m_SearchResultItemPassthroughParameter = GetUrl(new KeyValue() { Key = "item", RemoveKey = true });
+                    if (m_SearchResultItemPassthroughParameter.Contains('?'))
+                        m_SearchResultItemPassthroughParameter += "&item";
+                    else
+                        m_SearchResultItemPassthroughParameter += "?item";
                 }
-
-                if (m_SearchResultItemPassthroughParameter.Contains('?'))
-                    m_SearchResultItemPassthroughParameter = m_SearchResultItemPassthroughParameter.Replace("?", string.Empty);
 
                 return m_SearchResultItemPassthroughParameter; 
             }
@@ -4853,21 +4762,34 @@ namespace Sushi.Mediakiwi.Framework
                                     //folderEntity.DatabaseMappingPortal = gallery.DatabaseMappingPortal;
                                 }
                             }
-                            else if (!string.IsNullOrEmpty(Context.Request.Query["list"]))
+
+                            else if (Utility.ConvertToInt(Context.Request.Query["asset"]) > 0)
                             {
-                                Sushi.Mediakiwi.Data.FolderType type = (Sushi.Mediakiwi.Data.FolderType)Utility.ConvertToInt(Context.Request.Query["top"], 2);
+                                int galleryId = 0;
 
-                                if (!this.CurrentList.FolderID.HasValue)
-                                    folderEntity = Sushi.Mediakiwi.Data.Folder.SelectOneBySite(this.CurrentSite.ID, type);
-                                else
+                                Sushi.Mediakiwi.Data.Asset asset = Sushi.Mediakiwi.Data.Asset.SelectOne(Utility.ConvertToInt(Context.Request.Query["asset"]));
+                                if (!(asset == null || asset.ID == 0))
+                                    galleryId = asset.GalleryID;
+
+                                if (galleryId > 0)
                                 {
-                                    if (this.CurrentList.Target == ComponentListTarget.List)
-                                        folderEntity = Sushi.Mediakiwi.Data.Folder.SelectOneChild(this.CurrentList.FolderID.Value, this.CurrentSite.ID);
-                                    else
-                                        folder = this.CurrentList.FolderID.Value;
-
+                                    Sushi.Mediakiwi.Data.Gallery gallery = Sushi.Mediakiwi.Data.Gallery.SelectOne(galleryId);
+                                    if (!(gallery == null || gallery.ID == 0))
+                                    {
+                                        folderEntity = new Folder();
+                                        folderEntity.ID = gallery.ID;
+                                        folderEntity.ParentID = gallery.ParentID.GetValueOrDefault(0);
+                                        folderEntity.Name = gallery.Name;
+                                        folderEntity.Type = FolderType.Gallery;
+                                    }
                                 }
-
+                            }
+                            else if (this.Console.ItemType == RequestItemType.Undefined && this.CurrentList.FolderID.HasValue)
+                            {
+                                if (this.CurrentList.Target == ComponentListTarget.List)
+                                    folderEntity = Sushi.Mediakiwi.Data.Folder.SelectOneChild(this.CurrentList.FolderID.Value, this.CurrentSite.ID);
+                                else
+                                    folder = this.CurrentList.FolderID.Value;
                             }
                             else if (Utility.ConvertToInt(Context.Request.Query["asset"]) > 0)
                             {
@@ -5310,7 +5232,7 @@ namespace Sushi.Mediakiwi.Framework
             Caching.FlushAll(true);
 
             if (redirectToSelf && this.Console != null && this.Console.Context != null)
-                this.Console.Context.Response.Redirect(GetCurrentQueryUrl(true));
+                this.Console.Context.Response.Redirect(GetUrl());
 
             //this.Console.Context.Response.Redirect(Utility.GetSafeUrl(this.Console.Context.Request).Replace("?flush=me", string.Empty).Replace("&flush=me", string.Empty), true);
 

@@ -3,6 +3,7 @@ using Sushi.Mediakiwi.Framework;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Sushi.Mediakiwi.AppCentre.UI
 {
@@ -14,16 +15,18 @@ namespace Sushi.Mediakiwi.AppCentre.UI
         {
             wim.CanContainSingleInstancePerDefinedList = true;
 
-            this.ListDelete += this.Demonstration_ListDelete;
-            this.ListLoad += this.Demonstration_ListLoad;
-            this.ListSave += this.Demonstration_ListSave;
+            this.ListLoad += Demonstration_ListLoad;
+            this.ListSave += Demonstration_ListSave;
+            this.ListAction += Demonstration_ListAction;
         }
 
-        private void Demonstration_ListDelete(IComponentListTemplate sender, ComponentListEventArgs e)
+        Task Demonstration_ListAction(ComponentActionEventArgs e)
         {
+            Response.Redirect("https://www.google.com");
+            return Task.CompletedTask;
         }
 
-        private void Demonstration_ListSave(IComponentListTemplate sender, ComponentListEventArgs e)
+        Task Demonstration_ListSave(ComponentListEventArgs e)
         {
             if (Implement.Upload != null)
             {
@@ -34,9 +37,11 @@ namespace Sushi.Mediakiwi.AppCentre.UI
 
             if (!string.IsNullOrWhiteSpace(TitleTest))
                 wim.Notification.AddNotificationAlert($"Saved [Title]: {this.TitleTest}", true);
+
+            return Task.CompletedTask;
         }
 
-        private void Demonstration_ListLoad(IComponentListTemplate sender, ComponentListEventArgs e)
+        Task Demonstration_ListLoad(ComponentListEventArgs e)
         {
             Implement = new DemonstrationForm(wim.IsLayerMode);
 
@@ -45,6 +50,8 @@ namespace Sushi.Mediakiwi.AppCentre.UI
 
             this.FormMaps.Add(this);
             this.FormMaps.Add(Implement);
+
+            return Task.CompletedTask;
         }
 
         public string TitleTest { get; set; }

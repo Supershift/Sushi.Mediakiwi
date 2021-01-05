@@ -39,7 +39,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         //    wim.ListDataColumns.Add(Resource.Date, "Created");
         //    wim.ListDataColumns.Add(new ListDataColumn("", "RollBackTo") { ColumnWidth = 150 });
 
-        //    wim.ListDataApply<IPageVersion>(list);
+        //    wim.ListDataAdd<IPageVersion>(list);
 
         //}
 
@@ -49,9 +49,9 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         //{
         //    get { return Wim.Utility.ConvertToInt(Request["pageItem"]); }
         //}
-      
- 
 
-    
+
+
+
     }
 }

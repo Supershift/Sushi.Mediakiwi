@@ -9,6 +9,7 @@ using System.Globalization;
 using System.Collections;
 using Sushi.Mediakiwi.Data;
 using Sushi.Mediakiwi.UI;
+using System.Threading.Tasks;
 
 namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
 {
@@ -24,9 +25,9 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         {
             wim.CanAddNewItem = true;
 
-            this.ListSearch += new ComponentSearchEventHandler(Site_ListSearch);
-            this.ListLoad += new ComponentListEventHandler(Site_ListLoad);
-            this.ListSave += new ComponentListEventHandler(Site_ListSave);
+            this.ListSearch += Site_ListSearch;
+            this.ListLoad += Site_ListLoad;
+            this.ListSave += Site_ListSave;
             //this.ListAction += new ComponentActionEventHandler(Site_ListAction);
         }
 
@@ -64,9 +65,9 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="Sushi.Mediakiwi.Framework.ComponentListEventArgs"/> instance containing the event data.</param>
-        void Site_ListDelete(object sender, ComponentListEventArgs e)
+        async Task Site_ListDelete(ComponentListEventArgs e)
         {
-            this.Implement.Delete();
+            await this.Implement.DeleteAsync();
         }
 
         /// <summary>
@@ -95,11 +96,11 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="Sushi.Mediakiwi.Framework.ComponentListEventArgs"/> instance containing the event data.</param>
-        void Site_ListSave(object sender, ComponentListEventArgs e)
+        async Task Site_ListSave(ComponentListEventArgs e)
         {
             ResetDefaultFolder();
 
-            this.Implement.Save();
+            await this.Implement.SaveAsync();
 
             if (this.Implement.HasLists)
             {
@@ -130,7 +131,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                 }
             }
 
-            Response.Redirect(wim.GetCurrentQueryUrl(true, new KeyValue() { Key = "item", Value = this.Implement.ID }));
+            Response.Redirect(wim.GetUrl(new KeyValue() { Key = "item", Value = this.Implement.ID }));
         }
 
         /// <summary>
@@ -159,6 +160,12 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             }
             wim.FlushCache();
             Sushi.Mediakiwi.Framework.Functions.FolderPathLogic.UpdateCompletePath();
+
+            // if a master is connected, created the inheritance tree
+            if (Implement.MasterID.HasValue)
+            {
+                Sushi.Mediakiwi.Framework.Inheritance.Folder.CreateFolderTree(Implement.MasterID.Value, Implement.ID, FolderType.List);
+            }
         }
 
         Sushi.Mediakiwi.Data.Site m_Implement;
@@ -178,13 +185,13 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="Sushi.Mediakiwi.Framework.ComponentListEventArgs"/> instance containing the event data.</param>
-        void Site_ListLoad(object sender, ComponentListEventArgs e)
+        async Task Site_ListLoad(ComponentListEventArgs e)
         {
-            this.Implement = Sushi.Mediakiwi.Data.Site.SelectOne(e.SelectedKey);
+            this.Implement = await Mediakiwi.Data.Site.SelectOneAsync(e.SelectedKey);
             this.m_InheritenceIsSet = this.Implement.MasterID.HasValue;
 
             if (!Implement.HasPages && !Implement.HasLists)
-                this.ListDelete += new ComponentListEventHandler(Site_ListDelete);
+                this.ListDelete += Site_ListDelete;
 
             //ResetDefaultFolder();
 
@@ -196,7 +203,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// Site_s the list search.
         /// </summary>
         /// <param name="sender">The sender.</param>
-        void Site_ListSearch(object sender, ComponentListSearchEventArgs e)
+        async Task Site_ListSearch(ComponentListSearchEventArgs e)
         {
             wim.CanAddNewItem = true;
             wim.ListDataColumns.Add("ID", "ID", ListDataColumnType.UniqueIdentifier);
@@ -210,9 +217,9 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                 return;
 
             if (m_SearchSiteName == null)
-                wim.ListData = Sushi.Mediakiwi.Data.Site.SelectAll();
+                wim.ListDataAdd(await Sushi.Mediakiwi.Data.Site.SelectAllAsync());
             else
-                wim.ListData = Sushi.Mediakiwi.Data.Site.SelectAll(m_SearchSiteName);
+                wim.ListDataAdd(await Sushi.Mediakiwi.Data.Site.SelectAllAsync(m_SearchSiteName));
         }
 
         private string m_SearchSiteName;

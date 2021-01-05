@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Threading.Tasks;
 using System.Web;
 using Sushi.Mediakiwi.AppCentre.UI;
 using Sushi.Mediakiwi.Data;
@@ -70,34 +71,17 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         {
             wim.OpenInEditMode = true;
 
-            this.ListInit += this.ComponentList_ListInit;
-            this.ListSearch += new ComponentSearchEventHandler(ComponentList_ListSearch);
-            this.ListSave += new ComponentListEventHandler(ComponentList_ListSave);
-            this.ListDelete += new ComponentListEventHandler(ComponentList_ListDelete);
-            this.ListLoad += new ComponentListEventHandler(ComponentList_ListLoad);
-            this.ListPreRender += new ComponentListEventHandler(ComponentList_ListPreRender);
-            this.ListAction += new ComponentActionEventHandler(ComponentList_ListAction);
+            this.ListSearch += ComponentList_ListSearch;
+            this.ListSave += ComponentList_ListSave;
+            this.ListDelete += ComponentList_ListDelete;
+            this.ListLoad += ComponentList_ListLoad;
+            this.ListPreRender += ComponentList_ListPreRender;
         }
 
-        private void ComponentList_ListInit(object sender, EventArgs e)
-        {
-
-
-        }
-
-        void ComponentList_ListAction(object sender, ComponentActionEventArgs e)
-        {
-            //if (RemoveSqlTable)
-            //{
-            //    if (!this.Implement.IsSingleInstance)
-            //        this.Implement.DeleteSqlTable();
-            //}
-        }
-
-        void ComponentList_ListPreRender(object sender, ComponentListEventArgs e)
+        async Task ComponentList_ListPreRender(ComponentListEventArgs e)
         {
             if (Implement.SiteID.HasValue)
-                wim.CurrentSite = Sushi.Mediakiwi.Data.Site.SelectOne(Implement.SiteID.Value);
+                wim.CurrentSite = await Sushi.Mediakiwi.Data.Site.SelectOneAsync(Implement.SiteID.Value);
         }
 
         bool m_IsConfiguration_Template;
@@ -214,7 +198,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="Sushi.Mediakiwi.Framework.ComponentListEventArgs"/> instance containing the event data.</param>
-        void ComponentList_ListLoad(object sender, ComponentListEventArgs e)
+        async Task ComponentList_ListLoad(ComponentListEventArgs e)
         {
             if (wim.CurrentList.Type == Sushi.Mediakiwi.Data.ComponentListType.ComponentLists || wim.CurrentList.Type == Sushi.Mediakiwi.Data.ComponentListType.ComponentListProperties)
                 this.IsConfiguration_Template = true;
@@ -236,7 +220,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             wim.CanSaveAndAddNew = true;
             wim.CanAddNewItem = true;
 
-            Implement = Sushi.Mediakiwi.Data.ComponentList.SelectOne(selectedKey);
+            Implement = await Sushi.Mediakiwi.Data.ComponentList.SelectOneAsync(selectedKey);
 
             this.IsWimType = Implement.Type > 0;
 
@@ -259,7 +243,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             if (e.SelectedKey > 0 && (wim.CurrentList.Type == Sushi.Mediakiwi.Data.ComponentListType.ComponentLists || wim.CurrentList.Type == Sushi.Mediakiwi.Data.ComponentListType.ComponentListProperties))
             {
                 //  Settings
-                wim.AddTab(Sushi.Mediakiwi.Data.ComponentList.SelectOne(new Guid("15C30414-F187-4021-B991-386653677767")), e.SelectedKey);
+                wim.AddTab(await Sushi.Mediakiwi.Data.ComponentList.SelectOneAsync(new Guid("15C30414-F187-4021-B991-386653677767")), e.SelectedKey);
 
                 if (isListPropertySection)
                 {
@@ -267,17 +251,17 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                     if (Implement.Type == Sushi.Mediakiwi.Data.ComponentListType.Undefined && !Implement.ClassName.StartsWith("Wim.Module.", StringComparison.OrdinalIgnoreCase))
                     {
                         //  Fields
-                        Sushi.Mediakiwi.Data.IComponentList fieldList = Sushi.Mediakiwi.Data.ComponentList.SelectOne(new Guid("6a7d5e6c-9daa-4a6f-aeea-21bd4782da1e"));
+                        Sushi.Mediakiwi.Data.IComponentList fieldList = await Sushi.Mediakiwi.Data.ComponentList.SelectOneAsync(new Guid("6a7d5e6c-9daa-4a6f-aeea-21bd4782da1e"));
                         wim.AddTab(fieldList, 0);
 
                         //  Columns
-                        wim.AddTab(Sushi.Mediakiwi.Data.ComponentList.SelectOne(new Guid("c7b2c21d-0121-4e58-a0c9-616b31c2e1b1")), 0);
+                        wim.AddTab(await Sushi.Mediakiwi.Data.ComponentList.SelectOneAsync(new Guid("c7b2c21d-0121-4e58-a0c9-616b31c2e1b1")), 0);
                         //  Schedule
-                        wim.AddTab(Sushi.Mediakiwi.Data.ComponentList.SelectOne(new Guid("937A7D82-EABD-4747-A74A-7B9106E697B1")), e.SelectedKey);
+                        wim.AddTab(await Sushi.Mediakiwi.Data.ComponentList.SelectOneAsync(new Guid("937A7D82-EABD-4747-A74A-7B9106E697B1")), e.SelectedKey);
                     }
                 }
 
-                var list = Sushi.Mediakiwi.Data.ComponentList.SelectOne(new Guid("DAD14066-B9E3-4ED9-B951-BE64C93AE2D3"));
+                var list = await Sushi.Mediakiwi.Data.ComponentList.SelectOneAsync(new Guid("DAD14066-B9E3-4ED9-B951-BE64C93AE2D3"));
                 //  Compare
                 //wim.AddTab(Sushi.Mediakiwi.Data.ComponentList.SelectOne(new Guid("3ed45f19-2b30-4fcd-9a39-7a5855f7ebca")), e.SelectedKey);
                 wim.AddTab(list, e.SelectedKey);
@@ -306,9 +290,9 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="Sushi.Mediakiwi.Framework.ComponentListEventArgs"/> instance containing the event data.</param>
-        void ComponentList_ListDelete(object sender, ComponentListEventArgs e)
+        async Task ComponentList_ListDelete(ComponentListEventArgs e)
         {
-            Implement.Delete();
+            await Implement.DeleteAsync();
         }
 
         /// <summary>
@@ -316,7 +300,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="Sushi.Mediakiwi.Framework.ComponentListEventArgs"/> instance containing the event data.</param>
-        void ComponentList_ListSave(object sender, ComponentListEventArgs e)
+        async Task ComponentList_ListSave(ComponentListEventArgs e)
         {
             Implement.IsTemplate = true;
             Implement.Target = Sushi.Mediakiwi.Data.ComponentListTarget.List;
@@ -324,20 +308,20 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             //  [12.05.13:MM] Set the correct target type when moving to the Administration section.
             if (Implement.SiteID.HasValue)
             {
-                var site = Sushi.Mediakiwi.Data.Site.SelectOne(Implement.SiteID.Value);
+                var site = await Sushi.Mediakiwi.Data.Site.SelectOneAsync(Implement.SiteID.Value);
                 if (site.Type.HasValue)
                     Implement.Target = Sushi.Mediakiwi.Data.ComponentListTarget.Administration;
             }
 
             if (!Implement.FolderID.HasValue && Implement.SiteID.HasValue)
             {
-                Sushi.Mediakiwi.Data.Folder Folder = Sushi.Mediakiwi.Data.Folder.SelectOneBySite(Implement.SiteID.Value, Sushi.Mediakiwi.Data.FolderType.List);
+                Sushi.Mediakiwi.Data.Folder Folder = await Sushi.Mediakiwi.Data.Folder.SelectOneBySiteAsync(Implement.SiteID.Value, Sushi.Mediakiwi.Data.FolderType.List);
 
                 if (!Folder.IsNewInstance)
                 {
                     if (Implement.FolderID.HasValue)
                     {
-                        Sushi.Mediakiwi.Data.Folder Folder2 = Sushi.Mediakiwi.Data.Folder.SelectOne(Implement.FolderID.Value);
+                        Sushi.Mediakiwi.Data.Folder Folder2 = await Sushi.Mediakiwi.Data.Folder.SelectOneAsync(Implement.FolderID.Value);
                         if (Folder2.SiteID != Folder.SiteID)
                         {
                             //  New channel: reset folder
@@ -360,7 +344,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             Implement.SenseInterval = 0;
             Implement.SenseScheduled = null;
             /*********************************/
-            Implement.Save();
+            await Implement.SaveAsync();
             //if (!string.IsNullOrEmpty(Implement.Class) && Implement.ClassName == "Wim.Templates.Templates.UI.GenericsList")
             //{
             //    Sushi.Mediakiwi.Framework.CodeGeneration.GenericList.CreateProxy(Implement.ID);
@@ -372,7 +356,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// Components the list_ list search.
         /// </summary>
         /// <param name="sender">The sender.</param>
-        void ComponentList_ListSearch(object sender, ComponentListSearchEventArgs e)
+        private async Task ComponentList_ListSearch(ComponentListSearchEventArgs e)
         {
             wim.CanAddNewItem = true;
             wim.ListDataColumns.Add("ID", "ID", ListDataColumnType.UniqueIdentifier);
@@ -386,8 +370,8 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
 
             wim.ForceLoad = true;
 
-            var result = Sushi.Mediakiwi.Data.ComponentList.SelectAll(this.FilterText, this.FilterSite);
-            wim.ListDataApply(result);
+            var result = await Sushi.Mediakiwi.Data.ComponentList.SelectAllAsync(this.FilterText, this.FilterSite);
+            wim.ListDataAdd(result);
         }
 
         #region Lookup

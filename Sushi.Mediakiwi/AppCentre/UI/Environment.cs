@@ -6,6 +6,8 @@ using System.Web;
 using Sushi.Mediakiwi.Framework;
 using Sushi.Mediakiwi.UI;
 using Sushi.Mediakiwi.Data;
+using Sushi.Mediakiwi.Logic;
+using System.Threading.Tasks;
 
 namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
 {
@@ -24,8 +26,8 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         {
             wim.CanContainSingleInstancePerDefinedList = true;
 
-            this.ListLoad += new ComponentListEventHandler(Environment_ListLoad);
-            this.ListSave += new ComponentListEventHandler(Environment_ListSave);
+            this.ListLoad += Environment_ListLoad;
+            this.ListSave += Environment_ListSave;
         }
 
 
@@ -36,16 +38,16 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="Sushi.Mediakiwi.Framework.ComponentListEventArgs"/> instance containing the event data.</param>
-        void Environment_ListSave(object sender, ComponentListEventArgs e)
+        async Task Environment_ListSave(ComponentListEventArgs e)
         {
             if (!Implement.Password.Equals(m_PasswordAtStart))
                 this.Implement.Password = Utility.HashStringByMD5(Implement.Password);
 
-            this.Implement.Save();
+            await this.Implement.SaveAsync();
 
             //  Redirect as path could be changed!
-            string url = wim.AddApplicationPath(CommonConfiguration.PORTAL_PATH);
-            Response.Redirect(string.Concat(url, "?list=", wim.CurrentList.ID));
+            Response.Redirect(wim.GetUrl());
+            //FolderLogic.CreatePath(wim.Console, wim.CurrentList));
         }
 
         /// <summary>
@@ -53,11 +55,12 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="Sushi.Mediakiwi.Framework.ComponentListEventArgs"/> instance containing the event data.</param>
-        void Environment_ListLoad(object sender, ComponentListEventArgs e)
+        Task Environment_ListLoad(ComponentListEventArgs e)
         {
             this.Implement = Sushi.Mediakiwi.Data.Environment.Current;
             m_PasswordAtStart = this.Implement.Password;
             this.FormMaps.Add(new Forms.EnvironmentForm(this.Implement));
+            return Task.CompletedTask;
         }
 
         /// <summary>

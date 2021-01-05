@@ -631,7 +631,10 @@ namespace Sushi.Mediakiwi.Data
         {
             var connector = ConnectorFactory.CreateConnector<ApplicationUser>();
             var filter = connector.CreateDataFilter();
-            filter.Add(x => x.Displayname, username);
+
+            if (!string.IsNullOrWhiteSpace(username))
+                filter.Add(x => x.Displayname, username);
+            
             if (role > 0)
                 filter.Add(x => x.RoleID, role);
             
