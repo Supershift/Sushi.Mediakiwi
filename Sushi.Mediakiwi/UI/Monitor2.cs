@@ -167,15 +167,16 @@ namespace Sushi.Mediakiwi.UI
             {
                 if (_Console.CurrentList.Option_FormAsync && !this.IsFormatRequest_JSON)
                 {
-
-                    this.GlobalWimControlBuilder = new WimControlBuilder();
                     _Console.CurrentListInstance.wim.DoListInit();
+                    this.GlobalWimControlBuilder = new WimControlBuilder();
+              
 
                 }
                 else
                 {
-                    this.GlobalWimControlBuilder = component.CreateList(_Console, _Console.OpenInFrame);
                     _Console.CurrentListInstance.wim.DoListInit();
+                    this.GlobalWimControlBuilder = component.CreateList(_Console, _Console.OpenInFrame);
+             
 
                     //if (isDeleteTriggered)
                     //    _Console.CurrentListInstance.wim.DoListDelete(component.item);
