@@ -98,8 +98,6 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// <param name="e">The <see cref="Sushi.Mediakiwi.Framework.ComponentListEventArgs"/> instance containing the event data.</param>
         async Task Site_ListSave(ComponentListEventArgs e)
         {
-            ResetDefaultFolder();
-
             await this.Implement.SaveAsync();
 
             if (this.Implement.HasLists)
@@ -130,6 +128,8 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                     folder.Save();
                 }
             }
+
+            ResetDefaultFolder();
 
             Response.Redirect(wim.GetUrl(new KeyValue() { Key = "item", Value = this.Implement.ID }));
         }
@@ -162,7 +162,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             Sushi.Mediakiwi.Framework.Functions.FolderPathLogic.UpdateCompletePath();
 
             // if a master is connected, created the inheritance tree
-            if (Implement.MasterID.HasValue)
+            if (Implement.MasterID.HasValue && Implement.HasLists)
             {
                 Sushi.Mediakiwi.Framework.Inheritance.Folder.CreateFolderTree(Implement.MasterID.Value, Implement.ID, FolderType.List);
             }

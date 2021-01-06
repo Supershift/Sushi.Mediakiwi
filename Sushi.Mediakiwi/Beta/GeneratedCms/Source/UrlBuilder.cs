@@ -256,11 +256,11 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
         /// <summary>
         /// Gets the list request.
         /// </summary>
-        /// <param name="list">The list.</param>
-        /// <param name="itemID">The item ID.</param>
-        /// <returns></returns>
-        public string GetListRequest(IComponentList list, int? itemID = null)
+        public string GetListRequest(IComponentList list, int? itemID = null, int? channelId = null)
         {
+            if (channelId == null)
+                channelId = Console.ChannelIndentifier;
+
             var folder = Data.Folder.SelectOneChild(list.FolderID.GetValueOrDefault(), Console.ChannelIndentifier);
             var path = list.Name;
 

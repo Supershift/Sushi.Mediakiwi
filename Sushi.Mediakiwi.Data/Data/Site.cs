@@ -29,7 +29,7 @@ namespace Sushi.Mediakiwi.Data
                 Map(x => x.MasterID, "Site_Master_Key");
                 Map(x => x.AutoPublishInherited, "Site_AutoPublishInherited");
                 Map(x => x.IsActive, "Site_IsActive");
-                Map(x => x.Type, "Site_Type");
+                Map(x => x.Type, "Site_Type").ReadOnly();
                 Map(x => x.HasPages, "Site_HasPages");
                 Map(x => x.HasLists, "Site_HasLists");
                 Map(x => x.Created, "Site_Created");
@@ -441,10 +441,10 @@ delete from wim_ComponentVersions where ComponentVersion_Page_Key in
         /// <summary>
         /// Select a Site based on its primary key
         /// </summary>
-        public static Task<Site> SelectOneAsync(int ID)
+        public static async Task<Site> SelectOneAsync(int ID)
         {
             var connector = ConnectorFactory.CreateConnector<Site>();
-            return connector.FetchSingleAsync(ID);
+            return await connector.FetchSingleAsync(ID);
         }
 
         /// <summary>

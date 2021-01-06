@@ -1007,7 +1007,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation
         <input type=""hidden"" name=""autopostback"" id=""autopostback"" value="""" />
 		<section id=""bodySection"">
 			<header id=""bodyHeader"">
-				<a id=""logo"" href=""" + container.AddApplicationPath(CommonConfiguration.PORTAL_PATH) + @"""><img src=""" + LogoUrl(container) + @""" /></a>
+				<a id=""logo"" href=""" + container.UrlBuild.GetHomeRequest() + @"""><img src=""" + LogoUrl(container) + @""" /></a>
 			</header>" + homeContent + @"
 		    <nav id=""bodyNav"">
 			    " + Get_component_mainMenu(builder.TopNavigation) + @"

@@ -44,10 +44,17 @@ namespace Sushi.Mediakiwi.Framework.Inheritance
         /// <param name="isCopy">if set to <c>true</c> [is copy].</param>
         public static void CreateFolderTree(int masterSiteID, int siteID, Sushi.Mediakiwi.Data.FolderType type)
         {
+            if (siteID == 0)
+                return;
+
             Sushi.Mediakiwi.Data.Site siteInfo = Sushi.Mediakiwi.Data.Site.SelectOne(siteID);
 
             //  Connect the base page folder
             Sushi.Mediakiwi.Data.Folder webFolder = Sushi.Mediakiwi.Data.Folder.SelectOneBySite(siteID, type);
+
+            if (webFolder == null || webFolder.IsNewInstance)
+                return;
+            
             if (!webFolder.MasterID.HasValue)
             {
                 Sushi.Mediakiwi.Data.Folder masterFolder = Sushi.Mediakiwi.Data.Folder.SelectOneBySite(masterSiteID, type);

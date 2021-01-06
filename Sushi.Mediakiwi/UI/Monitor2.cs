@@ -379,6 +379,8 @@ namespace Sushi.Mediakiwi.UI
         /// <param name="component">The component.</param>
         async Task HandleBrowsingRequestAsync(DataGrid grid, Beta.GeneratedCms.Source.Component component)
         {
+            _Console.CurrentListInstance.wim.DoListInit();
+
             _Console.AddTrace("Monitor", "HandleListItemRequest.Init");
             _Console.View = 2;
             _Console.CurrentListInstance.wim.IsEditMode = true;
@@ -781,7 +783,7 @@ namespace Sushi.Mediakiwi.UI
                 // position counter
                 int n = 0;
 
-                var candidate = split[0];
+                var candidate = Utils.FromUrl(split[0]);
                 if (Data.Utility.IsNumeric(candidate))
                 {
                     _Console.ChannelIndentifier = Data.Utility.ConvertToInt(candidate, Data.Environment.Current.DefaultSiteID.GetValueOrDefault());
@@ -825,15 +827,15 @@ namespace Sushi.Mediakiwi.UI
                     }
 
                 }
-                
+
                 if (split.Length - n - 1 > 0)
                 {
                     var completepath = string.Concat("/", string.Join("/", split.Skip(n).Take(split.Length - n - 1)), "/");
-                    var folder = Folder.SelectOne(completepath, _Console.ChannelIndentifier);
-                    
-                    if (folder != null)
+                    _Console.CurrentFolder = Folder.SelectOne(completepath, _Console.ChannelIndentifier);
+
+                    if (_Console.CurrentFolder != null)
                     {
-                        folderId = folder.ID;
+                        folderId = _Console.CurrentFolder.ID;
                     }
                 }
 
@@ -842,6 +844,18 @@ namespace Sushi.Mediakiwi.UI
                     targetname = split.Last();
                 }
             }
+            else
+            {
+                if (_Console.ChannelIndentifier == 0)
+                {
+                    _Console.ChannelIndentifier = Data.Environment.Current.DefaultSiteID.GetValueOrDefault();
+                    if (_Console.ChannelIndentifier == 0)
+                    {
+                        _Console.ChannelIndentifier = Data.Site.SelectAll()[0].ID;
+                    }
+                }
+            }
+
             _Console.ItemType = RequestItemType.Undefined;
 
             //  Verify paging page

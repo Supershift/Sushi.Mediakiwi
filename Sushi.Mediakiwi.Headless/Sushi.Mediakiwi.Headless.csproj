@@ -2,12 +2,12 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <Version>7.14.15</Version>
+    <Version>7.14.16</Version>
     <Authors>Marc Molenwijk</Authors>
     <Company>Supershift</Company>
     <Product>Mediakiwi</Product>
     <Description>Headless handle for the Mediakiwi Rapid Portal Development Framework.</Description>
-    <Copyright>2005-2020 Supershift B.V.</Copyright>
+    <Copyright>2005-2021 Supershift B.V.</Copyright>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/Supershift/Sushi.Mediakiwi</PackageProjectUrl>
     <RepositoryUrl>https://github.com/Supershift/Sushi.Mediakiwi</RepositoryUrl>

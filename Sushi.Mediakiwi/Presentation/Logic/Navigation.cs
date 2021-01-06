@@ -138,6 +138,17 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                 var selection = (from item in list where item.Sort == 1 select item).ToArray();
                 foreach (var item in selection)
                 {
+                    //IMenuItemView item = candidate;
+                    //if (item.TypeID == 8 || item.TypeID == 2)
+                    //{
+                    //    // folder/container or folder
+                    //    Data.Folder inherited = Data.Folder.SelectOneChild(item.ItemID, container.ChannelIndentifier);
+                    //    item.ItemID = (inherited == null || inherited.IsNewInstance)
+                    //        ? item.ItemID
+                    //        : inherited.ID;
+                    //}
+
+
                     StringBuilder innerbuild = new StringBuilder();
                     bool isSelected = false;
                     if (!HasRoleAccess(item, container.CurrentApplicationUser))
@@ -148,6 +159,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                     if (item.TypeID == 8)
                     {
                         var subSubnavigation = Sushi.Mediakiwi.Data.SearchView.SelectAll(item.ItemID);
+
                         foreach (var subItem in subSubnavigation.Reverse())
                         {
                             //  If the item is the same as the callee 
@@ -318,6 +330,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
             bool isCurrent = false;
 
             var subSubnavigation = SearchView.SelectAll(item.ItemID);
+
             if (subSubnavigation.Length > 0)
             {
                 foreach (var subItem in subSubnavigation)

@@ -474,10 +474,14 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
         {
             get
             {
-                if (string.IsNullOrWhiteSpace(m_Channel))
+                if (m_Channel == null)
                 {
                     var candidate = Site.SelectOne(ChannelIndentifier);
-                    m_Channel = Utils.ToUrl(candidate.Name);
+                    if (!Sushi.Mediakiwi.Data.Environment.Current.DefaultSiteID.GetValueOrDefault().Equals(candidate.ID))
+                        m_Channel = Utils.ToUrl(candidate.Name);
+                    else
+                        m_Channel = string.Empty;
+
                 }
                 return m_Channel;
             }
@@ -677,6 +681,11 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
             set { m_CurrentVisitor = value; }
         }
 
+        public Data.Folder CurrentFolder
+        {
+            get;set;
+        }
+
         Data.IComponentList m_CurrentList;
         /// <summary>
         /// Gets or sets the current list.
@@ -848,12 +857,24 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
 
         void ValidateChannelSwitch(int currentChannelID, int requestedChannelID)
         {
-            Sushi.Mediakiwi.Data.Site currentChannel = Sushi.Mediakiwi.Data.Site.SelectOne(currentChannelID);
-            Sushi.Mediakiwi.Data.Site requestedChannel = Sushi.Mediakiwi.Data.Site.SelectOne(requestedChannelID);
+            if (currentChannelID == requestedChannelID)
+                return;
+
+            var currentChannel = Sushi.Mediakiwi.Data.Site.SelectOne(currentChannelID);
+            var requestedChannel = Sushi.Mediakiwi.Data.Site.SelectOne(requestedChannelID);
 
             int masterID = requestedChannel.MasterID.GetValueOrDefault();
 
             this.ValidateChannelSwitchPageInheritance(currentChannel, requestedChannel);
+
+            //if (CurrentList != null && CurrentList.IsInherited && CurrentFolder != null)
+            //{
+            //    var requestedFolder = Data.Folder.SelectOneChild(CurrentFolder.ID, requestedChannel.ID);
+            //    if (requestedFolder != null && !requestedFolder.IsNewInstance)
+            //    {
+            //        Response.Redirect(UrlBuild.GetListRequest(CurrentList, null, requestedChannel.ID));
+            //    }
+            //}
 
             //  [16 nov 14:MM] Validate inherited pages, folder
             Response.Redirect(string.Concat(this.GetWimPagePath(requestedChannel.ID)));
@@ -1110,9 +1131,10 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
             get
             {
                 // set the correct wim page
-                return Channel == null
-                    ? AddApplicationPath(CommonConfiguration.PORTAL_PATH)
-                    : AddApplicationPath(string.Concat(CommonConfiguration.PORTAL_PATH, "/", Channel));
+                return Channel.Any()
+                    ? AddApplicationPath(string.Concat(CommonConfiguration.PORTAL_PATH, "/", Channel))
+                    : AddApplicationPath(CommonConfiguration.PORTAL_PATH)
+                    ;
             }
         }
 

@@ -157,7 +157,7 @@ namespace Sushi.Mediakiwi.Data
                 filter.Add(x => x.SiteID, siteID.Value);
 
             if (filterType.HasValue)
-                filter.Add(x => x.FolderID, filterType.Value);
+                filter.Add(x => x.TypeID, filterType.Value);
 
             var result = await connector.FetchAllAsync(filter);
             return result.ToArray();
