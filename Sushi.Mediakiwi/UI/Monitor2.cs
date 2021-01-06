@@ -72,8 +72,8 @@ namespace Sushi.Mediakiwi.UI
             _Console.CurrentEnvironment = Data.Environment.Current;
 
             var path = _Console.AddApplicationPath(CommonConfiguration.PORTAL_PATH);
-            //if (!_Console.Request.Path.Value.EndsWith(path))
-            //    return;
+            if (!_Console.Request.Path.Value.StartsWith(path, StringComparison.CurrentCultureIgnoreCase))
+                return;
 
             _Console.SetDateFormat();
 

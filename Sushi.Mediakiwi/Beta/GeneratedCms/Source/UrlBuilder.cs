@@ -196,8 +196,35 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
 
         public string GetUrl(params KeyValue[] keyvalues)
         {
+            if (keyvalues != null && keyvalues.Any())
+            {
+                var listkey = keyvalues.Where(x => x.Key.Equals("list", StringComparison.CurrentCultureIgnoreCase)).FirstOrDefault();
+                if (listkey != null && !listkey.RemoveKey)
+                {
+                    if (Utils.IsNumeric(listkey.Value, out int listid))
+                    {
+                        if (!listid.Equals(Console.CurrentList.ID))
+                        {
+                            return GetUrl(listid, keyvalues);
+                        }
+                    }
+                }
+            }
+
             string querystring = GetCustomQueryString(Console.Context, keyvalues);
             return string.Concat(Console.UrlBuild.GetListRequest(Console.CurrentList), querystring);
+        }
+
+        public string GetUrl(Data.IComponentList componentlist, params KeyValue[] keyvalues)
+        {
+            string querystring = GetCustomQueryString(Console.Context, keyvalues);
+            return string.Concat(Console.UrlBuild.GetListRequest(componentlist), querystring);
+        }
+
+        public string GetUrl(int componentlistId, params KeyValue[] keyvalues)
+        {
+            string querystring = GetCustomQueryString(Console.Context, keyvalues);
+            return string.Concat(Console.UrlBuild.GetListRequest(componentlistId), querystring);
         }
 
         /// <summary>
