@@ -100,19 +100,22 @@ namespace Sushi.Mediakiwi.UI
             CheckSite();
 
             //  Check the role base security
-            CheckSecurity(reStartWithNotificationList);
+            if (CheckSecurity(reStartWithNotificationList))
+            {
+                //  Is the request opened in a frame? 0 = no, 1 = yes, list mode, 2 = yes, form mode
+                int openInFrame = Utility.ConvertToInt(_Console.Request.Query["openinframe"]);
 
-            //  Is the request opened in a frame? 0 = no, 1 = yes, list mode, 2 = yes, form mode
-            int openInFrame = Utility.ConvertToInt(_Console.Request.Query["openinframe"]);
+                //  Create new instances
+                DataGrid grid = new DataGrid();
+                var component = new Beta.GeneratedCms.Source.Component();
+                _Console.Component = component;
 
-            //  Create new instances
-            DataGrid grid = new DataGrid();
-            var component = new Beta.GeneratedCms.Source.Component();
-            _Console.Component = component;
-
-            await HandleRequestAsync(grid, component, isDeleteTriggered);
-
-          
+                await HandleRequestAsync(grid, component, isDeleteTriggered);
+            }
+            else
+            {
+                await _Console.Response.WriteAsync("no-access");
+            }
         }
 
         /// <summary>
@@ -569,15 +572,17 @@ namespace Sushi.Mediakiwi.UI
             //string redirect = _Console.GetWimPagePath(siteID);
 
             //  Find the default homepage in the menu section
-            var defaultHome = MenuItemView.SelectAll(siteID, _Console.CurrentApplicationUser.RoleID, 0);
-            if (defaultHome != null && defaultHome.Length > 0)
-            {
-                string redirect = _PresentationNavigation.GetUrl(_Console, defaultHome[0], siteID);
-                _Console.Response.Redirect(redirect);
-            }
+            var defaultHome = _Console.UrlBuild.GetHomeRequest(siteID);
+            _Console.Response.Redirect(defaultHome);
+            //MenuItemView.SelectAll(siteID, _Console.CurrentApplicationUser.RoleID, 0);
+            //if (defaultHome != null && defaultHome.Length > 0)
+            //{
+            //    string redirect = _PresentationNavigation.GetUrl(_Console, defaultHome[0], siteID);
+            //    _Console.Response.Redirect(redirect);
+            //}
         }
 
-        void CheckSecurity(bool reStartWithNotificationList)
+        bool CheckSecurity(bool reStartWithNotificationList)
         {
             //  ACL: Sites
             if (!_Console.CurrentListInstance.wim.CurrentApplicationUserRole.All_Sites
@@ -595,11 +600,15 @@ namespace Sushi.Mediakiwi.UI
                     if (allowed != null && allowed.Length > 0)
                     {
                         RedirectToChannelHomePage(allowed[0].ID);
+                        return false;
                     }
                     else
                     {
                         if (_Console.CurrentListInstance.wim.CurrentApplicationUser.Sites(Data.AccessFilter.RoleAndUser) != null && _Console.CurrentListInstance.wim.CurrentApplicationUser.Sites(Data.AccessFilter.RoleAndUser).Length > 0)
+                        {
                             _Console.Response.Redirect(_Console.GetWimPagePath(_Console.CurrentListInstance.wim.CurrentApplicationUser.Sites(Data.AccessFilter.RoleAndUser)[0].ID));
+                            return false;
+                        }
                         else
                             throw new Exception("There are no active accessible channels available.");
                     }
@@ -613,8 +622,10 @@ namespace Sushi.Mediakiwi.UI
 
             //  20-01-13:MM Added dashboard hack
             if (_Console.CurrentListInstance.wim.CurrentFolder.ID == 0 && string.IsNullOrEmpty(_Console.Request.Query["dashboard"]))
+            {
                 RedirectToChannelHomePage(_Console.ChannelIndentifier);
-
+                return false;
+            }
             //  ACL: Folders
             if (_Console.CurrentListInstance.wim.CurrentFolder.Type != FolderType.Gallery
                 && !_Console.CurrentListInstance.wim.CurrentApplicationUserRole.All_Folders)
@@ -625,6 +636,7 @@ namespace Sushi.Mediakiwi.UI
                         _Console.Response.Redirect(_Console.UrlBuild.GetFolderRequest(_Console.CurrentListInstance.wim.CurrentFolder.ParentID.Value));
 
                     _Console.Response.Redirect(_Console.WimPagePath);
+                    return false;
                 }
             }
 
@@ -644,13 +656,20 @@ namespace Sushi.Mediakiwi.UI
                     {
                         approved = _Console.CurrentListInstance.wim.CurrentApplicationUserRole.CanSeeFolder;
                         if (!approved)
+                        {
                             _Console.Response.Redirect(_Console.WimPagePath);
+                            return false;
+                        }
                     }
                     approved = _Console.CurrentListInstance.wim.CurrentApplicationUserRole.CanSeeList;
                     if (_Console.CurrentList.Type == ComponentListType.Undefined && !_Console.CurrentListInstance.wim.CurrentApplicationUserRole.All_Lists)
                     {
                         if (!_Console.CurrentListInstance.wim.CurrentList.HasRoleAccess(_Console.CurrentListInstance.wim.CurrentApplicationUser))
-                            _Console.Response.Redirect(_Console.WimPagePath);
+                        {
+                            _Console.Response.Redirect(_Console.WimPagePath); 
+                            return false;
+
+                        }
                     }
                     break;
                 case FolderType.Gallery:
@@ -661,9 +680,12 @@ namespace Sushi.Mediakiwi.UI
                         if (!currentGallery.HasRoleAccess(_Console.CurrentListInstance.wim.CurrentApplicationUser))
                         {
                             if (currentGallery.ParentID.HasValue)
+                            {
                                 _Console.Response.Redirect(_Console.UrlBuild.GetGalleryRequest(currentGallery.ParentID.Value));
+                            }
 
                             _Console.Response.Redirect(_Console.WimPagePath);
+                            return false;
                         }
                     }
                     break;
@@ -679,8 +701,10 @@ namespace Sushi.Mediakiwi.UI
                     && _Console.CurrentListInstance.wim.CurrentList.Type != ComponentListType.Links)
                 {
                     _Console.Response.Redirect(_Console.WimPagePath);
+                    return false;
                 }
             }
+            return true;
         }
 
 

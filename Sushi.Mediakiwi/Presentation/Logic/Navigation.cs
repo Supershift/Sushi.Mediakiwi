@@ -663,8 +663,8 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
 			            <li class=""active""><a href=""{1}"">{0}</a>{2}
                         </li>
                         "
-                            , itemTitle
-                            , tmp.Url
+                            , container.CurrentList.Name// itemTitle
+                            , container.UrlBuild.GetListRequest(container.CurrentList)//tmp.Url
                             , string.IsNullOrEmpty(tabulars) ? string.Empty : string.Concat("<ul>", tabulars, "</ul>")
                             );
                     }

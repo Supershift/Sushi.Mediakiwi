@@ -3854,138 +3854,138 @@ namespace Sushi.Mediakiwi.Framework
             _Grids.Add(grid);
         }
 
-        ///// <summary>
-        ///// Add an IEnumerable list of data entities to the grid
-        ///// </summary>
-        ///// <typeparam name="T"></typeparam>
-        ///// <param name="source">The source.</param>
-        //public void ListDataApply<T>(IEnumerable<T> source)
-        //{
-        //    ListDataApply<T>(source, null);
-        //}
+        /// <summary>
+        /// Add an IEnumerable list of data entities to the grid
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="source">The source.</param>
+        public void ListDataApply<T>(IEnumerable<T> source)
+        {
+            ListDataApply<T>(source, null);
+        }
 
-        ///// <summary>
-        ///// Lists the data apply.
-        ///// </summary>
-        ///// <typeparam name="T"></typeparam>
-        ///// <param name="source">The source.</param>
-        ///// <param name="isScrollable">if set to <c>true</c> [is scrollable].</param>
-        //public void ListDataApply<T>(IEnumerable<T> source, bool isScrollable)
-        //{
-        //    ListDataApply<T>(source, null, isScrollable);
-        //}
+        /// <summary>
+        /// Lists the data apply.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="source">The source.</param>
+        /// <param name="isScrollable">if set to <c>true</c> [is scrollable].</param>
+        public void ListDataApply<T>(IEnumerable<T> source, bool isScrollable)
+        {
+            ListDataApply<T>(source, null, isScrollable);
+        }
 
-        ///// <summary>
-        ///// Lists the data apply.
-        ///// </summary>
-        ///// <typeparam name="T"></typeparam>
-        ///// <param name="source">The source.</param>
-        ///// <param name="title">The title.</param>
-        //public void ListDataApply<T>(IEnumerable<T> source, string title)
-        //{
-        //    ListDataApply<T>(source, title, false);
-        //}
+        /// <summary>
+        /// Lists the data apply.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="source">The source.</param>
+        /// <param name="title">The title.</param>
+        public void ListDataApply<T>(IEnumerable<T> source, string title)
+        {
+            ListDataApply<T>(source, title, false);
+        }
 
-        ///// <summary>
-        ///// Add an IEnumerable list of data entities to the grid
-        ///// </summary>
-        ///// <typeparam name="T"></typeparam>
-        ///// <param name="source">The source.</param>
-        ///// <param name="title">The title of the datagrid.</param>
-        //public void ListDataApply<T>(IEnumerable<T> source, string title, bool isScrollable)
-        //{
-        //    if (source == null) return;
+        /// <summary>
+        /// Add an IEnumerable list of data entities to the grid
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="source">The source.</param>
+        /// <param name="title">The title of the datagrid.</param>
+        public void ListDataApply<T>(IEnumerable<T> source, string title, bool isScrollable)
+        {
+            if (source == null) return;
 
-        //    if (this.ListData != null)
-        //        this.Notification.AddError(string.Format("The method [ListDataApply<T>(IEnumerable)] is called multiple times; this should only be called once, please correct this."));
+            if (this.ListData != null)
+                this.Notification.AddError(string.Format("The method [ListDataApply<T>(IEnumerable)] is called multiple times; this should only be called once, please correct this."));
 
-        //    int step = GridDataCommunication.PageSize;// this.CurrentList.Option_Search_MaxResultPerPage;
+            int step = GridDataCommunication.PageSize;// this.CurrentList.Option_Search_MaxResultPerPage;
 
-        //    this.m_IsListDataScrollable = isScrollable;
-        //    this.m_DataTitle = title;
-        //    this.m_IsLinqUsed = true;
+            this.m_IsListDataScrollable = isScrollable;
+            this.m_DataTitle = title;
+            this.m_IsLinqUsed = true;
 
-        //    this.m_ListDataRecordCount = GridDataCommunication.ResultCount.HasValue ? GridDataCommunication.ResultCount.Value : source.Count();
+            this.m_ListDataRecordCount = GridDataCommunication.ResultCount.HasValue ? GridDataCommunication.ResultCount.Value : source.Count();
 
-        //    this.m_ListDataRecordPageCount = this.m_ListDataRecordCount == 0 ? 0 : Convert.ToInt32(decimal.Ceiling(((Decimal)this.m_ListDataRecordCount / (Decimal)step)));
+            this.m_ListDataRecordPageCount = this.m_ListDataRecordCount == 0 ? 0 : Convert.ToInt32(decimal.Ceiling(((Decimal)this.m_ListDataRecordCount / (Decimal)step)));
 
-        //    if (!GridDataCommunication.ResultCount.HasValue)
-        //    {
-        //        int page = CurrentPage - 1;
-        //        if (page < 0)
-        //        {
-        //            this.ListData = source.ToArray();
-        //        }
-        //        else if (page > 0)
-        //        {
-        //            int start = (page * step);
-        //            if (start >= this.m_ListDataRecordCount)
-        //                this.ListData = source.Take(step).ToArray();
-        //            else
-        //                this.ListData = source.Skip(start).Take(step).ToArray();
-        //        }
-        //        else
-        //            this.ListData = source.Take(step).ToArray();
-        //    }
-        //    else
-        //    {
-        //        if (GridDataCommunication.ShowAll)
-        //            this.ListData = source.ToArray();
-        //        else
-        //            this.ListData = source.Take(step).ToArray();
-        //    }
+            if (!GridDataCommunication.ResultCount.HasValue)
+            {
+                int page = CurrentPage - 1;
+                if (page < 0)
+                {
+                    this.ListData = source.ToArray();
+                }
+                else if (page > 0)
+                {
+                    int start = (page * step);
+                    if (start >= this.m_ListDataRecordCount)
+                        this.ListData = source.Take(step).ToArray();
+                    else
+                        this.ListData = source.Skip(start).Take(step).ToArray();
+                }
+                else
+                    this.ListData = source.Take(step).ToArray();
+            }
+            else
+            {
+                if (GridDataCommunication.ShowAll)
+                    this.ListData = source.ToArray();
+                else
+                    this.ListData = source.Take(step).ToArray();
+            }
 
-        //    this.m_AppliedSearchGridItem = this.ListData;
-        //    this.ApplyListDataColumnBackup();
-        //}
+            this.m_AppliedSearchGridItem = this.ListData;
+            this.ApplyListDataColumnBackup();
+        }
 
-        ///// <summary>
-        ///// Add an IQueryable list of data entities to the grid
-        ///// </summary>
-        ///// <typeparam name="T"></typeparam>
-        ///// <param name="source">The source.</param>
-        //public void ListDataApply<T>(IQueryable<T> source)
-        //{
-        //    ListDataApply<T>(source, null);
-        //}
+        /// <summary>
+        /// Add an IQueryable list of data entities to the grid
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="source">The source.</param>
+        public void ListDataApply<T>(IQueryable<T> source)
+        {
+            ListDataApply<T>(source, null);
+        }
 
-        ///// <summary>
-        ///// Add an IQueryable list of data entities to the grid
-        ///// </summary>
-        ///// <typeparam name="T"></typeparam>
-        ///// <param name="source">The source.</param>
-        //public void ListDataApply<T>(IQueryable<T> source, string title)
-        //{
-        //    if (source == null) return;
-        //    if (this.ListData != null)
-        //        this.Notification.AddError(string.Format("The method [ListDataApply<T>(IQueryable)] is called multiple times; this should only be called once, please correct this."));
+        /// <summary>
+        /// Add an IQueryable list of data entities to the grid
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="source">The source.</param>
+        public void ListDataApply<T>(IQueryable<T> source, string title)
+        {
+            if (source == null) return;
+            if (this.ListData != null)
+                this.Notification.AddError(string.Format("The method [ListDataApply<T>(IQueryable)] is called multiple times; this should only be called once, please correct this."));
 
-        //    int step = this.CurrentList.Option_Search_MaxResultPerPage;
+            int step = this.CurrentList.Option_Search_MaxResultPerPage;
 
-        //    //context.Log = Context.Response.Output;
-        //    this.m_DataTitle = title;
-        //    this.m_IsLinqUsed = true;
-        //    this.m_ListDataRecordCount = source.Count();
-        //    this.m_ListDataRecordPageCount = this.m_ListDataRecordCount == 0 ? 0 : Convert.ToInt32(decimal.Ceiling(((Decimal)this.m_ListDataRecordCount / (Decimal)step)));
+            //context.Log = Context.Response.Output;
+            this.m_DataTitle = title;
+            this.m_IsLinqUsed = true;
+            this.m_ListDataRecordCount = source.Count();
+            this.m_ListDataRecordPageCount = this.m_ListDataRecordCount == 0 ? 0 : Convert.ToInt32(decimal.Ceiling(((Decimal)this.m_ListDataRecordCount / (Decimal)step)));
 
-        //    int page = CurrentPage - 1;
-        //    if (page < 0)
-        //    {
-        //        this.ListData = source.ToArray();
-        //    }
-        //    else if (page > 0)
-        //    {
-        //        int start = (page * step);
-        //        if (start >= this.m_ListDataRecordCount)
-        //            this.ListData = source.Take(step).ToArray();
-        //        else
-        //            this.ListData = source.Skip(start).Take(step).ToArray();
-        //    }
-        //    else
-        //        this.ListData = source.Take(step).ToArray();
+            int page = CurrentPage - 1;
+            if (page < 0)
+            {
+                this.ListData = source.ToArray();
+            }
+            else if (page > 0)
+            {
+                int start = (page * step);
+                if (start >= this.m_ListDataRecordCount)
+                    this.ListData = source.Take(step).ToArray();
+                else
+                    this.ListData = source.Skip(start).Take(step).ToArray();
+            }
+            else
+                this.ListData = source.Take(step).ToArray();
 
-        //    this.m_AppliedSearchGridItem = this.ListData;
-        //}
+            this.m_AppliedSearchGridItem = this.ListData;
+        }
 
         /// <summary>
         /// Add another IQueryable list of data entities to the grid

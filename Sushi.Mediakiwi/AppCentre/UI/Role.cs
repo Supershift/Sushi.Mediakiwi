@@ -27,6 +27,13 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             this.ListLoad += Role_ListLoad;
             this.ListSave += Role_ListSave;
             this.ListDelete += Role_ListDelete;
+            ListPreRender += Role_ListPreRender;
+        }
+
+        private Task Role_ListPreRender(ComponentListEventArgs arg)
+        {
+            wim.SetPropertyVisibility("AllowedSites", !this.AllSites);
+            return Task.CompletedTask;
         }
 
         async Task Role_ListDelete(ComponentListEventArgs e)
@@ -62,6 +69,11 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                 m_Implement.IsAccessSite = false;
                 await Sushi.Mediakiwi.Data.RoleRight.UpdateAsync(new int[0], Sushi.Mediakiwi.Data.RoleRightType.Site, m_Implement.ID);
             }
+            else
+            {
+
+            }
+
             if (AllLists || m_Implement.All_Lists)
             {
                 m_Implement.IsAccessList = false;
@@ -128,17 +140,24 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             this.GalleryRootID = m_Implement.GalleryRoot;
             this.Dashboard = m_Implement.Dashboard;
 
-            if (e.SelectedKey == 0) return;
 
+            if (e.SelectedKey == 0) return;
             if (!m_Implement.All_Sites)
                 wim.AddTab(new Guid("93D10F58-6A1A-493F-8ADB-E53FC7CEDE19"));
-            if (!m_Implement.All_Folders)
-                wim.AddTab(new Guid("AB58D901-7305-4584-9133-53FB92684A2C"));
-            if (!m_Implement.All_Galleries)
-                wim.AddTab(new Guid("5A7DB5D1-8DCE-4510-8423-47E4925B6C8B"));
-            if (!m_Implement.All_Lists)
-                wim.AddTab(new Guid("B502AA2C-8D85-4D2C-9470-DFC8A388AC72"));
+            //if (!m_Implement.All_Folders)
+            //    wim.AddTab(new Guid("AB58D901-7305-4584-9133-53FB92684A2C"));
+            //if (!m_Implement.All_Galleries)
+            //    wim.AddTab(new Guid("5A7DB5D1-8DCE-4510-8423-47E4925B6C8B"));
+            //if (!m_Implement.All_Lists)
+            //    wim.AddTab(new Guid("B502AA2C-8D85-4D2C-9470-DFC8A388AC72"));
+
+            //Map<Role>(x => x.AllowedSites, this).SubListSelect("Sites", typeof(Site), false);
+            //this.FormMaps.Add(this);
         }
+
+
+
+
 
         async Task Role_ListSearch(ComponentListSearchEventArgs e)
         {
@@ -402,7 +421,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// Gets or sets a value indicating whether [all sites].
         /// </summary>
         /// <value><c>true</c> if [all sites]; otherwise, <c>false</c>.</value>
-        [Sushi.Mediakiwi.Framework.ContentListItem.Choice_Checkbox("All sites", false, "Access to all sites within Wim", Expression = OutputExpression.Alternating)]
+        [Sushi.Mediakiwi.Framework.ContentListItem.Choice_Checkbox("All sites", false, "Access to all sites within Wim", AutoPostBack = true, Expression = OutputExpression.Alternating)]
         public bool AllSites { get; set; }
 
         /// <summary>
@@ -425,6 +444,12 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// <value><c>true</c> if [all lists]; otherwise, <c>false</c>.</value>
         [Sushi.Mediakiwi.Framework.ContentListItem.Choice_Checkbox("All galleries", false, "Access to all galleries", Expression = OutputExpression.Alternating)]
         public bool AllGalleries { get; set; }
+
+        //[Sushi.Mediakiwi.Framework.ContentListItem.SubListSelect("Channels", "18b297dc-7e01-404d-bc45-bb3ea3eb344e", false)]
+        //public Mediakiwi.Data.SubList AllowedSites
+        //{
+        //    get; set;
+        //}
 
 
 

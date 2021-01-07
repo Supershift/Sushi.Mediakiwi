@@ -358,7 +358,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation
                     string bread = null;
                     string urlAddition = Sushi.Mediakiwi.Framework.Presentation.Logic.Navigation.GetQueryStringRecording(container);
 
-                    bool hideBreadCrumb = Sushi.Mediakiwi.Data.Environment.Current["HIDE_BREADCRUMB", true, "0", "Hide breadcrumb"] == "1";
+                    bool hideBreadCrumb = CommonConfiguration.HIDE_BREADCRUMB;
 
                     if (!container.CurrentListInstance.wim.Page.HideBreadCrumbs
                         && !container.CurrentList.Option_HideBreadCrumbs && !hideBreadCrumb)
@@ -584,6 +584,8 @@ namespace Sushi.Mediakiwi.Framework.Presentation
                             }
                         }
                     }
+
+
                     
                     //<a href=\"#\" class=\"button\">Wijzigen</a>
                     #endregion Breadcrumbs

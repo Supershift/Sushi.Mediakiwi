@@ -4,6 +4,8 @@ using System.Data;
 using System.Configuration;
 using System.Web;
 using Sushi.Mediakiwi.Framework;
+using System.Threading.Tasks;
+using Sushi.Mediakiwi.Data;
 
 namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
 {
@@ -20,9 +22,9 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             wim.HideOpenCloseToggle = true;
             wim.HideSaveButtons = true;
             
-            this.ListSearch += new ComponentSearchEventHandler(RoleAccessSite_ListSearch);
-            this.ListAction += new ComponentActionEventHandler(RoleAccessSite_ListAction);
-            this.ListLoad += new ComponentListEventHandler(RoleAccessSite_ListLoad);
+            this.ListSearch += RoleAccessSite_ListSearch;
+            this.ListAction += RoleAccessSite_ListAction;
+            this.ListLoad += RoleAccessSite_ListLoad;
         }
 
 
@@ -34,7 +36,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// </value>
         public bool IsUserSection { get; set; }
 
-        void RoleAccessSite_ListLoad(object sender, ComponentListEventArgs e)
+        Task RoleAccessSite_ListLoad(ComponentListEventArgs e)
         {
             Sushi.Mediakiwi.Data.IApplicationRole role = Sushi.Mediakiwi.Data.ApplicationRole.SelectOne(e.SelectedGroupItemKey);
             this.Role = role.Name;
@@ -47,20 +49,21 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                 var user = Sushi.Mediakiwi.Data.ApplicationUser.SelectOne(e.SelectedGroupItemKey);
                 this.User = user.Displayname;
             }
+            return Task.CompletedTask;
         }
 
         /// <summary>
         /// Gets or sets the user.
         /// </summary>
         /// <value>The user.</value>
-        [Sushi.Mediakiwi.Framework.OnlyVisibleWhenTrue("IsUserSection"), Sushi.Mediakiwi.Framework.ContentListItem.TextLine("User")]
+        [Sushi.Mediakiwi.Framework.OnlyVisibleWhenTrue("IsUserSection"), Sushi.Mediakiwi.Framework.ContentListItem.TextLine("User", Expression = OutputExpression.Alternating)]
         public string User { get; set; }
 
         /// <summary>
         /// Gets or sets the role.
         /// </summary>
         /// <value>The role.</value>
-        [Sushi.Mediakiwi.Framework.OnlyVisibleWhenTrue("IsUserSection", false), Sushi.Mediakiwi.Framework.ContentListItem.TextLine("Role")]
+        [Sushi.Mediakiwi.Framework.OnlyVisibleWhenTrue("IsUserSection", false), Sushi.Mediakiwi.Framework.ContentListItem.TextLine("Role", Expression = OutputExpression.Alternating)]
         public string Role { get; set; }
 
         /// <summary>
@@ -69,8 +72,8 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// <value>
         /// 	<c>true</c> if this instance is access allowed; otherwise, <c>false</c>.
         /// </value>
-        [Sushi.Mediakiwi.Framework.OnlyVisibleWhenTrue("IsUserSection", false), Sushi.Mediakiwi.Framework.ContentListItem.TextLine("Role")]
-        [Sushi.Mediakiwi.Framework.ContentListItem.Choice_Checkbox("Access list", true, "Checked selection means 'access granted', unchecked means 'access denied'")]
+        [Sushi.Mediakiwi.Framework.OnlyVisibleWhenTrue("IsUserSection", false)]
+        [Sushi.Mediakiwi.Framework.ContentListItem.Choice_Checkbox("Grant access", true, "Checked selection means 'access granted', unchecked means 'access denied'", Expression = OutputExpression.Alternating)]
         public bool IsAccessAllowed { get; set; }
 
         /// <summary>
@@ -85,7 +88,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="Sushi.Mediakiwi.Framework.ComponentActionEventArgs"/> instance containing the event data.</param>
-        void RoleAccessSite_ListAction(object sender, ComponentActionEventArgs e)
+        Task RoleAccessSite_ListAction(ComponentActionEventArgs e)
         {
             if (IsUserSection)
             {
@@ -93,15 +96,15 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
 
                 var user = Sushi.Mediakiwi.Data.ApplicationUser.SelectOne(e.SelectedGroupItemKey);
 
-                System.Collections.Generic.Dictionary<int, Sushi.Mediakiwi.Data.RoleRight.Access> dict = 
-                    new System.Collections.Generic.Dictionary<int, Sushi.Mediakiwi.Data.RoleRight.Access>();
+                System.Collections.Generic.Dictionary<int, Access> dict = 
+                    new System.Collections.Generic.Dictionary<int, Access>();
 
                 foreach (var item in datalist)
                 {
                     dict.Add(item.Key,
-                        item.Value.Equals("Denied") ? Sushi.Mediakiwi.Data.RoleRight.Access.Denied :
-                        item.Value.Equals("Granted") ? Sushi.Mediakiwi.Data.RoleRight.Access.Granted :
-                        Sushi.Mediakiwi.Data.RoleRight.Access.Inherit);
+                        item.Value.Equals("Denied") ? Access.Denied :
+                        item.Value.Equals("Granted") ? Access.Granted :
+                        Access.Inherit);
                 }
                 Sushi.Mediakiwi.Data.RoleRight.Update(dict, Sushi.Mediakiwi.Data.RoleRightType.SiteByUser, user.ID);
 
@@ -118,6 +121,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
 
                 Sushi.Mediakiwi.Data.RoleRight.Update(checklist, Sushi.Mediakiwi.Data.RoleRightType.Site, role.ID);
             }
+            return Task.CompletedTask;
         }
 
         Sushi.Mediakiwi.Data.Site[] m_AccessList;
@@ -135,7 +139,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="Sushi.Mediakiwi.Framework.ComponentListSearchEventArgs"/> instance containing the event data.</param>
-        void RoleAccessSite_ListSearch(object sender, ComponentListSearchEventArgs e)
+        Task RoleAccessSite_ListSearch(ComponentListSearchEventArgs e)
         {
             Sushi.Mediakiwi.Data.IComponentList list = Sushi.Mediakiwi.Data.ComponentList.SelectOne(e.SelectedGroupKey);
             IsUserSection = (list.Type == Sushi.Mediakiwi.Data.ComponentListType.Users);
@@ -165,7 +169,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                         item.Name,
                         HasRoleReference = (relation == null ? false : true),
                         RoleStatus = GetRoleGrantedAccess(user, item.ID),
-                        AccessType = (relation == null ? Sushi.Mediakiwi.Data.RoleRight.Access.Inherit : relation.AccessType)
+                        AccessType = (relation == null ? Access.Inherit : relation.AccessType)
                     };
 
                 foreach (var item in selection)
@@ -207,6 +211,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                 }
                 wim.ListData = selection.ToArray();
             }
+            return Task.CompletedTask;
         }
 
         /// <summary>

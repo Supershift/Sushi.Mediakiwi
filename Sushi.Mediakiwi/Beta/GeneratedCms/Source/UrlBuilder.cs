@@ -311,8 +311,16 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
         /// Gets the home request.
         /// </summary>
         /// <returns></returns>
-        public string GetHomeRequest()
+        public string GetHomeRequest(int? channelId = null)
         {
+            if (channelId.HasValue)
+            {
+                var channel = Site.SelectOne(channelId.Value);
+                if (channel != null && channel.ID > 0)
+                {
+                    return Console.AddApplicationPath(string.Concat(CommonConfiguration.PORTAL_PATH, "/", Utils.ToUrl(channel.Name)));
+                }
+            }
             return string.Concat(Console.WimPagePath);
         }
 
