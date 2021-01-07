@@ -66,8 +66,12 @@ namespace Sushi.Mediakiwi
             var url = GetSafeUrl(context);
             var portal = _configuration.GetValue<string>("mediakiwi:portal_path");
 
-            if (url.StartsWith(portal, StringComparison.CurrentCultureIgnoreCase)
-                || url.EndsWith(portal, StringComparison.CurrentCultureIgnoreCase))
+            if (
+                url.Equals(portal, StringComparison.CurrentCultureIgnoreCase)
+                || url.StartsWith($"{portal}/", StringComparison.CurrentCultureIgnoreCase)
+
+                //|| url.EndsWith(portal, StringComparison.CurrentCultureIgnoreCase)
+                )
             {
                 if (_env.IsDevelopment())
                 {
