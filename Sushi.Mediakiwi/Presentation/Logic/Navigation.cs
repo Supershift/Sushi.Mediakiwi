@@ -663,8 +663,8 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
 			            <li class=""active""><a href=""{1}"">{0}</a>{2}
                         </li>
                         "
-                            , container.CurrentList.Name// itemTitle
-                            , container.UrlBuild.GetListRequest(container.CurrentList)//tmp.Url
+                            , itemTitle
+                            , tmp.Url
                             , string.IsNullOrEmpty(tabulars) ? string.Empty : string.Concat("<ul>", tabulars, "</ul>")
                             );
                     }
@@ -732,7 +732,10 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
             if (levelEntry == 1)
             {
                 if (groupID == 0)
-                    t.Url = string.Concat(container.WimPagePath, "?group=", listID, addition, baseInfo, folderInfo, "&groupitem=", itemID, "&list=", t.List.ID, "&item=", t.SelectedItem);
+                {
+                    //t.Url = string.Concat(container.WimPagePath, "?group=", listID, addition, baseInfo, folderInfo, "&groupitem=", itemID, "&list=", t.List.ID, "&item=", t.SelectedItem);
+                    t.Url = string.Concat(container.UrlBuild.GetListRequest(t.List, t.SelectedItem), "&group=", listID, addition, baseInfo, folderInfo, "&groupitem=", itemID, "&list=", t.List.ID);
+                }
                 else
                 {
                     t.Url = string.Concat(container.WimPagePath, "?group=", groupID, addition, baseInfo, folderInfo, "&groupitem=", groupItemID, "&list=", t.List.ID, "&item=", group2ID == t.List.ID ? group2ItemID : t.SelectedItem);
@@ -880,7 +883,6 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
             {
                 int currentListID = container.Group.HasValue ? container.Group.Value : container.CurrentList.ID;
 
-
                 if (!container.Item.HasValue)
                 {
                     if (!CommonConfiguration.HIDE_BREADCRUMB)
@@ -889,6 +891,15 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                             , container.AddApplicationPath(CommonConfiguration.PORTAL_PATH)
                             );
                     }
+                }
+                else
+                {
+                    var lists = Data.ComponentList.SelectOne(currentListID);
+
+                    build.AppendFormat(@"<li class=""back""><span class=""icon-arrow-left-04""></span><a href=""{0}"">{1}</a></li>"
+                        , container.UrlBuild.GetListRequest(lists)
+                        , lists.Name
+                        );
                 }
 
                 if (container.CurrentList.Type != ComponentListType.Browsing)

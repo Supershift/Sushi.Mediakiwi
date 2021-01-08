@@ -86,7 +86,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation.Forms
 
                 m_Sites.Add(new ListItem("", ""));
 
-                foreach (Sushi.Mediakiwi.Data.Site site in Sushi.Mediakiwi.Data.Site.SelectAll())
+                foreach (Sushi.Mediakiwi.Data.Site site in Sushi.Mediakiwi.Data.Site.SelectAll(false))
                 {
                     li = new ListItem(site.Name, site.ID.ToString());
                     m_Sites.Add(li);

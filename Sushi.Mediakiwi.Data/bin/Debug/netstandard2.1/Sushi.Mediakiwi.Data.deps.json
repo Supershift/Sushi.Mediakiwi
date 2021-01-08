@@ -7,7 +7,7 @@
   "targets": {
     ".NETStandard,Version=v2.1": {},
     ".NETStandard,Version=v2.1/": {
-      "Sushi.Mediakiwi.Data/7.14.21": {
+      "Sushi.Mediakiwi.Data/7.14.23": {
         "dependencies": {
           "Microsoft.Extensions.Configuration": "3.1.9",
           "Microsoft.Extensions.Configuration.Abstractions": "3.1.9",
@@ -411,7 +411,7 @@
     }
   },
   "libraries": {
-    "Sushi.Mediakiwi.Data/7.14.21": {
+    "Sushi.Mediakiwi.Data/7.14.23": {
       "type": "project",
       "serviceable": false,
       "sha512": ""

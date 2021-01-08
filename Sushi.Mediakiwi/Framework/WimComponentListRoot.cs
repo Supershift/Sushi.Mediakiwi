@@ -4482,11 +4482,37 @@ namespace Sushi.Mediakiwi.Framework
         /// <summary>
         /// Gets the current query URL with a certain keys replaced.
         /// </summary>
-        /// <param name="keyvalues"></param>
         /// <returns></returns>
         public string GetUrl(params KeyValue[] keyvalues)
         {
             return Console.UrlBuild.GetUrl(keyvalues);
+        }
+
+        /// <summary>
+        /// Gets the current query URL with a certain keys replaced.
+        /// </summary>
+        /// <returns></returns>
+        public string GetUrl(int listId, params KeyValue[] keyvalues)
+        {
+            return Console.UrlBuild.GetUrl(listId, keyvalues);
+        }
+
+        /// <summary>
+        /// Gets the current query URL with a certain keys replaced.
+        /// </summary>
+        /// <returns></returns>
+        public string GetUrl(IComponentList list, params KeyValue[] keyvalues)
+        {
+            return Console.UrlBuild.GetUrl(list, keyvalues);
+        }
+
+        /// <summary>
+        /// Gets the current query URL with a certain keys replaced.
+        /// </summary>
+        /// <returns></returns>
+        public string GetUrl(Type listType, params KeyValue[] keyvalues)
+        {
+            return Console.UrlBuild.GetUrl(listType, keyvalues);
         }
 
         /// <summary>

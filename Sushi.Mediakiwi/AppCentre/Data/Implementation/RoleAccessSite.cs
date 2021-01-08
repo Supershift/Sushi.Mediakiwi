@@ -192,9 +192,11 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                 temp.RoleID = e.SelectedGroupItemKey;
                 Sushi.Mediakiwi.Data.IApplicationRole role = temp.Role();
 
+                var allowed = role.Sites(temp);
+
                 var selection =
-                    from item in Sushi.Mediakiwi.Data.Site.SelectAll()
-                    join relation in role.Sites(temp) on item.GUID equals relation.GUID
+                    from item in Sushi.Mediakiwi.Data.Site.SelectAll(true)
+                    join relation in allowed on item.GUID equals relation.GUID
                     into combination
                     from relation in combination.DefaultIfEmpty()
                     select new { ID = item.ID, Name = item.Name, HasAccess = relation == null ? false : true };

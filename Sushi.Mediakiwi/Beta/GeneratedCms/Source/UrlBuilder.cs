@@ -203,6 +203,9 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                 {
                     if (Utils.IsNumeric(listkey.Value, out int listid))
                     {
+                        // remote the key if applied as the url takes over.
+                        listkey.RemoveKey = true;
+
                         if (!listid.Equals(Console.CurrentList.ID))
                         {
                             return GetUrl(listid, keyvalues);
@@ -225,6 +228,12 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
         {
             string querystring = GetCustomQueryString(Console.Context, keyvalues);
             return string.Concat(Console.UrlBuild.GetListRequest(componentlistId), querystring);
+        }
+
+        public string GetUrl(Type componentlist, params KeyValue[] keyvalues)
+        {
+            string querystring = GetCustomQueryString(Console.Context, keyvalues);
+            return string.Concat(Console.UrlBuild.GetListRequest(componentlist), querystring);
         }
 
         /// <summary>
@@ -277,6 +286,12 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
         public string GetListRequest(int listID, int? itemID = null)
         {
             var list = ComponentList.SelectOne(listID);
+            return GetListRequest(list, itemID);
+        }
+
+        public string GetListRequest(Type listType, int? itemID = null)
+        {
+            var list = ComponentList.SelectOne(listType);
             return GetListRequest(list, itemID);
         }
 

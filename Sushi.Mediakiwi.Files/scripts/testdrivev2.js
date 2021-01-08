@@ -161,17 +161,16 @@ function SetClick(self) {
 
         var url = '';
         if (datalink != null) {
-            url = document.URL.split('?')[0] + '?';// + datalink + '=' + spli[1];
 
             if (datalink.indexOf('[KEY]') > -1)
-                url += datalink.replace('[KEY]', spli[1]);
+                url = datalink.replace('[KEY]', spli[1]);
             else {
                 if (datalink.indexOf('&item=') > -1)
-                    url += datalink;
+                    url = datalink;
                 else if (!datalink.indexOf('&item') > -1)
-                    url += datalink + '=' + spli[1];
+                    url = datalink + '=' + spli[1];
                 else
-                    url += datalink;
+                    url = datalink;
             }
         }
         else {
@@ -185,10 +184,10 @@ function SetClick(self) {
 
             if (group != undefined) {
                 var groupitem = getUrlVars()["groupitem"];
-                url = document.URL.split('?')[0] + '?group=' + group + folder + '&groupitem=' + groupitem + '&list=' + spli[0] + '&item=' + spli[1];
+                url = document.URL.split('?')[0] + '?group=' + group + folder + '&groupitem=' + groupitem + '&item=' + spli[1];
             }
             else
-                url = document.URL.split('?')[0] + '?list=' + spli[0] + folder + '&item=' + spli[1];
+                url = document.URL.split('?')[0] + '?item=' + spli[1] + folder;
         }
         var datatarget = null;
         var title = null;
@@ -219,6 +218,7 @@ function SetClick(self) {
 
         location.href = url;
     }
+
 
     /* for table rows having a checkbox or hidden text field in the first cell */
     var chk = $(self).parent('tr').find('td:first').find('input:first');

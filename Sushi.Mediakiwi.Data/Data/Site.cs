@@ -725,16 +725,20 @@ delete from wim_ComponentVersions where ComponentVersion_Page_Key in
                 {
                     if (user.Role().IsAccessSite)
                     {
+                        var rolerights = RoleRight.SelectAll(user.Role().ID, RoleRightType.Site);
+
                         sites = (
-                            from item in SelectAll()
-                            join relation in RoleRight.SelectAll(user.Role().ID, RoleRightType.Site) on item.ID equals relation.ItemID
+                            from item in SelectAll(true)
+                            join relation in rolerights on item.ID equals relation.ItemID
                             select item).ToList();
                     }
                     else
                     {
+                        var rolerights = RoleRight.SelectAll(user.Role().ID, RoleRightType.Site);
+
                         var acl = (
                             from item in SelectAll()
-                            join relation in RoleRight.SelectAll(user.Role().ID, RoleRightType.Site) on item.ID equals relation.ItemID
+                            join relation in rolerights on item.ID equals relation.ItemID
                             into combination
                             from relation in combination.DefaultIfEmpty()
                             select new { ID = item.ID, HasAccess = relation == null });
@@ -803,7 +807,7 @@ delete from wim_ComponentVersions where ComponentVersion_Page_Key in
                 return outcome;
             }
 
-            sites.Add(SelectBase());
+            //sites.Add(SelectBase());
             return sites.ToArray();
         }
 
@@ -939,14 +943,17 @@ delete from wim_ComponentVersions where ComponentVersion_Page_Key in
         /// <summary>
         /// Select all sites
         /// </summary>
-        public static List<Site> SelectAll()
+        public static List<Site> SelectAll(bool ignoreAdministration = true)
         {
             var connector = ConnectorFactory.CreateConnector<Site>();
             var filter = connector.CreateDataFilter();
             filter.AddOrder(x => x.Type);
             filter.AddOrder(x => x.Name);
 
-            filter.AddSql("ISNULL([Site_Type], 1) = 1");
+            if (ignoreAdministration)
+                filter.AddSql("ISNULL([Site_Type], 0) = 0");
+            else
+                filter.AddSql("ISNULL([Site_Type], 1) = 1");
 
             return connector.FetchAll(filter);
         }
@@ -954,14 +961,17 @@ delete from wim_ComponentVersions where ComponentVersion_Page_Key in
         /// <summary>
         /// Select all sites
         /// </summary>
-        public static async Task<List<Site>> SelectAllAsync()
+        public static async Task<List<Site>> SelectAllAsync(bool ignoreAdministration = true)
         {
             var connector = ConnectorFactory.CreateConnector<Site>();
             var filter = connector.CreateDataFilter();
             filter.AddOrder(x => x.Type);
             filter.AddOrder(x => x.Name);
 
-            filter.AddSql("ISNULL([Site_Type], 1) = 1");
+            if (ignoreAdministration)
+                filter.AddSql("ISNULL([Site_Type], 0) = 0");
+            else
+                filter.AddSql("ISNULL([Site_Type], 1) = 1");
 
             return await connector.FetchAllAsync(filter);
         }

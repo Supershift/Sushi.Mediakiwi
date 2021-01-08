@@ -1213,8 +1213,8 @@ namespace Sushi.Mediakiwi.UI
                                     //    //row_attribute["data-target"] = root.SearchListTarget.ToString();
                                     //}
 
-                                    if (passthrough != null && passthrough.Contains("?"))
-                                        passthrough = passthrough.Split('?')[1];
+                                    //if (passthrough != null && passthrough.Contains("?"))
+                                    //    passthrough = passthrough.Split('?')[1];
 
                                     row_attribute["data-link"] = passthrough;
 

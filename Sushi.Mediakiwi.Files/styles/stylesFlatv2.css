@@ -712,7 +712,7 @@
         border-radius: 2px !important;
         -webkit-appearance: none;
         /*font-weight: 600;*/
-        height: auto !important;
+        height: 30px !important;/*!important auto !important;*/
         border: none;
         /*text-transform: uppercase;*/
         color: #ffffff;
