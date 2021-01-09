@@ -153,11 +153,15 @@ namespace Sushi.Mediakiwi.Utilities
         /// Gets the domain.
         /// </summary>
         /// <value>The domain.</value>
-        string Domain
+        public string Domain
         {
             get
             {
-                return m_Context?.Request.Host.Host;
+
+                if (string.IsNullOrWhiteSpace(m_Context.Request.Headers["X-Forwarded-Host"]))
+                    return string.Concat(m_Context.Request.Host.ToString());
+
+                return string.Concat(m_Context.Request.Headers["X-Forwarded-Host"]);
             }
         }
 

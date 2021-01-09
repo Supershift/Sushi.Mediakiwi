@@ -158,7 +158,6 @@ function SetClick(self) {
     if (id != null) {
         var spli = id.split('_')[1].split('$');
         var datalink = $(self).parent('tr').attr('data-link');
-
         var url = '';
         if (datalink != null) {
 

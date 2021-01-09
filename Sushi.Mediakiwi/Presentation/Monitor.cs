@@ -58,7 +58,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation
 
         bool _IsLocalTest = false;// CommonConfiguration.IS_LOCAL_TEST;
 
-        string _Domain = "https://mediakiwi.azureedge.net/";
+        string _Domain = "https://sushi-mediakiwi.azureedge.net/";
 
         string _FolderVersion;
         string FolderVersion(string subfolder = null)
@@ -1005,7 +1005,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation
 	</head>
 	<body class=""" + (builder.Canvas.LeftNavigation.Hide || builder.Canvas.Type == CanvasType.Dashboard ? "full" : null) + addedBodyClass
                     + @""">
-    <form id=""uxForm"" method=""post"" action="""+url+@""" enctype=""multipart/form-data"">
+    <form id=""uxForm"" method=""post"" action="""+url+ @""" enctype=""multipart/form-data"">
         <input type=""hidden"" name=""autopostback"" id=""autopostback"" value="""" />
 		<section id=""bodySection"">
 			<header id=""bodyHeader"">

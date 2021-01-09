@@ -11,6 +11,8 @@ using Sushi.Mediakiwi.Data;
 using System.Net;
 using Microsoft.AspNetCore.Hosting;
 using System.Threading.Tasks;
+using System.Security.Claims;
+using System.Security.Principal;
 
 namespace Sushi.Mediakiwi.Beta.GeneratedCms
 {
@@ -297,12 +299,12 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
             {
                 path = path.Replace("~", Request.PathBase);
                 if (appendUrl)
-                    return String.Concat(CurrentHost, path);
+                    return String.Concat(CurrentDomain, path);
                 return path;
             }
 
             if (appendUrl)
-                return String.Concat(CurrentHost, Request.PathBase, path);
+                return String.Concat(CurrentDomain, Request.PathBase, path);
             return String.Concat(Request.PathBase, path);
         }
 
@@ -310,7 +312,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
         {
             get
             {
-                return String.Concat(CurrentHost, Request.PathBase, Request.Path, Request.QueryString);
+                return String.Concat(CurrentDomain, Request.PathBase, Request.Path, Request.QueryString);
             }
         }
         
@@ -435,8 +437,8 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
             Context = m_Application;
 
 
-            this.WimRepository = string.Concat(this.CurrentHost, AddApplicationPath("testdrive/files"));
-            this.BaseRepository = string.Concat(this.CurrentHost, AddApplicationPath("repository"));
+            this.WimRepository = string.Concat(this.CurrentDomain, AddApplicationPath("testdrive/files"));
+            this.BaseRepository = string.Concat(this.CurrentDomain, AddApplicationPath("repository"));
 
             _VisitorManager = new VisitorManager(application);
         }
@@ -623,8 +625,25 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
         public Data.IApplicationUser CurrentApplicationUser
         {
             get {
+                //  [20090411:MM] Patch
+                if (m_CurrentApplicationUser == null && CurrentVisitor != null && CurrentVisitor.ApplicationUserID.HasValue)
+                {
+                    m_CurrentApplicationUser = Data.ApplicationUser.SelectOne(CurrentVisitor.ApplicationUserID.Value, true);
 
-                 if (m_CurrentApplicationUser == null 
+                    if (!this.Context.User.Identity.IsAuthenticated)
+                    {
+                        var claims = new List<Claim>();
+                        claims.Add(new Claim("email", m_CurrentApplicationUser.Email));
+
+                        var identity = new GenericIdentity(m_CurrentApplicationUser.Name);
+                        identity.AddClaims(claims);
+
+                        Context.User = new GenericPrincipal(identity, null);
+                    }
+                    return m_CurrentApplicationUser;
+                }
+
+                if (m_CurrentApplicationUser == null 
                     && this.Context != null
                     && this.Context.User != null
                     && this.Context.User.Identity != null
@@ -645,10 +664,6 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
                         }
                     }
                 }
-
-                //  [20090411:MM] Patch
-                if (m_CurrentApplicationUser == null && CurrentVisitor != null && CurrentVisitor.ApplicationUserID.HasValue)
-                    m_CurrentApplicationUser = Data.ApplicationUser.SelectOne(CurrentVisitor.ApplicationUserID.Value, true);
 
                 if (m_CurrentApplicationUser == null && m_CurrentListInstance != null)
                     m_CurrentApplicationUser = m_CurrentListInstance.wim.CurrentApplicationUser;
@@ -1090,6 +1105,22 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
         }
 
         /// <summary>
+        /// Gets or sets the current domain (host including schema).
+        /// </summary>
+        /// <value>The current host.</value>
+        public string CurrentDomain
+        {
+            get
+            {
+
+                if (string.IsNullOrWhiteSpace(Request.Headers["X-Forwarded-Host"]))
+                    return string.Concat(Request.Scheme, "://", Request.Host.ToString());
+
+                return string.Concat(Request.Scheme, "://", Request.Headers["X-Forwarded-Host"]);
+            }
+        }
+
+        /// <summary>
         /// Gets or sets the current host.
         /// </summary>
         /// <value>The current host.</value>
@@ -1098,11 +1129,28 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
             get {
 
                 if (string.IsNullOrWhiteSpace(Request.Headers["X-Forwarded-Host"]))
-                    return string.Concat(Request.Scheme, "://", Request.Host.ToString());
+                    return string.Concat(Request.Host.ToString());
 
-                return string.Concat(Request.Scheme, "://", Request.Headers["X-Forwarded-Host"]);
+                return string.Concat(Request.Headers["X-Forwarded-Host"]);
             }
         }
+
+
+        /// <summary>
+        /// Gets or sets the current host.
+        /// </summary>
+        /// <value>The current host.</value>
+        //public string CurrentHost
+        //{
+        //    get
+        //    {
+
+        //        if (string.IsNullOrWhiteSpace(Request.Headers["X-Forwarded-Host"]))
+        //            return string.Concat(Request.Host.ToString());
+
+        //        return string.Concat(Request.Headers["X-Forwarded-Host"]);
+        //    }
+        //}
 
         /// <summary>
         /// Gets the wim group page path: wim.ashx?group=NN&amp;groupitem=NN

@@ -14,12 +14,14 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{DA850D2F-5A0B-4AC6-9A48-92952A3201C2}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
+		.gitignore = .gitignore
 		MK_CLEANUP.sql = MK_CLEANUP.sql
+		README.md = README.md
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sushi.Mediakiwi.Files", "Sushi.Mediakiwi.Files\Sushi.Mediakiwi.Files.csproj", "{8C696881-4AB8-41CD-AD46-AEAD0825BE50}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sushi.Mediakiwi.Headless", "Sushi.Mediakiwi.Headless\Sushi.Mediakiwi.Headless.csproj", "{6E1C9E66-EF21-433A-9190-D3F00E6A2CE9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sushi.Mediakiwi.Headless", "Sushi.Mediakiwi.Headless\Sushi.Mediakiwi.Headless.csproj", "{6E1C9E66-EF21-433A-9190-D3F00E6A2CE9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

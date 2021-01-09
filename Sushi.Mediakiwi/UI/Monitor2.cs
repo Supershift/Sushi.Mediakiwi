@@ -1055,17 +1055,18 @@ namespace Sushi.Mediakiwi.UI
                 }
             }
 
-            //  Check SSO
-            await AuthenticateViaSingleSignOnAsyc();
+            await AuthenticateViaSingleSignOnAsyc(false);
 
             //  Check roaming profile
             if (!showLogin && _Console.CurrentApplicationUser != null)
             {
-
                 return true;
             }
             else
             {
+                //  Check SSO
+                await AuthenticateViaSingleSignOnAsyc(true);
+
                 string reaction = _PresentationMonitor.GetLoginWrapper(_Console, _Placeholders, _Callbacks);
                 if (!string.IsNullOrEmpty(reaction))
                 {
@@ -1076,14 +1077,20 @@ namespace Sushi.Mediakiwi.UI
             return true;
         }
 
-        async Task AuthenticateViaSingleSignOnAsyc()
+        async Task AuthenticateViaSingleSignOnAsyc(bool shouldredirect = true)
         {
             if (_configuration.GetValue<bool>("mediakiwi:authentication"))
             {
                 if (!_Context.User.Identity.IsAuthenticated)
                 {
-                    if (!await IsValidIdentityAsync(_Context, _Console.CurrentHost))
-                        _Context.Response.Redirect($"{_Console.CurrentHost}/.auth/login/aad?post_login_redirect_url={_Console.GetWimPagePath(null)}");
+                    if (!await IsValidIdentityAsync(_Context, _Console.CurrentDomain))
+                    {
+                        if (shouldredirect && 
+                            !_Context.Request.Path.Value.EndsWith("/sso/negotiate", StringComparison.CurrentCultureIgnoreCase))
+                        {
+                            _Context.Response.Redirect($"{_Console.CurrentDomain}/.auth/login/aad?post_login_redirect_url={_Console.GetWimPagePath(null)}/sso/negotiate?redir={_Context.Request.Path}{_Context.Request.QueryString}");
+                        }
+                    }
                 }
             }
         }
@@ -1091,14 +1098,16 @@ namespace Sushi.Mediakiwi.UI
         async Task<bool> IsValidIdentityAsync(HttpContext context, string uriString)
         {
             var cookieContainer = new CookieContainer();
-            var handler = new HttpClientHandler() {
+            var handler = new HttpClientHandler()
+            {
                 CookieContainer = cookieContainer
             };
 
             if (context.Request.Cookies.ContainsKey("AppServiceAuthSession"))
             {
-                cookieContainer.Add(new Uri(uriString)
-                , new Cookie("AppServiceAuthSession", context.Request.Cookies["AppServiceAuthSession"]));
+                var cookie = new Cookie("AppServiceAuthSession", context.Request.Cookies["AppServiceAuthSession"].ToString());
+                cookie.Domain = _Console.CurrentHost;
+                cookieContainer.Add(cookie);
             }
 
             var jsonResult = string.Empty;
@@ -1107,6 +1116,12 @@ namespace Sushi.Mediakiwi.UI
                 client.DefaultRequestHeaders.Add("Accept", "application/json");
                 client.DefaultRequestHeaders.Add("Accept-Charset", "UTF-8");
                 client.DefaultRequestHeaders.Add("Cache-Control", "no-cache");
+
+                if (context.Request.Cookies.ContainsKey(".authtoken"))
+                {
+                    var authenticationToken = context.Request.Cookies[".authtoken"];
+                    client.DefaultRequestHeaders.Add("X-ZUMO-AUTH", authenticationToken);
+                }
 
                 var res = await client.GetAsync($"{uriString}/.auth/me");
                 jsonResult = await res.Content.ReadAsStringAsync();
@@ -1126,13 +1141,31 @@ namespace Sushi.Mediakiwi.UI
                         {
                             claims.Add(new Claim(claim["typ"].ToString(), claim["val"].ToString()));
                         }
+                        //claims.Add(new Claim("email", "test@test.nl"));
 
                         var identity = new GenericIdentity("DefaultUser");
                         identity.AddClaims(claims);
 
-                     
-
                         context.User = new GenericPrincipal(identity, null);
+
+                        var visitor = new VisitorManager(context)
+                            .SelectVisitorByCookie();
+
+                        if (_Console.CurrentApplicationUser != null)
+                            visitor.ApplicationUserID = _Console.CurrentApplicationUser.ID;
+                        new VisitorManager(context).Save(visitor, true);
+
+                        if (_Context.Request.Path.Value.EndsWith("/sso/negotiate", StringComparison.CurrentCultureIgnoreCase))
+                        {
+                            if (_Context.Request.Query.ContainsKey("redir"))
+                            {
+                                context.Response.Redirect(_Context.Request.Query["redir"]);
+                            }
+                            else
+                            {
+                                context.Response.Redirect(_Console.GetWimPagePath(null));
+                            }
+                        }
                         return true;
                     }
                     catch

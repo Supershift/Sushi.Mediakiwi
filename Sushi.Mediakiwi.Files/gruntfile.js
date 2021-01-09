@@ -71,6 +71,7 @@ module.exports = function (grunt) {
                     },
                     {
                         src: [
+                            'compiled/easyauth.min.js',
                             'compiled/jquery-1-7-1.min.js',
                             'compiled/jquery-ui-1-10-3-custom.min.js',
                             'compiled/jquery-ui-datepicker-nl.min.js',
@@ -93,6 +94,7 @@ module.exports = function (grunt) {
                     },
                     {
                         src: [
+                            'compiled/easyauth.min.js',
                             'compiled/jquery-1-7-1.min.js',
                             'compiled/jquery-ui-1-10-3-custom.min.js',
                             'compiled/jquery-shorten.min.js',
@@ -115,6 +117,7 @@ module.exports = function (grunt) {
                     },
                     {
                         src: [
+                            'compiled/easyauth.min.js',
                             'compiled/jquery-1-7-1.min.js',
                             'compiled/head-load-min.js',
                         ], dest: 'compiled/bundel_login.min.js'
