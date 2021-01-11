@@ -75,9 +75,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
 
         public string GetSafeUrl()
         {
-            if (Context.Request.Query.Count == 0)
-                return $"{Context.Request.Path}";
-            return $"{Context.Request.PathBase}{Context.Request.Path}?{Context.Request.QueryString}";
+            return UrlBuild.GetUrl();
         }
 
         /// <summary>

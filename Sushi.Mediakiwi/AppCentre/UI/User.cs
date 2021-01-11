@@ -34,7 +34,6 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             if (HijackUser)
             {
                 wim.CurrentVisitor.Data.Apply("Wim.Reset.Me", wim.CurrentApplicationUser.GUID.ToString());
-                wim.SaveVisit();
 
                 var tmp = await ApplicationUser.SelectOneAsync(m_Implement.GUID);
 
@@ -44,6 +43,8 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                     tmp.Save();
 
                     wim.CurrentVisitor.ApplicationUserID = m_Implement.ID;
+                    wim.SaveVisit();
+
                     Response.Redirect(wim.Console.GetSafeUrl());
                 }
             }

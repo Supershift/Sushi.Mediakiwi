@@ -194,7 +194,7 @@ namespace Sushi.Mediakiwi.Utilities
                         var httpContext = (HttpContext)state;
                         httpContext.Response.Cookies.Append(TicketName, encryption, new CookieOptions() {
                             Expires = LifeTime,
-                            Domain = this.Domain,
+                            Domain = this.Domain.Split(':')[0],
                             HttpOnly = false,
                             Secure = true,
                             IsEssential = true

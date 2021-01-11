@@ -1115,6 +1115,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation
         }
 
 
+  
 
         /// <summary>
         /// Gets the login wrapper.
@@ -1284,14 +1285,10 @@ namespace Sushi.Mediakiwi.Framework.Presentation
                     container.CurrentApplicationUser.LastLoggedVisit = Common.DatabaseDateTime;
                     container.CurrentApplicationUser.Save();
 
-                    //PortalAuthentication auth = new PortalAuthentication();
-                    //container.Response.Cookies.Add(auth.SetAuthentication(container.CurrentApplicationUser, container.Request.IsSecureConnection));
-
                     container.CurrentVisitor.ApplicationUserID = container.CurrentApplicationUser.ID;
-                    container.CurrentVisitor.Save();
-                    container.SaveVisit();
-
-                    container.Response.Redirect(container.PortalUrl);
+                    //container.CurrentVisitor.Save();
+                    //container.SaveVisit();
+                    //container.Response.Redirect(container.PortalUrl);
                     return true;
                 }
             }

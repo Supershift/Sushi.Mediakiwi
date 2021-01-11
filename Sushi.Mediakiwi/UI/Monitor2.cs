@@ -1060,6 +1060,7 @@ namespace Sushi.Mediakiwi.UI
             //  Check roaming profile
             if (!showLogin && _Console.CurrentApplicationUser != null)
             {
+                await ValidateHijackResetAsync();
                 return true;
             }
             else
@@ -1076,6 +1077,33 @@ namespace Sushi.Mediakiwi.UI
             }
             return true;
         }
+
+        async Task ValidateHijackResetAsync()
+        {
+            if (_Console.Request.QueryString.HasValue 
+                && _Console.Request.QueryString.Value.Equals("?reset", StringComparison.CurrentCultureIgnoreCase))
+            {
+                if (_Console.CurrentVisitor != null && _Console.CurrentVisitor.Data != null)
+                {
+                    if (!_Console.CurrentVisitor.Data["Wim.Reset.Me"].IsNull)
+                    {
+                        if (Guid.TryParse(_Console.CurrentVisitor.Data["Wim.Reset.Me"].Value, out var id))
+                        {
+                            var user = await ApplicationUser.SelectOneAsync(id);
+                            if (user?.ID > 0)
+                            {
+                                _Console.CurrentVisitor.Data.Apply("Wim.Reset.Me", null);
+                                _Console.CurrentVisitor.ApplicationUserID = user.ID;
+                                _Console.CurrentApplicationUser = user;
+                                _Console.SaveVisit();
+                            }
+
+                        }
+                    }
+                }
+            }
+        }
+
 
         async Task AuthenticateViaSingleSignOnAsyc(bool shouldredirect = true)
         {
@@ -1111,6 +1139,10 @@ namespace Sushi.Mediakiwi.UI
             }
 
             var jsonResult = string.Empty;
+
+            // for test validation purposes
+            context.Response.Headers.Add("easyauth", "true");
+
             using (var client = new HttpClient(handler))
             {
                 client.DefaultRequestHeaders.Add("Accept", "application/json");
