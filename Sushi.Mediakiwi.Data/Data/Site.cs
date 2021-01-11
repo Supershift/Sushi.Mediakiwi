@@ -951,9 +951,7 @@ delete from wim_ComponentVersions where ComponentVersion_Page_Key in
             filter.AddOrder(x => x.Name);
 
             if (ignoreAdministration)
-                filter.AddSql("ISNULL([Site_Type], 0) = 0");
-            else
-                filter.AddSql("ISNULL([Site_Type], 1) = 1");
+                filter.Add(x => x.Type, null);
 
             return connector.FetchAll(filter);
         }
@@ -969,9 +967,7 @@ delete from wim_ComponentVersions where ComponentVersion_Page_Key in
             filter.AddOrder(x => x.Name);
 
             if (ignoreAdministration)
-                filter.AddSql("ISNULL([Site_Type], 0) = 0");
-            else
-                filter.AddSql("ISNULL([Site_Type], 1) = 1");
+                filter.Add(x => x.Type, null);
 
             return await connector.FetchAllAsync(filter);
         }
@@ -1004,7 +1000,7 @@ delete from wim_ComponentVersions where ComponentVersion_Page_Key in
                         [Folder_Type] = @folderTypeID
                     AND [Folder_Folder_Key] IS NULL
                     AND [Site_Displayname] = @siteDisplayName
-                    AND [Site_Type] IS NULL
+                    AND [Site_Type] is null
                   ", filter);
         }
 
@@ -1036,7 +1032,7 @@ delete from wim_ComponentVersions where ComponentVersion_Page_Key in
                         [Folder_Type] = @folderTypeID
                     AND [Folder_Folder_Key] IS NULL
                     AND [Site_Displayname] = @siteDisplayName
-                    AND [Site_Type] IS NULL
+                    AND [Site_Type] is null
                   ", filter);
         }
     }

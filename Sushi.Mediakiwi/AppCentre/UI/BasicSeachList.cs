@@ -43,7 +43,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data
 
                 foreach (Sushi.Mediakiwi.Data.Site site in Sushi.Mediakiwi.Data.Site.SelectAll())
                 {
-                    if (site.MasterID.GetValueOrDefault() > 0) continue;
+                    //if (site.MasterID.GetValueOrDefault() > 0) continue;
                     li = new ListItem(site.Name, site.ID.ToString());
                     m_SearchSites.Add(li);
                 }

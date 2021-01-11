@@ -1140,9 +1140,6 @@ namespace Sushi.Mediakiwi.UI
 
             var jsonResult = string.Empty;
 
-            // for test validation purposes
-            context.Response.Headers.Add("easyauth", "true");
-
             using (var client = new HttpClient(handler))
             {
                 client.DefaultRequestHeaders.Add("Accept", "application/json");
