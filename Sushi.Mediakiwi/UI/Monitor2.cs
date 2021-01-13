@@ -1190,7 +1190,7 @@ namespace Sushi.Mediakiwi.UI
                         var visitor = new VisitorManager(context)
                             .SelectVisitorByCookie();
 
-                        if (_Console.CurrentApplicationUser != null)
+                        if (_Console.CurrentApplicationUser != null && !_Console.CurrentApplicationUser.IsNewInstance)
                         {
                             var now = DateTime.UtcNow;
 

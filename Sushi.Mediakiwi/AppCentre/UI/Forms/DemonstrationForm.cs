@@ -39,7 +39,12 @@ namespace Sushi.Mediakiwi.AppCentre.UI.Forms
             Map(x => x.Tagging).Tagging("Tagging", "List", mandatory, false, "Interactive help");
             Map(x => x.SubListSelect).SubListSelect("SubListSelect"
                 , typeof(Sushi.Mediakiwi.AppCentre.Data.Implementation.ComponentList)
-                , mandatory, false, "Interactive help");
+                , mandatory, false, "Interactive help")
+                    .OnlyOneItem()
+                    .Width(90, true)
+                    .Height(90, true)
+                    .ScrollBar(true)
+                ;
            
             Map(x => x.Sortable).SortList("Sortable", "Interactive help");
 

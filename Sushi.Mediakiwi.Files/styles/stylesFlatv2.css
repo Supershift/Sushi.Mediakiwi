@@ -3411,6 +3411,7 @@ div.select {
             float: left;
             /*height: 1.8em;*/
             line-height: 1.8em;
+            height: 27px;
             overflow: hidden;
             width: 95%;
         }
@@ -3424,7 +3425,7 @@ div.select {
             width: calc(100% - 40px);
             float: left;
             height: auto !important;
-            min-height: 27px;
+            min-height: 34px;
             border: solid 1px #dddee0;
             background: #f2f2f2 !important;
         }

@@ -1,23 +1,23 @@
 {
   "format": 1,
   "restore": {
-    "C:\\code\\sushi.mediakiwi\\Sushi.Mediakiwi.Headless\\Sushi.Mediakiwi.Headless.csproj": {}
+    "C:\\Users\\Build78\\Source\\Repos\\Sushi.Mediakiwi\\Sushi.Mediakiwi.Headless\\Sushi.Mediakiwi.Headless.csproj": {}
   },
   "projects": {
-    "C:\\code\\sushi.mediakiwi\\Sushi.Mediakiwi.Headless\\Sushi.Mediakiwi.Headless.csproj": {
-      "version": "7.15.5",
+    "C:\\Users\\Build78\\Source\\Repos\\Sushi.Mediakiwi\\Sushi.Mediakiwi.Headless\\Sushi.Mediakiwi.Headless.csproj": {
+      "version": "7.15.6",
       "restore": {
-        "projectUniqueName": "C:\\code\\sushi.mediakiwi\\Sushi.Mediakiwi.Headless\\Sushi.Mediakiwi.Headless.csproj",
+        "projectUniqueName": "C:\\Users\\Build78\\Source\\Repos\\Sushi.Mediakiwi\\Sushi.Mediakiwi.Headless\\Sushi.Mediakiwi.Headless.csproj",
         "projectName": "Sushi.Mediakiwi.Headless",
-        "projectPath": "C:\\code\\sushi.mediakiwi\\Sushi.Mediakiwi.Headless\\Sushi.Mediakiwi.Headless.csproj",
-        "packagesPath": "C:\\Users\\marc\\.nuget\\packages\\",
-        "outputPath": "C:\\code\\sushi.mediakiwi\\Sushi.Mediakiwi.Headless\\obj\\",
+        "projectPath": "C:\\Users\\Build78\\Source\\Repos\\Sushi.Mediakiwi\\Sushi.Mediakiwi.Headless\\Sushi.Mediakiwi.Headless.csproj",
+        "packagesPath": "C:\\Users\\Build78\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\Build78\\Source\\Repos\\Sushi.Mediakiwi\\Sushi.Mediakiwi.Headless\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
         ],
         "configFilePaths": [
-          "C:\\Users\\marc\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\Build78\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -83,7 +83,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.101\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.102\\RuntimeIdentifierGraph.json"
         }
       }
     }

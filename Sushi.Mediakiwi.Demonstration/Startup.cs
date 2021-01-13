@@ -56,14 +56,7 @@ namespace Sushi.Mediakiwi.Demonstration
 
             app.UseAuthentication();
             app.UseAuthorization();
-            app.MapWhen(
-                context => context.Request.Path.ToString().EndsWith(
-                    Configuration.GetValue<string>("mediakiwi:portal_path")),
-                appBranch => {
-                    appBranch.UseMediakiwi();
-                });
-
-
+            app.UseMediakiwi();
         }
     }
 }

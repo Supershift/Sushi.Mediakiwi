@@ -328,6 +328,12 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
         Data.ISubList m_interfaceCandidate;
         Data.SubList m_Candidate;
 
+        internal Grid.LayerSpecification LayerSpecification
+        {
+            get;set;
+        }
+        
+
 
         /// <summary>
         /// Writes the candidate.
@@ -375,7 +381,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                             AddNewItemsOnTop,
                             LayerSize.Normal,
                             null,
-                            null,
+                            null, LayerSpecification,
                             new NameItemValue() { Name = this.ID, ID = key, Value = candidate }
                             );
                     }
@@ -407,6 +413,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                             LayerSize.Normal, 
                             null, 
                             null,
+                            LayerSpecification,
                             new NameItemValue() { Name = this.ID, TextID = key, Value = candidate }
                             );
                         #endregion
@@ -440,6 +447,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                         LayerSize.Normal,
                         null,
                         null,
+                        LayerSpecification,
                         arr.ToArray()
                         );
                 }

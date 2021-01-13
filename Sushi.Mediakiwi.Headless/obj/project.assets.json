@@ -2907,7 +2907,7 @@
       ]
     },
     "Microsoft.CodeAnalysis.Analyzers/1.1.0": {
-      "sha512": "W2zfR7Wv6izX3C/M0/lHNlYTccaJYwfXLCtqxO3Rf2jJTlNlfxB9McTCHZts0Bsa0W+98nPVJ+i1nnUr9malhw==",
+      "sha512": "HS3iRWZKcUw/8eZ/08GXKY2Bn7xNzQPzf8gRPHGSowX7u7XXu9i9YEaBeBNKUXWfI7qjvT2zXtLUvbN0hds8vg==",
       "type": "package",
       "path": "microsoft.codeanalysis.analyzers/1.1.0",
       "hasTools": true,
@@ -7474,23 +7474,23 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\marc\\.nuget\\packages\\": {},
+    "C:\\Users\\Build78\\.nuget\\packages\\": {},
     "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder": {}
   },
   "project": {
-    "version": "7.15.5",
+    "version": "7.15.6",
     "restore": {
-      "projectUniqueName": "C:\\code\\sushi.mediakiwi\\Sushi.Mediakiwi.Headless\\Sushi.Mediakiwi.Headless.csproj",
+      "projectUniqueName": "C:\\Users\\Build78\\Source\\Repos\\Sushi.Mediakiwi\\Sushi.Mediakiwi.Headless\\Sushi.Mediakiwi.Headless.csproj",
       "projectName": "Sushi.Mediakiwi.Headless",
-      "projectPath": "C:\\code\\sushi.mediakiwi\\Sushi.Mediakiwi.Headless\\Sushi.Mediakiwi.Headless.csproj",
-      "packagesPath": "C:\\Users\\marc\\.nuget\\packages\\",
-      "outputPath": "C:\\code\\sushi.mediakiwi\\Sushi.Mediakiwi.Headless\\obj\\",
+      "projectPath": "C:\\Users\\Build78\\Source\\Repos\\Sushi.Mediakiwi\\Sushi.Mediakiwi.Headless\\Sushi.Mediakiwi.Headless.csproj",
+      "packagesPath": "C:\\Users\\Build78\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\Build78\\Source\\Repos\\Sushi.Mediakiwi\\Sushi.Mediakiwi.Headless\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
       ],
       "configFilePaths": [
-        "C:\\Users\\marc\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\Build78\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
@@ -7556,7 +7556,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.101\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.102\\RuntimeIdentifierGraph.json"
       }
     }
   }

@@ -6,7 +6,7 @@
   "compilationOptions": {},
   "targets": {
     ".NETCoreApp,Version=v3.1": {
-      "Sushi.Mediakiwi.Headless/7.15.4": {
+      "Sushi.Mediakiwi.Headless/7.15.5": {
         "dependencies": {
           "FluentValidation": "9.3.0",
           "FluentValidation.AspNetCore": "9.3.0",
@@ -1328,7 +1328,7 @@
     }
   },
   "libraries": {
-    "Sushi.Mediakiwi.Headless/7.15.4": {
+    "Sushi.Mediakiwi.Headless/7.15.5": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
@@ -1595,7 +1595,7 @@
     "Microsoft.CodeAnalysis.Analyzers/1.1.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-W2zfR7Wv6izX3C/M0/lHNlYTccaJYwfXLCtqxO3Rf2jJTlNlfxB9McTCHZts0Bsa0W+98nPVJ+i1nnUr9malhw==",
+      "sha512": "sha512-HS3iRWZKcUw/8eZ/08GXKY2Bn7xNzQPzf8gRPHGSowX7u7XXu9i9YEaBeBNKUXWfI7qjvT2zXtLUvbN0hds8vg==",
       "path": "microsoft.codeanalysis.analyzers/1.1.0",
       "hashPath": "microsoft.codeanalysis.analyzers.1.1.0.nupkg.sha512"
     },
