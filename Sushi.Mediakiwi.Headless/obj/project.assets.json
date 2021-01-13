@@ -7478,7 +7478,7 @@
     "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder": {}
   },
   "project": {
-    "version": "7.15.6",
+    "version": "7.15.7",
     "restore": {
       "projectUniqueName": "C:\\Users\\Build78\\Source\\Repos\\Sushi.Mediakiwi\\Sushi.Mediakiwi.Headless\\Sushi.Mediakiwi.Headless.csproj",
       "projectName": "Sushi.Mediakiwi.Headless",

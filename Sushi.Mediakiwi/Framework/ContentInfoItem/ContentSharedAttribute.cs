@@ -546,7 +546,7 @@ namespace Sushi.Mediakiwi.Framework
                     //if (!url.Contains("item="))
                     //    url += "&item=0";
 
-                    build.AppendFormat("<a class=\"openlayer\" data-layer=\"{1}\" href=\"{0}\" title=\"{2}\"><figure class=\"{3}\"></figure></a>"
+                    build.AppendFormat("<a class=\"openlayer\" data-layer=\"{1}\" href=\"{0}\" data-title=\"{2}\"><figure class=\"{3}\"></figure></a>"
                         , url // 0
                         , specification.Parse() //1
                         , layerTitle //2

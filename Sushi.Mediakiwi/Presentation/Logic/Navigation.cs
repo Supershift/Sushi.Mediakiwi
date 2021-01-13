@@ -1319,7 +1319,10 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                 if (!list.IsNewInstance)
                 {
                     string prefix = container.UrlBuild.GetListRequest(list, container.Item);
-                    return string.Concat(prefix, "&openinframe=1");
+                    if (prefix.Contains("?"))
+                        return string.Concat(prefix, "&openinframe=1");
+                    else
+                        return string.Concat(prefix, "?openinframe=1");
                 }
             }
             return "#";
@@ -1544,7 +1547,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                         }
 
                         if (!container.CurrentListInstance.wim.HideCreateNew)
-                            Build_TopLeft.AppendFormat(string.Format("<li><a href=\"{0}\" class=\"{4}submit{2}\"{3} title=\"{1}\">{1}</a></li>"
+                            Build_TopRight.AppendFormat(string.Format("<li><a href=\"{0}\" class=\"{4}submit{2}\"{3} title=\"{1}\">{1}</a></li>"
                                 , container.UrlBuild.GetListNewRecordRequest()
                                 , newRecord
                                 , container.CurrentListInstance.wim.Page.Body.Grid.ClickLayerClass
@@ -1631,7 +1634,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                         if (container.CurrentListInstance.wim.HasListDelete && !container.CurrentListInstance.wim.HideDelete && container.Item.GetValueOrDefault() > 0)
                         {
                             if (container.CurrentListInstance.wim.CurrentList.Data["wim_CanDelete"].ParseBoolean(true))
-                                Build_TopRight.Append(string.Format("<li><a href=\"#\" id=\"delete\" class=\"abbr type_confirm left flaticon icon-trash-o\"{1} title=\"{0}\"></a></li>"
+                                Build_TopLeft.Append(string.Format("<li><a href=\"#\" id=\"delete\" class=\"abbr type_confirm left flaticon icon-trash-o\"{1} title=\"{0}\"></a></li>"
                                     , Labels.ResourceManager.GetString("delete", new CultureInfo(container.CurrentApplicationUser.LanguageCulture))
                                     , ConfirmationQuestion(true, container)
                                     ));
@@ -1947,13 +1950,10 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                     Build_TopRight.Append(@"<li><a href=""#"" class=""flaticon icon-sort sortOrder""></a></li>");
             }
 
-            //MV: Export button was always missing in ListItem view, even if there was ListData
-            //if (container.CurrentListInstance.wim.HasExportOptionXLS && !container.Item.HasValue)
-            if (container.CurrentListInstance.wim.HasExportOptionXLS &&  container.CurrentListInstance.wim.ListData != null)
-                Build_TopRight.AppendFormat(@"<li><abbr title=""{0}""><a id=""export_xls"" href=""#"" class=""flaticon icon-export postBack nosync""></a></abrr></li>"
-                    , Labels.ResourceManager.GetString("export_xls", new CultureInfo(container.CurrentApplicationUser.LanguageCulture))
-                    );
-
+            //if (container.CurrentListInstance.wim.HasExportOptionXLS &&  container.CurrentListInstance.wim.ListData != null)
+            //    Build_TopRight.AppendFormat(@"<li><abbr title=""{0}""><a id=""export_xls"" href=""#"" class=""flaticon icon-export postBack nosync""></a></abrr></li>"
+            //        , Labels.ResourceManager.GetString("export_xls", new CultureInfo(container.CurrentApplicationUser.LanguageCulture))
+            //        );
 
             if (_Build_TopRight != null)
             {

@@ -75,6 +75,16 @@ namespace Sushi.Mediakiwi.Framework
 
             return new SublistSettings(_element);
         }
+        public SublistSettings Title(string title)
+        {
+            if (_element.LayerSpecification == null)
+            {
+                _element.LayerSpecification = new Grid.LayerSpecification();
+            }
+
+            _element.LayerSpecification.Title = title;
+            return new SublistSettings(_element);
+        }
     }
     public class ButtonSettings
     {

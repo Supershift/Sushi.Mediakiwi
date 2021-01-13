@@ -44,6 +44,7 @@ namespace Sushi.Mediakiwi.AppCentre.UI.Forms
                     .Width(90, true)
                     .Height(90, true)
                     .ScrollBar(true)
+                    .Title("Custom title")
                 ;
            
             Map(x => x.Sortable).SortList("Sortable", "Interactive help");
