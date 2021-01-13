@@ -1121,7 +1121,7 @@ namespace Sushi.Mediakiwi.UI
         {
             if (_configuration.GetValue<bool>("mediakiwi:authentication"))
             {
-                if (!_Context.User.Identity.IsAuthenticated)
+                if (_Console.CurrentApplicationUser == null)
                 {
                     if (!await IsValidIdentityAsync(_Context, _Console.CurrentDomain))
                     {
@@ -1199,7 +1199,7 @@ namespace Sushi.Mediakiwi.UI
                                 Action = ActionType.Login,
                                 Type = ItemType.Undefined,
                                 ItemID = _Console.CurrentApplicationUser.ID,
-                                Message = "Claim based authentication",
+                                Message = "Claim based (easyAuth)",
                                 Created = now
                             }.InsertAsync();
 
