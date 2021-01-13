@@ -7,7 +7,7 @@
     <Company>Supershift</Company>
     <Product>Mediakiwi</Product>
     <Description>Headless handle for the Mediakiwi Rapid Portal Development Framework.</Description>
-    <Copyright>2005-2021 Supershift B.V.</Copyright>
+    <Copyright>2005-2021 Supershift</Copyright>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/Supershift/Sushi.Mediakiwi</PackageProjectUrl>
     <RepositoryUrl>https://github.com/Supershift/Sushi.Mediakiwi</RepositoryUrl>
