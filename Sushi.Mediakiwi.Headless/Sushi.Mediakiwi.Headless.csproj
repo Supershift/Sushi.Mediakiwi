@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <Version>7.15.5</Version>
-    <Authors>Marc Molenwijk</Authors>
+    <Authors>Marc Molenwijk, Mark Rienstra</Authors>
     <Company>Supershift</Company>
     <Product>Mediakiwi</Product>
     <Description>Contains all Logic needed to communicate between a RazorPages project and the MediaKiwi Headless CMS.</Description>
