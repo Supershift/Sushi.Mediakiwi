@@ -229,6 +229,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                 Implement.AssemblyName = "Sushi.Mediakiwi.Framework.dll";
                 Implement.ClassName = "Wim.Templates.UI.GenericLinqList";
                 Implement.IsVisible = true;
+                Implement.IsInherited = true;
 
                 int folder = Utility.ConvertToInt(Request.Query["folder"]);
                 if (folder > 0)
