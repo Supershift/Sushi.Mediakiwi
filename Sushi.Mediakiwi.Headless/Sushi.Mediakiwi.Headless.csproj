@@ -6,7 +6,7 @@
     <Authors>Marc Molenwijk</Authors>
     <Company>Supershift</Company>
     <Product>Mediakiwi</Product>
-    <Description>Headless handle for the Mediakiwi Rapid Portal Development Framework.</Description>
+    <Description>Contains all Logic needed to communicate between a RazorPages project and the MediaKiwi Headless CMS.</Description>
     <Copyright>2005-2021 Supershift</Copyright>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/Supershift/Sushi.Mediakiwi</PackageProjectUrl>
@@ -14,7 +14,15 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="FluentValidation" Version="9.3.0" />
+    <PackageReference Include="FluentValidation.AspNetCore" Version="9.3.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication" Version="2.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.RazorPages" Version="2.2.5" />
+    <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="2.2.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Utilities\" />
   </ItemGroup>
 
 </Project>
