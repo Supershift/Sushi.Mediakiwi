@@ -912,12 +912,6 @@ namespace Sushi.Mediakiwi.Data
             return true;
         }
 
-        internal void SaveUpdated()
-        {
-            LastLoggedVisit = Common.DatabaseDateTime;
-            Save();
-        }
-
         /// <summary>
         /// Gets the alternative name suggestion.
         /// </summary>

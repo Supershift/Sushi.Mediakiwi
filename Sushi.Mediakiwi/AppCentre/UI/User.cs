@@ -45,6 +45,15 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                     wim.CurrentVisitor.ApplicationUserID = m_Implement.ID;
                     wim.SaveVisit();
 
+                    await new AuditTrail()
+                    {
+                        Action = ActionType.Login,
+                        Type = ItemType.Undefined,
+                        ItemID = wim.CurrentApplicationUser.ID,
+                        Message = $"Impersonating [{m_Implement.Email}]",
+                        Created = tmp.LastLoggedVisit.Value
+                    }.InsertAsync();
+
                     Response.Redirect(wim.Console.GetSafeUrl());
                 }
             }

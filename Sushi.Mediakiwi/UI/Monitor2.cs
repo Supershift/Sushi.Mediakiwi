@@ -1096,6 +1096,18 @@ namespace Sushi.Mediakiwi.UI
                                 _Console.CurrentVisitor.ApplicationUserID = user.ID;
                                 _Console.CurrentApplicationUser = user;
                                 _Console.SaveVisit();
+
+                                user.LastLoggedVisit = DateTime.UtcNow;
+                                await user.SaveAsync();
+
+                                await new AuditTrail()
+                                {
+                                    Action = ActionType.Login,
+                                    Type = ItemType.Undefined,
+                                    ItemID = _Console.CurrentApplicationUser.ID,
+                                    Message = "Reset impersonation",
+                                    Created = user.LastLoggedVisit.Value
+                                }.InsertAsync();
                             }
 
                         }
@@ -1170,8 +1182,6 @@ namespace Sushi.Mediakiwi.UI
                         {
                             claims.Add(new Claim(claim["typ"].ToString(), claim["val"].ToString()));
                         }
-                        //claims.Add(new Claim("email", "test@test.nl"));
-
                         var identity = new GenericIdentity("DefaultUser");
                         identity.AddClaims(claims);
 
@@ -1181,7 +1191,22 @@ namespace Sushi.Mediakiwi.UI
                             .SelectVisitorByCookie();
 
                         if (_Console.CurrentApplicationUser != null)
+                        {
+                            var now = DateTime.UtcNow;
+
+                            await new AuditTrail()
+                            {
+                                Action = ActionType.Login,
+                                Type = ItemType.Undefined,
+                                ItemID = _Console.CurrentApplicationUser.ID,
+                                Message = "Claim based authentication",
+                                Created = now
+                            }.InsertAsync();
+
                             visitor.ApplicationUserID = _Console.CurrentApplicationUser.ID;
+                            _Console.CurrentApplicationUser.LastLoggedVisit = now;
+                            await _Console.CurrentApplicationUser.SaveAsync();
+                        }
                         new VisitorManager(context).Save(visitor, true);
 
                         if (_Context.Request.Path.Value.EndsWith("/sso/negotiate", StringComparison.CurrentCultureIgnoreCase))

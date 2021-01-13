@@ -6,7 +6,7 @@
   "compilationOptions": {},
   "targets": {
     ".NETCoreApp,Version=v3.1": {
-      "Sushi.Mediakiwi.Headless/7.14.14": {
+      "Sushi.Mediakiwi.Headless/7.15.3": {
         "dependencies": {
           "Microsoft.AspNetCore.Authentication": "2.2.0"
         },
@@ -360,7 +360,7 @@
     }
   },
   "libraries": {
-    "Sushi.Mediakiwi.Headless/7.14.14": {
+    "Sushi.Mediakiwi.Headless/7.15.3": {
       "type": "project",
       "serviceable": false,
       "sha512": ""

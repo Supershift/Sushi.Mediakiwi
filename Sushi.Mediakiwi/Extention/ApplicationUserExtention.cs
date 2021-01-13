@@ -259,14 +259,31 @@ public static class ApplicationUserExtention
 
                 if (auth.Encrypt(password) == inUser.Password)
                 {
-                    inUser.LastLoggedVisit = Sushi.Mediakiwi.Common.DatabaseDateTime;
+                    inUser.ResetKey = null;
+                    inUser.LastLoggedVisit = DateTime.UtcNow;
                     inUser.Save(context, shouldRememberMe);
+
+                    new AuditTrail()
+                    {
+                        Action = ActionType.Login,
+                        Type = ItemType.Undefined,
+                        ItemID = inUser.ID,
+                        Created = inUser.LastLoggedVisit.Value
+                    }.Insert();
                 }
                 else
                 {
                     inUser = new ApplicationUser();
                     //  Insert a notification
-                    Notification.InsertOne(Notification.Tags.InternalWimError, string.Format("Someone tried to login in with wrong credentials (username: {0})", username));
+                    //Notification.InsertOne(Notification.Tags.InternalWimError, string.Format("Someone tried to login in with wrong credentials (username: {0})", username));
+
+                    new AuditTrail()
+                    {
+                        Action = ActionType.LoginAttempt,
+                        Type = ItemType.Undefined,
+                        Message = $"(username: {username})"
+                    }.Insert();
+
                 }
             }
         }
@@ -275,19 +292,33 @@ public static class ApplicationUserExtention
             string candidate = Utility.HashStringByMD5(string.Concat(inUser.Name, password));
             if (candidate.Equals(inUser.Password))
             {
-                inUser.LastLoggedVisit = Sushi.Mediakiwi.Common.DatabaseDateTime;
+                inUser.ResetKey = null;
+                inUser.LastLoggedVisit = DateTime.UtcNow;
 
                 var visitor = new VisitorManager(context).Select();
-                visitor.LastLoggedApplicationUserVisit = Sushi.Mediakiwi.Common.DatabaseDateTime;
+                visitor.LastLoggedApplicationUserVisit = DateTime.UtcNow;
                 visitor.Save();
 
                 inUser.Save(context, shouldRememberMe);
+
+                new AuditTrail()
+                {
+                    Action = ActionType.Login,
+                    Type = ItemType.Undefined,
+                    ItemID = inUser.ID,
+                    Created = inUser.LastLoggedVisit.Value
+                }.Insert();
             }
             else
             {
                 inUser = new ApplicationUser();
                 //  Insert a notification
-                Notification.InsertOne(Notification.Tags.InternalWimError, string.Format("Someone tried to login in with wrong credentials (username: {0})", username));
+                new AuditTrail()
+                {
+                    Action = ActionType.LoginAttempt,
+                    Type = ItemType.Undefined,
+                    Message = $"(username: {username})"
+                }.Insert();
             }
         }
         return inUser;

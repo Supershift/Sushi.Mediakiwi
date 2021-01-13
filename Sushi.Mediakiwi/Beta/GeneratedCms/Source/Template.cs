@@ -14,214 +14,6 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
     /// </summary>
     class Template
     {
-        /// <summary>
-        /// Dashboard2s the specified container.
-        /// </summary>
-        /// <param name="container">The container.</param>
-        /// <param name="header">The header.</param>
-        /// <param name="top">The top.</param>
-        /// <param name="footer">The footer.</param>
-        /// <param name="intro">The intro.</param>
-        /// <param name="target1">The target1.</param>
-        /// <param name="target2">The target2.</param>
-        /// <returns></returns>
-        internal static string Dashboard2(Console container, string header, string top, string footer, string intro, string target1, string target2)
-        {
-            return string.Format(@"<!DOCTYPE html PUBLIC ""-//W3C//DTD XHTML 1.1//EN"" ""http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd"">
-<html xmlns=""http://www.w3.org/1999/xhtml"" xml:lang=""en"">
-	<head>
-		<title>Dashboard</title>
-		{1}
-	</head>
-	<body class=""homePageDouble"">
-		<form method=""post"" action=""{4}"" enctype=""multipart/form-data"">
-        <div id=""canvas"">{2}
-            <div id=""banner"" class=""short""></div>
-			<div id=""content"">
-				<div id=""leftWideColumn"">
-					<div class=""centerContent"">{8}{5}
-					</div>
-				</div>
-				<div id=""righWideColumn"">
-					<div class=""centerContent"">{6}
-					</div>
-				</div>
-				<div class=""clear""></div>
-			</div>
-		</div>{3}
-        <form>
-		<script type=""text/javascript"" src=""{0}/scripts/inline.js""></script>
-	</body>
-</html>
-"
-                , container.WimRepository //0
-                , header //1
-                , top //2
-                , footer //3
-                , container.GetSafeUrl() //4
-                , target1 //5
-                , target2 //6 
-                , null //7
-                , intro //8
-                );
-        }
-
-
-
-        /// <summary>
-        /// Dashboards the specified container.
-        /// </summary>
-        /// <param name="container">The container.</param>
-        /// <param name="header">The header.</param>
-        /// <param name="top">The top.</param>
-        /// <param name="footer">The footer.</param>
-        /// <param name="target1">The target1.</param>
-        /// <param name="target2">The target2.</param>
-        /// <param name="target3">The target3.</param>
-        /// <returns></returns>
-        internal static string Dashboard3(Console container, string header, string top, string footer, string target1, string target2, string target3)
-        {
-//            <!DOCTYPE html PUBLIC ""-//W3C//DTD XHTML 1.1//EN"" ""http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd"">
-//<html xmlns=""http://www.w3.org/1999/xhtml"" xml:lang=""en"">
-//    <head>
-//        <title>Dashboard</title>
-//        {1}
-//    </head>
-//    <body class=""homePage{9}"">
-//        <form method=""post"" action=""{4}"" enctype=""multipart/form-data"">
-//        <form>
-//        <script type=""text/javascript"" src=""{0}/scripts/inline.js""></script>
-//    </body>
-//</html>
-
-
-            return string.Format(@"
-        <div id=""canvas"">{2}
-			<div id=""banner"" class=""short""></div>
-			<div id=""content"">
-				<div id=""leftColumn"" class=""contentPage"">{5}
-				</div>
-				<div id=""centerColumn"">
-					<div id=""centerContent"">{6}
-					</div>
-				</div>
-				<div id=""rightColumn"">{7}
-				</div>
-				<div class=""clear""></div>
-			</div>
-		</div>{3}
-"
-                , container.WimRepository //0
-                , header // 1
-                , top // 2
-                , footer // 3
-                , container.GetSafeUrl()// 4
-                , target1 // 5
-                , target2 // 6
-                , target3 // 7
-                , null // 8
-                , " portalPage hgt_2"//Sushi.Mediakiwi.Data.Common.HasWideInterface ? " reallyWide" : null // 9
-                );
-        }
-
-        /// <summary>
-        /// Opens the in frame.
-        /// </summary>
-        /// <param name="container">The container.</param>
-        /// <param name="header">The header.</param>
-        /// <param name="filters">The filters.</param>
-        /// <param name="breadcrumbs">The breadcrumbs.</param>
-        /// <param name="browsing">The browsing.</param>
-        /// <param name="type">The type.</param>
-        /// <param name="isThumbnailView">if set to <c>true</c> [is thumbnail view].</param>
-        /// <returns></returns>
-        internal static string OpenInFrame(Console container, string header, string filters, string breadcrumbs, string browsing, int type, bool isThumbnailView, string footer)
-        {
-            string tabTag = string.Empty;// GetTabularTags(container, null, 0, false);
-            
-
-            return string.Format(@"{9}{10}
-		{6}{3}
-        <div class=""{7}{8}"">
-{2}
-		</div>{11}
-"
-                , container.WimRepository
-                , header
-                , browsing
-                , filters
-                , container.GetSafeUrl()
-                , container.CurrentList.Name
-                , container.CurrentList.Description == null ? string.Empty : (container.CurrentList.Description.StartsWith("<p>", StringComparison.OrdinalIgnoreCase) ? container.CurrentList.Description : string.Concat("<p>", container.CurrentList.Description, "</p>"))
-                , type == 1 ? "textOptionSelect" : "textOptionSelect multi_yes"
-                , isThumbnailView ? "  type_li" : string.Empty
-                , breadcrumbs
-                , tabTag
-                , footer
-
-                );
-        }
-
-        /// <summary>
-        /// Folders the browsing.
-        /// </summary>
-        /// <param name="container">The container.</param>
-        /// <param name="header">The header.</param>
-        /// <param name="top">The top.</param>
-        /// <param name="footer">The footer.</param>
-        /// <param name="leftnavigation">The leftnavigation.</param>
-        /// <param name="breadcrumb">The breadcrumb.</param>
-        /// <param name="filters">The filters.</param>
-        /// <param name="browsing">The browsing.</param>
-        /// <param name="title">The title.</param>
-        /// <param name="showServiceUrl">if set to <c>true</c> [show service URL].</param>
-        /// <returns></returns>
-        internal static string FolderBrowsing(UI.Monitor monitor, Console container, string header, string top, string footer, string leftnavigation, string breadcrumb, string filters, string browsing, string title, bool showServiceUrl)
-        {
-            return FolderBrowsing(monitor, container, header, top, footer, leftnavigation, breadcrumb, filters, browsing, title, showServiceUrl, 0);
-        }
-
-        /// <summary>
-        /// Folders the browsing.
-        /// </summary>
-        /// <param name="container">The container.</param>
-        /// <param name="header">The header.</param>
-        /// <param name="top">The top.</param>
-        /// <param name="footer">The footer.</param>
-        /// <param name="leftnavigation">The leftnavigation.</param>
-        /// <param name="breadcrumb">The breadcrumb.</param>
-        /// <param name="filters">The filters.</param>
-        /// <param name="browsing">The browsing.</param>
-        /// <param name="title">The title.</param>
-        /// <param name="showServiceUrl">if set to <c>true</c> [show service URL].</param>
-        /// <param name="selectedTab">The selected tab.</param>
-        /// <returns></returns>
-        internal static string FolderBrowsing(UI.Monitor monitor, Console container, string header, string top, string footer, string leftnavigation, string breadcrumb, string filters, string browsing, string title, bool showServiceUrl, int selectedTab)
-        {
-            return FolderBrowsing(monitor, container, header, top, footer, leftnavigation, breadcrumb, null, filters, browsing, title, showServiceUrl, selectedTab, null);
-        }
-
-        /// <summary>
-        /// Folders the browsing.
-        /// </summary>
-        /// <param name="monitor">The monitor.</param>
-        /// <param name="container">The container.</param>
-        /// <param name="header">The header.</param>
-        /// <param name="top">The top.</param>
-        /// <param name="footer">The footer.</param>
-        /// <param name="leftnavigation">The leftnavigation.</param>
-        /// <param name="breadcrumb">The breadcrumb.</param>
-        /// <param name="filters">The filters.</param>
-        /// <param name="browsing">The browsing.</param>
-        /// <param name="title">The title.</param>
-        /// <param name="showServiceUrl">if set to <c>true</c> [show service URL].</param>
-        /// <param name="exportUrl">The export URL.</param>
-        /// <returns></returns>
-        internal static string FolderBrowsing(Sushi.Mediakiwi.UI.Monitor monitor, Console container, string header, string top, string footer, string leftnavigation, string breadcrumb, string filters, string browsing, string title, bool showServiceUrl, string exportUrl)
-        {
-            return FolderBrowsing(monitor, container, header, top, footer, leftnavigation, breadcrumb, null, filters, browsing, title, showServiceUrl, 0, exportUrl);
-        }
-
         static void ApplyTabularUrl(Console container, Sushi.Mediakiwi.Framework.WimComponentListRoot.Tabular t, int levelEntry)
         {
             ApplyTabularUrl(container, t, levelEntry, null);
@@ -232,8 +24,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
             string addition = string.Empty;
             if (container.CurrentListInstance.wim._QueryStringRecording != null)
             {
-                container.CurrentListInstance.wim._QueryStringRecording.ForEach(x =>
-                {
+                container.CurrentListInstance.wim._QueryStringRecording.ForEach(x => {
                     if (!string.IsNullOrEmpty(container.Request.Query[x]))
                         addition += string.Format("&{0}={1}", x, container.Request.Query[x]);
                 });
@@ -259,7 +50,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
 
             int folderID = Utility.ConvertToInt(container.Request.Query["folder"]);
             string folderInfo = null;
-            if (folderID > 0) 
+            if (folderID > 0)
                 folderInfo = string.Concat("&folder=", folderID);
 
             int baseID = Utility.ConvertToInt(container.Request.Query["base"]);
@@ -290,14 +81,14 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
 
 
         }
-       
+
         internal static string GetTabularTagNewDesign(Console container, string title, int selectedTab, bool showServiceUrl)
         {
             title = container.CurrentList.Name;
 
             if (container.CurrentListInstance.wim.Page.HideTabs)
             {
-                return null; 
+                return null;
             }
 
             string tabTag = null;
@@ -308,7 +99,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                 #region PAGE
                 if (container.ItemType == RequestItemType.Page)
                 {
-                    
+
                     if (container.CurrentPage.Template.GetPageSections().Length > 0)
                     {
                         //var legacyContentTab = container.CurrentPage.Template.Data[string.Format("TAB.LCT")].Value;
@@ -603,7 +394,6 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
             #endregion
             return tabTag;
         }
-        
 
         /// <summary>
         /// Gets the tabular tags.
@@ -633,16 +423,16 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
 
                         var selected = container.Request.Query["tab"];
                         bool isSelected = string.IsNullOrEmpty(selected);
-                        
+
                         foreach (var section in sections)
                         {
                             if (selected == section)
                                 isSelected = true;
 
                             build.AppendFormat(string.Format(@" <li><a href=""{0}""{2}><span>{1}</span></a></li>"
-                                , string.Concat(container.WimPagePath, "?page=", container.Item, "&tab=", section) 
+                                , string.Concat(container.WimPagePath, "?page=", container.Item, "&tab=", section)
                                 , container.CurrentPage.Template.Data[string.Format("T[{0}]", section)].Value
-                                , isSelected ? " class=\"active\"" : null 
+                                , isSelected ? " class=\"active\"" : null
                             ));
 
                             isSelected = false;
@@ -746,7 +536,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                         int groupElementId = Utility.ConvertToInt(container.Request.Query["groupitem"]);
                         if (groupId != container.CurrentList.ID)
                         {
-                           
+
                             if (container.CurrentList.Type == Sushi.Mediakiwi.Data.ComponentListType.ComponentListProperties)
                             {
                                 tabularList = container.CurrentListInstance.wim.m_Collection;
@@ -791,7 +581,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                             ApplyTabularUrl(container, t, 1);
 
                             tabulars += string.Format(@"<li><a href=""{1}""{2}><span>{0}</span></a></li>"
-                                , t.TitleValue 
+                                , t.TitleValue
                                 , t.Url
                                 , t.Selected ? " class=\"active\"" : null
                                 );
@@ -869,7 +659,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                         currentListId = list.ID;
                     }
 
-                    
+
 
                     if (isSingleItemList || master.CurrentListInstance.wim.HideListSearchTabular)
                     {
@@ -915,366 +705,6 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
             }
             #endregion
             return tabTag;
-        }
-
-        /// <summary>
-        /// Folders the browsing.
-        /// </summary>
-        /// <param name="monitor">The monitor.</param>
-        /// <param name="container">The container.</param>
-        /// <param name="header">The header.</param>
-        /// <param name="top">The top.</param>
-        /// <param name="footer">The footer.</param>
-        /// <param name="leftnavigation">The leftnavigation.</param>
-        /// <param name="breadcrumb">The breadcrumb.</param>
-        /// <param name="bottomnavigation">The bottomnavigation.</param>
-        /// <param name="filters">The filters.</param>
-        /// <param name="browsing">The browsing.</param>
-        /// <param name="title">The title.</param>
-        /// <param name="showServiceUrl">if set to <c>true</c> [show service URL].</param>
-        /// <param name="selectedTab">The selected tab.</param>
-        /// <param name="exportUrl">The export URL.</param>
-        /// <returns></returns>
-        internal static string FolderBrowsing(UI.Monitor monitor, Console container, string header, string top, string footer, string leftnavigation, string breadcrumb, string bottomnavigation, string filters, string browsing, string title, bool showServiceUrl, int selectedTab, string exportUrl)
-        {
-            string description =
-                container.CurrentList.Description == null 
-                ? string.Empty 
-                : (container.CurrentList.Description.StartsWith("<p>", StringComparison.OrdinalIgnoreCase) 
-                    ? container.CurrentList.Description 
-                    : string.Concat("<p>", container.CurrentList.Description, "</p>"));
-
-            string titleLine = "";
-            if (container.ItemType == RequestItemType.Page && container.Item.HasValue)
-            {
-                if (container.ItemType == RequestItemType.Page)
-                {
-                    if (container.CurrentApplicationUser.IsDeveloper)
-                    {
-                        var templateList = Data.ComponentList.SelectOne(Data.ComponentListType.PageTemplates);
-                        Data.PageTemplate template = container.CurrentPage.Template;
-                        title = string.Format("<a href=\"?list={2}&item={3}\" title=\"{1}\" style=\"color: #FFF\">{0}</a>", title, template.Location, templateList.ID, template.ID);
-                    }
-                }
-
-                titleLine = string.Format(@"
-					<ul id=""optionNavigation"">
-						<li class=""title left""><h1>{0}</h1></li>
-					</ul>", title);
-                description = null;
-            }
-
-            string tabTag = GetTabularTags(container, title, selectedTab, showServiceUrl);
-
-            string file = null;
-
-            bool containsSublist = false;
-            if (monitor.GlobalWimControlBuilder != null)
-            {
-                foreach (var lit in monitor.GlobalWimControlBuilder.FindObject("<bottombuttonbar />"))
-                {
-                    lit.Text = lit.Text.Replace("<bottombuttonbar />", bottomnavigation);
-                    containsSublist = true;
-                }
-            }
-
-            string downloadUrl = null;
-            if (!container.CurrentListInstance.wim.CurrentVisitor.Data["wim_export"].IsNull)
-            {
-                string[] split = container.CurrentListInstance.wim.CurrentVisitor.Data["wim_export"].Value.Split('.');
-                downloadUrl = string.Format(@"<a href=""{0}"" class=""export"">Click here to download file ({1})</a>",
-                    container.AddApplicationPath(string.Concat("/doc.ashx?", container.CurrentListInstance.wim.CurrentVisitor.Data["wim_export"].Value))
-                    , split[split.Length -1].ToUpper()
-                    );
-
-                container.CurrentListInstance.wim.CurrentVisitor.Data.Apply("wim_export", null);
-            }
-
-            string textData = null;
-            if (container.CurrentListInstance.wim.XHtmlDataTop != null)
-            {
-                string container2;
-                //if (container.CurrentListInstance.wim.Page.HideMenuBar)
-                //    container2 = "<div id=\"centerContent\" style=\"margin-top:10px;\">";
-                //else
-                container2 = "<div id=\"centerContent\">";
-                textData = string.Format("{0}{1}</div>", container2, container.CurrentListInstance.wim.XHtmlDataTop.ToString());
-
-                string grid = null;
-                if (!container.CurrentListInstance.wim.Page.HideTabbedGrid)
-                {
-                    grid = string.Format(@"
-                        {1}{0}
-                        <fieldset class=""axcontainer"" id=""main"">
-                            <div id=""mainContent"">{2}
-                            {3}{4}{5}{6}
-                            </div>
-                        </fieldset>"
-                        , container.CurrentListInstance.wim.Page.HideTabbedGrid ? null : tabTag //0
-                        , titleLine //1
-                        , description //2
-                        , string.IsNullOrEmpty(filters) ? string.Empty : string.Concat("<fieldset>", filters, "</fieldset>") //3
-                        , file == null ? null : string.Format("<img src=\"{0}\" />", file) //4
-                        , containsSublist ? browsing.Replace("<bottombuttonbar />", bottomnavigation) : browsing //5
-                        , containsSublist ? null : bottomnavigation //6
-                        );
-                }
-                string service = null;
-                if (container.CurrentListInstance.wim.XHtmlDataService != null)
-                {
-                    service = string.Format(@"<div class=""updates""><h2>{1}</h2></div><ul class=""links"">{0}</ul>",
-                        container.CurrentListInstance.wim.XHtmlDataService, container.CurrentListInstance.wim.XHtmlDataServiceTitle
-                        );
-                }
-                string buttons = null;
-                if (container.CurrentListInstance.wim.XHtmlDataButtons != null)
-                {
-                    buttons = string.Format(@"<div class=""updates""><h2>{1}</h2></div><ul class=""links"">{0}</ul>",
-                        container.CurrentListInstance.wim.XHtmlDataButtons, "Actions"
-                        );
-                }
-
-
-                return string.Format(@"<input type=""hidden"" id=""repository"" value=""{13}"">
-<input type=""hidden"" id=""no_link_sel"" value=""{21}"">
-        <div id=""canvas"">{2}
-			<div id=""banner"">
-				<div id=""bannerContent"">
-					&nbsp;
-				</div>
-			</div>
-			<div id=""content""{20}>{4}{19}
-                <div id=""centerColumn"">
-                    {5}{22}{23}                   
-				</div>
-                <div id=""rightColumn"">
-					{24}{25}
-                </div>
-
-				<div class=""clear""></div>
-			</div>
-		</div>{3}
-"
-                    , header //0
-                    , container.WimRepository //1
-                    , top //2
-                    , footer //3
-                    , leftnavigation //4
-                    , container.CurrentListInstance.wim.Page.HideMenuBar ? null : breadcrumb //5
-                    , containsSublist ? browsing.Replace("<bottombuttonbar />", bottomnavigation) : browsing //6
-                    , title //7
-                    , container.GetSafeUrl() //8
-                    , string.IsNullOrEmpty(filters) ? string.Empty : string.Concat("<fieldset>", filters, "</fieldset>") //9
-                    , description //10
-                    , container.CurrentListInstance.wim.CurrentFolder.Name //11
-                    , string.IsNullOrEmpty(exportUrl) ? null : string.Format("<iframe src=\"{0}\" class=\"hiddenx\" width=\"500\" height=\"500\">", string.IsNullOrEmpty(exportUrl) ? "about:blank" : exportUrl) //12
-                    , container.BaseRepository //13
-                    , container.CurrentListInstance.wim.Page.HideTabs ? null : tabTag //14
-                    , titleLine //15
-                    , Sushi.Mediakiwi.Data.Common.HasWideInterface ? " reallyWide reallyReallyWide" : null // 16
-                    , file == null ? null : string.Format("<img src=\"{0}\" />", file) // 17
-                    , containsSublist ? null : bottomnavigation //18
-                    , downloadUrl // 19
-                    , container.CurrentListInstance.wim.ShowInFullWidthMode ? @" class=""fullContent""" : null //20
-                    , Labels.ResourceManager.GetString("no_link_selected", new CultureInfo(container.CurrentApplicationUser.LanguageCulture)) //21
-                    , textData //22
-                    , grid // 23
-                    , service //24
-                    , buttons // 25
-                    );
-
-            }
-
-            bool showNew = true;
-
-            return string.Format(@"<input type=""hidden"" id=""repository"" value=""{13}"">
-<input type=""hidden"" id=""no_link_sel"" value=""{21}"">
-        <div id=""canvas"">{2}
-			<div id=""banner"">
-				<div id=""bannerContent"">
-					&nbsp;
-				</div>
-			</div>
-			<div id=""content""{20}>{4}{5}{19}
-				<div id=""mainColumn""{23}> {15}{14}
-                    <fieldset class=""axcontainer"" id=""main"">
-                        <div id=""mainContent"">{10}{24}
-                        {9}{17}{6}{18}{22}
-                        </div>
-                    </fieldset>
-				</div>
-				<div class=""clear""></div>
-			</div>
-		</div>{3}
-"
-                , header //0
-                , container.WimRepository //1
-                , top //2
-                , footer //3
-                , leftnavigation //4
-                , container.CurrentListInstance.wim.Page.HideMenuBar ? null : breadcrumb //5
-                , containsSublist ? browsing.Replace("<bottombuttonbar />", bottomnavigation) : browsing //6
-                , title //7
-                , container.GetSafeUrl() //8
-                , string.IsNullOrEmpty(filters) ? string.Empty : string.Concat("<fieldset>", filters, "</fieldset>") //9
-                , description //10
-                , container.CurrentListInstance.wim.CurrentFolder.Name //11
-                , string.IsNullOrEmpty(exportUrl) ? null : string.Format("<iframe src=\"{0}\" class=\"hiddenx\" width=\"500\" height=\"500\">", string.IsNullOrEmpty(exportUrl) ? "about:blank" : exportUrl) //12
-                , container.BaseRepository //13
-                , container.CurrentListInstance.wim.Page.HideTabs ? "<ul id=\"tabNavigation\" class=\"empty\"></ul>" : tabTag //14
-                , titleLine //15
-                , Sushi.Mediakiwi.Data.Common.HasWideInterface ? " reallyWide reallyReallyWide" : null // 16
-                , file == null ? null : string.Format("<img src=\"{0}\" />", file) // 17
-                , containsSublist ? null : bottomnavigation //18
-                , downloadUrl // 19
-                , @" class=""fullContent""" //20
-                , Labels.ResourceManager.GetString("no_link_selected", new CultureInfo(container.CurrentApplicationUser.LanguageCulture)) //21
-                , container.CurrentListInstance.wim.XHtmlDataBottom == null ? null : container.CurrentListInstance.wim.XHtmlDataBottom.ToString() // 22
-                , !showNew
-                    ? null 
-                    : container.CurrentList.Type != Data.ComponentListType.Browsing 
-                        ? null 
-                        : !container.CurrentApplicationUser.ShowDetailView
-                            ? " class=\"appview\"" 
-                            : null // 23
-
-                    , container.CurrentListInstance.wim.Page.TMP_ReportingSection // 24
-                );
-        }
-
-        /// <summary>
-        /// Logins the specified container.
-        /// </summary>
-        /// <param name="container">The container.</param>
-        /// <param name="header">The header.</param>
-        /// <returns></returns>
-        internal static string Login(Console container, string header)
-        {
-            string username = container.Request.Form["frmUsername"];
-            string username2 = username;
-
-            if (string.IsNullOrEmpty(username) && !string.IsNullOrEmpty(container.Request.Query["u"]))
-            {
-                using (Utilities.Authentication auth = new Utilities.Authentication())
-                {
-                    auth.Password = "urlinfo";
-                    //  The replacement is a patch
-                    username2 = auth.Decrypt(container.Request.Query["u"]);
-                }
-            }
-
-
-            string password = container.Request.Form["frmPassword"];
-            bool rememberMe = !string.IsNullOrEmpty(container.Request.Form["frmRemember"]);
-            string emailaddress = container.Request.Form["frmEmailAddress"];
-
-            if (!string.IsNullOrEmpty(emailaddress))
-            {
-                var appUser = Data.ApplicationUser.Select(emailaddress);
-
-                if (!appUser.IsNewInstance)
-                {
-                    string urlAddition = null;
-                    using (Utilities.Authentication auth = new Utilities.Authentication())
-                    {
-                        auth.Password = "urlinfo";
-                        urlAddition = string.Concat("?u=", WebUtility.UrlEncode(auth.Encrypt(appUser.Name)));
-                    }
-
-                    Utilities.Mail.Send(new System.Net.Mail.MailAddress(appUser.Email, appUser.Displayname)
-                        , "Forgotten password"
-                        , string.Format("You have requested your password through the Forgotten password page. Your password is: <b>{0}</b>", appUser.Password)
-                        , string.Concat(container.AddApplicationPath(CommonConfiguration.PORTAL_PATH, true), urlAddition));
-
-                    //container.CurrentEnvironment.LoginBody = string.Concat(container.CurrentEnvironment.LoginBody, "<br/><br/><b>Your credentials have been send to the applied e-mail address.</b>");
-
-                    username = null;
-                    password = null;
-                    emailaddress = null;
-                }
-            }
-
-            container.CurrentApplicationUser = Data.ApplicationUserLogic.Apply(username, password, rememberMe, container.Context);
-            if (!container.CurrentApplicationUser.IsNewInstance)
-            {
-                container.CurrentVisitor.ApplicationUserID = container.CurrentApplicationUser.ID;
-                container.SaveVisit();
-
-                //Sushi.Mediakiwi.Data.AuditTrail.Insert(Data.AuditType.Action, Data.AuditAction.Login, null, container.CurrentApplicationUser.ID, string.Format("{0} ({1})", container.CurrentApplicationUser.Displayname, container.CurrentApplicationUser.Email)); 
-                return null;
-            }
-
-            if (string.IsNullOrEmpty(username2) && container.Request.HasFormContentType && container.Request.Form.Count == 0)
-            {
-                if (container.CurrentVisitor.ApplicationUserID.HasValue)
-                {
-                    username2 = Data.ApplicationUser.SelectOne(container.CurrentVisitor.ApplicationUserID.Value).Name;
-                }
-            }
-            return $@"
-		<div id=""loginCanvas"">
-			<div id=""loginLogo"">
-				<a href=""?1""><img src=""{container.WimRepository}/logo.png"" width=""243"" height=""60"" /></a>
-			</div>
-			<div id=""loginContent"">
-				<div id=""loginVersion"">
-					Version {CommonConfiguration.VersionFull}
-				</div>
-				<ul id=""loginTabs""></ul>
-				<div id=""loginForms"">
-					<div id=""tab0"" class=""contentTab"">
-						<h1> </h1>
-						<p> </p>
-						<fieldset>
-							<table class=""form"">
-								<tfoot>
-									<tr>
-										<th>* Required fields</th>
-										<td>
-											<div class=""remember"">
-                                                <input type=""checkbox"" tabindex=""3"" class=""checkbox"" id=""frmRemember"" name=""frmRemember""{(rememberMe ? " checked=\"checked\"" : string.Empty)} value=""1"" />
-												<label for=""frmRemember"">Remember my details</label>
-											</div>
-											<button class=""postBack"" tabindex=""4"">Login</button>
-										</td>
-									</tr>
-								</tfoot>
-								<tbody>
-									<tr>
-										<th><label for=""frmUsername"">Username:<em>*</em></label></th>
-										<td>
-											<input type=""text"" class=""text{(string.IsNullOrEmpty(username) ? string.Empty : " error")}"" tabindex=""1"" name=""frmUsername"" value=""{username2}"" />
-										</td>
-									</tr>
-									<tr>
-										<th><label for=""frmPassword"">Password:<em>*</em></label></th>
-										<td>
-											<input type=""password"" class=""text{(string.IsNullOrEmpty(username) ? string.Empty : " error")}"" tabindex=""2"" name=""frmPassword""/>
-										</td>
-									</tr>
-								</tbody>
-							</table>
-						</fieldset>
-					</div>
-				</div>
-			</div>
-		</div>";
-                //, container.WimRepository //0
-               // , header //1
-               // , container.GetSafeUrl() //2
-                //, username2 //3
-                //, emailaddress //4
-               // , (rememberMe ? " checked=\"checked\"" : string.Empty) //5
-                //, string.IsNullOrEmpty(username) ? string.Empty : " error" //6
-                //, string.IsNullOrEmpty(emailaddress) ? string.Empty : " error" //7
-                //, CommonConfiguration.VersionFull //8
-                //, null //9
-                //, null //10
-                //, null //11
-                //, null //12
-                //, string.IsNullOrEmpty(container.CurrentApplicationUser.GetSkin()) ? null : string.Concat(container.CurrentApplicationUser.GetSkin(), "/") //13
-                //);
-
         }
     }
 }

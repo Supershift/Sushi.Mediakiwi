@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <Version>7.15.3</Version>
+    <Version>7.15.4</Version>
     <Product>Mediakiwi</Product>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <Company>Supershift</Company>
@@ -261,7 +261,6 @@
     <Compile Include="Framework\EventArguments\ComponentActionEventArgs.cs" />
     <Compile Include="Framework\EventArguments\ComponentListEventArgs.cs" />
     <Compile Include="Framework\EventArguments\ComponentTemplateEventArgs.cs" />
-    <Compile Include="Framework\Functions\AuditTrail.cs" />
     <Compile Include="Framework\IIdentity.cs" />
     <Compile Include="Framework\IInstallable.cs" />
     <Compile Include="Framework\iMappedUrlCreator.cs" />

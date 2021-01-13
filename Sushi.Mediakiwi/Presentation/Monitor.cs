@@ -1280,15 +1280,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation
                     }
 
                     container.CurrentApplicationUser.Store(container.Context, password, rememberMe);
-
-                    container.CurrentApplicationUser.ResetKey = null;
-                    container.CurrentApplicationUser.LastLoggedVisit = Common.DatabaseDateTime;
-                    container.CurrentApplicationUser.Save();
-
                     container.CurrentVisitor.ApplicationUserID = container.CurrentApplicationUser.ID;
-                    //container.CurrentVisitor.Save();
-                    //container.SaveVisit();
-                    //container.Response.Redirect(container.PortalUrl);
                     return true;
                 }
             }

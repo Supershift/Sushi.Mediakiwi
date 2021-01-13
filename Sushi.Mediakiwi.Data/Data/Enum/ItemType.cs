@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Sushi.Mediakiwi.Framework2.Functions.Auditing
+namespace Sushi.Mediakiwi.Data
 {
     /// <summary>
     /// 
     /// </summary>
-    public enum ActionType
+    public enum ItemType
     {
         /// <summary>
         /// 
@@ -16,32 +16,22 @@ namespace Sushi.Mediakiwi.Framework2.Functions.Auditing
         /// <summary>
         /// 
         /// </summary>
-        Login = 1,
+        Page = 1,
         /// <summary>
         /// 
         /// </summary>
-        Logout = 2,
+        List = 2,
         /// <summary>
         /// 
         /// </summary>
-        Add = 3,
+        Asset = 3,
         /// <summary>
         /// 
         /// </summary>
-        Update = 4,
+        Folder = 4,
         /// <summary>
         /// 
         /// </summary>
-        Remove = 5,
-        /// <summary>
-        /// 
-        /// </summary>
-        Preview = 6,
-        Publish = 7,
-        TakeOffline = 8,
-        Localised = 9,
-        Inherited = 10,
-        PageModuleExecution = 11,
-
+        Gallery = 5
     }
 }

@@ -10,7 +10,7 @@
                 date.setTime(date.getTime() + (30 * 1000));
                 var expires = '; expires=' + date.toUTCString();
                 document.cookie = '.authtoken=' + (token || '') + expires + '; path=/';
-                window.location.replace(url);
+                window.location.replace(uri[0]);
             }
         }
     }
