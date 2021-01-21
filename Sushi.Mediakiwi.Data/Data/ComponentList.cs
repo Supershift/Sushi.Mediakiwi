@@ -295,7 +295,7 @@ namespace Sushi.Mediakiwi.Data
         /// </summary>
         public virtual bool Option_CanSaveAndAddNew
         {
-            get { return this.Data["wim_01"].ParseBoolean(true); }
+            get { return this.Data["wim_01"].ParseBoolean(); }
             set { this.Data.ApplyObject("wim_01", value); }
         }
 
@@ -304,7 +304,7 @@ namespace Sushi.Mediakiwi.Data
         /// </summary>
         public virtual bool Option_HasExportXLS
         {
-            get { return this.Data["wim_hasExport_XLS"].ParseBoolean(true); }
+            get { return this.Data["wim_hasExport_XLS"].ParseBoolean(false); }
             set { this.Data.ApplyObject("wim_hasExport_XLS", value); }
         }
 
@@ -313,7 +313,7 @@ namespace Sushi.Mediakiwi.Data
         /// </summary>
         public virtual bool Option_HasExportColumnTitlesXLS
         {
-            get { return this.Data["wim_ExportCol_XLS"].ParseBoolean(true); }
+            get { return this.Data["wim_ExportCol_XLS"].ParseBoolean(false); }
             set { this.Data.ApplyObject("wim_ExportCol_XLS", value); }
         }
 
@@ -322,7 +322,7 @@ namespace Sushi.Mediakiwi.Data
         /// </summary>
         public virtual bool Option_OpenInEditMode
         {
-            get { return this.Data["wim_OpenInEdit"].ParseBoolean(); }
+            get { return this.Data["wim_OpenInEdit"].ParseBoolean(true); }
             set { this.Data.ApplyObject("wim_OpenInEdit", value); }
         }
 
@@ -340,7 +340,7 @@ namespace Sushi.Mediakiwi.Data
         /// </summary>
         public virtual bool Option_HasShowAll
         {
-            get { return this.Data["wim_hasShowAll"].ParseBoolean(true); }
+            get { return this.Data["wim_hasShowAll"].ParseBoolean(false); }
             set { this.Data.ApplyObject("wim_hasShowAll", value); }
         }
 
@@ -358,7 +358,7 @@ namespace Sushi.Mediakiwi.Data
         /// </summary>
         public virtual bool Option_AfterSaveListView
         {
-            get { return this.Data["wim_AfterSaveListView"].ParseBoolean(); }
+            get { return this.Data["wim_AfterSaveListView"].ParseBoolean(true); }
             set { this.Data.ApplyObject("wim_AfterSaveListView", value); }
         }
 

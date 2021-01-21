@@ -36,6 +36,55 @@ namespace Sushi.Mediakiwi.Framework
             _element.FieldName = fieldName;
             return new SublistSettings(_element);
         }
+        public SublistSettings OnlyOneItem(bool canContainOneItem = true)
+        {
+            _element.CanContainOneItem = canContainOneItem;
+            return new SublistSettings(_element);
+        }
+        public SublistSettings ScrollBar(bool hasScrollBar = true)
+        {
+            if (_element.LayerSpecification == null)
+            {
+                _element.LayerSpecification = new Grid.LayerSpecification();
+            }
+
+            _element.LayerSpecification.HasScrolling = hasScrollBar;
+            return new SublistSettings(_element);
+        }
+        public SublistSettings Height(int height, bool isPercentage = false)
+        {
+            if (_element.LayerSpecification == null)
+            {
+                _element.LayerSpecification = new Grid.LayerSpecification();
+            }
+
+            _element.LayerSpecification.Height = height;
+            _element.LayerSpecification.IsHeightPercentage = isPercentage;
+
+            return new SublistSettings(_element);
+        }
+        public SublistSettings Width(int width, bool isPercentage = false)
+        {
+            if (_element.LayerSpecification == null)
+            {
+                _element.LayerSpecification = new Grid.LayerSpecification();
+            }
+
+            _element.LayerSpecification.Width = width;
+            _element.LayerSpecification.IsWidthPercentage = isPercentage;
+
+            return new SublistSettings(_element);
+        }
+        public SublistSettings Title(string title)
+        {
+            if (_element.LayerSpecification == null)
+            {
+                _element.LayerSpecification = new Grid.LayerSpecification();
+            }
+
+            _element.LayerSpecification.Title = title;
+            return new SublistSettings(_element);
+        }
     }
     public class ButtonSettings
     {

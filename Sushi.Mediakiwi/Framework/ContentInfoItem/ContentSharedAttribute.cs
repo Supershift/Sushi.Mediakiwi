@@ -365,6 +365,7 @@ namespace Sushi.Mediakiwi.Framework
             LayerSize size,
             bool? hasScrollbar,
             int? layerHeight,
+            Grid.LayerSpecification specification,
             params NameItemValue[] items
             )
         {
@@ -379,7 +380,9 @@ namespace Sushi.Mediakiwi.Framework
                     , ((int)size).ToString()
                     );
 
-            Sushi.Mediakiwi.Framework.Grid.LayerSpecification specification = new Grid.LayerSpecification(size);
+            if (specification == null)
+                specification = new Grid.LayerSpecification(size);
+
             if (hasScrollbar.HasValue)
                 specification.HasScrolling = hasScrollbar.Value;
 
@@ -470,10 +473,10 @@ namespace Sushi.Mediakiwi.Framework
                 }
             }
 
-            if ((items == null || items.Length == 0) || items[0].ID == 0)
-            {
-                list.AppendFormat("\n\t\t\t\t\t\t\t\t\t\t\t<li class=\"instant\"><em style=\"color:#a7aab3;margin-left:-5px\">{0}</em></li>", Data.Utility.CleanFormatting(this.InteractiveHelp));
-            }
+            //if ((items == null || items.Length == 0) || items[0].ID == 0)
+            //{
+            //    list.AppendFormat("\n\t\t\t\t\t\t\t\t\t\t\t<li class=\"instant\"><em style=\"color:#a7aab3;margin-left:-5px\">{0}</em></li>", Data.Utility.CleanFormatting(this.InteractiveHelp));
+            //}
 
 
             if (IsCloaked)
@@ -543,7 +546,7 @@ namespace Sushi.Mediakiwi.Framework
                     //if (!url.Contains("item="))
                     //    url += "&item=0";
 
-                    build.AppendFormat("<a class=\"openlayer\" data-layer=\"{1}\" href=\"{0}\" title=\"{2}\"><figure class=\"{3}\"></figure></a>"
+                    build.AppendFormat("<a class=\"openlayer\" data-layer=\"{1}\" href=\"{0}\" data-title=\"{2}\"><figure class=\"{3}\"></figure></a>"
                         , url // 0
                         , specification.Parse() //1
                         , layerTitle //2

@@ -624,7 +624,11 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
         {
             get {
                 //  [20090411:MM] Patch
-                if (m_CurrentApplicationUser == null && CurrentVisitor != null && CurrentVisitor.ApplicationUserID.HasValue)
+                if (m_CurrentApplicationUser == null 
+                    && CurrentVisitor != null 
+                    && CurrentVisitor.ApplicationUserID.HasValue
+                    && CurrentVisitor.ApplicationUserID.Value > 0
+                    )
                 {
                     m_CurrentApplicationUser = Data.ApplicationUser.SelectOne(CurrentVisitor.ApplicationUserID.Value, true);
 

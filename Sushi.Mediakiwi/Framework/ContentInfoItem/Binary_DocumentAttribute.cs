@@ -310,6 +310,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                     key = m_Candidate.ID;
 
                 ApplyItemSelect(build, true, true, titleTag, this.ID, lst, url, false, isRequired, false, false, LayerSize.Small, false, 350,
+                    null,
                     new NameItemValue() { Name = this.ID, ID = key, Value = OutputText }
                     );
 
