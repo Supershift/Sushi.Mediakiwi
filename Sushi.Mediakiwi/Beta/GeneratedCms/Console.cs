@@ -628,40 +628,40 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
                 {
                     m_CurrentApplicationUser = Data.ApplicationUser.SelectOne(CurrentVisitor.ApplicationUserID.Value, true);
 
-                    if (!this.Context.User.Identity.IsAuthenticated)
-                    {
-                        var claims = new List<Claim>();
-                        claims.Add(new Claim("email", m_CurrentApplicationUser.Email));
+                    //if (!this.Context.User.Identity.IsAuthenticated)
+                    //{
+                    //    var claims = new List<Claim>();
+                    //    claims.Add(new Claim("email", m_CurrentApplicationUser.Email));
 
-                        var identity = new GenericIdentity(m_CurrentApplicationUser.Name);
-                        identity.AddClaims(claims);
+                    //    var identity = new GenericIdentity(m_CurrentApplicationUser.Name);
+                    //    identity.AddClaims(claims);
 
-                        Context.User = new GenericPrincipal(identity, null);
-                    }
+                    //    Context.User = new GenericPrincipal(identity, null);
+                    //}
                     return m_CurrentApplicationUser;
                 }
 
-                if (m_CurrentApplicationUser == null 
-                    && this.Context != null
-                    && this.Context.User != null
-                    && this.Context.User.Identity != null
-                    && this.Context.User.Identity.IsAuthenticated
-                    )
-                {
-                    if (this.Context.User.Claims != null)
-                    {
-                        foreach (var claim in this.Context.User.Claims)
-                        {
-                            if (claim != null 
-                                && !string.IsNullOrWhiteSpace(claim.Type)
-                                && !string.IsNullOrWhiteSpace(claim.Value)
-                                && claim.Value.Contains("@"))
-                            {
-                                m_CurrentApplicationUser = Data.ApplicationUser.SelectOne(claim.Value, true);
-                            }
-                        }
-                    }
-                }
+                //if (m_CurrentApplicationUser == null 
+                //    && this.Context != null
+                //    && this.Context.User != null
+                //    && this.Context.User.Identity != null
+                //    && this.Context.User.Identity.IsAuthenticated
+                //    )
+                //{
+                //    if (this.Context.User.Claims != null)
+                //    {
+                //        foreach (var claim in this.Context.User.Claims)
+                //        {
+                //            if (claim != null 
+                //                && !string.IsNullOrWhiteSpace(claim.Type)
+                //                && !string.IsNullOrWhiteSpace(claim.Value)
+                //                && claim.Value.Contains("@"))
+                //            {
+                //                m_CurrentApplicationUser = Data.ApplicationUser.SelectOne(claim.Value, true);
+                //            }
+                //        }
+                //    }
+                //}
 
                 if (m_CurrentApplicationUser == null && m_CurrentListInstance != null)
                     m_CurrentApplicationUser = m_CurrentListInstance.wim.CurrentApplicationUser;

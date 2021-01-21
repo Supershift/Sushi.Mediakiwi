@@ -1162,6 +1162,13 @@ namespace Sushi.Mediakiwi.UI
                 {
                     var authenticationToken = context.Request.Cookies[".authtoken"];
                     client.DefaultRequestHeaders.Add("X-ZUMO-AUTH", authenticationToken);
+
+                    await new AuditTrail()
+                    {
+                        Action = ActionType.Login,
+                        Type = ItemType.Undefined,
+                        Message = ".authtoken"
+                    }.InsertAsync();
                 }
 
                 var res = await client.GetAsync($"{uriString}/.auth/me");
@@ -1180,13 +1187,27 @@ namespace Sushi.Mediakiwi.UI
                         var claims = new List<Claim>();
                         foreach (var claim in obj[0]["user_claims"])
                         {
-                            claims.Add(new Claim(claim["typ"].ToString(), claim["val"].ToString()));
+                            if (claim != null
+                                && claim["val"] != null
+                                && claim["val"].Contains("@"))
+                            {
+                                var email = claim["val"].ToString();
+                                var applicationUser = Data.ApplicationUser.SelectOne(email, true);
+                                if (applicationUser != null && !applicationUser.IsNewInstance)
+                                {
+                                    await new AuditTrail()
+                                    {
+                                        Action = ActionType.Login,
+                                        Type = ItemType.Undefined,
+                                        ItemID = applicationUser.ID,
+                                        Message = $"Claim based: {applicationUser.Email}"
+                                    }.InsertAsync();
+
+                                    _Console.CurrentApplicationUser = applicationUser;
+                                    break;
+                                }
+                            }
                         }
-                        var identity = new GenericIdentity("DefaultUser");
-                        identity.AddClaims(claims);
-
-                        context.User = new GenericPrincipal(identity, null);
-
                         var visitor = new VisitorManager(context)
                             .SelectVisitorByCookie();
 

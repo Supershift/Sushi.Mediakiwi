@@ -18,8 +18,5 @@ namespace Sushi.Mediakiwi.Data.Caching
                 return CacheManagerProvider?.Invoke();
             }
         }
-            
-        
-        
     }
 }
