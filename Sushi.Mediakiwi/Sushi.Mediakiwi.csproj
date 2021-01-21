@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <Version>7.15.8</Version>
+    <Version>7.15.9</Version>
     <Product>Mediakiwi</Product>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <Company>Supershift</Company>
@@ -133,6 +133,7 @@
     <Compile Include="Presentation\Monitor.cs" />
     <Compile Include="UI\AddPageComponentControl.cs" />
     <Compile Include="UI\DataGridForJSON.cs" />
+    <Compile Include="Utilities\AuthenticationToken.cs" />
     <Compile Include="Utilities\JSON\Formatter.cs" />
     <Compile Include="Utilities\JSON\Getters.cs" />
     <Compile Include="Utilities\JSON\IRecord.cs" />
