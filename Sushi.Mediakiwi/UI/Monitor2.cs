@@ -1200,7 +1200,7 @@ namespace Sushi.Mediakiwi.UI
                                         Action = ActionType.Login,
                                         Type = ItemType.Undefined,
                                         ItemID = applicationUser.ID,
-                                        Message = $"Claim based: {applicationUser.Email}"
+                                        Message = $"Claim based: {applicationUser.Email}."
                                     }.InsertAsync();
 
                                     _Console.CurrentApplicationUser = applicationUser;
