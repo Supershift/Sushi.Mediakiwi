@@ -1120,6 +1120,7 @@ namespace Sushi.Mediakiwi.UI
 
         async Task AuthenticateViaSingleSignOnAsyc(bool shouldredirect = true)
         {
+            var TEST = "1";
             if (_configuration.GetValue<bool>("mediakiwi:authentication"))
             {
                 if (_Console.CurrentApplicationUser == null)
