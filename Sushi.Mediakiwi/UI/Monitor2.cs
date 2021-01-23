@@ -1167,7 +1167,8 @@ namespace Sushi.Mediakiwi.UI
                     client.DefaultRequestHeaders.Add("X-ZUMO-AUTH", authenticationToken);
                 }
 
-                var res = await client.GetAsync($"{uriString}/.auth/me");
+                // assure uncached import via the dt param.
+                var res = await client.GetAsync($"{uriString}/.auth/me?dt={DateTime.UtcNow.Ticks}");
                 jsonResult = await res.Content.ReadAsStringAsync();
             }
 
