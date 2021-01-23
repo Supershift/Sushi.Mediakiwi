@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Sushi.Mediakiwi.Beta.GeneratedCms.Source;
 using Sushi.Mediakiwi.Data;
@@ -1128,7 +1129,7 @@ namespace Sushi.Mediakiwi.UI
                         if (shouldredirect && 
                             !_Context.Request.Path.Value.EndsWith("/sso/negotiate", StringComparison.CurrentCultureIgnoreCase))
                         {
-                            _Context.Response.Redirect($"{_Console.CurrentDomain}/.auth/login/aad?post_login_redirect_url={_Console.GetWimPagePath(null)}/sso/negotiate?redir={_Context.Request.Path}{_Context.Request.QueryString}");
+                            _Context.Response.Redirect($"{_Console.CurrentDomain}/.auth/login/aad?post_login_redirect_url={_Console.GetWimPagePath(null)}/{_Context.Request.Path}{_Context.Request.QueryString}");
                         }
                     }
                 }
@@ -1151,7 +1152,6 @@ namespace Sushi.Mediakiwi.UI
             }
 
             var jsonResult = string.Empty;
-
             using (var client = new HttpClient(handler))
             {
                 client.DefaultRequestHeaders.Add("Accept", "application/json");
@@ -1168,24 +1168,33 @@ namespace Sushi.Mediakiwi.UI
                 jsonResult = await res.Content.ReadAsStringAsync();
             }
 
-            if (!string.IsNullOrWhiteSpace(jsonResult))
+            if (!string.IsNullOrWhiteSpace(jsonResult) 
+                && jsonResult.Contains("id_token", StringComparison.CurrentCultureIgnoreCase))
             {
-                if ((jsonResult.StartsWith("{") && jsonResult.EndsWith("}")) || //For object
-                    (jsonResult.StartsWith("[") && jsonResult.EndsWith("]"))) //For array
+                var me = JsonConvert.DeserializeObject<List<AuthenticationToken>>(jsonResult).FirstOrDefault();
+                if (me != null && me.user_claims.Any())
                 {
                     try
                     {
                         var obj = JArray.Parse(jsonResult);
 
                         var claims = new List<Claim>();
-                        foreach (var claim in obj[0]["user_claims"])
+                        foreach (var claim in me.user_claims)
                         {
-                            claims.Add(new Claim(claim["typ"].ToString(), claim["val"].ToString()));
+                           
+                            if (claim != null
+                                && claim.val != null
+                                && claim.val.Contains("@"))
+                            {
+                                var email = claim.val.ToString();
+                                var applicationUser = Data.ApplicationUser.SelectOne(email, true);
+                                if (applicationUser != null && !applicationUser.IsNewInstance)
+                                {
+                                    _Console.CurrentApplicationUser = applicationUser;
+                                    break;
+                                }
+                            }
                         }
-                        var identity = new GenericIdentity("DefaultUser");
-                        identity.AddClaims(claims);
-
-                        context.User = new GenericPrincipal(identity, null);
 
                         var visitor = new VisitorManager(context)
                             .SelectVisitorByCookie();
@@ -1206,21 +1215,9 @@ namespace Sushi.Mediakiwi.UI
                             visitor.ApplicationUserID = _Console.CurrentApplicationUser.ID;
                             _Console.CurrentApplicationUser.LastLoggedVisit = now;
                             await _Console.CurrentApplicationUser.SaveAsync();
+                            return true;
                         }
-                        new VisitorManager(context).Save(visitor, true);
-
-                        if (_Context.Request.Path.Value.EndsWith("/sso/negotiate", StringComparison.CurrentCultureIgnoreCase))
-                        {
-                            if (_Context.Request.Query.ContainsKey("redir"))
-                            {
-                                context.Response.Redirect(_Context.Request.Query["redir"]);
-                            }
-                            else
-                            {
-                                context.Response.Redirect(_Console.GetWimPagePath(null));
-                            }
-                        }
-                        return true;
+                        return false;
                     }
                     catch
                     {

@@ -1347,6 +1347,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation
         <script type=""text/javascript"" src=""" + FolderVersion("scripts") + @"jquery-ambiance.js""></script>
 		<script type=""text/javascript"" src=""" + FolderVersion("scripts") + @"slip.js""></script>
 		<script type=""text/javascript"" src=""" + FolderVersion("scripts") + @"fixedBar.js""></script>
+        <script type=""text/javascript"" src=""" + FolderVersion("scripts") + @"easyauth.js""></script>
         <script type=""text/javascript"" src=""" + FolderVersion("scripts") + @"testdrivev2.js""></script>
 		<script type=""text/javascript"" src=""" + FolderVersion("scripts/tinymce") + @"tinymce.js""></script>
         <link rel=""stylesheet"" href=""" + FolderVersion("scripts/dist/css") + @"select2.css"" type=""text/css"" media=""all"" />
