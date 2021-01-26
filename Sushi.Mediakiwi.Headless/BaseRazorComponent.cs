@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Sushi.Mediakiwi.Headless.Config;
@@ -27,6 +28,9 @@ namespace Sushi.Mediakiwi.Headless
 
         [Inject]
         public T Configuration { get; set; }
+        
+        [Inject]
+        public IHttpContextAccessor httpContextAccessor { get; set; }
 
         [Parameter]
         public bool ClearCache { get; set; }
@@ -104,7 +108,7 @@ namespace Sushi.Mediakiwi.Headless
         /// <returns></returns>
         protected override Task OnInitializedAsync()
         {
-
+            
             // We have content, reflect !
             if (Content?.Content?.Count > 0)
             {
@@ -128,6 +132,15 @@ namespace Sushi.Mediakiwi.Headless
                 // When ClearCache is set to true, its probably set by a parent component
                 if (ClearCache == false)
                     ClearCache = Content.InternalInfo.ClearCache;
+            }
+
+            if (httpContextAccessor != null)
+            {
+                if (ClearCache == false)
+                    ClearCache = httpContextAccessor.HttpContext.Request.IsClearCacheCall();
+
+                if (IsPreview == false)
+                    IsPreview = httpContextAccessor.HttpContext.Request.IsPreviewCall();
             }
 
             if (serviceProvider != null)

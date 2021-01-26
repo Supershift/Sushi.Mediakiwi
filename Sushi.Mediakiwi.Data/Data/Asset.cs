@@ -27,11 +27,11 @@ namespace Sushi.Mediakiwi.Data
                 /* TODO MJ 2019-01-03: Add this sort order, when calling data, like SelectAll()
                 Order = "Asset_SortOrder asc, Asset_Title asc")
                 */
-
                 if (isSave)
                     Table("wim_Assets");
                 else
                     Table("wim_Assets left join wim_GalleryView on Gallery_Key = Asset_Gallery_Key left join wim_AssetTypes on AssetType_Key = Asset_AssetType_Key");
+
                 Id(x => x.ID, "Asset_Key").Identity().SqlType(SqlDbType.Int);
                 Map(x => x.GUID, "Asset_GUID").SqlType(SqlDbType.UniqueIdentifier);
                 Map(x => x.GalleryID, "Asset_Gallery_Key").SqlType(SqlDbType.Int);

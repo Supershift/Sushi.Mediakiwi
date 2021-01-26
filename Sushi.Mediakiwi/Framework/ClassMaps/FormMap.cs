@@ -6,6 +6,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using Sushi.Mediakiwi.Data;
 using Sushi.Mediakiwi.Framework;
 using static Sushi.Mediakiwi.Beta.GeneratedCms.Source.Component;
 
@@ -52,6 +53,10 @@ namespace Sushi.Mediakiwi.Framework
                 //  SET IT FROM POSTBACK INSTANT!
                 if (element.Property != null)
                 {
+                    var name = element.Property.Name;
+                    if (!string.IsNullOrWhiteSpace(element.FieldName))
+                        name = element.FieldName;
+
                     element.InfoItem = new ListInfoItem();
                     element.InfoItem.ContentAttribute = element;
                     element.InfoItem.Info = element.Property;
@@ -63,18 +68,21 @@ namespace Sushi.Mediakiwi.Framework
 
                     element.InfoItem.SenderSponsorInstance = this;
                     if (string.IsNullOrWhiteSpace(UniqueId))
-                        element.InfoItem.ContentAttribute.ID = element.Property.Name;
+                        element.InfoItem.ContentAttribute.ID = name;
                     else
-                        element.InfoItem.ContentAttribute.ID = $"{UniqueId}_{element.Property.Name}";
+                        element.InfoItem.ContentAttribute.ID = $"{UniqueId}_{name}";
 
                     //  Set
                     if (element is IContentInfo)
                     {
                         if (wim.Console != null)
                         {
+                            var field = new Field();
+                            field.Property = name;
+
                             ((IContentInfo)element).Init(wim);
                             if (wim.Console.IsPosted(element.InfoItem.ContentAttribute.ID))
-                                ((IContentInfo)element).SetCandidate(wim.IsEditMode);
+                                ((IContentInfo)element).SetCandidate(field, wim.IsEditMode);
                             ((IContentInfo)element).Chain(element.InfoItem.ContentAttribute.ID);
                         }
                     }

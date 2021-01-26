@@ -15,15 +15,14 @@ namespace Sushi.Mediakiwi.AppCentre.UI.Forms
 
             if (asset.ID == 0)
             {
-                Map<DocumentForm>(x => x.File, this).FileUpload("Upload");
+                Map<DocumentForm>(x => x.File, this).FileUpload("Upload", true, "image/*");
 
-
-                Map(x => x.Title).TextField("Name", 255, true);
+                Map(x => x.Title).TextField("Title", 255, false);
                 Map(x => x.Description).TextArea("Description");
             }
             else
             {
-                Map(x => x.Title).TextField("Name", 255, true);
+                Map(x => x.Title).TextField("Title", 255, false);
                 Map(x => x.Description).TextArea("Description");
                 Map<DocumentForm>(x => x.File, this).FileUpload("Upload");
             }

@@ -309,8 +309,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                 string lst = null;
 
                 Data.IComponentList documentList = Data.ComponentList.SelectOne(
-                    new Guid("b1f5989b-2237-4b45-aa7b-917e3979e95e"));
-                //Sushi.Mediakiwi.Data.ComponentListType.Documents);
+                    new Guid("f6252c60-cff3-4c8b-922e-f1d1299cca43"));
                 lst = documentList.ID.ToString();
 
                 if (CanOnlyAdd || m_Candidate.ID == 0)

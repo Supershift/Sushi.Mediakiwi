@@ -51,20 +51,28 @@ namespace Sushi.Mediakiwi.Headless
 
                 if (ContentService != null)
                 {
-
                     // Get Pagecontent from service
                     PageContentResponse PageContent = new PageContentResponse();
 
-                    var n = DateTime.UtcNow;
 
-                    if (PageId.GetValueOrDefault(0) > 0)
-                        PageContent = ContentService.GetPageContent(null, request.IsClearCacheCall(), request.IsPreviewCall(), PageId.Value);
-                    else
-                        PageContent = ContentService.GetPageContent(request);
+                    var dt1 = DateTime.UtcNow;
 
-                    var t = DateTime.UtcNow;
+                    try
+                    {
+                        if (PageId.GetValueOrDefault(0) > 0)
+                            PageContent = ContentService.GetPageContent(null, request.IsClearCacheCall(), request.IsPreviewCall(), PageId.Value);
+                        else
+                            PageContent = ContentService.GetPageContent(request);
+                    }
+                    catch(Exception ex)
+                    {
 
-                    response.Headers.Add("x-mediakiwi-timed", new TimeSpan(t.Ticks - n.Ticks).TotalMilliseconds.ToString());
+                    }
+                    var dt2 = DateTime.UtcNow;
+
+                    response.Headers.Add(HttpHeaderNames.TimeSpend,new TimeSpan(dt2.Ticks - dt1.Ticks).TotalMilliseconds.ToString());
+                    response.Headers.Add(HttpHeaderNames.CachedData, PageContent.IsCached.ToString());
+                    response.Headers.Add(HttpHeaderNames.CacheInvalidData, PageContent.IsCacheInvalidated.ToString());
 
                     if (!PageContent.IsCached)
                         context.HttpContext.Items["mediakiwi.flush"] = "me";
@@ -96,8 +104,8 @@ namespace Sushi.Mediakiwi.Headless
                         if (context.HttpContext.Items.ContainsKey(ContextItemNames.PageContent) == false)
                             request.HttpContext.Items.Add(ContextItemNames.PageContent, PageContent);
 
-                        if (request.Headers.ContainsKey(HttpHeaderNames.FullRequestURL) == false)
-                            request.Headers.Add(HttpHeaderNames.FullRequestURL, request.GetEncodedUrl());
+                        if (response.Headers.ContainsKey(HttpHeaderNames.FullRequestURL) == false)
+                            response.Headers.Add(HttpHeaderNames.FullRequestURL, request.GetEncodedUrl());
 
                         if (string.IsNullOrWhiteSpace(PageContent?.PageLocation) == false)
                         {

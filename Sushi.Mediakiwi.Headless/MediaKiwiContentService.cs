@@ -246,11 +246,11 @@ namespace Sushi.Mediakiwi.Headless
             if (string.IsNullOrWhiteSpace(Configuration.MediaKiwi.ContentService.ServiceUrl))
                 return returnObj;
 
-            if (Configuration.MediaKiwi.ContentService.PingFirst == true)
-            {
-                if (PingSucceeded() == false)
-                    return returnObj;
-            }
+            //if (Configuration.MediaKiwi.ContentService.PingFirst == true)
+            //{
+            //    if (PingSucceeded() == false)
+            //        return returnObj;
+            //}
 
             // Create cachekey
             string cacheKey = "";
@@ -276,6 +276,7 @@ namespace Sushi.Mediakiwi.Headless
             }
 
             bool isCached = false;
+            bool invalidatedCache = false;
 
             // Check if the URL should be excluded
             if (string.IsNullOrWhiteSpace(forUrl) == false && IsPageExcluded(forUrl))
@@ -284,9 +285,10 @@ namespace Sushi.Mediakiwi.Headless
             }
             else
             {
-                isCached = IsCacheValid();
+
+                invalidatedCache = !IsCacheValid();
                 // Try to get from cache
-                if (_memCache == null || _memCache.TryGetValue(cacheKey, out returnObj) == false || clearCache)
+                if (_memCache == null || (_memCache.TryGetValue(cacheKey, out returnObj) == false || returnObj == null) || clearCache || invalidatedCache)
                 {
                     //when cache failed, retrieve via service
                     HttpWebRequest request = HttpWebRequest.CreateHttp($"{Configuration.MediaKiwi.ContentService.ServiceUrl}/getPageContent");
@@ -349,10 +351,13 @@ namespace Sushi.Mediakiwi.Headless
                 }
                 else
                 {
+                    isCached = true;
+
                     _logger.LogInformation($"Got cached content for '{forUrl}' (Page: {returnObj.MetaData?.PageTitle} : {returnObj.PageID})");
                 }
             }
 
+            returnObj.IsCacheInvalidated = invalidatedCache;
             returnObj.IsCached = isCached;
             return returnObj;
         }
@@ -579,6 +584,7 @@ namespace Sushi.Mediakiwi.Headless
 
         public bool IsCacheValid()
         {
+            //_logger.LogInformation($"Calling cache server with Ticks : {Last_Flush.Ticks}");
             if (string.IsNullOrWhiteSpace(Configuration.MediaKiwi.ContentService.ServiceUrl))
                 return true;
 
@@ -593,8 +599,8 @@ namespace Sushi.Mediakiwi.Headless
             request.ServerCertificateValidationCallback += (sender, certificate, chain, sslPolicyErrors) => true;
             //request.Expect = "application/json";
             
-            try
-            {
+            //try
+            //{
                 // Get the response.
                 WebResponse response = request.GetResponse();
                 bool success = false;
@@ -608,7 +614,8 @@ namespace Sushi.Mediakiwi.Headless
 
                     // Read the content.
                     string responseFromServer = reader.ReadToEnd();
-
+                   // _logger.LogInformation($"Response from caching server : {responseFromServer}");
+                    
                     success = responseFromServer.Equals("true", StringComparison.InvariantCultureIgnoreCase);
                     if (success)
                     {
@@ -617,13 +624,13 @@ namespace Sushi.Mediakiwi.Headless
                         return false;
                     }
                 }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, ex.Message, null);
-                FlushCache();
-                return false;
-            }
+            //}
+            //catch (Exception ex)
+            //{
+            //    _logger.LogError(ex, ex.Message, null);
+            //    FlushCache();
+            //    return false;
+            //}
             return true;
         }
 
