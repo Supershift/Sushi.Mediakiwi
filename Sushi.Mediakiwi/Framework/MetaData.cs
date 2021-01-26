@@ -57,6 +57,17 @@ namespace Sushi.Mediakiwi.Framework
     /// </summary>
     public class MetaData
     {
+        public MetaData()
+        {
+        }
+        public MetaData(string name, ContentType type, string title, bool isRequired = false)
+        {
+            Name = name;
+            Title = title;
+            ContentTypeSelection = ((int)type).ToString();
+            Mandatory = isRequired ? "1" : "0";
+        }
+
         /// <summary>
         /// Gets the content info.
         /// </summary>

@@ -32,6 +32,11 @@ namespace Sushi.Mediakiwi.Headless
         /// <summary>
         /// Triggered when the PageContent is set, just before continueing to the next middleware 
         /// </summary>
+        public event Func<PageHandlerExecutingContext, EventArgs, Task> OnContentSetAsync;
+
+        /// <summary>
+        /// Triggered when the PageContent is set, just before continueing to the next middleware 
+        /// </summary>
         public event EventHandler OnContentSet;
 
         /// <summary>
@@ -40,7 +45,9 @@ namespace Sushi.Mediakiwi.Headless
         public string OriginalRequestURL { get; set; }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
+        //[MR:03-12-2020] commented because 1) its not possible to use resopnse caching in combination with AntiForgery
+        // and 2) its not being used at the moment
+        //[ValidateAntiForgeryToken]
         public async Task<IActionResult> OnPostGetJsonContent()
         {
             return Content(JsonConvert.SerializeObject(PageContent), "application/json");
@@ -89,6 +96,26 @@ namespace Sushi.Mediakiwi.Headless
             handler(this, new EventArgs());
         }
 
+        protected async Task NotifyContentSetAsync(PageHandlerExecutingContext context)
+        {
+            Func<PageHandlerExecutingContext, EventArgs, Task> handler = OnContentSetAsync;
+
+            if (handler == null)
+            {
+                return;
+            }
+
+            Delegate[] invocationList = handler.GetInvocationList();
+            Task[] handlerTasks = new Task[invocationList.Length];
+
+            for (int i = 0; i < invocationList.Length; i++)
+            {
+                handlerTasks[i] = ((Func<PageHandlerExecutingContext, EventArgs, Task>)invocationList[i])(context, EventArgs.Empty);
+            }
+
+            await Task.WhenAll(handlerTasks);
+        }
+
         public override async Task OnPageHandlerExecutionAsync(PageHandlerExecutingContext context, PageHandlerExecutionDelegate next)
         { 
             // Load config from requestservices
@@ -113,7 +140,10 @@ namespace Sushi.Mediakiwi.Headless
             if (context.HttpContext.Request.Headers.ContainsKey(HttpHeaderNames.OriginalRequestURL))
                 OriginalRequestURL = context.HttpContext.Request.Headers[HttpHeaderNames.OriginalRequestURL].ToString();
 
-            // Check if we have an action to do
+            // Check if we have an action to do (Async)
+            await NotifyContentSetAsync(context);
+
+            // Check if we have an action to do (Sync)
             NotifyContentSet();
 
             await base.OnPageHandlerExecutionAsync(context, next);

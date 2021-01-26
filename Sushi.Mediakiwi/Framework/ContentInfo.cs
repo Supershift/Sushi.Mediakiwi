@@ -292,6 +292,28 @@ namespace Sushi.Mediakiwi.Framework
             Add(element);
             return new ContentSettings(element);
         }
+        public void Component(IEnumerable<MetaData> metadata)
+        {
+            foreach (var meta in metadata)
+            {
+                Meta(meta);
+            }
+        }
+
+        ContentSettings Meta(MetaData meta)
+        {
+            var element = meta.GetContentInfo();
+            element.FieldName = meta.Name;
+            element.Mandatory = meta.Mandatory == "1";
+            if (!string.IsNullOrWhiteSpace(meta.MaxValueLength))
+            {
+                element.MaxValueLength = Convert.ToInt32(meta.MaxValueLength);
+            }
+
+            Add(element);
+            return new ContentSettings(element);
+        }
+
         /// <summary>
         /// Possible return types: System.Int32, Sushi.Mediakiwi.Data.Page
         /// </summary>
@@ -340,12 +362,13 @@ namespace Sushi.Mediakiwi.Framework
         /// <param name="canOnlyOrderSort"></param>
         /// <param name="interactiveHelp"></param>
         /// <returns></returns>
-        public SublistSettings SubListSelect(string title, Type componentlist, bool mandatory = false, bool canOnlyOrderSort = false, string interactiveHelp = null)
+        public SublistSettings SubListSelect(string title, Type componentlist, bool mandatory = false, bool canOnlyOrderSort = false, bool autoPostback = false, string interactiveHelp = null)
         {
             var data = Data.ComponentList.SelectOne(componentlist.ToString());
             if (data != null && data.ID > 0)
             {
                 var element = new Sushi.Mediakiwi.Framework.ContentListItem.SubListSelectAttribute(title, data.GUID.ToString(), mandatory, canOnlyOrderSort, interactiveHelp);
+                element.AutoPostback = autoPostback;
                 Add(element);
                 return new SublistSettings(element);
             }

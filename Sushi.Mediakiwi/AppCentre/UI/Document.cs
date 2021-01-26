@@ -17,6 +17,8 @@ using Sushi.Mediakiwi.UI;
 using Sushi.Mediakiwi.AppCentre.UI.Forms;
 using System.Threading.Tasks;
 using Sushi.Mediakiwi.Framework;
+using Sushi.Mediakiwi.Persistors;
+using Sushi.Mediakiwi.Data.Configuration;
 
 namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
 {
@@ -122,6 +124,13 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         //    }
     }
 
+    public class Image : Document
+    {
+        public Image()
+        {
+        }
+    }
+
     /// <summary>
     /// Represents a Document entity.
     /// </summary>
@@ -154,32 +163,10 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             wim.HideOpenCloseToggle = true;
             wim.OpenInEditMode = true;
 
-            this.ListAction += Document_ListAction;
             this.ListLoad += Document_ListLoad;
             this.ListSave += Document_ListSave;
             this.ListDelete += Document_ListDelete;
             this.ListSearch += Document_ListSearch;
-        }
-
-
-
-        Task Document_ListAction(ComponentActionEventArgs e)
-        {
-            if (ButtonBack)
-            {
-                string url = wim.GetUrl(new KeyValue() { Key = "redo", Value = "1" });
-                Response.Redirect(url, true);
-            }
-
-            if (ButtonMulti)
-                wim.CurrentVisitor.Data.Apply("wim.showmulti", true);
-
-            if (ButtonSingle)
-                wim.CurrentVisitor.Data.Apply("wim.showmulti", null);
-
-            wim.CurrentVisitor.Save();
-            //Response.Redirect(Request.Url.ToString());
-            return Task.CompletedTask;
         }
 
         /// <summary>
@@ -218,7 +205,13 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                     );
                 Response.Redirect(redirect);
             }
+        }
 
+        public virtual BlobPersister GetPersistor
+        {
+            get{
+                return new BlobPersister();
+            }
         }
 
         /// <summary>
@@ -246,6 +239,29 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                 m_Implement.GalleryID = currentAsset.GalleryID;
             }
 
+            if (_Form.File != null && _Form.File.File != null)
+            {
+                _Form.Evaluate();
+
+
+                if (_Form.File.File.ContentType.ToLower() == "image/jpeg" ||
+                   _Form.File.File.ContentType.ToLower() == "image/jpg" ||
+                   _Form.File.File.ContentType.ToLower() == "image/png")
+                {
+                    m_Implement.IsImage = true;
+                    using (var image = System.Drawing.Image.FromStream(_Form.File.File.OpenReadStream()))
+                    {
+                        m_Implement.Width = image.Width;
+                        m_Implement.Height = image.Height;
+                        //image.
+                        // use image.Width and image.Height
+                    }
+                }
+
+                var upload = await GetPersistor.UploadAsync(_Form.File.File.OpenReadStream(), WimServerConfiguration.Instance?.Azure_Image_Container, _Form.File.File.FileName, _Form.File.File.ContentType);
+                m_Implement.RemoteLocation = $"{WimServerConfiguration.Instance?.Azure_Cdn_Uri}{upload.Uri.PathAndQuery}";
+            }
+            
             await m_Implement.SaveAsync();
 
             //if (e.SelectedKey == 0 || Request.Query["redo"] == "1")
@@ -822,6 +838,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             Implement = await Sushi.Mediakiwi.Data.Asset.SelectOneAsync(e.SelectedKey);
             _Form = new DocumentForm(Implement);
             this.FormMaps.Add(_Form);
+            
 
             //wim.Page.HideMenuBar = true;
             //if (e.SelectedKey == 0 || Request.Query["redo"] == "1")

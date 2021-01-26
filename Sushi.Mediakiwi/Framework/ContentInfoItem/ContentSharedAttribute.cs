@@ -90,6 +90,11 @@ namespace Sushi.Mediakiwi.Framework
         /// </summary>
         protected internal void SetContentContainer(Field field)
         {
+            if (field == null)
+            {
+                field = new Field();
+                field.Property = this.FieldName;
+            }
 
             if (Property.PropertyType != typeof(Data.CustomData))
                 return;
@@ -98,6 +103,7 @@ namespace Sushi.Mediakiwi.Framework
 
             if (m_ContentContainer == null)
                 m_ContentContainer = new Sushi.Mediakiwi.Data.CustomData();
+
 
             if (!m_ContentContainer[field.Property].IsEditable)
                 OverrideEditMode = true;
@@ -409,7 +415,7 @@ namespace Sushi.Mediakiwi.Framework
             {
                 if (!string.IsNullOrEmpty(item.TextID) && item.TextID != "0")
                 {
-                    string classname = "ui-state-default";
+                    //string classname = "ui-state-default";
 
                     index++;
                     if (canOnlyOrderSort)
@@ -745,7 +751,13 @@ namespace Sushi.Mediakiwi.Framework
                 {
                     //  Ajax writeout output exception (example = timesheets - ?xml=timesheet&list=55a4fc1e-cbf7-4941-8e27-cd37577f4f15)
                     if (Property == null)
-                        return m_FieldName;
+                    { return m_FieldName;
+                    }
+                    else if (Property.PropertyType.Equals(typeof(CustomData)))
+                    {
+                        if (!string.IsNullOrWhiteSpace(m_FieldName))
+                            return m_FieldName;
+                    }
 
                     return Property.Name;
                 }

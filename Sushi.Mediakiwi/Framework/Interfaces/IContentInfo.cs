@@ -26,7 +26,11 @@ namespace Sushi.Mediakiwi.Framework
         /// <summary>
         /// 
         /// </summary>
-        string FieldName { get; set; }
+        string FieldName { 
+            get; 
+            set; 
+        }
+
         bool HasSenderInstance { get; }
         /// <summary>
         /// 

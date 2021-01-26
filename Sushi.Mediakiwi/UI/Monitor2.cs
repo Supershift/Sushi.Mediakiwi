@@ -40,6 +40,7 @@ namespace Sushi.Mediakiwi.UI
             _Context = context;
             _configuration = configuration;
             _Console = new Sushi.Mediakiwi.Beta.GeneratedCms.Console(context, _env);
+            _Console.Configuration = configuration;
 
             //Console.CurrentApplicationUser = user;
 
@@ -1044,14 +1045,11 @@ namespace Sushi.Mediakiwi.UI
             if (!showLogin)
             {
                 //  Check if logout request is performed
-                if (_Console.IsPostBack("logout"))
+                if (_Console.IsPostBack("logout") || _Console.Request.Query.ContainsKey("logout"))
                 {
-                    _Console.CurrentVisitor.ApplicationUserID = null;
-                    _Console.CurrentVisitor.Save();
+           
 
-                    string wimPath = CommonConfiguration.PORTAL_PATH;
-
-                    _Console.Response.Redirect(_Console.AddApplicationPath(wimPath), true);
+                    await LogoutViaSingleSignOnAsyc();
 
                 }
             }
@@ -1117,6 +1115,21 @@ namespace Sushi.Mediakiwi.UI
             }
         }
 
+        async Task LogoutViaSingleSignOnAsyc()
+        {
+            _Console.CurrentVisitor.ApplicationUserID = null;
+            _Console.CurrentVisitor.Save();
+
+            if (_configuration.GetValue<bool>("mediakiwi:authentication"))
+            {
+                ///.auth/logout?post_logout_redirect_uri=/index.html
+                _Context.Response.Redirect($"{_Console.CurrentDomain}/.auth/logout?post_logout_redirect_uri={_Console.GetWimPagePath(null)}");
+            }
+            else
+            {
+                _Console.Response.Redirect(_Console.GetSafeUrl());
+            }
+        }
 
         async Task AuthenticateViaSingleSignOnAsyc(bool shouldredirect = true)
         {
@@ -1126,10 +1139,9 @@ namespace Sushi.Mediakiwi.UI
                 {
                     if (!await IsValidIdentityAsync(_Context, _Console.CurrentDomain))
                     {
-                        if (shouldredirect && 
-                            !_Context.Request.Path.Value.EndsWith("/sso/negotiate", StringComparison.CurrentCultureIgnoreCase))
+                        if (shouldredirect)
                         {
-                            _Context.Response.Redirect($"{_Console.CurrentDomain}/.auth/login/aad?post_login_redirect_url={_Console.GetWimPagePath(null)}/{_Context.Request.Path}{_Context.Request.QueryString}");
+                            _Context.Response.Redirect($"{_Console.CurrentDomain}/.auth/login/aad?post_login_redirect_url={_Console.GetWimPagePath(null)}");
                         }
                     }
                 }
@@ -1164,7 +1176,8 @@ namespace Sushi.Mediakiwi.UI
                     client.DefaultRequestHeaders.Add("X-ZUMO-AUTH", authenticationToken);
                 }
 
-                var res = await client.GetAsync($"{uriString}/.auth/me");
+                // assure uncached import via the dt param.
+                var res = await client.GetAsync($"{uriString}/.auth/me?dt={DateTime.UtcNow.Ticks}");
                 jsonResult = await res.Content.ReadAsStringAsync();
             }
 
