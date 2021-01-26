@@ -98,12 +98,13 @@ namespace Sushi.Mediakiwi
             }
         }
 
+
         /// <summary>
         /// Gets the connection.
         /// </summary>
         /// <param name="portal">The portal.</param>
         /// <returns></returns>
-        public static SqlConnection GetSqlConnection(string portal)
+        public static string GetConnection(string portal)
         {
             if (WimServerConfiguration.Instance?.Portals?.Count > 0)
             {
@@ -111,7 +112,7 @@ namespace Sushi.Mediakiwi
                 {
                     if (instance.Name == portal)
                     {
-                        return new SqlConnection(instance.Connection);
+                        return instance.Connection;
                     }
                 }
             }

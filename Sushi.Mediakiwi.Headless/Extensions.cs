@@ -6,6 +6,7 @@ namespace Sushi.Mediakiwi.Headless
     public struct ContextItemNames
     {
         public static string PageContent { get; set; } = "PageContent";
+        public static string ScriptTags { get; set; } = "ScriptTags";
     }
 
     public struct HttpHeaderNames
@@ -24,6 +25,10 @@ namespace Sushi.Mediakiwi.Headless
         /// The resolved MediaKiwi Page ID
         /// </summary>
         public static string PageId { get; set; } = "x-mediakiwi-pageid";
+
+        public static string TimeSpend { get; set; } = "x-mk-timed";
+        public static string CachedData { get; set; } = "x-mk-cached";
+        public static string CacheInvalidData { get; set; } = "x-mk-cache-invalid";
     }
 
     public static class Extensions
@@ -31,6 +36,8 @@ namespace Sushi.Mediakiwi.Headless
         public static bool IsClearCacheCall(this HttpRequest request)
         {
             if (request != null && request.Query["flush"] == "me")
+                return true;
+            else if (request != null && request?.HttpContext?.Items?.ContainsKey("mediakiwi.flush") == true)
                 return true;
             else
                 return false;

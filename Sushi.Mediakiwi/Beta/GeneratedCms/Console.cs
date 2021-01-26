@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Hosting;
 using System.Threading.Tasks;
 using System.Security.Claims;
 using System.Security.Principal;
+using Microsoft.Extensions.Configuration;
 
 namespace Sushi.Mediakiwi.Beta.GeneratedCms
 {
@@ -1029,6 +1030,20 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
         public bool IsComponent
         {
             get { return this.CurrentListInstance.wim.ItemIsComponent; }
+        }
+
+        internal IConfiguration Configuration
+        {
+            get;set;
+        }
+
+        public T ConfigurationValue<T>(string value)
+        {
+            return Configuration.GetValue<T>(value);
+        }
+        public string ConfigurationValue(string value)
+        {
+            return Configuration.GetValue<string>(value);
         }
 
         public Source.Component Component { get; set; }

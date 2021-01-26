@@ -2074,11 +2074,13 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                 if (m_IgnoreDataList && infoItem.ContentAttribute.ContentTypeSelection == ContentType.DataList)
                     continue;
 
-                infoItem.IsVisible = container.CurrentListInstance.wim.IsVisible(infoItem.SenderInstance, container.CurrentListInstance, infoItem.Name, infoItem.IsVisible);
-                if (!infoItem.IsVisible) continue;
-
-                infoItem.IsRequired = container.CurrentListInstance.wim.IsRequired(infoItem.SenderInstance, container.CurrentListInstance, infoItem.Name, infoItem.IsRequired);
-                infoItem.IsEditable = container.CurrentListInstance.wim.IsEditable(infoItem.SenderInstance, container.CurrentListInstance, infoItem.Name, infoItem.IsEditable);
+                if (infoItem.Info == null || !infoItem.Info.PropertyType.Equals(typeof(CustomData)))
+                {
+                    infoItem.IsVisible = container.CurrentListInstance.wim.IsVisible(infoItem.SenderInstance, container.CurrentListInstance, infoItem.Name, infoItem.IsVisible);
+                    if (!infoItem.IsVisible) continue;
+                    infoItem.IsRequired = container.CurrentListInstance.wim.IsRequired(infoItem.SenderInstance, container.CurrentListInstance, infoItem.Name, infoItem.IsRequired);
+                    infoItem.IsEditable = container.CurrentListInstance.wim.IsEditable(infoItem.SenderInstance, container.CurrentListInstance, infoItem.Name, infoItem.IsEditable);
+                }
 
                 ApplyContentInfoItem(container, infoItem, ref build, writeOutput, forceLoadEvent, ref isValidInput, fieldList, ref build2, ref count, ref containerTitle, ref isValidContainerInput, ref isContainerClosed, ref skipHeader, ref previousContentType);
             }
@@ -2236,7 +2238,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                         {
                             if (infoItem.Info != null && contentItem.Property != null && infoItem.Info.Equals(contentItem.Property))
                             {
-                                if (infoItem.Info != null)
+                                if (infoItem.Info != null && !infoItem.Info.PropertyType.Equals(typeof(CustomData)))
                                 {
                                     infoItem.IsVisible = map.IsHidden.HasValue ? !map.IsHidden.Value : !contentItem.IsHidden;
                                     infoItem.IsEditable = map.IsReadOnly.HasValue ? !map.IsReadOnly.Value : !contentItem.IsReadOnly;

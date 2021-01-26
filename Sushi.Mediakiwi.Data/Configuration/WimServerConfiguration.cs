@@ -62,7 +62,8 @@ namespace Sushi.Mediakiwi.Data.Configuration
         public string Portal_Path { get; set; }
 
         public string Connection { get; set; }
-        public string Azure_Storage { get; set; }
+        public string Azure_Image_Container { get; set; }
+        public string Azure_Cdn_Uri { get; set; }
 
         public string Encryption_key { get; set; }
 

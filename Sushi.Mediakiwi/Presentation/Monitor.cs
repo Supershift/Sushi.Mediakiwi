@@ -1031,7 +1031,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation
                             : string.Format(@"<a href=""?list={0}"" class=""submit left"">My account</a>", Data.Environment.Current["MY_PROFILE_LIST_ID"])
                             )
                         + @"
-				<a class=""submit postBack"" id=""logout"" href="""">Logout</a>
+				<a class=""submit"" id=""logout"" href=""?logout"">Logout</a>
 			</div>
 		</li>
 	</ul>
@@ -1109,7 +1109,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation
                     <section class=""metaMenu"">
 		                <li><img src=""testdrive/files/iconPeople.png"" alt=""Person"" /></li>
 		                <li>" + usernameLink + @" <span>|</span></li>
-		                <li class=""last""><a href=""#"" id=""logout"" class=""postBack"">uitloggen</a></li>
+		                <li class=""last""><a href=""?logout"" id=""logout"" class=""postBack"">uitloggen</a></li>
 	                </section>
                 </menu>";
         }

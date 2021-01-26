@@ -133,7 +133,7 @@ namespace Sushi.Mediakiwi.Data
         /// </summary>
         /// <param name="portal">The portal.</param>
         /// <returns></returns>
-        public static SqlConnection GetSqlConnection(string portal)
+        public static string GetConnection(string portal)
         {
             WimServerConfiguration config = WimServerConfiguration.GetConfig();
             if (config != null && config.Portals != null)
@@ -142,7 +142,7 @@ namespace Sushi.Mediakiwi.Data
                 {
                     if (instance.Name == portal)
                     {
-                        return new SqlConnection(instance.Connection);
+                        return instance.Connection;
                     }
                 }
             }

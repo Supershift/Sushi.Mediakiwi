@@ -338,7 +338,11 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
             get { return m_AutoPostBack; }
         }
 
-        public bool IsRequired;
+        public bool IsRequired
+        {
+            set;
+            get;
+        }
 
         /// <summary>
         /// Writes the candidate.
