@@ -91,16 +91,6 @@ namespace Sushi.Mediakiwi.Tests.Config
             Assert.IsNotNull(portal);
         }
 
-
-        [TestMethod]
-        public void GetSqlConnection()
-        {
-            var portal = Common.GetSqlConnection("CENTRAAL");
-            Console.WriteLine(portal.ConnectionString);
-            Assert.IsNotNull(portal);
-        }
-
-
         [TestMethod]
         public void GetUrlMappingByNameAndType()
         {
