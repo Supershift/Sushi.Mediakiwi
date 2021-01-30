@@ -593,7 +593,7 @@ namespace Sushi.Mediakiwi.Data
             instance.Target = target;
             instance.FolderID = folder;
             instance.SiteID = site;
-            await instance.SaveAsync();
+            await instance.SaveAsync().ConfigureAwait(false);
 
             return instance;
         }
@@ -631,7 +631,8 @@ namespace Sushi.Mediakiwi.Data
             filter.AddParameter("@sortOrder", sortOrder);
             filter.AddParameter("@listId", listID);
 
-            await connector.ExecuteNonQueryAsync("UPDATE [wim_ComponentLists] SET [ComponentList_SortOrder] = @sortOrder WHERE [ComponentList_Key] = @listId", filter);
+            await connector.ExecuteNonQueryAsync("UPDATE [wim_ComponentLists] SET [ComponentList_SortOrder] = @sortOrder WHERE [ComponentList_Key] = @listId", filter)
+                .ConfigureAwait(false);
             connector.Cache?.FlushRegion(connector.CacheRegion);
             return true;
         }
@@ -663,7 +664,7 @@ namespace Sushi.Mediakiwi.Data
             filter.AddOrder(x => x.ReferenceID);
             filter.AddOrder(x => x.Name);
 
-            var result = await connector.FetchAllAsync(filter);
+            var result = await connector.FetchAllAsync(filter).ConfigureAwait(false);
             return result.ToArray();
         }
 
@@ -698,7 +699,7 @@ namespace Sushi.Mediakiwi.Data
             filter.AddOrder(x => x.ReferenceID);
             filter.AddOrder(x => x.Name);
 
-            var result = await connector.FetchAllAsync(filter);
+            var result = await connector.FetchAllAsync(filter).ConfigureAwait(false);
             return result.ToArray();
         }
 
@@ -761,7 +762,7 @@ namespace Sushi.Mediakiwi.Data
 
             filter.Add(x => x.Target, targets, ComparisonOperator.In);
 
-            var result = await connector.FetchAllAsync(filter);
+            var result = await connector.FetchAllAsync(filter).ConfigureAwait(false);
             return result.ToArray();
         }
 
@@ -832,9 +833,9 @@ namespace Sushi.Mediakiwi.Data
             if (includeHidden == false)
                 filter.Add(x => x.IsVisible, true);
 
-            Folder folder = await Folder.SelectOneAsync(folderID);
+            Folder folder = await Folder.SelectOneAsync(folderID).ConfigureAwait(false);
 
-            var localResult = await connector.FetchAllAsync(filter);
+            var localResult = await connector.FetchAllAsync(filter).ConfigureAwait(false);
             List<IComponentList> local = localResult.ToList<IComponentList>();
 
             //  Get all inherited lists
@@ -859,7 +860,7 @@ namespace Sushi.Mediakiwi.Data
                 if (parent.Count > 0)
                     local.AddRange(parent);
 
-                folder = await Folder.SelectOneAsync(folder.MasterID.Value);
+                folder = await Folder.SelectOneAsync(folder.MasterID.Value).ConfigureAwait(false);
             }
 
             return local.ToArray();
