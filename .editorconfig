@@ -287,7 +287,7 @@ dotnet_diagnostic.S3442.severity = warning
 dotnet_diagnostic.S2306.severity = warning
 
 # "async" methods should not return "void"
-dotnet_diagnostic.S3168.severity = warning
+dotnet_diagnostic.S3168.severity = error
 
 # "base.Equals" should not be used to check for reference equality in "Equals" if "base" is not "object"
 dotnet_diagnostic.S3397.severity = warning
@@ -1334,3 +1334,6 @@ dotnet_diagnostic.CA5402.severity = warning
 
 # CA5403: Do not hard-code certificate
 dotnet_diagnostic.CA5403.severity = warning
+
+# S4462: Calls to "async" methods should not be blocking
+dotnet_diagnostic.S4462.severity = error

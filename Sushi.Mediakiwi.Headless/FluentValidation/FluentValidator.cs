@@ -141,7 +141,7 @@ namespace Sushi.Mediakiwi.Headless.FluentValidation
         /// </summary>
         /// <param name="editContext"></param>
         /// <param name="messages"></param>
-        private async void ValidateModel(EditContext editContext, ValidationMessageStore messages)
+        private async Task ValidateModel(EditContext editContext, ValidationMessageStore messages)
         {
             // <EditForm> should now be able to run async validations:
             // https://github.com/dotnet/aspnetcore/issues/11914
@@ -241,7 +241,7 @@ namespace Sushi.Mediakiwi.Headless.FluentValidation
         /// <param name="editContext"></param>
         /// <param name="messages"></param>
         /// <param name="fieldIdentifier"></param>
-        private async void ValidateField(EditContext editContext, ValidationMessageStore messages, FieldIdentifier fieldIdentifier)
+        private async Task ValidateField(EditContext editContext, ValidationMessageStore messages, FieldIdentifier fieldIdentifier)
         {
             var fieldValidator = TryGetFieldValidator(editContext, fieldIdentifier);
             if (fieldValidator == null)
@@ -285,20 +285,12 @@ namespace Sushi.Mediakiwi.Headless.FluentValidation
             }
         }
 
-        // Override a finalizer only if Dispose(bool disposing) above has code to free unmanaged resources.
-        // ~FluentValidator()
-        // {
-        //   // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
-        //   Dispose(false);
-        // }
-
         // This code added to correctly implement the disposable pattern.
         public void Dispose()
         {
             // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
             Dispose(true);
             // Uncomment the following line if the finalizer is overridden above.
-            // GC.SuppressFinalize(this);
         }
         #endregion
     }

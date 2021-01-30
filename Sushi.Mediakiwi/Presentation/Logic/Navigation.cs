@@ -138,17 +138,6 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                 var selection = (from item in list where item.Sort == 1 select item).ToArray();
                 foreach (var item in selection)
                 {
-                    //IMenuItemView item = candidate;
-                    //if (item.TypeID == 8 || item.TypeID == 2)
-                    //{
-                    //    // folder/container or folder
-                    //    Data.Folder inherited = Data.Folder.SelectOneChild(item.ItemID, container.ChannelIndentifier);
-                    //    item.ItemID = (inherited == null || inherited.IsNewInstance)
-                    //        ? item.ItemID
-                    //        : inherited.ID;
-                    //}
-
-
                     StringBuilder innerbuild = new StringBuilder();
                     bool isSelected = false;
                     if (!HasRoleAccess(item, container.CurrentApplicationUser))
@@ -190,7 +179,6 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                                 {
                                     firstInLineUrl = GetUrl(container, subnavigation[index], container.ChannelIndentifier);
                                     linkable = false;
-                                    //continue;
                                 }
                                 className = " class=\"first\"";
                             }
@@ -214,8 +202,6 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                         }
                         innerbuild.AppendFormat("</ul></menu></div>\n\t\t\t\t</li>");
                     }
-                    //else
-                    //    build.AppendFormat(@"</a></li>");
 
                     if (!isSelected)
                         isSelected = IsRequestPartOfNavigation(item, container);
@@ -452,7 +438,6 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                 else
                 {
                     //  Show NO tabs
-                    //return null;
                     tabTag = string.Format(@"
 			            <li class=""active""><a href=""{1}"">{0}</a></li>"
                         , title
@@ -480,10 +465,6 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                 if (galleryID == 0)
                 {
                     galleryID = Sushi.Mediakiwi.Data.Asset.SelectOne(container.Item.Value).GalleryID;
-                    //if (container.CurrentList.Type == Sushi.Mediakiwi.Data.ComponentListType.Documents)
-                    //    galleryID = Sushi.Mediakiwi.Data.Document.SelectOne(container.Item.Value).GalleryID;
-                    //else if (container.CurrentList.Type == Sushi.Mediakiwi.Data.ComponentListType.Images)
-                    //    galleryID = Sushi.Mediakiwi.Data.Image.SelectOne(container.Item.Value).GalleryID;
                 }
 
                 tabTag = string.Format(@"
@@ -672,7 +653,6 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                 else
                 {
                     //  Show NO tabs
-                    //return null;
                     tabTag = string.Format(@"
 			            <li class=""active""><a href=""{1}"">{0}</a></li>"
                         , container.CurrentList.Name
@@ -733,7 +713,6 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
             {
                 if (groupID == 0)
                 {
-                    //t.Url = string.Concat(container.WimPagePath, "?group=", listID, addition, baseInfo, folderInfo, "&groupitem=", itemID, "&list=", t.List.ID, "&item=", t.SelectedItem);
                     t.Url = string.Concat(container.UrlBuild.GetListRequest(t.List, t.SelectedItem), "&group=", listID, addition, baseInfo, folderInfo, "&groupitem=", itemID, "&list=", t.List.ID);
                 }
                 else
@@ -1162,36 +1141,8 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                 }
             }
 
-            //if (container.CurrentListInstance.wim.CanAddNewItem || container.Item.GetValueOrDefault() > 0)
-            //{
-            //    if (container.Item.GetValueOrDefault(0) != 0)
-            //    {
-            //        Data.ComponentList selectedList = container.CurrentList;
-            //        if (container.Item.GetValueOrDefault(container.Logic) != container.CurrentList.ID)
-            //        {
-            //            selectedList = Data.ComponentList.SelectOne(container.Item.GetValueOrDefault(container.Logic));
-            //        }
-
-            //        if (container.CurrentList.Type != Sushi.Mediakiwi.Data.ComponentListType.ComponentListProperties || selectedList.Type == Sushi.Mediakiwi.Data.ComponentListType.Undefined)
-            //        {
-            //            if (container.CurrentListInstance.HasListDelete)
-            //            {
-            //                if (container.CurrentListInstance.wim.CurrentList.Data["wim_CanDelete"].ParseBoolean(true))
-            //                {
-            //                    build2.AppendFormat("<a id=\"delete\" class=\"abbr type_confirm left flaticon icon-trash-o\"{1} title=\"{0}\"></a>"
-            //                                                 , Labels.ResourceManager.GetString("delete", new CultureInfo(container.CurrentApplicationUser.LanguageCulture))
-            //                                                 , ConfirmationQuestion(true, container)
-            //                                               );
-            //                }
-            //            }
-            //        }
-            //    }
-            //}
-
             if (buttonList != null)
             {
-                //var selection = (from item in buttonList where item.IconTarget == Sushi.Mediakiwi.Framework.ButtonTarget.BottomLeft select item);
-                //foreach (Framework.ContentListItem.ButtonAttribute button in selection)
                 buttonList.Where(x => (x.IconTarget == Sushi.Mediakiwi.Framework.ButtonTarget.BottomLeft || x.IconTarget == ButtonTarget.BottomRight))
                     .ToList()
                     .ForEach(button =>
@@ -1244,8 +1195,6 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
 
             build = new StringBuilder();
 
-            //if (container.Item.HasValue)
-            //{
                 build.AppendFormat(@"
             <footer>
                 <span class=""""> </span>
@@ -1254,15 +1203,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                 </div>
             </footer>
 			<br class=""clear"" />", build2.ToString());
-//            }
-//            else
-//            {
-//                build.AppendFormat(@"
-//            <div class=""navBar"">
-//				{0}
-//			    <br class=""clear"" />
-//            </div>", build2.ToString());
-//            }
+            
             return build.ToString();
         }
 
@@ -1594,20 +1535,6 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                         && !container.CurrentListInstance.wim.HideEditOption
                         )
                     {
-                        //builder.ApiResponse.Buttons.Add(new MediakiwiField()
-                        //{
-                        //    PropertyName = "edit",
-                        //    Title = Labels.ResourceManager.GetString("edit", new CultureInfo(container.CurrentApplicationUser.LanguageCulture)),
-                        //    PropertyType = "bool",
-                        //    ClassName = "action",
-                        //    VueType = MediakiwiFormVueType.wimButton,
-                        //    Event = MediakiwiJSEvent.click,
-                        //    Section = ButtonSection.Bottom
-                        //});
-
-                        //Build_TopRight.Append(string.Format("<li><a id=\"edit\" href=\"#\" class=\"postBack submit\">{0}</a></li>"
-                        //    , Labels.ResourceManager.GetString("edit", new CultureInfo(container.CurrentApplicationUser.LanguageCulture))
-                        //    ));
                     }
                     else
                         className = " left";
@@ -1681,11 +1608,6 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                             , container.UrlBuild.GetNewGalleryRequest()
                             , Labels.ResourceManager.GetString("folder_new", new CultureInfo(container.CurrentApplicationUser.LanguageCulture))
                             );
-
-                        //Build_TopRight.AppendFormat(@"<li><abbr title=""{1}""><a href=""{0}&openinframe=1"" class=""flaticon icon-settings-02 Small""></a></abbr></li>"
-                        //    , container.UrlBuild.GetGalleryOptionsRequest()
-                        //    , Labels.ResourceManager.GetString("folder_options", new CultureInfo(container.CurrentApplicationUser.LanguageCulture))
-                        //    );
                     }
                 }
                 else if (isTextMode)
@@ -1949,11 +1871,6 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                     Build_TopRight.Append(@"<li><a href=""#"" class=""flaticon icon-sort sortOrder""></a></li>");
             }
 
-            //if (container.CurrentListInstance.wim.HasExportOptionXLS &&  container.CurrentListInstance.wim.ListData != null)
-            //    Build_TopRight.AppendFormat(@"<li><abbr title=""{0}""><a id=""export_xls"" href=""#"" class=""flaticon icon-export postBack nosync""></a></abrr></li>"
-            //        , Labels.ResourceManager.GetString("export_xls", new CultureInfo(container.CurrentApplicationUser.LanguageCulture))
-            //        );
-
             if (_Build_TopRight != null)
             {
                 Build_TopRight.Insert(0, @"<li class=""laster""><ul>");
@@ -1992,10 +1909,6 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                 foreach (Framework.ContentListItem.ButtonAttribute item in buttonList)
                     if (item.IconTarget != Sushi.Mediakiwi.Framework.ButtonTarget.BottomRight) top.Add(item);
             }
-
-            //if (isNewNavigation)
-            //    return NewTopNavigation(container, top.ToArray());
-
 
             StringBuilder build = new StringBuilder();
             build.Append("\n<ul id=\"pathNavigation\" class=\"pathNavigation pseudoHover\">");
@@ -2181,23 +2094,6 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                 }
 
                 build.Append("</ul>");
-
-//                build.AppendFormat(@"<dl class=""properties"">
-//	<dt>
-//		<span>Information</span>
-//	</dt>
-//	<dd>
-//		<ul>
-//			<li>Published: {1}</li>
-//			<li>Modified: {2}</li>
-//            <li>Created: {0}</li>
-//		</ul>
-//	</dd>
-//</dl>
-//"
-//                    , page.Created.ToString("dd-MM-yyyy HH:mm")
-//                    , page.Published == DateTime.MinValue ? "-" : page.Published.ToString("dd-MM-yyyy HH:mm")
-//                    , page.Updated.ToString("dd-MM-yyyy HH:mm"));
             }
             else if (isEditMode)
             {
@@ -2238,8 +2134,6 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
 
                 if (container.CurrentListInstance.wim.CurrentApplicationUserRole.CanCreateList)
                 {
-                    //  Create new page
-                    //build2.AppendFormat("<li><a href=\"{0}\" class=\"createPage\">New list</a></li>", string.Concat(container.WimPagePath, "?", "list=", list1.ID, "&folder=", container.CurrentListInstance.wim.CurrentFolder.Id, "&item=0"));
                     //  Create new folder
                     build2.AppendFormat("<li><a href=\"{0}\" class=\"createFolder\">Create folder</a></li>", string.Concat(container.WimPagePath, "?", "list=", list0.ID, "&folder=", container.CurrentListInstance.wim.CurrentFolder.ID, "&item=0"));
                 }

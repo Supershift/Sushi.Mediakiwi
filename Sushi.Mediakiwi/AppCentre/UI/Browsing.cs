@@ -155,19 +155,6 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             }
         }
 
-        //private bool m_AddNew;
-        ///// <summary>
-        ///// Gets or sets a value indicating whether [add new].
-        ///// </summary>
-        ///// <value><c>true</c> if [add new]; otherwise, <c>false</c>.</value>
-        //
-        //[Sushi.Mediakiwi.Framework.ContentListSearchItem.Button("create new", false, true)]
-        //public bool AddNew
-        //{
-        //    get { return m_AddNew; }
-        //    set { m_AddNew = value; }
-        //}
-
         void ShowBrowsing()
         {
             wim.CurrentList.Option_Search_MaxResultPerPage = 512;
@@ -255,7 +242,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             #region Folder navigation
             Sushi.Mediakiwi.Data.Folder[] folders = null;
 
-            bool isRootLevelView = false;// wim.CurrentFolder.Level == 0;
+            bool isRootLevelView = false;
             if (isSearchInitiate || isRootLevelView)
             {
                 isRootLevelView = true;
@@ -292,12 +279,6 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                 return;
 
             build.AppendFormat("<div class=\"widget\">");
-
-            //if (wim.CurrentFolder.ParentID.HasValue)
-            //{
-            //    build.AppendFormat("<a href=\"{0}?folder={1}\">{2}</a>", wim.Console.WimPagePath, wim.CurrentFolder.ParentID, "..."
-            //        );
-            //}
 
             if (pages.Count() > 0)
             {
@@ -357,10 +338,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                             , i.IsPublished ? string.Empty : " class=\"inactive\""
                             );
                 }
-                else
-                {
-                    //build.Append("<a class=\"inactive\">....</a>");
-                }
+                
                 build.AppendFormat("</div>");
                 var arr = Sushi.Mediakiwi.Data.Folder.SelectAllByParent(entry.ID);
                 FindPage(arr, build);
@@ -374,10 +352,6 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             Sushi.Mediakiwi.Data.IComponentList list0 = Sushi.Mediakiwi.Data.ComponentList.SelectOne(Sushi.Mediakiwi.Data.ComponentListType.Folders);
 
             var folderSettings = Sushi.Mediakiwi.Data.ComponentList.SelectOne(new Guid("97292dd5-ebda-4318-8aaf-4c49e887cdad"));
-            //wim.ListDataColumns.Add("", "Info1", 90, Align.Right);
-            ////wim.ListDataColumns.Add("Type", "Info2");
-            //wim.ListDataColumns.Add(Labels.ResourceManager.GetString("list_datemodified", new CultureInfo(wim.CurrentApplicationUser.LanguageCulture)), "Info3", 110, Align.Center);
-            //wim.ListDataColumns.Add("", "Info4", 20, Align.Center);
 
             Sushi.Mediakiwi.Data.Gallery[] galleries;
             Sushi.Mediakiwi.Data.Gallery rootGallery = Sushi.Mediakiwi.Data.Gallery.SelectOne(Utility.ConvertToGuid(Request.Query["root"]));
@@ -463,10 +437,6 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                 list.Add(item);
             }
         }
-
-        //public string ParentURL { get; set; }
-        //[Sushi.Mediakiwi.Framework.ContentListSearchItem.Button(null, ButtonClassName = "flaticon icon-arrow-left-02", IconTarget = ButtonTarget.TopLeft, CustomUrlProperty = "ParentURL")]
-        //public bool Parent { get; set; }
 
         void GetListList(bool isSearchInitiate, List<BrowseItem> list)
         {
