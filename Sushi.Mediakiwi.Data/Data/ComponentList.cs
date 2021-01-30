@@ -612,16 +612,9 @@ namespace Sushi.Mediakiwi.Data
             filter.AddParameter("@sortOrder", sortOrder);
             filter.AddParameter("@listId", listID);
 
-            try
-            {
-                connector.ExecuteNonQuery("UPDATE [wim_ComponentLists] SET [ComponentList_SortOrder] = @sortOrder WHERE [ComponentList_Key] = @listId", filter);
-                connector.Cache?.FlushRegion(connector.CacheRegion);
-                return true;
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
+            connector.ExecuteNonQuery("UPDATE [wim_ComponentLists] SET [ComponentList_SortOrder] = @sortOrder WHERE [ComponentList_Key] = @listId", filter);
+            connector.Cache?.FlushRegion(connector.CacheRegion);
+            return true;
         }
 
         /// <summary>
@@ -638,16 +631,9 @@ namespace Sushi.Mediakiwi.Data
             filter.AddParameter("@sortOrder", sortOrder);
             filter.AddParameter("@listId", listID);
 
-            try
-            {
-                await connector.ExecuteNonQueryAsync("UPDATE [wim_ComponentLists] SET [ComponentList_SortOrder] = @sortOrder WHERE [ComponentList_Key] = @listId", filter);
-                connector.Cache?.FlushRegion(connector.CacheRegion);
-                return true;
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
+            await connector.ExecuteNonQueryAsync("UPDATE [wim_ComponentLists] SET [ComponentList_SortOrder] = @sortOrder WHERE [ComponentList_Key] = @listId", filter);
+            connector.Cache?.FlushRegion(connector.CacheRegion);
+            return true;
         }
 
         /// <summary>
@@ -739,7 +725,7 @@ namespace Sushi.Mediakiwi.Data
             if (siteID.GetValueOrDefault(0) > 0)
                 filter.Add(x => x.SiteID, siteID.Value);
 
-            if (string.IsNullOrWhiteSpace(text) == false)
+            if (!string.IsNullOrWhiteSpace(text))
                 filter.Add(x => x.Name, $"%{text}%", ComparisonOperator.Like);
 
             filter.Add(x => x.Target, targets, ComparisonOperator.In);
@@ -770,7 +756,7 @@ namespace Sushi.Mediakiwi.Data
             if (siteID.GetValueOrDefault(0) > 0)
                 filter.Add(x => x.SiteID, siteID.Value);
 
-            if (string.IsNullOrWhiteSpace(text) == false)
+            if (!string.IsNullOrWhiteSpace(text))
                 filter.Add(x => x.Name, $"%{text}%", ComparisonOperator.Like);
 
             filter.Add(x => x.Target, targets, ComparisonOperator.In);
@@ -794,7 +780,7 @@ namespace Sushi.Mediakiwi.Data
             filter.AddOrder(x => x.Name);
 
             filter.Add(x => x.FolderID, folderID);
-            if (includeHidden == false)
+            if (!includeHidden)
                 filter.Add(x => x.IsVisible, true);
 
             Folder folder = Folder.SelectOne(folderID);
@@ -814,7 +800,7 @@ namespace Sushi.Mediakiwi.Data
                 filter.AddOrder(x => x.ReferenceID);
                 filter.AddOrder(x => x.Name);
 
-                if (includeHidden == false)
+                if (!includeHidden)
                     filter.Add(x => x.IsVisible, true);
 
                 List<IComponentList> parent = connector.FetchAll(filter).ToList<IComponentList>();
@@ -1328,7 +1314,7 @@ namespace Sushi.Mediakiwi.Data
         {
             var candidate = (from item in SelectAll() where item.GUID == componentListGUID select item);
             IComponentList tmp;
-            if (candidate.Count() == 0)
+            if (!candidate.Any())
             {
                 if (ifNotPresentCreate == null)
                     tmp = new ComponentList();
@@ -1416,15 +1402,8 @@ namespace Sushi.Mediakiwi.Data
         public virtual bool Delete()
         {
             var connector = ConnectorFactory.CreateConnector<ComponentList>();
-            try
-            {
-                connector.Delete(this);
-                return true;
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
+            connector.Delete(this);
+            return true;
         }
 
         /// <summary>
@@ -1434,15 +1413,8 @@ namespace Sushi.Mediakiwi.Data
         public async Task<bool> DeleteAsync()
         {
             var connector = ConnectorFactory.CreateConnector<ComponentList>();
-            try
-            {
-                await connector.DeleteAsync(this);
-                return true;
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
+            await connector.DeleteAsync(this);
+            return true;
         }
 
         /// <summary>

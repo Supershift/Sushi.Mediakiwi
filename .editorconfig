@@ -125,6 +125,48 @@ dotnet_style_qualification_for_method = false:suggestion
 #prefer properties not to be prefaced with this. or Me. in Visual Basic
 dotnet_style_qualification_for_property = false:suggestion
 
+
+## CODE QUALITY
+
+# CA1707: Identifiers should not contain underscores
+dotnet_diagnostic.CA1707.severity = none
+# We use a lot of name_list for readibity
+
+# Sonarlint settings, also align with SonarLint.xml for Codacy!
+### EXCLUDES
+
+# Control structures should use curly braces
+dotnet_diagnostic.S121.severity = none
+
+# Redundant parentheses should not be used
+dotnet_diagnostic.S3235.severity = none
+# Reason: Is a minor code small and has no real value to quality.
+
+# Optional parameters should not be used
+dotnet_diagnostic.S4136.severity = none
+# Reason: 
+
+# Optional parameters should not be used
+dotnet_diagnostic.S2360.severity = none
+# Reason: 
+
+# Unused method parameters should be removed
+dotnet_diagnostic.S1172.severity = suggestion
+# Reason: Turned off because this also triggers a delegate match, wich is correct code and doesn't compile if this is set.
+
+# Boolean literals should not be redundant
+dotnet_diagnostic.S1125.severity = none
+# This improves readibity
+
+
+
+# Types should be named in PascalCase
+dotnet_diagnostic.S101.severity = none
+# We use a lot of name_list for readibity
+
+### END EXCLUDES
+
+
 dotnet_diagnostic.IDE0007.severity = none
 dotnet_diagnostic.IDE0008.severity = none
 # IDE0008: Use explicit type
@@ -171,10 +213,9 @@ dotnet_diagnostic.CA1829.severity = warning
 dotnet_diagnostic.CA2100.severity = warning
 
 
-
-
-
-# Sonarlint settings, also align with SonarLint.xml for Codacy!
+#"Any()" should be used to test for emptiness
+dotnet_diagnostic.S1155.severity = warning
+# Raason: Turned on intentially, should be used (MM)
 
 # "=+" should not be used instead of "+="
 dotnet_diagnostic.S2757.severity = warning
@@ -340,9 +381,6 @@ dotnet_diagnostic.S3253.severity = warning
 
 # Constructors should only call non-overridable methods
 dotnet_diagnostic.S1699.severity = warning
-
-# Control structures should use curly braces
-dotnet_diagnostic.S121.severity = none
 
 # Culture should be specified for "string" operations
 dotnet_diagnostic.S1449.severity = warning
@@ -522,10 +560,6 @@ dotnet_diagnostic.S3598.severity = warning
 # Optional parameters should be passed to "base" calls
 dotnet_diagnostic.S3466.severity = warning
 
-# Optional parameters should not be used
-dotnet_diagnostic.S2360.severity = none
-# Reason: 
-
 # Overflow checking should not be disabled for "Enumerable.Sum"
 dotnet_diagnostic.S2291.severity = warning
 
@@ -562,9 +596,6 @@ dotnet_diagnostic.S1905.severity = warning
 # Redundant modifiers should not be used
 dotnet_diagnostic.S2333.severity = warning
 
-# Redundant parentheses should not be used
-dotnet_diagnostic.S3235.severity = none
-# Reason: Is a minor code small and has no real value to quality.
 
 # Redundant property names should be omitted in anonymous classes
 dotnet_diagnostic.S3441.severity = warning
@@ -635,10 +666,6 @@ dotnet_diagnostic.S1854.severity = warning
 # Unused local variables should be removed
 dotnet_diagnostic.S1481.severity = warning
 
-# Unused method parameters should be removed
-dotnet_diagnostic.S1172.severity = none
-# Reason: Turned off because this also triggers a delegate match, wich is correct code and doesn't compile if this is set.
-
 # Unused type parameters should be removed
 dotnet_diagnostic.S2326.severity = warning
 
@@ -665,10 +692,6 @@ dotnet_diagnostic.S1656.severity = warning
 
 # Write-only properties should not be used
 dotnet_diagnostic.S2376.severity = warning
-
-# Types should be named in PascalCase
-dotnet_diagnostic.S101.severity = none
-# We use a lot of name_list for readibity
 
 # https://docs.microsoft.com/en-us/dotnet/fundamentals/code-analysis/quality-rules/
 
@@ -828,10 +851,6 @@ dotnet_diagnostic.CA1416.severity = warning
 
 # CA1417: Do not use 'OutAttribute' on string parameters for P/Invokes
 dotnet_diagnostic.CA1417.severity = warning
-
-# CA1707: Identifiers should not contain underscores
-dotnet_diagnostic.CA1707.severity = none
-# We use a lot of name_list for readibity
 
 # CA1708: Identifiers should differ by more than case
 dotnet_diagnostic.CA1708.severity = warning
