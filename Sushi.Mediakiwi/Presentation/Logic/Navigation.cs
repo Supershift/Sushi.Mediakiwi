@@ -906,8 +906,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                 {
                     Data.IComponentList[] lists1 = Data.ComponentList.SelectAll(currentFolder.ID);
                     lists1 = Sushi.Mediakiwi.Data.ComponentList.ValidateAccessRight(lists1,
-                        container.CurrentApplicationUser,
-                        container.CurrentListInstance.wim.CurrentSite.ID);
+                        container.CurrentApplicationUser);
 
                     foreach (Data.ComponentList list in lists1)
                     {

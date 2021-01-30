@@ -1514,7 +1514,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
             {
                 container.CurrentListInstance.wim.CanContainSingleInstancePerDefinedList = true;
                 container.Item = container.CurrentListInstance.wim.CurrentSite.ID;
-                listId = container.CurrentList.TemplateID.GetValueOrDefault(container.CurrentList.ID);
+                //listId = container.CurrentList.TemplateID.GetValueOrDefault(container.CurrentList.ID);
                 //if (container.CurrentList.TemplateId.HasValue)
                 //    container.CurrentList = Data.ComponentList.SelectOne(container.CurrentList.TemplateId.Value);
                 //  The Load/Save event are subscribed

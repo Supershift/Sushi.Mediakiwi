@@ -41,7 +41,6 @@ namespace Sushi.Mediakiwi.Data
                 Map(x => x.SenseScheduled, "ComponentList_Scheduled");
                 Map(x => x.HasOneChild, "ComponentList_ContainsOneChild");
                 Map(x => x.IsTemplate, "ComponentList_IsTemplate");
-                Map(x => x.TemplateID, "ComponentList_Template_Key");
                 Map(x => x.CatalogID, "ComponentList_Catalog_Key");
                 Map(x => x.IsSingleInstance, "ComponentList_IsSingle");
                 Map(x => x.Group, "ComponentList_Group").Length(50);
@@ -174,12 +173,6 @@ namespace Sushi.Mediakiwi.Data
         /// OBSOLETE: Is this list a template
         /// </summary>
         public virtual bool IsTemplate { get; set; }
-
-        /// <summary>
-        /// OBSOLETE: The template identifier
-        /// </summary>
-        [Obsolete("[MR:25-02-2020] Not SET anywhere")]
-        public virtual int? TemplateID { get; set; }
 
         /// <summary>
         /// The corresponding catalog identifier
@@ -854,7 +847,7 @@ namespace Sushi.Mediakiwi.Data
                 if (includeHidden == false)
                     filter.Add(x => x.IsVisible, true);
 
-                var parentResult = await connector.FetchAllAsync(filter);
+                var parentResult = await connector.FetchAllAsync(filter).ConfigureAwait(false);
                 List<IComponentList> parent = parentResult.ToList<IComponentList>();
 
                 if (parent.Count > 0)
@@ -919,28 +912,31 @@ namespace Sushi.Mediakiwi.Data
                 if (user.Role().IsAccessList)
                 {
                     lists = (
-                        from item in await SelectAllAsync(folderID, includeHidden)
-                        join relation in await RoleRight.SelectAllAsync(user.Role().ID, RoleRightType.List) on item.ID equals relation.ItemID
+                        from item in await SelectAllAsync(folderID, includeHidden).ConfigureAwait(false)
+                        join relation in await RoleRight.SelectAllAsync(user.Role().ID, RoleRightType.List).ConfigureAwait(false) 
+                        on item.ID equals relation.ItemID
                         select item).ToArray();
                 }
                 else
                 {
                     var acl = (
-                        from item in await SelectAllAsync(folderID, includeHidden)
-                        join relation in await RoleRight.SelectAllAsync(user.Role().ID, RoleRightType.List) on item.ID equals relation.ItemID
+                        from item in await SelectAllAsync(folderID, includeHidden).ConfigureAwait(false)
+                        join relation in await RoleRight.SelectAllAsync(user.Role().ID, RoleRightType.List).ConfigureAwait(false)
+                        on item.ID equals relation.ItemID
                         into combination
                         from relation in combination.DefaultIfEmpty()
                         select new { ID = item.ID, HasAccess = relation == null });
 
                     lists = (
                         from item in acl
-                        join relation in await SelectAllAsync(folderID, includeHidden) on item.ID equals relation.ID
+                        join relation in await SelectAllAsync(folderID, includeHidden).ConfigureAwait(false)
+                        on item.ID equals relation.ID
                         where item.HasAccess
                         select relation).ToArray();
                 }
             }
             else
-                lists = await SelectAllAsync(folderID, includeHidden);
+                lists = await SelectAllAsync(folderID, includeHidden).ConfigureAwait(false);
 
             return lists;
         }
@@ -998,28 +994,31 @@ namespace Sushi.Mediakiwi.Data
                 if (user.Role().IsAccessList)
                 {
                     lists = (
-                        from item in await SelectAllAsync()
-                        join relation in await RoleRight.SelectAllAsync(user.Role().ID, type) on item.ID equals relation.ItemID
+                        from item in await SelectAllAsync().ConfigureAwait(false)
+                        join relation in await RoleRight.SelectAllAsync(user.Role().ID, type).ConfigureAwait(false)
+                        on item.ID equals relation.ItemID
                         select item).ToArray();
                 }
                 else
                 {
                     var acl = (
-                        from item in await SelectAllAsync()
-                        join relation in await RoleRight.SelectAllAsync(user.Role().ID, type) on item.ID equals relation.ItemID
+                        from item in await SelectAllAsync().ConfigureAwait(false)
+                        join relation in await RoleRight.SelectAllAsync(user.Role().ID, type).ConfigureAwait(false)
+                        on item.ID equals relation.ItemID
                         into combination
                         from relation in combination.DefaultIfEmpty()
                         select new { ID = item.ID, HasAccess = relation == null });
 
                     lists = (
                         from item in acl
-                        join relation in await SelectAllAsync() on item.ID equals relation.ID
+                        join relation in await SelectAllAsync().ConfigureAwait(false)
+                        on item.ID equals relation.ID
                         where item.HasAccess
                         select relation).ToArray();
                 }
             }
             else
-                lists = await SelectAllAsync();
+                lists = await SelectAllAsync().ConfigureAwait(false);
 
             return lists;
         }
@@ -1031,7 +1030,7 @@ namespace Sushi.Mediakiwi.Data
         /// <param name="user">The user.</param>
         /// <param name="siteID">The site ID.</param>
         /// <returns></returns>
-        public static IComponentList[] ValidateAccessRight(IComponentList[] lists, IApplicationUser user, int siteID)
+        public static IComponentList[] ValidateAccessRight(IComponentList[] lists, IApplicationUser user)
         {
             return (from item in lists join relation in SelectAllAccessibleLists(user, RoleRightType.List) on item.ID equals relation.ID select item).ToArray();
         }
@@ -1043,9 +1042,10 @@ namespace Sushi.Mediakiwi.Data
         /// <param name="user">The user.</param>
         /// <param name="siteID">The site ID.</param>
         /// <returns></returns>
-        public static async Task<IComponentList[]> ValidateAccessRightAsync(IComponentList[] lists, IApplicationUser user, int siteID)
+        public static async Task<IComponentList[]> ValidateAccessRightAsync(IComponentList[] lists, IApplicationUser user)
         {
-            return (from item in lists join relation in await SelectAllAccessibleListsAsync(user, RoleRightType.List) on item.ID equals relation.ID select item).ToArray();
+            return (from item in lists join relation in await SelectAllAccessibleListsAsync(user, RoleRightType.List).ConfigureAwait(false)
+                    on item.ID equals relation.ID select item).ToArray();
         }
 
         /// <summary>
@@ -1074,8 +1074,9 @@ namespace Sushi.Mediakiwi.Data
         public static async Task<IComponentList[]> SelectAllDashboardListsAsync(int dashboardID, int column)
         {
             var candidate =
-                         from item in await SelectAllAsync()
-                         join relation in await DashboardListItem.SelectAllAsync(dashboardID) on item.ID equals relation.ListID
+                         from item in await SelectAllAsync().ConfigureAwait(false)
+                         join relation in await DashboardListItem.SelectAllAsync(dashboardID).ConfigureAwait(false)
+                         on item.ID equals relation.ListID
                          where relation.ColumnID == column
                          orderby relation.SortOrder
                          select item;
@@ -1111,7 +1112,7 @@ namespace Sushi.Mediakiwi.Data
             filter.AddOrder(x => x.Name);
             filter.AddSql("NOT [ComponentList_Scheduled] IS NULL");
 
-            var result = await connector.FetchAllAsync(filter);
+            var result = await connector.FetchAllAsync(filter).ConfigureAwait(false);
             return result.ToArray();
         }
 
@@ -1134,7 +1135,7 @@ namespace Sushi.Mediakiwi.Data
         public static async Task<IComponentList> SelectOneAsync(int ID)
         {
             var connector = ConnectorFactory.CreateConnector<ComponentList>();
-            return await connector.FetchSingleAsync(ID);
+            return await connector.FetchSingleAsync(ID).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -1162,7 +1163,7 @@ namespace Sushi.Mediakiwi.Data
             var filter = connector.CreateDataFilter();
             filter.Add(x => x.Type, type);
 
-            return await connector.FetchSingleAsync(filter);
+            return await connector.FetchSingleAsync(filter).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -1212,7 +1213,7 @@ namespace Sushi.Mediakiwi.Data
                 filter.Add(x => x.FolderID, folder);
             }
 
-            return await connector.FetchSingleAsync(filter);
+            return await connector.FetchSingleAsync(filter).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -1226,7 +1227,7 @@ namespace Sushi.Mediakiwi.Data
             var filter = connector.CreateDataFilter();
             filter.Add(x => x.ClassName, className);
 
-            return await connector.FetchSingleAsync(filter);
+            return await connector.FetchSingleAsync(filter).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -1246,7 +1247,7 @@ namespace Sushi.Mediakiwi.Data
         /// <returns></returns>
         public static async Task<IComponentList> SelectOneAsync(Type type)
         {
-            return await SelectOneAsync(type.ToString());
+            return await SelectOneAsync(type.ToString()).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -1274,7 +1275,7 @@ namespace Sushi.Mediakiwi.Data
             var filter = connector.CreateDataFilter();
             filter.Add(x => x.ReferenceID, referenceID);
 
-            return await connector.FetchSingleAsync(filter);
+            return await connector.FetchSingleAsync(filter).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -1302,7 +1303,7 @@ namespace Sushi.Mediakiwi.Data
             var filter = connector.CreateDataFilter();
             filter.Add(x => x.GUID, componentListGUID);
 
-            return await connector.FetchSingleAsync(filter);
+            return await connector.FetchSingleAsync(filter).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -1357,7 +1358,7 @@ namespace Sushi.Mediakiwi.Data
                 DataString = m_Data.Serialized;
 
             var connector = ConnectorFactory.CreateConnector<ComponentList>();
-            await connector.SaveAsync(this);
+            await connector.SaveAsync(this).ConfigureAwait(false);
 
             return this.ID;
         }
@@ -1391,7 +1392,9 @@ namespace Sushi.Mediakiwi.Data
             if (ID == 0 || user.Role().All_Lists)
                 return true;
 
-            var selection = from item in await SelectAllAccessibleListsAsync(user, RoleRightType.List) where item.ID == ID select item;
+            var selection = from item in await SelectAllAccessibleListsAsync(user, RoleRightType.List)
+                            .ConfigureAwait(false)
+                            where item.ID == ID select item;
             bool xs = selection.Count() == 1;
             return xs;
         }
@@ -1414,7 +1417,7 @@ namespace Sushi.Mediakiwi.Data
         public async Task<bool> DeleteAsync()
         {
             var connector = ConnectorFactory.CreateConnector<ComponentList>();
-            await connector.DeleteAsync(this);
+            await connector.DeleteAsync(this).ConfigureAwait(false);
             return true;
         }
 
@@ -1427,7 +1430,7 @@ namespace Sushi.Mediakiwi.Data
             if (!FolderID.HasValue)
                 return this.Name;
 
-            return string.Format("{0}{1}", Folder.SelectOne(FolderID.Value).CompletePath, this.Name);
+            return$"{Folder.SelectOne(FolderID.Value).CompletePath}{Name}";
         }
 
         #endregion Methods

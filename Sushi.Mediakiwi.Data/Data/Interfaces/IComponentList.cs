@@ -63,7 +63,6 @@ namespace Sushi.Mediakiwi.Data
         int? SiteID { get; set; }
         int SortOrder { get; set; }
         ComponentListTarget Target { get; set; }
-        int? TemplateID { get; set; }
         ComponentListType Type { get; set; }
         DateTime? Updated { get; }
 

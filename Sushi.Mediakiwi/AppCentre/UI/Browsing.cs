@@ -490,7 +490,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                     continue;
 
                 Sushi.Mediakiwi.Data.IComponentList[] all_lists = Sushi.Mediakiwi.Data.ComponentList.SelectAll(entry.ID, wim.CurrentApplicationUser, true);
-                var allowed_lists = Sushi.Mediakiwi.Data.ComponentList.ValidateAccessRight(all_lists, wim.CurrentApplicationUser, wim.CurrentSite.ID);
+                var allowed_lists = Sushi.Mediakiwi.Data.ComponentList.ValidateAccessRight(all_lists, wim.CurrentApplicationUser);
                 Sushi.Mediakiwi.Data.IComponentList[] selected_lists = null;
 
                 if (wim.CurrentApplicationUser.ShowHidden)
