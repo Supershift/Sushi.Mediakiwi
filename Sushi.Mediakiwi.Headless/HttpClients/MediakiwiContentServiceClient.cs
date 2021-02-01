@@ -49,12 +49,12 @@ namespace Sushi.Mediakiwi.Headless.HttpClients
             CancellationTokenSource cts = new CancellationTokenSource(_settings.MediaKiwi.ContentService.TimeOut); // 2 seconds timeout
 
             // Create querystring for adding SiteID to the Request
-            Dictionary<string, string> dict = new Dictionary<string, string>();
+            Dictionary<string, string> queryString = new Dictionary<string, string>();
             if (siteId.GetValueOrDefault(0) > 0)
-                dict.Add("siteId", siteId.GetValueOrDefault(0).ToString());
+                queryString.Add("siteId", siteId.GetValueOrDefault(0).ToString());
 
-            //when cache failed, retrieve via service
-            var response = await _httpClient.PostAsync(getServiceUrl($"{_settings.MediaKiwi.ContentService.ServiceUrl}/getPageNotFoundContent", dict), null, cts.Token);
+            // Retrieve content via service
+            var response = await _httpClient.PostAsync(getServiceUrl($"{_settings.MediaKiwi.ContentService.ServiceUrl}/getPageNotFoundContent", queryString), null, cts.Token).ConfigureAwait(false);
 
             if (response.IsSuccessStatusCode)
             {
@@ -102,8 +102,9 @@ namespace Sushi.Mediakiwi.Headless.HttpClients
             request.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
             request.Content = new StringContent(JsonSerializer.Serialize(requestObj), Encoding.UTF8, "application/json");
 
-            //when cache failed, retrieve via service
-            using var httpResponse = await _httpClient.SendAsync(request, HttpCompletionOption.ResponseContentRead, cts.Token);
+            // Retrieve content via service
+            using var httpResponse = await _httpClient.SendAsync(request, HttpCompletionOption.ResponseContentRead, cts.Token).ConfigureAwait(false);
+
             if (httpResponse.IsSuccessStatusCode)
             {
                 return await httpResponse.Content.ReadAsStringAsync();
@@ -119,27 +120,6 @@ namespace Sushi.Mediakiwi.Headless.HttpClients
 
         #region Get Cache Valid
 
-        public bool GetCacheValid(DateTime lastFlush)
-        {
-            CancellationTokenSource cts = new CancellationTokenSource(_settings.MediaKiwi.ContentService.TimeOut); // 2 seconds timeout
-
-            // Create Http Request object
-            var request = new HttpRequestMessage(HttpMethod.Get, $"{_settings.MediaKiwi.ContentService.ServiceUrl}/flush?now={lastFlush.Ticks}");
-            request.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
-
-            //when cache failed, retrieve via service
-            using var httpResponse = _httpClient.SendAsync(request, HttpCompletionOption.ResponseContentRead, cts.Token).Result;
-            if (httpResponse.IsSuccessStatusCode)
-            {
-                var responseFromServer = httpResponse.Content.ReadAsStringAsync().Result;
-                return responseFromServer.Equals("true", StringComparison.InvariantCultureIgnoreCase);
-            }
-            else
-            {
-                return false;
-            }
-        }
-
         public async Task<bool> GetCacheValidAsync(DateTime lastFlush)
         {
             CancellationTokenSource cts = new CancellationTokenSource(_settings.MediaKiwi.ContentService.TimeOut); // 2 seconds timeout
@@ -148,8 +128,9 @@ namespace Sushi.Mediakiwi.Headless.HttpClients
             var request = new HttpRequestMessage(HttpMethod.Get, $"{_settings.MediaKiwi.ContentService.ServiceUrl}/flush?now={lastFlush.Ticks}");
             request.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 
-            //when cache failed, retrieve via service
-            using var httpResponse = await _httpClient.SendAsync(request, HttpCompletionOption.ResponseContentRead, cts.Token);
+            // Retrieve content via service
+            using var httpResponse = await _httpClient.SendAsync(request, HttpCompletionOption.ResponseContentRead, cts.Token).ConfigureAwait(false);
+
             if (httpResponse.IsSuccessStatusCode)
             {
                 var responseFromServer = await httpResponse.Content.ReadAsStringAsync();
@@ -165,27 +146,6 @@ namespace Sushi.Mediakiwi.Headless.HttpClients
 
         #region Ping
 
-        public bool Ping()
-        {
-            CancellationTokenSource cts = new CancellationTokenSource(_settings.MediaKiwi.ContentService.TimeOut); // 2 seconds timeout
-
-            // Create Http Request object
-            var request = new HttpRequestMessage(HttpMethod.Get, $"{_settings.MediaKiwi.ContentService.ServiceUrl}/ping");
-            request.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
-
-            //when cache failed, retrieve via service
-            using var httpResponse = _httpClient.SendAsync(request, HttpCompletionOption.ResponseContentRead, cts.Token).Result;
-            if (httpResponse.IsSuccessStatusCode)
-            {
-                var responseFromServer = httpResponse.Content.ReadAsStringAsync().Result;
-                return responseFromServer.Equals("\"hello\"", StringComparison.InvariantCultureIgnoreCase);
-            }
-            else
-            {
-                return false;
-            }
-        }
-
         public async Task<bool> PingAsync()
         {
             CancellationTokenSource cts = new CancellationTokenSource(_settings.MediaKiwi.ContentService.TimeOut); // 2 seconds timeout
@@ -194,8 +154,9 @@ namespace Sushi.Mediakiwi.Headless.HttpClients
             var request = new HttpRequestMessage(HttpMethod.Get, $"{_settings.MediaKiwi.ContentService.ServiceUrl}/ping");
             request.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 
-            //when cache failed, retrieve via service
-            using var httpResponse = await _httpClient.SendAsync(request, HttpCompletionOption.ResponseContentRead, cts.Token);
+            // Retrieve Content via service
+            using var httpResponse = await _httpClient.SendAsync(request, HttpCompletionOption.ResponseContentRead, cts.Token).ConfigureAwait(false);
+
             if (httpResponse.IsSuccessStatusCode)
             {
                 var responseFromServer = await httpResponse.Content.ReadAsStringAsync();

@@ -56,9 +56,9 @@ namespace Sushi.Mediakiwi.Headless
                     try
                     {
                         if (PageId.GetValueOrDefault(0) > 0)
-                            PageContent = ContentService.GetPageContent(null, request.IsClearCacheCall(), request.IsPreviewCall(), PageId.Value);
+                            PageContent = ContentService.GetPageContentAsync(null, request.IsClearCacheCall(), request.IsPreviewCall(), PageId.Value).ConfigureAwait(true).GetAwaiter().GetResult();
                         else
-                            PageContent = ContentService.GetPageContent(request);
+                            PageContent = ContentService.GetPageContentAsync(request).ConfigureAwait(true).GetAwaiter().GetResult();
                     }
                     catch(Exception ex)
                     {

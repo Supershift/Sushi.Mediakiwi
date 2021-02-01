@@ -16,12 +16,9 @@ namespace Sushi.Mediakiwi.Headless.HttpClients.Interfaces
         public Task<string> GetPageContentStringAsync(string forUrl, bool clearCache, bool isPreview, int? pageId);
 
 
-        public bool GetCacheValid(DateTime lastFlush);
         public Task<bool> GetCacheValidAsync(DateTime lastFlush);
 
 
-        public bool Ping();
         public Task<bool> PingAsync();
-
     }
 }
