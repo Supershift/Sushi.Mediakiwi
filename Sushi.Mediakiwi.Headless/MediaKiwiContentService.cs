@@ -1,7 +1,5 @@
-﻿using FluentValidation.Validators;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
-using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -9,19 +7,30 @@ using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json;
 using Sushi.Mediakiwi.Headless.Config;
 using Sushi.Mediakiwi.Headless.Data;
+using Sushi.Mediakiwi.Headless.HttpClients.Interfaces;
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Net;
+using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Sushi.Mediakiwi.Headless
 {
+  
     public static class MediaKiwiContentServiceExtensions
     {
+        private static Action<HttpClient> DefaultHttpClient()
+        {
+            return client =>
+            {
+                client.Timeout = TimeSpan.FromSeconds(2);
+            };
+        }
+
         public static void AddMediaKiwiContentService(this IServiceCollection services)
         {
+            services.AddTransient<HttpClients.DefaultHttpClientHandler>();
+            services.AddHttpClient<IMediakiwiContentServiceClient, HttpClients.MediakiwiContentServiceClient>(nameof(HttpClients.MediakiwiContentServiceClient), client => DefaultHttpClient()).ConfigurePrimaryHttpMessageHandler<HttpClients.DefaultHttpClientHandler>();
+
             var mk = new MediaKiwiContentService(services.BuildServiceProvider());
             services.AddSingleton<IMediaKiwiContentService>(mk);
         }
@@ -31,6 +40,7 @@ namespace Sushi.Mediakiwi.Headless
     {
         private static CancellationTokenSource _resetCacheToken = new CancellationTokenSource();
 
+        private readonly IMediakiwiContentServiceClient _httpClient;
         private readonly IMemoryCache _memCache;
         private readonly ILogger _logger;
         private ISushiApplicationSettings Configuration;
@@ -63,9 +73,14 @@ namespace Sushi.Mediakiwi.Headless
         public MediaKiwiContentService(IServiceProvider serviceProvider)
         {
             _memCache = serviceProvider.GetService<IMemoryCache>();
+            _httpClient = serviceProvider.GetService<IMediakiwiContentServiceClient>();
             var _loggerFactory = serviceProvider.GetService<ILoggerFactory>();
-            _logger = _loggerFactory.CreateLogger<MediaKiwiContentService>();
+            if (_loggerFactory != null)
+            {
+                _logger = _loggerFactory.CreateLogger<MediaKiwiContentService>();
+            }
             Configuration = serviceProvider.GetService<ISushiApplicationSettings>();
+
         }
 
         public PageContentResponse GetPageNotFoundContent(int? siteId = null, bool clearCache = false)
@@ -91,61 +106,27 @@ namespace Sushi.Mediakiwi.Headless
             if (clearCache)
                 _logger.LogInformation($"A cache clear was requested for '{cacheKey}'");
 
-
             // Try to get from cache
             if (_memCache == null || _memCache.TryGetValue(cacheKey, out returnObj) == false || clearCache)
             {
-                // Create querystring for adding SiteID to the Request
-                Dictionary<string, string> dict = new Dictionary<string, string>();
-                if (siteId.GetValueOrDefault(0) > 0)
-                    dict.Add("siteId", siteId.GetValueOrDefault(0).ToString());
-
-                //when cache failed, retrieve via service
-                HttpWebRequest request = HttpWebRequest.CreateHttp(getServiceUrl($"{Configuration.MediaKiwi.ContentService.ServiceUrl}/getPageNotFoundContent", dict));
-                request.Method = "POST";
-                request.ContentType = "application/json";
-                request.Timeout = Configuration.MediaKiwi.ContentService.TimeOut;
-
-                // TODO: needs to be removed for production,
-                // this will now accept all SSL certificates 
-                request.ServerCertificateValidationCallback += (sender, certificate, chain, sslPolicyErrors) => true;
-                //request.Expect = "application/json";
-
-                // Get the response.
-                WebResponse response = request.GetResponse();
                 try
                 {
-                    // Get the stream containing content returned by the server.
-                    // The using block ensures the stream is automatically closed.
-                    using (Stream dataStream = response.GetResponseStream())
+                    string responseFromServer = _httpClient.GetPageNotFoundContent(siteId, clearCache).Result;
+                    if (string.IsNullOrWhiteSpace(responseFromServer) == false)
                     {
-                        // Open the stream using a StreamReader for easy access.
-                        StreamReader reader = new StreamReader(dataStream);
-
-                        // Read the content.
-                        string responseFromServer = reader.ReadToEnd();
-
-                        // Display the content.
                         returnObj = JsonConvert.DeserializeObject<PageContentResponse>(responseFromServer);
-
-                        // Apply default meta tags
-                        // TODO: this function should not exist, this data should come from 
-                        // the MediaKiwi API
-                        //SetMetaInfo(returnObj, forUrl);
                     }
-
                 }
                 catch (Exception ex)
                 {
                     _logger.LogError(ex, ex.Message, null);
                 }
-              
+
                 // Add content to cache if needed
                 if (returnObj?.PageID > 0 && _memCache != null)
                 {
                     AddCache(cacheKey, returnObj);
                 }
-
             }
 
             return returnObj;
@@ -220,23 +201,6 @@ namespace Sushi.Mediakiwi.Headless
         }
 
         #endregion Get Page Content - HttpRequest
-        
-        private string GetSubSiteURL(string inputUrl)
-        {
-            string temp = inputUrl;
-            if (string.IsNullOrWhiteSpace(Configuration?.MediaKiwi?.ContentService?.SiteFolderPrefix) == false)
-            {
-                string prefix = Configuration.MediaKiwi.ContentService.SiteFolderPrefix.Trim().Trim('/');
-                if (string.IsNullOrWhiteSpace(prefix) == false)
-                {
-                    temp = $"/{prefix}/{inputUrl}";
-                    temp = temp.Replace("//", "/");
-
-                    _logger.LogInformation($"Setting content SubSite URL to '{temp}'");
-                }
-            }
-            return temp;
-        }
 
         #region Get Page Content - Url / PageID
 
@@ -245,12 +209,6 @@ namespace Sushi.Mediakiwi.Headless
             PageContentResponse returnObj = new PageContentResponse();
             if (string.IsNullOrWhiteSpace(Configuration.MediaKiwi.ContentService.ServiceUrl))
                 return returnObj;
-
-            //if (Configuration.MediaKiwi.ContentService.PingFirst == true)
-            //{
-            //    if (PingSucceeded() == false)
-            //        return returnObj;
-            //}
 
             // Create cachekey
             string cacheKey = "";
@@ -285,62 +243,27 @@ namespace Sushi.Mediakiwi.Headless
             }
             else
             {
-
                 invalidatedCache = !IsCacheValid();
+
                 // Try to get from cache
                 if (_memCache == null || (_memCache.TryGetValue(cacheKey, out returnObj) == false || returnObj == null) || clearCache || invalidatedCache)
                 {
-                    //when cache failed, retrieve via service
-                    HttpWebRequest request = HttpWebRequest.CreateHttp($"{Configuration.MediaKiwi.ContentService.ServiceUrl}/getPageContent");
-                    request.Method = "POST";
-                    request.ContentType = "application/json";
-                    request.Timeout = Configuration.MediaKiwi.ContentService.TimeOut;
-
-                    // TODO: needs to be removed for production,
-                    // this will now accept all SSL certificates 
-                    request.ServerCertificateValidationCallback += (sender, certificate, chain, sslPolicyErrors) => true;
-
-                    string json = string.Empty;
-
-                    using (var streamWriter = new StreamWriter(request.GetRequestStream()))
-                    {
-                        json = JsonConvert.SerializeObject(new
-                        {
-                            Path = GetSubSiteURL(forUrl),
-                            ClearCache = clearCache,
-                            IsPreview = isPreview,
-                            PageID = pageId
-                        });
-                        streamWriter.Write(json);
-                    }
-
                     try
-                    { 
-                        // Get the response.
-                        WebResponse response = request.GetResponse();
+                    {
+                        // Read the content.
+                        string responseFromServer = _httpClient.GetPageContentStringAsync(forUrl, clearCache, isPreview, pageId).Result;
 
-                        // Get the stream containing content returned by the server.
-                        // The using block ensures the stream is automatically closed.
-                        using (Stream dataStream = response.GetResponseStream())
+                        // Display the content.
+                        if (string.IsNullOrWhiteSpace(responseFromServer) == false)
                         {
-                            // Open the stream using a StreamReader for easy access.
-                            StreamReader reader = new StreamReader(dataStream);
-
-                            // Read the content.
-                            string responseFromServer = reader.ReadToEnd();
-
-                            // Display the content.
                             returnObj = JsonConvert.DeserializeObject<PageContentResponse>(responseFromServer);
-
-                            // Apply default meta tags
-                            // TODO: this function should not exist, this data should come from 
-                            // the MediaKiwi API
-                            SetMetaInfo(returnObj, forUrl);
                         }
+
+                        SetMetaInfo(returnObj, forUrl);
                     }
                     catch (Exception ex)
                     {
-                        _logger.LogError(ex, "The request was: '{0}'", json);
+                        _logger.LogError(ex.Message);
                     }
                    
                     // Add content to cache if needed
@@ -355,6 +278,11 @@ namespace Sushi.Mediakiwi.Headless
 
                     _logger.LogInformation($"Got cached content for '{forUrl}' (Page: {returnObj.MetaData?.PageTitle} : {returnObj.PageID})");
                 }
+            }
+
+            if (returnObj == null)
+            {
+                returnObj = new PageContentResponse();
             }
 
             returnObj.IsCacheInvalidated = invalidatedCache;
@@ -410,58 +338,24 @@ namespace Sushi.Mediakiwi.Headless
                 // Try to get from cache (ASYNC!)
                 if (_memCache == null || _memCache.TryGetValue(cacheKey, out returnObj) == false || clearCache)
                 {
-                    //when cache failed, retrieve via service
-                    HttpWebRequest request = HttpWebRequest.CreateHttp($"{Configuration.MediaKiwi.ContentService.ServiceUrl}/getPageContent");
-                    request.Method = "POST";
-                    request.ContentType = "application/json";
-                    request.Timeout = Configuration.MediaKiwi.ContentService.TimeOut;
-
-                    // TODO: needs to be removed for production,
-                    // this will now accept all SSL certificates 
-                    request.ServerCertificateValidationCallback += (sender, certificate, chain, sslPolicyErrors) => true;
-
-                    string json = string.Empty;
-                    using (var streamWriter = new StreamWriter(request.GetRequestStream()))
-                    {
-                        json = JsonConvert.SerializeObject(new
-                        {
-                            Path = GetSubSiteURL(forUrl),
-                            ClearCache = clearCache,
-                            IsPreview = isPreview,
-                            PageID = pageId
-                        });
-                        await streamWriter.WriteAsync(json);
-                    }
-
                     try
                     {
-                        // Get the response.
-                        WebResponse response = await request.GetResponseAsync();
+                        // Read the content.
+                        string responseFromServer = await _httpClient.GetPageContentStringAsync(forUrl, clearCache, isPreview, pageId);
 
-                        // Get the stream containing content returned by the server.
-                        // The using block ensures the stream is automatically closed.
-                        using (Stream dataStream = response.GetResponseStream())
+                        // Display the content.
+                        if (string.IsNullOrWhiteSpace(responseFromServer) == false)
                         {
-                            // Open the stream using a StreamReader for easy access.
-                            StreamReader reader = new StreamReader(dataStream);
-
-                            // Read the content.
-                            string responseFromServer = await reader.ReadToEndAsync();
-
-                            // Display the content.
                             returnObj = JsonConvert.DeserializeObject<PageContentResponse>(responseFromServer);
-
-                            // Apply default meta tags
-                            // TODO: this function should not exist, this data should come from 
-                            // the MediaKiwi API
-                            SetMetaInfo(returnObj, forUrl);
                         }
+
+                        // Set MetaData
+                        SetMetaInfo(returnObj, forUrl);
                     }
                     catch (Exception ex)
                     {
-                        _logger.LogError(ex, "The request was : '{0}'", json);
+                        _logger.LogError(ex.Message);
                     }
-                  
 
                     // Add content to cache if needed
                     if (returnObj?.PageID > 0 && _memCache != null)
@@ -473,6 +367,11 @@ namespace Sushi.Mediakiwi.Headless
                 {
                     _logger.LogInformation($"Got cached content for '{forUrl}' (Page: {returnObj.MetaData?.PageTitle} : {returnObj.PageID})");
                 }
+            }
+            
+            if (returnObj == null) 
+            {
+                returnObj = new PageContentResponse();
             }
 
             returnObj.IsCached = isCached;
@@ -575,62 +474,29 @@ namespace Sushi.Mediakiwi.Headless
 
         #endregion Is Page Excluded - Url
 
-        private string getServiceUrl(string baseUrl, Dictionary<string, string> queryString)
-        {
-            return QueryHelpers.AddQueryString(baseUrl, queryString).ToString();
-        }
-
         public static DateTime Last_Flush = DateTime.UtcNow;
 
         public bool IsCacheValid()
         {
-            //_logger.LogInformation($"Calling cache server with Ticks : {Last_Flush.Ticks}");
             if (string.IsNullOrWhiteSpace(Configuration.MediaKiwi.ContentService.ServiceUrl))
                 return true;
 
-            //when cache failed, retrieve via service
-            HttpWebRequest request = HttpWebRequest.CreateHttp($"{Configuration.MediaKiwi.ContentService.ServiceUrl}/flush?now={Last_Flush.Ticks}");
-            request.Method = "GET";
-            request.ContentType = "application/json";
-            request.Timeout = Configuration.MediaKiwi.ContentService.TimeOut;
-
-            // TODO: needs to be removed for production,
-            // this will now accept all SSL certificates 
-            request.ServerCertificateValidationCallback += (sender, certificate, chain, sslPolicyErrors) => true;
-            //request.Expect = "application/json";
-            
-            //try
-            //{
-                // Get the response.
-                WebResponse response = request.GetResponse();
-                bool success = false;
-
-                // Get the stream containing content returned by the server.
-                // The using block ensures the stream is automatically closed.
-                using (Stream dataStream = response.GetResponseStream())
+            try
+            {
+                bool responseFromServer = _httpClient.GetCacheValid(Last_Flush);
+                if (responseFromServer)
                 {
-                    // Open the stream using a StreamReader for easy access.
-                    StreamReader reader = new StreamReader(dataStream);
-
-                    // Read the content.
-                    string responseFromServer = reader.ReadToEnd();
-                   // _logger.LogInformation($"Response from caching server : {responseFromServer}");
-                    
-                    success = responseFromServer.Equals("true", StringComparison.InvariantCultureIgnoreCase);
-                    if (success)
-                    {
-                        FlushCache();
-                        Last_Flush = DateTime.UtcNow;
-                        return false;
-                    }
+                    FlushCache();
+                    Last_Flush = DateTime.UtcNow;
+                    return false;
                 }
-            //}
-            //catch (Exception ex)
-            //{
-            //    _logger.LogError(ex, ex.Message, null);
-            //    FlushCache();
-            //    return false;
-            //}
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+            }
+
+            //when cache failed, retrieve via service
             return true;
         }
 
@@ -639,35 +505,10 @@ namespace Sushi.Mediakiwi.Headless
             if (string.IsNullOrWhiteSpace(Configuration.MediaKiwi.ContentService.ServiceUrl))
                 return false;
 
-            //when cache failed, retrieve via service
-            HttpWebRequest request = HttpWebRequest.CreateHttp($"{Configuration.MediaKiwi.ContentService.ServiceUrl}/ping");
-            request.Method = "GET";
-            request.ContentType = "application/json";
-            request.Timeout = Configuration.MediaKiwi.ContentService.TimeOut;
-
-            // TODO: needs to be removed for production,
-            // this will now accept all SSL certificates 
-            request.ServerCertificateValidationCallback += (sender, certificate, chain, sslPolicyErrors) => true;
-            //request.Expect = "application/json";
-
-            // Get the response.
-            WebResponse response = request.GetResponse();
             bool success = false;
-
             try
             {
-                // Get the stream containing content returned by the server.
-                // The using block ensures the stream is automatically closed.
-                using (Stream dataStream = response.GetResponseStream())
-                {
-                    // Open the stream using a StreamReader for easy access.
-                    StreamReader reader = new StreamReader(dataStream);
-
-                    // Read the content.
-                    string responseFromServer = reader.ReadToEnd();
-
-                    success = responseFromServer.Equals("\"hello\"", StringComparison.InvariantCultureIgnoreCase);
-                }
+                success = _httpClient.Ping();
             }
             catch (Exception ex)
             {

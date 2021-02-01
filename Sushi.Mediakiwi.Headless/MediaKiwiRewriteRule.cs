@@ -4,9 +4,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Sushi.Mediakiwi.Headless.Config;
 using Sushi.Mediakiwi.Headless.Data;
 using Microsoft.Extensions.Logging;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using System.Net.Http.Headers;
-using System.Net;
 using Microsoft.AspNetCore.Http.Extensions;
 
 namespace Sushi.Mediakiwi.Headless
@@ -54,7 +51,6 @@ namespace Sushi.Mediakiwi.Headless
                     // Get Pagecontent from service
                     PageContentResponse PageContent = new PageContentResponse();
 
-
                     var dt1 = DateTime.UtcNow;
 
                     try
@@ -66,8 +62,9 @@ namespace Sushi.Mediakiwi.Headless
                     }
                     catch(Exception ex)
                     {
-
+                        _logger.LogError(ex.Message);
                     }
+
                     var dt2 = DateTime.UtcNow;
 
                     response.Headers.Add(HttpHeaderNames.TimeSpend,new TimeSpan(dt2.Ticks - dt1.Ticks).TotalMilliseconds.ToString());

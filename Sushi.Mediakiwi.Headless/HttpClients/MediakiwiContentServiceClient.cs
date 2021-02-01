@@ -1,0 +1,212 @@
+﻿using Sushi.Mediakiwi.Headless.Config;
+using System;
+using Microsoft.Extensions.DependencyInjection;
+using System.Net.Http;
+using Microsoft.Extensions.Logging;
+using System.Collections.Generic;
+using Microsoft.AspNetCore.WebUtilities;
+using System.Threading.Tasks;
+using Sushi.Mediakiwi.Headless.HttpClients.Data;
+using System.Text.Json;
+using System.Text;
+using System.Threading;
+
+namespace Sushi.Mediakiwi.Headless.HttpClients
+{
+    public class MediakiwiContentServiceClient : Interfaces.IMediakiwiContentServiceClient
+    {
+        private readonly HttpClient _httpClient;
+        private readonly ISushiApplicationSettings _settings;
+        private ILogger _logger;
+
+        public MediakiwiContentServiceClient(HttpClient client, IServiceProvider serviceProvider = null)
+        {
+            _httpClient = client;
+
+            if (serviceProvider != null)
+            {
+                _settings = serviceProvider.GetService<ISushiApplicationSettings>();
+                var _loggerFactory = serviceProvider.GetService<ILoggerFactory>();
+                if (_loggerFactory != null)
+                    _logger = _loggerFactory.CreateLogger<MediakiwiContentServiceClient>();
+            }
+        }
+
+        private string getServiceUrl(string baseUrl, Dictionary<string, string> queryString)
+        {
+            return QueryHelpers.AddQueryString(baseUrl, queryString).ToString();
+        }
+
+        #region Get Page Not Found
+
+        public async Task<string> GetPageNotFoundContent(int? siteId)
+        {
+            return await GetPageNotFoundContent(siteId, false);
+        }
+
+        public async Task<string> GetPageNotFoundContent(int? siteId, bool clearCache)
+        {
+            CancellationTokenSource cts = new CancellationTokenSource(_settings.MediaKiwi.ContentService.TimeOut); // 2 seconds timeout
+
+            // Create querystring for adding SiteID to the Request
+            Dictionary<string, string> dict = new Dictionary<string, string>();
+            if (siteId.GetValueOrDefault(0) > 0)
+                dict.Add("siteId", siteId.GetValueOrDefault(0).ToString());
+
+            //when cache failed, retrieve via service
+            var response = await _httpClient.PostAsync(getServiceUrl($"{_settings.MediaKiwi.ContentService.ServiceUrl}/getPageNotFoundContent", dict), null, cts.Token);
+
+            if (response.IsSuccessStatusCode)
+            {
+                return await response.Content.ReadAsStringAsync();
+            }
+            else
+            {
+                return string.Empty;
+            }
+        }
+
+        #endregion Get Page Not Found
+
+        #region Get Page Content (String output)
+
+        public async Task<string> GetPageContentStringAsync(string forUrl)
+        {
+            return await GetPageContentStringAsync(forUrl, false);
+        }
+
+        public async Task<string> GetPageContentStringAsync(string forUrl, bool clearCache)
+        {
+            return await GetPageContentStringAsync(forUrl, clearCache, false);
+        }
+
+        public async Task<string> GetPageContentStringAsync(string forUrl, bool clearCache, bool isPreview)
+        {
+            return await GetPageContentStringAsync(forUrl, clearCache, isPreview, null);
+        }
+
+        public async Task<string> GetPageContentStringAsync(string forUrl, bool clearCache, bool isPreview, int? pageId)
+        {
+            CancellationTokenSource cts = new CancellationTokenSource(_settings.MediaKiwi.ContentService.TimeOut); // 2 seconds timeout
+
+            // Create Request to Post
+            GetPageContentRequest requestObj = new GetPageContentRequest() {
+                ClearCache = clearCache,
+                IsPreview = isPreview,
+                PageID = pageId,
+                Path = forUrl
+            };
+
+            // Create Http Request object
+            var request = new HttpRequestMessage(HttpMethod.Post, $"{_settings.MediaKiwi.ContentService.ServiceUrl}/getPageContent");
+            request.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
+            request.Content = new StringContent(JsonSerializer.Serialize(requestObj), Encoding.UTF8, "application/json");
+
+            //when cache failed, retrieve via service
+            using var httpResponse = await _httpClient.SendAsync(request, HttpCompletionOption.ResponseContentRead, cts.Token);
+            if (httpResponse.IsSuccessStatusCode)
+            {
+                return await httpResponse.Content.ReadAsStringAsync();
+            }
+            else
+            {
+                return string.Empty;
+            }
+
+        }
+
+        #endregion Get Page Content (String output)
+
+        #region Get Cache Valid
+
+        public bool GetCacheValid(DateTime lastFlush)
+        {
+            CancellationTokenSource cts = new CancellationTokenSource(_settings.MediaKiwi.ContentService.TimeOut); // 2 seconds timeout
+
+            // Create Http Request object
+            var request = new HttpRequestMessage(HttpMethod.Get, $"{_settings.MediaKiwi.ContentService.ServiceUrl}/flush?now={lastFlush.Ticks}");
+            request.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
+
+            //when cache failed, retrieve via service
+            using var httpResponse = _httpClient.SendAsync(request, HttpCompletionOption.ResponseContentRead, cts.Token).Result;
+            if (httpResponse.IsSuccessStatusCode)
+            {
+                var responseFromServer = httpResponse.Content.ReadAsStringAsync().Result;
+                return responseFromServer.Equals("true", StringComparison.InvariantCultureIgnoreCase);
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public async Task<bool> GetCacheValidAsync(DateTime lastFlush)
+        {
+            CancellationTokenSource cts = new CancellationTokenSource(_settings.MediaKiwi.ContentService.TimeOut); // 2 seconds timeout
+
+            // Create Http Request object
+            var request = new HttpRequestMessage(HttpMethod.Get, $"{_settings.MediaKiwi.ContentService.ServiceUrl}/flush?now={lastFlush.Ticks}");
+            request.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
+
+            //when cache failed, retrieve via service
+            using var httpResponse = await _httpClient.SendAsync(request, HttpCompletionOption.ResponseContentRead, cts.Token);
+            if (httpResponse.IsSuccessStatusCode)
+            {
+                var responseFromServer = await httpResponse.Content.ReadAsStringAsync();
+                return responseFromServer.Equals("true", StringComparison.InvariantCultureIgnoreCase);
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        #endregion Get Cache Valid
+
+        #region Ping
+
+        public bool Ping()
+        {
+            CancellationTokenSource cts = new CancellationTokenSource(_settings.MediaKiwi.ContentService.TimeOut); // 2 seconds timeout
+
+            // Create Http Request object
+            var request = new HttpRequestMessage(HttpMethod.Get, $"{_settings.MediaKiwi.ContentService.ServiceUrl}/ping");
+            request.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
+
+            //when cache failed, retrieve via service
+            using var httpResponse = _httpClient.SendAsync(request, HttpCompletionOption.ResponseContentRead, cts.Token).Result;
+            if (httpResponse.IsSuccessStatusCode)
+            {
+                var responseFromServer = httpResponse.Content.ReadAsStringAsync().Result;
+                return responseFromServer.Equals("\"hello\"", StringComparison.InvariantCultureIgnoreCase);
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public async Task<bool> PingAsync()
+        {
+            CancellationTokenSource cts = new CancellationTokenSource(_settings.MediaKiwi.ContentService.TimeOut); // 2 seconds timeout
+
+            // Create Http Request object
+            var request = new HttpRequestMessage(HttpMethod.Get, $"{_settings.MediaKiwi.ContentService.ServiceUrl}/ping");
+            request.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
+
+            //when cache failed, retrieve via service
+            using var httpResponse = await _httpClient.SendAsync(request, HttpCompletionOption.ResponseContentRead, cts.Token);
+            if (httpResponse.IsSuccessStatusCode)
+            {
+                var responseFromServer = await httpResponse.Content.ReadAsStringAsync();
+                return responseFromServer.Equals("\"hello\"", StringComparison.InvariantCultureIgnoreCase);
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        #endregion Ping    
+    }
+}
