@@ -24,23 +24,6 @@ namespace Sushi.Mediakiwi.Headless
         public Task<PageContentResponse> GetPageContentAsync(HttpRequest request);
 
         /// <summary>
-        /// Gets the content from memorycache or webservice
-        /// </summary>
-        /// <param name="forUrl">The url for which to get the content</param>
-        /// <param name="clearCache">Get renewed content from service, skip caching</param>
-        /// <param name="isPreview">This is a preview call, probably from the CMS</param>
-        /// <param name="pageId">Get this page ID, will precede over the URL !</param>
-        /// <returns></returns>
-        public PageContentResponse GetPageContent(string forUrl, bool clearCache = false, bool isPreview = false, int? pageId = null);
-
-        /// <summary>
-        /// Gets the content from memorycache or webservice
-        /// </summary>
-        /// <param name="request">The Http Request object for which to get the content</param>
-        /// <returns></returns>
-        public PageContentResponse GetPageContent(HttpRequest request);
-
-        /// <summary>
         /// If the suppliewd request is in the EXCLUDED settings for this service,
         /// TRUE will be returned. If it's not excluded, FALSE will be returned
         /// </summary>
@@ -60,6 +43,6 @@ namespace Sushi.Mediakiwi.Headless
         /// This executes the Ping endpoint on the controller and returns true if a succesful connection 
         /// was made to the Ping endpoint.
         /// </summary>
-        public bool PingSucceeded();
+        public Task<bool> PingSucceeded();
     }
 }
