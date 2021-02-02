@@ -2248,18 +2248,25 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                             }
                         }
                     }
-
+                    all.Add(x);
 
                     if (contentAttribute.ContentTypeSelection == ContentType.DataExtend)
                     {
                         if (!isVisible) continue;
 
                         object sender = info.GetValue(senderInstance, null);
-
+                
                         if (sender == null)
                         {
                             sender = System.Activator.CreateInstance(info.PropertyType);
                         }
+
+                        var componentlist = sender as ComponentListTemplate;
+                        if (componentlist != null)
+                        {
+                            componentlist.wim.Console = container;
+                        }
+
 
                         ((Framework.ContentListItem.DataExtendAttribute)contentAttribute).m_Implement = sender;
                         if (((Framework.ContentListItem.DataExtendAttribute)contentAttribute).m_Implement != null)

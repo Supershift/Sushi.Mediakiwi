@@ -279,7 +279,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// Gets or sets the name.
         /// </summary>
         /// <value>The name.</value>
-        [OnlyEditableWhenTrue("IsNewElement")]
+        [OnlyEditableWhenTrue(nameof(IsNewElement))]
         [Framework.ContentListItem.TextField("Username", 50, true, Expression = OutputExpression.Alternating)]
         public string Name
         {

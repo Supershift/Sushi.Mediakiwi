@@ -42,8 +42,6 @@ namespace Sushi.Mediakiwi.Tests.ORM
             Group = null,
             CanSortOrder = false,
             Class = null,
-            DataString = null,
-            SettingsString = null,
             SortOrder = 0
         };
 
@@ -73,8 +71,6 @@ namespace Sushi.Mediakiwi.Tests.ORM
             Group = null,
             CanSortOrder = false,
             Class = null,
-            DataString = null,
-            SettingsString = null,
             SortOrder = 0
         };
         #endregion Test Data

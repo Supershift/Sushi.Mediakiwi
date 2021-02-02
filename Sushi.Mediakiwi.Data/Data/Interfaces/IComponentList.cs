@@ -12,7 +12,6 @@ namespace Sushi.Mediakiwi.Data
         string ClassName { get; set; }
         int? ComponentTemplateID { get; set; }
         CustomData Data { get; set; }
-        string DataString { get; set; }
         string Description { get; set; }
         int? FolderID { get; set; }
         string Group { get; set; }
@@ -58,7 +57,7 @@ namespace Sushi.Mediakiwi.Data
         int? SenseInterval { get; set; }
         DateTime? SenseScheduled { get; set; }
         CustomData Settings { get; set; }
-        string SettingsString { get; set; }
+
         string SingleItemName { get; set; }
         int? SiteID { get; set; }
         int SortOrder { get; set; }

@@ -207,7 +207,7 @@ namespace Sushi.Mediakiwi.Data
         /// <summary>
         /// XML representation of the DATA property
         /// </summary>
-        public virtual string DataString { get; set; }
+        private string DataString { get; set; }
 
         private CustomData m_Data;
 
@@ -233,7 +233,7 @@ namespace Sushi.Mediakiwi.Data
         /// <summary>
         /// XML representation of the Settings property
         /// </summary>
-        public virtual string SettingsString { get; set; }
+        private string SettingsString { get; set; }
 
         private CustomData m_Settings;
 
@@ -1342,6 +1342,10 @@ namespace Sushi.Mediakiwi.Data
             if (m_Data != null)
                 DataString = m_Data.Serialized;
 
+            if (m_Settings != null)
+                SettingsString = m_Settings.Serialized;
+
+
             var connector = ConnectorFactory.CreateConnector<ComponentList>();
             connector.Save(this);
 
@@ -1356,6 +1360,9 @@ namespace Sushi.Mediakiwi.Data
         {
             if (m_Data != null)
                 DataString = m_Data.Serialized;
+
+            if (m_Settings != null)
+                SettingsString = m_Settings.Serialized;
 
             var connector = ConnectorFactory.CreateConnector<ComponentList>();
             await connector.SaveAsync(this).ConfigureAwait(false);

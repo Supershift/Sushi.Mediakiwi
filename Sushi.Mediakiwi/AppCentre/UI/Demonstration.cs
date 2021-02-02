@@ -9,6 +9,9 @@ namespace Sushi.Mediakiwi.AppCentre.UI
 {
     public class Demonstration : ComponentListTemplate
     {
+        [Sushi.Mediakiwi.Framework.ContentSettingItem.TextField("Setting", 50)]
+        public string Backend { get; set; }
+
         DemonstrationForm Implement { get; set; }
 
         public Demonstration()
