@@ -1369,12 +1369,12 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
             }
 
             System.Diagnostics.Trace.WriteLine("DoListSearch");
+
+            container.CurrentListInstance.SenderInstance = container.CurrentListInstance;
             container.CurrentListInstance.wim.DoListSearch();
 
             System.Diagnostics.Trace.WriteLine("Scanning component list (writing)");
             ScanClass(container, build, true, false, ref isValidInput, list);
-
-
 
             CreateGenericErrorMessage(container, build, ref isValidInput);
 
@@ -1892,6 +1892,16 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
             }
             else
             {
+                var instance = senderInstance as IComponentListTemplate;
+                if (instance != null)
+                {
+                    var set = (IComponentListTemplate)senderInstance;
+                    if (set.FormMaps != null && set.FormMaps.Count > 0)
+                    {
+                        Map(container, set.FormMaps.List, m_AllListProperties);
+                    }
+                }
+
                 System.Diagnostics.Trace.WriteLine($"Validating properties");
                 ValidateAllProperties(container, senderInstance);
                 System.Diagnostics.Trace.WriteLine($"End validating properties");

@@ -18,7 +18,6 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// </summary>
         public ComponentListSettings()
         {
-            //wim.ShowInFullWidthMode = true;
             wim.CanAddNewItem = false;
             
             this.ListLoad += ComponentListSettings_ListLoad;
@@ -40,7 +39,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                 if (item.ContentAttribute.ContentTypeSelection == ContentType.DataExtend || item.ContentAttribute.ContentTypeSelection == ContentType.ContentContainer)
                     continue;
 
-                ComponenentListInstance.Settings[item.Name].Apply(item.SenderInstance);
+                ComponentListInstance.Settings[item.Name].Apply(item.SenderInstance);
             }
             return Task.CompletedTask;
         }
@@ -56,9 +55,9 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                     continue;
 
                 object value = item.GetValue();
-                ComponenentListInstance.Settings.ApplyObject(item.Name, value);
+                ComponentListInstance.Settings.ApplyObject(item.Name, value);
             }
-            await ComponenentListInstance.SaveAsync();
+            await ComponentListInstance.SaveAsync().ConfigureAwait(false);
         }
 
         /// <summary>
@@ -68,8 +67,11 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// <param name="e">The <see cref="Sushi.Mediakiwi.Framework.ComponentListEventArgs"/> instance containing the event data.</param>
         async Task ComponentListSettings_ListLoad(ComponentListEventArgs e)
         {
-            this.ComponenentListInstance = await Sushi.Mediakiwi.Data.ComponentList.SelectOneAsync(e.SelectedGroupItemKey);
-            this.Implement = Utils.CreateInstance(ComponenentListInstance);
+            ComponentListInstance = await Sushi.Mediakiwi.Data.ComponentList.SelectOneAsync(e.SelectedGroupItemKey).ConfigureAwait(false);
+            Implement = Utils.CreateInstance(ComponentListInstance) as ComponentListTemplate;
+            Implement.SenderInstance = Implement;
+
+            await Implement.OnListConfigure().ConfigureAwait(false);
         }
 
         /// <summary>
@@ -77,15 +79,13 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// </summary>
         /// <value>The implement.</value>
         [Sushi.Mediakiwi.Framework.ContentSettingItem.DataExtend()]
-        public object Implement { get; set; }
+        public ComponentListTemplate Implement { get; set; }
 
         /// <summary>
         /// Gets or sets the componenent list instance.
         /// </summary>
         /// <value>The componenent list instance.</value>
-        public Sushi.Mediakiwi.Data.IComponentList ComponenentListInstance { get; set; }
-        //[Sushi.Mediakiwi.Framework.ContentSettingItem.d.DataList()]
-        //public Sushi.Mediakiwi.Data.DataList DataJobList { get; set; }
+        public Sushi.Mediakiwi.Data.IComponentList ComponentListInstance { get; set; }
 
     }
 }

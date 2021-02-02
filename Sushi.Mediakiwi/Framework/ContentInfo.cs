@@ -5,6 +5,7 @@ using System.Text;
 
 namespace Sushi.Mediakiwi.Framework
 {
+
     public class ContentInfo
     {
         protected bool? IsHidden { get; set; }

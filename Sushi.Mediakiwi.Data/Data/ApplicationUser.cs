@@ -633,12 +633,12 @@ namespace Sushi.Mediakiwi.Data
             var filter = connector.CreateDataFilter();
 
             if (!string.IsNullOrWhiteSpace(username))
-                filter.Add(x => x.Displayname, username);
+                filter.Add(x => x.Displayname, $"%{username}%", ComparisonOperator.Like);
             
             if (role > 0)
                 filter.Add(x => x.RoleID, role);
             
-            var result = await connector.FetchAllAsync(filter);
+            var result = await connector.FetchAllAsync(filter).ConfigureAwait(false);
             return result.ToArray();
         }
 

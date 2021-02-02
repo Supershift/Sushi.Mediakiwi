@@ -201,7 +201,28 @@ namespace Sushi.Mediakiwi.Framework
         public event Func<Task> ListInit;
         public event Func<ComponentListSearchEventArgs, Task> ListSearch;
         public event Func<ComponentListEventArgs, Task> ListLoad;
+        public event Func<Task> ListConfigure;
 
+        internal async Task OnListConfigure()
+        {
+            Func<Task> handler = ListConfigure;
+
+            if (handler == null)
+            {
+                return;
+            }
+
+            m_IsSearched = true;
+            Delegate[] invocationList = handler.GetInvocationList();
+            Task[] handlerTasks = new Task[invocationList.Length];
+
+            for (int i = 0; i < invocationList.Length; i++)
+            {
+                handlerTasks[i] = ((Func<Task>)invocationList[i])();
+            }
+
+            await Task.WhenAll(handlerTasks).ConfigureAwait(false);
+        }
 
         internal async Task OnListInit()
         {
@@ -221,7 +242,7 @@ namespace Sushi.Mediakiwi.Framework
                 handlerTasks[i] = ((Func<Task>)invocationList[i])();
             }
 
-            await Task.WhenAll(handlerTasks);
+            await Task.WhenAll(handlerTasks).ConfigureAwait(false);
         }
 
         internal void OnListAsync(ComponentAsyncEventArgs e)
