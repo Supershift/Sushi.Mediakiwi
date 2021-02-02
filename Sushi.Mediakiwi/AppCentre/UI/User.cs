@@ -75,10 +75,17 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             return Task.CompletedTask;
         }
 
+        public string Backend2 { get; set; }
+
         async Task User_ListSearch(ComponentListSearchEventArgs e)
         {
             wim.CanAddNewItem = true;
             wim.Page.HideTabs = true;
+            
+            Map<User>(x => x.m_SearchUserName, this).TextField("Username", 50).Expression(OutputExpression.Alternating);
+            Map<User>(x => x.m_SearchRole, this).Dropdown("Role2", nameof(AvailableRoles)).Expression(OutputExpression.Alternating);
+
+            this.FormMaps.Add(this);
 
             wim.ListDataColumns.Add(new ListDataColumn("ID", nameof(Sushi.Mediakiwi.Data.IApplicationUser.ID), ListDataColumnType.UniqueIdentifier));
             wim.ListDataColumns.Add(new ListDataColumn("Name", nameof(Sushi.Mediakiwi.Data.IApplicationUser.Displayname), ListDataColumnType.HighlightPresent));
@@ -90,7 +97,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             if (wim.IsCachedSearchResult)
                 return;
 
-            var data = await Sushi.Mediakiwi.Data.ApplicationUser.SelectAllAsync(m_SearchUserName, Utility.ConvertToInt(m_SearchRole));
+            var data = await Sushi.Mediakiwi.Data.ApplicationUser.SelectAllAsync(m_SearchUserName, Utility.ConvertToInt(m_SearchRole)).ConfigureAwait(false);
             wim.ListDataAdd(data);
         }
 
@@ -246,29 +253,8 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
 
         #region List search attributes
 
-        private string m_SearchUserName;
-        /// <summary>
-        /// Gets or sets the name of the search user.
-        /// </summary>
-        /// <value>The name of the search user.</value>
-        [Framework.ContentListSearchItem.TextField("Username", 50, false, Expression = OutputExpression.Alternating)]
-        public string SearchUserName
-        {
-            get { return m_SearchUserName; }
-            set { m_SearchUserName = value; }
-        }
-
-        private string m_SearchRole;
-        /// <summary>
-        /// Gets or sets the search role.
-        /// </summary>
-        /// <value>The search role.</value>
-        [Framework.ContentListSearchItem.Choice_Dropdown("Role", "AvailableRoles", false, false, null, Expression = OutputExpression.Alternating)]
-        public string SearchRole
-        {
-            get { return m_SearchRole; }
-            set { m_SearchRole = value; }
-        }
+        private string m_SearchUserName { get; set; }
+        private string m_SearchRole { get; set; }
 
         #endregion List search attributes
 
@@ -279,7 +265,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// Gets or sets the name.
         /// </summary>
         /// <value>The name.</value>
-        [OnlyEditableWhenTrue("IsNewElement")]
+        [OnlyEditableWhenTrue(nameof(IsNewElement))]
         [Framework.ContentListItem.TextField("Username", 50, true, Expression = OutputExpression.Alternating)]
         public string Name
         {

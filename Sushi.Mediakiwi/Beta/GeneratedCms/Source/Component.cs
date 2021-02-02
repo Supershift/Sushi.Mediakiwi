@@ -37,12 +37,6 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                 }
                 if (isClosingStatement)
                     return;
-
-                //if (hasContent)
-                //CreateHeader(title, build, true, skipTitle);
-                //if (!hasTableContent)
-                //    return;
-                return;
             }
             else
             {
@@ -81,10 +75,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                     else
                         build.SearchGrid += build2.SearchGrid;
                 }
-                // [MR:09-03-2016] moved this line out of the hasTableContent condition
-                //CreateFooter(container, build, build2);
             }
-            // [MR:09-03-2016] ^to here
             CreateFooter(container, build, build2);
 
             build.Append("</dd>");
@@ -386,10 +377,6 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
             else if (container.View == 1)
             {
                 string createNewTag = null;
-                if (container.CurrentListInstance.wim.CurrentFolder.Type == Sushi.Mediakiwi.Data.FolderType.Gallery)
-                {
-                    //createNewTag = string.Format(@"<span class=""add""><input type=""hidden"" name=""createNew"" /><button class=""postBack"">Create new&nbsp;&nbsp;</button></span>");
-                }
                 string listViewTag = null;
 
                 if (m_IsNewDesign)
@@ -634,7 +621,6 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
             version.Name = template.Name;
             version.TemplateIsShared = template.IsShared;
             
-            //version.AvailableTemplateID = availableTemplate.ID;
             version.IsFixed = false;
             version.IsAlive = true;
             version.IsSecundary = copy.IsSecundary;
@@ -643,33 +629,12 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
             version.Target = (copy == null || copy.ID == 0) ? target : copy.Target;
             version.Save();
 
-            //Sushi.Mediakiwi.Data.ComponentVersion component = Data.ComponentVersion.SelectOne(version.ID);
 
             Sushi.Mediakiwi.Framework.MetaData[] metadata =
                 (Sushi.Mediakiwi.Framework.MetaData[])Data.Utility.GetDeserialized(typeof(Sushi.Mediakiwi.Framework.MetaData[]), template.MetaData);
 
             Data.Content content = null;
 
-            //if (metadata == null)
-            //{
-            //    Sushi.Mediakiwi.Framework.MetaData empty = new MetaData()
-            //    {
-            //        ContentTypeSelection = ((int)ContentType.TextLine).ToString(),
-            //        Title = "ID"
-            //    };
-
-            //    metadata = new MetaData[] { empty };
-            //    Framework.IContentInfo x = empty.GetContentInfo();
-            //    ((Framework.ContentSharedAttribute)x).Console = container;
-            //    ((Framework.ContentSharedAttribute)x).IsBluePrint = true;
-
-
-            //    var field2 = new Field();
-            //    field2.Value = "xxxxx";
-            //    x.SetCandidate(field2, false);
-            //    x.WriteCandidate(build2, container.CurrentListInstance.wim.IsEditMode, x.Mandatory);
-            //}
-            //else
             if (metadata != null)
             {
                 foreach (Sushi.Mediakiwi.Framework.MetaData item in metadata)
@@ -679,7 +644,6 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                     if (x != null)
                     {
                         ((Framework.ContentSharedAttribute)x).Console = container;
-                        //((Framework.ContentSharedAttribute)x).m_IsNewDesign = this.m_IsNewDesign;
                         ((Framework.ContentSharedAttribute)x).IsBluePrint = true;
                         count++;
 
@@ -722,12 +686,8 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                     }
                 }
 
-                //CreateBlock(container, template.Name, build, build2, version, isContainerClosed, false);
             }
-            //else
-            //{
-                CreateBlock(container, template.Name, build, build2, version, isContainerClosed, false);
-            //}
+            CreateBlock(container, template.Name, build, build2, version, isContainerClosed, false);
 
             return build.ToString();
         }
@@ -915,7 +875,6 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
             pageVersion.CompletePath = page.CompletePath;
             pageVersion.Hash = m_CurrentPageVersionComponentXML_Hash;
             pageVersion.Save();
-            //Sushi.Mediakiwi.Framework2.Functions.AuditTrail.Insert(user, page, Framework2.Functions.Auditing.ActionType.Update, pageVersion.ID);
         }
 
         /// <summary>
@@ -1028,8 +987,6 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                 build2 = new WimControlBuilder();
             }
 
-            //build.Append("<dl class=\"application fixed\"></dl>");
-            // [CB: 3-1-2016] dit is nodig om de null pointer op te lossen en als er geen pagina is (shared component neem ik aan) de components te gebruiken
             Sushi.Mediakiwi.Data.IComponent[] visible = null;
             if (page != null)
                 visible = Data.Component.VerifyVisualisation(page.Template, components, section, ref showServiceColumn, true);
@@ -1053,7 +1010,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
             int c_index = 0;
             foreach (Data.ComponentVersion component in selection)
             {
-                Data.ComponentTemplate template = component.Template;// Data.ComponentTemplate.SelectOne(component.TemplateID);
+                Data.ComponentTemplate template = component.Template;
 
                 Sushi.Mediakiwi.Framework.MetaData[] metadata =
                     (Sushi.Mediakiwi.Framework.MetaData[])Data.Utility.GetDeserialized(typeof(Sushi.Mediakiwi.Framework.MetaData[]), template.MetaData);
@@ -1094,7 +1051,6 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                     return build;
                 }
 
-                //page.IsEdited = true;
                 page.Updated = Sushi.Mediakiwi.Data.Common.DatabaseDateTime;
 
                 if (page.Template.HasCustomDate && customDateField != null && !string.IsNullOrEmpty(customDateField.Value))
@@ -1120,42 +1076,9 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                     }
                 }
             }
-            //build.Append("<dl class=\"application fixed\"></dl>");
 
             return build;
         }
-
-        //int[] m_SortIndex;
-        //int[] SortOrderIndex(Console container)
-        //{
-        //    if (m_SortIndex == null)
-        //    {
-        //        List<int> sortList = new List<int>();
-        //        int previousComponentId = 0;
-        //        foreach (string key in container.Request.Form.Keys)
-        //        {
-        //            if (key.StartsWith("element$") && !key.Contains('_'))
-        //            {
-        //                if (container.Request.Form[key] == "1")
-        //                {
-        //                    int componentId = Data.Utility.ConvertToInt(key.Split('$')[1].Split('_')[0]);
-
-        //                    if (componentId > 0 && previousComponentId != componentId)
-        //                    {
-        //                        sortList.Add(componentId);
-        //                        previousComponentId = componentId;
-        //                    }
-        //                }
-        //                else
-        //                {
-        //                    string item = key;
-        //                }
-        //            }
-        //        }
-        //        m_SortIndex = sortList.ToArray();
-        //    }
-        //    return m_SortIndex;
-        //}
 
         internal void SetComponent(
             Data.IComponent[] c,
@@ -1446,12 +1369,12 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
             }
 
             System.Diagnostics.Trace.WriteLine("DoListSearch");
+
+            container.CurrentListInstance.SenderInstance = container.CurrentListInstance;
             container.CurrentListInstance.wim.DoListSearch();
 
             System.Diagnostics.Trace.WriteLine("Scanning component list (writing)");
             ScanClass(container, build, true, false, ref isValidInput, list);
-
-
 
             CreateGenericErrorMessage(container, build, ref isValidInput);
 
@@ -1478,8 +1401,6 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                     else
                         container.CurrentListInstance.wim.CurrentVisitor.Data.Apply("wim_FilterInfo", Sushi.Mediakiwi.Data.Content.GetSerialized(m_Content));
                 }
-                //container.CurrentApplicationUser.LastLoggedVisit = DateTime.Now;
-                //container.CurrentApplicationUser.Save();
             }
 
             return build;
@@ -1514,11 +1435,6 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
             {
                 container.CurrentListInstance.wim.CanContainSingleInstancePerDefinedList = true;
                 container.Item = container.CurrentListInstance.wim.CurrentSite.ID;
-                listId = container.CurrentList.TemplateID.GetValueOrDefault(container.CurrentList.ID);
-                //if (container.CurrentList.TemplateId.HasValue)
-                //    container.CurrentList = Data.ComponentList.SelectOne(container.CurrentList.TemplateId.Value);
-                //  The Load/Save event are subscribed
-
 
                 System.Diagnostics.Trace.WriteLine("ShouldActAsDataStore");
 
@@ -1567,7 +1483,6 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                 System.Diagnostics.Trace.WriteLine("DoListLoad");
 
                 container.CurrentListInstance.SenderInstance = container.CurrentListInstance;
-                //container.CurrentListInstance.FormMaps.Add((IFormMap)container.CurrentListInstance);
                 container.CurrentListInstance.wim.DoListLoad(container.Item.GetValueOrDefault(0), currentVersion.ID, Data.Utility.ConvertToInt(container.Request.Query["pitem"]), isValidInput);
             }
 
@@ -1605,7 +1520,6 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
             {
 
                 System.Diagnostics.Trace.WriteLine("DoListPreRender");
-                //ScanClass(container, build, false, true, ref isValidInput);
                 container.CurrentListInstance.wim.DoListPreRender(container.Item.GetValueOrDefault(0), currentVersion.ID, isValidInput);
                 fieldList = new List<Field>();
 
@@ -1613,8 +1527,6 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
 
                 System.Diagnostics.Trace.WriteLine("ScanClass (prerender write)");
 
-                // [MR:16-02-2018] changed on behalf of mail bij MP 14-02-2018 14:21
-                //was : ScanClass(container, build, false, !container.CurrentListInstance.wim.ShouldPostPreRenderLoadFormRequest, ref isValidInput, fieldList);
                 ScanClass(container, build, true, !container.CurrentListInstance.wim.ShouldPostPreRenderLoadFormRequest, ref isValidInput, fieldList);
             }
 
@@ -1719,11 +1631,6 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                         }
                         else
                         {
-                            //if (container.CurrentListInstance.wim.Notification.GenericInformation != null)
-                            //{
-
-                            //}
-
                             string savedMessage = container.CurrentList.Label_Saved;
                             if (string.IsNullOrEmpty(savedMessage))
                             {
@@ -1735,12 +1642,6 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                             }
                             container.CurrentListInstance.wim.CurrentVisitor.Data.Apply("wim.note", savedMessage);
                             container.CurrentListInstance.wim.CurrentVisitor.Save();
-                            //if (!container.CurrentList.Data["wim_LblSaved"].IsNull
-                            //    )
-                            //{
-                            //    container.CurrentListInstance.wim.CurrentVisitor.Data.Apply("wim.note", container.CurrentList.Data["wim_LblSaved"].Value);
-                            //    container.CurrentListInstance.wim.CurrentVisitor.Save();
-                            //}
 
                             if (container.CurrentList.IsSingleInstance)
                             {
@@ -1779,13 +1680,6 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                 if (!container.CurrentListInstance.wim.HasListPreRender)
                     ScanClass(container, build, true, false, ref isValidInput);
             }
-            // [MR:16-02-2018] changed on behalf of mail bij MP 14-02-2018 14:21
-            // was :
-            //
-            //  // else if (!container.CurrentListInstance.wim.HasListPreRender)
-            //     ScanClass(container, build, true, forceLoadEvent, ref isValidInput);
-            // is now :
-            //
             else if (!container.CurrentListInstance.wim.HasListPreRender)
                 ScanClass(container, build, true, forceLoadEvent, ref isValidInput);
 
@@ -1998,6 +1892,16 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
             }
             else
             {
+                var instance = senderInstance as IComponentListTemplate;
+                if (instance != null)
+                {
+                    var set = (IComponentListTemplate)senderInstance;
+                    if (set.FormMaps != null && set.FormMaps.Count > 0)
+                    {
+                        Map(container, set.FormMaps.List, m_AllListProperties);
+                    }
+                }
+
                 System.Diagnostics.Trace.WriteLine($"Validating properties");
                 ValidateAllProperties(container, senderInstance);
                 System.Diagnostics.Trace.WriteLine($"End validating properties");
@@ -2085,12 +1989,8 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                 ApplyContentInfoItem(container, infoItem, ref build, writeOutput, forceLoadEvent, ref isValidInput, fieldList, ref build2, ref count, ref containerTitle, ref isValidContainerInput, ref isContainerClosed, ref skipHeader, ref previousContentType);
             }
             System.Diagnostics.Trace.WriteLine($"End paging properties");
-
-            //m_IsFirstRun = false;
         }
 
-
-        //bool m_IsFirstRun = true;
         Hashtable m_IdValue;
 
         public class ListInfoItem
@@ -2280,37 +2180,11 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                     {
                         if (contentItem.Property != null && map.SenderInstance != null)
                         {
-                            //if (contentItem.InfoItem == new ListInfoItem())
-                            //{
-                            //    contentItem.InfoItem = new ListInfoItem();
-                            //    contentItem.InfoItem.ContentAttribute = contentItem;
-                            //    contentItem.InfoItem.Info = contentItem.Property;
-
-                            //    contentItem.InfoItem.HasTopPosition = false;
-                            //    contentItem.InfoItem.SenderInstance = map.SenderInstance;
-                            //    contentItem.InfoItem.SenderSponsorInstance = map;
-                            //    contentItem.InfoItem.ContentAttribute.ID = index == 0 ? $"{key}{contentItem.Property.Name}" : $"{key}{index}{contentItem.Property.Name}";
-
-                            //    contentItem.InfoItem.IsVisible = map.IsHidden.HasValue ? map.IsHidden.Value : !contentItem.IsHidden;
-                            //    contentItem.InfoItem.IsCloaked = map.IsCloacked.HasValue ? map.IsCloacked.Value : contentItem.IsCloaked;
-                            //    contentItem.InfoItem.IsEditable = map.IsReadOnly.HasValue ? !map.IsReadOnly.Value : !contentItem.IsReadOnly;
-                            //    contentItem.InfoItem.IsRequired = contentItem.Mandatory;
-
-                            //    if (contentItem is IContentInfo)
-                            //        ((IChainable)contentItem).Chain(container, contentItem.InfoItem.ContentAttribute.ID);
-                            //}
-                            //else
-                            //{
-                                contentItem.InfoItem.IsVisible = map.IsHidden.HasValue ? map.IsHidden.Value : !contentItem.IsHidden;
-                                contentItem.InfoItem.IsCloaked = map.IsCloacked.HasValue ? map.IsCloacked.Value : contentItem.IsCloaked;
-                                contentItem.InfoItem.IsEditable = map.IsReadOnly.HasValue ? !map.IsReadOnly.Value : !contentItem.IsReadOnly;
-                                contentItem.InfoItem.IsRequired = contentItem.Mandatory;
-
-                                //if (contentItem is IContentInfo)
-                                //    ((IContentInfo)contentItem).Chain(contentItem.InfoItem.ContentAttribute.ID);
-
-                            //}
-
+                            
+                            contentItem.InfoItem.IsVisible = map.IsHidden.HasValue ? map.IsHidden.Value : !contentItem.IsHidden;
+                            contentItem.InfoItem.IsCloaked = map.IsCloacked.HasValue ? map.IsCloacked.Value : contentItem.IsCloaked;
+                            contentItem.InfoItem.IsEditable = map.IsReadOnly.HasValue ? !map.IsReadOnly.Value : !contentItem.IsReadOnly;
+                            contentItem.InfoItem.IsRequired = contentItem.Mandatory;
                             all.Add(contentItem.InfoItem);
                         }
                     }
@@ -2384,30 +2258,6 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                             }
                         }
                     }
-
-                    //20-10-20:MM
-                    //if (contentAttribute.ContentTypeSelection == ContentType.ContentContainer)
-                    //{
-                    //    m_ContentContainerListInfoItem = x;
-
-                    //    Sushi.Mediakiwi.Data.CustomData custom = info.GetValue(senderInstance, null) as Sushi.Mediakiwi.Data.CustomData;
-                    //    if (custom != null)
-                    //    {
-                    //        //  Add temporary fields 
-                    //        if (custom.m_TemporaryProperties != null)
-                    //        {
-                    //            List<Sushi.Mediakiwi.Data.Property> list = new List<Sushi.Mediakiwi.Data.Property>();
-                    //            foreach (Sushi.Mediakiwi.Data.Property p in properties)
-                    //                list.Add(p);
-
-                    //            foreach (Sushi.Mediakiwi.Data.Property p in custom.m_TemporaryProperties)
-                    //                list.Add(p);
-
-                    //            properties = list.ToArray();
-                    //        }
-                    //    }
-
-                    //}
                     all.Add(x);
 
                     if (contentAttribute.ContentTypeSelection == ContentType.DataExtend)
@@ -2415,20 +2265,18 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                         if (!isVisible) continue;
 
                         object sender = info.GetValue(senderInstance, null);
-
+                
                         if (sender == null)
                         {
-                            //if (info.PropertyType == typeof(Wim.Templates.IGeneric))
-                            //{
-                            //    sender = System.Activator.CreateInstance(typeof(Sushi.Mediakiwi.Framework.Templates.GenericInstance));
-                            //    //var q = all;
-                            //    //var y = ((Framework.ContentListItem.DataExtendAttribute)contentAttribute).m_Implement.GetType().GetProperties();
-                            //    //var z = properties;
-                            //    //return;
-                            //}
-                            //else
-                                sender = System.Activator.CreateInstance(info.PropertyType);
+                            sender = System.Activator.CreateInstance(info.PropertyType);
                         }
+
+                        var componentlist = sender as ComponentListTemplate;
+                        if (componentlist != null)
+                        {
+                            componentlist.wim.Console = container;
+                        }
+
 
                         ((Framework.ContentListItem.DataExtendAttribute)contentAttribute).m_Implement = sender;
                         if (((Framework.ContentListItem.DataExtendAttribute)contentAttribute).m_Implement != null)
@@ -2588,16 +2436,6 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                     {
                         if (!infoItem.IsCloaked && infoItem.ContentAttribute.ContentTypeSelection == ContentType.Section)
                         {
-                            //[MR:01-04-2020] this breaks backwards compatibility, so its commented
-                            //var section = infoItem.ContentAttribute as SectionAttribute;
-                            //if (section != null)
-                            //{
-
-                            //    CreateBlock(container, section.OutputText, build, build2, null, section);
-                            //}
-                            //else
-                            //{
-
                             containerTitle = infoItem.ContentAttribute.OutputText;
                             if (string.IsNullOrEmpty(containerTitle))
                             {
@@ -2611,8 +2449,6 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
 
 
                             CreateBlock(container, containerTitle, build, build2, null, isContainerClosed, skipHeader, false, false);
-
-                            //}//[MR:01-04-2020] this breaks backwards compatibility, so its commented
 
                             build2 = new WimControlBuilder();
                         }
@@ -2672,7 +2508,6 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                 }
                 else
                     ID = infoItem.Name;
-                //ID = infoItem.Info.Name;
 
                 System.Diagnostics.Trace.WriteLine($"ID: {ID} ({infoItem.ContentAttribute.GetType().ToString()})");
 
@@ -2700,8 +2535,6 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                     }
                 }
 
-                //if (m_IsFirstRun)
-                //{
                 infoItem.ContentAttribute.ShowInheritedData = container.CurrentListInstance.wim.Form.ShowTranslationData;
 
                 if (inputField == null)
@@ -2750,12 +2583,6 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                             build2.Append("\t\t\t\t\t</table>");
                         skipHeader = false;
                     }
-                    //{
-                    //    CreateFooter(container, build);
-                    //}
-                    //((Framework.ContentSharedAttribute)infoItem.ContentAttribute).m_IsNewDesign = this.m_IsNewDesign;
-                    //if (infoItem.ContentAttribute.ContentTypeSelection == ContentType.DataList)
-                    //    CreateBlock(container, containerTitle, build, build2, null, isContainerClosed, skipHeader); 
 
                     if (infoItem.IsCloaked)
                         skipExpression = true;
@@ -2766,7 +2593,6 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                         fieldList.Add(field);
 
                     if (infoItem.ContentAttribute.ContentTypeSelection == ContentType.Button)
-                    //&& !((Framework.ContentListItem.ButtonAttribute)infoItem.ContentAttribute).m_IsFormElement)
                     {
                         if (m_ButtonList == null)
                             m_ButtonList = new List<Sushi.Mediakiwi.Framework.ContentListItem.ButtonAttribute>();
@@ -2963,19 +2789,6 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
             {
                 if (container.CurrentListInstance.wim.IsSaveMode)
                     isContainerClosed = isValidContainerInput;
-
-                //if (m_ShowSearchButton && fieldList != null && fieldList.Count > 0)
-                //{
-                //    if (!string.IsNullOrEmpty(container.CurrentListInstance.wim.SearchButtonText))
-                //    {
-                //        Framework.ContentListSearchItem.ButtonAttribute button = new Sushi.Mediakiwi.Framework.ContentListSearchItem.ButtonAttribute(container.CurrentListInstance.wim.SearchButtonText, false, true);
-                //        button.ID = "searchBtn";
-                //        button.m_IsFormElement = false;
-                //        button.Console = container;
-                //        button.IconTarget = ButtonTarget.BottomRight;
-                //        button.WriteCandidate(build2, true);
-                //    }
-                //}
 
                 if (build2.Length > 0)
                 {
