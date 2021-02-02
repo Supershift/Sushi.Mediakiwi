@@ -25,6 +25,20 @@ namespace Sushi.Mediakiwi.Headless
         private IWebHostEnvironment WebHostEnvironment { get; }
         private IMemoryCache Cache { get; }
 
+        private async Task<string> createCacheEntryAsync(string path, ICacheEntry entry)
+        {
+            IFileProvider fileProvider = WebHostEnvironment.WebRootFileProvider;
+            IChangeToken changeToken = fileProvider.Watch(path);
+
+            entry.SetPriority(CacheItemPriority.NeverRemove);
+            entry.AddExpirationToken(changeToken);
+
+            IFileInfo file = fileProvider.GetFileInfo(path);
+            if (file == null || !file.Exists)
+                return null;
+
+            return await ReadFileContentAsync(file).ConfigureAwait(false);
+        }
 
         public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
         {
@@ -38,20 +52,7 @@ namespace Sushi.Mediakiwi.Headless
             }
 
             // Get the value from the cache, or compute the value and add it to the cache
-            var fileContent = await Cache.GetOrCreateAsync($"InlineStyleTagHelper-{path}-{version}", async entry => {
-                IFileProvider fileProvider = WebHostEnvironment.WebRootFileProvider;
-                IChangeToken changeToken = fileProvider.Watch(path);
-
-                entry.SetPriority(CacheItemPriority.NeverRemove);
-                entry.AddExpirationToken(changeToken);
-
-                IFileInfo file = fileProvider.GetFileInfo(path);
-                if (file == null || !file.Exists)
-                    return null;
-
-                return await ReadFileContent(file);
-            });
-
+            var fileContent = await Cache.GetOrCreateAsync($"InlineStyleTagHelper-{path}-{version}", async entry => await createCacheEntryAsync(path, entry)).ConfigureAwait(false);
             if (fileContent == null)
             {
                 output.SuppressOutput();
@@ -64,12 +65,12 @@ namespace Sushi.Mediakiwi.Headless
         }
 
 
-        private static async Task<string> ReadFileContent(IFileInfo file)
+        private static async Task<string> ReadFileContentAsync(IFileInfo file)
         {
             using var stream = file.CreateReadStream();
             using var textReader = new StreamReader(stream);
 
-            return await textReader.ReadToEndAsync();
+            return await textReader.ReadToEndAsync().ConfigureAwait(false);
         }
     }
 }
