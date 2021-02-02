@@ -110,7 +110,7 @@ namespace Sushi.Mediakiwi.Headless
                 try
                 {
                     // Fetch JSON content from service
-                    string responseFromServer = _httpClient.GetPageNotFoundContent(siteId, clearCache).Result;
+                    string responseFromServer = await _httpClient.GetPageNotFoundContent(siteId, clearCache);
 
                     // Convert JSON content
                     if (string.IsNullOrWhiteSpace(responseFromServer) == false)
