@@ -1892,15 +1892,15 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
             }
             else
             {
-                var instance = senderInstance as IComponentListTemplate;
-                if (instance != null)
-                {
-                    var set = (IComponentListTemplate)senderInstance;
-                    if (set.FormMaps != null && set.FormMaps.Count > 0)
-                    {
-                        Map(container, set.FormMaps.List, m_AllListProperties);
-                    }
-                }
+                //var instance = senderInstance as IComponentListTemplate;
+                //if (instance != null)
+                //{
+                //    var set = (IComponentListTemplate)senderInstance;
+                //    if (set.FormMaps != null && set.FormMaps.Count > 0)
+                //    {
+                //        Map(container, set.FormMaps.List, m_AllListProperties);
+                //    }
+                //}
 
                 System.Diagnostics.Trace.WriteLine($"Validating properties");
                 ValidateAllProperties(container, senderInstance);
@@ -2258,7 +2258,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                             }
                         }
                     }
-                    all.Add(x);
+                    //all.Add(x);
 
                     if (contentAttribute.ContentTypeSelection == ContentType.DataExtend)
                     {
