@@ -1892,15 +1892,15 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
             }
             else
             {
-                //var instance = senderInstance as IComponentListTemplate;
-                //if (instance != null)
-                //{
-                //    var set = (IComponentListTemplate)senderInstance;
-                //    if (set.FormMaps != null && set.FormMaps.Count > 0)
-                //    {
-                //        Map(container, set.FormMaps.List, m_AllListProperties);
-                //    }
-                //}
+                var instance = senderInstance as IComponentListTemplate;
+                if (instance != null)
+                {
+                    var set = (IComponentListTemplate)senderInstance;
+                    if (set.FormMaps != null && set.FormMaps.Count > 0)
+                    {
+                        Map(container, set.FormMaps.List, m_AllListProperties);
+                    }
+                }
 
                 System.Diagnostics.Trace.WriteLine($"Validating properties");
                 ValidateAllProperties(container, senderInstance);
@@ -1913,9 +1913,8 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                 foreach (var custom in container.CurrentListInstance.wim.m_infoList)
                 {
                     var found = from item in m_AllListProperties where item.Name == custom.Name select item;
-                    if (found.Count() == 0)
+                    if (!found.Any())
                     {
-                        
                         m_AllListProperties.Add(custom);
                     }
                 }
@@ -2175,7 +2174,6 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                     else
                         _mapdata.Add(key, 1);
 
-
                     foreach (var contentItem in map.Elements)
                     {
                         if (contentItem.Property != null && map.SenderInstance != null)
@@ -2185,7 +2183,11 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                             contentItem.InfoItem.IsCloaked = map.IsCloacked.HasValue ? map.IsCloacked.Value : contentItem.IsCloaked;
                             contentItem.InfoItem.IsEditable = map.IsReadOnly.HasValue ? !map.IsReadOnly.Value : !contentItem.IsReadOnly;
                             contentItem.InfoItem.IsRequired = contentItem.Mandatory;
-                            all.Add(contentItem.InfoItem);
+
+                            if (!all.Contains(contentItem.InfoItem))
+                            {
+                                all.Add(contentItem.InfoItem);
+                            }
                         }
                     }
                     if (map.FormMaps != null && map.FormMaps.Count > 0)
@@ -2258,7 +2260,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                             }
                         }
                     }
-                    //all.Add(x);
+                    all.Add(x);
 
                     if (contentAttribute.ContentTypeSelection == ContentType.DataExtend)
                     {
