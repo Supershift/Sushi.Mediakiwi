@@ -70,8 +70,6 @@ namespace Sushi.Mediakiwi.Framework
             get
             {
                 return (Request.Method == "POST");
-                //    return true;
-                //return false;
             }
         }
 
