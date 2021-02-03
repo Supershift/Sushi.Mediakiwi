@@ -3,13 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29609.76
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sushi.Mediakiwi.Data", "Sushi.Mediakiwi.Data\Sushi.Mediakiwi.Data.csproj", "{F0C72A9E-4799-48E7-85B3-C9CE5A3AE81B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sushi.Mediakiwi.Data", "src\Sushi.Mediakiwi.Data\Sushi.Mediakiwi.Data.csproj", "{F0C72A9E-4799-48E7-85B3-C9CE5A3AE81B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sushi.Mediakiwi.Tests", "Sushi.Mediakiwi.Tests\Sushi.Mediakiwi.Tests.csproj", "{D0A0EAE4-EDA0-4836-B752-D603370DF0E8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sushi.Mediakiwi.Tests", "src\Sushi.Mediakiwi.Tests\Sushi.Mediakiwi.Tests.csproj", "{D0A0EAE4-EDA0-4836-B752-D603370DF0E8}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sushi.Mediakiwi", "Sushi.Mediakiwi\Sushi.Mediakiwi.csproj", "{D0B32D66-DDB4-4D44-95B0-DED7108E03CB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sushi.Mediakiwi", "src\Sushi.Mediakiwi\Sushi.Mediakiwi.csproj", "{D0B32D66-DDB4-4D44-95B0-DED7108E03CB}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sushi.Mediakiwi.Demonstration", "Sushi.Mediakiwi.Demonstration\Sushi.Mediakiwi.Demonstration.csproj", "{C252AF02-772F-4BDA-B226-AF0B7C1C2741}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sushi.Mediakiwi.Demonstration", "src\Sushi.Mediakiwi.Demonstration\Sushi.Mediakiwi.Demonstration.csproj", "{C252AF02-772F-4BDA-B226-AF0B7C1C2741}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{DA850D2F-5A0B-4AC6-9A48-92952A3201C2}"
 	ProjectSection(SolutionItems) = preProject
@@ -19,9 +19,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sushi.Mediakiwi.Files", "Sushi.Mediakiwi.Files\Sushi.Mediakiwi.Files.csproj", "{8C696881-4AB8-41CD-AD46-AEAD0825BE50}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sushi.Mediakiwi.Files", "src\Sushi.Mediakiwi.Files\Sushi.Mediakiwi.Files.csproj", "{8C696881-4AB8-41CD-AD46-AEAD0825BE50}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sushi.Mediakiwi.Headless", "Sushi.Mediakiwi.Headless\Sushi.Mediakiwi.Headless.csproj", "{6E1C9E66-EF21-433A-9190-D3F00E6A2CE9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sushi.Mediakiwi.Headless", "src\Sushi.Mediakiwi.Headless\Sushi.Mediakiwi.Headless.csproj", "{6E1C9E66-EF21-433A-9190-D3F00E6A2CE9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
