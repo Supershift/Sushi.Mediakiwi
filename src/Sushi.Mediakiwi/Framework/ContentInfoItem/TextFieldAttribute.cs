@@ -218,7 +218,9 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                 //  Possible return types: System.String, System.Int32, System.Decimal
 
                 if (Property.PropertyType == typeof(Data.CustomData))
+                {
                     ApplyContentContainer(field, (candidate == null ? null : candidate.ToString()));
+                }
                 else if (Property.PropertyType == typeof(string))
                 {
                     //if candidate is user input it needs to cleaned
@@ -238,13 +240,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
 
                     Property.SetValue(SenderInstance, candidate, null);
                 }
-                //else if (Property.PropertyType == typeof(Dictionary<string, string>))
-                //{
-                //    var dict = candidate as Dictionary<string, string>;
-                //    candidate = 
 
-                //    Property.SetValue(SenderInstance, candidate, null);
-                //}
                 else if (Property.PropertyType == typeof(int))
                 {
                     candidate = Data.Utility.ConvertToInt(candidate);

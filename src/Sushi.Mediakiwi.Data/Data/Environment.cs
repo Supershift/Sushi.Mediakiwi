@@ -381,7 +381,7 @@ namespace Sushi.Mediakiwi.Data
                         return null;
 
                     m_Registry = new Hashtable();
-                    foreach (Registry item in Data.Registry.SelectAll())
+                    foreach (Registry item in Sushi.Mediakiwi.Data.Registry.SelectAll())
                     {
                         if (!m_Registry.ContainsKey(item.Name))
                             m_Registry.Add(item.Name, item.Value);

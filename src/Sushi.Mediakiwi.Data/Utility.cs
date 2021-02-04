@@ -17,6 +17,13 @@ namespace Sushi.Mediakiwi.Data
 {
     public class Utility
     {
+        public static string ConvertUrl(string path)
+        {
+            return path
+                .ToLowerInvariant()
+                .Replace(" ", "-");
+        }
+
         public static string GetHtmlFormattedLastServerError(System.Exception ex)
         {
             string error = "";

@@ -1,6 +1,10 @@
-﻿using System;
+﻿using Sushi.Mediakiwi.Data.Data;
+using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using System.Threading.Tasks;
 
 namespace Sushi.Mediakiwi.Data
 {
@@ -9,6 +13,22 @@ namespace Sushi.Mediakiwi.Data
     /// </summary>
     public class CustomData
     {
+        public async Task<Dictionary<string, ContentItem>> ToContentAsync(string ContentDeliveryPrefix = null)
+        {
+            return await ContentCreatorLogic.GetContentAsync(this, ContentDeliveryPrefix).ConfigureAwait(false);
+        }
+
+        public async Task<string> ToJsonAsync(string ContentDeliveryPrefix = null)
+        {
+            var result = await ToContentAsync(ContentDeliveryPrefix).ConfigureAwait(false);
+            return JsonSerializer.Serialize(result, new JsonSerializerOptions
+            {
+                IgnoreNullValues = true,
+                IgnoreReadOnlyProperties = true,
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+            });
+        }
+
         /// <summary>
         /// Applies the specified property (if the property exists it's value is updated).
         /// If the value = NULL it will remove the entry.
@@ -108,7 +128,7 @@ namespace Sushi.Mediakiwi.Data
         /// </summary>
         /// <param name="property">The property.</param>
         /// <param name="value">The value.</param>
-        public void Apply(string property, string value)
+        public void Apply(string property, string value, int? type = null)
         {
             CustomDataItem data = this[property];
 
@@ -119,15 +139,16 @@ namespace Sushi.Mediakiwi.Data
                 return;
             }
 
+            data.Type = type.HasValue ? type.ToString() : null;
             data.m_Value = value;
 
             if (!HasProperty(property))
             {
-                data.m_Property = property;
+                data.Property = property;
                 m_Items.Add(data);
             }
 
-            Changed?.Invoke(this, null);
+            Changed?.Invoke(this, EventArgs.Empty);
         }
 
         /// <summary>
@@ -180,7 +201,6 @@ namespace Sushi.Mediakiwi.Data
                 }
                 CustomDataItem tmp = new CustomDataItem(this);
                 tmp.Property = property;
-                //tmp.IsNull = true;
 
                 return tmp;
             }

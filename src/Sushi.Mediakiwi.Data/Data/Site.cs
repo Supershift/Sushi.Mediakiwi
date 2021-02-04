@@ -133,7 +133,7 @@ namespace Sushi.Mediakiwi.Data
             get
             {
                 if (m_Country == null && CountryID.HasValue)
-                    m_Country = Data.Country.SelectOne(CountryID.Value);
+                    m_Country = Sushi.Mediakiwi.Data.Country.SelectOne(CountryID.Value);
                 return m_Country;
             }
         }

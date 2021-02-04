@@ -9,6 +9,16 @@ namespace Sushi.Mediakiwi.Data
     [System.Xml.Serialization.XmlType("Data")]
     public class CustomDataItem
     {
+        public Field ToField()
+        {
+            return new Field
+            {
+                Type = Convert.ToInt32(Type, System.Globalization.CultureInfo.InvariantCulture),
+                Property = Property,
+                Value = Value
+            };
+        }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="CustomDataItem"/> class.
         /// </summary>
@@ -33,6 +43,9 @@ namespace Sushi.Mediakiwi.Data
         /// <param name="instance">The instance.</param>
         public void Apply(object instance)
         {
+            if (instance == null)
+                throw new ArgumentNullException(nameof(instance), "Should not be NULL");
+
             System.Reflection.PropertyInfo info = instance.GetType().GetProperty(this.Property);
             if (info == null) return;
             if (info.PropertyType == typeof(string)) info.SetValue(instance, this.Value, null);
@@ -65,19 +78,16 @@ namespace Sushi.Mediakiwi.Data
         }
 
         /// <summary>
-        ///
+        /// Gets the property.
         /// </summary>
-        internal string m_Property;
+        /// <value>The property.</value>
+        public string Type { get; set; }
 
         /// <summary>
         /// Gets the property.
         /// </summary>
         /// <value>The property.</value>
-        public string Property
-        {
-            get { return m_Property; }
-            set { m_Property = value; }
-        }
+        public string Property { get; set; }
 
         /// <summary>
         ///
@@ -94,7 +104,7 @@ namespace Sushi.Mediakiwi.Data
             set
             {
                 m_Value = value;
-                if (m_Customdata != null) m_Customdata.Apply(this.Property, m_Value);
+                if (m_Customdata != null) m_Customdata.Apply(Property, m_Value);
             }
         }
 
@@ -284,50 +294,13 @@ namespace Sushi.Mediakiwi.Data
         }
 
         /// <summary>
-        /// Parses the type of the SQL parameter.
-        /// </summary>
-        /// <param name="type">The type.</param>
-        /// <returns></returns>
-        internal System.Data.SqlDbType ParseSqlParameterType(Type type)
-        {
-            if (type == typeof(Int16)) return System.Data.SqlDbType.Int;
-            if (type == typeof(Int32)) return System.Data.SqlDbType.Int;
-            if (type == typeof(Int64)) return System.Data.SqlDbType.BigInt;
-            if (type == typeof(Decimal)) return System.Data.SqlDbType.Decimal;
-            if (type == typeof(String)) return System.Data.SqlDbType.NVarChar;
-            if (type == typeof(DateTime)) return System.Data.SqlDbType.DateTime;
-            if (type == typeof(Guid)) return System.Data.SqlDbType.UniqueIdentifier;
-            if (type == typeof(Boolean)) return System.Data.SqlDbType.Bit;
-
-            throw new Exception("Could not determine the SqlDbType for the Property.");
-        }
-
-        internal object ParseSqlParameterValue(Type type)
-        {
-            //  Set also in CustomDataItem: ParseSqlParameterValue
-            //  Set also in CreateFilter
-            //  IsNotFilterOrType
-
-            if (type == typeof(Int16)) return ParseInt();
-            if (type == typeof(Int32)) return ParseInt();
-            if (type == typeof(Int64)) return ParseLong();
-            if (type == typeof(Decimal)) return ParseDecimal();
-            if (type == typeof(String)) return Value;
-            if (type == typeof(DateTime)) return ParseDateTime();
-            if (type == typeof(Guid)) return ParseGuid();
-            if (type == typeof(Boolean)) return ParseBoolean();
-
-            throw new Exception("Could not determine the SqlDbType for the Property.");
-        }
-
-        /// <summary>
         /// Parses the int array.
         /// </summary>
         /// <returns></returns>
         public int[] ParseIntArray()
         {
             if (string.IsNullOrEmpty(Value))
-                return null;
+                return default;
 
             return Sushi.Mediakiwi.Data.Utility.ConvertToIntArray(Value.Split(','));
         }
@@ -350,9 +323,9 @@ namespace Sushi.Mediakiwi.Data
         /// <returns></returns>
         public SubList ParseSubList()
         {
-            if (this.m_Customdata != null && this.m_Customdata.m_Table.Contains(this.m_Property))
+            if (this.m_Customdata != null && this.m_Customdata.m_Table.Contains(Property))
             {
-                SubList list2 = this.m_Customdata.m_Table[this.m_Property] as SubList;
+                SubList list2 = this.m_Customdata.m_Table[Property] as SubList;
                 if (list2 == null)
                     return null;
 
@@ -361,7 +334,7 @@ namespace Sushi.Mediakiwi.Data
                 if (list2 == null)
                     list2 = new SubList();
                 list2.m_urlAddition = urlAddition;
-                this.m_Customdata.m_Table[this.m_Property] = list2;
+                this.m_Customdata.m_Table[Property] = list2;
                 return list2;
             }
 
@@ -372,7 +345,7 @@ namespace Sushi.Mediakiwi.Data
                 list = SubList.GetDeserialized(Value);
 
             if (this.m_Customdata != null)
-                this.m_Customdata.m_Table[this.m_Property] = list;
+                this.m_Customdata.m_Table[Property] = list;
 
             return list;
         }

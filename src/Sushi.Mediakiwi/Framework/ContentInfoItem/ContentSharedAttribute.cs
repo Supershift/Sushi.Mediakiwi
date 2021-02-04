@@ -121,8 +121,7 @@ namespace Sushi.Mediakiwi.Framework
         internal void ApplyContentContainer(Field field, string candidate)
         {
             field.Value = candidate;
-            m_ContentContainer.Apply(field.Property, field.Value);
-            //m_ContentContainer.Add(field);
+            m_ContentContainer.Apply(field.Property, field.Value, (int)this.ContentTypeSelection);
             Property.SetValue(SenderInstance, m_ContentContainer, null);
         }
 
