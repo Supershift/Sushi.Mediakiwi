@@ -79,6 +79,7 @@ namespace Sushi.Mediakiwi.Framework
                         {
                             var field = new Field();
                             field.Property = name;
+                            field.Type = (int)element.ContentTypeSelection;
 
                             ((IContentInfo)element).Init(wim);
                             if (wim.Console.IsPosted(element.InfoItem.ContentAttribute.ID))

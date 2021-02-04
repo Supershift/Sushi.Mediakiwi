@@ -279,7 +279,7 @@ namespace Sushi.Mediakiwi.Framework
         /// <returns></returns>
         public ContentSettings MultiField(string title, string interactiveHelp = null)
         {
-            var element = new Sushi.Mediakiwi.Framework.ContentListItem.MultiFieldAttribute(title, interactiveHelp);
+            var element = new MultiFieldAttribute(title, interactiveHelp);
             Add(element);
             return new ContentSettings(element);
         }
@@ -289,30 +289,32 @@ namespace Sushi.Mediakiwi.Framework
         /// <returns></returns>
         public ContentSettings PageContainer()
         {
-            var element = new Sushi.Mediakiwi.Framework.ContentListItem.PageContainerAttribute();
+            var element = new PageContainerAttribute();
             Add(element);
             return new ContentSettings(element);
         }
         public void Component(IEnumerable<MetaData> metadata)
         {
-            foreach (var meta in metadata)
+            if (metadata != null)
             {
-                Meta(meta);
+                foreach (var meta in metadata)
+                {
+                    Meta(meta);
+                }
             }
         }
 
-        ContentSettings Meta(MetaData meta)
+        private void Meta(MetaData metadata)
         {
-            var element = meta.GetContentInfo();
-            element.FieldName = meta.Name;
-            element.Mandatory = meta.Mandatory == "1";
-            if (!string.IsNullOrWhiteSpace(meta.MaxValueLength))
+            var element = metadata.GetContentInfo();
+            element.FieldName = metadata.Name;
+            element.Mandatory = metadata.Mandatory == "1";
+            if (!string.IsNullOrWhiteSpace(metadata.MaxValueLength))
             {
-                element.MaxValueLength = Convert.ToInt32(meta.MaxValueLength);
+                element.MaxValueLength = Convert.ToInt32(metadata.MaxValueLength, System.Globalization.CultureInfo.InvariantCulture);
             }
 
             Add(element);
-            return new ContentSettings(element);
         }
 
         /// <summary>
@@ -324,7 +326,7 @@ namespace Sushi.Mediakiwi.Framework
         /// <returns></returns>
         public ContentSettings PageSelect(string title, bool mandatory = false, string interactiveHelp = null)
         {
-            var element = new Sushi.Mediakiwi.Framework.ContentListItem.PageSelectAttribute(title, mandatory, interactiveHelp);
+            var element = new PageSelectAttribute(title, mandatory, interactiveHelp);
             Add(element);
             return new ContentSettings(element);
         }
