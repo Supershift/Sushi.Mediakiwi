@@ -14,21 +14,21 @@ namespace Sushi.Mediakiwi.Headless
         /// <summary>
         /// This would be the URL before any MediaKiwi URL redirect was done
         /// </summary>
-        public static string OriginalRequestURL { get; set; } = "x-mediakiwi-originalrequesturl";
-        
+        public static readonly string OriginalRequestURL = "x-mediakiwi-originalrequesturl";
+
         /// <summary>
         /// This would be the URL before the ContentService was called to transform the URL
         /// </summary>
-        public static string FullRequestURL { get; set; } = "x-mediakiwi-fullrequesturl";
+        public static readonly string FullRequestURL = "x-mediakiwi-fullrequesturl";
 
         /// <summary>
         /// The resolved MediaKiwi Page ID
         /// </summary>
-        public static string PageId { get; set; } = "x-mediakiwi-pageid";
+        public static readonly string PageId = "x-mediakiwi-pageid";
 
-        public static string TimeSpend { get; set; } = "x-mk-timed";
-        public static string CachedData { get; set; } = "x-mk-cached";
-        public static string CacheInvalidData { get; set; } = "x-mk-cache-invalid";
+        public static readonly string TimeSpend = "x-mk-timed";
+        public static readonly string CachedData = "x-mk-cached";
+        public static readonly string CacheInvalidData = "x-mk-cache-invalid";
     }
 
     public static class Extensions
