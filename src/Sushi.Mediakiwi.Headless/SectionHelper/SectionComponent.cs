@@ -1,79 +1,116 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
+using Sushi.Mediakiwi.Headless.SectionHelper.Elements;
+using Sushi.Mediakiwi.Headless.SectionHelper.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using static Sushi.Mediakiwi.Headless.SectionHelper.SectionService;
 
 namespace Sushi.Mediakiwi.Headless.SectionHelper
 {
-    public class SectionComponent : ComponentBase, IDisposable
+    /// <summary>
+    /// The Section Component handles rendering the final output of all collected Section Elements for a specific Section
+    /// </summary>
+    public class SectionComponent : ComponentBase
     {
+        /// <summary>
+        /// Inject the Section Service from DI
+        /// </summary>
         [Inject]
         public SectionService Service { get; set; }
 
+        /// <summary>
+        /// The name for this Section
+        /// </summary>
         [Parameter]
         public string SectionName { get; set; }
+        
+        /// <summary>
+        /// Is the current SectionName registered ?
+        /// </summary>
+        private bool _isRegistered;
 
-        private bool _initialised;
+        /// <summary>
+        /// The current Section
+        /// </summary>
         private ISection _section;
-        private int _sequence;
 
+        /// <summary>
+        /// The current Section Element Order
+        /// </summary>
+        private int _sectionElementOrder;
+
+        /// <summary>
+        /// Builds the Render tree, basically renders every SectionElement within this element
+        /// </summary>
+        /// <param name="builder"></param>
         protected override void BuildRenderTree(RenderTreeBuilder builder)
         {
             base.BuildRenderTree(builder);
 
-            if (!_initialised)
+            // If the current section name has not been registered yet, do so
+            if (!_isRegistered)
             {
                 if (string.IsNullOrWhiteSpace(SectionName))
                 {
-                    throw new ArgumentOutOfRangeException("SectionName must be set.");
+                    throw new ArgumentOutOfRangeException(nameof(SectionName));
                 }
                 _section = Service.RegisterSection(SectionName);
                 _section.ChangesDone += Service_ChangesDone;
-                _initialised = true;
+                _isRegistered = true;
             }
 
-            int sequence = 0;
-            List<Element> elements = _initialised ? _section.Elements.Where(x => !x.ShouldUpdate).ToList() : _section.Elements;
-            foreach (Element element in elements)
+            // Keep track of the current Section Element order
+            int currentSectionElementOrder = 0;
+
+            // Loop through all Section Element which don't require an update
+            foreach (SectionElement element in _section.Elements.Where(x => !x.ShouldUpdate).ToList())
             {
-                BuildElement(builder, element, ref sequence);
+                BuildElement(builder, element, ref currentSectionElementOrder);
             }
-            sequence = _sequence;
-            if (_initialised)
+
+            currentSectionElementOrder = _sectionElementOrder;
+
+            //
+            if (_isRegistered)
             {
-                foreach (Element element in _section.Elements.Where(x => x.ShouldUpdate || x.Sequence == -1))
+                foreach (SectionElement element in _section.Elements.Where(x => x.ShouldUpdate || x.RenderOrder == -1))
                 {
-                    BuildElement(builder, element, ref sequence);
-                    sequence++;
+                    BuildElement(builder, element, ref currentSectionElementOrder);
+                    currentSectionElementOrder++;
                 }
-                _sequence = sequence;
+                _sectionElementOrder = currentSectionElementOrder;
             }
             _section.Elements.Where(x => x.ShouldUpdate = true).ToList().ForEach(x => x.ShouldUpdate = false);
         }
 
-        private void BuildElement(RenderTreeBuilder builder, Element element, ref int sequence)
+        /// <summary>
+        /// Render Section Element to output
+        /// </summary>
+        /// <param name="builder">The RenderTree builder which takes care of the rendering</param>
+        /// <param name="element">The Section Element to render</param>
+        /// <param name="sectionElementOrder">The Section Element order</param>
+        private void BuildElement(RenderTreeBuilder builder, SectionElement element, ref int sectionElementOrder)
         {
-            if (element.Sequence == -1)
+            if (element.RenderOrder == -1)
             {
-                element.Sequence = sequence;
+                element.RenderOrder = sectionElementOrder;
             }
             else if (element.ShouldUpdate)
             {
-                sequence = element.Sequence;
+                sectionElementOrder = element.RenderOrder;
             }
-            builder.OpenElement(sequence, element.Name);
-            sequence++;
+            builder.OpenElement(sectionElementOrder, element.Name);
+            sectionElementOrder++;
             foreach (var kv in element.AllProperties)
             {
-                builder.AddAttribute(sequence, kv.Key, kv.Value);
-                sequence++;
+                builder.AddAttribute(sectionElementOrder, kv.Key, kv.Value);
+                sectionElementOrder++;
             }
             if (string.IsNullOrWhiteSpace(element?.Content.Value) == false)
             {
-                builder.AddContent(sequence, element.Content);
-                sequence++;
+                builder.AddContent(sectionElementOrder, element.Content);
+                sectionElementOrder++;
             }
             builder.CloseElement();
         }
@@ -86,11 +123,6 @@ namespace Sushi.Mediakiwi.Headless.SectionHelper
             });
         }
 
-        public void Dispose()
-        {
-            Service = null;
-            _section.ChangesDone -= Service_ChangesDone;
-            _section = null;
-        }
+        
     }
 }

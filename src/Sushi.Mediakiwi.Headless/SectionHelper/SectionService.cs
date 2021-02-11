@@ -1,148 +1,63 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.DependencyInjection;
+using Sushi.Mediakiwi.Headless.SectionHelper.Elements;
+using Sushi.Mediakiwi.Headless.SectionHelper.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace Sushi.Mediakiwi.Headless.SectionHelper
 {
-
+    /// <summary>
+    /// Section Service Extension for adding the SectionService to the ServiceCollection
+    /// </summary>
     public static class SectionServiceExtensions
     {
+        /// <summary>
+        /// Adds the SectionService service to the ServiceCollection. 
+        /// This service is used to add Javascript & Stylesheet to a page section on the fly.
+        /// </summary>
+        /// <param name="services"></param>
         public static void AddSectionHelper(this IServiceCollection services)
         {
             services.AddScoped<SectionService>();
         }
     }
 
-    public class SectionService : IDisposable
+    /// <summary>
+    /// The SectionService handles everything concerning custom (Javascript / StyleSheet) Sections
+    /// </summary>
+    public class SectionService
     {
-        public class Element
-        {
-            public string Name { get; }
-            public MarkupString Content { get; protected set; }
-            public int Sequence { get; set; } = -1;
-            public bool ShouldUpdate { get; set; }
-            protected Dictionary<string, string> Properties { get; } = new Dictionary<string, string>();
-            protected Dictionary<string, string> PrivateProperties { get; } = new Dictionary<string, string>();
+        /// <summary>
+        /// The Last URL which was handled by the Service
+        /// </summary>
+        private string _lastHandledUri;
 
-            public void AddProperty(string name, string value)
-            {
-                Properties.Add(name, value);
-                ShouldUpdate = true;
-            }
+        /// <summary>
+        /// Every known section for this request 
+        /// </summary>
+        private readonly List<Section> _sections = new List<Section>();
+        
+        private NavigationManager _uriHelper { get; set; }
 
-            public void RemoveProperty(string name)
-            {
-                Properties.Remove(name);
-                ShouldUpdate = true;
-            }
-
-            public Dictionary<string, string> AllProperties
-            {
-                get
-                {
-                    Dictionary<string, string> d = new Dictionary<string, string>();
-                    foreach (var kv in PrivateProperties)
-                    {
-                        d.Add(kv.Key, kv.Value);
-                    }
-                    foreach (var kv in Properties)
-                    {
-                        d.Add(kv.Key, kv.Value);
-                    }
-                    return d;
-                }
-            }
-
-            public Element(string name) : this(name, string.Empty) { }
-
-            public Element(string name, string content)
-            {
-                Name = name;
-                Content = new MarkupString(content);
-            }
-
-            public Element(string name, MarkupString content)
-            {
-                Name = name;
-                Content = content;
-            }
-        }
-
-        public class Javascript : Element
-        {
-            public string Uri
-            {
-                get
-                {
-                    return PrivateProperties["src"];
-                }
-            }
-
-            public Javascript(string uri) : base("script", null)
-            {
-                PrivateProperties.Add("type", "text/javascript");
-                PrivateProperties.Add("src", uri);
-            }
-        }
-
-        public class Stylesheet : Element
-        {
-            public string Uri
-            {
-                get
-                {
-                    return PrivateProperties.ContainsKey("href") ? PrivateProperties["href"] : null;
-                }
-            }
-
-            public Stylesheet(string uri) : base("link")
-            {
-                PrivateProperties.Add("rel", "stylesheet");
-                PrivateProperties.Add("type", "text/css");
-                PrivateProperties.Add("href", uri);
-            }
-        }
-
-        public class InlineJavaScript : Element
-        {
-            public InlineJavaScript(string content) : base("script", content)
-            {
-                PrivateProperties.Add("type", "text/javascript");
-            }
-
-            public InlineJavaScript(MarkupString content) : base("script", content)
-            {
-                PrivateProperties.Add("type", "text/javascript");
-            }
-        }
-
-        public class InlineStylesheet : Element
-        {
-            public InlineStylesheet(string content) : base("style", content)
-            {
-                PrivateProperties.Add("type", "text/css");
-            }
-
-            public InlineStylesheet(MarkupString content) : base("style", content)
-            {
-                PrivateProperties.Add("type", "text/css");
-            }
-        }
-
-        private string _lastUri;
-        private List<Section> _sections = new List<Section>();
-        private NavigationManager _uriHelper;
-
+        /// <summary>
+        /// SectionService constructor with Navigation Manager reference
+        /// </summary>
+        /// <param name="uriHelper"></param>
         public SectionService(NavigationManager uriHelper)
         {
             _uriHelper = uriHelper;
-            _lastUri = _uriHelper.Uri;
+            _lastHandledUri = _uriHelper.Uri;
             _uriHelper.LocationChanged += UriHelper_LocationChanged;
         }
 
-        public void AddElement(string sectionName, Element element)
+        /// <summary>
+        /// Adds a new SectionElement to the Section Elements collection
+        /// </summary>
+        /// <param name="sectionName">The name of the section to add the Element to</param>
+        /// <param name="element">The element to add</param>
+        public void AddElement(string sectionName, SectionElement element)
         {
             Section section = _sections.FirstOrDefault(x => x.Name == sectionName);
             if (section == null)
@@ -154,28 +69,11 @@ namespace Sushi.Mediakiwi.Headless.SectionHelper
             section.InvokeChangesDone();
         }
 
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        protected virtual void Dispose(bool disposing)
-        {
-            _uriHelper.LocationChanged -= UriHelper_LocationChanged;
-            foreach (Section s in _sections)
-            {
-                s.Dispose();
-            }
-            _sections = null;
-            _uriHelper = null;
-        }
-
-        ~SectionService()
-        {
-            Dispose(false);
-        }
-
+        /// <summary>
+        /// Registers a new Section to add Section Elements to
+        /// </summary>
+        /// <param name="sectionName">The name of the new Section</param>
+        /// <returns></returns>
         public ISection RegisterSection(string sectionName)
         {
             Section section = _sections.FirstOrDefault(x => x.Name == sectionName);
@@ -183,16 +81,20 @@ namespace Sushi.Mediakiwi.Headless.SectionHelper
             {
                 section = new Section(sectionName);
                 _sections.Add(section);
-
             }
             return section;
         }
 
+        /// <summary>
+        /// Will fire when the location is changed, so after a navigation took place
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void UriHelper_LocationChanged(object sender, Microsoft.AspNetCore.Components.Routing.LocationChangedEventArgs e)
         {
-            if (_lastUri != e.Location)
+            if (_lastHandledUri != e.Location)
             {
-                _lastUri = e.Location;
+                _lastHandledUri = e.Location;
                 foreach (Section s in _sections)
                 {
                     s.Elements.Clear();
@@ -203,55 +105,75 @@ namespace Sushi.Mediakiwi.Headless.SectionHelper
             {
                 foreach (Section s in _sections)
                 {
-                    s.Elements.Where(x => x is InlineJavaScript).ToList().ForEach(x => { x.ShouldUpdate = true; x.Sequence = -1; });
+                    s.Elements.Where(x => x is JavaScriptInline).ToList().ForEach(x => { x.ShouldUpdate = true; x.RenderOrder = -1; });
                     s.InvokeChangesDone();
                 }
             }
         }
 
-        public interface ISection
+        #region Static Element Constructors
+
+        /// <summary>
+        /// Creates a Javascript file element
+        /// </summary>
+        /// <param name="url">The URL / Path to the JS File</param>
+        /// <returns>A new JavaScriptFile element</returns>
+        public static JavaScriptFile JavascriptFile(string url)
         {
-            string Name { get; }
-
-            event EventHandler<EventArgs> ChangesDone;
-
-            List<Element> Elements { get; }
+            return new JavaScriptFile(url);
         }
 
-        public class Section : ISection, IDisposable
+        /// <summary>
+        /// Creates a JavaScript Inline element
+        /// </summary>
+        /// <param name="content">The (string) content</param>
+        /// <returns>A new JavaScriptInline element</returns>
+        public static JavaScriptInline JavaScriptInline(string content)
         {
-            public string Name { get; private set; }
-
-            public event EventHandler<EventArgs> ChangesDone;
-
-            public Section(string name)
-            {
-                Name = name;
-            }
-
-            public List<Element> Elements { get; private set; } = new List<Element>();
-
-            public void InvokeChangesDone()
-            {
-                ChangesDone?.Invoke(this, EventArgs.Empty);
-            }
-
-            public void Dispose()
-            {
-                Dispose(true);
-                GC.SuppressFinalize(this);
-            }
-
-            protected virtual void Dispose(bool disposing)
-            {
-                Elements = null;
-                ChangesDone = null;
-            }
-
-            ~Section()
-            {
-                Dispose(false);
-            }
+            return new JavaScriptInline(content);
         }
+
+        /// <summary>
+        /// Creates a JavaScript Inline element
+        /// </summary>
+        /// <param name="content">The (raw HTML) content</param>
+        /// <returns>A new JavaScriptInline element</returns>
+        public static JavaScriptInline JavaScriptInline(MarkupString content)
+        {
+            return new JavaScriptInline(content);
+        }
+
+        /// <summary>
+        /// Creates a StyleSheet File element
+        /// </summary>
+        /// <param name="url">The URL / Path to the Stylesheet File</param>
+        /// <returns>A new StyleSheetFile element</returns>
+        public static StylesheetFile StyleSheetFile(string url)
+        {
+            return new StylesheetFile(url);
+        }
+
+        /// <summary>
+        /// Creates a StyleSheet Inline element
+        /// </summary>
+        /// <param name="content">The (string) content</param>
+        /// <returns>A new StyleSheetInline element</returns>
+        public static StyleSheetInline StyleSheetInline(string content)
+        {
+            return new StyleSheetInline(content);
+        }
+
+        /// <summary>
+        /// Creates a StyleSheet Inline element
+        /// </summary>
+        /// <param name="content">The (raw HTML) content</param>
+        /// <returns>A new StyleSheetInline element</returns>
+        public static StyleSheetInline StyleSheetInline(MarkupString content)
+        {
+            return new StyleSheetInline(content);
+        }
+
+        #endregion Static Element Constructors
+
     }
 }
