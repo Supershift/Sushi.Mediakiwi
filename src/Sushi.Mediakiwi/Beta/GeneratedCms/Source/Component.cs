@@ -1599,7 +1599,15 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                         version.Save();
                     }
 
+                    // when a redirect is set, return with null.
+                    if (container.CurrentListInstance.wim._IsRedirected)
+                    {
+                        build.IsTerminated = true;
+                        return build;
+                    }
+
                     var listurl = container.UrlBuild.GetListRequest(container.CurrentListInstance.wim.CurrentList);
+
                     if (openInFrame == 0)
                     {
                         int folderID = Data.Utility.ConvertToInt(container.Request.Query["folder"]);

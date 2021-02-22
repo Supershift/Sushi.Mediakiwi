@@ -167,7 +167,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                 if (m_Candidate != null)
                     key = m_Candidate.ID;
 
-                ApplyItemSelect(build, true, true, titleTag, this.ID, list.ID.ToString(), null, false, isRequired, false, false, LayerSize.Normal, false, 400,
+                ApplyItemSelect(build, true, true, titleTag, this.ID, list.ID.ToString(), null, false, isRequired, false, false, LayerSize.Normal, false, 450,
                     null, new NameItemValue() { Name = this.ID, ID = key, Value = OutputText }
                     );
 

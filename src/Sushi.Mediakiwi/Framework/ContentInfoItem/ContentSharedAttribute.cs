@@ -374,6 +374,10 @@ namespace Sushi.Mediakiwi.Framework
             params NameItemValue[] items
             )
         {
+            if (items != null)
+            {
+                items = items.Where(x => x != null).ToArray();
+            }
 
             StringBuilder list = new StringBuilder();
 

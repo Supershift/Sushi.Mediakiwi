@@ -181,7 +181,10 @@ namespace Sushi.Mediakiwi.UI
                 {
                     _Console.CurrentListInstance.wim.DoListInit();
                     this.GlobalWimControlBuilder = component.CreateList(_Console, _Console.OpenInFrame);
-             
+                    if (this.GlobalWimControlBuilder.IsTerminated)
+                    {
+                        return;
+                    }
 
                     //if (isDeleteTriggered)
                     //    _Console.CurrentListInstance.wim.DoListDelete(component.item);
@@ -620,7 +623,6 @@ namespace Sushi.Mediakiwi.UI
             {
                 //  CHECK FOR UserBased exceptions!!!
             }
-
 
             //  20-01-13:MM Added dashboard hack
             if (_Console.CurrentListInstance.wim.CurrentFolder.ID == 0 && string.IsNullOrEmpty(_Console.Request.Query["dashboard"]))

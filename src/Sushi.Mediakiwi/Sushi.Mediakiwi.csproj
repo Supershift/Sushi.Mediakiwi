@@ -70,6 +70,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Include="AppCentre\Data\BaseImplementation.cs" />
     <Compile Include="AppCentre\Data\Implementation\RoleAccessSite.cs" />
     <Compile Include="AppCentre\UI\BaseImplementation.cs" />
     <Compile Include="AppCentre\UI\BasicSeachList.cs" />

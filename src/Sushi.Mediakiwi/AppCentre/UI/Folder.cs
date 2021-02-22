@@ -396,7 +396,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// </summary>
         /// <value>The folder title.</value>
         [Sushi.Mediakiwi.Framework.OnlyVisibleWhenTrue("IsNotRoot")]
-        [Sushi.Mediakiwi.Framework.ContentListItem.TextField("Title", 25, true, "", Utility.GlobalRegularExpression.NotAcceptableFilenameCharacter)]
+        [Sushi.Mediakiwi.Framework.ContentListItem.TextField("Title", 50, true, "", Utility.GlobalRegularExpression.NotAcceptableFilenameCharacter)]
         public string Name { get; set; }
 
         [Sushi.Mediakiwi.Framework.ContentListItem.FolderSelect("Parent", true, Sushi.Mediakiwi.Data.FolderType.List, "")]

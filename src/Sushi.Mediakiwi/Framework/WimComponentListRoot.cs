@@ -1026,30 +1026,6 @@ namespace Sushi.Mediakiwi.Framework
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     /// <summary>
     /// The evensts
     /// </summary>
@@ -1331,6 +1307,8 @@ namespace Sushi.Mediakiwi.Framework
     /// </summary>
     public partial class WimComponentListRoot
     {
+    
+
         /// <summary>
         /// 
         /// </summary>
@@ -4559,6 +4537,17 @@ namespace Sushi.Mediakiwi.Framework
         {
             set { _Console = value; }
             get { return _Console; }
+        }
+
+        internal bool _IsRedirected = true;
+        /// <summary>
+        /// Redirect to an URL and inform the backend to stop processing this page
+        /// </summary>
+        /// <param name="url"></param>
+        public void Redirect(string url)
+        {
+            _IsRedirected = true;
+            this.Console.Response.Redirect(url, false);
         }
 
         public string AddApplicationPath(string path, bool appendUrl = false)
