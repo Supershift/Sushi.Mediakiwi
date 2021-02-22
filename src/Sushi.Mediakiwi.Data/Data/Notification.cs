@@ -1,6 +1,7 @@
 ﻿using Sushi.MicroORM;
 using Sushi.MicroORM.Mapping;
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Xml;
@@ -110,29 +111,15 @@ namespace Sushi.Mediakiwi.Data
         public bool Save()
         {
             var connector = ConnectorFactory.CreateConnector<Notification>();
-            try
-            {
-                connector.Save(this);
-                return true;
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
+            connector.Save(this);
+            return true;
         }
 
         public async Task<bool> SaveAsync()
         {
             var connector = ConnectorFactory.CreateConnector<Notification>();
-            try
-            {
-                await connector.SaveAsync(this);
-                return true;
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
+            await connector.SaveAsync(this).ConfigureAwait(false);
+            return true;
         }
 
         /// <summary>
@@ -151,7 +138,7 @@ namespace Sushi.Mediakiwi.Data
         public static async Task DeleteAllAsync()
         {
             var connector = ConnectorFactory.CreateConnector<Notification>();
-            await connector.ExecuteNonQueryAsync("TRUNCATE TABLE [wim_Notifications]");
+            await connector.ExecuteNonQueryAsync("TRUNCATE TABLE [wim_Notifications]").ConfigureAwait(false);
 			connector.Cache?.FlushRegion(connector.CacheRegion);
         }
 
@@ -179,7 +166,7 @@ namespace Sushi.Mediakiwi.Data
             var filter = connector.CreateDataFilter();
             filter.AddParameter("@type", group);
 
-            await connector.ExecuteNonQueryAsync("DELETE FROM [wim_Notifications] WHERE [Notification_Type] = @TYPE", filter);
+            await connector.ExecuteNonQueryAsync("DELETE FROM [wim_Notifications] WHERE [Notification_Type] = @TYPE", filter).ConfigureAwait(false);
 			connector.Cache?.FlushRegion(connector.CacheRegion);
         }
 
@@ -202,7 +189,7 @@ namespace Sushi.Mediakiwi.Data
         public static async Task<INotification> SelectOneAsync(int Id)
         {
             var connector = ConnectorFactory.CreateConnector<Notification>();
-            return await connector.FetchSingleAsync(Id);
+            return await connector.FetchSingleAsync(Id).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -226,7 +213,7 @@ namespace Sushi.Mediakiwi.Data
             var connector = ConnectorFactory.CreateConnector<Notification>();
             string sql = "SELECT DISTINCT [Notification_Type] FROM [wim_Notifications] ORDER BY [Notification_Type] ASC";
 
-            var result = await connector.ExecuteSetAsync<string>(sql);
+            var result = await connector.ExecuteSetAsync<string>(sql).ConfigureAwait(false);
             return result.ToArray();
         }
 
@@ -250,7 +237,7 @@ namespace Sushi.Mediakiwi.Data
         /// <returns></returns>
         public static async Task<INotification[]> SelectAllAsync(string group, int selection)
         {
-            return await SelectAllAsync(group, selection, null);
+            return await SelectAllAsync(group, selection, null).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -297,7 +284,7 @@ namespace Sushi.Mediakiwi.Data
             if (maxResult.GetValueOrDefault(0) > 0)
                 filter.MaxResults = maxResult.Value;
 
-            var result = await connector.FetchAllAsync(filter);
+            var result = await connector.FetchAllAsync(filter).ConfigureAwait(false);
             return result.ToArray();
         }
 
@@ -349,15 +336,9 @@ namespace Sushi.Mediakiwi.Data
         /// <returns></returns>
         public static int InsertOne(string groupName, NotificationType type, IApplicationUser currentApplicationUser, string notification, int? pageID, int? visitorID, params System.Xml.XmlDocument[] xml)
         {
-            var connector = ConnectorFactory.CreateConnector<Notification>();
-            var filter = connector.CreateDataFilter();
-
-            //[MR:08-01-2020] This was Dependancy Injection, temporary set fixed
-            //var implement = Environment.GetInstance<INotification>();
-
             var implement = new Notification();
 
-            if (xml != null)
+            if (xml != null && xml.Any())
             {
                 implement.XML = new XmlDocument();
                 implement.XML.LoadXml(Sushi.Mediakiwi.Data.Utility.GetSerialized(new XMLArray() { MessageCount = xml.Length }));
@@ -399,7 +380,7 @@ namespace Sushi.Mediakiwi.Data
         /// <returns></returns>
         public static async Task<int> InsertOneAsync(string groupName, NotificationType type, string notification)
         {
-            return await InsertOneAsync(groupName, type, null, notification);
+            return await InsertOneAsync(groupName, type, null, notification).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -412,7 +393,7 @@ namespace Sushi.Mediakiwi.Data
         public static async Task<int> InsertOneAsync(string groupName, Exception ex)
         {
             var body = Utility.GetHtmlFormattedLastServerError(ex);
-            return await InsertOneAsync(groupName, NotificationType.Error, null, body);
+            return await InsertOneAsync(groupName, NotificationType.Error, null, body).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -423,7 +404,7 @@ namespace Sushi.Mediakiwi.Data
         /// <returns></returns>
         public static async Task<int> InsertOneAsync(string groupName, string notification)
         {
-            return await InsertOneAsync(groupName, NotificationType.Error, null, notification);
+            return await InsertOneAsync(groupName, NotificationType.Error, null, notification).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -436,7 +417,7 @@ namespace Sushi.Mediakiwi.Data
         /// <returns></returns>
         public static async Task<int> InsertOneAsync(string groupName, NotificationType type, IApplicationUser currentApplicationUser, string notification)
         {
-            return await InsertOneAsync(groupName, type, currentApplicationUser, notification, null, null, null);
+            return await InsertOneAsync(groupName, type, currentApplicationUser, notification, null, null, null).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -451,15 +432,9 @@ namespace Sushi.Mediakiwi.Data
         /// <returns></returns>
         public static async Task<int> InsertOneAsync(string groupName, NotificationType type, IApplicationUser currentApplicationUser, string notification, int? pageID, int? visitorID, params System.Xml.XmlDocument[] xml)
         {
-            var connector = ConnectorFactory.CreateConnector<Notification>();
-            var filter = connector.CreateDataFilter();
-
-            //[MR:08-01-2020] This was Dependancy Injection, temporary set fixed
-            //var implement = Environment.GetInstance<INotification>();
-
             var implement = new Notification();
 
-            if (xml != null)
+            if (xml != null && xml.Any())
             {
                 implement.XML = new XmlDocument();
                 implement.XML.LoadXml(Sushi.Mediakiwi.Data.Utility.GetSerialized(new XMLArray() { MessageCount = xml.Length }));
@@ -487,7 +462,7 @@ namespace Sushi.Mediakiwi.Data
             implement.Text = notification;
             implement.PageID = pageID;
             implement.VisitorID = visitorID;
-            await implement.SaveAsync();
+            await implement.SaveAsync().ConfigureAwait(false);
 
             return implement.ID;
         }

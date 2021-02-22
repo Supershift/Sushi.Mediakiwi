@@ -2021,6 +2021,10 @@ textarea.error,
     border: solid 2px #e74c3c !important;
 }
 
+.error iframe {
+    border: solid 1px red;
+}
+
 .formTable input[type=checkbox].error + label,
 .formTable input[type=radio].error + label {
     color: #e74c3c !important;
@@ -3425,13 +3429,17 @@ div.select {
             width: calc(100% - 40px);
             float: left;
             height: auto !important;
-            min-height: 34px;
+            min-height: 31px;
             border: solid 1px #dddee0;
             background: #f2f2f2 !important;
         }
 
-.formTable div.select.indent ul.multiple,
-.formTable div.select.indent ul.single {
+        .error div.select ul.multiple,
+        .error div.select ul.single {
+            border: solid 1px red;
+        }
+
+.formTable div.select.indent ul.multiple, .formTable div.select.indent ul.single {
     padding: 0px 0px 0px 26px;
 }
 
@@ -3495,8 +3503,10 @@ div.select ul li {
     font-weight: normal !important;
     font-size: 13px;
     height: 1.8em;
-    border-bottom: 1px solid #ffffff !important;
     /*background: #ececec; /* Old browsers */
+}
+div.select ul.multiple li {
+    border-bottom: 1px solid #ffffff !importa
 }
 
 div.select ul li {

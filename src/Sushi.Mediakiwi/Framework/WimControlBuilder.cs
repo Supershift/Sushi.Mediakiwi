@@ -72,6 +72,11 @@ namespace Sushi.Mediakiwi.Framework
     public class WimControlBuilder
     {
         /// <summary>
+        /// Inform that hte control builder process has been terminated (mostly be a redirect).
+        /// </summary>
+        public bool IsTerminated { get; set; }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="WimControlBuilder"/> class.
         /// </summary>
         public WimControlBuilder()

@@ -1,5 +1,6 @@
 using Sushi.Mediakiwi.Data;
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Text;
 
@@ -155,8 +156,6 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
             {
                 #region Element creation
 
-                System.Diagnostics.Trace.WriteLine($"step 1");
-
                 Sushi.Mediakiwi.Data.Folder currentFolder;
 
                 if (m_Candidate.FolderID == 0)
@@ -180,14 +179,9 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                 else
                     currentFolder = m_Candidate.Folder;
 
-                System.Diagnostics.Trace.WriteLine($"step 2");
-
                 string titleTag = string.Concat(Title, Mandatory ? "<em>*</em>" : "");
 
-                var pages = Data.Page.SelectAll();
-
-
-                System.Diagnostics.Trace.WriteLine($"step 3: pages = {pages.Length}");
+                var pages = Data.Page.SelectAll().OrderBy(x => x.InternalPath);
 
                 string options = null;
                 string key = "Sushi.Mediakiwi.Data.Page.Options";
@@ -199,7 +193,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                 {
                     count++;
                     optiondata.AppendFormat("\n\t\t\t\t\t\t\t\t\t\t<option value=\"{0}\"{2}>{1}</option>"
-                        , item.ID, item.CompletePath, m_Candidate.ID == item.ID ? " selected=\"selected\"" : string.Empty);
+                        , item.ID, item.InternalPath, m_Candidate.ID == item.ID ? " selected=\"selected\"" : string.Empty);
                 }
                 options = optiondata.ToString();
               
@@ -244,9 +238,6 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                     }
 
                     build.AppendFormat("\n\t\t\t\t\t\t\t<th><label for=\"{0}\">{1}</label></th>", this.ID, this.TitleLabel);
-
-                    //if (ShowInheritedData)
-                    //    build.AppendFormat("\t\t\t\t\t\t\t<th class=\"local\"><label>{0}:</label></th>\t\t\t\t\t\t</tr>\t\t\t\t\t\t<tr>\t\t\t\t\t\t\t<td><div class=\"description\">{1}</div></td>\n", this.ID, this.TitleLabel);
 
                     build.AppendFormat("\n\t\t\t\t\t\t\t<td{0}{1}>{2}"
                         , (Expression == OutputExpression.FullWidth && Console.HasDoubleCols) ? " colspan=\"3\"" : null
