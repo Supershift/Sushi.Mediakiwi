@@ -73,6 +73,11 @@ namespace Sushi.Mediakiwi.Headless.Data
         {
             if (ContainsKey(name) == false)
             {
+                if (MetaTags == null)
+                {
+                    MetaTags = new List<ContentMetaTag>();
+                }
+
                 MetaTags.Add(new ContentMetaTag(name, content, renderKey));
             }
             else if (overWriteIfExists)

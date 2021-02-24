@@ -20,15 +20,17 @@ namespace Sushi.Mediakiwi.Headless
 
         public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
         {
-            if (string.Equals(context.TagName, "head", StringComparison.OrdinalIgnoreCase))
+            if (string.Equals(context.TagName, "head", StringComparison.OrdinalIgnoreCase) && ViewContext?.HttpContext?.Items?.ContainsKey(ContextItemNames.PageContent) == true)
             {
-                if (ViewContext?.HttpContext?.Items?.ContainsKey(ContextItemNames.PageContent) == true)
+                PageContentResponse pageContent = ViewContext.HttpContext.Items[ContextItemNames.PageContent] as PageContentResponse;
+                if (pageContent != null)
                 {
-                    PageContentResponse pageContent = ViewContext.HttpContext.Items[ContextItemNames.PageContent] as PageContentResponse;
-                    if (pageContent != null)
+                    int metaCount = (pageContent?.MetaData?.MetaTags?.Count > 0) ? pageContent.MetaData.MetaTags.Count : 0;
+
+                    output.PreContent.AppendLine();
+                    output.PreContent.AppendHtmlLine($"<!-- Processed by the MetaTagHelperComponent : {metaCount} tags -->");
+                    if (metaCount > 0)
                     {
-                        output.PreContent.AppendLine();
-                        output.PreContent.AppendHtmlLine("<!-- Processed by the MetaTagHelperComponent -->");
                         foreach (var metaTag in pageContent.MetaData.MetaTags)
                         {
                             switch (metaTag.RenderKey)
@@ -44,7 +46,6 @@ namespace Sushi.Mediakiwi.Headless
                         }
                     }
                 }
-
             }
             return Task.CompletedTask;
         }
