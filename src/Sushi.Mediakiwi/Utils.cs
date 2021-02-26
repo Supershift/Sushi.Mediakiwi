@@ -25,6 +25,23 @@ namespace Sushi.Mediakiwi
     /// </summary>
 	public class Utils
 	{
+        /// <summary>
+        /// Convert a path to a natural lowercase url
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        public static string ConvertUrl(string path)
+        {
+            if (string.IsNullOrWhiteSpace(path))
+            {
+                return string.Empty;
+            }
+
+            return path
+                .ToLowerInvariant()
+                .Replace(" ", "-");
+        }
+
         private static readonly TaskFactory _taskFactory = new
             TaskFactory(CancellationToken.None,
                         TaskCreationOptions.None,
@@ -886,7 +903,8 @@ namespace Sushi.Mediakiwi
         {
             if (text == null) return null;
             //return text;
-            text = new Regex("(<br>)+$", RegexOptions.IgnoreCase | RegexOptions.Multiline).Replace(text, string.Empty);
+            text = new Regex("(( |<br/>)+$)+$", RegexOptions.IgnoreCase | RegexOptions.Multiline).Replace(text, string.Empty);
+            //text = new Regex("(<br.*?>)+$", RegexOptions.IgnoreCase | RegexOptions.Multiline).Replace(text, string.Empty);
             return text;
         }
 
