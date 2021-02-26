@@ -41,6 +41,7 @@ namespace Sushi.Mediakiwi.Data
                 Map(x => x.IsListTemplate, "ComponentTemplate_IsListTemplate").SqlType(SqlDbType.Bit);
                 Map(x => x.MetaData, "ComponentTemplate_MetaData").SqlType(SqlDbType.NText);
                 Map(x => x.LastWriteTimeUtc, "ComponentTemplate_LastWriteTimeUtc").SqlType(SqlDbType.DateTime);
+                Map(x => x.NestedType, "ComponentTemplate_NestType").SqlType(SqlDbType.DateTime);
             }
         }
 
@@ -56,6 +57,12 @@ namespace Sushi.Mediakiwi.Data
         /// Name of the template
         /// </summary>
         public string Name { get; set; }
+
+        /// <summary>
+        /// Gets or sets the nested type setting
+        /// </summary>
+        /// <value>The ID.</value>
+        public int? NestedType { get; set; }
 
         /// <summary>
         /// Relative path of the component template file (.ascx)
