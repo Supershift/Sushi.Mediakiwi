@@ -287,7 +287,8 @@
 	    ComponentTemplate_AjaxType int NULL,
 	    ComponentTemplate_IsShared bit NULL,
 		ComponentTemplate_Source ntext NULL,
-	    ComponentTemplate_Tag varchar(25) NULL);
+	    ComponentTemplate_Tag varchar(25) NULL,
+		ComponentTemplate_NestType int NULL);
 	    
     --PK_ComponentTemplate_Key;
 	IF:select COUNT(*) from sys.indexes where name = 'PK_ComponentTemplate_Key';    
