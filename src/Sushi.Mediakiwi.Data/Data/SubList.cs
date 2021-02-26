@@ -123,6 +123,12 @@ namespace Sushi.Mediakiwi.Data
         }
 
         /// <summary>
+        /// The component list identifier
+        /// </summary>
+        [XmlElement("id")]
+        public Guid? List { get; set; }
+
+        /// <summary>
         /// Gets a value indicating whether an item (1 to 3) in the array contains additional meta information.
         /// </summary>
         /// <param name="additionalField">The additional field.</param>
