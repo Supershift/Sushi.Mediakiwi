@@ -44,7 +44,7 @@ namespace Sushi.Mediakiwi.Data
         /// Can both bee TEXT or HTML or alt
         /// </summary>
         [DataMember(Name = "items")]
-        public object[] Items { get; set; }
+        public ICollection<object> Items { get; set; }
 
         /// <summary>
         /// The height of this Image

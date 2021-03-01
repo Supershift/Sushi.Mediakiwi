@@ -12,6 +12,7 @@ namespace Sushi.Mediakiwi.Headless.Data
         public ContentComponent()
         {
             Content = new Dictionary<string, ContentItem>();
+            Nested = new List<ContentComponent>();
         }
 
         /// <summary>
@@ -19,6 +20,12 @@ namespace Sushi.Mediakiwi.Headless.Data
         /// </summary>
         [DataMember(Name = "componentName")]
         public string ComponentName { get; set; }
+        
+        /// <summary>
+        /// The Component ID 
+        /// </summary>
+        [DataMember(Name = "componentId")]
+        public int ComponentID { get; set; }
 
         /// <summary>
         /// The sortorder for this SortOrder
@@ -37,6 +44,12 @@ namespace Sushi.Mediakiwi.Headless.Data
         /// </summary>
         [DataMember(Name = "content")]
         public Dictionary<string, ContentItem> Content { get; set; }
+
+        /// <summary>
+        /// Get the nested Components
+        /// </summary>
+        [DataMember(Name = "nested")]
+        public List<ContentComponent> Nested { get; set; }
 
         /// <summary>
         /// Internal information for this Component (if any)
