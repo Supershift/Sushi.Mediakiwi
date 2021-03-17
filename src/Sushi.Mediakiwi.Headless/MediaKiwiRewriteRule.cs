@@ -70,13 +70,29 @@ namespace Sushi.Mediakiwi.Headless
                     response.Headers.Add(HttpHeaderNames.TimeSpend,new TimeSpan(dt2.Ticks - dt1.Ticks).TotalMilliseconds.ToString());
                     response.Headers.Add(HttpHeaderNames.CachedData, PageContent.IsCached.ToString());
                     response.Headers.Add(HttpHeaderNames.CacheInvalidData, PageContent.IsCacheInvalidated.ToString());
-
+                    
                     if (!PageContent.IsCached)
                         context.HttpContext.Items["mediakiwi.flush"] = "me";
 
                     // Set internal info in the Page
                     if (PageContent == null)
+                    {
                         PageContent = new PageContentResponse();
+                    }
+
+                    // apply the proper status code based on the headless result
+                    response.StatusCode = (int)PageContent.StatusCode;
+
+                    // act upon status codes 301 & 302 resulting in a location change.
+                    if (PageContent.StatusCode == System.Net.HttpStatusCode.Moved
+                        || PageContent.StatusCode == System.Net.HttpStatusCode.MovedPermanently
+                        || PageContent.StatusCode == System.Net.HttpStatusCode.Found
+                        || PageContent.StatusCode == System.Net.HttpStatusCode.Redirect
+                        )
+                    {
+                        // apply the new location
+                        response.Headers.Add("Location", PageContent.PageInternalPath);
+                    }
 
                     PageContent.InternalInfo.ClearCache = request.IsClearCacheCall();
                     PageContent.InternalInfo.IsPreview = request.IsPreviewCall();

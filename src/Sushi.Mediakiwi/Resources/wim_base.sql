@@ -754,6 +754,7 @@
 		PageMap_Page_Key int NOT NULL,
 		PageMap_Type int NULL,
 		PageMap_Path nvarchar(150) NOT NULL,
+		PageMap_Expression nvarchar(200) NULL,
 		PageMap_Title nvarchar(150) NULL,
 		PageMap_Query nvarchar(50) NULL,
 		PageMap_Created datetime NOT NULL,

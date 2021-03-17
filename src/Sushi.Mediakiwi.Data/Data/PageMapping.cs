@@ -20,6 +20,7 @@ namespace Sushi.Mediakiwi.Data
                 Table("wim_PageMappings");
                 Id(x => x.ID, "PageMap_Key").Identity();
                 Map(x => x.Path, "PageMap_Path").Length(150);
+                Map(x => x.Expression, "PageMap_Expression").Length(200);
                 Map(x => x.Created, "PageMap_Created");
                 Map(x => x.ListID, "PageMap_List_Key");
                 Map(x => x.ItemID, "PageMap_Item_Key");
@@ -50,7 +51,7 @@ namespace Sushi.Mediakiwi.Data
         public virtual bool IsInternalDoc { get; set; }
 
         public virtual bool IsInternalLink { get; set; }
-
+        public virtual string Expression { get; set; }
         public virtual string Path { get; set; }
 
         /// <summary>
