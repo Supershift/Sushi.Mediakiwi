@@ -4539,7 +4539,7 @@ namespace Sushi.Mediakiwi.Framework
             get { return _Console; }
         }
 
-        internal bool _IsRedirected = true;
+        internal bool _IsRedirected;
         /// <summary>
         /// Redirect to an URL and inform the backend to stop processing this page
         /// </summary>
