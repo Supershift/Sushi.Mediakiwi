@@ -27,5 +27,23 @@ namespace Sushi.Mediakiwi.Headless.Data
         [DataMember(Name = "customData")]
         public Dictionary<string, object> CustomData { get; set; } = new Dictionary<string, object>();
 
+        /// <summary>
+        /// Adds an item to the CustomData dictionary
+        /// </summary>
+        /// <param name="name">The name for the dictionary item</param>
+        /// <param name="value">The value for the dictionary item</param>
+        /// <param name="overWriteIsExists">When TRUE, overwrite an existing item, else do NOT overwrite an existing item</param>
+        public void Add(string name, object value, bool overWriteIsExists = false)
+        {
+            if (CustomData.ContainsKey(name) == false)
+            {
+                CustomData.Add(name, value);
+            }
+            else if (overWriteIsExists)
+            {
+                CustomData[name] = value;
+            }
+        }
+
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.Serialization;
 
 namespace Sushi.Mediakiwi.Headless.Data
@@ -9,6 +10,30 @@ namespace Sushi.Mediakiwi.Headless.Data
     [DataContract]
     public class ContentComponent
     {
+        public ContentComponent Clone()
+        {
+            var clone = new ContentComponent
+            {
+                ComponentName = ComponentName,
+                ComponentID = ComponentID,
+                SortOrder = SortOrder,
+                Title = Title,
+                Slot = Slot,
+                IsShared = IsShared
+            };
+
+            if (Content != null && Content.Any())
+            {
+                clone.Content = new Dictionary<string, ContentItem>();
+                foreach (var key in Content.Keys)
+                {
+                    clone.Content.Add(key, Content[key]);
+                }
+            }
+            return clone;
+
+        }
+
         public ContentComponent()
         {
             Content = new Dictionary<string, ContentItem>();

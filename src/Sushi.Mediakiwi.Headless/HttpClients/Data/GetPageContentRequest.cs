@@ -7,6 +7,9 @@ namespace Sushi.Mediakiwi.Headless.HttpClients.Data
 {
     public class GetPageContentRequest
     {
+        [JsonPropertyName("domain")]
+        public string Domain { get; set; }
+
         [JsonPropertyName("path")]
         public string Path { get; set; }
 

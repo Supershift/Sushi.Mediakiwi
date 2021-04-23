@@ -9,11 +9,11 @@ namespace Sushi.Mediakiwi.Headless.HttpClients.Interfaces
         public Task<string> GetPageNotFoundContent(int? siteId);
         public Task<string> GetPageNotFoundContent(int? siteId, bool clearCache);
 
-
         public Task<string> GetPageContentStringAsync(string forUrl);
-        public Task<string> GetPageContentStringAsync(string forUrl, bool clearCache);
-        public Task<string> GetPageContentStringAsync(string forUrl, bool clearCache, bool isPreview);
-        public Task<string> GetPageContentStringAsync(string forUrl, bool clearCache, bool isPreview, int? pageId);
+        public Task<string> GetPageContentStringAsync(string forUrl, string basePath);
+        public Task<string> GetPageContentStringAsync(string forUrl, string basePath, bool clearCache);
+        public Task<string> GetPageContentStringAsync(string forUrl, string basePath, bool clearCache, bool isPreview);
+        public Task<string> GetPageContentStringAsync(string forUrl, string basePath, bool clearCache, bool isPreview, int? pageId);
 
 
         public Task<bool> GetCacheValidAsync(DateTime lastFlush);
