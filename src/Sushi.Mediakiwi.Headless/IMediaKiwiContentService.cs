@@ -10,11 +10,12 @@ namespace Sushi.Mediakiwi.Headless
         /// Gets the content from memorycache or webservice
         /// </summary>
         /// <param name="forUrl">The url for which to get the content</param>
+        /// <param name="basePath">The domain and basepath for which to get the content</param>
         /// <param name="clearCache">Get renewed content from service, skip caching</param>
         /// <param name="isPreview">This is a preview call, probably from the CMS</param>
         /// <param name="pageId">Get this page ID, will precede over the URL !</param>
         /// <returns></returns>
-        public Task<PageContentResponse> GetPageContentAsync(string forUrl, bool clearCache = false, bool isPreview = false, int? pageId = null);
+        public Task<PageContentResponse> GetPageContentAsync(string forUrl, string basePath, bool clearCache = false, bool isPreview = false, int? pageId = null);
 
         /// <summary>
         /// Gets the content from memorycache or webservice

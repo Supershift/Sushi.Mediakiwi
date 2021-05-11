@@ -1046,28 +1046,77 @@ namespace Sushi.Mediakiwi.Data
             return connector.FetchSingle(filter);
         }
 
+        /// <summary>
+        /// Selects a page entity based on its path
+        /// </summary>
+        /// <param name="path">The path to look for</param>
+        /// <param name="returnOnlyPublishedPage">Only returns published pages</param>
+        /// <returns></returns>
         public static Page SelectOne(string path, bool returnOnlyPublishedPage)
+        {
+            return SelectOne(path, returnOnlyPublishedPage, null);
+        }
+
+
+        /// <summary>
+        /// Selects a page entity based on its path
+        /// </summary>
+        /// <param name="path">The path to look for</param>
+        /// <param name="returnOnlyPublishedPage">Only returns published pages</param>
+        /// <param name="siteId">The Site ID to look in</param>
+        /// <returns></returns>
+        public static Page SelectOne(string path, bool returnOnlyPublishedPage, int? siteId)
         {
             var connector = ConnectorFactory.CreateConnector<Page>();
             var filter = connector.CreateDataFilter();
             filter.AddOrder(x => x.SortOrder);
             filter.Add(x => x.InternalPath, path);
+            if (siteId.GetValueOrDefault(0) > 0)
+            {
+                filter.Add(x => x.SiteID, siteId.Value);
+            }
 
             if (returnOnlyPublishedPage)
+            {
                 filter.Add(x => x.IsPublished, true);
+            }
 
             return connector.FetchSingle(filter);
         }
 
+        /// <summary>
+        /// Selects a page entity based on its path
+        /// </summary>
+        /// <param name="path">The path to look for</param>
+        /// <param name="returnOnlyPublishedPage">Only returns published pages</p
         public static async Task<Page> SelectOneAsync(string path, bool returnOnlyPublishedPage)
+        {
+            return await SelectOneAsync(path, returnOnlyPublishedPage, null);
+        }
+
+        /// <summary>
+        /// Selects a page entity based on its path
+        /// </summary>
+        /// <param name="path">The path to look for</param>
+        /// <param name="returnOnlyPublishedPage">Only returns published pages</param>
+        /// <param name="siteId">The Site ID to look in</param>
+        /// <returns></returns>
+        public static async Task<Page> SelectOneAsync(string path, bool returnOnlyPublishedPage, int? siteId)
         {
             var connector = ConnectorFactory.CreateConnector<Page>();
             var filter = connector.CreateDataFilter();
             filter.AddOrder(x => x.SortOrder);
             filter.Add(x => x.InternalPath, path);
 
+            if (siteId.GetValueOrDefault(0) > 0)
+            {
+                filter.Add(x => x.SiteID, siteId.Value);
+            }
+
             if (returnOnlyPublishedPage)
+            {
                 filter.Add(x => x.IsPublished, true);
+            }
 
             return await connector.FetchSingleAsync(filter);
         }

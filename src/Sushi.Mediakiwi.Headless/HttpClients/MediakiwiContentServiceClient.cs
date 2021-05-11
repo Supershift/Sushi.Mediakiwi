@@ -72,20 +72,25 @@ namespace Sushi.Mediakiwi.Headless.HttpClients
 
         public async Task<string> GetPageContentStringAsync(string forUrl)
         {
-            return await GetPageContentStringAsync(forUrl, false);
+            return await GetPageContentStringAsync(forUrl, null);
         }
 
-        public async Task<string> GetPageContentStringAsync(string forUrl, bool clearCache)
+        public async Task<string> GetPageContentStringAsync(string forUrl, string basePath)
         {
-            return await GetPageContentStringAsync(forUrl, clearCache, false);
+            return await GetPageContentStringAsync(forUrl, basePath, false);
         }
 
-        public async Task<string> GetPageContentStringAsync(string forUrl, bool clearCache, bool isPreview)
+        public async Task<string> GetPageContentStringAsync(string forUrl, string basePath, bool clearCache)
         {
-            return await GetPageContentStringAsync(forUrl, clearCache, isPreview, null);
+            return await GetPageContentStringAsync(forUrl, basePath, clearCache, false);
         }
 
-        public async Task<string> GetPageContentStringAsync(string forUrl, bool clearCache, bool isPreview, int? pageId)
+        public async Task<string> GetPageContentStringAsync(string forUrl, string basePath, bool clearCache, bool isPreview)
+        {
+            return await GetPageContentStringAsync(forUrl, basePath, clearCache, isPreview, null);
+        }
+
+        public async Task<string> GetPageContentStringAsync(string forUrl, string basePath, bool clearCache, bool isPreview, int? pageId)
         {
             CancellationTokenSource cts = new CancellationTokenSource(_settings.MediaKiwi.ContentService.TimeOut); // 2 seconds timeout
 
@@ -94,7 +99,8 @@ namespace Sushi.Mediakiwi.Headless.HttpClients
                 ClearCache = clearCache,
                 IsPreview = isPreview,
                 PageID = pageId,
-                Path = forUrl
+                Path = forUrl,
+                Domain = basePath
             };
 
             // Create Http Request object

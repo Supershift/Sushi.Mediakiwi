@@ -59,6 +59,13 @@ namespace Sushi.Mediakiwi.Headless.Data
         [DataMember(Name = "statusCode")]
         public HttpStatusCode StatusCode { get; set; }
 
+
+        /// <summary>
+        /// The exception (if any)
+        /// </summary>
+        [DataMember(Name ="exception")]
+        public string Exception { get; set; }
+
         /// <summary>
         /// The Metadata for this page
         /// </summary>

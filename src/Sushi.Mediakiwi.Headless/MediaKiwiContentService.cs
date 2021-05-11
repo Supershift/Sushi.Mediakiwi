@@ -167,7 +167,7 @@ namespace Sushi.Mediakiwi.Headless
             }
             else
             {
-                return await GetPageContentAsync(url, isClearCacheCall, isPreviewCall);
+                return await GetPageContentAsync(url, AppBaseUrl, isClearCacheCall, isPreviewCall);
             }
         }
 
@@ -175,11 +175,13 @@ namespace Sushi.Mediakiwi.Headless
 
         #region Get Page Content - Url / PageID
 
-        public async Task<PageContentResponse> GetPageContentAsync(string forUrl, bool clearCache = false, bool isPreview = false, int? pageId = null)
+        public async Task<PageContentResponse> GetPageContentAsync(string forUrl, string basePath, bool clearCache = false, bool isPreview = false, int? pageId = null)
         {
             PageContentResponse returnObj = new PageContentResponse();
             if (string.IsNullOrWhiteSpace(_configuration.MediaKiwi.ContentService.ServiceUrl))
+            {
                 return returnObj;
+            }
 
             if (_configuration.MediaKiwi.ContentService.PingFirst && await PingSucceeded() == false)
             {
@@ -188,19 +190,33 @@ namespace Sushi.Mediakiwi.Headless
 
             // Create cachekey
             string cacheKey = "";
-
             if (pageId.GetValueOrDefault(0) == 0)
-                cacheKey = new Uri(forUrl, UriKind.Relative).ToString();
+            {
+                if (string.IsNullOrWhiteSpace(basePath) == false)
+                {
+                    cacheKey = new Uri($"{basePath}{forUrl}", UriKind.Absolute).ToString();
+                }
+                else
+                {
+                    cacheKey = new Uri(forUrl, UriKind.Relative).ToString();
+                }
+            }
             else
+            {
                 cacheKey = $"Page_{pageId.Value}";
+            }
 
             // Throw warning when we dont have memorycache
             if (_memCache == null)
+            {
                 _logger.LogWarning($"Memorycache is not enabled, please add it to services in the startup");
+            }
 
             // Log that we requested a clear cache
             if (clearCache)
+            {
                 _logger.LogInformation($"A cache clear was requested for '{cacheKey}'");
+            }
 
             // Log that this was a preview call and set ClearCache to true, since we don't want caching for previews
             if (isPreview)
@@ -226,7 +242,7 @@ namespace Sushi.Mediakiwi.Headless
                     try
                     {
                         // Read the JSON content.
-                        string responseFromServer = await _httpClient.GetPageContentStringAsync(forUrl, clearCache, isPreview, pageId);
+                        string responseFromServer = await _httpClient.GetPageContentStringAsync(forUrl, basePath, clearCache, isPreview, pageId);
 
                         // Convert the JSON content.
                         if (string.IsNullOrWhiteSpace(responseFromServer) == false)
