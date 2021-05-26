@@ -1501,6 +1501,11 @@
     IF: select count(*) from wim_ComponentLists where ComponentList_GUID = 'D03439F0-73D7-4C78-B51E-50310A00F6DA';
     THEN: INSERT INTO wim_ComponentLists(ComponentList_Folder_Key, ComponentList_Assembly, ComponentList_ClassName, ComponentList_TargetType, ComponentList_Name, ComponentList_SingleItemName, ComponentList_Description,ComponentList_Type, ComponentList_GUID, ComponentList_IsVisible, ComponentList_ContainsOneChild, ComponentList_IsInherited) VALUES(null, 'Sushi.Mediakiwi.Framework.dll', 'Sushi.Mediakiwi.AppCentre.UI.WikiList', 2, 'Wiki', 'Wiki', null, null, 'D03439F0-73D7-4C78-B51E-50310A00F6DA', 0, 1, 0);
 
+	-- SharedFieldList
+	IF: select count(*) from wim_ComponentLists where ComponentList_GUID = '937C843E-C586-4CAE-A923-7305685242C4';
+    THEN: INSERT INTO wim_ComponentLists(ComponentList_Folder_Key, ComponentList_Assembly, ComponentList_ClassName, ComponentList_TargetType, ComponentList_Name, ComponentList_SingleItemName, ComponentList_Description,ComponentList_Type, ComponentList_GUID, ComponentList_IsVisible, ComponentList_ContainsOneChild, ComponentList_IsInherited) VALUES(4, 'Sushi.Mediakiwi.dll', 'Sushi.Mediakiwi.AppCentre.Data.Implementation.SharedFieldList', 2, 'Shared Fields', 'Shared Field', null, 47, '937C843E-C586-4CAE-A923-7305685242C4', 1, 1, 0);
+
+
 
     -- MAIN_DOMAIN_COOKIE_HOST;
     IF: select count(*) from wim_Registry where Registry_GUID = '8FA687E9-81C0-4561-9755-BAB02E9B055C';
@@ -1643,3 +1648,87 @@
 	IF:select COUNT(*) from wim_Environments where Environment_Version >= 4.46;
 	THEN: update wim_Pages set Page_InheritContentEdited = Page_InheritContent where Page_InheritContentEdited is null; 
  
+	-- Add Wim_SharedFields table
+	IF:select COUNT(*) from sys.indexes where name = 'PK_Wim_SharedFields';   
+	THEN:CREATE TABLE [wim_SharedFields](
+	[SharedField_Key] [int] IDENTITY(1,1) NOT NULL,
+	[SharedField_ContentTypeID] [int] NOT NULL,
+	[SharedField_FieldName] [nvarchar](200) NOT NULL,
+	CONSTRAINT [PK_Wim_SharedFields] PRIMARY KEY CLUSTERED 
+	(
+		[SharedField_Key] ASC
+	)WITH (STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+	) ON [PRIMARY];
+
+	-- Add Wim_SharedFieldTranslations table
+	IF:select COUNT(*) from sys.indexes where name = 'PK_Wim_SharedFieldTranslations';   
+	THEN:CREATE TABLE [wim_SharedFieldTranslations](
+		[SharedFieldTranslation_Key] [int] IDENTITY(1,1) NOT NULL,
+		[SharedFieldTranslation_Field_Key] [int] NOT NULL,
+		[SharedFieldTranslation_Site_Key] [int] NOT NULL,
+		[SharedFieldTranslation_EditValue] [nvarchar](max) NOT NULL,
+		[SharedFieldTranslation_Value] [nvarchar](max) NULL,
+	 CONSTRAINT [PK_Wim_SharedFieldTranslations] PRIMARY KEY CLUSTERED 
+	(
+		[SharedFieldTranslation_Key] ASC
+	)WITH (STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+	) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY];
+
+	-- Add Wim_SharedFieldTranslation -> Wim_SharedFields FK
+	IF:select COUNT(*) from sys.indexes where name = 'FK_Wim_SharedFieldTranslations_Wim_SharedFields';   
+	THEN:ALTER TABLE [wim_SharedFieldTranslations] WITH CHECK ADD CONSTRAINT [FK_Wim_SharedFieldTranslations_Wim_SharedFields] FOREIGN KEY([SharedFieldTranslation_Field_Key])
+	REFERENCES [wim_SharedFields] ([SharedField_Key])
+	ALTER TABLE [wim_SharedFieldTranslations] CHECK CONSTRAINT [FK_Wim_SharedFieldTranslations_Wim_SharedFields];
+	
+	-- Add Wim_SharedFieldTranslation -> Wim_Sites FK
+	IF:select COUNT(*) from sys.indexes where name = 'FK_Wim_SharedFieldTranslations_wim_Sites';   
+	THEN:ALTER TABLE [wim_SharedFieldTranslations] WITH CHECK ADD CONSTRAINT [FK_Wim_SharedFieldTranslations_wim_Sites] FOREIGN KEY([SharedFieldTranslation_Site_Key])
+	REFERENCES [wim_Sites] ([Site_Key])
+	ALTER TABLE [wim_SharedFieldTranslations] CHECK CONSTRAINT [FK_Wim_SharedFieldTranslations_wim_Sites];
+
+	-- Add wim_SharedFieldProperties
+	IF:select COUNT(*) from sys.indexes where name = 'PK_Wim_SharedFieldProperties';   
+	THEN:CREATE TABLE [wim_SharedFieldProperties](
+		[SharedFieldProperty_Key] [int] IDENTITY(1,1) NOT NULL,
+		[SharedFieldProperty_SharedField_Key] [int] NOT NULL,
+		[SharedFieldProperty_Property_Key] [int] NOT NULL,
+		[SharedFieldProperty_Template_Key] [int] NOT NULL,
+	 CONSTRAINT [PK_Wim_SharedFieldProperties] PRIMARY KEY CLUSTERED 
+	(
+		[SharedFieldProperty_Key] ASC
+	)WITH (STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+	) ON [PRIMARY];
+
+	-- Add wim_SharedFieldProperties -> wim_ComponentTemplates FK
+	IF:select COUNT(*) from sys.indexes where name = 'FK_Wim_SharedFieldProperties_wim_ComponentTemplates';   
+	THEN:ALTER TABLE [wim_SharedFieldProperties]  WITH CHECK ADD CONSTRAINT [FK_Wim_SharedFieldProperties_wim_ComponentTemplates] FOREIGN KEY([SharedFieldProperty_Template_Key])
+	REFERENCES [wim_ComponentTemplates] ([ComponentTemplate_Key])
+	ALTER TABLE [wim_SharedFieldProperties] CHECK CONSTRAINT [FK_Wim_SharedFieldProperties_wim_ComponentTemplates];
+
+	-- Add wim_SharedFieldProperties -> wim_SharedFieldProperties FK
+	IF:select COUNT(*) from sys.indexes where name = 'FK_Wim_SharedFieldProperties_wim_Properties';   
+	THEN:ALTER TABLE [wim_SharedFieldProperties]  WITH CHECK ADD CONSTRAINT [FK_Wim_SharedFieldProperties_wim_Properties] FOREIGN KEY([SharedFieldProperty_Property_Key])
+	REFERENCES [wim_Properties] ([Property_Key])
+	ALTER TABLE [wim_SharedFieldProperties] CHECK CONSTRAINT [FK_Wim_SharedFieldProperties_wim_Properties];
+
+	-- Add wim_SharedFieldProperties -> wim_SharedFieldProperties FK
+	IF:select COUNT(*) from sys.indexes where name = 'FK_Wim_SharedFieldProperties_Wim_SharedFields';   
+	THEN:ALTER TABLE [wim_SharedFieldProperties] WITH CHECK ADD CONSTRAINT [FK_Wim_SharedFieldProperties_Wim_SharedFields] FOREIGN KEY([SharedFieldProperty_SharedField_Key])
+	REFERENCES [wim_SharedFields] ([SharedField_Key])
+	ALTER TABLE [wim_SharedFieldProperties] CHECK CONSTRAINT [FK_Wim_SharedFieldProperties_Wim_SharedFields];
+
+	-- ADD vw_SharedFields
+	IF:select COUNT(*) FROM sys.views where name = 'vw_SharedFields';
+	THEN:CREATE VIEW [vw_SharedFields] as
+	select [SharedFieldTranslation_Key]
+	  ,[SharedFieldTranslation_Field_Key]
+	  ,[SharedFieldTranslation_Site_Key]
+	  ,[SharedFieldTranslation_EditValue]
+	  ,[SharedFieldTranslation_Value]
+	  ,[SharedField_FieldName]
+	  ,[SharedField_ContentTypeID]
+	  from [wim_SharedFieldTranslations]
+	left join [wim_SharedFields] as fields
+	on [SharedFieldTranslation_Field_Key] = fields.SharedField_Key;
+	
+	

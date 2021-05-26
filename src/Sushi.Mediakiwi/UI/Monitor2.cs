@@ -39,7 +39,7 @@ namespace Sushi.Mediakiwi.UI
             _env = env;
             _Context = context;
             _configuration = configuration;
-            _Console = new Sushi.Mediakiwi.Beta.GeneratedCms.Console(context, _env);
+            _Console = new Beta.GeneratedCms.Console(context, _env);
             _Console.Configuration = configuration;
 
             //Console.CurrentApplicationUser = user;
@@ -155,7 +155,7 @@ namespace Sushi.Mediakiwi.UI
         {
             _Console.View = (int)ContainerView.ItemSelect;
 
-            if (_Console.CurrentList.Type == Data.ComponentListType.ListSettings)
+            if (_Console.CurrentList.Type == ComponentListType.ListSettings)
                 _Console.View = (int)ContainerView.ListSettingRequest;
 
             _Console.AddTrace("Monitor", "GetExportOptionUrl(..)");
@@ -201,6 +201,7 @@ namespace Sushi.Mediakiwi.UI
                     if (formFields == null)
                         formFields = new Dictionary<string, string>();
 
+                    this.GlobalWimControlBuilder.ApiResponse.CurrentSiteID = _Console.ChannelIndentifier;
                     this.GlobalWimControlBuilder.ApiResponse.ListDescription = _Console.CurrentListInstance.wim.CurrentList.Description;
                     this.GlobalWimControlBuilder.ApiResponse.RedirectUrl = _Console.RedirectionUrl;
                     if (!string.IsNullOrWhiteSpace(_Console.RedirectionUrl))
@@ -210,7 +211,10 @@ namespace Sushi.Mediakiwi.UI
                     this.GlobalWimControlBuilder.ApiResponse.ListTitle = _Console.CurrentListInstance.wim.ListTitle;
                     // if this item is a button add it to the button list
 
-                    await AddToResponseAsync(Newtonsoft.Json.JsonConvert.SerializeObject(this.GlobalWimControlBuilder.ApiResponse));
+                    // [MR:25-05-2021] added for : https://supershift.atlassian.net/browse/FTD-147
+                    await GlobalWimControlBuilder.ApiResponse.ApplySharedFieldDataAsync();
+
+                    await AddToResponseAsync(JsonConvert.SerializeObject(this.GlobalWimControlBuilder.ApiResponse));
                     return;
                 }
 
@@ -235,7 +239,7 @@ namespace Sushi.Mediakiwi.UI
                 int childID = _Console.CurrentListInstance.wim.CurrentSite.ID;
                 int parentID = _Console.CurrentListInstance.wim.CurrentSite.MasterID.GetValueOrDefault();
 
-                _Console.CurrentListInstance.wim.CurrentSite = Data.Site.SelectOne(parentID);
+                _Console.CurrentListInstance.wim.CurrentSite = Site.SelectOne(parentID);
                 _Console.CurrentListInstance.wim.IsCurrentList = true;
                 _Console.CurrentListInstance.wim.DoListLoad(_Console.Item.GetValueOrDefault(0), 0);
 
@@ -304,7 +308,7 @@ namespace Sushi.Mediakiwi.UI
                 this.GlobalWimControlBuilder.Canvas.Type = _Console.OpenInFrame > 0 ? CanvasType.ListItemInLayer : CanvasType.ListItem;
                 this.GlobalWimControlBuilder.TopNavigation = _PresentationNavigation.TopNavigation(_Console);
                 this.GlobalWimControlBuilder.Bottom = _PresentationNavigation.NewBottomNavigation(_Console, component.m_ButtonList != null ? component.m_ButtonList.ToArray() : null, false);
-                this.GlobalWimControlBuilder.Tabularnav = Beta.GeneratedCms.Source.Template.GetTabularTagNewDesign(_Console, _Console.CurrentList.Name, 0, false);
+                this.GlobalWimControlBuilder.Tabularnav = Template.GetTabularTagNewDesign(_Console, _Console.CurrentList.Name, 0, false);
                 this.GlobalWimControlBuilder.Leftnav = _PresentationNavigation.NewLeftNavigation(_Console, component.m_ButtonList != null ? component.m_ButtonList.ToArray() : null);
 
                 await AddToResponseAsync(_PresentationMonitor.GetTemplateWrapper(_Console, _Placeholders, _Callbacks, this.GlobalWimControlBuilder));
@@ -330,7 +334,7 @@ namespace Sushi.Mediakiwi.UI
                 else
                     this.GlobalWimControlBuilder.Leftnav = _PresentationNavigation.NewLeftNavigation(_Console, component.m_ButtonList != null ? component.m_ButtonList.ToArray() : null);
                 this.GlobalWimControlBuilder.Bottom = _PresentationNavigation.NewBottomNavigation(_Console, component.m_ButtonList != null ? component.m_ButtonList.ToArray() : null, false);
-                this.GlobalWimControlBuilder.Tabularnav = Beta.GeneratedCms.Source.Template.GetTabularTagNewDesign(_Console, _Console.CurrentList.Name, 0, false);
+                this.GlobalWimControlBuilder.Tabularnav = Template.GetTabularTagNewDesign(_Console, _Console.CurrentList.Name, 0, false);
 
                 await AddToResponseAsync(_PresentationMonitor.GetTemplateWrapper(_Console, _Placeholders, _Callbacks, this.GlobalWimControlBuilder));
             }
@@ -504,7 +508,7 @@ namespace Sushi.Mediakiwi.UI
                 !this.GlobalWimControlBuilder.IsNull
             );
 
-            this.GlobalWimControlBuilder.Tabularnav = Beta.GeneratedCms.Source.Template.GetTabularTagNewDesign(_Console, _Console.CurrentList.Name, 0, false);
+            this.GlobalWimControlBuilder.Tabularnav = Template.GetTabularTagNewDesign(_Console, _Console.CurrentList.Name, 0, false);
             this.GlobalWimControlBuilder.Rightnav = _PresentationNavigation.RightSideNavigation(_Console, component.m_ButtonList != null ? component.m_ButtonList.ToArray() : null);
             this.GlobalWimControlBuilder.Leftnav = _PresentationNavigation.NewLeftNavigation(_Console, component.m_ButtonList != null ? component.m_ButtonList.ToArray() : null);
 
@@ -594,7 +598,7 @@ namespace Sushi.Mediakiwi.UI
                 && _Console.CurrentListInstance.wim.CurrentApplicationUserRole.Sites(_Console.CurrentApplicationUser).Length == 0)
             {
                 if (!reStartWithNotificationList)
-                    throw new Exception(Framework.ErrorCode.GetMessage(1002, _Console.CurrentApplicationUser.LanguageCulture));
+                    throw new Exception(ErrorCode.GetMessage(1002, _Console.CurrentApplicationUser.LanguageCulture));
             }
             //  ACL: Sites
             if (!_Console.CurrentListInstance.wim.CurrentApplicationUserRole.All_Sites)
@@ -609,9 +613,9 @@ namespace Sushi.Mediakiwi.UI
                     }
                     else
                     {
-                        if (_Console.CurrentListInstance.wim.CurrentApplicationUser.Sites(Data.AccessFilter.RoleAndUser) != null && _Console.CurrentListInstance.wim.CurrentApplicationUser.Sites(Data.AccessFilter.RoleAndUser).Length > 0)
+                        if (_Console.CurrentListInstance.wim.CurrentApplicationUser.Sites(AccessFilter.RoleAndUser) != null && _Console.CurrentListInstance.wim.CurrentApplicationUser.Sites(AccessFilter.RoleAndUser).Length > 0)
                         {
-                            _Console.Response.Redirect(_Console.GetWimPagePath(_Console.CurrentListInstance.wim.CurrentApplicationUser.Sites(Data.AccessFilter.RoleAndUser)[0].ID));
+                            _Console.Response.Redirect(_Console.GetWimPagePath(_Console.CurrentListInstance.wim.CurrentApplicationUser.Sites(AccessFilter.RoleAndUser)[0].ID));
                             return false;
                         }
                         else
@@ -656,7 +660,7 @@ namespace Sushi.Mediakiwi.UI
 
                     break;
                 case FolderType.List:
-                    if (_Console.CurrentListInstance.wim.CurrentList.Type == Data.ComponentListType.Browsing)
+                    if (_Console.CurrentListInstance.wim.CurrentList.Type == ComponentListType.Browsing)
                     {
                         approved = _Console.CurrentListInstance.wim.CurrentApplicationUserRole.CanSeeFolder;
                         if (!approved)
@@ -813,9 +817,9 @@ namespace Sushi.Mediakiwi.UI
                 int n = 0;
 
                 var candidate = Utils.FromUrl(split[0]);
-                if (Data.Utility.IsNumeric(candidate))
+                if (Utility.IsNumeric(candidate))
                 {
-                    _Console.ChannelIndentifier = Data.Utility.ConvertToInt(candidate, Data.Environment.Current.DefaultSiteID.GetValueOrDefault());
+                    _Console.ChannelIndentifier = Utility.ConvertToInt(candidate, Data.Environment.Current.DefaultSiteID.GetValueOrDefault());
                 }
                 else
                 {
@@ -831,7 +835,7 @@ namespace Sushi.Mediakiwi.UI
                     _Console.ChannelIndentifier = Data.Environment.Current.DefaultSiteID.GetValueOrDefault();
                     if (_Console.ChannelIndentifier == 0)
                     {
-                        _Console.ChannelIndentifier = Data.Site.SelectAll()[0].ID;
+                        _Console.ChannelIndentifier = Site.SelectAll()[0].ID;
                     }
                 }
 
@@ -880,7 +884,7 @@ namespace Sushi.Mediakiwi.UI
                     _Console.ChannelIndentifier = Data.Environment.Current.DefaultSiteID.GetValueOrDefault();
                     if (_Console.ChannelIndentifier == 0)
                     {
-                        _Console.ChannelIndentifier = Data.Site.SelectAll()[0].ID;
+                        _Console.ChannelIndentifier = Site.SelectAll()[0].ID;
                     }
                 }
             }
@@ -944,11 +948,11 @@ namespace Sushi.Mediakiwi.UI
                     string name = string.Concat(_Console.Request.Query["id"], "__", type.Value, "__", _Console.Request.Query["index"]);
 
 
-                    ((Framework.ContentSharedAttribute)element).ID = name;
-                    ((Framework.ContentSharedAttribute)element).OverrideTableGeneration = true;
-                    ((Framework.ContentSharedAttribute)element).Expression = (_Console.Request.Query["w"] == "2" ? OutputExpression.FullWidth : OutputExpression.Alternating);
-                    ((Framework.ContentSharedAttribute)element).Console = _Console;
-                    ((Framework.ContentSharedAttribute)element).IsBluePrint = true;
+                    ((ContentSharedAttribute)element).ID = name;
+                    ((ContentSharedAttribute)element).OverrideTableGeneration = true;
+                    ((ContentSharedAttribute)element).Expression = (_Console.Request.Query["w"] == "2" ? OutputExpression.FullWidth : OutputExpression.Alternating);
+                    ((ContentSharedAttribute)element).Console = _Console;
+                    ((ContentSharedAttribute)element).IsBluePrint = true;
                     if (element.ContentTypeSelection == ContentType.Binary_Image)
                         ((Framework.ContentInfoItem.Binary_ImageAttribute)element).GalleryPropertyUrl = _Console.Request.Query["gallery"];
 
@@ -1031,7 +1035,7 @@ namespace Sushi.Mediakiwi.UI
             }
             else if (_Console.ItemType == RequestItemType.Asset)
             {
-                _Console.ApplyList(Data.ComponentListType.Documents);
+                _Console.ApplyList(ComponentListType.Documents);
             }
             else
                 _Console.ApplyList(typeof(AppCentre.Data.Implementation.Browsing));
@@ -1202,7 +1206,7 @@ namespace Sushi.Mediakiwi.UI
                                 && claim.val.Contains("@"))
                             {
                                 var email = claim.val.ToString();
-                                var applicationUser = Data.ApplicationUser.SelectOne(email, true);
+                                var applicationUser = ApplicationUser.SelectOne(email, true);
                                 if (applicationUser != null && !applicationUser.IsNewInstance)
                                 {
                                     _Console.CurrentApplicationUser = applicationUser;

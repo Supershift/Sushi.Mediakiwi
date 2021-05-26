@@ -360,6 +360,39 @@ namespace Sushi.Mediakiwi.Data
         }
 
         /// <summary>
+        /// Selects all Based on Component Template ID.
+        /// </summary>
+        /// <param name="componentTemplateId">The Component Template ID.</param>
+        /// <returns></returns>
+        public static async Task<ICollection<ComponentVersion>> SelectAllForTemplateAsync(int componentTemplateId)
+        {
+            var connector = ConnectorFactory.CreateConnector<ComponentVersion>();
+            var filter = connector.CreateDataFilter();
+            filter.AddOrder(x => x.SortOrder);
+            filter.Add(x => x.TemplateID, componentTemplateId);
+
+            var result = await connector.FetchAllAsync(filter);
+            return result;
+        }
+
+        /// <summary>
+        /// Selects all Based on Component Template ID.        
+        /// </summary>
+        /// <param name="componentTemplateId">The Component Template ID.</param>
+        /// <returns></returns>
+        public static ICollection<ComponentVersion> SelectAllForTemplate(int componentTemplateId)
+        {
+            var connector = ConnectorFactory.CreateConnector<ComponentVersion>();
+            var filter = connector.CreateDataFilter();
+            filter.AddOrder(x => x.SortOrder);
+            filter.Add(x => x.TemplateID, componentTemplateId);
+
+            var result = connector.FetchAll(filter);
+            return result;
+        }
+
+
+        /// <summary>
         /// Selects all.
         /// </summary>
         /// <returns></returns>

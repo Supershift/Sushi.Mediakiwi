@@ -55,6 +55,7 @@
                                         <i class="fas fa-check-circle check" title="Saved" v-if="field.status === fieldStatus.saved"></i>
                                         <i class="far fa-exclamation-triangle warning" title="Warning" v-if="field.status === fieldStatus.invalid"></i>
                                     </transition>
+                                    <i class="fas fa-retweet sharedField" title="Shared field" v-if="field.isSharedField"></i>
                                     <i class="fas fa-trash delete" title="Delete" @click.stop="deleteField(field.id)"></i>
                                     <i class="fas fa-bars sort" title="Move"></i>
                                 </div>
@@ -154,6 +155,8 @@
                         title: r.title,
                         isMandatory: r.isMandatory,
                         sortOrder: r.sortOrder,
+                        isSharedField: r.isSharedField,
+                        fieldName: r.fieldName
                     }
                 });
             },
@@ -327,6 +330,8 @@
                     fields: [],
                     notifications: [],
                     status: this.fieldStatus.edited,
+                    isSharedField: false,
+                    fieldName: ''
                 });
             },
             deleteField(fieldID) {
@@ -549,6 +554,57 @@
                 this.fieldsCollection[i].fields = form.fields;
                 this.fieldsCollection[i].notifications = form.notifications;
             },
+            async checkSharedField(isChecked) {
+                this.loading = true;
+
+                let request = {
+                    fieldName: this.selectedField.fieldName,
+                    isChecked: isChecked
+                };
+                let result = undefined;
+
+                await this.$http.post(`${this.rootPath}/api/documentype/checksharedfield`, request, {
+                    before(request) {
+                        if (this.previousFetchFieldsRequest) {
+                            this.previousFetchFieldsRequest.abort();
+                        }
+                        this.previousFetchFieldsRequest = request;
+                    }
+                }).then(response => {
+                    // success
+                    if (typeof (response.data) === "string")
+                        result = JSON.parse(response.data);
+                    else
+                        result = response.data;
+
+                    // Check if we have an impact on other pages,
+                    // if so, display a dialog box about that
+                    if (result.pages && result.pages.length > 0) {
+
+                        // Create page list
+                        var ul = $('<ul/>');
+                        for (var i = 0; i < result.pages.length; i++) {
+                            var li = $('<li/>').html(result.pages[i].pagePath);
+                            ul.append(li);
+                        }
+
+                        // Enabling shared field
+                        if (isChecked) {
+                            this.$dialog.alert(`<h2>Caution</h2>When enabling shared field '<i> ${this.selectedField.fieldName}</i>', the following pages will also be updated: ${ul[0].outerHTML}`, { html: true });
+                        }
+                        else {
+                            this.$dialog.alert(`<h2>Caution</h2>When disabling shared field '<i> ${this.selectedField.fieldName}</i>', the following pages will also be updated: ${ul[0].outerHTML}`, { html: true });
+                        }
+                    }
+
+                    this.loading = false;
+                }, response => {
+                    // error
+                    if (response && response.status)
+                        this.loading = false;
+                });
+
+            },
             async saveFieldProperties(field) {
                 let target = "Save";
 
@@ -630,6 +686,8 @@
                         fields: [],
                         notifications: [],
                         status: 0,
+                        isSharedField: r.isSharedField,
+                        fieldName: r.fieldName
                     }
                 }).sort((a, b) => (a.sortOrder > b.sortOrder) ? 1 : -1);
 
@@ -647,6 +705,8 @@
                         fields: [],
                         notifications: [],
                         status: 0,
+                        isSharedField: false,
+                        fieldName: ''
                     });
                 }
 

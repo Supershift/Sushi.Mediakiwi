@@ -72,6 +72,8 @@
   <ItemGroup>
     <Compile Include="AppCentre\Data\BaseImplementation.cs" />
     <Compile Include="AppCentre\Data\Implementation\RoleAccessSite.cs" />
+    <Compile Include="AppCentre\UI\Forms\SharedFieldForm.cs" />
+    <Compile Include="AppCentre\UI\SharedFieldList.cs" />
     <Compile Include="AppCentre\UI\BaseImplementation.cs" />
     <Compile Include="AppCentre\UI\BasicSeachList.cs" />
     <Compile Include="AppCentre\UI\BrowseItem.cs" />

@@ -127,11 +127,17 @@
                 return true;
             },
             postFields: function ($event, target) {
-                if (this.$parent.postFields)
+                if ($event.target.id && $event.target.id === 'IsSharedField') {
+                    if (this.$parent.checkSharedField) {
+                        this.$parent.checkSharedField($event.target.checked);
+                    }
+                }
+                if (this.$parent.postFields) {
                     this.$parent.postFields($event, target);
+                }
             },
             hide(buttons) {
-                for (let button of buttons) {
+                for (let button of buttons) { 
                     if (button.section == 0)
                         return "";
                 }
