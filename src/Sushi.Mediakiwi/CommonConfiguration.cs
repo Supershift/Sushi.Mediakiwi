@@ -1,4 +1,5 @@
 using Sushi.Mediakiwi.Data.Configuration;
+using Sushi.Mediakiwi.Framework;
 using System;
 using System.Reflection;
 
@@ -41,16 +42,26 @@ namespace Sushi.Mediakiwi
 
         static string _Domain = "https://sushi-mediakiwi.azureedge.net/";
         static string _FolderVersion;
-        internal static string CDN_Folder(string subfolder)
+        internal static string CDN_Folder(WimComponentListRoot wim, string subfolder)
         {
             if (_FolderVersion == null)
             {
                 // CDN
-                 _FolderVersion = string.Concat(_Domain, Utils.Version.Replace(".", "-"), "/");
+                if (string.IsNullOrEmpty(CommonConfiguration.LOCAL_FILE_PATH))
+                {
+                    _FolderVersion = string.Concat(_Domain, Utils.Version.Replace(".", "-"), "/");
+                }
+                else
+                {
+                    if (CommonConfiguration.LOCAL_FILE_PATH.IndexOf("http", StringComparison.InvariantCultureIgnoreCase) > -1)
+                        _FolderVersion = CommonConfiguration.LOCAL_FILE_PATH;
+                    else
+                        _FolderVersion = wim.AddApplicationPath(CommonConfiguration.LOCAL_FILE_PATH, true);
+                }
             }
 
             if (!string.IsNullOrWhiteSpace(subfolder))
-                return string.Concat(_FolderVersion, subfolder, "/");
+                return string.Concat(_FolderVersion, subfolder);
 
             return _FolderVersion;
         }

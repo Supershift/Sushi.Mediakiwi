@@ -245,8 +245,7 @@ namespace Sushi.Mediakiwi.AppCentre.UI
             // ARTICLE WILL BE REPLACED WITH THE VUE TEMPLATE
             wim.Page.Body.Add(@"<article id=""app""></article>", false, Body.BodyTarget.Nested);
 
-            //wim.Page.Head.AddVersionedStyle("styles/stylesFeed.min.css", true);
-            wim.Page.Head.AddStyle("cms/styles/documentType.min.css", true);
+            wim.Page.Head.AddStyle(CommonConfiguration.CDN_Folder(wim, "styles/documentType.min.css"));
 
             wim.Page.Head.Add($@"<script> 
 var rootPath = {JsonConvert.SerializeObject(wim.AddApplicationPath("/", true))};
@@ -254,9 +253,9 @@ var documentTypeID = {e.SelectedKey};
 </script>");
 
             if (CommonConfiguration.IS_LOCAL_DEVELOPMENT)
-                wim.Page.Head.AddScript(CommonConfiguration.CDN_Folder("app/dist/document-type-app.js"));
+                wim.Page.Head.AddScript(CommonConfiguration.CDN_Folder(wim, "app/dist/document-type-app.js"));
             else
-                wim.Page.Head.AddScript(CommonConfiguration.CDN_Folder("app/dist/document-type-app.min.js"));
+                wim.Page.Head.AddScript(CommonConfiguration.CDN_Folder(wim, "app/dist/document-type-app.min.js"));
 
             return Task.CompletedTask;
         }

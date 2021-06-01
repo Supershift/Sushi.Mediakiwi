@@ -642,9 +642,15 @@ namespace Sushi.Mediakiwi.Framework
         /// <param name="path">relative path to the file</param>
         public void AddScript(string path, bool appendApplicationPath = true)
         {
-            string fileVersion = CommonConfiguration.FILE_VERSION;
             string _path = (appendApplicationPath) ? _root.AddApplicationPath(path) : path;
-            Add($"<script type=\"text/javascript\" src=\"{_path}?v={fileVersion}\"></script>");
+
+            if (string.IsNullOrWhiteSpace(CommonConfiguration.FILE_VERSION))
+            {
+                Add($"<script type=\"text/javascript\" src=\"{_path}\"></script>");
+                return;
+            }
+
+            Add($"<script type=\"text/javascript\" src=\"{_path}?v={CommonConfiguration.FILE_VERSION}\"></script>");
         }
 
         /// <summary>

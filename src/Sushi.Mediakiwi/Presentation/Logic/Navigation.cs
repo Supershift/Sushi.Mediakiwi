@@ -685,7 +685,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
 
         static void ApplyTabularUrl(Sushi.Mediakiwi.Beta.GeneratedCms.Console container, Sushi.Mediakiwi.Framework.WimComponentListRoot.Tabular t, int levelEntry, int? currentListID)
         {
-            int listID = currentListID.HasValue ? currentListID.Value : Utility.ConvertToInt(container.Request.Query["list"]);
+            int listID = container.CurrentList != null ? container.CurrentList.ID : Utility.ConvertToInt(container.Request.Query["list"]);
 
             string addition = GetQueryStringRecording(container);
 
