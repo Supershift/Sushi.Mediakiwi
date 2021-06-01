@@ -1,13 +1,11 @@
 using System;
 using System.Linq;
 using System.Data;
-using System.Drawing;
-using System.Web;
-using System.Collections;
 using System.Collections.Generic;
-using System.Web.UI.WebControls;
-using System.Web.UI.HtmlControls;
+using System.Threading.Tasks;
+using Sushi.Mediakiwi.Data;
 using Sushi.Mediakiwi.Framework;
+using Sushi.Mediakiwi.UI;
 
 namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
 {
@@ -22,22 +20,22 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         public ComponentTemplate()
         {
             wim.OpenInEditMode = true;
-            
-            IS_HEADLESS = Wim.CommonConfiguration.HEADLESS_CMS;
+            IS_HEADLESS = true;
 
-
-            this.ListSave += new ComponentListEventHandler(ComponentTemplate_ListSave);
+            this.ListSave += ComponentTemplate_ListSave;
             this.ListPreRender += ComponentTemplate_ListPreRender;
-            this.ListDelete += new ComponentListEventHandler(ComponentTemplate_ListDelete);
-            this.ListLoad += new ComponentListEventHandler(ComponentTemplate_ListLoad);
-            this.ListSearch += new ComponentSearchEventHandler(ComponentTemplate_ListSearch);
-            this.ListAction += new ComponentActionEventHandler(ComponentTemplate_ListAction);
+            this.ListDelete += ComponentTemplate_ListDelete;
+            this.ListLoad += ComponentTemplate_ListLoad;
+            this.ListSearch += ComponentTemplate_ListSearch;
+            this.ListAction += ComponentTemplate_ListAction;
         }
 
-        void ComponentTemplate_ListPreRender(object sender, ComponentListEventArgs e)
+        Task ComponentTemplate_ListPreRender(ComponentListEventArgs e)
         {
             if (IsPostBack)
                 SetSourceVisibility(this.Implement.HasEditableSource);
+
+            return Task.CompletedTask;
         }
 
         void SetSourceVisibility(bool isHTMLSource)
@@ -64,22 +62,23 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// Handles the ListAction event of the ComponentTemplate control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="Sushi.Mediakiwi.Framework.ComponentActionEventArgs"/> instance containing the event data.</param>
-        void ComponentTemplate_ListAction(object sender, ComponentActionEventArgs e)
+        /// <param name="e">The <see cref="Wim.Framework.ComponentActionEventArgs"/> instance containing the event data.</param>
+        Task ComponentTemplate_ListAction(ComponentActionEventArgs e)
         {
             //if (this.RefreshMetaData)
             //{
             //    string url = string.Concat(wim.Console.CurrentHost, Utility.AddApplicationPath(Wim.CommonConfiguration.RelativeRepositoryBase), "/tcl.aspx?metadataupdate=all");
             //    wim.Notification.AddNotification(string.Format("The blueprint has been updated for {0} component template(s) using the following URL: {1}.", Utilities.WebScrape.GetUrlResponse(url), url));
             //}
+            return Task.CompletedTask;
         }
 
         /// <summary>
         /// Gets or sets a value indicating whether [set all page cache].
         /// </summary>
         /// <value><c>true</c> if [set all page cache]; otherwise, <c>false</c>.</value>
-        [Sushi.Mediakiwi.Framework.OnlyVisibleWhenFalse("IS_HEADLESS")]
-        [Sushi.Mediakiwi.Framework.ContentListSearchItem.Button("Set pagelevel cache", AskConfirmation = true, IconTarget = Sushi.Mediakiwi.Framework.ButtonTarget.TopRight)]
+        [Mediakiwi.Framework.OnlyVisibleWhenFalse("IS_HEADLESS")]
+        [Mediakiwi.Framework.ContentListSearchItem.Button("Set pagelevel cache", AskConfirmation = true, IconTarget = ButtonTarget.TopRight)]
         public bool SetAllPageCache { get; set; }
 
         public bool IS_HEADLESS { get; set; }
@@ -88,45 +87,16 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// Components the template_ list search.
         /// </summary>
         /// <param name="sender">The sender.</param>
-        void ComponentTemplate_ListSearch(object sender, ComponentListSearchEventArgs e)
+        Task ComponentTemplate_ListSearch(ComponentListSearchEventArgs e)
         {
             wim.CanAddNewItem = true;
 
-            if (Wim.CommonConfiguration.HEADLESS_CMS)
-            {
-                wim.ListDataColumns.Add("ID", "ID", ListDataColumnType.UniqueIdentifier);
-                wim.ListDataColumns.Add("Template", "Name", ListDataColumnType.HighlightPresent);
-                wim.ListDataColumns.Add("Description", "Description");
-                wim.ListDataColumns.Add("Active", "HasSourceTag", 50);
-                //wim.ListDataColumns.Add("Search", "IsSearchable", 50, Align.Center);
-                //wim.ListDataColumns.Add("Cache level", "CacheLevelInfo", 70);
-                //wim.ListDataColumns.Add("Move", "CanMoveUpDown", 50, Align.Center);
-                //wim.ListDataColumns.Add("Replicate", "CanReplicate", 50, Align.Center);
-                //wim.ListDataColumns.Add("Deactivate", "CanDeactivate", 50, Align.Center);
-                //wim.ListDataColumns.Add("AJAX", "HasAjaxCall", 50, Align.Center);
-                //wim.ListDataColumns.Add("Header", "IsHeader", 50, Align.Center);
-                //wim.ListDataColumns.Add("Footer", "IsFooter", 50, Align.Center);
-                //wim.ListDataColumns.Add("Is secundary", "IsSecundaryContainerItem", ListDataColumnType.ExportOnly);
-                //wim.ListDataColumns.Add("Location", "Location", ListDataColumnType.ExportOnly);
-            }
-            else
-            {
-                wim.ListDataColumns.Add("ID", "ID", ListDataColumnType.UniqueIdentifier);
-                wim.ListDataColumns.Add("", "ReferenceID", 15);
-                wim.ListDataColumns.Add("Template", "Name", ListDataColumnType.HighlightPresent);
-                wim.ListDataColumns.Add("Search", "IsSearchable", 50, Align.Center);
-                wim.ListDataColumns.Add("Cache level", "CacheLevelInfo", 70);
-                wim.ListDataColumns.Add("Move", "CanMoveUpDown", 50, Align.Center);
-                wim.ListDataColumns.Add("Replicate", "CanReplicate", 50, Align.Center);
-                wim.ListDataColumns.Add("Deactivate", "CanDeactivate", 50, Align.Center);
-                wim.ListDataColumns.Add("AJAX", "HasAjaxCall", 50, Align.Center);
-                wim.ListDataColumns.Add("Header", "IsHeader", ListDataColumnType.ExportOnly);
-                wim.ListDataColumns.Add("Footer", "IsFooter", ListDataColumnType.ExportOnly);
-                wim.ListDataColumns.Add("Is secundary", "IsSecundaryContainerItem", ListDataColumnType.ExportOnly);
-                wim.ListDataColumns.Add("Location", "Location", ListDataColumnType.ExportOnly);
-            }
-            Sushi.Mediakiwi.AppCentre.Data.Extention.ComponentTemplate[] templates = 
-                Sushi.Mediakiwi.AppCentre.Data.Extention.ComponentTemplate.SelectAll(FilterText, FilterSite);
+            wim.ListDataColumns.Add("ID", "ID", ListDataColumnType.UniqueIdentifier);
+            wim.ListDataColumns.Add("Template", "Name", ListDataColumnType.HighlightPresent);
+            wim.ListDataColumns.Add("Description", "Description");
+            wim.ListDataColumns.Add("Active", "HasSourceTag", 50);
+                
+            var templates = Mediakiwi.Data.ComponentTemplate.SelectAll();
             wim.ForceLoad = true;
 
             if (FilterTarget > 0 || FilterTemplate > 0)
@@ -134,7 +104,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                 if (FilterTemplate > 0)
                 {
                     bool checkForService = FilterTarget == 2;
-                    Sushi.Mediakiwi.Data.IAvailableTemplate[] available = Sushi.Mediakiwi.Data.AvailableTemplate.SelectAll(FilterTemplate);
+                    IAvailableTemplate[] available = AvailableTemplate.SelectAll(FilterTemplate);
 
                     templates = (from item in templates  
                                  join relation in available on item.ID equals relation.ComponentTemplateID
@@ -163,19 +133,25 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             }
 
             wim.ListData = templates;
+            return Task.CompletedTask;
         }
+
+        public ListItemCollection NestTypes { get; set; }
+
 
         /// <summary>
         /// Handles the ListLoad event of the ComponentTemplate control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="Sushi.Mediakiwi.Framework.ComponentListEventArgs"/> instance containing the event data.</param>
-        void ComponentTemplate_ListLoad(object sender, ComponentListEventArgs e)
+        /// <param name="e">The <see cref="Wim.Framework.ComponentListEventArgs"/> instance containing the event data.</param>
+        Task ComponentTemplate_ListLoad(ComponentListEventArgs e)
         {
-            wim.SetPropertyVisibility("MetaData", wim.CurrentApplicationUser.IsDeveloper);
+            NestTypes = new ListItemCollection();
+            NestTypes.Add(new ListItem("Not nested", ""));
+            NestTypes.Add(new ListItem("Equal source tags", "1"));
+            NestTypes.Add(new ListItem("Adjacent source tags", "2"));
             wim.CanAddNewItem = true;
-
-            Implement = Sushi.Mediakiwi.Data.ComponentTemplate.SelectOne(e.SelectedKey);
+            Implement = Mediakiwi.Data.ComponentTemplate.SelectOne(e.SelectedKey);
             if (e.SelectedKey == 0)
             {
                 Implement.HasEditableSource = true;
@@ -185,25 +161,20 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                 Implement.Location = "#";
             }
             this.Implement.HasEditableSource = (Implement.Location == "#");
-
             SetSourceVisibility(Implement.HasEditableSource);
-
-            //var dt = new Sushi.Mediakiwi.Data.DataTemplate();
-            //this.Implement.Source = dt.CleanComponentTemplate(this.Implement);
-            //this.Implement.Source2 = this.Implement.Source;
-
             if (e.SelectedKey > 0 && Implement.HasEditableSource)
             {
                 wim.AddTab(new Guid("36fc7157-d5c7-433c-8317-b601226f9bd0"), e.SelectedKey);
             }
+            return Task.CompletedTask;
         }
 
-        Sushi.Mediakiwi.Data.ComponentTemplate m_Implement;
+        Mediakiwi.Data.ComponentTemplate m_Implement;
         /// <summary>
         /// Gets or sets the implement.
         /// </summary>
         /// <value>The implement.</value>
-        [Sushi.Mediakiwi.Framework.ContentListItem.DataExtend()]
+        [Mediakiwi.Framework.ContentListItem.DataExtend()]
         public Sushi.Mediakiwi.Data.ComponentTemplate Implement
         {
             get { return m_Implement; }
@@ -214,25 +185,22 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// Handles the ListDelete event of the ComponentTemplate control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="Sushi.Mediakiwi.Framework.ComponentListEventArgs"/> instance containing the event data.</param>
-        void ComponentTemplate_ListDelete(object sender, ComponentListEventArgs e)
+        /// <param name="e">The <see cref="Wim.Framework.ComponentListEventArgs"/> instance containing the event data.</param>
+        Task ComponentTemplate_ListDelete(ComponentListEventArgs e)
         {
             this.Implement.Delete();
+            return Task.CompletedTask;
         }
 
         /// <summary>
         /// Handles the ListSave event of the ComponentTemplate control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="Sushi.Mediakiwi.Framework.ComponentListEventArgs"/> instance containing the event data.</param>
-        void ComponentTemplate_ListSave(object sender, ComponentListEventArgs e)
+        /// <param name="e">The <see cref="Wim.Framework.ComponentListEventArgs"/> instance containing the event data.</param>
+        Task ComponentTemplate_ListSave(ComponentListEventArgs e)
         {
-            if (!string.IsNullOrEmpty(this.Implement.Source))
-            {
-                var dt = new Sushi.Mediakiwi.Data.DataTemplate();
-                this.Implement.MetaData = dt.ParseComponentTemplate(this.Implement);
-            }
             this.Implement.Save();
+            return Task.CompletedTask;
         }
 
 
@@ -242,7 +210,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// Gets or sets the filter client ID.
         /// </summary>
         /// <value>The filter client ID.</value>
-        [Sushi.Mediakiwi.Framework.ContentListSearchItem.TextField("Search for", 50, AutoPostBack = true, Expression = Sushi.Mediakiwi.Framework.OutputExpression.Alternating)]
+        [Mediakiwi.Framework.ContentListSearchItem.TextField("Search for", 50, AutoPostBack = true, Expression = OutputExpression.Alternating)]
         public string FilterText
         {
             get { return m_FilterText; }
@@ -253,7 +221,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// Gets or sets the filter site.
         /// </summary>
         /// <value>The filter site.</value>
-        [Sushi.Mediakiwi.Framework.ContentListSearchItem.Choice_Dropdown("Part of site", "SearchSites", true, true, Expression = Sushi.Mediakiwi.Framework.OutputExpression.Alternating)]
+        [Mediakiwi.Framework.ContentListSearchItem.Choice_Dropdown("Part of site", "SearchSites", true, true, Expression = OutputExpression.Alternating)]
         public int FilterSite { get; set; }
 
         private ListItemCollection m_Sites;
@@ -271,7 +239,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                 ListItem li;
                 m_Sites.Add(new ListItem("-- select a site --", ""));
 
-                foreach (Sushi.Mediakiwi.Data.Site site in Sushi.Mediakiwi.Data.Site.SelectAll())
+                foreach (var site in Mediakiwi.Data.Site.SelectAll())
                 {
                     if (site.MasterID.GetValueOrDefault() > 0) continue;
                     li = new ListItem(site.Name, site.ID.ToString());
@@ -282,8 +250,8 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             }
         }
 
-        [Sushi.Mediakiwi.Framework.OnlyVisibleWhenFalse("IS_HEADLESS")]
-        [Sushi.Mediakiwi.Framework.ContentListSearchItem.Choice_Dropdown("Page template", "PageTemplates", true, true, Expression = Sushi.Mediakiwi.Framework.OutputExpression.Alternating)]
+        [Mediakiwi.Framework.OnlyVisibleWhenFalse("IS_HEADLESS")]
+        [Mediakiwi.Framework.ContentListSearchItem.Choice_Dropdown("Page template", "PageTemplates", true, true, Expression = OutputExpression.Alternating)]
         public int FilterTemplate { get; set; }
 
 
@@ -303,7 +271,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                 ListItem li;
                 m_PageTemplates.Add(new ListItem("", ""));
 
-                foreach (Sushi.Mediakiwi.Data.PageTemplate template in Sushi.Mediakiwi.Data.PageTemplate.SelectAll())
+                foreach (var template in Mediakiwi.Data.PageTemplate.SelectAll())
                 {
                     li = new ListItem(string.Format("{1:00}. {0}", template.Name, template.ReferenceID), template.ID.ToString());
                     m_PageTemplates.Add(li);
@@ -313,8 +281,8 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             }
         }
 
-        [Sushi.Mediakiwi.Framework.OnlyVisibleWhenFalse("IS_HEADLESS")]
-        [Sushi.Mediakiwi.Framework.ContentListSearchItem.Choice_Dropdown("Target", "Targets", true, true, Expression = Sushi.Mediakiwi.Framework.OutputExpression.Alternating)]
+        [Mediakiwi.Framework.OnlyVisibleWhenFalse("IS_HEADLESS")]
+        [Mediakiwi.Framework.ContentListSearchItem.Choice_Dropdown("Target", "Targets", true, true, Expression = Mediakiwi.Framework.OutputExpression.Alternating)]
         public int FilterTarget { get; set; }
 
         private ListItemCollection m_Targets;
@@ -352,7 +320,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                 ListItem li;
                 m_SearchSites.Add(new ListItem("", ""));
 
-                foreach (Sushi.Mediakiwi.Data.Site site in Sushi.Mediakiwi.Data.Site.SelectAll())
+                foreach (var site in Mediakiwi.Data.Site.SelectAll())
                 {
                     if (site.MasterID.GetValueOrDefault() > 0) continue;
                     li = new ListItem(site.Name, site.ID.ToString());
@@ -395,7 +363,6 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                 if (m_AjaxTypes != null) return m_AjaxTypes;
 
                 m_AjaxTypes = new ListItemCollection();
-                //ListItem li;
                 m_AjaxTypes.Add(new ListItem("Fully cacheable", "0"));
                 m_AjaxTypes.Add(new ListItem("Visitor based", "1"));
                 m_AjaxTypes.Add(new ListItem("Update via ajax", "2"));

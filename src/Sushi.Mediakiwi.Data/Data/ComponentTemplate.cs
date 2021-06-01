@@ -84,6 +84,8 @@ namespace Sushi.Mediakiwi.Data
         /// <value>The reference id.</value>
         public int? ReferenceID { get; set; }
 
+        public bool HasEditableSource { get; set; }
+
         /// <summary>
         /// The possibility to search the content of this template
         /// </summary>

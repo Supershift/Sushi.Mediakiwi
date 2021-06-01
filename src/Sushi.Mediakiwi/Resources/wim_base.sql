@@ -205,17 +205,14 @@
 	    Environment_Smtp varchar(250) NULL,
 	    Environment_DefaultMail varchar(255) NULL,
 	    Environment_ErrorMail varchar(255) NULL,
-	    Environment_Url varchar(255) NULL,
 	    Environment_Version decimal(18,2) NOT NULL,
 	    Environment_Default_Site_Key int NULL,
-	    Environment_Path varchar(50) NULL,
 	    Environment_Update datetime NULL,
 	    Environment_Title nvarchar(50) NULL,
 	    Environment_Password varchar(50) NULL,
 	    Environment_SmtpUser varchar(250) NULL,
 	    Environment_SmtpPass varchar(250) NULL,
 		Environment_SmtpEnableSSL bit NULL,
-		Environment_LogoL int NULL
 		);
 	    
     --PK_Environment_Key;
@@ -693,7 +690,9 @@
 	    AvailableTemplates_Timestamp timestamp NULL,
 	    AvailableTemplates_IsPresent bit NOT NULL,
 	    AvailableTemplates_SortOrder int NULL,
-	    AvailableTemplates_Fixed_Id nvarchar(50) NULL);
+	    AvailableTemplates_Fixed_Id nvarchar(50) NULL,
+		AvailableTemplates_Slot int NULL
+		);
 	    
     --PK_AvailableTemplates_Key;
 	IF:select COUNT(*) from sys.indexes where name = 'PK_AvailableTemplates_Key';    
