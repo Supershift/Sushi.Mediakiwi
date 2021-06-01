@@ -14,6 +14,7 @@ using Sushi.Mediakiwi.Framework;
 using Sushi.Mediakiwi.Data.Configuration;
 using Sushi.MicroORM;
 using System.Linq;
+using Sushi.Mediakiwi.Controllers;
 
 namespace Sushi.Mediakiwi
 {
@@ -49,8 +50,9 @@ namespace Sushi.Mediakiwi
 
                 // Assign json section to config
                 WimServerConfiguration.LoadJsonConfig(_configuration);
-                
                 DatabaseConfiguration.SetDefaultConnectionString(Common.DatabaseConnectionString);
+
+                ControllerRegister.AddRoute("api/documentype/getfields", new DocumentTypeController());
             }
         }
 
@@ -66,35 +68,35 @@ namespace Sushi.Mediakiwi
             var url = GetSafeUrl(context);
             var portal = _configuration.GetValue<string>("mediakiwi:portal_path");
 
-            if (
-                url.Equals(portal, StringComparison.CurrentCultureIgnoreCase)
-                || url.StartsWith($"{portal}/", StringComparison.CurrentCultureIgnoreCase)
+            Configure(context);
 
-                //|| url.EndsWith(portal, StringComparison.CurrentCultureIgnoreCase)
-                )
+            if (!await Monitor.StartControllerAsync(context, _env, _configuration))
             {
-                if (_env.IsDevelopment())
-                {
-                    Configure(context);
-                    Monitor monitor = new Monitor(context, _env, _configuration);
-                    await monitor.StartAsync();
-                }
-                else
-                {
-                    try
-                    {
-                        Configure(context);
 
+                if (
+                    url.Equals(portal, StringComparison.CurrentCultureIgnoreCase)
+                    || url.StartsWith($"{portal}/", StringComparison.CurrentCultureIgnoreCase)
+                    )
+                {
+                    if (_env.IsDevelopment())
+                    {
                         Monitor monitor = new Monitor(context, _env, _configuration);
                         await monitor.StartAsync();
                     }
-                    catch (Exception ex)
+                    else
                     {
-                        throw ex;
+                        try
+                        {
+                            Monitor monitor = new Monitor(context, _env, _configuration);
+                            await monitor.StartAsync();
+                        }
+                        catch (Exception ex)
+                        {
+                            throw ex;
+                        }
                     }
                 }
             }
-
             await _next.Invoke(context);
         }
     }

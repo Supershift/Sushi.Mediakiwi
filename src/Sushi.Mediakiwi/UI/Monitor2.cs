@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Sushi.Mediakiwi.Beta.GeneratedCms.Source;
+using Sushi.Mediakiwi.Controllers;
 using Sushi.Mediakiwi.Data;
 using Sushi.Mediakiwi.Framework;
 using Sushi.Mediakiwi.Interfaces;
@@ -68,6 +69,22 @@ namespace Sushi.Mediakiwi.UI
             }
         }
 
+        internal static async Task<bool> StartControllerAsync(HttpContext context, IHostingEnvironment env, IConfiguration configuration)
+        {
+            var controllerOutput = new ControllerRegister(context).Verify();
+            if (controllerOutput != null)
+            {
+                var monitor = new Monitor(context, env, configuration);
+                if (await monitor.CheckRoamingApplicationUserAsync().ConfigureAwait(false))
+                {
+                    var output = await controllerOutput.Complete(context).ConfigureAwait(false);
+                    await context.Response.WriteAsync(output).ConfigureAwait(false);
+                    return true;
+                }
+            }
+            return false;
+        }
+
         internal async Task StartAsync(bool reStartWithNotificationList)
         {
             //  Set the current environment
@@ -85,10 +102,11 @@ namespace Sushi.Mediakiwi.UI
                 || _Console.Url.EndsWith($"{path}?reminder", StringComparison.CurrentCultureIgnoreCase)
                 ;
 
-            if (!await CheckRoamingApplicationUserAsync(forcelogin))
+            if (!await CheckRoamingApplicationUserAsync(forcelogin).ConfigureAwait(false))
             {
                 return;
             }
+
             _Console.SaveVisit();
 
             //  Obtain querystring requests

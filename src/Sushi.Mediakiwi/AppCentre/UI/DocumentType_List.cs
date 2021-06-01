@@ -248,7 +248,7 @@ namespace Sushi.Mediakiwi.AppCentre.UI
             wim.Page.Head.AddStyle(CommonConfiguration.CDN_Folder(wim, "styles/documentType.min.css"));
 
             wim.Page.Head.Add($@"<script> 
-var rootPath = {JsonConvert.SerializeObject(wim.AddApplicationPath("/", true))};
+var rootPath = {JsonConvert.SerializeObject(wim.AddApplicationPath("", true))};
 var documentTypeID = {e.SelectedKey};
 </script>");
 

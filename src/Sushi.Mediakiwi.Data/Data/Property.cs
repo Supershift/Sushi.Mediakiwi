@@ -138,6 +138,10 @@ namespace Sushi.Mediakiwi.Data
         public bool IsMandatory
         {
             get { return Mandatory == "1"; }
+            set
+            {
+                Mandatory = (value ? "1" : "0");
+            }
         }
 
         public string OnlyRead { get; set; }
