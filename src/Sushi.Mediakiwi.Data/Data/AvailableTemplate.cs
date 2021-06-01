@@ -242,6 +242,16 @@ namespace Sushi.Mediakiwi.Data
             return result.ToArray();
         }
 
+        public static IAvailableTemplate[] SelectAllByComponentTemplate(int componentTemplateID)
+        {
+            var connector = ConnectorFactory.CreateConnector<AvailableTemplate>();
+            var filter = connector.CreateDataFilter();
+            filter.Add(x => x.ComponentTemplateID, componentTemplateID);
+            filter.AddOrder(x => x.SortOrder);
+            var result = connector.FetchAll(filter);
+            return result.ToArray();
+        }
+
         public static IAvailableTemplate[] SelectAllBySlot(int slotID)
         {
             var connector = ConnectorFactory.CreateConnector<AvailableTemplate>();

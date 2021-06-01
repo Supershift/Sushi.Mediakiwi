@@ -16,3 +16,9 @@ alter table [dbo].[wim_AvailableTemplates ] add AvailableTemplates_Slot int
 
 alter table [dbo].[wim_ComponentTemplates] add ComponentTemplate_NestType int
 alter table [dbo].[wim_ComponentTemplates] alter column ComponentTemplate_NestType int
+
+alter table [dbo].[wim_Properties] add Property_Template_Key int
+alter table [dbo].[wim_Properties] add Property_Help nvarchar(max)
+alter table [dbo].[wim_Properties] add Property_IsRequired bit
+alter table [dbo].[wim_Properties] add Property_MaxInput int
+alter table [dbo].[wim_Properties] add Property_Default nvarchar(max)

@@ -41,7 +41,7 @@ namespace Sushi.Mediakiwi.Data
                 Map(x => x.IsListTemplate, "ComponentTemplate_IsListTemplate").SqlType(SqlDbType.Bit);
                 Map(x => x.MetaData, "ComponentTemplate_MetaData").SqlType(SqlDbType.NText);
                 Map(x => x.LastWriteTimeUtc, "ComponentTemplate_LastWriteTimeUtc").SqlType(SqlDbType.DateTime);
-                Map(x => x.NestedType, "ComponentTemplate_NestType").SqlType(SqlDbType.DateTime);
+                Map(x => x.NestedType, "ComponentTemplate_NestType").SqlType(SqlDbType.Int);
             }
         }
 
@@ -225,7 +225,7 @@ namespace Sushi.Mediakiwi.Data
         /// Gets or sets the last write time UTC of the page template (ASPX).
         /// </summary>
         /// <value>The last write time UTC.</value>
-        public DateTime LastWriteTimeUtc { get; set; }
+        public DateTime? LastWriteTimeUtc { get; set; }
 
         public string Source2 { get; set; }
 

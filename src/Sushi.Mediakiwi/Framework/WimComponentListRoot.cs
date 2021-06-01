@@ -642,9 +642,9 @@ namespace Sushi.Mediakiwi.Framework
         /// <param name="path">relative path to the file</param>
         public void AddScript(string path, bool appendApplicationPath = true)
         {
+            string fileVersion = CommonConfiguration.FILE_VERSION;
             string _path = (appendApplicationPath) ? _root.AddApplicationPath(path) : path;
-            Add(string.Format(@"<script type=""text/javascript"" src=""{0}""></script>",
-                _path));
+            Add($"<script type=\"text/javascript\" src=\"{_path}?v={fileVersion}\"></script>");
         }
 
         /// <summary>
@@ -654,8 +654,9 @@ namespace Sushi.Mediakiwi.Framework
         /// <param name="appendApplicationPath">when false the application path will not be added to the path param</param>
         public void AddStyle(string path, bool appendApplicationPath = true)
         {
+            string fileVersion = CommonConfiguration.FILE_VERSION;
             string _path = (appendApplicationPath) ? _root.AddApplicationPath(path) : path;
-            Add(string.Format(@"<link rel=""stylesheet"" href=""{0}"" type=""text/css"" media=""all"" />", _path));
+            Add($"<link rel=\"stylesheet\" href=\"{_path}?v={fileVersion}\" type=\"text/css\" media=\"all\" />");
         }
 
         /// <summary>
@@ -3750,7 +3751,7 @@ namespace Sushi.Mediakiwi.Framework
         /// <summary>
         /// The search result. Add columns by using ListDataColumns.Add
         /// </summary>
-        //[Obsolete("[20120715:MM] Please use ListDataApply", false)]
+        [Obsolete("[20120715:MM] Please use ListDataAdd", false)]
         internal IList ListData { get; set; }
 
         internal bool m_IsListDataScrollable;

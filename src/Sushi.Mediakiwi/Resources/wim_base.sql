@@ -434,8 +434,12 @@
 	    Property_OptionList_Key int NULL,
 	    Property_CanFilter bit NULL,
 	    Property_IsHidden bit NULL,
-	    Property_OnlyInput bit NULL);
-	    
+	    Property_OnlyInput bit NULL
+		Property_Template_Key int NULL,
+		Property_Help nvarchar(max) NULL,
+		Property_IsRequired bit NULL,
+		Property_MaxInput INT NULL,
+		Property_Default nvarchar(max) NULL);
 	    
     --PK_Property_Key;
 	IF:select COUNT(*) from sys.indexes where name = 'PK_Property_Key';    

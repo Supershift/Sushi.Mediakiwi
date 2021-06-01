@@ -85,6 +85,8 @@ namespace Sushi.Mediakiwi.Data.Configuration
 
         public string Login_Background_Url { get; set; }
 
+        public string File_Version { get; set; }
+        
         public string Loginbox_Logo_Url { get; set; }
         public string Logo_Url { get; set; }
 

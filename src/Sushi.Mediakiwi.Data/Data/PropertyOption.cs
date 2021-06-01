@@ -106,6 +106,30 @@ namespace Sushi.Mediakiwi.Data
         }
 
         /// <summary>
+        /// Delete an implementation record.
+        /// </summary>
+        /// <returns></returns>
+        public bool Delete()
+        {
+            var connector = ConnectorFactory.CreateConnector<PropertyOption>();
+            connector.Delete(this);
+
+            return true;
+        }
+
+        /// <summary>
+        /// Delete an implementation record.
+        /// </summary>
+        /// <returns></returns>
+        public async Task<bool> DeleteAsync()
+        {
+            var connector = ConnectorFactory.CreateConnector<PropertyOption>();
+            await connector.DeleteAsync(this);
+
+            return true;
+        }
+
+        /// <summary>
         /// Deletes the collection by FormElementID.
         /// </summary>
         /// <param name="formElementID">The form element ID.</param>

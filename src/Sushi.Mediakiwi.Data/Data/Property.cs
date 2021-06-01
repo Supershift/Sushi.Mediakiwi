@@ -39,10 +39,19 @@ namespace Sushi.Mediakiwi.Data
                 Map(x => x.IsFixed, "Property_IsFixed");
                 Map(x => x.InheritedID, "Property_Property_Key");
                 Map(x => x.SortOrder, "Property_SortOrder");
+
+                Map(x => x.TemplateID, "Property_Template_Key");
+                Map(x => x.InteractiveHelp, "Property_Help").Length(512);
+                Map(x => x.IsMandatory, "Property_IsRequired");
+                Map(x => x.MaxValueLength, "Property_MaxInput");
+                Map(x => x.DefaultValue, "Property_Default");
             }
         }
 
         #region Properties
+
+        public int TemplateID { get; set; }
+        public string DefaultValue { get; set; }
 
         /// <summary>
         /// Gets or sets the ID.
@@ -90,6 +99,8 @@ namespace Sushi.Mediakiwi.Data
         /// <value>The title.</value>
         public string Title { get; set; }
 
+        public string Section { get; set; }
+
         /// <summary>
         /// Gets or sets a value indicating whether this instance is present property.
         /// </summary>
@@ -99,7 +110,7 @@ namespace Sushi.Mediakiwi.Data
 
         public string FieldName2 { get; set; }
 
-        public string MaxValueLength { get; set; }
+        public int? MaxValueLength { get; set; }
 
         public int TypeID { get; set; }
 
@@ -168,7 +179,24 @@ namespace Sushi.Mediakiwi.Data
         /// Gets or sets the list select.
         /// </summary>
         /// <value>The list select.</value>
-        public string CanContainOneItem { get; set; }
+        public bool CanContainOneItem
+        {
+            get
+            {
+                return this.MaxValueLength.GetValueOrDefault(0) == 1;
+            }
+            set
+            {
+                if (value)
+                {
+                    this.MaxValueLength = 1;
+                }
+                else
+                {
+                    this.MaxValueLength = null;
+                }
+            }
+        }
 
         /// <summary>
         /// Gets or sets the list select.
@@ -331,6 +359,15 @@ namespace Sushi.Mediakiwi.Data
             filter.Add(x => x.FieldName, fieldName);
 
             return connector.FetchSingle(filter);
+        }
+
+        public static List<Property> SelectAllByTemplate(int templateid)
+        {
+            var connector = new Connector<Property>();
+            var filter = connector.CreateDataFilter();
+            filter.Add(x => x.TemplateID, templateid);
+            filter.AddOrder(x => x.SortOrder);
+            return connector.FetchAll(filter);
         }
 
         /// <summary>

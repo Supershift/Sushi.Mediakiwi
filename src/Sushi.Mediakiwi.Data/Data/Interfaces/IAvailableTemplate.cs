@@ -17,6 +17,7 @@ namespace Sushi.Mediakiwi.Data
         string Target { get; set; }
         DateTime? Updated { get; }
         bool IsNewInstance { get; }
+        int? SlotID { get; set; }
 
         void Save();
 

@@ -38,6 +38,30 @@ namespace Sushi.Mediakiwi
                 return WimServerConfiguration.Instance.Login_Background_Url; 
             }
         }
+
+        static string _Domain = "https://sushi-mediakiwi.azureedge.net/";
+        static string _FolderVersion;
+        internal static string CDN_Folder(string subfolder)
+        {
+            if (_FolderVersion == null)
+            {
+                // CDN
+                 _FolderVersion = string.Concat(_Domain, Utils.Version.Replace(".", "-"), "/");
+            }
+
+            if (!string.IsNullOrWhiteSpace(subfolder))
+                return string.Concat(_FolderVersion, subfolder, "/");
+
+            return _FolderVersion;
+        }
+
+        public static string FILE_VERSION
+        {
+            get
+            {
+                return WimServerConfiguration.Instance.File_Version;
+            }
+        }
         public static string LOGIN_BOXLOGO
         {
             get

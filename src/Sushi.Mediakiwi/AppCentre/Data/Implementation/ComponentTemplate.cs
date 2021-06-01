@@ -132,7 +132,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                 }
             }
 
-            wim.ListData = templates;
+            wim.ListDataAdd(templates);
             return Task.CompletedTask;
         }
 
@@ -166,6 +166,11 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             {
                 wim.AddTab(new Guid("36fc7157-d5c7-433c-8317-b601226f9bd0"), e.SelectedKey);
             }
+
+            Map<Mediakiwi.Data.ComponentTemplate>(x => x.Name, Implement).TextField("Name", 50, true).Expression(OutputExpression.Alternating);
+            Map<Mediakiwi.Data.ComponentTemplate>(x => x.SourceTag, Implement).TextField("Source tag", 25).Expression(OutputExpression.Alternating);
+            this.FormMaps.Add(this);
+
             return Task.CompletedTask;
         }
 
