@@ -14,6 +14,8 @@ namespace Sushi.Mediakiwi.Controllers
 {
     internal class BaseController
     {
+        public bool IsAuthenticationRequired { get; set; }
+
         internal JsonSerializerOptions Settings { get; }
          = new JsonSerializerOptions
          {

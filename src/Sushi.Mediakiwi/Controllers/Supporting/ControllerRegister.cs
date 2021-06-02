@@ -10,12 +10,14 @@ namespace Sushi.Mediakiwi.Controllers
     {
         internal static Dictionary<string, IController> Routes { get; set; }
 
-        internal static void AddRoute(string route, IController controller)
+        internal static void AddRoute(string route, IController controller, bool isAuthenticationRequired)
         {
             if (Routes == null)
             {
                 Routes = new Dictionary<string, IController>();
             }
+            controller.IsAuthenticationRequired = isAuthenticationRequired;
+
             Routes.Add(route, controller);
         }
 

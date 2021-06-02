@@ -52,7 +52,7 @@ namespace Sushi.Mediakiwi
                 WimServerConfiguration.LoadJsonConfig(_configuration);
                 DatabaseConfiguration.SetDefaultConnectionString(Common.DatabaseConnectionString);
 
-                ControllerRegister.AddRoute("api/documentype/getfields", new DocumentTypeController());
+                ControllerRegister.AddRoute("api/documentype/getfields", new DocumentTypeController(), true);
             }
         }
 

@@ -75,7 +75,7 @@ namespace Sushi.Mediakiwi.UI
             if (controllerOutput != null)
             {
                 var monitor = new Monitor(context, env, configuration);
-                if (await monitor.CheckRoamingApplicationUserAsync().ConfigureAwait(false))
+                if (!controllerOutput.IsAuthenticationRequired || await monitor.CheckRoamingApplicationUserAsync().ConfigureAwait(false))
                 {
                     var output = await controllerOutput.CompleteAsync(context).ConfigureAwait(false);
                     await context.Response.WriteAsync(output).ConfigureAwait(false);
