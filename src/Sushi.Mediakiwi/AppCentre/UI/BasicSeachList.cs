@@ -1,9 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Collections.Generic;
-using System.Data;
-using System.Web;
-using Sushi.Mediakiwi.Framework;
+﻿using Sushi.Mediakiwi.Framework;
 using Sushi.Mediakiwi.UI;
 using System.Threading.Tasks;
 
@@ -17,13 +12,13 @@ namespace Sushi.Mediakiwi.AppCentre.Data
         }
 
 
-        [Sushi.Mediakiwi.Framework.ContentListSearchItem.TextField("Search for", 50, AutoPostBack = false, Expression = Sushi.Mediakiwi.Framework.OutputExpression.Alternating)]
+        [Sushi.Mediakiwi.Framework.ContentListSearchItem.TextField("Search for", 50, AutoPostBack = false, Expression = OutputExpression.Alternating)]
         public string FilterText { get; set; }
 
-        [Sushi.Mediakiwi.Framework.ContentListSearchItem.Choice_Dropdown("Type", "FilterTypes", false, false, Expression = Sushi.Mediakiwi.Framework.OutputExpression.Alternating)]
+        [Sushi.Mediakiwi.Framework.ContentListSearchItem.Choice_Dropdown("Type", "FilterTypes", false, false, Expression = OutputExpression.Alternating)]
         public int? FilterType { get; set; }
 
-        [Sushi.Mediakiwi.Framework.ContentListSearchItem.Choice_Dropdown("Channel", "SearchSites", false, false, Expression = Sushi.Mediakiwi.Framework.OutputExpression.Right)]
+        [Sushi.Mediakiwi.Framework.ContentListSearchItem.Choice_Dropdown("Channel", "SearchSites", false, false, Expression = OutputExpression.Right)]
         public int? FilterSite { get; set; }
 
         private ListItemCollection m_SearchSites;
@@ -41,7 +36,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data
                 ListItem li;
                 m_SearchSites.Add(new ListItem("", ""));
 
-                foreach (Sushi.Mediakiwi.Data.Site site in Sushi.Mediakiwi.Data.Site.SelectAll())
+                foreach (Sushi.Mediakiwi.Data.Site site in Mediakiwi.Data.Site.SelectAll())
                 {
                     //if (site.MasterID.GetValueOrDefault() > 0) continue;
                     li = new ListItem(site.Name, site.ID.ToString());
@@ -87,10 +82,10 @@ namespace Sushi.Mediakiwi.AppCentre.Data
             wim.ListDataColumns.Add(new ListDataColumn("Description", "Description"));
             wim.ListDataColumns.Add(new ListDataColumn("Type", "Type") { ColumnWidth = 70 } );
 
-            if (string.IsNullOrEmpty(this.FilterText) && this.FilterType == 0)
+            if (string.IsNullOrEmpty(this.FilterText) && this.FilterType.GetValueOrDefault(0) == 0)
                 return;
 
-            wim.ListDataAdd(await Sushi.Mediakiwi.Data.SearchView.SelectAllAsync(FilterSite, FilterType, FilterText));
+            wim.ListDataAdd(await Mediakiwi.Data.SearchView.SelectAllAsync(FilterSite, FilterType, FilterText));
         }
     }
 }

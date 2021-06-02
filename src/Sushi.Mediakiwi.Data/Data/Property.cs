@@ -451,6 +451,30 @@ namespace Sushi.Mediakiwi.Data
         //private static List<MemoryItemProperty> MemoryAllocationList;
 
         /// <summary>
+        /// Selects all Async.
+        /// </summary>
+        /// <returns></returns>
+        public static List<Property> SelectAllByFieldName(string fieldName)
+        {
+            var connector = new Connector<Property>();
+            var filter = connector.CreateDataFilter();
+            filter.Add(x => x.FieldName, fieldName);
+            return connector.FetchAll(filter);
+        }
+
+        /// <summary>
+        /// Selects all Async.
+        /// </summary>
+        /// <returns></returns>
+        public static async Task<List<Property>> SelectAllByFieldNameAsync(string fieldName)
+        {
+            var connector = new Connector<Property>();
+            var filter = connector.CreateDataFilter();
+            filter.Add(x => x.FieldName, fieldName);
+            return await connector.FetchAllAsync(filter);
+        }
+
+        /// <summary>
         /// Selects all in the supplied ID array.
         /// </summary>
         /// <param name="IDs">The IDs.</param>

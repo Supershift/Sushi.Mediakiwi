@@ -228,8 +228,20 @@ namespace Sushi.Mediakiwi.Data
         ///
         /// </summary>
         RoleAccessFolder = 44,
-
+        
+        /// <summary>
+        /// Role access for galleries
+        /// </summary>
         RoleAccessGallery = 45,
-        ListSettings = 46
+
+        /// <summary>
+        /// List settings
+        /// </summary>
+        ListSettings = 46,
+
+        /// <summary>
+        /// Shared Fields
+        /// </summary>
+        SharedFields = 47,
     }
 }
