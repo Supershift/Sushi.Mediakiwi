@@ -32,12 +32,12 @@ public static class PageExtension
                     if (!string.IsNullOrEmpty(item.Value))
                     {
                         if (
-                            item.Type == (int)Sushi.Mediakiwi.Framework.ContentType.Binary_Image
-                            || item.Type == (int)Sushi.Mediakiwi.Framework.ContentType.Hyperlink
-                            || item.Type == (int)Sushi.Mediakiwi.Framework.ContentType.Binary_Document
-                            || item.Type == (int)Sushi.Mediakiwi.Framework.ContentType.PageSelect
-                            || item.Type == (int)Sushi.Mediakiwi.Framework.ContentType.FolderSelect
-                            || item.Type == (int)Sushi.Mediakiwi.Framework.ContentType.Choice_Dropdown
+                            item.Type == (int)ContentType.Binary_Image
+                            || item.Type == (int)ContentType.Hyperlink
+                            || item.Type == (int)ContentType.Binary_Document
+                            || item.Type == (int)ContentType.PageSelect
+                            || item.Type == (int)ContentType.FolderSelect
+                            || item.Type == (int)ContentType.Choice_Dropdown
                             )
                         {
                             if (item.Value == "0")
@@ -52,18 +52,18 @@ public static class PageExtension
         }
         // first backup the current version
         var pvOld = new PageVersion();
-        pvOld.ContentXML = Wim.Utility.GetSerialized(targetComponents); ;
-        pvOld.MetaDataXML = Wim.Utility.GetSerialized(inPage);
+        pvOld.ContentXML = Utility.GetSerialized(targetComponents); ;
+        pvOld.MetaDataXML = Utility.GetSerialized(inPage);
         pvOld.UserID = user.ID;
         pvOld.PageID = inPage.ID;
         pvOld.TemplateID = inPage.TemplateID;
         pvOld.IsArchived = false;
         pvOld.Name = inPage.Name;
         pvOld.CompletePath = inPage.CompletePath;
-        pvOld.Hash = Wim.Utility.HashString(contentHash.ToString());
+        pvOld.Hash = Utility.HashString(contentHash.ToString());
         pvOld.Save();
 
-        Sushi.Mediakiwi.Framework2.Functions.AuditTrail.Insert(user, inPage, Sushi.Mediakiwi.Framework2.Functions.Auditing.ActionType.Update, pvOld.ID);
+        //Sushi.Mediakiwi.Framework2.Functions.AuditTrail.Insert(user, inPage, Sushi.Mediakiwi.Framework2.Functions.Auditing.ActionType.Update, pvOld.ID);
     }
 
 
@@ -80,18 +80,18 @@ public static class PageExtension
         {
             c.Delete();
         }
-        var sourceComponents = Wim.Utility.GetDeserialized(typeof(ComponentVersion[]), pageVersion.ContentXML) as ComponentVersion[];
+        var sourceComponents = Utility.GetDeserialized(typeof(ComponentVersion[]), pageVersion.ContentXML) as ComponentVersion[];
         foreach (var c in sourceComponents)
         {
             var component = new ComponentVersion();
-            Wim.Utility.ReflectProperty(c, component);
+            Utility.ReflectProperty(c, component);
             c.ID = 0;
             c.GUID = Guid.NewGuid();
             c.PageID = inPage.ID;
-            c.Save(false);
+            c.Save();
         }
 
-        var sourcePage = Wim.Utility.GetDeserialized(typeof(Page), pageVersion.MetaDataXML) as Page;
+        var sourcePage = Utility.GetDeserialized(typeof(Page), pageVersion.MetaDataXML) as Page;
 
         inPage.CustomDate = sourcePage.CustomDate;
         inPage.Description = sourcePage.Description;
@@ -102,7 +102,7 @@ public static class PageExtension
         inPage.Title = sourcePage.Title;
         inPage.Save();
 
-        Wim.Utilities.CacheItemManager.FlushIndexOfCacheObjects(string.Concat("Data_", inPage.GetType().ToString()));
+        //Wim.Utilities.CacheItemManager.FlushIndexOfCacheObjects(string.Concat("Data_", inPage.GetType().ToString()));
     }
 
     /// <summary>
@@ -126,7 +126,7 @@ public static class PageExtension
         foreach (var c in sourceComponents)
         {
             var component = new ComponentVersion();
-            Wim.Utility.ReflectProperty(c, component);
+            Utility.ReflectProperty(c, component);
             RecreateLinksInComponentForCopy(inPage, c, null);
             c.ID = 0;
             c.GUID = Guid.NewGuid();
@@ -134,43 +134,43 @@ public static class PageExtension
             c.Save(false);
         }
 
-        Wim.Utilities.CacheItemManager.FlushIndexOfCacheObjects(string.Concat("Data_", inPage.GetType().ToString()));
+        //Wim.Utilities.CacheItemManager.FlushIndexOfCacheObjects(string.Concat("Data_", inPage.GetType().ToString()));
         inPage.Save();
         return true;
     }
 
     public static void RecreateLinksInComponentForCopy(this Page inPage, ComponentVersion component, Dictionary<int, Folder> oldNewFolderMapping = null, List<Link> pageLinks = null)
     {
-        var fieldList = new List<Content.Field>();
+        var fieldList = new List<Field>();
         var currentContent = component.GetContent();
         if (currentContent != null && currentContent.Fields != null)
         {
             foreach (var field in currentContent.Fields)
             {
-                if (field.Type == (int)Sushi.Mediakiwi.Framework.ContentType.FolderSelect && oldNewFolderMapping != null)
+                if (field.Type == (int)ContentType.FolderSelect && oldNewFolderMapping != null)
                 {
-                    int oldFolderView = Wim.Utility.ConvertToInt(field.Value, 0);
+                    int oldFolderView = Utility.ConvertToInt(field.Value, 0);
                     if (oldFolderView > 0 && oldNewFolderMapping.ContainsKey(oldFolderView))
                         field.Value = oldNewFolderMapping[oldFolderView].ToString();
                 }
 
 
-                if (field.Type == (int)Sushi.Mediakiwi.Framework.ContentType.Hyperlink)
+                if (field.Type == (int)ContentType.Hyperlink)
                 {
                     var link = field.Link;
                     if (link.ID > 0)
                     {
                         var newlink = new Sushi.Mediakiwi.Data.Link();
-                        Wim.Utility.ReflectProperty(link, newlink);
+                        Utility.ReflectProperty(link, newlink);
                         newlink.ID = 0;
                         newlink.GUID = Guid.NewGuid();
-                        newlink.Save(false);
+                        newlink.Save();
                         if (pageLinks != null && newlink.PageID.HasValue)
                             pageLinks.Add(newlink);
                         field.Value = newlink.ID.ToString();
                     }
                 }
-                if (field.Type == (int)Sushi.Mediakiwi.Framework.ContentType.RichText)
+                if (field.Type == (int)ContentType.RichText)
                 {
                     var result = MatchAndReplaceTextForLinks(field.Value, pageLinks);
                     field.Value = result;
@@ -196,14 +196,14 @@ public static class PageExtension
                 if (match.Groups.Count > 1)
                 {
                     string v = match.Groups[1].Value;
-                    var link = Sushi.Mediakiwi.Data.Link.SelectOne(Wim.Utility.ConvertToInt(v));
+                    var link = Sushi.Mediakiwi.Data.Link.SelectOne(Utility.ConvertToInt(v));
                     if (link.ID > 0)
                     {
                         var newlink = new Link();
-                        Wim.Utility.ReflectProperty(link, newlink);
+                        Utility.ReflectProperty(link, newlink);
                         newlink.ID = 0;
                         newlink.GUID = Guid.NewGuid();
-                        newlink.Save(false);
+                        newlink.Save();
                         if (pageLinks != null && newlink.PageID.HasValue)
                             pageLinks.Add(newlink);
                         return $@"""wim:{newlink.ID.ToString()}""";
@@ -227,7 +227,7 @@ public static class PageExtension
     {
         if (!inPage.IsSearchable)
         {
-            Page.DeleteAllComponentSearchReferences(inPage.ID);
+            //Page.DeleteAllComponentSearchReferences(inPage.ID);
             return;
         }
 
@@ -250,14 +250,14 @@ public static class PageExtension
             if (content.Fields == null || content.Fields.Length == 0)
                 continue;
 
-            foreach (Content.Field field in content.Fields)
+            foreach (Field field in content.Fields)
             {
                 if (field.Value == null || field.Value.Length == 0)
                     continue;
 
-                if (field.Type == (int)Sushi.Mediakiwi.Framework.ContentType.TextField ||
-                    field.Type == (int)Sushi.Mediakiwi.Framework.ContentType.TextArea ||
-                    field.Type == (int)Sushi.Mediakiwi.Framework.ContentType.RichText)
+                if (field.Type == (int)ContentType.TextField ||
+                    field.Type == (int)ContentType.TextArea ||
+                    field.Type == (int)ContentType.RichText)
                 {
                     searchableContent.Append(" " + field.Value);
                 }
@@ -267,7 +267,7 @@ public static class PageExtension
             {
                 string finalContent = searchableContent.ToString();
 
-                ComponentSearch.AddOne(1, component.ID, finalContent, inPage.SiteID);
+                //ComponentSearch.AddOne(1, component.ID, finalContent, inPage.SiteID);
             }
         }
     }
@@ -281,7 +281,7 @@ public static class PageExtension
     internal static void PublishPage(this Page inPage, object context)
     {
         inPage.SetCompletePath();
-        Page.ContextContainer c = (Page.ContextContainer)context;
+        //Page.ContextContainer c = (Page.ContextContainer)context;
         try
         {
             inPage.Updated = Common.DatabaseDateTime;
@@ -295,7 +295,7 @@ public static class PageExtension
 
             inPage.Save();
 
-            EnvironmentVersionLogic.Flush(true, c.Context);
+            //EnvironmentVersionLogic.Flush(true, c.Context);
 
             inPage.SubmitPageForSearch();
 
@@ -517,7 +517,7 @@ public static class PageExtension
                     string candidate = field.Value;
 
                     if (field.Type == (int)Sushi.Mediakiwi.Framework.ContentType.RichText)
-                        candidate = Wim.Utility.ApplyRichtextLinks(inPage.Site, field.Value);
+                        candidate = Utility.ApplyRichtextLinks(inPage.Site, field.Value);
 
                     candidates.Add(candidate);
                 }
@@ -572,7 +572,7 @@ public static class PageExtension
         }
 
         string tmp = string.Concat("/repository/cache/", inPage.InternalPath, add, ".html");
-        return HttpContext.Current.Server.MapPath(Wim.Utility.AddApplicationPath(tmp));
+        return HttpContext.Current.Server.MapPath(Utility.AddApplicationPath(tmp));
     }
 
     /// <summary>
@@ -597,7 +597,7 @@ public static class PageExtension
         }
 
         string tmp = string.Concat("/repository/cache/", inPage.InternalPath, add, ".html");
-        return Wim.Utility.AddApplicationPath(tmp);
+        return Utility.AddApplicationPath(tmp);
     }
 
     /// <summary>

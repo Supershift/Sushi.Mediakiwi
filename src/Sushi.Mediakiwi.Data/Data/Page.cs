@@ -379,6 +379,11 @@ namespace Sushi.Mediakiwi.Data
 
                 var domain = "https://www.website.com";
                 
+                if (Site != null && !string.IsNullOrWhiteSpace(Site.Domain))
+                {
+                    domain = Site.Domain;
+                }
+
                 return $"{domain}{CompletePath}";
 
                 //string ext = Sushi.Mediakiwi.Data.Environment.Current.GetRegistryValue("PAGE_WILDCARD_EXTENTION", "aspx");

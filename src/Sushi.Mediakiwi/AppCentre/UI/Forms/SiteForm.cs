@@ -18,12 +18,13 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation.Forms
 
             Map(x => x.Name).TextField("Title", 50, true).Expression(OutputExpression.Alternating);
             Map(x => x.IsActive).Checkbox("Active").Expression(OutputExpression.Alternating);
-            Map(x => x.CountryID).Dropdown("Country", nameof(SiteForm.AvailableCountries), false).Expression(OutputExpression.Alternating); ;
-            Map(x => x.TimeZoneIndex).Dropdown("Timezone", nameof(SiteForm.AvailableTimeZones), false).Expression(OutputExpression.Alternating); ;
-            Map(x => x.Language).Dropdown("Language", nameof(SiteForm.AvailableCulturesCollection), false).Expression(OutputExpression.Alternating); ;
-            Map(x => x.Culture).Dropdown("Culture", nameof(SiteForm.AvailableCulturesCollection), false).Expression(OutputExpression.Alternating); ;
+            Map(x => x.CountryID).Dropdown("Country", nameof(SiteForm.AvailableCountries), false).Expression(OutputExpression.Alternating);
+            Map(x => x.TimeZoneIndex).Dropdown("Timezone", nameof(SiteForm.AvailableTimeZones), false).Expression(OutputExpression.Alternating);
+            Map(x => x.Language).Dropdown("Language", nameof(SiteForm.AvailableCulturesCollection), false).Expression(OutputExpression.Alternating);
+            Map(x => x.Culture).Dropdown("Culture", nameof(SiteForm.AvailableCulturesCollection), false).Expression(OutputExpression.Alternating);
             Map(x => x.MasterID).Dropdown("Inherit from", nameof(SiteForm.AvailableSitesCollection), false);
-            
+            Map(x => x.Domain).TextField("Domain", 50, false, false, "https://www.website.com");
+
             Map<SiteForm>(x => x.Section1, this).Section("Settings");
 
             Map(x => x.HasLists).Checkbox("Lists").Expression(OutputExpression.Alternating);
