@@ -306,17 +306,12 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             get { return !m_Implement.MasterID.HasValue; }
         }
 
-        private DateTime m_Publication;
         /// <summary>
         /// Gets or sets the template.
         /// </summary>
         /// <value>The template.</value>
         [Sushi.Mediakiwi.Framework.ContentListItem.DateTime("Publish", false, "If applied the page will be published at this date and time.", Expression = OutputExpression.Alternating)]
-        public DateTime Publication
-        {
-            get { return m_Publication; }
-            set { m_Publication = value; }
-        }
+        public DateTime? Publication { get; set; }
 
         /// <summary>
         /// Gets or sets the template.
@@ -325,17 +320,12 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         [Sushi.Mediakiwi.Framework.ContentListItem.Choice_Checkbox("_is_searchable", "Is this page indexed by search enigines?", Expression = OutputExpression.Alternating)]
         public bool IsSearchable { get; set; }
 
-        private DateTime m_Expiration;
         /// <summary>
         /// Gets or sets the template.
         /// </summary>
         /// <value>The template.</value>
         [Sushi.Mediakiwi.Framework.ContentListItem.DateTime("Expires", false, "If applied the page will expire at this date and time.", Expression = OutputExpression.Alternating)]
-        public DateTime Expiration
-        {
-            get { return m_Expiration; }
-            set { m_Expiration = value; }
-        }
+        public DateTime? Expiration { get; set; }
 
         /// <summary>
         /// Gets or sets the template.

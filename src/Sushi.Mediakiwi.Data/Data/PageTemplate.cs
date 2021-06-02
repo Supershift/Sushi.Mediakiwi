@@ -246,7 +246,7 @@ namespace Sushi.Mediakiwi.Data
         /// Gets or sets the last write time UTC of the page template (ASPX).
         /// </summary>
         /// <value>The last write time UTC.</value>
-        public DateTime LastWriteTimeUtc { get; set; }
+        public DateTime? LastWriteTimeUtc { get; set; }
 
         public DateTime? Updated
         {

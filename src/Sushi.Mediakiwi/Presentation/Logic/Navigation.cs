@@ -1762,7 +1762,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
 
                             // [MR:26-04-2019] when a file is smaller than 120 bytes, it's probably a marker file and
                             // should not trigger an update.
-                            if (nfo.Length > 120 && (file.Ticks > page.Template.LastWriteTimeUtc.Ticks))
+                            if (nfo.Length > 120 && (file.Ticks > page.Template.LastWriteTimeUtc.GetValueOrDefault().Ticks))
                             {
                                 Build_TopRight.AppendFormat("<li><a href=\"{0}&refreshcode=1\" id=\"dev_refreshcode\" class=\"abbr action flaticon icon-refresh\" title=\"{1}\"></a></li>"
                                     , container.UrlBuild.GetPageRequest(page)
@@ -1841,7 +1841,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
 
                         if (pagePublicationHandler.CanPublish(container.CurrentApplicationUser, page))
                         {
-                            if (page.Published == DateTime.MinValue || page.Published.Ticks != page.Updated.Ticks)
+                            if (page.Published == DateTime.MinValue || page.Published.GetValueOrDefault().Ticks != page.Updated.Ticks)
                             {
                                 Build_TopRight.AppendFormat("<li><a href=\"{0}\" id=\"pagepublish\" class=\"abbr submit {2}\"{3} title=\"{1}\">{1}</a></li>", "#"
                                     , Labels.ResourceManager.GetString("page_publish", new CultureInfo(container.CurrentApplicationUser.LanguageCulture))
@@ -2061,21 +2061,21 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                 if (container.CurrentListInstance.wim.CurrentApplicationUserRole.CanChangePage)
                     build2.AppendFormat("<li><a href=\"{0}\" class=\"properties\">Properties</a></li>", string.Concat(container.WimPagePath, "?", "list=", list0.ID, "&folder=", container.CurrentListInstance.wim.CurrentFolder.ID, "&item=", container.Item.Value));
 
-
                 if (container.CurrentListInstance.wim.CurrentApplicationUserRole.CanPublishPage)
                 {
                     build2.Append("</ul><ul class=\"subNavigation\" class=\"pseudoHover\">");
 
                     //page.Updated
 
-                    if (page.Published != DateTime.MinValue)
+                    if (page.Published.HasValue && page.Published != DateTime.MinValue)
+                    {
                         build2.AppendFormat("<li><input/><a href=\"{0}\" id=\"pageoffline\" class=\"takeOffline postBack\">Take Offline</a></li>", "#");
-
-                    if (page.Published == DateTime.MinValue || page.Published.Ticks != page.Updated.Ticks)
+                    }
+                    else if (page.Published == DateTime.MinValue || page.Published.GetValueOrDefault().Ticks != page.Updated.Ticks)
+                    {
                         build2.AppendFormat("<li><a href=\"{0}\" id=\"pagepublish\" class=\"publish postBack\">Publish</a></li>", "#");
+                    }
                 }
-
-
 
                 if (!page.IsPublished)
                 {

@@ -154,6 +154,12 @@ namespace Sushi.Mediakiwi.UI
             {//  Handles the list item request.
                 await HandleListItemRequestAsync(grid, component, isDeleteTriggered);
             }
+            else if (_Console.ItemType == RequestItemType.Page)
+            {
+                _Console.AddTrace("Monitor", "HandlePageItemRequest(...)");
+                //  Handles the page request.
+                await HandlePageItemRequestAsync(grid, component, isDeleteTriggered);
+            }
             else
             {
                 //  Handles the browsing request.
@@ -162,6 +168,164 @@ namespace Sushi.Mediakiwi.UI
             }
         }
 
+        /// <summary>
+        /// Handles the page item request.
+        /// </summary>
+        /// <param name="grid">The grid.</param>
+        /// <param name="component">The component.</param>
+        /// <param name="isDeleteTriggered">if set to <c>true</c> [is delete triggered].</param>
+        async Task HandlePageItemRequestAsync(DataGrid grid, Beta.GeneratedCms.Source.Component component, bool isDeleteTriggered)
+        {
+            _Console.CurrentListInstance.wim.IsEditMode =
+                _Console.CurrentApplicationUser.Role().CanChangePage;
+
+            Page page = null;
+            if (_Console.CurrentPage == null)
+            {
+                page = Page.SelectOne(_Console.Item.Value, false);
+                _Context.Items.Add("Wim.Page", page);
+                _Context.Items.Add("Wim.Site", page.Site);
+            }
+
+            _Console.View = 0;
+
+            bool isPagePublishTriggered = _Console.IsPostBack("pagepublish");
+            bool isPageOfflineTriggered = _Console.IsPostBack("pageoffline");
+
+            bool isPageLocalised = _Console.IsPostBack("page.localize");
+            bool isPageInherited = _Console.IsPostBack("page.inherit");
+
+            int selectedTab = Utility.ConvertToInt(_Console.Request.Query["tab"]);
+            string section = _Console.Request.Query["tab"];
+
+            // TO DO (restore)! [MR:26-03-2019] for Page Modules
+            //string pBack = string.Empty;
+            //if (_Console.PostBackStartsWith("pagemod_", out pBack))
+            //{
+                //    pBack = pBack.Replace("pagemod_", "");
+
+                // 
+                //foreach (var pmodule in Data.Environment.GetPageModules())
+                //{
+                //    if (pmodule.GetType().Name == pBack)
+                //    {
+                //        var moduleResult = pmodule.Execute(_Console.CurrentPage, _Console.CurrentApplicationUser);
+                //        if (moduleResult.IsSuccess && string.IsNullOrWhiteSpace(moduleResult.WimNotificationOutput) == false)
+                //        {
+                //            _Console.CurrentListInstance.wim.Notification.AddNotification(moduleResult.WimNotificationOutput);
+                //        }
+                //        else if (string.IsNullOrWhiteSpace(moduleResult.WimNotificationOutput) == false)
+                //        {
+                //            _Console.CurrentListInstance.wim.Notification.AddError(moduleResult.WimNotificationOutput);
+                //        }
+
+                //        Data.Page page = Data.Page.SelectOne(_Console.Item.Value, false);
+                //        if (page?.ID > 0)
+                //        {
+                //            Framework2.Functions.AuditTrail.Insert(_Console.CurrentApplicationUser, page, Framework2.Functions.Auditing.ActionType.PageModuleExecution, null);
+                //        }
+                //    }
+                //}
+            //}
+
+            if (string.IsNullOrEmpty(section))
+            {
+                //  26-08-14:MM
+                var sections = _Console.CurrentPage.Template.GetPageSections();
+                if (sections.Length > 0)
+                    section = sections[0];
+            }
+
+            string redirect = string.IsNullOrEmpty(section) ? "" : string.Concat("&tab=", section);
+
+            if (_Console.IsPostBack("page.translate"))
+            {
+                _Console.CurrentApplicationUser.ShowTranslationView = true;
+                _Console.CurrentApplicationUser.Save();
+
+                if (!_Console.CurrentListInstance.IsEditMode)
+                    _Console.Response.Redirect(string.Concat(_Console.WimPagePath, "?page=", _Console.Item.Value, redirect));
+            }
+            //if (_Console.IsPostBack("page.copy"))
+            //{
+            //    ComponentVersionLogic.CopyFromMaster(_Console.Item.Value);
+            //    _Console.CurrentListInstance.wim.FlushCache(true);
+
+            //    if (!_Console.CurrentListInstance.IsEditMode)
+            //        _Console.Response.Redirect(string.Concat(_Console.WimPagePath, "?page=", _Console.Item.Value, redirect));
+            //}
+            if (_Console.IsPostBack("page.normal"))
+            {
+                _Console.CurrentApplicationUser.ShowTranslationView = false;
+                _Console.CurrentApplicationUser.Save();
+
+                if (!_Console.CurrentListInstance.IsEditMode)
+                    _Console.Response.Redirect(string.Concat(_Console.WimPagePath, "?page=", _Console.Item.Value, redirect));
+            }
+
+            if (isPagePublishTriggered)
+            {
+                var pagePublicationHandler = new PagePublication();
+
+                //page.Publish(pagePublicationHandler, _Console.CurrentApplicationUser);
+                //Wim.Framework2.Functions.AuditTrail.Insert(_Console.CurrentApplicationUser, page, Framework2.Functions.Auditing.ActionType.Publish, null);
+                _Console.Response.Redirect(string.Concat(_Console.WimPagePath, "?page=", _Console.Item.Value, redirect));
+            }
+            else if (isPageOfflineTriggered)
+            {
+                var pagePublicationHandler = new PagePublication();
+
+                //page.TakeDown(pagePublicationHandler, _Console.CurrentApplicationUser);
+                //Wim.Framework2.Functions.AuditTrail.Insert(_Console.CurrentApplicationUser, page, Framework2.Functions.Auditing.ActionType.TakeOffline, null);
+                _Console.Response.Redirect(string.Concat(_Console.WimPagePath, "?page=", _Console.Item.Value, redirect));
+            }
+            else if (isDeleteTriggered)
+            {
+                //  Save the version
+                var currentversion = ComponentVersion.SelectAllOnPage(page.ID);
+                component.SavePageVersion(page, currentversion, _Console.CurrentApplicationUser, true);
+
+                page.Delete();
+                //Wim.Framework2.Functions.AuditTrail.Insert(_Console.CurrentApplicationUser, page, Framework2.Functions.Auditing.ActionType.Remove, null);
+                _Console.Response.Redirect(string.Concat(_Console.WimPagePath, "?folder=", _Console.CurrentListInstance.wim.CurrentFolder.ID));
+            }
+            else if (isPageLocalised)
+            {
+                page.InheritContentEdited = false;
+                page.Updated = Common.DatabaseDateTime;
+                page.Save();
+
+                //Wim.Framework2.Functions.AuditTrail.Insert(_Console.CurrentApplicationUser, page, Framework2.Functions.Auditing.ActionType.Localised, null);
+                _Console.Response.Redirect(string.Concat(_Console.WimPagePath, "?page=", _Console.Item.Value, redirect));
+
+            }
+            else if (isPageInherited)
+            {
+                page.InheritContentEdited = true;
+                page.Updated = Common.DatabaseDateTime;
+                page.Save();
+
+                //Wim.Framework2.Functions.AuditTrail.Insert(_Console.CurrentApplicationUser, page, Framework2.Functions.Auditing.ActionType.Inherited, null);
+                _Console.Response.Redirect(string.Concat(_Console.WimPagePath, "?page=", _Console.Item.Value, redirect));
+            }
+
+            Data.Page pageInstance;
+
+            this.GlobalWimControlBuilder = component.CreateContentList(_Console, 0, selectedTab == 1, out pageInstance, section);
+
+            if (!_Console.IsAdminFooter)
+            {
+                this.GlobalWimControlBuilder.Canvas.Type = CanvasType.ListItem;
+
+                this.GlobalWimControlBuilder.Leftnav = _PresentationNavigation.NewLeftNavigation(_Console, component.m_ButtonList != null ? component.m_ButtonList.ToArray() : null);
+
+                this.GlobalWimControlBuilder.TopNavigation = _PresentationNavigation.TopNavigation(_Console);
+                this.GlobalWimControlBuilder.Rightnav = _PresentationNavigation.RightSideNavigation(_Console, component.m_ButtonList != null ? component.m_ButtonList.ToArray() : null);
+                this.GlobalWimControlBuilder.Bottom = _PresentationNavigation.NewBottomNavigation(_Console, component.m_ButtonList != null ? component.m_ButtonList.ToArray() : null, false);
+
+                await AddToResponseAsync(_PresentationMonitor.GetTemplateWrapper(_Console, _Placeholders, _Callbacks, this.GlobalWimControlBuilder));
+            }
+        }
 
         /// <summary>
         /// Handles the list item request.
@@ -915,6 +1079,7 @@ namespace Sushi.Mediakiwi.UI
             _Console.Item = Utility.ConvertToIntNullable(_Console.Request.Query["page"], false);
             if (_Console.Item.HasValue)
             {
+                _Console.ApplyList(Data.ComponentListType.Browsing);
                 _Console.ItemType = RequestItemType.Page;
                 return;
             }
@@ -922,6 +1087,7 @@ namespace Sushi.Mediakiwi.UI
             _Console.Item = Utility.ConvertToIntNullable(_Console.Request.Query["asset"], false);
             if (_Console.Item.HasValue)
             {
+                _Console.ApplyList(Data.ComponentListType.Documents);
                 _Console.ItemType = RequestItemType.Asset;
                 return;
             }

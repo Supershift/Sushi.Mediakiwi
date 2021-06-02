@@ -182,7 +182,7 @@ namespace Sushi.Mediakiwi.Data
         /// The publication date of this page.
         /// </summary>
         /// <value>The published.</value>
-        public DateTime Published { get; set; }
+        public DateTime? Published { get; set; }
 
         private DateTime m_Updated;
 
@@ -243,7 +243,7 @@ namespace Sushi.Mediakiwi.Data
         //[DatabaseColumn("Page_IsEdited", SqlDbType.Bit)]
         public bool IsEdited
         {
-            get { return (this.Published.Ticks != this.Updated.Ticks); }
+            get { return (this.Published.GetValueOrDefault().Ticks != this.Updated.Ticks); }
         }
 
         /// <summary>
@@ -361,7 +361,7 @@ namespace Sushi.Mediakiwi.Data
         {
             get
             {
-                return string.Empty;
+                return CompletePath;
             }
 
         }
@@ -376,7 +376,10 @@ namespace Sushi.Mediakiwi.Data
             {
                 if (string.IsNullOrEmpty(Name))
                     return null;
-                return "TODO";
+
+                var domain = "https://www.website.com";
+                
+                return $"{domain}{CompletePath}";
 
                 //string ext = Sushi.Mediakiwi.Data.Environment.Current.GetRegistryValue("PAGE_WILDCARD_EXTENTION", "aspx");
                 //ext = (ext == ".") ? "" : string.Concat(".", ext);
@@ -883,7 +886,7 @@ namespace Sushi.Mediakiwi.Data
             if (sortby == PageSortBy.LinkText)
                 return string.Format("{0}{1}", page.LinkText, m_count);
 
-            return string.Format("{0}{1}", page.CustomDate.GetValueOrDefault(page.Published).Ticks, m_count);
+            return string.Format("{0}{1}", page.CustomDate.GetValueOrDefault(page.Published.GetValueOrDefault()).Ticks, m_count);
         }
 
         /// <summary>

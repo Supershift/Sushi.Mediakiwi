@@ -1504,6 +1504,10 @@
     IF: select count(*) from wim_ComponentLists where ComponentList_GUID = 'D03439F0-73D7-4C78-B51E-50310A00F6DA';
     THEN: INSERT INTO wim_ComponentLists(ComponentList_Folder_Key, ComponentList_Assembly, ComponentList_ClassName, ComponentList_TargetType, ComponentList_Name, ComponentList_SingleItemName, ComponentList_Description,ComponentList_Type, ComponentList_GUID, ComponentList_IsVisible, ComponentList_ContainsOneChild, ComponentList_IsInherited) VALUES(null, 'Sushi.Mediakiwi.Framework.dll', 'Sushi.Mediakiwi.AppCentre.UI.WikiList', 2, 'Wiki', 'Wiki', null, null, 'D03439F0-73D7-4C78-B51E-50310A00F6DA', 0, 1, 0);
 
+    -- Document Type properties;
+    IF: select count(*) from wim_ComponentLists where ComponentList_GUID = '36fc7157-d5c7-433c-8317-b601226f9bd0';
+    THEN: 
+	INSERT INTO wim_ComponentLists (ComponentList_Folder_Key, ComponentList_Assembly, ComponentList_ClassName, ComponentList_TargetType, ComponentList_Name, ComponentList_SingleItemName, ComponentList_Description,ComponentList_Type, ComponentList_GUID, ComponentList_IsVisible, ComponentList_ContainsOneChild, ComponentList_IsInherited) VALUES(null, 'Sushi.Mediakiwi.dll', 'Sushi.Mediakiwi.AppCentre.UI.DocumentType_List', 2, 'DT Definition', 'DT Definition', null, null, '36fc7157-d5c7-433c-8317-b601226f9bd0', 0, 1, 0);
 
     -- MAIN_DOMAIN_COOKIE_HOST;
     IF: select count(*) from wim_Registry where Registry_GUID = '8FA687E9-81C0-4561-9755-BAB02E9B055C';

@@ -10,6 +10,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Text.Json;
 
 namespace Sushi.Mediakiwi.Controllers
 {
@@ -23,18 +24,25 @@ namespace Sushi.Mediakiwi.Controllers
         public JsonSerializerSettings JsonSettings { get; } 
             = new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() };
 
+        public JsonSerializerOptions Settings { get; }
+          = new JsonSerializerOptions
+          {
+              IgnoreNullValues = true,
+              PropertyNameCaseInsensitive = true,
+              PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+          };
 
         public async Task<string> Complete(HttpContext context)
         {
             GetFieldsRequest request = null;
-            var serializer = new JsonSerializer();
 
-            using (var sr = new StreamReader(context.Request.Body))
-            using (var jsonTextReader = new JsonTextReader(sr))
+            var stream = context.Request.Body;
+            using (StreamReader sr = new StreamReader(stream))
             {
-                request = serializer.Deserialize<GetFieldsRequest>(jsonTextReader);
+                var output = await sr.ReadToEndAsync();
+                request = System.Text.Json.JsonSerializer.Deserialize<GetFieldsRequest>(output, Settings);
             }
-            
+
             Dictionary<string, int> req = new Dictionary<string, int>();
             foreach (var q in context.Request.Query)
             {
@@ -52,43 +60,45 @@ namespace Sushi.Mediakiwi.Controllers
 
             int index = 1;
 
-            var properties = Property.SelectAllByTemplate(req["item"]);
+            var properties = Property.SelectAllByTemplate(request.DocumentTypeID);
 
             bool reload = false;
             // go through all metadata properties and check if a related property is present
-            foreach (var meta in metadata)
+            if (metadata != null)
             {
-                var property = properties.FirstOrDefault(x => x.FieldName.Equals(meta.Name));
-                // if not exits, create it
-                if (property == null)
+                foreach (var meta in metadata)
                 {
-                    property = new Property
+                    var property = properties.FirstOrDefault(x => x.FieldName.Equals(meta.Name));
+                    // if not exits, create it
+                    if (property == null)
                     {
-                        FieldName = meta.Name,
-                        Title = meta.Title,
-                        AutoPostBack = meta.AutoPostBack.Equals("1"),
-                        InteractiveHelp = meta.InteractiveHelp,
-                        DefaultValue = meta.Default,
-                        TypeID = Convert.ToInt32(meta.ContentTypeSelection),
-                        MaxValueLength = Utility.ConvertToIntNullable(meta.MaxValueLength),
-                        IsMandatory = meta.Mandatory.Equals("1"),
-                        SortOrder = index,
-                        TemplateID = req["item"]
-                    };
-                    property.Save();
-                    reload = true;
-                }
+                        property = new Property
+                        {
+                            FieldName = meta.Name,
+                            Title = meta.Title,
+                            AutoPostBack = meta.AutoPostBack.Equals("1"),
+                            InteractiveHelp = meta.InteractiveHelp,
+                            DefaultValue = meta.Default,
+                            TypeID = Convert.ToInt32(meta.ContentTypeSelection),
+                            MaxValueLength = Utility.ConvertToIntNullable(meta.MaxValueLength),
+                            IsMandatory = meta.Mandatory.Equals("1"),
+                            SortOrder = index,
+                            TemplateID = req["item"]
+                        };
+                        property.Save();
+                        reload = true;
+                    }
 
-                // if the sort order is not correct, correct it.
-                if (!property.SortOrder.Equals(index))
-                {
-                    property.SortOrder = index;
-                    property.Save();
-                    reload = true;
+                    // if the sort order is not correct, correct it.
+                    if (!property.SortOrder.Equals(index))
+                    {
+                        property.SortOrder = index;
+                        property.Save();
+                        reload = true;
+                    }
+                    index++;
                 }
-                index++;
             }
-
             // reload properties if it changed.
             if (reload)
             {

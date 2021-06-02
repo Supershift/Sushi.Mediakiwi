@@ -127,7 +127,20 @@ namespace Sushi.Mediakiwi.Data
             }
         }
 
-        ComponentTemplate IComponent.Template { get; }
+        ComponentTemplate m_Template;
+        /// <summary>
+        /// Gets the template.
+        /// </summary>
+        /// <value>The template.</value>
+        public ComponentTemplate Template
+        {
+            get
+            {
+                if (m_Template == null)
+                    m_Template = Mediakiwi.Data.ComponentTemplate.SelectOne(this.ComponentTemplateID);
+                return m_Template;
+            }
+        }
 
         #endregion properties
 
