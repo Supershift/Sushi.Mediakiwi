@@ -8,13 +8,13 @@ namespace Sushi.Mediakiwi.Controllers
 {
     internal class ControllerRegister
     {
-        internal static Dictionary<string, IDocumentTypeController> Routes { get; set; }
+        internal static Dictionary<string, IController> Routes { get; set; }
 
-        internal static void AddRoute(string route, IDocumentTypeController controller)
+        internal static void AddRoute(string route, IController controller)
         {
             if (Routes == null)
             {
-                Routes = new Dictionary<string, IDocumentTypeController>();
+                Routes = new Dictionary<string, IController>();
             }
             Routes.Add(route, controller);
         }
@@ -28,7 +28,7 @@ namespace Sushi.Mediakiwi.Controllers
             _Path = _Context.Request.Path.Value;
         }
 
-        internal IDocumentTypeController Verify()
+        internal IController Verify()
         {
             foreach (var route in Routes)
             {

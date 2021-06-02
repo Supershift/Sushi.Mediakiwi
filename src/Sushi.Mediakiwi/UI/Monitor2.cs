@@ -77,7 +77,7 @@ namespace Sushi.Mediakiwi.UI
                 var monitor = new Monitor(context, env, configuration);
                 if (await monitor.CheckRoamingApplicationUserAsync().ConfigureAwait(false))
                 {
-                    var output = await controllerOutput.Complete(context).ConfigureAwait(false);
+                    var output = await controllerOutput.CompleteAsync(context).ConfigureAwait(false);
                     await context.Response.WriteAsync(output).ConfigureAwait(false);
                     return true;
                 }

@@ -1,6 +1,4 @@
 ﻿using Microsoft.AspNetCore.Http;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 using Sushi.Mediakiwi.Controllers.Data;
 using Sushi.Mediakiwi.Data;
 using Sushi.Mediakiwi.Framework;
@@ -10,38 +8,19 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Text.Json;
 
 namespace Sushi.Mediakiwi.Controllers
 {
-    public interface IDocumentTypeController
+    /// <summary>
+    /// This Controller is initiated by adding a route in the following location:
+    /// Sushi.Mediakiwi => Configure
+    /// ControllerRegister.AddRoute("api/documentype/getfields", new DocumentTypeController());
+    /// </summary>
+    internal class DocumentTypeController : BaseController, IController
     {
-        Task<string> Complete(HttpContext context);
-    }
-
-    public class DocumentTypeController : IDocumentTypeController
-    {
-        public JsonSerializerSettings JsonSettings { get; } 
-            = new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() };
-
-        public JsonSerializerOptions Settings { get; }
-          = new JsonSerializerOptions
-          {
-              IgnoreNullValues = true,
-              PropertyNameCaseInsensitive = true,
-              PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-          };
-
-        public async Task<string> Complete(HttpContext context)
+        public async Task<string> CompleteAsync(HttpContext context)
         {
-            GetFieldsRequest request = null;
-
-            var stream = context.Request.Body;
-            using (StreamReader sr = new StreamReader(stream))
-            {
-                var output = await sr.ReadToEndAsync();
-                request = System.Text.Json.JsonSerializer.Deserialize<GetFieldsRequest>(output, Settings);
-            }
+            var request = await GetPostAsync<GetFieldsRequest>(context).ConfigureAwait(false);
 
             Dictionary<string, int> req = new Dictionary<string, int>();
             foreach (var q in context.Request.Query)
@@ -117,7 +96,7 @@ namespace Sushi.Mediakiwi.Controllers
                 });
             }
 
-            return JsonConvert.SerializeObject(response, JsonSettings);
+            return GetResponse(response);
         }
     }
 }
