@@ -11,6 +11,10 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
 {
     public class SharedFieldList : BaseImplementation
     {
+
+        public static int LAYER_WIDTH = 800;
+        public static int LAYER_HEIGHT = 750;
+
         #region Properties
 
         SharedFieldTranslation Implement;
@@ -110,7 +114,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         {
             wim.ListDataColumns.Add(new ListDataColumn("ID", nameof(SharedField.ID), ListDataColumnType.UniqueIdentifier));
             wim.ListDataColumns.Add(new ListDataColumn("Field", nameof(SharedField.FieldName), ListDataColumnType.HighlightPresent));
-            wim.ListDataColumns.Add(new ListDataColumn("Type", nameof(SharedField.List_ContentType), ListDataColumnType.HighlightPresent));
+            wim.ListDataColumns.Add(new ListDataColumn("Type", nameof(SharedField.List_ContentType), ListDataColumnType.Default));
             wim.ListDataColumns.Add(new ListDataColumn("Edit value", nameof(SharedField.List_EditValue), ListDataColumnType.Default));
             wim.ListDataColumns.Add(new ListDataColumn("Published value", nameof(SharedField.List_PublishedValue), ListDataColumnType.Default));
             wim.ListDataColumns.Add(new ListDataColumn("Published", nameof(SharedField.List_IsPublished), ListDataColumnType.Default));
@@ -127,24 +131,22 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                     fieldData = new SharedFieldTranslation()
                     {
                         ContentTypeID = field.ContentTypeID,
-                        EditValue = "-",
+                        EditValue = "",
                         FieldID = field.ID,
                         FieldName = field.FieldName,
                         SiteID = wim.CurrentSite.ID,
-                        Value = "-"
+                        Value = ""
                     };
                 }
                 var matchingProps = await Property.SelectAllByFieldNameAsync(field.FieldName).ConfigureAwait(false);
                 if (matchingProps?.Count > 0)
                 {
-                    field.List_PageCount = 10;
-
-                    //foreach (var prop in matchingProps.Where(x => x.TemplateID > 0))
-                    //{
-                    //    var cVersions = Wim.Data.ComponentVersion.SelectAllForTemplate(prop.TemplateID);
-                    //    var pages = Wim.Data.Page.SelectAll(cVersions.Select(x => x.PageID.GetValueOrDefault(0)).ToArray());
-                    //    field.List_PageCount = pages.Length;
-                    //}
+                    foreach (var prop in matchingProps.Where(x => x.TemplateID > 0))
+                    {
+                        var cVersions = ComponentVersion.SelectAllForTemplate(prop.TemplateID);
+                        var pages = Page.SelectAll(cVersions.Select(x => x.PageID.GetValueOrDefault(0)).ToArray());
+                        field.List_PageCount = pages.Length;
+                    }
                 }
                 
                 field.List_EditValue = fieldData.GetEditValue(50);
@@ -164,8 +166,8 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
 
             wim.Page.Body.Grid.SetClickLayer(new Grid.LayerSpecification()
             {
-                Height = 600,
-                Width = 800,
+                Height = LAYER_HEIGHT,
+                Width = LAYER_WIDTH,
                 Title = "Shared field"
             });
         }

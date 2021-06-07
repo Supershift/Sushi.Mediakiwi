@@ -71,11 +71,11 @@ namespace Sushi.Mediakiwi.AppCentre.UI
             return Task.CompletedTask;
         }
 
-        private Task DocumentType_List_ListSave(ComponentListEventArgs e)
+        private async Task DocumentType_List_ListSave(ComponentListEventArgs e)
         {
             if (FieldPropertiesFormMapImplement == null)
             {
-                var properties = Sushi.Mediakiwi.Data.Property.SelectAllByTemplate(e.SelectedKey);
+                var properties = await Property.SelectAllByTemplateAsync(e.SelectedKey);
 
                 List<MetaData> meta = new List<MetaData>();
                 foreach (var property in properties)
@@ -85,6 +85,8 @@ namespace Sushi.Mediakiwi.AppCentre.UI
                     item.Title = property.Title;
                     item.InteractiveHelp = property.InteractiveHelp;
                     item.Mandatory = property.IsMandatory ? "1" : "0";
+                    item.IsSharedField = property.IsSharedField;
+
                     if (property.MaxValueLength.HasValue)
                         item.MaxValueLength = property.MaxValueLength.Value.ToString();
                     else
@@ -112,7 +114,7 @@ namespace Sushi.Mediakiwi.AppCentre.UI
 
                     if (isChoiceType)
                     {
-                        var propertyoptions = PropertyOption.SelectAll(property.ID);
+                        var propertyoptions = await PropertyOption.SelectAllAsync(property.ID);
                         List<MetaDataList> options = new List<MetaDataList>();
                         foreach (var dataitem in propertyoptions)
                             options.Add(new MetaDataList(dataitem.Name, dataitem.Value));
@@ -125,16 +127,16 @@ namespace Sushi.Mediakiwi.AppCentre.UI
 
                 var serialized = Utility.GetSerialized(meta.ToArray());
 
-                var ct = ComponentTemplate.SelectOne(e.SelectedKey);
+                var ct = await ComponentTemplate.SelectOneAsync(e.SelectedKey);
                 if (ct.MetaData != serialized)
                 {
                     ct.MetaData = serialized;
                     ct.LastWriteTimeUtc = DateTime.UtcNow;
-                    ct.Save();
+                    await ct.SaveAsync();
                     wim.FlushCache();
                 }
 
-                var templates = AvailableTemplate.SelectAllByComponentTemplate(ct.ID);
+                var templates = await AvailableTemplate.SelectAllByComponentTemplateAsync(ct.ID);
                 var slot = templates.Where(x => x.SlotID.Equals(1)).ToList();
                 if (slot.Any() == false)
                 {
@@ -165,9 +167,10 @@ namespace Sushi.Mediakiwi.AppCentre.UI
                     catch (Exception) { }
                 }
 
+
                 Property.Data = null;
                 Property.TemplateID = e.SelectedKey;
-                Property.Save();
+                await Property.SaveAsync();
 
                 bool isChoiceType =
                         Property.TypeID.Equals((int)ContentType.Choice_Dropdown) ||
@@ -188,7 +191,7 @@ namespace Sushi.Mediakiwi.AppCentre.UI
                 {
                     List<PropertyOption> toCreate = new List<PropertyOption>();
                     List<PropertyOption> toRemove = new List<PropertyOption>();
-                    var properties = PropertyOption.SelectAll(Property.ID);
+                    var properties = await PropertyOption.SelectAllAsync(Property.ID);
 
                     // Identify new
                     foreach (var item in options)
@@ -211,7 +214,6 @@ namespace Sushi.Mediakiwi.AppCentre.UI
                         item.Delete();
                 }
             }
-            return Task.CompletedTask;
         }
 
         Property Property;

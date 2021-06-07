@@ -75,46 +75,21 @@ namespace Sushi.Mediakiwi.Framework.Api
         {
             try
             {
-                var _sharedFieldValues = await Data.SharedFieldTranslation.FetchAllForSiteAsync(CurrentSiteID).ConfigureAwait(false);
+                var _fieldName = Fields?.FirstOrDefault(x => string.IsNullOrWhiteSpace(x.PropertyName) == false && x.PropertyName == "FieldName" && x.Value != null);
 
-                if (Fields?.Count > 0 && _sharedFieldValues?.Count > 0)
+                if (_fieldName != null)
                 {
-                    foreach (var field in Fields.Where(x => string.IsNullOrWhiteSpace(x.PropertyName) == false))
+                    var _sharedField = await Data.SharedField.FetchSingleAsync(_fieldName.Value.ToString().ToUpperInvariant());
+                    if (_sharedField?.ID > 0)
                     {
-                        if (field.PropertyName == "FieldName")
+                        IsSharedField = true;
+                        var _sharedFieldValue = await Data.SharedFieldTranslation.FetchSingleForFieldAndSiteAsync(_sharedField.ID, CurrentSiteID);
+
+                        if (_sharedFieldValue?.ID > 0)
                         {
-                            var sharedFieldInstance = _sharedFieldValues.FirstOrDefault(x => x.FieldName.ToUpperInvariant() == field.Value.ToString().ToUpperInvariant());
-                            if (sharedFieldInstance?.ID > 0)
-                            {
-                                IsSharedField = true;
-                                SharedFieldValue = sharedFieldInstance.Value;
-                            }
+                            SharedFieldValue = _sharedFieldValue.Value;
                         }
                     }
-                }
-
-                if (Fields.Any(x => x.PropertyName == nameof(IsSharedField) == false))
-                {
-                    Fields.Add(new MediakiwiField()
-                    {
-                        Event = MediakiwiJSEvent.change,
-                        Expression = OutputExpression.Left,
-                        PropertyName = nameof(IsSharedField),
-                        PropertyType = typeof(bool).FullName,
-                        VueType = MediakiwiFormVueType.wimChoiceCheckbox,
-                        Title = "Is shared field",
-                        Value = IsSharedField
-                    });
-                    Fields.Add(new MediakiwiField()
-                    {
-                        Event = MediakiwiJSEvent.none,
-                        Expression = OutputExpression.Right,
-                        PropertyName = nameof(SharedFieldValue),
-                        PropertyType = typeof(string).FullName,
-                        VueType = MediakiwiFormVueType.wimTextline,
-                        Title = "Shared value",
-                        Value = SharedFieldValue
-                    });
                 }
             }
             catch (Exception ex)

@@ -135,34 +135,34 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
             }
         }
 
-        internal bool HasPost
-        {
-            get
-            {
-                if (!Context.Request.HasFormContentType)
-                    return false;
+        //internal bool HasPost
+        //{
+        //    get
+        //    {
+        //        if (!Context.Request.HasFormContentType)
+        //            return false;
 
-                if (IsJson)
-                {
-                    if (JsonForm != null)
-                    {
-                        if (JsonForm.Count == 0) return false;
-                        return true;
-                    }
-                    return false;
-                }
-                else
-                {
-                    if (!Context.Request.HasFormContentType)
-                        return false;
+        //        if (IsJson)
+        //        {
+        //            if (JsonForm != null)
+        //            {
+        //                if (JsonForm.Count == 0) return false;
+        //                return true;
+        //            }
+        //            return false;
+        //        }
+        //        else
+        //        {
+        //            if (!Context.Request.HasFormContentType)
+        //                return false;
 
-                    if (Context.Request.Form.Count == 0) 
-                        return false;
+        //            if (Context.Request.Form.Count == 0) 
+        //                return false;
 
-                    return true;
-                }
-            }
-        }
+        //            return true;
+        //        }
+        //    }
+        //}
 
         public string JsonReferrer
         {
@@ -451,13 +451,9 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
             {
                 if (IsJson)
                 {
-                    if (JsonForm != null)
+                    if (JsonForm?.ContainsKey(name) == true && JsonForm[name] != null)
                     {
-                        if (JsonForm.ContainsKey(name))
-                        {
-                            if (JsonForm[name] != null)
-                                return JsonForm[name].ToString();
-                        }
+                        return JsonForm[name].ToString();
                     }
                     return null;
                 }

@@ -127,7 +127,10 @@
                 return true;
             },
             postFields: function ($event, target) {
+                console.log('post fields:');
+                console.log($event.target.id);
                 if ($event.target.id && $event.target.id === 'IsSharedField') {
+                    console.log('go for the check shared field');
                     if (this.$parent.checkSharedField) {
                         this.$parent.checkSharedField($event.target.checked);
                     }

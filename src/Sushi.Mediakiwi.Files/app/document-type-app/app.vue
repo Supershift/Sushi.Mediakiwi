@@ -384,6 +384,7 @@
                 };
 
                 // loop through all form fields and get the value
+
                 for (let fieldProperty of field.fields) {
                     if (fieldProperty && fieldProperty.propertyName) {
                         request.FormFields[fieldProperty.propertyName] = fieldProperty.value;
@@ -580,7 +581,7 @@
                     // Check if we have an impact on other pages,
                     // if so, display a dialog box about that
                     if (result.pages && result.pages.length > 0) {
-
+                        console.log(result.pages);
                         // Create page list
                         var ul = $('<ul/>');
                         for (var i = 0; i < result.pages.length; i++) {
@@ -610,7 +611,7 @@
 
                 let request = {
                     Referrer: target,
-                    FormFields: {}
+                    FormFields: {} 
                 };
 
                 // loop through all form fields and get the value
@@ -619,6 +620,10 @@
                         request.FormFields[fieldProperty.propertyName] = fieldProperty.value;
                     }
                 }
+
+                // Log what we're posting
+                console.log('posting content:');
+                console.dir(field.fields);
 
                 // Add order
                 let fieldID = (field.id < 0) ? 0 : field.id;
@@ -630,6 +635,10 @@
                 request.FormFields["IsMandatory"] = field.isMandatory;
 
                 request.FormFields["FieldName"] = this.camelCase(request.FormFields["Title"]);
+                //console.log('ohjajoh');
+                //console.log('isSharedField:' + field.isSharedField);
+                //console.dir(field);
+                //request.FormFields["IsSharedField"] = field.isSharedField; 
 
                 let headers = this.headers;
                 let success = undefined;

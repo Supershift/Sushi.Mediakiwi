@@ -61,6 +61,8 @@ namespace Sushi.Mediakiwi.Framework
         /// 
         /// </summary>
         int MaxValueLength { get; set; }
+
+        bool IsSharedField { get; set; }
         /// <summary>
         /// 
         /// </summary>

@@ -257,6 +257,11 @@ namespace Sushi.Mediakiwi.Data
         public bool IsFixed { get; set; }
 
         /// <summary>
+        /// Is this property Marked as a Shared Field ?
+        /// </summary>
+        public bool IsSharedField { get; set; }
+
+        /// <summary>
         /// Gets or sets the inherited ID. This property is inherited of a template property list.
         /// </summary>
         /// <value>The inherited ID.</value>
@@ -372,6 +377,15 @@ namespace Sushi.Mediakiwi.Data
             filter.Add(x => x.TemplateID, templateid);
             filter.AddOrder(x => x.SortOrder);
             return connector.FetchAll(filter);
+        }
+
+        public static async Task<List<Property>> SelectAllByTemplateAsync(int templateid)
+        {
+            var connector = new Connector<Property>();
+            var filter = connector.CreateDataFilter();
+            filter.Add(x => x.TemplateID, templateid);
+            filter.AddOrder(x => x.SortOrder);
+            return await connector.FetchAllAsync(filter);
         }
 
         /// <summary>

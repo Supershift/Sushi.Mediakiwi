@@ -309,6 +309,8 @@ namespace Sushi.Mediakiwi.Framework
             var element = metadata.GetContentInfo();
             element.FieldName = metadata.Name;
             element.Mandatory = metadata.Mandatory == "1";
+            element.IsSharedField = metadata.IsSharedField;
+
             if (!string.IsNullOrWhiteSpace(metadata.MaxValueLength))
             {
                 element.MaxValueLength = Convert.ToInt32(metadata.MaxValueLength, System.Globalization.CultureInfo.InvariantCulture);

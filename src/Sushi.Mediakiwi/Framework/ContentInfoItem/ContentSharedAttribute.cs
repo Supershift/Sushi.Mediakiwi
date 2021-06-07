@@ -10,13 +10,84 @@ using Sushi.Mediakiwi.UI;
 
 namespace Sushi.Mediakiwi.Framework
 {
+
     public delegate string Translator(string property, string value);
     /// <summary>
     /// 
     /// </summary>
     [AttributeUsage(AttributeTargets.Property)]
     public class ContentSharedAttribute : Attribute
-    {
+    {   
+        /// <summary>
+        /// This will contain an Anchor tag containing the replacement field [LABEL]
+        /// when an Edit Shared Field URL is available
+        /// </summary>
+        public string EditSharedFieldLink { get; set; }
+
+        /// <summary>
+        /// This will contain an Icon DIV to add to an element to show that it's a
+        /// shared field.
+        /// </summary>
+        public string SharedIcon { get; set; }
+
+        protected (bool isShared, bool isEnabled, string outputValue) ApplySharedFieldInformation(bool isEnabled, string outputValue)
+        {
+            bool _isEnabled = isEnabled;
+            string _outputValue = outputValue;
+
+            // Shared Field addition
+            var sharedField = SharedField.FetchSingle(FieldName);
+            bool isSharedField = (sharedField?.ID > 0) ? true : false;
+
+            // Disable the field when it is shared
+            if (isSharedField)
+            {
+                var cList = ComponentList.SelectOne(typeof(AppCentre.Data.Implementation.SharedFieldList));
+
+                _isEnabled = false;
+                var sharedValue = SharedFieldTranslation.FetchSingleForFieldAndSite(sharedField.ID, Console.ChannelIndentifier);
+                if (sharedValue?.ID > 0)
+                {
+                    _outputValue = sharedValue.Value;
+                    InteractiveHelp += " [This a Shared Field, click to edit]";
+                    var editSharedFieldUrl = Console.CurrentListInstance.wim.GetUrl(new KeyValue[]
+                    {
+                        new KeyValue()
+                        {
+                            Key ="list",
+                            Value = cList.ID
+                        },
+                        new KeyValue()
+                        {
+                            Key="item",
+                            Value = sharedField.ID
+                        },
+                        new KeyValue()
+                        {
+                            Key="openinframe",
+                            Value="2"
+                        },
+                        new KeyValue()
+                        {
+                            Key="page",
+                            RemoveKey = true
+                        }
+                    });
+
+                    Grid.LayerSpecification specs = new Grid.LayerSpecification()
+                    {
+                        Height = AppCentre.Data.Implementation.SharedFieldList.LAYER_HEIGHT,
+                        Width = AppCentre.Data.Implementation.SharedFieldList.LAYER_WIDTH,
+                    };
+
+                    SharedIcon = $"<div class=\"iconStatus\"style=\"position: absolute; margin-top:2px; right:32px;\"><i class=\"fas fa-retweet\" title=\"Shared field\"></i></div>";
+                    EditSharedFieldLink = $"<a class=\"openlayer\" data-layer=\"{specs.Parse()}\" href=\"{editSharedFieldUrl}\">[LABEL]</a>";
+                }
+            }
+
+            return (isSharedField, _isEnabled, _outputValue);
+        }
+
         public ListInfoItem InfoItem { get; set; }
 
         public bool IsCloaked { get; set; }
@@ -96,13 +167,13 @@ namespace Sushi.Mediakiwi.Framework
                 field.Property = this.FieldName;
             }
 
-            if (Property.PropertyType != typeof(Data.CustomData))
+            if (Property.PropertyType != typeof(CustomData))
                 return;
 
             m_ContentContainer = Property.GetValue(SenderInstance, null) as Data.CustomData;
 
             if (m_ContentContainer == null)
-                m_ContentContainer = new Sushi.Mediakiwi.Data.CustomData();
+                m_ContentContainer = new CustomData();
 
 
             if (!m_ContentContainer[field.Property].IsEditable)
@@ -221,6 +292,8 @@ namespace Sushi.Mediakiwi.Framework
             set { m_IsBluePrint = value; }
             get { return m_IsBluePrint; }
         }
+
+        public bool IsSharedField { get; set; }
 
         //protected bool IsMultiFile { get; set; }
 
@@ -406,10 +479,10 @@ namespace Sushi.Mediakiwi.Framework
             {
                 int listID;
                 Guid listGUID;
-                if (Data.Utility.IsNumeric(selectionlistID, out listID))
-                    layerTitle = Sushi.Mediakiwi.Data.ComponentList.SelectOne(listID).Name;
-                else if (Data.Utility.IsGuid(selectionlistID, out listGUID))
-                    layerTitle = Sushi.Mediakiwi.Data.ComponentList.SelectOne(listGUID).Name;
+                if (Utility.IsNumeric(selectionlistID, out listID))
+                    layerTitle = ComponentList.SelectOne(listID).Name;
+                else if (Utility.IsGuid(selectionlistID, out listGUID))
+                    layerTitle = ComponentList.SelectOne(listGUID).Name;
             }
 
 
@@ -482,6 +555,11 @@ namespace Sushi.Mediakiwi.Framework
                 }
             }
 
+            bool isEnabled = IsEnabled();
+
+            // [MR:03-06-2021] Apply shared field clickable icon.
+            var sharedInfoApply = ApplySharedFieldInformation(isEnabled, OutputText);
+
             //if ((items == null || items.Length == 0) || items[0].ID == 0)
             //{
             //    list.AppendFormat("\n\t\t\t\t\t\t\t\t\t\t\t<li class=\"instant\"><em style=\"color:#a7aab3;margin-left:-5px\">{0}</em></li>", Data.Utility.CleanFormatting(this.InteractiveHelp));
@@ -513,7 +591,17 @@ namespace Sushi.Mediakiwi.Framework
                         if (Expression == OutputExpression.FullWidth || Expression == OutputExpression.Left)
                             build.Append("\t\t\t\t\t\t<tr>");
                     }
-                    build.AppendFormat("\n\t\t\t\t\t\t\t<th><label for=\"{0}\">{1}</label></th>", this.ID, this.TitleLabel);
+
+                    if (string.IsNullOrWhiteSpace(EditSharedFieldLink) == false)
+                    {
+                        build.AppendFormat($"<th><label for=\"{ID}\">{EditSharedFieldLink.Replace("[LABEL]", this.TitleLabel)}</label></th>");
+                    }
+                    else
+                    {
+                        build.AppendFormat($"<th><label for=\"{ID}\">{TitleLabel}</label></th>");
+                    }
+
+                    //build.AppendFormat("\n\t\t\t\t\t\t\t<th><label for=\"{0}\">{1}</label></th>", this.ID, this.TitleLabel);
                     
                     build.AppendFormat("\n\t\t\t\t\t\t\t<td{0}{1}>{2}"
                         , (Expression == OutputExpression.FullWidth && Console.HasDoubleCols) ? " colspan=\"3\"" : null
@@ -633,6 +721,7 @@ namespace Sushi.Mediakiwi.Framework
                 return null;
             }
         }
+
         bool m_SelectedKeysSet;
         string[] m_SelectedKeys;
         /// <summary>
@@ -672,7 +761,7 @@ namespace Sushi.Mediakiwi.Framework
                 List<int> list = new List<int>();
                 foreach (var key in SelectedKeys)
                 {
-                    list.Add(Data.Utility.ConvertToInt(key.Split('$')[1]));
+                    list.Add(Utility.ConvertToInt(key.Split('$')[1]));
                 }
                 return list.ToArray();
             }
@@ -1027,9 +1116,27 @@ namespace Sushi.Mediakiwi.Framework
                 }
 
                 if (Expression == OutputExpression.FullWidth)
-                    build.AppendFormat("\n\t\t\t\t\t\t\t<th class=\"full\"><label class=\"input-text{2}\">{1}</label></th>", this.ID, this.TitleLabel, isShort ? " short" : null);
+                {
+                    if (string.IsNullOrWhiteSpace(EditSharedFieldLink) == false)
+                    {
+                        build.Append($"<th class=\"full\"><label for=\"{ID}\" class=\"input-text {(isShort ? " short" : null)}\">{EditSharedFieldLink.Replace("[LABEL]", this.TitleLabel)}</label></th>");
+                    }
+                    else
+                    {
+                        build.Append($"<th class=\"full\"><label for=\"{ID}\" class=\"input-text {(isShort ? " short" : null)}\">{TitleLabel}</label></th>");
+                    }
+                }
                 else
-                    build.AppendFormat("\n\t\t\t\t\t\t\t<th class=\"half\"><label class=\"input-text{2}\">{1}</label></th>", this.ID, this.TitleLabel, isShort ? " short" : null);
+                {
+                    if (string.IsNullOrWhiteSpace(EditSharedFieldLink) == false)
+                    {
+                        build.Append($"<th class=\"half\"><label for=\"{ID}\" class=\"input-text {(isShort ? " short" : null)}\">{EditSharedFieldLink.Replace("[LABEL]", this.TitleLabel)}</label></th>");
+                    }
+                    else
+                    {
+                        build.Append($"<th class=\"half\"><label for=\"{ID}\" class=\"input-text {(isShort ? " short" : null)}\">{TitleLabel}</label></th>");
+                    }
+                }
 
                 build.AppendFormat("\n\t\t\t\t\t\t\t<td{0}{1}>"
                     , (Expression == OutputExpression.FullWidth && Console.HasDoubleCols) ? " colspan=\"3\"" : null

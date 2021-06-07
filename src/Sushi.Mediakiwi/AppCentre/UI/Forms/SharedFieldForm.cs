@@ -90,7 +90,12 @@ namespace Sushi.Mediakiwi.AppCentre.UI.Forms
             FieldName = Implement.FieldName;
             PublishedValue = "-";
             bool canEdit = true;
-            bool canDeleteOrRevert = implement?.ID > 0;
+            bool canDelete = implement?.ID > 0;
+            bool canRevert = false;
+            if (string.IsNullOrWhiteSpace(implement.EditValue) == false && string.IsNullOrWhiteSpace(implement.Value) == false)
+            {
+                canRevert = !(implement.EditValue.Equals(implement.Value));
+            }
 
             if (wim.CurrentEnvironment["FORM_DATEPICKER"].ToUpperInvariant() == "EN")
             {
@@ -230,8 +235,8 @@ namespace Sushi.Mediakiwi.AppCentre.UI.Forms
 
             Load(this);
 
-            wim.SetPropertyVisibility(nameof(Data.Implementation.SharedFieldList.Button_Revert), canDeleteOrRevert);
-            wim.SetPropertyVisibility(nameof(Data.Implementation.SharedFieldList.Button_Delete), canDeleteOrRevert);
+            wim.SetPropertyVisibility(nameof(Data.Implementation.SharedFieldList.Button_Revert), canRevert);
+            wim.SetPropertyVisibility(nameof(Data.Implementation.SharedFieldList.Button_Delete), canDelete);
             wim.SetPropertyVisibility(nameof(Data.Implementation.SharedFieldList.Button_Save), canEdit);
             wim.SetPropertyVisibility(nameof(Data.Implementation.SharedFieldList.Button_SavePublish), canEdit);
 
@@ -240,61 +245,133 @@ namespace Sushi.Mediakiwi.AppCentre.UI.Forms
                 wim.Notification.AddNotification("This field can only be edited in-page, since it relies on values not available here");
             }
 
-            LoadPagesAndComponents();
+            LoadPagesAndComponents(wim);
         }
 
         #endregion Load - Dependent on ContentType
 
         #region Load Pages and Components
 
-        private void LoadPagesAndComponents()
+        private void LoadPagesAndComponents(WimComponentListRoot wim)
         {
             List<Page> allPages = new List<Page>();
             List<ComponentTemplate> allComponentTemplates = new List<ComponentTemplate>();
+            var pageList = ComponentList.SelectOne(typeof(Data.Implementation.Browsing));
+            var componentTemplateList = ComponentList.SelectOne(typeof(Data.Implementation.ComponentTemplate));
 
             var matchingProps = Property.SelectAllByFieldName(Implement.FieldName);
             if (matchingProps?.Count > 0)
             {
-                //foreach (var prop in matchingProps.Where(x => x.TemplateID > 0))
-                //{
-                //    allComponentTemplates.Add(ComponentTemplate.SelectOne(prop.TemplateID));
-                //    var cVersions = ComponentVersion.SelectAllForTemplate(prop.TemplateID);
-                //    var pages = Page.SelectAll(cVersions.Select(x => x.PageID.GetValueOrDefault(0)).ToArray());
-                //    allPages.AddRange(pages);
-                //}
+                foreach (var prop in matchingProps.Where(x => x.TemplateID > 0))
+                {
+                    allComponentTemplates.Add(ComponentTemplate.SelectOne(prop.TemplateID));
+                    var cVersions = ComponentVersion.SelectAllForTemplate(prop.TemplateID);
+                    var pages = Page.SelectAll(cVersions.Select(x => x.PageID.GetValueOrDefault(0)).ToArray());
+                    allPages.AddRange(pages);
+                }
             }
 
-            // Do we have a pages collection ?
+            // Add the pages collection 
+            StringBuilder bld = new StringBuilder();
+            bld.Append("<section class=\"searchTable\">");
+            bld.Append("<article class=\"dataBlock\">");
+            bld.Append("<table width=\"100%\" class=\"selections\">");
+            bld.Append("<thead><tr><th>Title</th><th>Path</th><th>View</th></tr>");
+            bld.Append("<tbody>");
             if (allPages?.Count > 0)
             {
-                StringBuilder bld = new StringBuilder();
-                bld.Append("<table width=\"100%\">");
                 foreach (var page in allPages)
                 {
-                    bld.Append($"<tr><td width=\"30%\">{page.Title}</td><td>{page.CompletePath}</td></tr>");
+                    string pageTitle = string.IsNullOrWhiteSpace(page.Title) ? page.Name : page.Title;
+                    string pagePath = string.IsNullOrWhiteSpace(page.CompletePath) ? page.HRefFull : page.CompletePath;
+                    string pageUrl = string.IsNullOrWhiteSpace(page.HRefFull) ? page.HRef : page.HRefFull;
+                    if (pageList?.ID > 0)
+                    {
+                        pageUrl = wim.GetUrl(new KeyValue[] {
+                            new KeyValue() {
+                                Key = "list",
+                                Value = pageList.ID
+                            },
+                            new KeyValue()
+                            {
+                                Key="page",
+                                Value = page.ID
+                            },
+                            new KeyValue()
+                            {
+                                Key="openinframe",
+                                RemoveKey = true
+                            },
+                            new KeyValue()
+                            {
+                                Key="item",
+                                RemoveKey = true
+                            }
+                        });
+                    }
+                    bld.Append($"<tr><td>{pageTitle}</td><td>{pagePath}</td><td><a target=\"_top\" href=\"{pageUrl}\">View</a></td></tr>");
                 }
-                bld.Append("</table>");
-
-                Pages = bld.ToString();
-                Map(x => x.sec_Pages).Section("Pages containing this field");
-                Map(x => x.Pages).HtmlContainer(true);
             }
+            else
+            {
+                bld.Append($"<tr><td>-</td><td>-</td><td>&nbsp;</td></tr>");
+            }
+            bld.Append("</tbody>");
+            bld.Append("</table><br class=\"clear\">");
+            bld.Append("</article>");
+            bld.Append("</section>");
+
+            Pages = bld.ToString();
+            Map(x => x.sec_Pages).Section($"{allPages?.Count} Page(s) containing this field");
+            Map(x => x.Pages).HtmlContainer(true);
+
 
             // Do we have a component templates collection ?
+            bld.Clear();
+            bld.Append("<section class=\"searchTable\">");
+            bld.Append("<article class=\"dataBlock\">");
+            bld.Append("<table width=\"100%\" class=\"selections\">");
+            bld.Append("<thead><tr><th>Title</th><th>Source Tag</th><th>View</th></tr>");
+            bld.Append("<tbody>");
             if (allComponentTemplates?.Count > 0)
             {
-                StringBuilder bld = new StringBuilder();
-                bld.Append("<table width=\"100%\">");
                 foreach (var cTemplate in allComponentTemplates)
                 {
-                    bld.Append($"<tr><td width=\"30%\">{cTemplate.Name}</td><td>{cTemplate.SourceTag}</td></tr>");
+                    string componentTemplateUrl = "";
+                    if (pageList?.ID > 0)
+                    {
+                        componentTemplateUrl = wim.GetUrl(new KeyValue[] {
+                            new KeyValue() {
+                                Key = "list",
+                                Value = componentTemplateList.ID
+                            },
+                            new KeyValue()
+                            {
+                                Key = "item",
+                                Value = cTemplate.ID
+                            },
+                            new KeyValue()
+                            {
+                                Key="openinframe",
+                                RemoveKey = true
+                            }
+                        });
+                    }
+                    bld.Append($"<tr><td width=\"30%\">{cTemplate.Name}</td><td>{cTemplate.SourceTag}</td><td><a target=\"_top\" href=\"{componentTemplateUrl}\">View</a></td></tr>");
                 }
-                bld.Append("</table>");
-
-                ComponentTemplates = bld.ToString();
-                Map(x => x.sec_ComponentTemplates).Section("Component templates containing this field");
-                Map(x => x.ComponentTemplates).HtmlContainer(true);
             }
+            else
+            {
+                bld.Append($"<tr><td>-</td><td>-</td><td>&nbsp;</td></tr>");
+            }
+            bld.Append("</tbody>");
+            bld.Append("</table><br class=\"clear\">");
+            bld.Append("</article>");
+            bld.Append("</section>");
+
+            ComponentTemplates = bld.ToString();
+            Map(x => x.sec_ComponentTemplates).Section($"{allComponentTemplates?.Count} Component template(s) containing this field");
+            Map(x => x.ComponentTemplates).HtmlContainer(true);
         }
 
         #endregion Load Pages and Components

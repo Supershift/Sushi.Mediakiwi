@@ -324,6 +324,7 @@ namespace Sushi.Mediakiwi.Framework
             get { return m_Mandatory; }
         }
 
+
         private string m_EmptyFirst;
         /// <summary>
         /// 
@@ -444,6 +445,16 @@ namespace Sushi.Mediakiwi.Framework
         {
             set { m_CollectionList = value; }
             get { return m_CollectionList; }
+        }
+
+        private bool m_IsSharedField;
+        /// <summary>
+        /// 
+        /// </summary>
+        public bool IsSharedField
+        {
+            set { m_IsSharedField = value; }
+            get { return m_IsSharedField; }
         }
 
         /// <summary>

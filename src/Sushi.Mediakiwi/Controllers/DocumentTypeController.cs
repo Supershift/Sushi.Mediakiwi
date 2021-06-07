@@ -18,6 +18,7 @@ namespace Sushi.Mediakiwi.Controllers
     /// </summary>
     internal class DocumentTypeController : BaseController, IController
     {
+     
         public async Task<string> CompleteAsync(HttpContext context)
         {
             var request = await GetPostAsync<GetFieldsRequest>(context).ConfigureAwait(false);
@@ -34,12 +35,12 @@ namespace Sushi.Mediakiwi.Controllers
             GetFieldsResponse response = new GetFieldsResponse();
             response.Fields = new List<DocumentTypeFieldListItem>();
 
-            var componentlist = ComponentTemplate.SelectOne(request.DocumentTypeID);
+            var componentlist = await ComponentTemplate.SelectOneAsync(request.DocumentTypeID);
             var metadata = (MetaData[])Utility.GetDeserialized(typeof(MetaData[]), componentlist.MetaData);
 
             int index = 1;
 
-            var properties = Property.SelectAllByTemplate(request.DocumentTypeID);
+            var properties = await Property.SelectAllByTemplateAsync(request.DocumentTypeID);
 
             bool reload = false;
             // go through all metadata properties and check if a related property is present
@@ -62,9 +63,14 @@ namespace Sushi.Mediakiwi.Controllers
                             MaxValueLength = Utility.ConvertToIntNullable(meta.MaxValueLength),
                             IsMandatory = meta.Mandatory.Equals("1"),
                             SortOrder = index,
-                            TemplateID = req["item"]
+                            TemplateID = request.DocumentTypeID,
+                            IsSharedField = meta.IsSharedField
                         };
-                        property.Save();
+                        await property.SaveAsync();
+
+                        // Set shared FIeld
+                        await SaveSharedFieldAsync(property, meta.IsSharedField);
+
                         reload = true;
                     }
 
@@ -72,16 +78,17 @@ namespace Sushi.Mediakiwi.Controllers
                     if (!property.SortOrder.Equals(index))
                     {
                         property.SortOrder = index;
-                        property.Save();
+                        await property.SaveAsync();
                         reload = true;
                     }
                     index++;
                 }
             }
+
             // reload properties if it changed.
             if (reload)
             {
-                properties = Property.SelectAllByTemplate(req["item"]);
+                properties = await Property.SelectAllByTemplateAsync(request.DocumentTypeID);
             }
 
             foreach (var property in properties)
@@ -92,11 +99,75 @@ namespace Sushi.Mediakiwi.Controllers
                     Title = property.Title,
                     IsMandatory = property.IsMandatory,
                     TypeID = property.TypeID,
-                    SortOrder = property.SortOrder
+                    SortOrder = property.SortOrder,
+                    FieldName = property.FieldName,
                 });
             }
 
+            // [MR:29-04-2021] added for : https://supershift.atlassian.net/browse/FTD-147
+            await response.ApplySharedFieldInformationAsync();
+
             return GetResponse(response);
         }
+
+        private async Task SaveSharedFieldAsync(Property property, bool isShared)
+        {
+            // Check if there is an existing SharedField for this FieldName
+            var existingSharedField = await SharedField.FetchSingleAsync(property.FieldName);
+
+            // Field is marked As Shared field, but doesn't exist yet.
+            // This means we need to add this property as a shared Field
+            if (isShared && existingSharedField == null || existingSharedField?.ID == 0)
+            {
+                existingSharedField = new SharedField()
+                {
+                    ContentTypeID = property.TypeID,
+                    FieldName = property.FieldName
+                };
+
+                // Save SharedField Entity
+                await existingSharedField.SaveAsync();
+
+                // Loop through existing properties that have the same fieldname and 
+                // and add them to the SharedFIeldProperty collection
+                foreach (var existingProp in await Property.SelectAllByFieldNameAsync(property.FieldName))
+                {
+                    // Create translations based off of the default value if we have any
+                    if (string.IsNullOrWhiteSpace(property.DefaultValue) == false)
+                    {
+                        foreach (var site in await Site.SelectAllAsync())
+                        {
+                            SharedFieldTranslation translation = new SharedFieldTranslation()
+                            {
+                                ContentTypeID = property.TypeID,
+                                EditValue = property.DefaultValue,
+                                FieldID = existingSharedField.ID,
+                                FieldName = property.FieldName,
+                                SiteID = site.ID,
+                                Value = property.DefaultValue
+                            };
+
+                            await translation.SaveAsync();
+                        }
+                    }
+                }
+            }
+
+            // Field is NOT marked As Shared field, but is present as such
+            // This means we need to delete everything connected to this shared FIeld
+            if (isShared && existingSharedField?.ID > 0)
+            {
+                // Delete all translations
+                var sharedFieldTranslations = await SharedFieldTranslation.FetchAllForFieldAsync(existingSharedField.ID);
+                foreach (var sharedFieldTranslation in sharedFieldTranslations)
+                {
+                    await sharedFieldTranslation.DeleteAsync();
+                }
+
+                // Delete sharedfield
+                await existingSharedField.DeleteAsync();
+            }
+        }
+
     }
 }

@@ -75,19 +75,25 @@ namespace Sushi.Mediakiwi.Data
                 case (int)ContentType.DocumentSelect:
                 case (int)ContentType.Binary_Document:
                     {
-                        int valueID = Utility.ConvertToInt(_value, 0);
-                        if (valueID > 0)
+                        if (string.IsNullOrWhiteSpace(_value) == false)
                         {
-                            returnValue = Document.SelectOne(valueID).RemoteLocation;
+                            int valueID = Utility.ConvertToInt(_value, 0);
+                            if (valueID > 0)
+                            {
+                                returnValue = Document.SelectOne(valueID).RemoteLocation;
+                            }
                         }
                     }
                     break;
                 case (int)ContentType.Binary_Image:
                     {
-                        int valueID = Utility.ConvertToInt(_value, 0);
-                        if (valueID > 0)
+                        if (string.IsNullOrWhiteSpace(_value) == false)
                         {
-                            returnValue = Image.SelectOne(valueID).RemoteLocation;
+                            int valueID = Utility.ConvertToInt(_value, 0);
+                            if (valueID > 0)
+                            {
+                                returnValue = Image.SelectOne(valueID).RemoteLocation;
+                            }
                         }
                     }
                     break;
@@ -114,19 +120,25 @@ namespace Sushi.Mediakiwi.Data
                     break;
                 case (int)ContentType.FolderSelect:
                     {
-                        int valueID = Utility.ConvertToInt(_value, 0);
-                        if (valueID > 0)
+                        if (string.IsNullOrWhiteSpace(_value) == false)
                         {
-                            returnValue = Folder.SelectOne(valueID).CompletePath;
+                            int valueID = Utility.ConvertToInt(_value, 0);
+                            if (valueID > 0)
+                            {
+                                returnValue = Folder.SelectOne(valueID).CompletePath;
+                            }
                         }
                     }
                     break;
                 case (int)ContentType.Hyperlink:
                     {
-                        int valueID = Utility.ConvertToInt(_value, 0);
-                        if (valueID > 0)
+                        if (string.IsNullOrWhiteSpace(_value) == false)
                         {
-                            returnValue = Link.SelectOne(valueID).GetHrefAsync().ConfigureAwait(false).GetAwaiter().GetResult();
+                            int valueID = Utility.ConvertToInt(_value, 0);
+                            if (valueID > 0)
+                            {
+                                returnValue = Link.SelectOne(valueID).GetHrefAsync().ConfigureAwait(false).GetAwaiter().GetResult();
+                            }
                         }
                     }
                     break;
@@ -137,10 +149,13 @@ namespace Sushi.Mediakiwi.Data
                     break;
                 case (int)ContentType.PageSelect:
                     {
-                        int valueID = Utility.ConvertToInt(_value, 0);
-                        if (valueID > 0)
+                        if (string.IsNullOrWhiteSpace(_value) == false)
                         {
-                            returnValue = Page.SelectOne(valueID).InternalPath;
+                            int valueID = Utility.ConvertToInt(_value, 0);
+                            if (valueID > 0)
+                            {
+                                returnValue = Page.SelectOne(valueID).InternalPath;
+                            }
                         }
                     }
                     break;
@@ -166,7 +181,6 @@ namespace Sushi.Mediakiwi.Data
             }
 
             return returnValue;
-
         }
 
         public static ICollection<SharedFieldTranslation> FetchAll()

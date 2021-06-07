@@ -53,6 +53,7 @@ namespace Sushi.Mediakiwi
                 DatabaseConfiguration.SetDefaultConnectionString(Common.DatabaseConnectionString);
 
                 ControllerRegister.AddRoute("api/documentype/getfields", new DocumentTypeController(), true);
+                ControllerRegister.AddRoute("api/documentype/checksharedfield", new CheckSharedFieldController(), true);
             }
         }
 

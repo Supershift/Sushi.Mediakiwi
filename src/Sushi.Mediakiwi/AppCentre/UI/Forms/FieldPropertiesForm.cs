@@ -20,6 +20,7 @@ namespace Sushi.Mediakiwi.AppCentre.UI.Forms
         public ListItemCollection TypeOptions { get; set; }
         public ListItemCollection ListOptions { get; set; }
 
+        
         public FieldPropertiesForm(WimComponentListRoot wim, Property implement)
         {
             ListOptions = new ListItemCollection();
@@ -48,8 +49,28 @@ namespace Sushi.Mediakiwi.AppCentre.UI.Forms
 
             bool isSublist = (implement.TypeID.Equals((int)ContentType.SubListSelect));
 
+            // Check if we're dealing with a shared field
+            if (string.IsNullOrWhiteSpace(implement.FieldName) == false)
+            {
+                // Retrieve the shared field (if any)
+                var _sharedField = SharedField.FetchSingle(implement.FieldName);
+                if (_sharedField?.ID > 0)
+                {
+                    implement.IsSharedField = true;
+
+                    // Retrieve the translated values for this shared Field (if any)
+                    var _sharedFieldValues = SharedFieldTranslation.FetchAllForField(_sharedField.ID);
+                    var sharedFieldInstance = _sharedFieldValues.FirstOrDefault();
+                    if (sharedFieldInstance?.ID > 0)
+                    {
+                        SharedValue = sharedFieldInstance.Value;
+                    }
+                }
+            }
+
 
             Load(implement);
+
             _culture = wim.CurrentApplicationUser.LanguageCulture;
 
             Map(x => x.Section).Section("Additional settings");
@@ -67,8 +88,11 @@ namespace Sushi.Mediakiwi.AppCentre.UI.Forms
             Map(x => x.SortOrder).TextField("SortOrder").Expression(OutputExpression.FullWidth).Hide();
             Map(x => x.InteractiveHelp).TextArea("Help", 512, false).Expression(OutputExpression.FullWidth);
             Map(x => x.FieldName).TextField("Field", 50, false).Expression(OutputExpression.FullWidth).ReadOnly();
-
+            Map(x => x.IsSharedField).Checkbox("Is shared field", true).Expression(OutputExpression.Left).Hide(isSublist);
+            Map(x => x.SharedValue, this).TextField("Shared value").Expression(OutputExpression.Right).Hide(isSublist).ReadOnly();
         }
+
+        public string SharedValue { get; set; }
 
         public string Translate(string nl, string en)
         {

@@ -10,7 +10,8 @@ namespace Sushi.Mediakiwi.Controllers.Data
         public string Title { get; set; }
         public int TypeID { get; set; }
         public bool IsMandatory { get; set; }
-
+        public bool IsSharedField { get; set; }
+        public string FieldName { get; set; }
         /// <summary>
         /// Zero based order
         /// </summary>

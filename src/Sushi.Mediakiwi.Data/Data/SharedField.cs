@@ -181,7 +181,7 @@ namespace Sushi.Mediakiwi.Data
             connector.Delete(this);
         }
 
-        public async Task DeleteAsnc()
+        public async Task DeleteAsync()
         {
             var connector = new Connector<SharedField>();
             await connector.DeleteAsync(this).ConfigureAwait(false);

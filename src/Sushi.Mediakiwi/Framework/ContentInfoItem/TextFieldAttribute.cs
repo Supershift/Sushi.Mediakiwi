@@ -34,7 +34,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
         public TextFieldAttribute(string title, int maxlength)
             : this(title, maxlength, false) { }
 
-       
+
         /// <summary>
         /// Possible return types: System.String, System.Int32, System.Int32[nullable], System.Decimal, System.Decimal[nullable], System.Guid
         /// </summary>
@@ -87,7 +87,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
         public TextFieldAttribute(string title, int maxlength, bool mandatory, bool autoPostback, string interactiveHelp, string mustMatchRegex)
             : this(title, maxlength, mandatory, autoPostback, interactiveHelp, mustMatchRegex, InputType.Text) { }
 
-  
+
 
         /// <summary>
         /// Possible return types: System.String, System.Int32, System.Int32[nullable], System.Decimal, System.Decimal[nullable], System.Guid
@@ -154,8 +154,10 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
         public Regex MustMatch
         {
             set { m_MustMatch = value; }
-            get {
-                return m_MustMatch; }
+            get
+            {
+                return m_MustMatch;
+            }
         }
 
         /// <summary>
@@ -255,15 +257,13 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                 }
                 else if (Property.PropertyType == typeof(decimal))
                 {
-                    if (candidate != null)
+                    if (candidate != null && Console.CurrentListInstance.wim.CurrentCulture.NumberFormat.CurrencyDecimalSeparator == ",")
                     {
-                        if (Console.CurrentListInstance.wim.CurrentCulture.NumberFormat.CurrencyDecimalSeparator == ",")
-                        {
-                            candidate = candidate.ToString()
-                               .Replace(".", ",")
-                               .Replace(",", ".");
-                        }
+                        candidate = candidate.ToString()
+                           .Replace(".", ",")
+                           .Replace(",", ".");
                     }
+                    
 
                     decimal candidate2 = Data.Utility.ConvertToDecimal(candidate);
                     if (TextType == InputType.Money) candidate = Data.Utility.ConvertToDecimalString(candidate2);
@@ -272,15 +272,13 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                 }
                 else if (Property.PropertyType == typeof(double))
                 {
-                    if (candidate != null)
+                    if (candidate != null && Console.CurrentListInstance.wim.CurrentCulture.NumberFormat.CurrencyDecimalSeparator == ",")
                     {
-                        if (Console.CurrentListInstance.wim.CurrentCulture.NumberFormat.CurrencyDecimalSeparator == ",")
-                        {
-                            candidate = candidate.ToString()
-                               .Replace(".", ",")
-                               .Replace(",", ".");
-                        }
+                        candidate = candidate.ToString()
+                           .Replace(".", ",")
+                           .Replace(",", ".");
                     }
+                    
 
                     double candidate2 = Data.Utility.ConvertToDouble(candidate);
                     Property.SetValue(SenderInstance, candidate2, null);
@@ -288,7 +286,9 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                 else if (Property.PropertyType == typeof(decimal?))
                 {
                     if (candidate == null || candidate.ToString() == string.Empty)
+                    {
                         Property.SetValue(SenderInstance, null, null);
+                    }
                     else
                     {
                         if (Console.CurrentListInstance.wim.CurrentCulture.NumberFormat.CurrencyDecimalSeparator == ",")
@@ -325,7 +325,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                     InhertitedOutputText = string.IsNullOrEmpty(InhertitedOutputText) ? null : WebUtility.HtmlEncode(this.InhertitedOutputText);
                 }
             }
-          
+
         }
 
         public bool AutoPostBack
@@ -376,27 +376,28 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                 PostInputHtml = $"<label>{PostInputHtml}</label>";
             }
 
-            string className = string.Empty;
+            bool isEnabled = true;
 
             if (isMoneyMode || isEditMode || this.Console.CurrentListInstance.wim.IsEditMode)
             {
-                bool isEnabled = true;
                 if (!isEditMode || isMoneyMode)
                     isEnabled = false;
-         
+
                 isEnabled = this.IsEnabled(isEnabled);
 
                 #region Element creation
+
+                // [MR:03-06-2021] Apply shared field clickable icon.
+                var sharedInfoApply = ApplySharedFieldInformation(isEnabled, outputValue);
+                isEnabled = sharedInfoApply.isEnabled;
+                outputValue = sharedInfoApply.outputValue;
+
                 StringBuilder element = new StringBuilder();
 
-                className = ClassName;
                 string cellClassName = "";
                 string styleTag = "";
                 int breakpoint = 10;
 
-                if (!string.IsNullOrEmpty(className))
-                    className = string.Format(" class=\"{0}\"", className.Trim());
-                
                 if (!string.IsNullOrEmpty(cellClassName))
                     cellClassName = string.Format(" class=\"{0}\"", cellClassName.Trim());
 
@@ -405,7 +406,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                 if ((TextType == InputType.Money || TextType == InputType.Numeric) && !isEnabled) styleTag += "color:#005770;";
 
                 if (TextType == InputType.Money || TextType == InputType.Numeric
-                    || (Property != null && 
+                    || (Property != null &&
                         (Property.PropertyType == typeof(decimal?)
                         || Property.PropertyType == typeof(decimal)
                         || Property.PropertyType == typeof(int)
@@ -434,7 +435,9 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                     , PostInputHtml // 11
                     , string.IsNullOrWhiteSpace(this.InteractiveHelp) ? null : $" placeholder=\"{Data.Utility.CleanFormatting(this.InteractiveHelp)}\""
                     );
+
                 #endregion Element creation
+
 
                 if (IsCloaked)
                 {
@@ -463,12 +466,31 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                         }
 
                         if (Expression == OutputExpression.FullWidth)
-                            build.AppendFormat("\n\t\t\t\t\t\t\t<th class=\"full\"><label for=\"{0}\">{1}</label></th>", this.ID, this.TitleLabel);
+                        {
+                            if (string.IsNullOrWhiteSpace(EditSharedFieldLink) == false)
+                            {
+                                build.Append($"<th class=\"full\"><label for=\"{ID}\">{EditSharedFieldLink.Replace("[LABEL]", this.TitleLabel)}</label></th>");
+                            }
+                            else
+                            {
+                                build.Append($"<th class=\"full\"><label for=\"{ID}\">{TitleLabel}</label></th>");
+                            }
+                        }
                         else
-                            build.AppendFormat("\n\t\t\t\t\t\t\t<th class=\"half\"><label for=\"{0}\">{1}</label></th>", this.ID, this.TitleLabel);
+                        {
+                            if (string.IsNullOrWhiteSpace(EditSharedFieldLink) == false)
+                            {
+                                build.Append($"<th class=\"half\"><label for=\"{ID}\">{EditSharedFieldLink.Replace("[LABEL]", this.TitleLabel)}</label></th>");
+                            }
+                            else 
+                            {
+                                build.Append($"<th class=\"half\"><label for=\"{ID}\">{TitleLabel}</label></th>");
+                            }
+                        }
 
                         //if (ShowInheritedData)
                         //    build.AppendFormat("\t\t\t\t\t\t\t<th class=\"local\"><label>{0}:</label></th>\t\t\t\t\t\t</tr>\t\t\t\t\t\t<tr>\t\t\t\t\t\t\t<td><div class=\"description\">{1}</div></td>\n", this.ID, this.TitleLabel);
+
 
                         build.AppendFormat("\n\t\t\t\t\t\t\t<td{0}{1}>{2}"
                             , (Expression == OutputExpression.FullWidth && Console.HasDoubleCols) ? " colspan=\"3\"" : null
@@ -483,6 +505,13 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                                     : (OverrideTableGeneration ? "halfer" : "half")
                                 );
 
+                    // Add Shared Icon (if any)
+                    if (string.IsNullOrWhiteSpace(SharedIcon) == false)
+                    {
+                        build.Append(SharedIcon);
+                    }
+
+                    // Add element 
                     build.Append(element.ToString());
 
 
@@ -554,9 +583,5 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
             return true;
         }
 
-        #region IContentInfo Members
-        #endregion
-
-
-    }
+     }
 }
