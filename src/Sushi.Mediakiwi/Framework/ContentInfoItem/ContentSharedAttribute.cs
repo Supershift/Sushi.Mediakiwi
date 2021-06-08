@@ -629,7 +629,11 @@ namespace Sushi.Mediakiwi.Framework
             get
             {
                 if (!string.IsNullOrEmpty(Console.Form(SelectedKey)))
-                    return Console.Form(SelectedKey).ToString().Replace("T", string.Empty);
+                {
+                    string value = Console.Form(SelectedKey).ToString();
+                    //value = value.Replace("T", string.Empty)
+                    return value;
+                }
                 return null;
             }
         }
