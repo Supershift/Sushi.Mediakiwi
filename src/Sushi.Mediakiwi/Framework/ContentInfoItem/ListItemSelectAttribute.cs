@@ -82,16 +82,16 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
         /// <param name="isEditMode">if set to <c>true</c> [is edit mode].</param>
         public void SetCandidate(Field field, bool isEditMode)
         {
-            if (true)//Console.CurrentApplicationUser.ShowNewDesign2)
-            {
-                _ReplacementAttribute = new Choice_DropdownAttribute(this.Title, this.Collection)
-                {
-                };
-                Data.Utility.ReflectProperty(this, _ReplacementAttribute);
-                _ReplacementAttribute.Console = this.Console;
-                _ReplacementAttribute.SetCandidate(field, isEditMode);
-                return;
-            }
+
+            _ReplacementAttribute = new Choice_DropdownAttribute(Title, Collection);
+            Utility.ReflectProperty(this, _ReplacementAttribute);
+            _ReplacementAttribute.Console = Console;
+            _ReplacementAttribute.m_ListItemCollection = m_ListItemCollection;
+            _ReplacementAttribute.SetCandidate(field, isEditMode);
+            
+
+            return;
+            /*
 
             if (Property != null && Property.PropertyType == typeof(Data.CustomData))
                 SetContentContainer(field);
@@ -107,10 +107,10 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                     {
                         m_ListItemCollection.Add(new ListItem(option.Name, option.Value));
                     }
-                    m_ListItemCollection = GetCollection(this.CollectionProperty, Property.Name, Console.CurrentListInstance, SenderSponsorInstance);
+                    m_ListItemCollection = GetCollection(CollectionProperty, Property.Name, Console.CurrentListInstance, SenderSponsorInstance);
                 }
                 else
-                    m_ListItemCollection = GetCollection(this.CollectionProperty, Property.Name, SenderSponsorInstance, SenderInstance);
+                    m_ListItemCollection = GetCollection(CollectionProperty, Property.Name, SenderSponsorInstance, SenderInstance);
             }
 
             if (IsInitialLoad || !isEditMode)
@@ -157,7 +157,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
             }
             else
             {
-                string candidateList = Console.Form(this.ID);
+                string candidateList = Console.Form(ID);
                 if (!string.IsNullOrEmpty(candidateList))
                 {
                     string[] candidates = candidateList.Split('\n');
@@ -238,11 +238,12 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                     }
                 }
             }
+            */
         }
 
         string[] m_Candidate;
 
-        Sushi.Mediakiwi.UI.ListItemCollection m_CollectionSelected;
+        ListItemCollection m_CollectionSelected;
 
         /// <summary>
         /// Writes the candidate.
@@ -253,12 +254,12 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
         /// <returns></returns>
         public Field WriteCandidate(WimControlBuilder build, bool isEditMode, bool isRequired, bool isCloaked)
         {
-            if (true)//Console.CurrentApplicationUser.ShowNewDesign2)
-                return _ReplacementAttribute.WriteCandidate(build, isEditMode, isRequired, isCloaked);
+            return _ReplacementAttribute.WriteCandidate(build, isEditMode, isRequired, isCloaked);
 
-            this.SetWriteEnvironment();
-            this.IsCloaked = isCloaked;
-            this.Mandatory = isRequired;
+            /*
+            SetWriteEnvironment();
+            IsCloaked = isCloaked;
+            Mandatory = isRequired;
             if (OverrideEditMode) isEditMode = false;
             if (isEditMode)
             {
@@ -269,7 +270,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                         options1 += string.Format("\n\t\t<option value=\"{0}\">{1}</option>", li.Value, li.Text);
                 }
                 string options2 = "";
-                this.OutputText = "";
+                OutputText = "";
                 if (m_CollectionSelected != null && m_CollectionSelected.Count > 0)
                 {
                     foreach (var li in m_CollectionSelected)
@@ -277,7 +278,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                         if (string.IsNullOrEmpty(li.Text)) continue;
 
                         options2 += string.Format("\n\t\t<option value=\"{0}\">{1}</option>", li.Value, li.Text);
-                        this.OutputText += string.Concat(li.Value, "|", li.Text, "\n");
+                        OutputText += string.Concat(li.Value, "|", li.Text, "\n");
                     }
                 }
 
@@ -305,11 +306,11 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
 </tr>
 "
                     , titleTag // 0
-                    , this.ID // 1
-                    , this.InteractiveHelp // 2
-                    , this.OutputText // 3
+                    , ID // 1
+                    , InteractiveHelp // 2
+                    , OutputText // 3
                     , IsValid(isRequired) ? string.Empty : " error" // 4
-                    , this.Console.WimRepository // 5
+                    , Console.WimRepository // 5
                     , options1 // 6
                     , options2 // 7
                     , CustomErrorText // 8
@@ -341,9 +342,10 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                     candidate += "\n</ul></div>";
                 }
 
-                build.Append(GetSimpleTextElement(this.Title, this.Mandatory, candidate, this.InteractiveHelp));
+                build.Append(GetSimpleTextElement(candidate));
             }
             return ReadCandidate(Data.Utility.ConvertToCsvString(m_Candidate));
+            */
         }
 
         /// <summary>
@@ -352,7 +354,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
         /// <returns></returns>
              public override bool IsValid(bool isRequired)
         {
-            this.Mandatory = isRequired;
+            Mandatory = isRequired;
                 if (Console.CurrentListInstance.wim.IsSaveMode)
                 {
                     //  Custom error validation

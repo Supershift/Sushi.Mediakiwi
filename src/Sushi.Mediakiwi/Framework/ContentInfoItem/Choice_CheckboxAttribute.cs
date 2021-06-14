@@ -53,11 +53,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
         /// <summary>
         /// 
         /// </summary>
-        public bool AutoPostBack
-        {
-            set { m_AutoPostBack = value; }
-            get { return m_AutoPostBack; }
-        }
+        public bool AutoPostBack { get; set; }
 
         /// <summary>
         /// Sets the candidate.
@@ -75,8 +71,10 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
         /// <param name="isEditMode">if set to <c>true</c> [is edit mode].</param>
         public void SetCandidate(Field field, bool isEditMode)
         {
-            if (Property != null && Property.PropertyType == typeof(Data.CustomData))
+            if (Property != null && Property.PropertyType == typeof(CustomData))
+            {
                 SetContentContainer(field);
+            }
 
             m_Candidate = false;
             if (IsInitialLoaded || !isEditMode)
@@ -91,7 +89,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                 else
                 {
 
-                    if (Property.PropertyType == typeof(Data.CustomData))
+                    if (Property.PropertyType == typeof(CustomData))
                     {
                         m_Candidate = m_ContentContainer[field.Property].Value == "1";
                     }
@@ -101,40 +99,46 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                         if (value != null)
                         {
                             if (Property.PropertyType == typeof(bool))
+                            {
                                 m_Candidate = Boolean.Parse(value.ToString());
+                            }
                             if (Property.PropertyType == typeof(string))
+                            {
                                 m_Candidate = value.ToString() == "1";
+                            }
                         }
                     }
                 }
             }
             else
             {
-                m_Candidate = Console.Form(this.ID) == "1" || Console.Form(this.ID) == "yes" || Console.Form(this.ID) == "true" || Console.Form(this.ID) == "True";
+                m_Candidate = Console.Form(ID) == "1" || Console.Form(ID) == "yes" || Console.Form(ID) == "true" || Console.Form(ID) == "True";
             }
 
             if (!IsBluePrint && Property != null && Property.CanWrite)
             {
-                if (Property.PropertyType == typeof(Data.CustomData))
+                if (Property.PropertyType == typeof(CustomData))
+                {
                     ApplyContentContainer(field, m_Candidate ? "1" : "0");
+                }
                 else if (Property.PropertyType == typeof(bool))
+                {
                     Property.SetValue(SenderInstance, m_Candidate, null);
+                }
                 else if (Property.PropertyType == typeof(string))
+                {
                     Property.SetValue(SenderInstance, m_Candidate ? "1" : "0", null);
+                }
             }
-
 
             OutputText = m_Candidate
                 ? Labels.ResourceManager.GetString("yes", new CultureInfo(Console.CurrentApplicationUser.LanguageCulture))
                 : Labels.ResourceManager.GetString("no", new CultureInfo(Console.CurrentApplicationUser.LanguageCulture));
 
             //  Inherited content section
-            if (ShowInheritedData)
+            if (ShowInheritedData && field != null && !string.IsNullOrEmpty(field.InheritedValue))
             {
-                if (field != null && !string.IsNullOrEmpty(field.InheritedValue))
-                {
-                    InhertitedOutputText = (field.InheritedValue == "1").ToString();
-                }
+                InhertitedOutputText = (field.InheritedValue == "1").ToString();
             }
         }
 
@@ -149,19 +153,45 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
         /// <returns></returns>
         public Field WriteCandidate(WimControlBuilder build, bool isEditMode, bool isRequired, bool isCloaked)
         {
-            this.SetWriteEnvironment();
+            SetWriteEnvironment();
 
-            this.IsCloaked = isCloaked;
-            this.Mandatory = isRequired;
-            if (OverrideEditMode) isEditMode = false;
+            IsCloaked = isCloaked;
+            Mandatory = isRequired;
+            if (OverrideEditMode)
+            {
+                isEditMode = false;
+            }
 
-            bool isEnabled = true;
+            bool isEnabled = IsEnabled();
+
+            // [MR:03-06-2021] Apply shared field clickable icon.
+            var sharedInfoApply = ApplySharedFieldInformation(isEnabled, OutputText);
+
+            // If we have a document assigned, overwrite the current one
+            if (sharedInfoApply.isShared)
+            {
+                // Enable readonly when shared
+                isEnabled = sharedInfoApply.isEnabled;
+
+                // When Currently not cloaked, do so if its a shared field
+                if (IsCloaked == false && sharedInfoApply.isHidden)
+                {
+                    IsCloaked = sharedInfoApply.isHidden;
+                }
+
+                if (string.IsNullOrWhiteSpace(sharedInfoApply.outputValue) == false)
+                {
+                    OutputText = sharedInfoApply.outputValue;
+                }
+            }
+
             if (!isEditMode)
                 isEnabled = false;
 
-            if (isEditMode || this.Console.CurrentListInstance.wim.IsEditMode)
+            if ((isEditMode || Console.CurrentListInstance.wim.IsEditMode) && isEnabled)
             {
                 #region Element creation
+
                 StringBuilder element = new StringBuilder();
                 string titleTag = string.Concat(Title, Mandatory ? "<em>*</em>" : "");
 
@@ -169,77 +199,90 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                 // this didn't happen, so you would end up having 'false' values all the time
                 if (isEnabled == false && m_Candidate)
                 {
-                    element.AppendFormat("<input type=\"hidden\" name=\"{0}\" id=\"{0}\" value=\"1\" />", this.ID);
+                    element.AppendFormat("<input type=\"hidden\" name=\"{0}\" id=\"{0}\" value=\"1\" />", ID);
                 }
-                element.AppendFormat("\n\t\t\t\t\t\t\t\t\t<input type=\"checkbox\" class=\"radio{1}\" value=\"1\" name=\"{0}\" id=\"{0}\"{2}{3}/>{4}"
-                        , this.ID
-                        , this.InputPostBackClassName()//AutoPostBack ? string.Concat(" ", PostBackValue) : string.Empty
+                element.AppendFormat("<input type=\"checkbox\" class=\"radio{1}\" value=\"1\" name=\"{0}\" id=\"{0}\"{2}{3}/>{4}"
+                        , ID
+                        , InputPostBackClassName()//AutoPostBack ? string.Concat(" ", PostBackValue) : string.Empty
                         , m_Candidate ? " checked=\"checked\"" : string.Empty
                         , isEnabled ? null : " disabled=\"disabled\""
-                        , string.IsNullOrEmpty(this.InputPostText) ? null : this.InputPostText
+                        , string.IsNullOrEmpty(InputPostText) ? null : InputPostText
                         );
 
                 #endregion Element creation
 
                 if (IsCloaked)
+                {
                     build.AppendCloaked(element.ToString());
+                }
                 else
                 {
                     #region Wrapper
+
                     if (ShowInheritedData)
                     {
-                        this.ApplyTranslation(build);
+                        ApplyTranslation(build);
                     }
                     else
                     {
                         if ((Console.ExpressionPrevious == OutputExpression.Left && Expression == OutputExpression.FullWidth) || (Console.ExpressionPrevious == OutputExpression.Left && Expression == OutputExpression.Left))
-                            build.Append("\t\t\t\t\t\t\t<th><label>&nbsp;</label></th><td>&nbsp;</td></tr>");
+                        {
+                            build.Append("<th><label>&nbsp;</label></th><td>&nbsp;</td></tr>");
+                        }
 
                         if ((Console.ExpressionPrevious == OutputExpression.FullWidth && Expression == OutputExpression.Right) || (Console.ExpressionPrevious == OutputExpression.Right && Expression == OutputExpression.Right))
-                            build.Append("\t\t\t\t\t\t<tr><th><label>&nbsp;</label></th>\n\t\t\t\t\t\t\t<td>&nbsp;</td>");
+                        {
+                            build.Append("<tr><th><label>&nbsp;</label></th><td>&nbsp;</td>");
+                        }
 
                         if (Expression == OutputExpression.FullWidth || Expression == OutputExpression.Left)
-                            build.Append("\t\t\t\t\t\t<tr>");
+                        {
+                            build.Append("<tr>");
+                        }
                     }
 
-                    build.AppendFormat("\n\t\t\t\t\t\t\t<th><label for=\"{0}\">{1}</label></th>", this.ID, this.TitleLabel);
+                    build.AppendFormat("<th><label for=\"{0}\">{1}</label></th>", ID, TitleLabel);
 
                     //if (ShowInheritedData)
-                    //    build.AppendFormat("\t\t\t\t\t\t\t<th class=\"local\"><label>{0}:</label></th>\t\t\t\t\t\t</tr>\t\t\t\t\t\t<tr>\t\t\t\t\t\t\t<td><div class=\"description\">{1}</div></td>\n", this.ID, this.TitleLabel);
+                    //    build.AppendFormat("\t\t\t\t\t\t\t<th class=\"local\"><label>{0}:</label></th>\t\t\t\t\t\t</tr>\t\t\t\t\t\t<tr>\t\t\t\t\t\t\t<td><div class=\"description\">{1}</div></td>\n", ID, TitleLabel);
 
-                    build.AppendFormat("\n\t\t\t\t\t\t\t<td{0}{1}>{2}"
+                    build.AppendFormat("<td{0}{1}>{2}"
                         , (Expression == OutputExpression.FullWidth && Console.HasDoubleCols) ? " colspan=\"3\"" : null
-                        , this.InputCellClassName(this.IsValid(isRequired))
+                        , InputCellClassName(IsValid(isRequired))
                         , CustomErrorText
                         );
 
-                    build.AppendFormat("\n\t\t\t\t\t\t\t\t<div class=\"{0}\">", (Expression == OutputExpression.FullWidth) ? this.Class_Wide : "half");
+                    build.AppendFormat("<div class=\"{0}\">", (Expression == OutputExpression.FullWidth) ? Class_Wide : "half");
 
                     build.Append(element.ToString());
 
-                    build.Append("\n\t\t\t\t\t\t\t\t</div>");
-                    build.Append("\n\t\t\t\t\t\t\t</td>");
+                    build.Append("</div></td>");
 
                     if (Expression == OutputExpression.FullWidth || Expression == OutputExpression.Right)
-                        build.Append("\n\t\t\t\t\t\t</tr>\n");
+                    {
+                        build.Append("</tr>");
+                    }
 
                     #endregion Wrapper
                 }
             }
             else
-                build.Append(GetSimpleTextElement(this.Title, this.Mandatory, this.OutputText, this.InteractiveHelp, true));
+            {
+                build.Append(GetSimpleTextElement(OutputText, true));
+            }
 
             build.ApiResponse.Fields.Add(new Api.MediakiwiField()
             {
                 Event = AutoPostBack ? Api.MediakiwiJSEvent.change : Api.MediakiwiJSEvent.none,
-                Title = MandatoryWrap(this.Title),
-                Value = (this.m_Candidate ? true : false),
-                Expression = this.Expression,
-                PropertyName = this.ID,
+                Title = MandatoryWrap(Title),
+                Value = (m_Candidate ? true : false),
+                Expression = Expression,
+                PropertyName = ID,
                 PropertyType = (Property == null) ? typeof(bool).FullName : Property.PropertyType.FullName,
                 VueType = Api.MediakiwiFormVueType.wimChoiceCheckbox,
                 InputPost = m_InputPostText,
-                ReadOnly = this.IsReadOnly
+                ReadOnly = IsReadOnly,
+                ContentTypeID = ContentTypeSelection
             });
 
             return ReadCandidate(m_Candidate ? "1" : "0");
@@ -251,17 +294,12 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
         /// <returns></returns>
         public override bool IsValid(bool isRequired)
         {
-            this.Mandatory = isRequired;
-                if (Console.CurrentListInstance.wim.IsSaveMode)
-                {
-                    //  Custom error validation
-                    if (!base.IsValid(isRequired))
-                        return false;
-                }
-                return true;
-            
+            Mandatory = isRequired;
+            if (Console.CurrentListInstance.wim.IsSaveMode && !base.IsValid(isRequired))
+            {
+                return false;
+            }
+            return true;
         }
-
-
     }
 }

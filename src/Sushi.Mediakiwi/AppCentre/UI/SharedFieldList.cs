@@ -90,6 +90,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         {
             Implement = await SharedFieldTranslation.FetchSingleForFieldAndSiteAsync(arg.SelectedKey, wim.CurrentSite.ID).ConfigureAwait(false);
             SharedField field = await SharedField.FetchSingleAsync(arg.SelectedKey);
+            var componentTemplateID = Utility.ConvertToInt(Request.Query["ctemplateid"], 0);
 
             if (Implement == null || Implement.ID == 0)
             {
@@ -102,7 +103,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                 };
             }
 
-            FormMap = new UI.Forms.SharedFieldFormMap(wim, Implement);
+            FormMap = new UI.Forms.SharedFieldFormMap(wim, field, Implement, componentTemplateID);
             FormMaps.Add(FormMap);
         }
 
@@ -149,8 +150,8 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                     }
                 }
                 
-                field.List_EditValue = fieldData.GetEditValue(50);
-                field.List_PublishedValue = fieldData.GetPublishedValue(50);
+                field.List_EditValue = fieldData.GetPublishedValue(true, 50);
+                field.List_PublishedValue = fieldData.GetPublishedValue(true, 50);
             }
 
             // Apply search filter across field + fielddata

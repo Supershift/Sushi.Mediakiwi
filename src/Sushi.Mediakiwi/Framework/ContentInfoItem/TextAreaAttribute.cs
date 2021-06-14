@@ -55,8 +55,9 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
             Mandatory = mandatory;
             InteractiveHelp = interactiveHelp;
             if (mustMatchRegex != null)
+            {
                 MustMatch = new Regex(mustMatchRegex);
-
+            }
         }
 
         /// <summary>
@@ -71,15 +72,10 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
         /// </summary>
         public bool IsXml { get; set; }
 
-        private Regex m_MustMatch;
         /// <summary>
         /// 
         /// </summary>
-        public Regex MustMatch
-        {
-            set { m_MustMatch = value; }
-            get { return m_MustMatch; }
-        }
+        public Regex MustMatch { get; set; }
 
         private bool _allowHtmlTags;
         /// <summary>
@@ -90,7 +86,9 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
             get
             {
                 if (IsSourceCode)
+                {
                     return true;
+                }
                 return _allowHtmlTags;
             }
             set
@@ -115,9 +113,11 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
         /// </summary>
         public virtual void SetCandidate(Field field, bool isEditMode)
         {
-            this.SetMultiFieldTitleHTML("Text", "icon-align-left");
-            if (Property != null && Property.PropertyType == typeof(Data.CustomData))
+            SetMultiFieldTitleHTML("Text", "icon-align-left");
+            if (Property != null && Property.PropertyType == typeof(CustomData))
+            {
                 SetContentContainer(field);
+            }
 
             string candidate = null;
 
@@ -127,11 +127,13 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                 if (IsBluePrint)
                 {
                     if (field != null)
+                    {
                         candidate = field.Value;
+                    }
                 }
                 else
                 {
-                    if (Property.PropertyType == typeof(Data.CustomData))
+                    if (Property.PropertyType == typeof(CustomData))
                     {
                         candidate = m_ContentContainer[field.Property].Value;
                     }
@@ -139,13 +141,15 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                     {
                         object value = Property.GetValue(SenderInstance, null);
                         if (value != null)
+                        {
                             candidate = value.ToString();
+                        }
                     }
                 }
             }
             else
             {
-                candidate = Console.Form(this.ID);
+                candidate = Console.Form(ID);
                 isCandidateUserInput = true;
                 if (IsSourceCode && IsXml)
                 {
@@ -159,14 +163,19 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                 }
             }
 
-            if (candidate != null) candidate = candidate.Trim();
+            if (candidate != null)
+            {
+                candidate = candidate.Trim();
+            }
 
             // Possible return types: System.String
 
             if (!IsBluePrint && Property != null && Property.CanWrite)
             {
-                if (Property.PropertyType == typeof(Data.CustomData))
+                if (Property.PropertyType == typeof(CustomData))
+                {
                     ApplyContentContainer(field, candidate);
+                }
                 else if (Property.PropertyType == typeof(string))
                 {
                     //if candidate is user input it needs to cleaned
@@ -177,9 +186,12 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                             //encode html
                             candidateString = WebUtility.HtmlEncode(candidateString);
                         }
+
                         //enforce max length of string
-                        if (this.MaxValueLength > 0)
-                            candidateString = Data.Utility.ConvertToFixedLengthText(candidateString, this.MaxValueLength);
+                        if (MaxValueLength > 0)
+                        {
+                            candidateString = Utility.ConvertToFixedLengthText(candidateString, MaxValueLength);
+                        }
 
                         candidate = candidateString;
                     }
@@ -188,15 +200,12 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                 }
             }
             OutputText = candidate;
-            
+
             //  Inherited content section
-            if (ShowInheritedData)
+            if (ShowInheritedData && field != null && !string.IsNullOrEmpty(field.InheritedValue))
             {
-                if (field != null && !string.IsNullOrEmpty(field.InheritedValue))
-                {
-                    InhertitedOutputText = field.InheritedValue;
-                    InhertitedOutputText = Data.Utility.CleanLineFeed(WebUtility.HtmlEncode(InhertitedOutputText), true);
-                }
+                InhertitedOutputText = field.InheritedValue;
+                InhertitedOutputText = Utility.CleanLineFeed(WebUtility.HtmlEncode(InhertitedOutputText), true);
             }
         }
 
@@ -209,34 +218,62 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
         /// <returns></returns>
         public Field WriteCandidate(WimControlBuilder build, bool isEditMode, bool isRequired, bool isCloaked)
         {
-            this.SetWriteEnvironment();
-            this.IsCloaked = isCloaked;
-            this.Mandatory = isRequired;
-            if (OverrideEditMode) isEditMode = false;
+            SetWriteEnvironment();
+            IsCloaked = isCloaked;
+            Mandatory = isRequired;
+            if (OverrideEditMode)
+            {
+                isEditMode = false;
+            }
 
             //get the value of the property
-            string outputValue = this.OutputText;
+            string outputValue = OutputText;
             if (Property?.PropertyType == typeof(String) && CommonConfiguration.HTML_ENCODE_TEXTAREA_INPUT && !AllowHtmlTags)
             {
                 //in this case the user input was HTML encoded. it needs to be decoded again to get back to its orignal value
                 outputValue = WebUtility.HtmlDecode(outputValue);
             }
 
-            if (isEditMode || (this.IsSourceCode))
+            var isEnabled = IsEnabled();
+
+            // [MR:03-06-2021] Apply shared field clickable icon.
+            var sharedInfoApply = ApplySharedFieldInformation(isEnabled, outputValue);
+
+            // If we have a document assigned, overwrite the current one
+            if (sharedInfoApply.isShared)
+            {
+                // Enable readonly when shared
+                isEnabled = sharedInfoApply.isEnabled;
+
+                // When Currently not cloaked, do so if its a shared field
+                if (IsCloaked == false && sharedInfoApply.isHidden)
+                {
+                    IsCloaked = sharedInfoApply.isHidden;
+                }
+
+                outputValue = sharedInfoApply.outputValue;
+            }
+
+            if (isEnabled && (isEditMode || IsSourceCode))
             {
                 #region Element creation
+
                 StringBuilder element = new StringBuilder();
                 //  [MM:22.12.14] If this textarea acts as an code field, the breaks should be left alone
                 string cleanData = outputValue;
-                if (!this.IsSourceCode)
-                    cleanData = Data.Utility.CleanLineFeed(this.OutputText, false);
+                if (!IsSourceCode)
+                {
+                    cleanData = Utility.CleanLineFeed(outputValue, false);
+                }
 
-                element.AppendFormat("\n\t\t\t\t\t\t\t\t\t<textarea cols=\"32\" rows=\"4\"{2} name=\"{0}\" id=\"{0}\"{3}>{1}</textarea>"
-                  , this.ID
+                element.AppendFormat("<textarea cols=\"32\" rows=\"4\"{2} name=\"{0}\" id=\"{0}\"{3}{4}>{1}</textarea>"
+                  , ID
                   , cleanData
-                  , this.InputClassName(IsValid(isRequired), (this.IsSourceCode ? string.Concat(" SourceCode", (isEditMode ? " editable" : string.Empty)) : string.Empty))
-                  , this.IsSourceCode && string.IsNullOrEmpty(Console.Request.Query["xml"]) ? " data-done=\"1\"" : null
+                  , InputClassName(IsValid(isRequired), (IsSourceCode ? string.Concat(" SourceCode", (isEditMode ? " editable" : string.Empty)) : string.Empty))
+                  , IsSourceCode && string.IsNullOrEmpty(Console.Request.Query["xml"]) ? " data-done=\"1\"" : null
+                  , isEnabled ? null : " disabled=\"disabled\""
                   );
+
                 #endregion Element creation
 
                 if (IsCloaked)
@@ -246,12 +283,15 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                 else
                 {
                     #region Wrapper
+
                     string titleTag = string.Concat(Title, Mandatory ? "<em>*</em>" : "");
-                    if (this.IsSourceCode)
+                    if (IsSourceCode)
                     {
-                        this.Console.CurrentListInstance.wim.Page.Head.EnableColorCodingLibrary = true;
-                        if (string.IsNullOrEmpty(this.m_InteractiveHelp))
-                            this.m_InteractiveHelp = "Press 'ESC' for fullscreen (and also to reset)";
+                        Console.CurrentListInstance.wim.Page.Head.EnableColorCodingLibrary = true;
+                        if (string.IsNullOrEmpty(m_InteractiveHelp))
+                        {
+                            m_InteractiveHelp = "Press 'ESC' for fullscreen (and also to reset)";
+                        }
                     }
 
                     //  If set all table cell/row creation will be ignored
@@ -259,76 +299,99 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                     {
                         if (ShowInheritedData)
                         {
-                            this.ApplyTranslation(build);
+                            ApplyTranslation(build);
                         }
                         else
                         {
                             if ((Console.ExpressionPrevious == OutputExpression.Left && Expression == OutputExpression.FullWidth) || (Console.ExpressionPrevious == OutputExpression.Left && Expression == OutputExpression.Left))
-                                build.Append("\t\t\t\t\t\t\t<th><label>&nbsp;</label></th><td>&nbsp;</td></tr>");
+                            {
+                                build.Append("<th><label>&nbsp;</label></th><td>&nbsp;</td></tr>");
+                            }
 
                             if ((Console.ExpressionPrevious == OutputExpression.FullWidth && Expression == OutputExpression.Right) || (Console.ExpressionPrevious == OutputExpression.Right && Expression == OutputExpression.Right))
-                                build.Append("\t\t\t\t\t\t<tr><th><label>&nbsp;</label></th>\n\t\t\t\t\t\t\t<td>&nbsp;</td>");
+                            {
+                                build.Append("<tr><th><label>&nbsp;</label></th><td>&nbsp;</td>");
+                            }
 
                             if (Expression == OutputExpression.FullWidth || Expression == OutputExpression.Left)
-                                build.Append("\t\t\t\t\t\t<tr>");
+                            {
+                                build.Append("<tr>");
+                            }
                         }
 
-                        build.AppendFormat("\n\t\t\t\t\t\t\t<th><label for=\"{0}\">{1}</label></th>", this.ID, this.TitleLabel);
+                        if (string.IsNullOrWhiteSpace(EditSharedFieldLink) == false)
+                        {
+                            build.Append($"<th><label for=\"{ID}\">{EditSharedFieldLink.Replace("[LABEL]", TitleLabel)}</label></th>");
+                        }
+                        else
+                        {
+                            build.Append($"<th><label for=\"{ID}\">{TitleLabel}</label></th>");
+                        }
+
+                        //  build.AppendFormat("\n\t\t\t\t\t\t\t<th><label for=\"{0}\">{1}</label></th>", ID, TitleLabel);
 
                         //if (ShowInheritedData)
-                        //    build.AppendFormat("\t\t\t\t\t\t\t<th class=\"local\"><label>{0}:</label></th>\t\t\t\t\t\t</tr>\t\t\t\t\t\t<tr>\t\t\t\t\t\t\t<td><div class=\"description\">{1}</div></td>\n", this.ID, this.TitleLabel);
+                        //    build.AppendFormat("\t\t\t\t\t\t\t<th class=\"local\"><label>{0}:</label></th>\t\t\t\t\t\t</tr>\t\t\t\t\t\t<tr>\t\t\t\t\t\t\t<td><div class=\"description\">{1}</div></td>\n", ID, TitleLabel);
 
-                        build.AppendFormat("\n\t\t\t\t\t\t\t<td{0}{1}>{2}"
+                        build.AppendFormat("<td{0}{1}>{2}"
                             , (Expression == OutputExpression.FullWidth && Console.HasDoubleCols) ? " colspan=\"3\"" : null
-                            , this.InputCellClassName(this.IsValid(isRequired))
+                            , InputCellClassName(IsValid(isRequired))
                             , CustomErrorText
                             );
                     }
                     #endregion Wrapper
                 }
 
-                build.AppendFormat("\n\t\t\t\t\t\t\t\t<div class=\"{0}\">", (Expression == OutputExpression.FullWidth) ? this.Class_Wide
+                build.AppendFormat("<div class=\"{0}\">", (Expression == OutputExpression.FullWidth) ? Class_Wide
                     : (OverrideTableGeneration ? "halfer" : "half")
                 );
 
-               
+
+
+                // Add Shared Icon (if any)
+                if (string.IsNullOrWhiteSpace(SharedIcon) == false && IsCloaked == false)
+                {
+                    build.Append(SharedIcon);
+                }
 
                 build.Append(element.ToString());
 
-                build.Append("\n\t\t\t\t\t\t\t\t</div>");
+                build.Append("</div>");
 
                 //  If set all table cell/row creation will be ignored
                 if (!OverrideTableGeneration)
                 {
-                    build.Append("\n\t\t\t\t\t\t\t</td>");
+                    build.Append("</td>");
 
                     if (Expression == OutputExpression.FullWidth || Expression == OutputExpression.Right)
-                        build.Append("\n\t\t\t\t\t\t</tr>\n");
+                    {
+                        build.Append("</tr>\n");
+                    }
                 }
             }
             else
             {
                 string output = outputValue;
-                if (!string.IsNullOrEmpty(this.OutputText))
+                if (!string.IsNullOrEmpty(OutputText) && !IsSourceCode)
                 {
-                    if (!this.IsSourceCode)
-                        output = Data.Utility.CleanLineFeed(WebUtility.HtmlEncode(this.OutputText), true);
+                    output = Utility.CleanLineFeed(WebUtility.HtmlEncode(OutputText), true);
                 }
 
-                build.Append(GetSimpleTextElement(this.Title, this.Mandatory, output, this.InteractiveHelp));
+                build.Append(GetSimpleTextElement(output));
             }
 
 
             build.ApiResponse.Fields.Add(new Api.MediakiwiField()
             {
                 Event = m_AutoPostBack ? Api.MediakiwiJSEvent.change : Api.MediakiwiJSEvent.none,
-                Title = MandatoryWrap(this.Title),
-                Value = this.OutputText,
-                Expression = this.Expression,
-                PropertyName = this.ID,
+                Title = MandatoryWrap(Title),
+                Value = OutputText,
+                Expression = Expression,
+                PropertyName = ID,
                 PropertyType = (Property == null) ? typeof(string).FullName : Property.PropertyType.FullName,
                 VueType = Api.MediakiwiFormVueType.wimTextArea,
-                ReadOnly = this.IsReadOnly
+                ReadOnly = IsReadOnly,
+                ContentTypeID = ContentTypeSelection
             });
 
             return ReadCandidate(OutputText);
@@ -338,25 +401,28 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
         /// </summary>
         /// <value></value>
         /// <returns></returns>
-             public override bool IsValid(bool isRequired)
+        public override bool IsValid(bool isRequired)
         {
-            this.Mandatory = isRequired;
-                if (Console.CurrentListInstance.wim.IsSaveMode)
+            Mandatory = isRequired;
+            if (Console.CurrentListInstance.wim.IsSaveMode)
+            {
+                //  Custom error validation
+                if (!base.IsValid(isRequired))
                 {
-                    //  Custom error validation
-                    if (!base.IsValid(isRequired))
-                        return false;
-
-                    if (Mandatory && string.IsNullOrEmpty(OutputText))
-                        return false;
-                    if (this.MaxValueLength > 0 && !string.IsNullOrEmpty(OutputText) && OutputText.Length > MaxValueLength)
-                        return false;
+                    return false;
                 }
-                return true;
-            
-        }
 
-        #region IContentInfo Members
-        #endregion
+                if (Mandatory && string.IsNullOrEmpty(OutputText))
+                {
+                    return false;
+                }
+                if (MaxValueLength > 0 && !string.IsNullOrEmpty(OutputText) && OutputText.Length > MaxValueLength)
+                {
+                    return false;
+                }
+            }
+            return true;
+
+        }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Sushi.Mediakiwi.Data;
 using Sushi.Mediakiwi.Framework;
+using Sushi.Mediakiwi.UI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,91 +11,127 @@ namespace Sushi.Mediakiwi.AppCentre.UI.Forms
 {
     public class SharedFieldFormMap : FormMap<SharedFieldFormMap>
     {
-        public SharedFieldTranslation Implement { get; set; }
+        public SharedFieldTranslation ImplementTranslation { get; set; }
+        public SharedField Implement { get; set; }
+        public ComponentTemplate Template { get; set; }
+
         private System.Globalization.CultureInfo dateCulture = new System.Globalization.CultureInfo("nl-NL");
 
         #region Save - Dependent on ContentType
 
         public async Task SaveAsync(bool andPublish = false)
         {
-            switch (Implement.ContentTypeID)
+            switch (ImplementTranslation.ContentTypeID)
             {
-                case (int)ContentType.FileUpload:
-                case (int)ContentType.DocumentSelect:
-                case (int)ContentType.Binary_Image:
-                case (int)ContentType.Binary_Document:
-                case (int)ContentType.FolderSelect:
-                case (int)ContentType.Hyperlink:
-                case (int)ContentType.PageSelect:
+                case ContentType.FileUpload:
+                case ContentType.DocumentSelect:
+                case ContentType.Binary_Image:
+                case ContentType.Binary_Document:
+                case ContentType.FolderSelect:
+                case ContentType.Hyperlink:
+                case ContentType.PageSelect:
                     {
-                        Implement.EditValue = EditValueInt.ToString();
+                        ImplementTranslation.EditValue = EditValueInt.ToString();
                     }
                     break;
-                case (int)ContentType.Choice_Checkbox:
+                case ContentType.Choice_Checkbox:
                     {
-                        Implement.EditValue = EditValueBool ? "1" : "0";
+                        ImplementTranslation.EditValue = EditValueBool ? "1" : "0";
                     }
                     break;
-                case (int)ContentType.Date:
+                case ContentType.Date:
                     {
-                        Implement.EditValue = EditValueDateTime.ToString("dd-MM-yyyy");
+                        ImplementTranslation.EditValue = EditValueDateTime.ToString("dd-MM-yyyy");
                     }
                     break;
-                case (int)ContentType.DateTime:
+                case ContentType.DateTime:
                     {
-                        Implement.EditValue = EditValueDateTime.ToString("dd-MM-yyyy HH:mm:ss");
+                        ImplementTranslation.EditValue = EditValueDateTime.ToString("dd-MM-yyyy HH:mm:ss");
                     }
                     break;
-                case (int)ContentType.MultiField:
+                case ContentType.MultiField:
                     {
-                        Implement.EditValue = EditValueMulti;
+                        ImplementTranslation.EditValue = EditValueMulti;
                     }
                     break;
-                case (int)ContentType.RichText:
-                case (int)ContentType.Sourcecode:
-                case (int)ContentType.TextArea:
-                case (int)ContentType.TextField:
+                case ContentType.SubListSelect:
                     {
-                        Implement.EditValue = EditValueString;
+                        ImplementTranslation.EditValue = null;
+                        if (EditValueSubList != null)
+                        {
+                            ImplementTranslation.EditValue = EditValueSubList.Serialized;
+                        }
                     }
                     break;
-                case (int)ContentType.Undefined:
-                case (int)ContentType.TextLine:
-                case (int)ContentType.TextDate:
-                case (int)ContentType.SubListSelect:
-                case (int)ContentType.Section:
-                case (int)ContentType.MultiImageSelect:
-                case (int)ContentType.MultiAssetUpload:
-                case (int)ContentType.ListItemSelect:
-                case (int)ContentType.Choice_Dropdown:
-                case (int)ContentType.Choice_Radio:
-                case (int)ContentType.HtmlContainer:
+                case ContentType.RichText:
+                case ContentType.Sourcecode:
+                case ContentType.TextArea:
+                case ContentType.Choice_Dropdown:
+                case ContentType.ListItemSelect:
+                case ContentType.TextField:
+                    {
+                        ImplementTranslation.EditValue = EditValueString;
+                    }
+                    break;
+                case ContentType.Undefined:
+                case ContentType.TextLine:
+                case ContentType.TextDate:
+                case ContentType.Section:
+                case ContentType.MultiImageSelect:
+                case ContentType.MultiAssetUpload:
+                case ContentType.Choice_Radio:
+                case ContentType.HtmlContainer:
                     break;
             }
 
             if (andPublish)
             {
-                Implement.Value = Implement.EditValue;
+                ImplementTranslation.Value = ImplementTranslation.EditValue;
             }
 
-            await Implement.SaveAsync().ConfigureAwait(false);
+            await ImplementTranslation.SaveAsync().ConfigureAwait(false);
+
+            Implement.IsHiddenOnPage = IsHiddenOnPage;
+            await Implement.SaveAsync();
         }
 
         #endregion Save - Dependent on ContentType
 
+        private ListItemCollection m_EditValueOptions;
+
+        public ListItemCollection EditValueOptions
+        {
+            get 
+            {
+                if (m_EditValueOptions == null)
+                {
+                    m_EditValueOptions = new ListItemCollection();
+                }
+                return m_EditValueOptions; 
+            }
+        }
+
         #region Load - Dependent on ContentType
 
-        public SharedFieldFormMap(WimComponentListRoot wim, SharedFieldTranslation implement)
+        public SharedFieldFormMap(WimComponentListRoot wim, SharedField implement, SharedFieldTranslation implementTranslation, int componentTemplateId)
         {
+            ImplementTranslation = implementTranslation;
             Implement = implement;
-            FieldName = Implement.FieldName;
-            PublishedValue = "-";
-            bool canEdit = true;
-            bool canDelete = implement?.ID > 0;
-            bool canRevert = false;
-            if (string.IsNullOrWhiteSpace(implement.EditValue) == false && string.IsNullOrWhiteSpace(implement.Value) == false)
+            if (componentTemplateId > 0)
             {
-                canRevert = !(implement.EditValue.Equals(implement.Value));
+                Template = ComponentTemplate.SelectOne(componentTemplateId);
+            }
+
+            FieldName = ImplementTranslation.FieldName;
+            PublishedValue = "-";
+            IsHiddenOnPage = Implement.IsHiddenOnPage;
+
+            bool canEdit = true;
+            bool canDelete = implementTranslation?.ID > 0;
+            bool canRevert = false;
+            if (string.IsNullOrWhiteSpace(implementTranslation.EditValue) == false && string.IsNullOrWhiteSpace(implementTranslation.Value) == false)
+            {
+                canRevert = !(implementTranslation.EditValue.Equals(implementTranslation.Value));
             }
 
             if (wim.CurrentEnvironment["FORM_DATEPICKER"].ToUpperInvariant() == "EN")
@@ -103,132 +140,210 @@ namespace Sushi.Mediakiwi.AppCentre.UI.Forms
             }
 
             Map(x => x.FieldName).TextLine("Field name").Expression(OutputExpression.FullWidth);
+            Map(x => x.IsHiddenOnPage).Checkbox("Hide on page", false, "When checked, this field will not be shown on the page").Expression(OutputExpression.FullWidth);
             Map(x => x.PublishedValue).TextLine("Published Value").Expression(OutputExpression.FullWidth);
 
-            switch (Implement.ContentTypeID)
+            switch (ImplementTranslation.ContentTypeID)
             {
-                case (int)ContentType.FileUpload:
-                case (int)ContentType.DocumentSelect:
-                case (int)ContentType.Binary_Document:
+                case ContentType.FileUpload:
+                case ContentType.DocumentSelect:
+                case ContentType.Binary_Document:
                     {
-                        EditValueInt = Utility.ConvertToInt(Implement.EditValue, 0);
-                        PublishedValue = implement.GetPublishedValue();
+                        EditValueInt = Utility.ConvertToInt(ImplementTranslation.EditValue, 0);
+                        PublishedValue = implementTranslation.GetPublishedValue(true);
 
                         Map(x => x.EditValueInt).Document("Edit value", false);
                     }
                     break;
-                case (int)ContentType.Binary_Image:
+                case ContentType.Binary_Image:
                     {
-                        EditValueInt = Utility.ConvertToInt(Implement.EditValue, 0);
-                        PublishedValue = implement.GetPublishedValue();
+                        EditValueInt = Utility.ConvertToInt(ImplementTranslation.EditValue, 0);
+                        PublishedValue = implementTranslation.GetPublishedValue(true);
 
                         Map(x => x.EditValueInt).Image("Edit value", false);
                     }
                     break;
-                case (int)ContentType.Choice_Checkbox:
+                case ContentType.Choice_Checkbox:
                     {
-                        EditValueBool = (Implement.EditValue == "1");
-                        PublishedValue = implement.GetPublishedValue();
+                        EditValueBool = (ImplementTranslation.EditValue == "1");
+                        PublishedValue = implementTranslation.GetPublishedValue();
 
                         Map(x => x.EditValueBool).Checkbox("Edit value", false);
                     }
                     break;
-                case (int)ContentType.Date:
+                case ContentType.Date:
                     {
-                        if (DateTime.TryParseExact(Implement.EditValue, "dd-MM-yyyy", dateCulture, System.Globalization.DateTimeStyles.None, out DateTime resultEdit))
+                        if (DateTime.TryParseExact(ImplementTranslation.EditValue, "dd-MM-yyyy", dateCulture, System.Globalization.DateTimeStyles.None, out DateTime resultEdit))
                         {
                             EditValueDateTime = resultEdit;
                         }
 
-                        PublishedValue = implement.GetPublishedValue();
+                        PublishedValue = implementTranslation.GetPublishedValue();
                         Map(x => x.EditValueDateTime).Date("Edit value", false);
                     }
                     break;
-                case (int)ContentType.DateTime:
+                case ContentType.DateTime:
                     {
-                        if (DateTime.TryParseExact(Implement.EditValue, "dd-MM-yyyy HH:mm:ss", dateCulture, System.Globalization.DateTimeStyles.None, out DateTime resultEdit))
+                        if (DateTime.TryParseExact(ImplementTranslation.EditValue, "dd-MM-yyyy HH:mm:ss", dateCulture, System.Globalization.DateTimeStyles.None, out DateTime resultEdit))
                         {
                             EditValueDateTime = resultEdit;
                         }
 
-                        PublishedValue = implement.GetPublishedValue();
+                        PublishedValue = implementTranslation.GetPublishedValue();
                         Map(x => x.EditValueDateTime).DateTime("Edit value", false);
                     }
                     break;
-                case (int)ContentType.FolderSelect:
+                case ContentType.FolderSelect:
                     {
-                        EditValueInt = Utility.ConvertToInt(Implement.EditValue, 0);
-                        PublishedValue = implement.GetPublishedValue();
+                        EditValueInt = Utility.ConvertToInt(ImplementTranslation.EditValue, 0);
+                        PublishedValue = implementTranslation.GetPublishedValue();
 
                         Map(x => x.EditValueInt).FolderSelect("Edit value", false);
                     }
                     break;
-                case (int)ContentType.Hyperlink:
+                case ContentType.Hyperlink:
                     {
-                        EditValueInt = Utility.ConvertToInt(Implement.EditValue, 0);
-                        PublishedValue = implement.GetPublishedValue();
+                        EditValueInt = Utility.ConvertToInt(ImplementTranslation.EditValue, 0);
+                        PublishedValue = implementTranslation.GetPublishedValue();
 
                         Map(x => x.EditValueInt).Hyperlink("Edit value", false);
                     }
                     break;
-                case (int)ContentType.MultiField:
+                case ContentType.MultiField:
                     {
-                        EditValueMulti = Implement.EditValue;
-                        var mfs = MultiField.GetDeserialized(Implement.Value);
+                        EditValueMulti = ImplementTranslation.EditValue;
+                        var mfs = MultiField.GetDeserialized(ImplementTranslation.Value);
                         if (mfs != null)
                         {
                             MultiFieldParser mfp = new MultiFieldParser();
-                            PublishedValue = mfp.WriteHTML(Implement.Value, null);
+                            PublishedValue = mfp.WriteHTML(ImplementTranslation.Value, null);
                         }
 
                         Map(x => x.EditValueMulti).MultiField("Edit value");
                     }
                     break;
-                case (int)ContentType.PageSelect:
+                case ContentType.PageSelect:
                     {
-                        EditValueInt = Utility.ConvertToInt(Implement.EditValue, 0);
-                        PublishedValue = implement.GetPublishedValue();
+                        EditValueInt = Utility.ConvertToInt(ImplementTranslation.EditValue, 0);
+                        PublishedValue = implementTranslation.GetPublishedValue();
 
                         Map(x => x.EditValueInt).PageSelect("Edit value", false);
                     }
                     break;
-                case (int)ContentType.RichText:
+                case ContentType.RichText:
                     {
-                        PublishedValue = implement.GetPublishedValue();
-                        EditValueString = Implement.EditValue;
+                        PublishedValue = implementTranslation.GetPublishedValue();
+                        EditValueString = ImplementTranslation.EditValue;
                         Map(x => x.EditValueString).RichText("Edit value");
                     }
                     break;
-                case (int)ContentType.Sourcecode:
-                case (int)ContentType.TextArea:
+                case ContentType.Sourcecode: {
+                        EditValueString = ImplementTranslation.EditValue;
+                        PublishedValue = implementTranslation.GetPublishedValue();
+                        Map(x => x.EditValueString).TextArea("Edit value", null, false, "", null, true);
+                    }
+                    break;
+                case ContentType.TextArea:
                     {
-                        EditValueString = Implement.EditValue;
-                        PublishedValue = implement.GetPublishedValue();
+                        EditValueString = ImplementTranslation.EditValue;
+                        PublishedValue = implementTranslation.GetPublishedValue();
                         Map(x => x.EditValueString).TextArea("Edit value");
                     }
                     break;
-                case (int)ContentType.TextField:
+                case ContentType.TextField:
                     {
-                        EditValueString = Implement.EditValue;
-                        PublishedValue = implement.GetPublishedValue();
+                        EditValueString = ImplementTranslation.EditValue;
+                        PublishedValue = implementTranslation.GetPublishedValue();
                         Map(x => x.EditValueString).TextField("Edit value");
                     }
                     break;
-                case (int)ContentType.Undefined:
-                case (int)ContentType.TextLine:
-                case (int)ContentType.TextDate:
-                case (int)ContentType.SubListSelect:
-                case (int)ContentType.Section:
-                case (int)ContentType.MultiImageSelect:
-                case (int)ContentType.MultiAssetUpload:
-                case (int)ContentType.ListItemSelect:
-                case (int)ContentType.Choice_Dropdown:
-                case (int)ContentType.Choice_Radio:
-                case (int)ContentType.HtmlContainer:
+                
+                case ContentType.SubListSelect:
+                    {
+                        // Create an Editable sublist, based off the Edit Value
+                        if (string.IsNullOrWhiteSpace(implementTranslation.EditValue) == false)
+                        {
+                            EditValueSubList = SubList.GetDeserialized(implementTranslation.EditValue);
+                        }
+                        if (EditValueSubList == null)
+                        {
+                            EditValueSubList = new SubList();
+                        }
+
+                        // Create published value for display purposes
+                        PublishedValue = implementTranslation.GetPublishedValue();
+                
+                        // Create Edit value for display purposes
+                        EditValueString = implementTranslation.GetEditValue();
+        
+                        // Assume we cannot edit (default list view)
+                        canEdit = false;
+
+                        // If we received a template (from the page instance), we have a shot at filling the options
+                        if (Template?.ID > 0)
+                        {
+                            var thisProperty = Property.SelectAllByTemplate(Template.ID).FirstOrDefault(x => x.FieldName == implement.FieldName);
+                            if (string.IsNullOrWhiteSpace(thisProperty.ListCollection) == false && Utility.IsGuid(thisProperty.ListCollection, out Guid listGuid))
+                            {
+                                Map(x => x.EditValueSubList).SubListSelect("Edit value", listGuid, thisProperty.IsMandatory, false, false, thisProperty.InteractiveHelp);
+                                canEdit = true;
+                            }
+                        }
+
+                        // No editing is possible
+                        if (canEdit == false)
+                        {
+                            Map(x => x.EditValueString).TextLine("Edit value").ReadOnly();
+                        }
+                    }
+                    break;
+                case ContentType.ListItemSelect:
+                case ContentType.Choice_Dropdown:
+                    {
+                        EditValueString = ImplementTranslation.EditValue;
+                        PublishedValue = implementTranslation.GetPublishedValue();
+                        canEdit = false;
+
+                        // If we received a template, we have a shot at filling the options
+                        if (Template?.ID > 0) 
+                        {
+                            var thisProperty = Property.SelectAllByTemplate(Template.ID).FirstOrDefault(x => x.FieldName == implement.FieldName);
+                            if (thisProperty?.ID > 0)
+                            {
+                                foreach (var opt in thisProperty.Options)
+                                {
+                                    EditValueOptions.Add(new ListItem()
+                                    {
+                                        Text = opt.Name,
+                                        Value = opt.Value,
+                                        Selected = (implementTranslation?.ID > 0 && opt.Value == implementTranslation.EditValue)
+                                    });
+                                }
+
+                                Map(x => x.EditValueString).Dropdown("Edit value", nameof(EditValueOptions), thisProperty.IsMandatory, false);
+                                canEdit = true;
+                            }
+                        }
+
+                        if (canEdit == false)
+                        {
+                            Map(x => x.EditValueString).TextLine("Edit value").ReadOnly();
+                        }
+                    }
+                    break;
+                case ContentType.Undefined:
+                case ContentType.TextLine:
+                case ContentType.TextDate:
+                
+                case ContentType.Section:
+                case ContentType.MultiImageSelect:
+                case ContentType.MultiAssetUpload:
+                case ContentType.Choice_Radio:
+                case ContentType.HtmlContainer:
                     {
                         Map(x => x.EditValueString).TextLine("Edit value").ReadOnly();
-                        PublishedValue = implement.GetPublishedValue();
-                        canEdit = false;
+                        PublishedValue = implementTranslation.GetPublishedValue();
+                        canEdit = false; 
                     }
                     break;
             }
@@ -237,8 +352,6 @@ namespace Sushi.Mediakiwi.AppCentre.UI.Forms
 
             wim.SetPropertyVisibility(nameof(Data.Implementation.SharedFieldList.Button_Revert), canRevert);
             wim.SetPropertyVisibility(nameof(Data.Implementation.SharedFieldList.Button_Delete), canDelete);
-            wim.SetPropertyVisibility(nameof(Data.Implementation.SharedFieldList.Button_Save), canEdit);
-            wim.SetPropertyVisibility(nameof(Data.Implementation.SharedFieldList.Button_SavePublish), canEdit);
 
             if (canEdit == false)
             {
@@ -259,7 +372,7 @@ namespace Sushi.Mediakiwi.AppCentre.UI.Forms
             var pageList = ComponentList.SelectOne(typeof(Data.Implementation.Browsing));
             var componentTemplateList = ComponentList.SelectOne(typeof(Data.Implementation.ComponentTemplate));
 
-            var matchingProps = Property.SelectAllByFieldName(Implement.FieldName);
+            var matchingProps = Property.SelectAllByFieldName(ImplementTranslation.FieldName);
             if (matchingProps?.Count > 0)
             {
                 foreach (var prop in matchingProps.Where(x => x.TemplateID > 0))
@@ -377,8 +490,10 @@ namespace Sushi.Mediakiwi.AppCentre.UI.Forms
         #endregion Load Pages and Components
 
         public string FieldName { get; set; }
+        public bool IsHiddenOnPage { get; set; }
         public string PublishedValue { get; set; }
 
+        public SubList EditValueSubList { get; set; }
         public string EditValueString { get; set; }
         public int EditValueInt { get; set; }
         public bool EditValueBool { get; set; }

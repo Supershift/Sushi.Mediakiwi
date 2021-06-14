@@ -15,7 +15,7 @@
     "IIS Express": {
       "commandName": "IISExpress",
       "launchBrowser": true,
-      "launchUrl": "https://localhost:44367/mediakiwi/dt-definition?item=2&group=8&groupitem=2&list=56",
+      "launchUrl": "https://localhost:44367/mediakiwi?page=1",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }

@@ -7,19 +7,19 @@ using System.Text;
 namespace Sushi.Mediakiwi.Framework.ContentInfoItem
 {
     /// <summary>
-    /// Possible return types: System.Int32, System.Int32[nullable], System.String, Sushi.Mediakiwi.Data.Image
+    /// Possible return types: System.Int32, System.Int32[nullable], System.String, Image
     /// </summary>
     public class Binary_ImageAttribute : ContentSharedAttribute, IContentInfo
     {
         /// <summary>
-        /// Possible return types: System.Int32, System.Int32[nullable], System.String, Sushi.Mediakiwi.Data.Image
+        /// Possible return types: System.Int32, System.Int32[nullable], System.String, Image
         /// </summary>
         /// <param name="title"></param>
         public Binary_ImageAttribute(string title)
             : this(title, false) { }
 
         /// <summary>
-        /// Possible return types: System.Int32, System.Int32[nullable], System.String, Sushi.Mediakiwi.Data.Image
+        /// Possible return types: System.Int32, System.Int32[nullable], System.String, Image
         /// </summary>
         /// <param name="title"></param>
         /// <param name="mandatory"></param>
@@ -28,7 +28,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
 
 
         /// <summary>
-        /// Possible return types: System.Int32, System.Int32[nullable], System.String, Sushi.Mediakiwi.Data.Image
+        /// Possible return types: System.Int32, System.Int32[nullable], System.String, Image
         /// </summary>
         /// <param name="title"></param>
         /// <param name="mandatory"></param>
@@ -37,7 +37,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
             : this(title, mandatory, null, interactiveHelp) { }
 
         /// <summary>
-        /// Possible return types: System.Int32, System.Int32[nullable], System.String, Sushi.Mediakiwi.Data.Image
+        /// Possible return types: System.Int32, System.Int32[nullable], System.String, Image
         /// </summary>
         /// <param name="title">The title.</param>
         /// <param name="mandatory">if set to <c>true</c> [mandatory].</param>
@@ -104,32 +104,35 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
         /// <param name="isEditMode">if set to <c>true</c> [is edit mode].</param>
         public void SetCandidate(Field field, bool isEditMode)
         {
-            this.SetMultiFieldTitleHTML(Labels.ResourceManager.GetString("input_image", new CultureInfo(Console.CurrentApplicationUser.LanguageCulture)), "icon-photo");
+            SetMultiFieldTitleHTML(Labels.ResourceManager.GetString("input_image", new CultureInfo(Console.CurrentApplicationUser.LanguageCulture)), "icon-photo");
 
-            if (Property != null && Property.PropertyType == typeof(Data.CustomData))
-                SetContentContainer(field);
-            Data.Gallery gallery = null;
-            if (!string.IsNullOrEmpty(this.GalleryProperty))
+            if (Property != null && Property.PropertyType == typeof(CustomData))
             {
-                var galleryProperty = this.SenderInstance.GetType().GetProperty(this.GalleryProperty);
-                var value = galleryProperty.GetValue(this.SenderInstance, null);
+                SetContentContainer(field);
+            }
 
-                if (value is Sushi.Mediakiwi.Data.Gallery)
+            Gallery gallery = null;
+            if (!string.IsNullOrEmpty(GalleryProperty))
+            {
+                var galleryProperty = SenderInstance.GetType().GetProperty(GalleryProperty);
+                var value = galleryProperty.GetValue(SenderInstance, null);
+
+                if (value is Gallery)
                 {
-                    gallery = (Sushi.Mediakiwi.Data.Gallery)value;
+                    gallery = (Gallery)value;
                 }
             }
 
             string galleryMap = gallery == null ? null : gallery.CompletePath;
 
-            m_Candidate = new Sushi.Mediakiwi.Data.Image();
+            m_Candidate = new Image();
             if (IsInitialLoad || !isEditMode)
             {
                 if (IsBluePrint)
                 {
                     if (field != null)
                     {
-                        int candidate = Data.Utility.ConvertToInt(field.Value);
+                        int candidate = Utility.ConvertToInt(field.Value);
 
                         if (candidate > 0)
                         {
@@ -140,34 +143,33 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                 }
                 else
                 {
-                    if (Property.PropertyType == typeof(Data.CustomData))
+                    if (Property.PropertyType == typeof(CustomData))
                     {
-                        int candidate = Data.Utility.ConvertToInt(m_ContentContainer[field.Property].Value);
+                        int candidate = Utility.ConvertToInt(m_ContentContainer[field.Property].Value);
                         if (candidate > 0)
-                            m_Candidate = Data.Image.SelectOne(candidate);
+                        {
+                            m_Candidate = Image.SelectOne(candidate);
+                        }
                     }
-                    else if (Property.PropertyType == typeof(Data.Image))
-                        m_Candidate = Property.GetValue(SenderInstance, null) as Data.Image;
+                    else if (Property.PropertyType == typeof(Image))
+                    {
+                        m_Candidate = Property.GetValue(SenderInstance, null) as Image;
+                    }
                     else if (Property.PropertyType == typeof(int?))
                     {
                         int? tmp = Property.GetValue(SenderInstance, null) as int?;
                         if (tmp.HasValue)
                         {
-                            // CB 01-09-2014; dit lost het probleem op dat assets uit een andere database niet getoond werden; Zoals artikelbeheer ETL ImagesPageImagesList.cs
-                            //if (gallery != null && gallery.DatabaseMappingPortal != null)
-                            //{
-                            //    m_Candidate = Data.Image.SelectOneByPortal(tmp.Value, gallery.DatabaseMappingPortal.Name);
-                            //}
-                            //else
-                            m_Candidate = Data.Image.SelectOne(tmp.Value);
-
+                            m_Candidate = Image.SelectOne(tmp.Value);
                         }
                     }
                     else
                     {
-                        int candidate = Data.Utility.ConvertToInt(Property.GetValue(SenderInstance, null));
+                        int candidate = Utility.ConvertToInt(Property.GetValue(SenderInstance, null));
                         if (candidate > 0)
-                            m_Candidate = Data.Image.SelectOne(candidate);
+                        {
+                            m_Candidate = Image.SelectOne(candidate);
+                        }
                     }
                 }
             }
@@ -176,38 +178,52 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                 var candidate = SelectedID;
                 if (candidate.HasValue)
                 {
-                    m_Candidate = Data.Image.SelectOne(candidate.Value);
+                    m_Candidate = Image.SelectOne(candidate.Value);
                 }
 
             }
 
             if (!IsBluePrint && Property != null && Property.CanWrite)
             {
-                if (Property.PropertyType == typeof(Data.CustomData))
+                if (Property.PropertyType == typeof(CustomData))
+                {
                     ApplyContentContainer(field, m_Candidate.ID.ToString());
+                }
                 else if (Property.PropertyType == typeof(int))
+                {
                     Property.SetValue(SenderInstance, m_Candidate.ID, null);
+                }
                 else if (Property.PropertyType == typeof(int?))
                 {
                     if (m_Candidate != null && m_Candidate.ID != 0)
+                    {
                         Property.SetValue(SenderInstance, m_Candidate.ID, null);
+                    }
                     else
+                    {
                         Property.SetValue(SenderInstance, null, null);
+                    }
                 }
                 else
+                {
                     Property.SetValue(SenderInstance, m_Candidate, null);
+                }
             }
             else if (!IsBluePrint && field != null)
             {
                 field.Value = (m_Candidate == null || m_Candidate.ID == 0) ? null : m_Candidate.ID.ToString();
             }
 
-            if (m_Candidate.ID > 0)
+            if (m_Candidate?.ID > 0)
             {
                 if (m_Candidate.IsImage)
-                    OutputText = string.Format("{0} <span>({1}px / {2}px)</span>", m_Candidate.Title, m_Candidate.Width, m_Candidate.Height);
+                {
+                    OutputText = $"{m_Candidate.Title} <span>({m_Candidate.Width}px / {m_Candidate.Height}px)</span>";
+                }
                 else
-                    OutputText = string.Format("{0} <span>({1} KB)</span>", m_Candidate.Title, m_Candidate.Size > 0 ? (m_Candidate.Size / 1024) : 0);
+                {
+                    OutputText = $"{m_Candidate.Title} <span>({(m_Candidate.Size > 0 ? (m_Candidate.Size / 1024) : 0)} KB)</span>";
+                }
             }
 
             //  Inherited content section
@@ -216,18 +232,18 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                 InhertitedOutputText = "None";
                 if (field != null && !string.IsNullOrEmpty(field.InheritedValue))
                 {
-                    m_InheritedCandidate = Sushi.Mediakiwi.Data.Image.SelectOne(Data.Utility.ConvertToInt(field.InheritedValue));
+                    m_InheritedCandidate = Image.SelectOne(Utility.ConvertToInt(field.InheritedValue));
                     if (m_InheritedCandidate != null && m_InheritedCandidate.ID > 0)
                     {
-                        string inheritedImage = string.Format("<img class=\"preview\" alt=\"Preview\" src=\"{0}/thumbnail/{1}.jpg\"/> ", this.Console.WimRepository.Replace("/wim", String.Empty), m_InheritedCandidate.ID);
-                        InhertitedOutputText = string.Format("{2}{0} ({1} KB)</a>", m_InheritedCandidate.Title, m_InheritedCandidate.Size > 0 ? (m_InheritedCandidate.Size / 1024) : 0, inheritedImage);
+                        string inheritedImage = $"<img class=\"preview\" alt=\"Preview\" src=\"{Console.WimRepository.Replace("/wim", String.Empty, StringComparison.InvariantCultureIgnoreCase)}/thumbnail/{m_InheritedCandidate.ID}.jpg\"/>";
+                        InhertitedOutputText = $"{inheritedImage}{m_InheritedCandidate.Title} ({(m_InheritedCandidate.Size > 0 ? (m_InheritedCandidate.Size / 1024) : 0)} KB)</a>";
                     }
                 }
             }
         }
 
-        Sushi.Mediakiwi.Data.Image m_Candidate;
-        Sushi.Mediakiwi.Data.Image m_InheritedCandidate;
+        Image m_Candidate;
+        Image m_InheritedCandidate;
 
         /// <summary>
         /// Writes the candidate.
@@ -238,29 +254,56 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
         /// <returns></returns>
         public Field WriteCandidate(WimControlBuilder build, bool isEditMode, bool isRequired, bool isCloaked)
         {
-            this.SetWriteEnvironment();
+            SetWriteEnvironment();
 
-            this.IsCloaked = isCloaked;
-            this.Mandatory = isRequired;
-            if (OverrideEditMode) isEditMode = false;
-
-            if (isEditMode && this.IsEnabled())
+            IsCloaked = isCloaked;
+            Mandatory = isRequired;
+            if (OverrideEditMode)
             {
-                Data.Gallery gallery = null;
+                isEditMode = false;
+            }
 
-                if (!string.IsNullOrEmpty(this.Collection))
+            bool isEnabled = IsEnabled();
+
+            // [MR:03-06-2021] Apply shared field clickable icon.
+            var sharedInfoApply = ApplySharedFieldInformation(isEnabled, OutputText);
+
+            // If we have a document assigned, overwrite the current one
+            if (sharedInfoApply.isShared)
+            {
+                // Enable readonly when shared
+                isEnabled = sharedInfoApply.isEnabled;
+
+                // When Currently not cloaked, do so if its a shared field
+                if (IsCloaked == false && sharedInfoApply.isHidden)
                 {
-                    gallery = Data.Gallery.Identify(this.Collection);
+                    IsCloaked = sharedInfoApply.isHidden;
+                }
+
+                if (Utility.ConvertToInt(sharedInfoApply.outputValue, 0) > 0)
+                {
+                    m_Candidate = Image.SelectOne(Utility.ConvertToInt(sharedInfoApply.outputValue, 0));
+                }
+            }
+
+            if (isEditMode && isEnabled)
+            {
+                Gallery gallery = null;
+
+                if (!string.IsNullOrEmpty(Collection))
+                {
+                    gallery = Gallery.Identify(Collection);
                     if (gallery == null || gallery.ID == 0)
                     {
-                        if (this.Collection.StartsWith("/"))
+                        if (Collection.StartsWith("/"))
                         {
-                            var split = this.Collection.Split('/');
-                            var root = Sushi.Mediakiwi.Data.Gallery.SelectOneRoot();
-                            gallery = new Data.Gallery() {
+                            var split = Collection.Split('/');
+                            var root = Gallery.SelectOneRoot();
+                            gallery = new Data.Gallery()
+                            {
                                 BaseGalleryID = root.ID,
                                 Name = split[split.Length - 1],
-                                CompletePath = this.Collection,
+                                CompletePath = Collection,
                                 IsActive = true,
                                 IsFolder = true
                             };
@@ -268,8 +311,8 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                         }
                         else
                         {
-                            OutputText = string.Format("<font color=red>Gallery not found '{0}'.</font>", this.Collection);
-                            build.Append(GetSimpleTextElement(this.Title, this.Mandatory, OutputText, this.InteractiveHelp));
+                            OutputText = $"<font color=red>Gallery not found '{Collection}'.</font>";
+                            build.Append(GetSimpleTextElement(OutputText));
                             return ReadCandidate(m_Candidate.ID);
                         }
                     }
@@ -277,14 +320,14 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
 
                 if (gallery == null || gallery.ID == 0)
                 {
-                    gallery = Data.Gallery.SelectOneRoot();
+                    gallery = Gallery.SelectOneRoot();
                 }
 
                 string addition = null;
-                if (!string.IsNullOrEmpty(this.GalleryProperty))
+                if (!string.IsNullOrEmpty(GalleryProperty))
                 {
-                    var galleryProperty = this.SenderInstance.GetType().GetProperty(this.GalleryProperty);
-                    var value = galleryProperty.GetValue(this.SenderInstance, null);
+                    var galleryProperty = SenderInstance.GetType().GetProperty(GalleryProperty);
+                    var value = galleryProperty.GetValue(SenderInstance, null);
 
                     if (value is Gallery)
                     {
@@ -298,7 +341,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                         : GalleryPropertyUrl
                     ;
                 string initialview = string.Concat("gallery=", galleryUrlParam,
-                    this.SavedAssetTypeID > 0
+                    SavedAssetTypeID > 0
                         ? string.Concat("&sat=", SavedAssetTypeID)
                         : null
                 );
@@ -308,8 +351,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                 string url = null;
                 string lst = null;
 
-                Data.IComponentList documentList = Data.ComponentList.SelectOne(
-                    new Guid("f6252c60-cff3-4c8b-922e-f1d1299cca43"));
+                IComponentList documentList = ComponentList.SelectOne(new Guid("f6252c60-cff3-4c8b-922e-f1d1299cca43"));
                 lst = documentList.ID.ToString();
 
                 if (CanOnlyAdd || m_Candidate.ID == 0)
@@ -325,25 +367,32 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                 if (m_Candidate != null)
                     key = m_Candidate.ID;
 
-                ApplyItemSelect(build, true, true, titleTag, this.ID, lst, url, false, isRequired, false, false, (CanOnlyAdd ? LayerSize.Normal : LayerSize.Normal), (CanOnlyAdd ? false : true), 450
-                    , null, new NameItemValue() { Name = this.ID, ID = key, Value = OutputText }
+                ApplyItemSelect(build, true, true, titleTag, ID, lst, url, false, isRequired, false, false, (CanOnlyAdd ? LayerSize.Normal : LayerSize.Normal), (CanOnlyAdd ? false : true), 450
+                    , null, new NameItemValue() { Name = ID, ID = key, Value = OutputText }
                     );
             }
             else
             {
-                string image = null;
                 OutputText = "None";
                 if (m_Candidate != null && m_Candidate.ID != 0)
                 {
-                    //image = string.Format("<img class=\"preview\" alt=\"Preview\" src=\"{0}\"/> ", m_Candidate.ThumbnailPath);
-                    image = m_Candidate.FileName;
-                    OutputText = string.Format("{2}{0} ({1} KB)</a>", m_Candidate.Title, m_Candidate.Size > 0 ? (m_Candidate.Size / 1024) : 0, image);
+                    if (m_Candidate.FileName.Equals(m_Candidate.Title, StringComparison.InvariantCultureIgnoreCase) == true)
+                    {
+                        OutputText = $"{m_Candidate.FileName} ({(m_Candidate.Size > 0 ? (m_Candidate.Size / 1024) : 0)} KB)</a>";
+                    }
+                    else
+                    {
+                        OutputText = $"{m_Candidate.FileName} ({m_Candidate.Title}) ({(m_Candidate.Size > 0 ? (m_Candidate.Size / 1024) : 0)} KB)</a>";
+                    }
                 }
-                build.Append(GetSimpleTextElement(this.Title, this.Mandatory, OutputText, this.InteractiveHelp));
+                build.Append(GetSimpleTextElement(OutputText));
             }
 
             if (m_Candidate == null)
+            {
                 return ReadCandidate(0);
+            }
+
             return ReadCandidate(m_Candidate.ID);
         }
 
@@ -353,15 +402,19 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
         /// <returns></returns>
         public override bool IsValid(bool isRequired)
         {
-            this.Mandatory = isRequired;
+            Mandatory = isRequired;
             if (Console.CurrentListInstance.wim.IsSaveMode)
             {
                 //  Custom error validation
                 if (!base.IsValid(isRequired))
+                {
                     return false;
+                }
 
                 if (Mandatory)
+                {
                     return !(m_Candidate == null || m_Candidate.ID == 0);
+                }
             }
             return true;
         }

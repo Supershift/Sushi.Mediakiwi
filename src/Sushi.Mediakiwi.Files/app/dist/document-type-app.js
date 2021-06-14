@@ -2063,7 +2063,7 @@ __webpack_require__.r(__webpack_exports__);
 
             FormMap_Title: "Title",
             FormMap_IsMandatory: "IsMandatory",
-            FormMap_TypeID: "TypeID",
+            FormMap_TypeID: "ContentTypeID",
 
             fieldStatus: {
                 default: 0,
@@ -2098,7 +2098,7 @@ __webpack_require__.r(__webpack_exports__);
             return this.fieldsCollection.map(r => {
                 return {
                     id: r.id,
-                    typeID: r.typeID,
+                    contentTypeID: r.contentTypeID,
                     title: r.title,
                     isMandatory: r.isMandatory,
                     sortOrder: r.sortOrder,
@@ -2259,7 +2259,7 @@ __webpack_require__.r(__webpack_exports__);
             this.fieldsCollection.push({
                 id: this.getNewID(),
                 title: '',
-                typeID: '',
+                contentTypeID: '',
                 isMandatory: false,
                 fields: [],
                 notifications: [],
@@ -2329,7 +2329,7 @@ __webpack_require__.r(__webpack_exports__);
             request.FormFields["SortOrder"] = field.sortOrder;
 
             request.FormFields["Title"] = field.title;
-            request.FormFields["TypeID"] = parseInt(field.typeID);
+            request.FormFields["ContentTypeID"] = parseInt(field.contentTypeID);
             request.FormFields["IsMandatory"] = field.isMandatory;
 
             request.FormFields["FieldName"] = this.camelCase(request.FormFields["Title"]);
@@ -2539,7 +2539,7 @@ __webpack_require__.r(__webpack_exports__);
             request.FormFields["SortOrder"] = field.sortOrder;
 
             request.FormFields["Title"] = field.title;
-            request.FormFields["TypeID"] = parseInt(field.typeID);
+            request.FormFields["ContentTypeID"] = parseInt(field.contentTypeID);
             request.FormFields["IsMandatory"] = field.isMandatory;
 
             request.FormFields["FieldName"] = this.camelCase(request.FormFields["Title"]);
@@ -2592,7 +2592,7 @@ __webpack_require__.r(__webpack_exports__);
                 return {
                     id: r.id,
                     title: r.title,
-                    typeID: r.typeID,
+                    contentTypeID: r.contentTypeID,
                     isMandatory: r.isMandatory,
                     sortOrder: r.sortOrder,
                     className: r.className,
@@ -2610,7 +2610,7 @@ __webpack_require__.r(__webpack_exports__);
                 this.fieldsCollection.push({
                     id: -1,
                     title: '',
-                    typeID: 0,
+                    contentTypeID: 0,
                     isMandatory: false,
                     sortOrder: -1,
                     className: '',
@@ -26268,8 +26268,8 @@ var render = function() {
                                         {
                                           name: "model",
                                           rawName: "v-model",
-                                          value: field.typeID,
-                                          expression: "field.typeID"
+                                          value: field.contentTypeID,
+                                          expression: "field.contentTypeID"
                                         }
                                       ],
                                       staticClass: "selectX",
@@ -26301,7 +26301,7 @@ var render = function() {
                                               })
                                             _vm.$set(
                                               field,
-                                              "typeID",
+                                              "contentTypeID",
                                               $event.target.multiple
                                                 ? $$selectedVal
                                                 : $$selectedVal[0]

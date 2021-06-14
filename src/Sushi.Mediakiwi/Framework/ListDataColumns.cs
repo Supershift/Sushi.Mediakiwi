@@ -129,7 +129,7 @@ namespace Sushi.Mediakiwi.Framework
                     , (Sushi.Mediakiwi.Framework.ListDataTotalType)psc.TotalType
                     , null
                     , psc.ColumnWidth.GetValueOrDefault()
-                    , (psc.Property.TypeID == (int)ContentType.Date || psc.Property.TypeID == (int)ContentType.DateTime)
+                    , (psc.Property.ContentTypeID == ContentType.Date || psc.Property.ContentTypeID == ContentType.DateTime)
                         ? typeof(DateTime)
                         : null
                     );

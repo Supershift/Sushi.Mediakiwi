@@ -23,12 +23,14 @@ namespace Sushi.Mediakiwi
         private IHostingEnvironment _env;
         private readonly RequestDelegate _next;
         private readonly IConfiguration _configuration;
+        private readonly IServiceProvider _serviceProvider;
 
-        public Portal(RequestDelegate next, IHostingEnvironment env, IConfiguration configuration)
+        public Portal(RequestDelegate next, IHostingEnvironment env, IConfiguration configuration, IServiceProvider serviceProvider)
         {
             _env = env;
             _next = next;
             _configuration = configuration;
+            _serviceProvider = serviceProvider;
         }
 
         internal static ConcurrentDictionary<string, ICacheManager> Caches;
@@ -71,7 +73,7 @@ namespace Sushi.Mediakiwi
 
             Configure(context);
 
-            if (!await Monitor.StartControllerAsync(context, _env, _configuration))
+            if (!await Monitor.StartControllerAsync(context, _env, _configuration, _serviceProvider ))
             {
 
                 if (

@@ -79,7 +79,7 @@ namespace Sushi.Mediakiwi.Framework.Api
 
                 if (_fieldName != null)
                 {
-                    var _sharedField = await Data.SharedField.FetchSingleAsync(_fieldName.Value.ToString().ToUpperInvariant());
+                    var _sharedField = await Data.SharedField.FetchSingleAsync(_fieldName.Value.ToString().ToUpperInvariant(), _fieldName.ContentTypeID);
                     if (_sharedField?.ID > 0)
                     {
                         IsSharedField = true;

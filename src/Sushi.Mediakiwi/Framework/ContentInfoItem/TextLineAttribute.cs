@@ -176,10 +176,11 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                     Expression = this.Expression,
                     PropertyName = this.ID,
                     PropertyType = (Property == null) ? typeof(string).FullName : Property.PropertyType.FullName,
-                    VueType = Api.MediakiwiFormVueType.wimTextline
+                    VueType = Api.MediakiwiFormVueType.wimTextline,
+                    ContentTypeID=ContentTypeSelection
                 });
 
-                build.Append(GetSimpleTextElement(this.Title, this.Mandatory, this.OutputText, this.InteractiveHelp));
+                build.Append(GetSimpleTextElement(OutputText));
             }
             return null;
         }

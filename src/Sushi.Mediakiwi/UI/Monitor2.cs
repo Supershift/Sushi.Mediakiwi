@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Sushi.Mediakiwi.Beta.GeneratedCms.Source;
@@ -28,6 +30,7 @@ namespace Sushi.Mediakiwi.UI
         private Beta.GeneratedCms.Console _Console;
         private iPresentationMonitor _PresentationMonitor;
         private iPresentationNavigation _PresentationNavigation;
+        private IServiceProvider _serviceProvider;
         Dictionary<GlobalPlaceholder, string> _Placeholders;
         Dictionary<CallbackTarget, List<ICallback>> _Callbacks;
         bool IsLoadedInThinLayer;
@@ -69,12 +72,19 @@ namespace Sushi.Mediakiwi.UI
             }
         }
 
-        internal static async Task<bool> StartControllerAsync(HttpContext context, IHostingEnvironment env, IConfiguration configuration)
+        internal static async Task<bool> StartControllerAsync(HttpContext context, IHostingEnvironment env, IConfiguration configuration, IServiceProvider serviceProvider)
         {
+            var actionDescriptorCollection = serviceProvider.GetService<IActionDescriptorCollectionProvider>();
+            var actionContext = serviceProvider.GetService<IActionContextAccessor>();
+
+            var monitor = new Monitor(context, env, configuration);
+
+            
+
+           // Old version
             var controllerOutput = new ControllerRegister(context).Verify();
             if (controllerOutput != null)
             {
-                var monitor = new Monitor(context, env, configuration);
                 if (!controllerOutput.IsAuthenticationRequired || await monitor.CheckRoamingApplicationUserAsync().ConfigureAwait(false))
                 {
                     var output = await controllerOutput.CompleteAsync(context).ConfigureAwait(false);
@@ -82,9 +92,20 @@ namespace Sushi.Mediakiwi.UI
                     return true;
                 }
             }
+
+            //New version
+            //var hasLoggedInUser = await monitor.CheckRoamingApplicationUserAsync();
+            //var controllerOutput = await new ControllerRegister2(context, serviceProvider).VerifyAsync(hasLoggedInUser);
+
+            //if (controllerOutput != null)
+            //{
+            //    var output = await controllerOutput.CompleteAsync(context).ConfigureAwait(false);
+            //    await context.Response.WriteAsync(output).ConfigureAwait(false);
+            //    return true;
+            //}
             return false;
         }
-
+        
         internal async Task StartAsync(bool reStartWithNotificationList)
         {
             //  Set the current environment

@@ -11,9 +11,9 @@ namespace Sushi.Mediakiwi.Controllers
     /// Sushi.Mediakiwi => Configure
     /// ControllerRegister.AddRoute("api/documentype/checksharedfield", new CheckSharedFieldController());
     /// </summary>
-    internal class CheckSharedFieldController : BaseController, IController
+    internal class CheckSharedFieldController : BaseController
     {
-        public async Task<string> CompleteAsync(HttpContext context)
+        public override async Task<string> CompleteAsync(HttpContext context)
         {
             var request = await GetPostAsync<CheckSharedFieldRequest>(context).ConfigureAwait(false);
 

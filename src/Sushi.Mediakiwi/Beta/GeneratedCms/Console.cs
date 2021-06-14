@@ -169,7 +169,9 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
             get
             {
                 if (m_JsonRequest == null)
+                {
                     return string.Empty;
+                }
 
                 return m_JsonRequest.Referrer;
             }

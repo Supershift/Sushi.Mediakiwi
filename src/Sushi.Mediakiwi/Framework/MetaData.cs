@@ -115,7 +115,16 @@ namespace Sushi.Mediakiwi.Framework
             }
 
             if (ContentTypeSelection == (int)ContentType.SubListSelect)
-                return new ContentInfoItem.SubListSelectAttribute(Title, Componentlist, Mandatory == "1", CanOnlySortOrder == "1",  CanContainOneItem == "1", CanClickOnItem=="1", InteractiveHelp);
+            {
+                // [MR: 11-06-2021] added these lines, for as a datatype definition saves its GUID
+                // in the Collection property, not the ComponentList property
+                string componentListGuid = Componentlist;
+                if (string.IsNullOrWhiteSpace(Componentlist) && string.IsNullOrWhiteSpace(Collection) == false)
+                {
+                    componentListGuid = Collection;
+                }
+                return new ContentInfoItem.SubListSelectAttribute(Title, componentListGuid, Mandatory == "1", CanOnlySortOrder == "1", CanContainOneItem == "1", CanClickOnItem == "1", InteractiveHelp);
+            }
 
             //if (ContentTypeSelection == (int)ContentType.MultiImageSelect)
             //    return new ContentInfoItem.MultiImageSelectAttribute(Title, InteractiveHelp);
@@ -447,11 +456,12 @@ namespace Sushi.Mediakiwi.Framework
             get { return m_CollectionList; }
         }
 
-        private bool m_IsSharedField;
+        private string m_IsSharedField;
         /// <summary>
         /// 
         /// </summary>
-        public bool IsSharedField
+        [XmlElement("isshared")]
+        public string IsSharedField
         {
             set { m_IsSharedField = value; }
             get { return m_IsSharedField; }

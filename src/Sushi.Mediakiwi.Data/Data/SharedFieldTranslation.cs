@@ -1,4 +1,5 @@
-﻿using Sushi.MicroORM;
+﻿using Sushi.Mediakiwi.Data.Data;
+using Sushi.MicroORM;
 using Sushi.MicroORM.Mapping;
 using System;
 using System.Collections.Generic;
@@ -37,72 +38,110 @@ namespace Sushi.Mediakiwi.Data
         public int ID { get; set; }
         public int SiteID { get; set; }
         public int FieldID { get; set; }
-        public int ContentTypeID { get; set; }
+        public ContentType ContentTypeID { get; set; }
         public string FieldName { get; set; }
         public string EditValue { get; set; }
         public string Value { get; set; }
 
-        public string GetEditValue(int? maxChars = null)
-        {
-            var value = GetValue(EditValue);
-            if (maxChars.GetValueOrDefault(0) > 0)
-            {
-                value = Utility.ConvertToFixedLengthText(value, maxChars.Value, "&hellip;");
-            }
+        /// <summary>
+        /// Returns the published value 
+        /// </summary>
+        /// <returns></returns>
+        public string GetPublishedValue() => GetPublishedValue(false, null);
 
-            return value;
-        }
+        /// <summary>
+        /// Returns the published value
+        /// </summary>
+        /// <param name="optimizeForDisplay">When TRUE, the output will be optimized for display</param>
+        /// <returns></returns>
+        public string GetPublishedValue(bool optimizeForDisplay) => GetPublishedValue(optimizeForDisplay, null);
 
-        public string GetPublishedValue(int? maxChars = null)
-        {
-            var value = GetValue(Value);
-            if (maxChars.GetValueOrDefault(0) > 0)
-            {
-                value = Utility.ConvertToFixedLengthText(value, maxChars.Value, "&hellip;");
-            }
+        /// <summary>
+        /// Returns the published value
+        /// </summary>
+        /// <param name="optimizeForDisplay">When TRUE, the output will be optimized for display</param>
+        /// <param name="maxChars">Maximum chars to return</param>
+        /// <returns></returns>
+        public string GetPublishedValue(bool optimizeForDisplay, int? maxChars) => GetValue(Value, optimizeForDisplay, maxChars);
 
-            return value;
-        }
 
-        private string GetValue(string _value)
+        /// <summary>
+        /// Returns the edit value 
+        /// </summary>
+        /// <returns></returns>
+        public string GetEditValue() => GetEditValue(false, null);
+
+        /// <summary>
+        /// Returns the edit value
+        /// </summary>
+        /// <param name="optimizeForDisplay">When TRUE, the output will be optimized for display</param>
+        /// <returns></returns>
+        public string GetEditValue(bool optimizeForDisplay) => GetEditValue(optimizeForDisplay, null);
+
+        /// <summary>
+        /// Returns the edit value
+        /// </summary>
+        /// <param name="optimizeForDisplay">When TRUE, the output will be optimized for display</param>
+        /// <param name="maxChars">Maximum chars to return</param>
+        /// <returns></returns>
+        public string GetEditValue(bool optimizeForDisplay, int? maxChars) => GetValue(EditValue, optimizeForDisplay, maxChars);
+
+
+        private string GetValue(string _value, bool optimizeForDisplay, int? maxChars)
         {
             string returnValue = "";
             System.Globalization.CultureInfo dateCulture = new System.Globalization.CultureInfo("nl-NL");
 
             switch (ContentTypeID)
             {
-                case (int)ContentType.FileUpload:
-                case (int)ContentType.DocumentSelect:
-                case (int)ContentType.Binary_Document:
+                case ContentType.FileUpload:
+                case ContentType.DocumentSelect:
+                case ContentType.Binary_Document:
                     {
                         if (string.IsNullOrWhiteSpace(_value) == false)
                         {
                             int valueID = Utility.ConvertToInt(_value, 0);
                             if (valueID > 0)
                             {
-                                returnValue = Document.SelectOne(valueID).RemoteLocation;
+                                var doc = Document.SelectOne(valueID);
+                                if (optimizeForDisplay == false)
+                                {
+                                    returnValue = (doc?.ID > 0) ? doc.ID.ToString() : "";
+                                }
+                                else
+                                {
+                                    returnValue = (doc?.ID > 0) ? doc.RemoteLocation : "";
+                                }
                             }
                         }
                     }
                     break;
-                case (int)ContentType.Binary_Image:
+                case ContentType.Binary_Image:
                     {
                         if (string.IsNullOrWhiteSpace(_value) == false)
                         {
                             int valueID = Utility.ConvertToInt(_value, 0);
                             if (valueID > 0)
                             {
-                                returnValue = Image.SelectOne(valueID).RemoteLocation;
+                                var doc = Image.SelectOne(valueID);
+                                if (optimizeForDisplay == false)
+                                {
+                                    returnValue = (doc?.ID > 0) ? doc.ID.ToString() : "";
+                                }
+                                else
+                                {
+                                    returnValue = (doc?.ID > 0) ? doc.RemoteLocation : "";
+                                }
                             }
                         }
                     }
                     break;
-                case (int)ContentType.Choice_Checkbox:
+                case ContentType.Choice_Checkbox:
                     {
                         returnValue = (_value == "1").ToString();
                     }
                     break;
-                case (int)ContentType.Date:
+                case ContentType.Date:
                     {
                         if (DateTime.TryParseExact(_value, "dd-MM-yyyy", dateCulture, System.Globalization.DateTimeStyles.None, out DateTime result))
                         {
@@ -110,7 +149,7 @@ namespace Sushi.Mediakiwi.Data
                         }
                     }
                     break;
-                case (int)ContentType.DateTime:
+                case ContentType.DateTime:
                     {
                         if (DateTime.TryParseExact(_value, "dd-MM-yyyy HH:mm:ss", dateCulture, System.Globalization.DateTimeStyles.None, out DateTime result))
                         {
@@ -118,7 +157,7 @@ namespace Sushi.Mediakiwi.Data
                         }
                     }
                     break;
-                case (int)ContentType.FolderSelect:
+                case ContentType.FolderSelect:
                     {
                         if (string.IsNullOrWhiteSpace(_value) == false)
                         {
@@ -130,7 +169,7 @@ namespace Sushi.Mediakiwi.Data
                         }
                     }
                     break;
-                case (int)ContentType.Hyperlink:
+                case ContentType.Hyperlink:
                     {
                         if (string.IsNullOrWhiteSpace(_value) == false)
                         {
@@ -142,42 +181,68 @@ namespace Sushi.Mediakiwi.Data
                         }
                     }
                     break;
-                case (int)ContentType.MultiField:
+                case ContentType.MultiField:
                     {
                         returnValue = "MultiField";
+                        var mfs = MultiField.GetDeserialized(_value);
+                        if (mfs != null)
+                        {
+                            returnValue = _value;
+                        }
                     }
                     break;
-                case (int)ContentType.PageSelect:
+                case ContentType.PageSelect:
                     {
                         if (string.IsNullOrWhiteSpace(_value) == false)
                         {
                             int valueID = Utility.ConvertToInt(_value, 0);
                             if (valueID > 0)
                             {
-                                returnValue = Page.SelectOne(valueID).InternalPath;
+                                returnValue = Page.SelectOne(valueID, false).InternalPath;
                             }
                         }
                     }
                     break;
-                case (int)ContentType.RichText:
-                case (int)ContentType.Sourcecode:
-                case (int)ContentType.TextArea:
-                case (int)ContentType.TextField:
-                case (int)ContentType.Undefined:
-                case (int)ContentType.TextLine:
-                case (int)ContentType.TextDate:
-                case (int)ContentType.SubListSelect:
-                case (int)ContentType.Section:
-                case (int)ContentType.MultiImageSelect:
-                case (int)ContentType.MultiAssetUpload:
-                case (int)ContentType.ListItemSelect:
-                case (int)ContentType.Choice_Dropdown:
-                case (int)ContentType.Choice_Radio:
-                case (int)ContentType.HtmlContainer:
+                case ContentType.SubListSelect: {
+                        if (string.IsNullOrWhiteSpace(_value) == false)
+                        {
+                            var subList = SubList.GetDeserialized(_value);
+                            if (subList?.Items?.Length > 0)
+                            {
+                                StringBuilder temp = new StringBuilder();
+                                foreach (var item in subList.Items)
+                                {
+                                    temp.Append($"{item.Description} (ID: {item.ID})<br/>");
+                                }
+                                returnValue = temp.ToString();
+                            }
+                        }
+                    }
+                    break;
+                case ContentType.RichText:
+                case ContentType.Sourcecode:
+                case ContentType.TextArea:
+                case ContentType.TextField:
+                case ContentType.Undefined:
+                case ContentType.TextLine:
+                case ContentType.TextDate:
+                
+                case ContentType.Section:
+                case ContentType.MultiImageSelect:
+                case ContentType.MultiAssetUpload:
+                case ContentType.ListItemSelect:
+                case ContentType.Choice_Dropdown:
+                case ContentType.Choice_Radio:
+                case ContentType.HtmlContainer:
                     {
                         returnValue = _value;
                     }
                     break;
+            }
+
+            if (optimizeForDisplay && maxChars.GetValueOrDefault(0) > 0)
+            {
+                return Utility.ConvertToFixedLengthText(returnValue, maxChars.Value, "&hellip;");
             }
 
             return returnValue;

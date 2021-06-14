@@ -8,7 +8,7 @@ namespace Sushi.Mediakiwi.Controllers.Data
     {
         public int ID { get; set; }
         public string Title { get; set; }
-        public int TypeID { get; set; }
+        public int ContentTypeID { get; set; }
         public bool IsMandatory { get; set; }
         public bool IsSharedField { get; set; }
         public string FieldName { get; set; }

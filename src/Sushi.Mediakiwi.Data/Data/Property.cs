@@ -25,7 +25,7 @@ namespace Sushi.Mediakiwi.Data
                 Map(x => x.Title, "Property_Title").Length(255);
                 Map(x => x.IsPresentProperty, "Property_IsPresent");
                 Map(x => x.FieldName, "Property_FieldName").Length(35);
-                Map(x => x.TypeID, "Property_Type");
+                Map(x => x.ContentTypeID, "Property_Type");
                 Map(x => x.FilterType, "Property_ColumnType").Length(15);
                 Map(x => x.OptionListSelect, "Property_OptionList_Key");
                 Map(x => x.IsShort, "Property_IsShort");
@@ -45,6 +45,7 @@ namespace Sushi.Mediakiwi.Data
                 Map(x => x.IsMandatory, "Property_IsRequired");
                 Map(x => x.MaxValueLength, "Property_MaxInput");
                 Map(x => x.DefaultValue, "Property_Default");
+                Map(x => x.IsSharedField, "Property_IsShared");
             }
         }
 
@@ -112,7 +113,7 @@ namespace Sushi.Mediakiwi.Data
 
         public int? MaxValueLength { get; set; }
 
-        public int TypeID { get; set; }
+        public ContentType ContentTypeID { get; set; }
 
         public string Mandatory { get; set; }
 
@@ -364,7 +365,7 @@ namespace Sushi.Mediakiwi.Data
             var filter = connector.CreateDataFilter();
             filter.Add(x => x.ListID, listID);
             if (listTypeID.HasValue)
-                filter.Add(x => x.TypeID, listTypeID.Value);
+                filter.Add(x => x.ContentTypeID, listTypeID.Value);
             filter.Add(x => x.FieldName, fieldName);
 
             return connector.FetchSingle(filter);
@@ -401,7 +402,7 @@ namespace Sushi.Mediakiwi.Data
             var filter = connector.CreateDataFilter();
             filter.Add(x => x.ListID, listID);
             if (listTypeID.HasValue)
-                filter.Add(x => x.TypeID, listTypeID.Value);
+                filter.Add(x => x.ContentTypeID, listTypeID.Value);
             filter.Add(x => x.FieldName, fieldName);
 
             return await connector.FetchSingleAsync(filter);
@@ -416,7 +417,7 @@ namespace Sushi.Mediakiwi.Data
             var connector = ConnectorFactory.CreateConnector<Property>();
             var filter = connector.CreateDataFilter();
             filter.Add(x => x.ListID, listID);
-            filter.Add(x => x.TypeID, 35);
+            filter.Add(x => x.ContentTypeID, ContentType.ContentContainer);
 
             Property tmp = connector.FetchSingle(filter);
             return (tmp?.ID > 0);
@@ -431,7 +432,7 @@ namespace Sushi.Mediakiwi.Data
             var connector = ConnectorFactory.CreateConnector<Property>();
             var filter = connector.CreateDataFilter();
             filter.Add(x => x.ListID, listID);
-            filter.Add(x => x.TypeID, 35);
+            filter.Add(x => x.ContentTypeID, ContentType.ContentContainer);
 
             Property tmp = await connector.FetchSingleAsync(filter);
             return (tmp?.ID > 0);

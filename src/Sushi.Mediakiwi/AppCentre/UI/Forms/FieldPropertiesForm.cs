@@ -37,9 +37,9 @@ namespace Sushi.Mediakiwi.AppCentre.UI.Forms
             }
 
             bool isChoiceType =
-                implement.TypeID.Equals((int)ContentType.Choice_Dropdown) ||
-                implement.TypeID.Equals((int)ContentType.ListItemSelect) ||
-                implement.TypeID.Equals((int)ContentType.Choice_Radio);
+                implement.ContentTypeID.Equals(ContentType.Choice_Dropdown) ||
+                implement.ContentTypeID.Equals(ContentType.ListItemSelect) ||
+                implement.ContentTypeID.Equals(ContentType.Choice_Radio);
 
             if (isChoiceType)
             {
@@ -47,17 +47,15 @@ namespace Sushi.Mediakiwi.AppCentre.UI.Forms
                 implement.Data = string.Join(",", propertydate.Select(x => x.Value));
             }
 
-            bool isSublist = (implement.TypeID.Equals((int)ContentType.SubListSelect));
+            bool isSublist = (implement.ContentTypeID.Equals(ContentType.SubListSelect));
 
-            // Check if we're dealing with a shared field
-            if (string.IsNullOrWhiteSpace(implement.FieldName) == false)
+            //// Check if we're dealing with a shared field
+            if (implement.IsSharedField && string.IsNullOrWhiteSpace(implement.FieldName) == false)
             {
                 // Retrieve the shared field (if any)
-                var _sharedField = SharedField.FetchSingle(implement.FieldName);
+                var _sharedField = SharedField.FetchSingle(implement.FieldName, implement.ContentTypeID);
                 if (_sharedField?.ID > 0)
                 {
-                    implement.IsSharedField = true;
-
                     // Retrieve the translated values for this shared Field (if any)
                     var _sharedFieldValues = SharedFieldTranslation.FetchAllForField(_sharedField.ID);
                     var sharedFieldInstance = _sharedFieldValues.FirstOrDefault();
@@ -75,7 +73,7 @@ namespace Sushi.Mediakiwi.AppCentre.UI.Forms
 
             Map(x => x.Section).Section("Additional settings");
             Map(x => x.Title).TextField("Title", 255, false).Expression(OutputExpression.FullWidth);
-            Map(x => x.TypeID).Dropdown("Type", nameof(TypeOptions), true, true).Expression(OutputExpression.FullWidth);
+            Map(x => x.ContentTypeID).Dropdown("Type", nameof(TypeOptions), true, true).Expression(OutputExpression.FullWidth);
             Map(x => x.IsMandatory).Checkbox("Required").Expression(OutputExpression.FullWidth);
 
             Map(x => x.ListCollection).Dropdown("Module", nameof(ListOptions), true).Expression(OutputExpression.FullWidth).Show(isSublist);

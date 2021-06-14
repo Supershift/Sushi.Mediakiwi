@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Sushi.Mediakiwi.Controllers.Data;
 using Sushi.Mediakiwi.Data;
 using Sushi.Mediakiwi.Framework;
@@ -16,10 +18,20 @@ namespace Sushi.Mediakiwi.Controllers
     /// Sushi.Mediakiwi => Configure
     /// ControllerRegister.AddRoute("api/documentype/getfields", new DocumentTypeController());
     /// </summary>
-    internal class DocumentTypeController : BaseController, IController
+    [Route("api/documentype")]
+    public class DocumentTypeController : BaseController
     {
-     
-        public async Task<string> CompleteAsync(HttpContext context)
+        [HttpGet("GetData")]
+        public async Task<string> GetData() 
+        {
+            string temp = "";
+
+            return temp;
+        }
+
+        [HttpPost("GetFields")]
+        [AllowAnonymous]
+        public override async Task<string> CompleteAsync(HttpContext context)
         {
             var request = await GetPostAsync<GetFieldsRequest>(context).ConfigureAwait(false);
 
@@ -59,17 +71,17 @@ namespace Sushi.Mediakiwi.Controllers
                             AutoPostBack = meta.AutoPostBack.Equals("1"),
                             InteractiveHelp = meta.InteractiveHelp,
                             DefaultValue = meta.Default,
-                            TypeID = Convert.ToInt32(meta.ContentTypeSelection),
+                            ContentTypeID = (ContentType)Enum.Parse(typeof(ContentType), meta.ContentTypeSelection),
                             MaxValueLength = Utility.ConvertToIntNullable(meta.MaxValueLength),
                             IsMandatory = meta.Mandatory.Equals("1"),
                             SortOrder = index,
                             TemplateID = request.DocumentTypeID,
-                            IsSharedField = meta.IsSharedField
+                            IsSharedField = meta.IsSharedField.Equals("1")
                         };
                         await property.SaveAsync();
 
                         // Set shared FIeld
-                        await SaveSharedFieldAsync(property, meta.IsSharedField);
+                        await SaveSharedFieldAsync(property, meta.IsSharedField.Equals("1"));
 
                         reload = true;
                     }
@@ -98,14 +110,14 @@ namespace Sushi.Mediakiwi.Controllers
                     ID = property.ID,
                     Title = property.Title,
                     IsMandatory = property.IsMandatory,
-                    TypeID = property.TypeID,
+                    ContentTypeID = (int)property.ContentTypeID,
                     SortOrder = property.SortOrder,
                     FieldName = property.FieldName,
                 });
             }
 
             // [MR:29-04-2021] added for : https://supershift.atlassian.net/browse/FTD-147
-            await response.ApplySharedFieldInformationAsync();
+            await response.ApplySharedFieldInformationAsync(request.DocumentTypeID);
 
             return GetResponse(response);
         }
@@ -113,7 +125,7 @@ namespace Sushi.Mediakiwi.Controllers
         private async Task SaveSharedFieldAsync(Property property, bool isShared)
         {
             // Check if there is an existing SharedField for this FieldName
-            var existingSharedField = await SharedField.FetchSingleAsync(property.FieldName);
+            var existingSharedField = await SharedField.FetchSingleAsync(property.FieldName, property.ContentTypeID);
 
             // Field is marked As Shared field, but doesn't exist yet.
             // This means we need to add this property as a shared Field
@@ -121,7 +133,7 @@ namespace Sushi.Mediakiwi.Controllers
             {
                 existingSharedField = new SharedField()
                 {
-                    ContentTypeID = property.TypeID,
+                    ContentTypeID = property.ContentTypeID,
                     FieldName = property.FieldName
                 };
 
@@ -139,12 +151,12 @@ namespace Sushi.Mediakiwi.Controllers
                         {
                             SharedFieldTranslation translation = new SharedFieldTranslation()
                             {
-                                ContentTypeID = property.TypeID,
+                                ContentTypeID = property.ContentTypeID,
                                 EditValue = property.DefaultValue,
                                 FieldID = existingSharedField.ID,
                                 FieldName = property.FieldName,
                                 SiteID = site.ID,
-                                Value = property.DefaultValue
+                                Value = property.DefaultValue,
                             };
 
                             await translation.SaveAsync();

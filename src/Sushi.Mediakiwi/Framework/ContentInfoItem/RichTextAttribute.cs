@@ -358,15 +358,43 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
         /// <returns></returns>
         public Field WriteCandidate(WimControlBuilder build, bool isEditMode, bool isRequired, bool isCloaked)
         {
-            this.SetWriteEnvironment();
-            this.IsCloaked = isCloaked;
-            this.Mandatory = isRequired;
-            if (OverrideEditMode) isEditMode = false;
-            if (isEditMode && this.IsEnabled())
+            SetWriteEnvironment();
+            IsCloaked = isCloaked;
+            Mandatory = isRequired;
+            if (OverrideEditMode)
+            {
+                isEditMode = false;
+            }
+
+            string outputValue = OutputText;
+
+            var isEnabled = IsEnabled();
+
+            // [MR:03-06-2021] Apply shared field clickable icon.
+            var sharedInfoApply = ApplySharedFieldInformation(isEnabled, outputValue);
+
+            // If we have a document assigned, overwrite the current one
+            if (sharedInfoApply.isShared)
+            {
+                // Enable readonly when shared
+                isEnabled = sharedInfoApply.isEnabled;
+
+                // When Currently not cloaked, do so if its a shared field
+                if (IsCloaked == false && sharedInfoApply.isHidden)
+                {
+                    IsCloaked = sharedInfoApply.isHidden;
+                }
+
+                OutputText = sharedInfoApply.outputValue;
+            }
+
+            if (isEditMode && isEnabled)
             {
                 #region Element creation
+
                 StringBuilder element = new StringBuilder();
-                element.AppendFormat(NewEditor.EditorHTML(this.IsEnabled(), this.EnableTable, this.IsCloaked));
+                element.AppendFormat(NewEditor.EditorHTML(isEnabled, EnableTable, IsCloaked));
+
                 #endregion Element creation
 
                 if (IsCloaked)
@@ -377,9 +405,8 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                 {
                     #region Wrapper
 
-            
+                    //string titleTag = string.Concat(Title, Mandatory ? "<em>*</em>" : "");
 
-                    string titleTag = string.Concat(Title, Mandatory ? "<em>*</em>" : "");
                     //  If set all table cell/row creation will be ignored
                     if (!OverrideTableGeneration)
                     {
@@ -396,7 +423,14 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                                 build.Append("\t\t\t\t\t\t<tr>");
                         }
 
-                        build.AppendFormat("\n\t\t\t\t\t\t\t<th><label for=\"{0}\">{1}</label></th>", this.ID, this.TitleLabel);
+                        if (string.IsNullOrWhiteSpace(EditSharedFieldLink) == false)
+                        {
+                            build.Append($"<th><label for=\"{ID}\">{EditSharedFieldLink.Replace("[LABEL]", this.TitleLabel)}</label></th>");
+                        }
+                        else
+                        {
+                            build.Append($"<th><label for=\"{ID}\">{TitleLabel}</label></th>");
+                        }
 
                         //if (ShowInheritedData)
                         //    build.AppendFormat("\t\t\t\t\t\t\t<th class=\"local\"><label>{0}:</label></th>\t\t\t\t\t\t</tr>\t\t\t\t\t\t<tr>\t\t\t\t\t\t\t<td><div class=\"description\">{1}</div></td>\n", this.ID, this.TitleLabel);
@@ -411,6 +445,12 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                     build.AppendFormat("\n\t\t\t\t\t\t\t\t<div class=\"{0}\">", (Expression == OutputExpression.FullWidth) ? this.Class_Wide
                         : (OverrideTableGeneration ? "halfer" : "half")
                     );
+
+                    // Add Shared Icon (if any)
+                    if (string.IsNullOrWhiteSpace(SharedIcon) == false && IsCloaked == false)
+                    {
+                        build.Append(SharedIcon);
+                    }
 
                     build.Append(element.ToString());
 
@@ -432,7 +472,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                 string candidate = OutputText;
                 RichTextLink.CreateLinkPreview(ref candidate);
 
-                build.Append(GetSimpleTextElement(this.Title, this.Mandatory, candidate, this.InteractiveHelp));
+                build.Append(GetSimpleTextElement(candidate));
             }
 
             build.ApiResponse.Fields.Add(new Api.MediakiwiField()
@@ -444,7 +484,8 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                 PropertyName = this.ID,
                 PropertyType = (Property == null) ? typeof(string).FullName : Property.PropertyType.FullName,
                 VueType = Api.MediakiwiFormVueType.wimRichText,
-                ReadOnly = this.IsReadOnly
+                ReadOnly = this.IsReadOnly,
+                ContentTypeID = ContentTypeSelection
             });
 
             return ReadCandidate(this.OutputText);

@@ -9,10 +9,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Text.Json;
+using System.Web.Http;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Sushi.Mediakiwi.Controllers
 {
-    internal class BaseController
+    public class BaseController : ControllerBase, IController
     {
         public bool IsAuthenticationRequired { get; set; }
 
@@ -37,6 +39,11 @@ namespace Sushi.Mediakiwi.Controllers
                 var output = await sr.ReadToEndAsync();
                 return JsonSerializer.Deserialize<T>(output, Settings);
             }
+        }
+
+        public virtual async Task<string> CompleteAsync(HttpContext context)
+        {
+            return "";
         }
     }
 }

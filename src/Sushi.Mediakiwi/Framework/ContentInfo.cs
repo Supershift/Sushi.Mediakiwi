@@ -309,7 +309,7 @@ namespace Sushi.Mediakiwi.Framework
             var element = metadata.GetContentInfo();
             element.FieldName = metadata.Name;
             element.Mandatory = metadata.Mandatory == "1";
-            element.IsSharedField = metadata.IsSharedField;
+            element.IsSharedField = metadata.IsSharedField == "1";
 
             if (!string.IsNullOrWhiteSpace(metadata.MaxValueLength))
             {
@@ -362,7 +362,7 @@ namespace Sushi.Mediakiwi.Framework
         /// Possible return types: Sushi.Mediakiwi.Data.SubList, Sushi.Mediakiwi.Data.iSubList
         /// </summary>
         /// <param name="title"></param>
-        /// <param name="componentlistGuid"></param>
+        /// <param name="componentlist"></param>
         /// <param name="mandatory"></param>
         /// <param name="canOnlyOrderSort"></param>
         /// <param name="interactiveHelp"></param>
@@ -372,13 +372,36 @@ namespace Sushi.Mediakiwi.Framework
             var data = Data.ComponentList.SelectOne(componentlist.ToString());
             if (data != null && data.ID > 0)
             {
-                var element = new Sushi.Mediakiwi.Framework.ContentListItem.SubListSelectAttribute(title, data.GUID.ToString(), mandatory, canOnlyOrderSort, interactiveHelp);
+                var element = new SubListSelectAttribute(title, data.GUID.ToString(), mandatory, canOnlyOrderSort, interactiveHelp);
                 element.AutoPostback = autoPostback;
                 Add(element);
                 return new SublistSettings(element);
             }
             return null;
         }
+
+        /// <summary>
+        /// Possible return types: Sushi.Mediakiwi.Data.SubList, Sushi.Mediakiwi.Data.iSubList
+        /// </summary>
+        /// <param name="title"></param>
+        /// <param name="componentlistGuid"></param>
+        /// <param name="mandatory"></param>
+        /// <param name="canOnlyOrderSort"></param>
+        /// <param name="interactiveHelp"></param>
+        /// <returns></returns>
+        internal SublistSettings SubListSelect(string title, Guid componentlistGuid, bool mandatory = false, bool canOnlyOrderSort = false, bool autoPostback = false, string interactiveHelp = null)
+        {
+            var data = Data.ComponentList.SelectOne(componentlistGuid);
+            if (data != null && data.ID > 0)
+            {
+                var element = new SubListSelectAttribute(title, data.GUID.ToString(), mandatory, canOnlyOrderSort, interactiveHelp);
+                element.AutoPostback = autoPostback;
+                Add(element);
+                return new SublistSettings(element);
+            }
+            return null;
+        }
+
         /// <summary>
         /// Possible return types: System.String
         /// </summary>

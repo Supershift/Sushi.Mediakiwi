@@ -392,7 +392,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                         break;
                     }
 
-                build.Append(GetSimpleTextElement(this.Title, this.Mandatory, candidate, this.InteractiveHelp));
+                build.Append(GetSimpleTextElement(candidate));
             }
 
             build.ApiResponse.Fields.Add(new Api.MediakiwiField()
@@ -406,7 +406,8 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                 VueType = Api.MediakiwiFormVueType.wimChoiceRadio,
                 Options = optionsList,
                 GroupName = Groupname,
-                ReadOnly = this.IsReadOnly
+                ReadOnly = this.IsReadOnly,
+                ContentTypeID = ContentTypeSelection
             });
 
             return ReadCandidate(OutputText);

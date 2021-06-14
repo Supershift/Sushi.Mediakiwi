@@ -17,7 +17,7 @@
                                            v-bind:class="getClass(field, 'Title')">
                                 </div>
                                 <div>
-                                    <select v-model="field.typeID"
+                                    <select v-model="field.contentTypeID"
                                             :id="'field_type_' + field.id"
                                             class="selectX"
                                             style="width:100%"
@@ -114,7 +114,7 @@
 
                 FormMap_Title: "Title",
                 FormMap_IsMandatory: "IsMandatory",
-                FormMap_TypeID: "TypeID",
+                FormMap_TypeID: "ContentTypeID",
 
                 fieldStatus: {
                     default: 0,
@@ -151,7 +151,7 @@
                 return this.fieldsCollection.map(r => {
                     return {
                         id: r.id,
-                        typeID: r.typeID,
+                        contentTypeID: r.contentTypeID,
                         title: r.title,
                         isMandatory: r.isMandatory,
                         sortOrder: r.sortOrder,
@@ -325,7 +325,7 @@
                 this.fieldsCollection.push({
                     id: this.getNewID(),
                     title: '',
-                    typeID: '',
+                    contentTypeID: '',
                     isMandatory: false,
                     fields: [],
                     notifications: [],
@@ -397,7 +397,7 @@
                 request.FormFields["SortOrder"] = field.sortOrder;
 
                 request.FormFields["Title"] = field.title;
-                request.FormFields["TypeID"] = parseInt(field.typeID);
+                request.FormFields["ContentTypeID"] = parseInt(field.contentTypeID);
                 request.FormFields["IsMandatory"] = field.isMandatory;
 
                 request.FormFields["FieldName"] = this.camelCase(request.FormFields["Title"]);
@@ -631,7 +631,7 @@
                 request.FormFields["SortOrder"] = field.sortOrder;
 
                 request.FormFields["Title"] = field.title;
-                request.FormFields["TypeID"] = parseInt(field.typeID);
+                request.FormFields["ContentTypeID"] = parseInt(field.contentTypeID);
                 request.FormFields["IsMandatory"] = field.isMandatory;
 
                 request.FormFields["FieldName"] = this.camelCase(request.FormFields["Title"]);
@@ -688,7 +688,7 @@
                     return {
                         id: r.id,
                         title: r.title,
-                        typeID: r.typeID,
+                        contentTypeID: r.contentTypeID,
                         isMandatory: r.isMandatory,
                         sortOrder: r.sortOrder,
                         className: r.className,
@@ -707,7 +707,7 @@
                     this.fieldsCollection.push({
                         id: -1,
                         title: '',
-                        typeID: 0,
+                        contentTypeID: 0,
                         isMandatory: false,
                         sortOrder: -1,
                         className: '',

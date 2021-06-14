@@ -1094,7 +1094,8 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                         ClassName = "action",
                         VueType = MediakiwiFormVueType.wimButton,
                         Event = MediakiwiJSEvent.click,
-                        Section = ButtonSection.Bottom
+                        Section = ButtonSection.Bottom,
+                        ContentTypeID = ContentType.Button
                     });
 
                     build2.Append(string.Format("<li><a id=\"edit\" href=\"#\" class=\"postBack submit\">{0}</a></li>"
@@ -1123,7 +1124,8 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                             VueType = MediakiwiFormVueType.wimButton,
                             Event = MediakiwiJSEvent.click,
                             Section = ButtonSection.Bottom,
-                            ClassName = string.Format("{0} right", string.IsNullOrEmpty(container.CurrentListInstance.wim.Page.Body.Form._PrimairyAction) ? " action" : null)
+                            ClassName = string.Format("{0} right", string.IsNullOrEmpty(container.CurrentListInstance.wim.Page.Body.Form._PrimairyAction) ? " action" : null),
+                            ContentTypeID = ContentType.Button
                         });
 
                         build2.AppendFormat("<input id=\"save\" class=\"submit postBack{1} right\" type=\"submit\" value=\"{0}\">", saveRecord
@@ -1573,7 +1575,8 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                                 VueType = MediakiwiFormVueType.wimButton,
                                 Event = MediakiwiJSEvent.click,
                                 ClassName = "abbr type_confirm left flaticon icon-trash-o",
-                                Section = ButtonSection.Top
+                                Section = ButtonSection.Top,
+                                ContentTypeID = ContentType.Button
                             }); ;
                         }
                     }

@@ -8,57 +8,57 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
 {
     internal class SublistParsing
     {
-        internal static Sushi.Mediakiwi.Data.SubList Parse(
+        internal static SubList Parse(
             HttpContext context, 
             System.Reflection.PropertyInfo property, 
             object senderInstance, 
             Field field,
-            Data.CustomData contentContainer,
+            CustomData contentContainer,
             string[] selectedValues,
             string selectedValue,
             string selectedKey,
             string id, 
             bool canContainOneItem)
         {
-            Sushi.Mediakiwi.Data.SubList m_Candidate = new Data.SubList();
+            SubList m_Candidate = new SubList();
             if (canContainOneItem)
             {
-                string candidate = null;
-                string idToCheck = null;
-                
-                candidate = selectedValue;
-                idToCheck = selectedKey;
+                string candidate = selectedValue;
 
                 if (!string.IsNullOrEmpty(candidate) && candidate.Contains("|"))
                 {
                     if (m_Candidate == null)
-                        m_Candidate = new Sushi.Mediakiwi.Data.SubList(candidate.Split('|')[0], candidate.Split('|')[1]);
+                    {
+                        m_Candidate = new SubList(candidate.Split('|')[0], candidate.Split('|')[1]);
+                    }
                     else
-                        m_Candidate.Add(new Sushi.Mediakiwi.Data.SubList.SubListitem(candidate.Split('|')[0], candidate.Split('|')[1]));
-
+                    {
+                        m_Candidate.Add(new SubList.SubListitem(candidate.Split('|')[0], candidate.Split('|')[1]));
+                    }
                 }
             }
             else
             {
-                string candidate = context.Request.HasFormContentType ? context.Request.Form[id].ToString() : string.Empty;
                 bool hasPostback = context.Request.HasFormContentType ? context.Request.Form.Count > 0 : false;
             
                 if (property != null && context.Request.HasFormContentType && context.Request.Form != null && !hasPostback)
                 {
                     //  20090324:MM Exception for postback change visibility
-                    if (property.PropertyType == typeof(Data.CustomData))
+                    if (property.PropertyType == typeof(CustomData))
                     {
-                        string xx = contentContainer[field.Property].Value;
                         m_Candidate = contentContainer[field.Property].ParseSubList();
                     }
-                    else if (property.PropertyType == typeof(Data.SubList))
-                        m_Candidate = property.GetValue(senderInstance, null) as Data.SubList;
-
+                    else if (property.PropertyType == typeof(SubList))
+                    {
+                        m_Candidate = property.GetValue(senderInstance, null) as SubList;
+                    }
                 }
                 else
                 {
                     if (m_Candidate == null)
-                        m_Candidate = new Sushi.Mediakiwi.Data.SubList();
+                    {
+                        m_Candidate = new SubList();
+                    }
 
                     var values = selectedValues;
                     foreach (string value in values)
@@ -67,8 +67,9 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                         {
                             string[] split = value.Split('|');
                             if (split.Length == 2)
-                                m_Candidate.Add(new Sushi.Mediakiwi.Data.SubList.SubListitem(split[0], split[1]));
-
+                            {
+                                m_Candidate.Add(new SubList.SubListitem(split[0], split[1]));
+                            }
                         }
                     }
                 }
@@ -78,12 +79,12 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
     }
 
     /// <summary>
-    /// Possible return types: Sushi.Mediakiwi.Data.SubList, Sushi.Mediakiwi.Data.iSubList
+    /// Possible return types: SubList, iSubList
     /// </summary>
     public class SubListSelectAttribute : ContentEditableSharedAttribute, IContentInfo
     {
         /// <summary>
-        /// Possible return types: Sushi.Mediakiwi.Data.SubList, Sushi.Mediakiwi.Data.iSubList
+        /// Possible return types: SubList, iSubList
         /// </summary>
         /// <param name="title"></param>
         /// <param name="componentlistGuid">The indentifier GUID of the component list (this can also be a ClassName).</param>
@@ -91,7 +92,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
             : this(title, componentlistGuid, false) { }
 
         /// <summary>
-        /// Possible return types: Sushi.Mediakiwi.Data.SubList, Sushi.Mediakiwi.Data.iSubList
+        /// Possible return types: SubList, iSubList
         /// </summary>
         /// <param name="title"></param>
         /// <param name="componentlistGuid">TThe indentifier GUID of the component list (this can also be a ClassName).</param>
@@ -100,7 +101,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
             : this(title, componentlistGuid, mandatory, null) { }
 
         /// <summary>
-        /// Possible return types: Sushi.Mediakiwi.Data.SubList, Sushi.Mediakiwi.Data.iSubList
+        /// Possible return types: SubList, iSubList
         /// </summary>
         /// <param name="title"></param>
         /// <param name="componentlistGuid">The indentifier GUID of the component list (this can also be a ClassName).</param>
@@ -110,7 +111,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
             : this(title, componentlistGuid, mandatory, false, interactiveHelp) { }
 
         /// <summary>
-        /// Possible return types: Sushi.Mediakiwi.Data.SubList, Sushi.Mediakiwi.Data.iSubList
+        /// Possible return types: SubList, iSubList
         /// </summary>
         /// <param name="title">The title.</param>
         /// <param name="componentlistGuid">The indentifier GUID of the component list (this can also be a ClassName).</param>
@@ -131,7 +132,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
             : this(title, componentlistGuid, mandatory, canOnlyOrderSort, false, false, interactiveHelp) { }
 
         /// <summary>
-        /// Possible return types: Sushi.Mediakiwi.Data.SubList, Sushi.Mediakiwi.Data.iSubList
+        /// Possible return types: SubList, iSubList
         /// </summary>
         /// <param name="title">The title.</param>
         /// <param name="componentlistGuid">The indentifier GUID of the component list (this can also be a ClassName).</param>
@@ -149,8 +150,10 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
             Mandatory = mandatory;
             InteractiveHelp = interactiveHelp;
 
-            //if (!Data.Utility.IsGuid(componentlistGuid))
-            //    componentlistGuid = Sushi.Mediakiwi.Data.ComponentList.SelectOne(componentlistGuid).GUID.ToString();
+            if (!Utility.IsGuid(componentlistGuid))
+            {
+                componentlistGuid = ComponentList.SelectOne(componentlistGuid).GUID.ToString();
+            }
 
             Componentlist = componentlistGuid;
             CanOnlyOrderSort = canOnlyOrderSort;
@@ -232,15 +235,15 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
         /// <param name="isEditMode">if set to <c>true</c> [is edit mode].</param>
         public void SetCandidate(Field field, bool isEditMode)
         {
-            //  Set because of new post _0 detection
-            //this.IsMultiFile = this.m_IsNewDesign;
 
-            if (Property != null && Property.PropertyType == typeof(Data.CustomData))
+            if (Property != null && Property.PropertyType == typeof(CustomData))
             {
                 SetContentContainer(field);
 
                 if (field.PropertyInfo.ListSelect.HasValue)
+                {
                     Componentlist = field.PropertyInfo.ListSelect.GetValueOrDefault().ToString();
+                }
             }
 
             m_Candidate = null;
@@ -248,27 +251,29 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
             {
                 if (IsBluePrint)
                 {
-                    if (field != null)
+                    if (string.IsNullOrEmpty(field?.Value) == false)
                     {
-                        if (!string.IsNullOrEmpty(field.Value))
-                            m_Candidate = Data.SubList.GetDeserialized(field.Value);
+                        m_Candidate = SubList.GetDeserialized(field.Value);
                     }
                 }
                 else
                 {
-                    if (Property.PropertyType == typeof(Data.CustomData))
+                    if (Property.PropertyType == typeof(CustomData))
                     {
-                        string xx = m_ContentContainer[field.Property].Value;
                         m_Candidate = m_ContentContainer[field.Property].ParseSubList();
                     }
-                    else if (Property.PropertyType == typeof(Data.SubList))
-                        m_Candidate = Property.GetValue(SenderInstance, null) as Data.SubList;
-                    else if (Property.PropertyType.GetInterface(typeof(Data.ISubList).FullName) != null)
+                    else if (Property.PropertyType == typeof(SubList))
                     {
-                        m_interfaceCandidate = Property.GetValue(SenderInstance, null) as Data.ISubList;
-                        m_Candidate = new Data.SubList();
+                        m_Candidate = Property.GetValue(SenderInstance, null) as SubList;
+                    }
+                    else if (Property.PropertyType.GetInterface(typeof(ISubList).FullName) != null)
+                    {
+                        m_interfaceCandidate = Property.GetValue(SenderInstance, null) as ISubList;
+                        m_Candidate = new SubList();
                         if (m_interfaceCandidate != null)
+                        {
                             m_Candidate.Add(m_interfaceCandidate.GetListItemValue());
+                        }
                     }
                 }
             }
@@ -276,33 +281,36 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
             {
                 //  [MM:14.12.14] Moved to central location
                 m_Candidate = SublistParsing.Parse(
-                    this.Context, 
-                    this.Property, 
-                    this.SenderInstance, 
+                    Context, 
+                    Property, 
+                    SenderInstance, 
                     field, 
                     m_ContentContainer, 
-                    this.SelectedValues, 
-                    this.SelectedValue, 
-                    this.SelectedKey, 
-                    this.ID, 
-                    this.CanContainOneItem
+                    SelectedValues, 
+                    SelectedValue, 
+                    SelectedKey, 
+                    ID, 
+                    CanContainOneItem
                     );
             }
 
             if (!IsBluePrint && Property != null && Property.CanWrite)
             {
-                if (Property.PropertyType == typeof(Data.CustomData))
+                if (Property.PropertyType == typeof(CustomData))
                 {
                     ApplyContentContainer(field, m_Candidate == null ? null : m_Candidate.Serialized);
                 }
-                else if (Property.PropertyType == typeof(Data.SubList))
-                    Property.SetValue(SenderInstance, m_Candidate, null);
-
-                else if (Property.PropertyType.GetInterface(typeof(Data.ISubList).FullName) != null)
+                else if (Property.PropertyType == typeof(SubList))
                 {
-                    m_interfaceCandidate = Property.GetValue(SenderInstance, null) as Data.ISubList;
+                    Property.SetValue(SenderInstance, m_Candidate, null);
+                }
+                else if (Property.PropertyType.GetInterface(typeof(ISubList).FullName) != null)
+                {
+                    m_interfaceCandidate = Property.GetValue(SenderInstance, null) as ISubList;
                     if (m_interfaceCandidate == null)
-                        m_interfaceCandidate = System.Activator.CreateInstance(Property.PropertyType) as Data.ISubList;
+                    {
+                        m_interfaceCandidate = Activator.CreateInstance(Property.PropertyType) as ISubList;
+                    }
 
                     m_interfaceCandidate = m_interfaceCandidate.SetListItemValue(m_Candidate.Items);
                     Property.SetValue(SenderInstance, m_interfaceCandidate, null);
@@ -312,28 +320,26 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
             OutputText = null;
             if (m_Candidate != null && m_Candidate.Items != null && m_Candidate.Items.Length > 0)
             {
-                if (this.CanContainOneItem)
+                if (CanContainOneItem)
+                {
                     OutputText = string.Concat(m_Candidate.Items[0].TextID, "|", m_Candidate.Items[0].Description);
+                }
                 else
                 {
                     OutputText = "";
-                    foreach (Data.SubList.SubListitem item in m_Candidate.Items)
+                    foreach (SubList.SubListitem item in m_Candidate.Items)
                     {
-                        OutputText += string.Concat(item.TextID, "|", item.Description, "\n");
+                        OutputText += string.Concat(item.TextID, "|", item.Description);
                     }
                 }
             }
         }
 
-        Data.ISubList m_interfaceCandidate;
-        Data.SubList m_Candidate;
+        ISubList m_interfaceCandidate;
+        SubList m_Candidate;
 
-        internal Grid.LayerSpecification LayerSpecification
-        {
-            get;set;
-        }
+        internal Grid.LayerSpecification LayerSpecification { get; set; }
         
-
 
         /// <summary>
         /// Writes the candidate.
@@ -344,19 +350,45 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
         /// <returns></returns>
         public Field WriteCandidate(WimControlBuilder build, bool isEditMode, bool isRequired, bool isCloaked)
         {
-            this.SetWriteEnvironment();
-            this.IsCloaked = isCloaked;
-            this.Mandatory = isRequired;
-            if (OverrideEditMode) 
+            SetWriteEnvironment();
+            IsCloaked = isCloaked;
+            Mandatory = isRequired;
+            if (OverrideEditMode)
+            {
                 isEditMode = false;
+            }
 
-            if (isEditMode)
+            bool isEnabled = IsEnabled();
+            string outputValue = OutputText;
+
+            // [MR:03-06-2021] Apply shared field clickable icon.
+            var sharedInfoApply = ApplySharedFieldInformation(isEnabled, outputValue);
+            // If we have a document assigned, overwrite the current one
+            if (sharedInfoApply.isShared)
+            {
+                // Enable readonly when shared
+                isEnabled = sharedInfoApply.isEnabled;
+
+                // When Currently not cloaked, do so if its a shared field
+                if (IsCloaked == false && sharedInfoApply.isHidden)
+                {
+                    IsCloaked = sharedInfoApply.isHidden;
+                }
+
+                if (string.IsNullOrWhiteSpace(sharedInfoApply.outputValue) == false)
+                {
+                    outputValue = sharedInfoApply.outputValue;
+                }
+            }
+
+            if (isEditMode && isEnabled)
             {
                 // Edit mode
-                Data.IComponentList list = Data.ComponentList.SelectOne(Data.Utility.ConvertToGuid(this.Componentlist));
-                if (this.CanContainOneItem)
+                IComponentList list = ComponentList.SelectOne(Utility.ConvertToGuid(Componentlist));
+                if (CanContainOneItem)
                 {
                     #region Half Width
+
                     if (Expression != OutputExpression.FullWidth)
                     {
                         string titleTag = string.Concat(Title, Mandatory ? "<em>*</em>" : "");
@@ -370,25 +402,28 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
 
                         ApplyItemSelect(
                             build,
-                            this.CanContainOneItem, this.CanClickOnItem,
+                            CanContainOneItem, CanClickOnItem,
                             titleTag,
-                            this.ID,
-                            this.Componentlist,
+                            ID,
+                            Componentlist,
                             m_Candidate == null ? null : m_Candidate.UrlAddition,
-                            this.AutoPostback,
+                            AutoPostback,
                             isRequired,
                             false,
                             AddNewItemsOnTop,
                             LayerSize.Normal,
                             null,
                             null, LayerSpecification,
-                            new NameItemValue() { Name = this.ID, ID = key, Value = candidate }
+                            new NameItemValue() { Name = ID, ID = key, Value = candidate }
                             );
                     }
+
                     #endregion 
+
                     else
                     {
                         #region Full Width
+
                         string titleTag = string.Concat(Title, Mandatory ? "<em>*</em>" : "");
 
                         string candidate = null;
@@ -401,12 +436,12 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
 
                         ApplyItemSelect(
                             build,
-                            this.CanContainOneItem, this.CanClickOnItem,
+                            CanContainOneItem, CanClickOnItem,
                             titleTag,
-                            this.ID,
-                            this.Componentlist,
+                            ID,
+                            Componentlist,
                             m_Candidate == null ? null : m_Candidate.UrlAddition,
-                            this.AutoPostback, 
+                            AutoPostback, 
                             isRequired, 
                             false, 
                             AddNewItemsOnTop, 
@@ -414,8 +449,9 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                             null, 
                             null,
                             LayerSpecification,
-                            new NameItemValue() { Name = this.ID, TextID = key, Value = candidate }
+                            new NameItemValue() { Name = ID, TextID = key, Value = candidate }
                             );
+
                         #endregion
                     }
                 }
@@ -424,10 +460,15 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                     List<NameItemValue> arr = new List<NameItemValue>();
                     if (m_Candidate != null && m_Candidate.Items != null && m_Candidate.Items.Length > 0)
                     {
-                        foreach (Data.SubList.SubListitem item in m_Candidate.Items)
+                        foreach (SubList.SubListitem item in m_Candidate.Items)
                         {
-                            
-                            arr.Add(new NameItemValue() { Name = this.ID, Value = item.Description, ID = item.ID, TextID = item.TextID } );
+                            arr.Add(new NameItemValue() 
+                            { 
+                                Name = ID, 
+                                Value = item.Description, 
+                                ID = item.ID, 
+                                TextID = item.TextID 
+                            });
                         }
                     }
 
@@ -435,14 +476,14 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
 
                     ApplyItemSelect(
                         build,
-                        this.CanContainOneItem, this.CanClickOnItem,
+                        CanContainOneItem, CanClickOnItem,
                         titleTag,
-                        this.ID,
-                        this.Componentlist,
+                        ID,
+                        Componentlist,
                         m_Candidate == null ? null : m_Candidate.UrlAddition,
-                        this.AutoPostback,
+                        AutoPostback,
                         isRequired,
-                        this.CanOnlyOrderSort,
+                        CanOnlyOrderSort,
                         AddNewItemsOnTop,
                         LayerSize.Normal,
                         null,
@@ -455,8 +496,9 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
             else
             {
                 //  Read mode
-                string candidate = null;
-                if (m_Candidate != null && m_Candidate.Items != null && m_Candidate.Items.Length > 0)
+                string candidate = sharedInfoApply.isShared ? outputValue : null;
+
+                if (m_Candidate?.Items?.Length > 0)
                 {
                     if (m_Candidate.Items.Length == 1)
                     {
@@ -464,21 +506,26 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                     }
                     else
                     {
-                        candidate = "<div class=\"optionInfo\">\n<ul>";
+                        candidate = "<div class=\"optionInfo\"><ul>";
                         foreach (var item in m_Candidate.Items)
                         {
                             if (!string.IsNullOrWhiteSpace(item.Description))
-                                candidate += string.Format("\n\t<li>{0}</li>", item.Description);
+                            {
+                                candidate += $"<li>{item.Description}</li>";
+                            }
                         }
-                        candidate += "\n</ul></div>";
+                        candidate += "</ul></div>";
                     }
                 }
                
-                build.Append(GetSimpleTextElement(this.Title, this.Mandatory, candidate, this.InteractiveHelp));
+                build.Append(GetSimpleTextElement(candidate));
             }
 
             if (m_Candidate == null || m_Candidate.Items == null || m_Candidate.Items.Length == 0)
+            {
                 return ReadCandidate(null);
+            }
+
             return ReadCandidate(m_Candidate.Serialized);
         }
 
@@ -488,15 +535,19 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
         /// <returns></returns>
         public override bool IsValid(bool isRequired)
         {
-            this.Mandatory = isRequired;
+            Mandatory = isRequired;
             if (Console.CurrentListInstance.wim.IsSaveMode)
             {
                 //  Custom error validation
                 if (!base.IsValid(isRequired))
+                {
                     return false;
+                }
 
                 if (Mandatory && (m_Candidate == null || m_Candidate.Items == null || m_Candidate.Items.Length == 0))
+                {
                     return false;
+                }
             }
             return true;
         }

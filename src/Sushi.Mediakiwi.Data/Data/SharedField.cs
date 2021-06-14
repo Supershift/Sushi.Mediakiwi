@@ -2,6 +2,7 @@
 using Sushi.MicroORM.Mapping;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Sushi.Mediakiwi.Data
@@ -17,12 +18,14 @@ namespace Sushi.Mediakiwi.Data
                 Id(x => x.ID, "SharedField_Key").Identity();
                 Map(x => x.ContentTypeID, "SharedField_ContentTypeID");
                 Map(x => x.FieldName, "SharedField_FieldName").SqlType(SqlDbType.NVarChar);
+                Map(x => x.IsHiddenOnPage, "SharedField_IsHiddenOnPage");
             }
         }
 
         public int ID { get; set; }
-        public int ContentTypeID { get; set; }
+        public ContentType ContentTypeID { get; set; }
         public string FieldName { get; set; }
+        public bool IsHiddenOnPage { get; set; }
 
         public string List_ContentType
         {
@@ -30,57 +33,57 @@ namespace Sushi.Mediakiwi.Data
             {
                 switch (ContentTypeID)
                 {
-                    case (int)ContentType.FileUpload:
+                    case ContentType.FileUpload:
                         return "File upload";
-                    case (int)ContentType.Binary_Document:
-                    case (int)ContentType.DocumentSelect:
+                    case ContentType.Binary_Document:
+                    case ContentType.DocumentSelect:
                         return "Document";
-                    case (int)ContentType.Binary_Image:
+                    case ContentType.Binary_Image:
                         return "Image";
-                    case (int)ContentType.FolderSelect:
+                    case ContentType.FolderSelect:
                         return "Folder";
-                    case (int)ContentType.Hyperlink:
+                    case ContentType.Hyperlink:
                         return "Link";
-                    case (int)ContentType.PageSelect:
+                    case ContentType.PageSelect:
                         return "Page";
-                    case (int)ContentType.Choice_Checkbox:
+                    case ContentType.Choice_Checkbox:
                         return "Checkbox";
-                    case (int)ContentType.Date:
+                    case ContentType.Date:
                         return "Date";
-                    case (int)ContentType.DateTime:
+                    case ContentType.DateTime:
                         return "Datetime";
-                    case (int)ContentType.MultiField:
+                    case ContentType.MultiField:
                         return "Multifield";
-                    case (int)ContentType.RichText:
+                    case ContentType.RichText:
                         return "Richtext";
-                    case (int)ContentType.Sourcecode:
+                    case ContentType.Sourcecode:
                         return "Code";
-                    case (int)ContentType.TextArea:
+                    case ContentType.TextArea:
                         return "Textarea";
-                    case (int)ContentType.TextField:
+                    case ContentType.TextField:
                         return "TextField";
-                    case (int)ContentType.TextLine:
+                    case ContentType.TextLine:
                         return "TextLine";
-                    case (int)ContentType.TextDate:
+                    case ContentType.TextDate:
                         return "TextDate";
-                    case (int)ContentType.SubListSelect:
+                    case ContentType.SubListSelect:
                         return "Sublistselect";
-                    case (int)ContentType.Section:
+                    case ContentType.Section:
                         return "Section";
-                    case (int)ContentType.MultiImageSelect:
+                    case ContentType.MultiImageSelect:
                         return "Multi image";
-                    case (int)ContentType.MultiAssetUpload:
+                    case ContentType.MultiAssetUpload:
                         return "Multi document";
-                    case (int)ContentType.ListItemSelect:
+                    case ContentType.ListItemSelect:
                         return "Listitem select";
-                    case (int)ContentType.Choice_Dropdown:
+                    case ContentType.Choice_Dropdown:
                         return "Dropdown";
-                    case (int)ContentType.Choice_Radio:
+                    case ContentType.Choice_Radio:
                         return "Radio";
-                    case (int)ContentType.HtmlContainer:
+                    case ContentType.HtmlContainer:
                         return "HTML";
                     default:
-                    case (int)ContentType.Undefined:
+                    case ContentType.Undefined:
                         return "?";
                 }
             }
@@ -89,7 +92,7 @@ namespace Sushi.Mediakiwi.Data
         {
             get
             {
-                if (ID > 0)
+                if (ID > 0 && string.IsNullOrWhiteSpace(List_EditValue) == false && string.IsNullOrWhiteSpace(List_PublishedValue) == false)
                 {
                     return List_EditValue.Equals(List_PublishedValue, System.StringComparison.InvariantCulture);
                 }
@@ -144,23 +147,64 @@ namespace Sushi.Mediakiwi.Data
         }
 
 
-        public static SharedField FetchSingle(string fieldName)
+        public static SharedField FetchSingle(string fieldName, ContentType contentType)
         {
             var connector = new Connector<SharedField>();
             var filter = connector.CreateDataFilter();
+
             filter.Add(x => x.FieldName, fieldName);
+            filter.Add(x => x.ContentTypeID, contentType);
+
             var result = connector.FetchSingle(filter);
             return result;
         }
 
-        public static async Task<SharedField> FetchSingleAsync(string fieldName)
+        public static async Task<SharedField> FetchSingleAsync(string fieldName, ContentType contentType)
         {
             var connector = new Connector<SharedField>();
             var filter = connector.CreateDataFilter();
 
             filter.Add(x => x.FieldName, fieldName);
+            filter.Add(x => x.ContentTypeID, contentType);
+
             var result = await connector.FetchSingleAsync(filter).ConfigureAwait(false);
             return result;
+        }
+
+        public static SharedField FetchSingleForComponentTemplate(string fieldName, ContentType contentType, int componentTemplateId)
+        {
+            var connector = new Connector<SharedField>();
+            var filter = connector.CreateDataFilter();
+
+            var props = Property.SelectAllByTemplate(componentTemplateId);
+            var matchingProp = props.FirstOrDefault(x => x.FieldName == fieldName && x.IsSharedField);
+            if (matchingProp?.ID > 0) 
+            {
+                filter.Add(x => x.FieldName, fieldName);
+                filter.Add(x => x.ContentTypeID, contentType);
+
+                return connector.FetchSingle(filter);
+            }
+
+            return default(SharedField);
+        }
+
+        public static async Task<SharedField> FetchSingleForComponentTemplateAsync(string fieldName, ContentType contentType, int componentTemplateId)
+        {
+            var connector = new Connector<SharedField>();
+            var filter = connector.CreateDataFilter();
+
+            var props = await Property.SelectAllByTemplateAsync(componentTemplateId);
+            var matchingProp = props.FirstOrDefault(x => x.FieldName == fieldName && x.IsSharedField);
+            if (matchingProp?.ID > 0)
+            {
+                filter.Add(x => x.FieldName, fieldName);
+                filter.Add(x => x.ContentTypeID, contentType);
+
+                return await connector.FetchSingleAsync(filter);
+            }
+
+            return default(SharedField);
         }
 
         public void Save()

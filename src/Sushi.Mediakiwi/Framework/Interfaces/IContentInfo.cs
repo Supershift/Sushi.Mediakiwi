@@ -145,7 +145,6 @@ namespace Sushi.Mediakiwi.Framework
         bool CanHaveExpression { get; }
         bool OverrideTableGeneration { set; get; }
         string GetMultiFieldTitleHTML(bool isEditMode);
-
         bool IsHidden { get; set; }
         bool IsReadOnly { get; set; }
         bool IsCloaked { get; set; }

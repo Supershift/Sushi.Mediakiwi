@@ -107,14 +107,14 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
             Mandatory = mandatory;
             InteractiveHelp = interactiveHelp;
             AutoPostBack = autoPostback;
-            this.TextType = inputType;
+            TextType = inputType;
             if (mustMatchRegex != null)
                 MustMatch = new Regex(mustMatchRegex, RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
             else
             {
-                if (this.TextType == InputType.Money)
+                if (TextType == InputType.Money)
                     MustMatch = new Regex(Data.Utility.GlobalRegularExpression.OnlyDecimal, RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
-                else if (this.TextType == InputType.Numeric)
+                else if (TextType == InputType.Numeric)
                     MustMatch = new Regex(Data.Utility.GlobalRegularExpression.OnlyNumeric, RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
             }
         }
@@ -180,7 +180,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
         /// <param name="isEditMode">if set to <c>true</c> [is edit mode].</param>
         public void SetCandidate(Field field, bool isEditMode)
         {
-            this.SetMultiFieldTitleHTML("Header", "icon-header");
+            SetMultiFieldTitleHTML("Header", "icon-header");
 
             if (Property != null && Property.PropertyType == typeof(Data.CustomData))
             {
@@ -210,7 +210,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
             }
             else
             {
-                candidate = Console.Form(this.ID);
+                candidate = Console.Form(ID);
                 isCandidateUserInput = true;
 
             }
@@ -234,8 +234,8 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                             candidateString = WebUtility.HtmlEncode(candidateString);
                         }
                         //enforce max length of string
-                        if (this.MaxValueLength > 0)
-                            candidateString = Data.Utility.ConvertToFixedLengthText(candidateString, this.MaxValueLength);
+                        if (MaxValueLength > 0)
+                            candidateString = Data.Utility.ConvertToFixedLengthText(candidateString, MaxValueLength);
 
                         candidate = candidateString;
                     }
@@ -314,7 +314,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                 field.Value = candidate == null ? null : candidate.ToString();
             }
 
-            this.OutputText = candidate == null ? null : candidate.ToString();
+            OutputText = candidate == null ? null : candidate.ToString();
 
             //  Inherited content section
             if (ShowInheritedData)
@@ -322,7 +322,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                 if (field != null && !string.IsNullOrEmpty(field.InheritedValue))
                 {
                     InhertitedOutputText = field.InheritedValue;
-                    InhertitedOutputText = string.IsNullOrEmpty(InhertitedOutputText) ? null : WebUtility.HtmlEncode(this.InhertitedOutputText);
+                    InhertitedOutputText = string.IsNullOrEmpty(InhertitedOutputText) ? null : WebUtility.HtmlEncode(InhertitedOutputText);
                 }
             }
 
@@ -349,22 +349,21 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
         /// <returns></returns>
         public Field WriteCandidate(WimControlBuilder build, bool isEditMode, bool isRequired, bool isCloaked)
         {
-            this.SetWriteEnvironment();
+            SetWriteEnvironment();
 
-            this.IsCloaked = isCloaked;
-            this.IsRequired = isRequired;
-            this.Mandatory = isRequired;
+            IsCloaked = isCloaked;
+            IsRequired = isRequired;
+            Mandatory = isRequired;
             if (OverrideEditMode) isEditMode = false;
 
             bool isMoneyMode = false;
-            if (TextType == InputType.Money || TextType == InputType.Numeric)
+            if (TextType == InputType.Money || TextType == InputType.Numeric && !Console.CurrentListInstance.wim.IsEditMode)
             {
-                if (!this.Console.CurrentListInstance.wim.IsEditMode)
-                    isMoneyMode = true;
+                isMoneyMode = true;
             }
 
             //get the value of the property
-            string outputValue = this.OutputText;
+            string outputValue = OutputText;
             if (Property?.PropertyType == typeof(String) && CommonConfiguration.HTML_ENCODE_TEXTAREA_INPUT && !AllowHtmlTags)
             {
                 //in this case the user input was HTML encoded. it needs to be decoded again to get back to its orignal value
@@ -378,19 +377,33 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
 
             bool isEnabled = true;
 
-            if (isMoneyMode || isEditMode || this.Console.CurrentListInstance.wim.IsEditMode)
+            if (isMoneyMode || isEditMode || Console.CurrentListInstance.wim.IsEditMode)
             {
                 if (!isEditMode || isMoneyMode)
+                {
                     isEnabled = false;
+                }
 
-                isEnabled = this.IsEnabled(isEnabled);
+                isEnabled = IsEnabled(isEnabled);
 
                 #region Element creation
 
                 // [MR:03-06-2021] Apply shared field clickable icon.
                 var sharedInfoApply = ApplySharedFieldInformation(isEnabled, outputValue);
-                isEnabled = sharedInfoApply.isEnabled;
-                outputValue = sharedInfoApply.outputValue;
+                // If we have a document assigned, overwrite the current one
+                if (sharedInfoApply.isShared)
+                {
+                    // Enable readonly when shared
+                    isEnabled = sharedInfoApply.isEnabled;
+                    
+                    // When Currently not cloaked, do so if its a shared field
+                    if (IsCloaked == false && sharedInfoApply.isHidden)
+                    {
+                        IsCloaked = sharedInfoApply.isHidden;
+                    }
+
+                    outputValue = sharedInfoApply.outputValue;
+                }
 
                 StringBuilder element = new StringBuilder();
 
@@ -422,18 +435,18 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
 
                 element.AppendFormat("\n\t\t\t\t\t\t\t\t\t{10}<input type=\"{0}\"{1} name=\"{2}\" id=\"{2}\"{3} value=\"{4}\"{5}{6} {9}{12} />{7}{8}{11}"
                     , IsPasswordField ? "password" : "text" // 0
-                    , this.InputClassName(IsValid(isRequired), IsAsync ? $"atext {ClassName}".TrimEnd() : ClassName) // 1
-                    , this.ID // 2
-                    , this.MaxValueLength > 0 ? string.Concat(" maxlength=\"", this.MaxValueLength, "\"") : string.Empty // 3
+                    , InputClassName(IsValid(isRequired), IsAsync ? $"atext {ClassName}".TrimEnd() : ClassName) // 1
+                    , ID // 2
+                    , MaxValueLength > 0 ? string.Concat(" maxlength=\"", MaxValueLength, "\"") : string.Empty // 3
                     , WebUtility.HtmlEncode(outputValue) // 4
                     , styleTag // 5
                     , isEnabled ? null : " disabled=\"disabled\"" // 6
-                    , (this.MaxValueLength != 0 && this.MaxValueLength <= breakpoint) ? this.InputPostText : null // 7
-                    , (this.MaxValueLength == 0 || this.MaxValueLength > breakpoint) ? this.InputPostText : null // 8
+                    , (MaxValueLength != 0 && MaxValueLength <= breakpoint) ? InputPostText : null // 7
+                    , (MaxValueLength == 0 || MaxValueLength > breakpoint) ? InputPostText : null // 8
                     , IsPasswordField ? "autocomplete=\"new-password\"" : "autocomplete=\"off\"" // 9
                     , PreInputHtml // 10
                     , PostInputHtml // 11
-                    , string.IsNullOrWhiteSpace(this.InteractiveHelp) ? null : $" placeholder=\"{Data.Utility.CleanFormatting(this.InteractiveHelp)}\""
+                    , string.IsNullOrWhiteSpace(InteractiveHelp) ? null : $" placeholder=\"{Data.Utility.CleanFormatting(InteractiveHelp)}\""
                     );
 
                 #endregion Element creation
@@ -451,7 +464,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                     {
                         if (ShowInheritedData)
                         {
-                            this.ApplyTranslation(build);
+                            ApplyTranslation(build);
                         }
                         else
                         {
@@ -469,7 +482,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                         {
                             if (string.IsNullOrWhiteSpace(EditSharedFieldLink) == false)
                             {
-                                build.Append($"<th class=\"full\"><label for=\"{ID}\">{EditSharedFieldLink.Replace("[LABEL]", this.TitleLabel)}</label></th>");
+                                build.Append($"<th class=\"full\"><label for=\"{ID}\">{EditSharedFieldLink.Replace("[LABEL]", TitleLabel)}</label></th>");
                             }
                             else
                             {
@@ -480,7 +493,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                         {
                             if (string.IsNullOrWhiteSpace(EditSharedFieldLink) == false)
                             {
-                                build.Append($"<th class=\"half\"><label for=\"{ID}\">{EditSharedFieldLink.Replace("[LABEL]", this.TitleLabel)}</label></th>");
+                                build.Append($"<th class=\"half\"><label for=\"{ID}\">{EditSharedFieldLink.Replace("[LABEL]", TitleLabel)}</label></th>");
                             }
                             else 
                             {
@@ -489,24 +502,24 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                         }
 
                         //if (ShowInheritedData)
-                        //    build.AppendFormat("\t\t\t\t\t\t\t<th class=\"local\"><label>{0}:</label></th>\t\t\t\t\t\t</tr>\t\t\t\t\t\t<tr>\t\t\t\t\t\t\t<td><div class=\"description\">{1}</div></td>\n", this.ID, this.TitleLabel);
+                        //    build.AppendFormat("\t\t\t\t\t\t\t<th class=\"local\"><label>{0}:</label></th>\t\t\t\t\t\t</tr>\t\t\t\t\t\t<tr>\t\t\t\t\t\t\t<td><div class=\"description\">{1}</div></td>\n", ID, TitleLabel);
 
 
                         build.AppendFormat("\n\t\t\t\t\t\t\t<td{0}{1}>{2}"
                             , (Expression == OutputExpression.FullWidth && Console.HasDoubleCols) ? " colspan=\"3\"" : null
-                            , this.InputCellClassName(this.IsValid(isRequired))
+                            , InputCellClassName(IsValid(isRequired))
                             , CustomErrorText
                             );
                     }
 
-                    //build.AppendFormat("\n\t\t\t\t\t\t\t\t<div class=\"{0}\">", (Expression == OutputExpression.FullWidth) ? this.Class_Wide : "half");
+                    //build.AppendFormat("\n\t\t\t\t\t\t\t\t<div class=\"{0}\">", (Expression == OutputExpression.FullWidth) ? Class_Wide : "half");
                     build.AppendFormat("\n\t\t\t\t\t\t\t\t<div class=\"{0}\">"
-                                    , (Expression == OutputExpression.FullWidth) ? this.Class_Wide
+                                    , (Expression == OutputExpression.FullWidth) ? Class_Wide
                                     : (OverrideTableGeneration ? "halfer" : "half")
                                 );
 
                     // Add Shared Icon (if any)
-                    if (string.IsNullOrWhiteSpace(SharedIcon) == false)
+                    if (string.IsNullOrWhiteSpace(SharedIcon) == false && IsCloaked == false)
                     {
                         build.Append(SharedIcon);
                     }
@@ -531,22 +544,23 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
 
             else
             {
-                string output = string.IsNullOrEmpty(this.OutputText) ? null : WebUtility.HtmlEncode(outputValue);
+                string output = string.IsNullOrEmpty(OutputText) ? null : WebUtility.HtmlEncode(outputValue);
 
-                build.Append(GetSimpleTextElement(this.Title, this.Mandatory, output, this.InteractiveHelp, (isMoneyMode | MaxValueLength < BREAKPOINT), PostInputHtml));
+                build.Append(GetSimpleTextElement(output, (isMoneyMode | MaxValueLength < BREAKPOINT), PostInputHtml));
             }
 
             var fieldata = new Api.MediakiwiField()
             {
                 Event = AutoPostBack ? Api.MediakiwiJSEvent.change : Api.MediakiwiJSEvent.none,
-                Title = MandatoryWrap(this.Title),
-                Value = this.OutputText,
-                Expression = this.Expression,
-                PropertyName = this.ID,
+                Title = MandatoryWrap(Title),
+                Value = OutputText,
+                Expression = Expression,
+                PropertyName = ID,
                 PropertyType = (Property == null) ? typeof(string).FullName : Property.PropertyType.FullName,
                 VueType = Api.MediakiwiFormVueType.wimText,
-                ClassName = this.InputClassName(IsValid(isRequired), IsAsync ? $"atext {ClassName}".TrimEnd() : ClassName, false),
-                ReadOnly = this.IsReadOnly
+                ClassName = InputClassName(IsValid(isRequired), IsAsync ? $"atext {ClassName}".TrimEnd() : ClassName, false),
+                ReadOnly = IsReadOnly,
+                ContentTypeID = ContentTypeSelection
             };
 
             if (IsCloaked)
@@ -565,7 +579,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
         /// <returns></returns>
         public override bool IsValid(bool isRequired)
         {
-            this.Mandatory = isRequired;
+            Mandatory = isRequired;
             if (Console.CurrentListInstance.wim.IsSaveMode || Console.CurrentListInstance.wim.ShouldValidate)
             {
                 //  Custom error validation
@@ -574,9 +588,9 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
 
                 if (Mandatory && string.IsNullOrEmpty(OutputText))
                     return false;
-                if (!string.IsNullOrEmpty(OutputText) && this.MustMatch != null)
+                if (!string.IsNullOrEmpty(OutputText) && MustMatch != null)
                 {
-                    bool isMatch = this.MustMatch.IsMatch(OutputText);
+                    bool isMatch = MustMatch.IsMatch(OutputText);
                     return isMatch;
                 }
             }

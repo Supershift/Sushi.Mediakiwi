@@ -34,7 +34,7 @@ namespace Sushi.Mediakiwi.Logic
                         if (p.FilterType == typeof(int).ToString())
                             return Utility.ConvertToInt(value);
 
-                        if (p.TypeID == (int)ContentType.Choice_Checkbox)
+                        if (p.ContentTypeID == ContentType.Choice_Checkbox)
                         {
                             if (value.ToString() == "0" || value.ToString() == string.Empty) return false;
                             return true;
@@ -50,7 +50,7 @@ namespace Sushi.Mediakiwi.Logic
                     {
                         if (p.FieldName == propertyName.Replace("Data.", ""))
                         {
-                            if (p.TypeID == (int)ContentType.Choice_Checkbox)
+                            if (p.ContentTypeID == ContentType.Choice_Checkbox)
                             {
                                 return false;
                             }

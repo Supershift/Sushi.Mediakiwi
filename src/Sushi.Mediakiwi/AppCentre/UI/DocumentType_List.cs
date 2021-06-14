@@ -61,9 +61,9 @@ namespace Sushi.Mediakiwi.AppCentre.UI
             if (FieldPropertiesFormMapImplement != null)
             {
                 bool isChoiceType =
-                    Property.TypeID.Equals((int)ContentType.Choice_Dropdown) ||
-                    Property.TypeID.Equals((int)ContentType.ListItemSelect) ||
-                    Property.TypeID.Equals((int)ContentType.Choice_Radio);
+                    Property.ContentTypeID.Equals(ContentType.Choice_Dropdown) ||
+                    Property.ContentTypeID.Equals(ContentType.ListItemSelect) ||
+                    Property.ContentTypeID.Equals(ContentType.Choice_Radio);
 
                 if (isChoiceType)
                     FieldPropertiesFormMapImplement.Find(x => x.Data).Show();
@@ -85,7 +85,7 @@ namespace Sushi.Mediakiwi.AppCentre.UI
                     item.Title = property.Title;
                     item.InteractiveHelp = property.InteractiveHelp;
                     item.Mandatory = property.IsMandatory ? "1" : "0";
-                    item.IsSharedField = property.IsSharedField;
+                    item.IsSharedField = property.IsSharedField ? "1" : "0";
 
                     if (property.MaxValueLength.HasValue)
                         item.MaxValueLength = property.MaxValueLength.Value.ToString();
@@ -94,7 +94,7 @@ namespace Sushi.Mediakiwi.AppCentre.UI
 
                     item.Default = property.DefaultValue;
                     item.AutoPostBack = property.AutoPostBack ? "1" : "0";
-                    item.ContentTypeSelection = property.TypeID.ToString();
+                    item.ContentTypeSelection = ((int)property.ContentTypeID).ToString();
 
                     if (property.CanContainOneItem)
                     {
@@ -108,9 +108,9 @@ namespace Sushi.Mediakiwi.AppCentre.UI
                     item.Collection = property.ListCollection;
 
                     bool isChoiceType =
-                        property.TypeID.Equals((int)ContentType.Choice_Dropdown) ||
-                        property.TypeID.Equals((int)ContentType.ListItemSelect) ||
-                        property.TypeID.Equals((int)ContentType.Choice_Radio);
+                        property.ContentTypeID.Equals(ContentType.Choice_Dropdown) ||
+                        property.ContentTypeID.Equals(ContentType.ListItemSelect) ||
+                        property.ContentTypeID.Equals(ContentType.Choice_Radio);
 
                     if (isChoiceType)
                     {
@@ -173,9 +173,9 @@ namespace Sushi.Mediakiwi.AppCentre.UI
                 await Property.SaveAsync();
 
                 bool isChoiceType =
-                        Property.TypeID.Equals((int)ContentType.Choice_Dropdown) ||
-                        Property.TypeID.Equals((int)ContentType.ListItemSelect) ||
-                        Property.TypeID.Equals((int)ContentType.Choice_Radio);
+                        Property.ContentTypeID.Equals(ContentType.Choice_Dropdown) ||
+                        Property.ContentTypeID.Equals(ContentType.ListItemSelect) ||
+                        Property.ContentTypeID.Equals(ContentType.Choice_Radio);
 
                 if (options == null)
                 {
@@ -229,7 +229,7 @@ namespace Sushi.Mediakiwi.AppCentre.UI
                 if (Property == null)
                 {
                     Property = new Property();
-                    Property.TypeID = (int)ContentType.TextField;
+                    Property.ContentTypeID = ContentType.TextField;
                 }
                 FieldPropertiesFormMapImplement = new FieldPropertiesForm(wim, Property);
                 FormMaps.Add(FieldPropertiesFormMapImplement);

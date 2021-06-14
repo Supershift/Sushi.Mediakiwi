@@ -1,9 +1,6 @@
 using Sushi.Mediakiwi.Data;
 using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Text;
-using System.Text.RegularExpressions;
 
 namespace Sushi.Mediakiwi.Framework.ContentInfoItem
 {
@@ -48,13 +45,17 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
         /// <param name="interactiveHelp">The interactive help.</param>
         /// <param name="mustMatchRegex">The must match regex.</param>
         public SourcecodeAttribute(string title, int maxlength, bool mandatory, string interactiveHelp, string mustMatchRegex)
-            : base(title, maxlength, mandatory, interactiveHelp, mustMatchRegex) { this.IsSourceCode = true; }
+            : base(title, maxlength, mandatory, interactiveHelp, mustMatchRegex)
+        {
+            IsSourceCode = true; 
+            ContentTypeSelection = ContentType.Sourcecode;
+        }
 
         public override void SetCandidate(Field field, bool isEditMode)
         {
-            this.IsSourceCode = true;
+            IsSourceCode = true;
             base.SetCandidate(field, isEditMode);
-            this.SetMultiFieldTitleHTML(Labels.ResourceManager.GetString("input_code", new CultureInfo(Console.CurrentApplicationUser.LanguageCulture)), "icon-code");
+            SetMultiFieldTitleHTML(Labels.ResourceManager.GetString("input_code", new CultureInfo(Console.CurrentApplicationUser.LanguageCulture)), "icon-code");
         }
     }
 }
