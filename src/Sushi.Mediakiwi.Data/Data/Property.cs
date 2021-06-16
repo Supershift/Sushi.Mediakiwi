@@ -39,7 +39,6 @@ namespace Sushi.Mediakiwi.Data
                 Map(x => x.IsFixed, "Property_IsFixed");
                 Map(x => x.InheritedID, "Property_Property_Key");
                 Map(x => x.SortOrder, "Property_SortOrder");
-
                 Map(x => x.TemplateID, "Property_Template_Key");
                 Map(x => x.InteractiveHelp, "Property_Help").Length(512);
                 Map(x => x.IsMandatory, "Property_IsRequired");
