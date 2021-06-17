@@ -75,7 +75,6 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                 //    Sushi.Mediakiwi.Framework.Inheritance.Folder.CreateFolder(folder, Sushi.Mediakiwi.CurrentSite);
                 //}
 
-                
                 m_Implement.Name = name;
                 m_Implement.LinkText = this.LinkText?.Trim();
                 m_Implement.Title = this.Title?.Trim();

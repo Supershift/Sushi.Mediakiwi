@@ -131,9 +131,9 @@ namespace Sushi.Mediakiwi.UI
             _Console.SaveVisit();
 
             //  Obtain querystring requests
-            this.SetRequestType();
+            SetRequestType();
             //  If an xml (ajax) request comes in output a correct response.
-            if (!await this.OutputAjaxRequestAsync()) return;
+            if (!await OutputAjaxRequestAsync()) return;
             //  Define internal event-check value types
             var  isDeleteTriggered = await SetFormModesAsync();
             //  Checks and sets the current folder.
@@ -167,8 +167,8 @@ namespace Sushi.Mediakiwi.UI
         /// <param name="isDeleteTriggered">if set to <c>true</c> [is delete triggered].</param>
         async Task HandleRequestAsync(DataGrid grid, Beta.GeneratedCms.Source.Component component, bool isDeleteTriggered)
         {
-            this.HandleActionRequest();
-            if (await this.HandleAsyncRequestAsync(component))
+            HandleActionRequest();
+            if (await HandleAsyncRequestAsync(component))
                 return;
 
             if ((_Console.ItemType == RequestItemType.Item) || _Console.CurrentListInstance.wim.CanContainSingleInstancePerDefinedList)
@@ -288,7 +288,7 @@ namespace Sushi.Mediakiwi.UI
             {
                 var pagePublicationHandler = new PagePublication();
 
-                //page.Publish(pagePublicationHandler, _Console.CurrentApplicationUser);
+                await page.PublishAsync(pagePublicationHandler, _Console.CurrentApplicationUser);
                 //Wim.Framework2.Functions.AuditTrail.Insert(_Console.CurrentApplicationUser, page, Framework2.Functions.Auditing.ActionType.Publish, null);
                 _Console.Response.Redirect(string.Concat(_Console.WimPagePath, "?page=", _Console.Item.Value, redirect));
             }
@@ -296,7 +296,7 @@ namespace Sushi.Mediakiwi.UI
             {
                 var pagePublicationHandler = new PagePublication();
 
-                //page.TakeDown(pagePublicationHandler, _Console.CurrentApplicationUser);
+                await page.TakeDown(pagePublicationHandler, _Console.CurrentApplicationUser);
                 //Wim.Framework2.Functions.AuditTrail.Insert(_Console.CurrentApplicationUser, page, Framework2.Functions.Auditing.ActionType.TakeOffline, null);
                 _Console.Response.Redirect(string.Concat(_Console.WimPagePath, "?page=", _Console.Item.Value, redirect));
             }
@@ -332,19 +332,19 @@ namespace Sushi.Mediakiwi.UI
 
             Data.Page pageInstance;
 
-            this.GlobalWimControlBuilder = component.CreateContentList(_Console, 0, selectedTab == 1, out pageInstance, section);
+            GlobalWimControlBuilder = component.CreateContentList(_Console, 0, selectedTab == 1, out pageInstance, section);
 
             if (!_Console.IsAdminFooter)
             {
-                this.GlobalWimControlBuilder.Canvas.Type = CanvasType.ListItem;
+                GlobalWimControlBuilder.Canvas.Type = CanvasType.ListItem;
 
-                this.GlobalWimControlBuilder.Leftnav = _PresentationNavigation.NewLeftNavigation(_Console, component.m_ButtonList != null ? component.m_ButtonList.ToArray() : null);
+                GlobalWimControlBuilder.Leftnav = _PresentationNavigation.NewLeftNavigation(_Console, component.m_ButtonList != null ? component.m_ButtonList.ToArray() : null);
 
-                this.GlobalWimControlBuilder.TopNavigation = _PresentationNavigation.TopNavigation(_Console);
-                this.GlobalWimControlBuilder.Rightnav = _PresentationNavigation.RightSideNavigation(_Console, component.m_ButtonList != null ? component.m_ButtonList.ToArray() : null);
-                this.GlobalWimControlBuilder.Bottom = _PresentationNavigation.NewBottomNavigation(_Console, component.m_ButtonList != null ? component.m_ButtonList.ToArray() : null, false);
+                GlobalWimControlBuilder.TopNavigation = _PresentationNavigation.TopNavigation(_Console);
+                GlobalWimControlBuilder.Rightnav = _PresentationNavigation.RightSideNavigation(_Console, component.m_ButtonList != null ? component.m_ButtonList.ToArray() : null);
+                GlobalWimControlBuilder.Bottom = _PresentationNavigation.NewBottomNavigation(_Console, component.m_ButtonList != null ? component.m_ButtonList.ToArray() : null, false);
 
-                await AddToResponseAsync(_PresentationMonitor.GetTemplateWrapper(_Console, _Placeholders, _Callbacks, this.GlobalWimControlBuilder));
+                await AddToResponseAsync(_PresentationMonitor.GetTemplateWrapper(_Console, _Placeholders, _Callbacks, GlobalWimControlBuilder));
             }
         }
 
@@ -373,18 +373,18 @@ namespace Sushi.Mediakiwi.UI
 
             if (!_Console.IsComponent)
             {
-                if (_Console.CurrentList.Option_FormAsync && !this.IsFormatRequest_JSON)
+                if (_Console.CurrentList.Option_FormAsync && !IsFormatRequest_JSON)
                 {
                     _Console.CurrentListInstance.wim.DoListInit();
-                    this.GlobalWimControlBuilder = new WimControlBuilder();
+                    GlobalWimControlBuilder = new WimControlBuilder();
               
 
                 }
                 else
                 {
                     _Console.CurrentListInstance.wim.DoListInit();
-                    this.GlobalWimControlBuilder = component.CreateList(_Console, _Console.OpenInFrame);
-                    if (this.GlobalWimControlBuilder.IsTerminated)
+                    GlobalWimControlBuilder = component.CreateList(_Console, _Console.OpenInFrame);
+                    if (GlobalWimControlBuilder.IsTerminated)
                     {
                         return;
                     }
@@ -393,44 +393,44 @@ namespace Sushi.Mediakiwi.UI
                     //    _Console.CurrentListInstance.wim.DoListDelete(component.item);
                 }
 
-                if (this.IsFormatRequest_JSON)
+                if (IsFormatRequest_JSON)
                 {
                     _Console.Response.ContentType = "application/json";
 
-                    _PresentationNavigation.RightSideNavigation(_Console, component.m_ButtonList != null ? component.m_ButtonList.ToArray() : null, this.GlobalWimControlBuilder);
-                    _PresentationNavigation.NewBottomNavigation(_Console, component.m_ButtonList != null ? component.m_ButtonList.ToArray() : null, false, this.GlobalWimControlBuilder);
+                    _PresentationNavigation.RightSideNavigation(_Console, component.m_ButtonList != null ? component.m_ButtonList.ToArray() : null, GlobalWimControlBuilder);
+                    _PresentationNavigation.NewBottomNavigation(_Console, component.m_ButtonList != null ? component.m_ButtonList.ToArray() : null, false, GlobalWimControlBuilder);
 
                     Dictionary<string, string> formFields = null;
                     if (formFields == null)
                         formFields = new Dictionary<string, string>();
 
-                    this.GlobalWimControlBuilder.ApiResponse.CurrentSiteID = _Console.ChannelIndentifier;
-                    this.GlobalWimControlBuilder.ApiResponse.ListDescription = _Console.CurrentListInstance.wim.CurrentList.Description;
-                    this.GlobalWimControlBuilder.ApiResponse.RedirectUrl = _Console.RedirectionUrl;
+                    GlobalWimControlBuilder.ApiResponse.CurrentSiteID = _Console.ChannelIndentifier;
+                    GlobalWimControlBuilder.ApiResponse.ListDescription = _Console.CurrentListInstance.wim.CurrentList.Description;
+                    GlobalWimControlBuilder.ApiResponse.RedirectUrl = _Console.RedirectionUrl;
                     if (!string.IsNullOrWhiteSpace(_Console.RedirectionUrl))
                         _Console.Response.StatusCode = 302;
 
-                    this.GlobalWimControlBuilder.ApiResponse.IsEditMode = _Console.CurrentListInstance.IsEditMode;
-                    this.GlobalWimControlBuilder.ApiResponse.ListTitle = _Console.CurrentListInstance.wim.ListTitle;
+                    GlobalWimControlBuilder.ApiResponse.IsEditMode = _Console.CurrentListInstance.IsEditMode;
+                    GlobalWimControlBuilder.ApiResponse.ListTitle = _Console.CurrentListInstance.wim.ListTitle;
                     // if this item is a button add it to the button list
 
                     // [MR:25-05-2021] added for : https://supershift.atlassian.net/browse/FTD-147
                     await GlobalWimControlBuilder.ApiResponse.ApplySharedFieldDataAsync();
 
-                    await AddToResponseAsync(JsonConvert.SerializeObject(this.GlobalWimControlBuilder.ApiResponse));
+                    await AddToResponseAsync(JsonConvert.SerializeObject(GlobalWimControlBuilder.ApiResponse));
                     return;
                 }
 
-                else if (this.IsFormatRequest_AJAX)
+                else if (IsFormatRequest_AJAX)
                 {
                     _Console.Response.ContentType = "text/plain";
-                    string searchListGrid = this.GlobalWimControlBuilder.SearchGrid;
+                    string searchListGrid = GlobalWimControlBuilder.SearchGrid;
                     await AddToResponseAsync(searchListGrid);
                     return;
                 }
                 else
                     //  Needed to NULLafy it as it was required for AJAX call
-                    this.GlobalWimControlBuilder.SearchGrid = null;
+                    GlobalWimControlBuilder.SearchGrid = null;
             }
 
             bool isCopyTriggered = _Console.Form("copyparent") == "1";
@@ -507,14 +507,14 @@ namespace Sushi.Mediakiwi.UI
 
                 Page pageInstance;
 
-                this.GlobalWimControlBuilder = component.CreateContentList(_Console, 0, true, out pageInstance, null);
-                this.GlobalWimControlBuilder.Canvas.Type = _Console.OpenInFrame > 0 ? CanvasType.ListItemInLayer : CanvasType.ListItem;
-                this.GlobalWimControlBuilder.TopNavigation = _PresentationNavigation.TopNavigation(_Console);
-                this.GlobalWimControlBuilder.Bottom = _PresentationNavigation.NewBottomNavigation(_Console, component.m_ButtonList != null ? component.m_ButtonList.ToArray() : null, false);
-                this.GlobalWimControlBuilder.Tabularnav = Template.GetTabularTagNewDesign(_Console, _Console.CurrentList.Name, 0, false);
-                this.GlobalWimControlBuilder.Leftnav = _PresentationNavigation.NewLeftNavigation(_Console, component.m_ButtonList != null ? component.m_ButtonList.ToArray() : null);
+                GlobalWimControlBuilder = component.CreateContentList(_Console, 0, true, out pageInstance, null);
+                GlobalWimControlBuilder.Canvas.Type = _Console.OpenInFrame > 0 ? CanvasType.ListItemInLayer : CanvasType.ListItem;
+                GlobalWimControlBuilder.TopNavigation = _PresentationNavigation.TopNavigation(_Console);
+                GlobalWimControlBuilder.Bottom = _PresentationNavigation.NewBottomNavigation(_Console, component.m_ButtonList != null ? component.m_ButtonList.ToArray() : null, false);
+                GlobalWimControlBuilder.Tabularnav = Template.GetTabularTagNewDesign(_Console, _Console.CurrentList.Name, 0, false);
+                GlobalWimControlBuilder.Leftnav = _PresentationNavigation.NewLeftNavigation(_Console, component.m_ButtonList != null ? component.m_ButtonList.ToArray() : null);
 
-                await AddToResponseAsync(_PresentationMonitor.GetTemplateWrapper(_Console, _Placeholders, _Callbacks, this.GlobalWimControlBuilder));
+                await AddToResponseAsync(_PresentationMonitor.GetTemplateWrapper(_Console, _Placeholders, _Callbacks, GlobalWimControlBuilder));
 
                 return;
             }
@@ -522,24 +522,24 @@ namespace Sushi.Mediakiwi.UI
             if (!_Console.IsAdminFooter)
             {
              
-                this.GlobalWimControlBuilder.TopNavigation = _PresentationNavigation.TopNavigation(_Console);
-                this.GlobalWimControlBuilder.Canvas.Type = _Console.OpenInFrame > 0 ? CanvasType.ListItemInLayer : CanvasType.ListItem;
-                this.GlobalWimControlBuilder.Rightnav = _PresentationNavigation.RightSideNavigation(_Console, component.m_ButtonList != null ? component.m_ButtonList.ToArray() : null);
+                GlobalWimControlBuilder.TopNavigation = _PresentationNavigation.TopNavigation(_Console);
+                GlobalWimControlBuilder.Canvas.Type = _Console.OpenInFrame > 0 ? CanvasType.ListItemInLayer : CanvasType.ListItem;
+                GlobalWimControlBuilder.Rightnav = _PresentationNavigation.RightSideNavigation(_Console, component.m_ButtonList != null ? component.m_ButtonList.ToArray() : null);
 
 
                 if (
-                    this.GlobalWimControlBuilder.Canvas.Type == CanvasType.ListInLayer ||
-                    this.GlobalWimControlBuilder.Canvas.Type == CanvasType.ListItemInLayer
+                    GlobalWimControlBuilder.Canvas.Type == CanvasType.ListInLayer ||
+                    GlobalWimControlBuilder.Canvas.Type == CanvasType.ListItemInLayer
                     )
                 {
                     //  Do nothing, this is an layer and has no leftnavigation.
                 }
                 else
-                    this.GlobalWimControlBuilder.Leftnav = _PresentationNavigation.NewLeftNavigation(_Console, component.m_ButtonList != null ? component.m_ButtonList.ToArray() : null);
-                this.GlobalWimControlBuilder.Bottom = _PresentationNavigation.NewBottomNavigation(_Console, component.m_ButtonList != null ? component.m_ButtonList.ToArray() : null, false);
-                this.GlobalWimControlBuilder.Tabularnav = Template.GetTabularTagNewDesign(_Console, _Console.CurrentList.Name, 0, false);
+                    GlobalWimControlBuilder.Leftnav = _PresentationNavigation.NewLeftNavigation(_Console, component.m_ButtonList != null ? component.m_ButtonList.ToArray() : null);
+                GlobalWimControlBuilder.Bottom = _PresentationNavigation.NewBottomNavigation(_Console, component.m_ButtonList != null ? component.m_ButtonList.ToArray() : null, false);
+                GlobalWimControlBuilder.Tabularnav = Template.GetTabularTagNewDesign(_Console, _Console.CurrentList.Name, 0, false);
 
-                await AddToResponseAsync(_PresentationMonitor.GetTemplateWrapper(_Console, _Placeholders, _Callbacks, this.GlobalWimControlBuilder));
+                await AddToResponseAsync(_PresentationMonitor.GetTemplateWrapper(_Console, _Placeholders, _Callbacks, GlobalWimControlBuilder));
             }
         }
 
@@ -604,7 +604,7 @@ namespace Sushi.Mediakiwi.UI
             if (_Console.Request.Query["DBM"] == "1")
                 _Console.CurrentListInstance.wim.IsDashboardMode = true;
 
-            //if (!this.IsFormatRequest)
+            //if (!IsFormatRequest)
             //{
             _Console.AddTrace("Monitor", "GetExportOptionUrl(..)");
             if (await GetExportOptionUrlAsync(grid, component))
@@ -612,8 +612,8 @@ namespace Sushi.Mediakiwi.UI
 
             _Console.AddTrace("Monitor", "CreateSearchList(..)");
 
-            this.GlobalWimControlBuilder = component.CreateSearchList(_Console, 0);
-            this.GlobalWimControlBuilder.Canvas.Type = _Console.OpenInFrame > 0 ? CanvasType.ListInLayer : CanvasType.List;
+            GlobalWimControlBuilder = component.CreateSearchList(_Console, 0);
+            GlobalWimControlBuilder.Canvas.Type = _Console.OpenInFrame > 0 ? CanvasType.ListInLayer : CanvasType.List;
 
             if (_Console.OpenInFrame > 0)
                 _Console.CurrentListInstance.wim.Page.HideTabs = true;
@@ -624,7 +624,7 @@ namespace Sushi.Mediakiwi.UI
             {
                 _Console.AddTrace("Monitor", "GetGridFromListInstance(..)");
 
-                if (this.IsFormatRequest_JSON)
+                if (IsFormatRequest_JSON)
                 {
                     _Console.Response.ContentType = "application/json";
                     searchListGrid = grid.GetGridFromListInstanceForJSON(_Console.CurrentListInstance.wim, _Console, 0, false, true);
@@ -632,7 +632,7 @@ namespace Sushi.Mediakiwi.UI
                     await AddToResponseAsync(searchListGrid);
                     return;
                 }
-                if (this.IsFormatRequest_AJAX)
+                if (IsFormatRequest_AJAX)
                 {
                     _Console.Response.ContentType = "text/plain";
                     searchListGrid = null;
@@ -693,7 +693,7 @@ namespace Sushi.Mediakiwi.UI
             }
             else
             {
-                this.GlobalWimControlBuilder.Canvas.Type = CanvasType.Explorer;
+                GlobalWimControlBuilder.Canvas.Type = CanvasType.Explorer;
 
                 _Console.AddTrace("Monitor", "GetThumbnailGridFromListInstance(..)");
                 searchListGrid = grid.GetThumbnailGridFromListInstance(_Console.CurrentListInstance.wim, _Console, 0, false);
@@ -701,21 +701,21 @@ namespace Sushi.Mediakiwi.UI
 
             _Console.AddTrace("Monitor", "AddToResponse(..)");
 
-            this.GlobalWimControlBuilder.SearchGrid = searchListGrid;
-            this.GlobalWimControlBuilder.TopNavigation = _PresentationNavigation.TopNavigation(_Console);
-            this.GlobalWimControlBuilder.Bottom = _PresentationNavigation.NewBottomNavigation(
+            GlobalWimControlBuilder.SearchGrid = searchListGrid;
+            GlobalWimControlBuilder.TopNavigation = _PresentationNavigation.TopNavigation(_Console);
+            GlobalWimControlBuilder.Bottom = _PresentationNavigation.NewBottomNavigation(
                 _Console,
                 component.m_ButtonList != null
                     ? component.m_ButtonList.ToArray()
                     : null,
-                !this.GlobalWimControlBuilder.IsNull
+                !GlobalWimControlBuilder.IsNull
             );
 
-            this.GlobalWimControlBuilder.Tabularnav = Template.GetTabularTagNewDesign(_Console, _Console.CurrentList.Name, 0, false);
-            this.GlobalWimControlBuilder.Rightnav = _PresentationNavigation.RightSideNavigation(_Console, component.m_ButtonList != null ? component.m_ButtonList.ToArray() : null);
-            this.GlobalWimControlBuilder.Leftnav = _PresentationNavigation.NewLeftNavigation(_Console, component.m_ButtonList != null ? component.m_ButtonList.ToArray() : null);
+            GlobalWimControlBuilder.Tabularnav = Template.GetTabularTagNewDesign(_Console, _Console.CurrentList.Name, 0, false);
+            GlobalWimControlBuilder.Rightnav = _PresentationNavigation.RightSideNavigation(_Console, component.m_ButtonList != null ? component.m_ButtonList.ToArray() : null);
+            GlobalWimControlBuilder.Leftnav = _PresentationNavigation.NewLeftNavigation(_Console, component.m_ButtonList != null ? component.m_ButtonList.ToArray() : null);
 
-            await AddToResponseAsync(_PresentationMonitor.GetTemplateWrapper(_Console, _Placeholders, _Callbacks, this.GlobalWimControlBuilder));
+            await AddToResponseAsync(_PresentationMonitor.GetTemplateWrapper(_Console, _Placeholders, _Callbacks, GlobalWimControlBuilder));
         }
 
 
@@ -1128,7 +1128,7 @@ namespace Sushi.Mediakiwi.UI
             if (_Console.Item.HasValue) _Console.ItemType = RequestItemType.Item;
 
             //  Apply the current component list based on the roaming environment settings
-            this.ApplyComponentList(folderId, targetname);
+            ApplyComponentList(folderId, targetname);
         }
 
         /// <summary>
@@ -1461,7 +1461,7 @@ namespace Sushi.Mediakiwi.UI
             if (outputHTML == null)
                 outputHTML = new StringBuilder();
 
-            if (this.IsLoadedInThinLayer)
+            if (IsLoadedInThinLayer)
                 outputHTML.Append(output);
             else
             {

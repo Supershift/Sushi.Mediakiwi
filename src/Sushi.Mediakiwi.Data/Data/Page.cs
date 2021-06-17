@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Sushi.Mediakiwi.Data.MicroORM;
+using Microsoft.AspNetCore.Http;
 
 namespace Sushi.Mediakiwi.Data
 {
@@ -15,6 +16,15 @@ namespace Sushi.Mediakiwi.Data
     [DataMap(typeof(PageMap))]
     public class Page : IExportable
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Page"/> class.
+        /// </summary>
+        public Page()
+        {
+            Folder = new Folder();
+            m_PageTemplate = new PageTemplate();
+        }
+
         public class PageMap : DataMap<Page>
         {
             public PageMap() : this(false) { }
@@ -22,9 +32,14 @@ namespace Sushi.Mediakiwi.Data
             public PageMap(bool isSave)
             {
                 if (isSave)
+                {
                     Table("wim_Pages");
+                }
                 else
+                {
                     Table("wim_Pages left join wim_Folders on Page_Folder_Key = Folder_Key left join wim_Sites on Site_Key = Folder_Site_Key");
+                }
+
                 Id(x => x.ID, "Page_Key").Identity();
                 Map(x => x.GUID, "Page_GUID");
                 Map(x => x.Name, "Page_Name").Length(150);
@@ -79,15 +94,6 @@ namespace Sushi.Mediakiwi.Data
             //return list.ToArray();
         }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Page"/> class.
-        /// </summary>
-        public Page()
-        {
-            Folder = new Folder();
-            m_PageTemplate = new PageTemplate();
-        }
-
         private Regex getWimLinks = new Regex(@"""wim:(.*?)""", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
         /// <summary>
@@ -106,8 +112,10 @@ namespace Sushi.Mediakiwi.Data
         {
             get
             {
-                if (this.m_GUID == Guid.Empty)
-                    this.m_GUID = Guid.NewGuid();
+                if (m_GUID == Guid.Empty)
+                {
+                    m_GUID = Guid.NewGuid();
+                }
                 return m_GUID;
             }
             set { m_GUID = value; }
@@ -171,8 +179,10 @@ namespace Sushi.Mediakiwi.Data
         {
             get
             {
-                if (this.m_Created == DateTime.MinValue)
-                    this.m_Created = Common.DatabaseDateTime;
+                if (m_Created == DateTime.MinValue)
+                {
+                    m_Created = Common.DatabaseDateTime;
+                }
                 return m_Created;
             }
             set { m_Created = value; }
@@ -194,8 +204,10 @@ namespace Sushi.Mediakiwi.Data
         {
             get
             {
-                if (this.m_Updated == DateTime.MinValue)
-                    this.m_Updated = Common.DatabaseDateTime;
+                if (m_Updated == DateTime.MinValue)
+                {
+                    m_Updated = Common.DatabaseDateTime;
+                }
                 return m_Updated;
             }
             set { m_Updated = value; }
@@ -243,7 +255,10 @@ namespace Sushi.Mediakiwi.Data
         //[DatabaseColumn("Page_IsEdited", SqlDbType.Bit)]
         public bool IsEdited
         {
-            get { return (this.Published.GetValueOrDefault().Ticks != this.Updated.Ticks); }
+            get
+            {
+                return (Published.GetValueOrDefault().Ticks != Updated.Ticks);
+            }
         }
 
         /// <summary>
@@ -255,7 +270,9 @@ namespace Sushi.Mediakiwi.Data
             get 
             {
                 if (Template?.ID > 0)
+                {
                     return Template.IsAddedOutputCache;
+                }
                 return false;
             }
         }
@@ -304,13 +321,17 @@ namespace Sushi.Mediakiwi.Data
                 {
                     m_PageTemplate = PageTemplate.SelectOne(TemplateID);
                     if (m_PageTemplate != null && m_PageTemplate.ID != TemplateID)
+                    {
                         m_PageTemplate = PageTemplate.SelectOne(TemplateID);
+                    }
 
                     //CB - 15-09-2014: Try to find the overwriten variant
                     var overwriteTemplate = PageTemplate.SelectOneOverwrite(SiteID, TemplateID);
                     // if overwrite template found, then we use that one
                     if (overwriteTemplate != null && overwriteTemplate.ID > 0)
+                    {
                         m_PageTemplate = overwriteTemplate;
+                    }
                 }
                 return m_PageTemplate;
             }
@@ -328,7 +349,9 @@ namespace Sushi.Mediakiwi.Data
             get
             {
                 if (m_Folder != null && (m_Folder.IsNewInstance || m_Folder.ID != FolderID))
+                {
                     m_Folder = Folder.SelectOne(FolderID);
+                }
                 return m_Folder;
             }
             set { m_Folder = value; }
@@ -351,7 +374,9 @@ namespace Sushi.Mediakiwi.Data
             get
             {
                 if (m_Site == null)
+                {
                     m_Site = Site.SelectOne(SiteID);
+                }
                 return m_Site;
             }
             set { m_Site = value; }
@@ -393,7 +418,7 @@ namespace Sushi.Mediakiwi.Data
                 //    return string.Concat(CompletePath, ext);
 
 
-                //string[] urlArr = HttpContext.Current.Request.Url.AbsoluteUri.Split('/');
+                //string[] urlArr = Http`.Current.Request.Url.AbsoluteUri.Split('/');
                 ////  Creates /www.url.ext
                 //string rebuild = string.Format("{0}/{1}", urlArr[1], urlArr[2]);
 
@@ -402,9 +427,9 @@ namespace Sushi.Mediakiwi.Data
 
                 //if (Wim.CommonConfiguration.REDIRECT_CHANNEL_PATH
                 //    && !Wim.CommonConfiguration.IS_LOCAL_DEVELOPMENT
-                //    && !string.IsNullOrEmpty(this.Site.Domain))
+                //    && !string.IsNullOrEmpty(Site.Domain))
                 //{
-                //    tmp = string.Concat("/", this.Site.Domains[0], Wim.Utility.RemApplicationPath(CompletePath), ext);
+                //    tmp = string.Concat("/", Site.Domains[0], Wim.Utility.RemApplicationPath(CompletePath), ext);
                 //}
 
                 //string unEncoded = Utility.GlobalRegularExpression.Implement.CleanRelativePathSlash.Replace(tmp, "/");
@@ -419,7 +444,18 @@ namespace Sushi.Mediakiwi.Data
         /// <value>The complete path.</value>
         public string InternalPath { get; set; }
 
-        public string CompletePath { get; set; }
+        /// <summary>
+        /// The complete page path including the possible application path
+        /// </summary>
+        /// <value>The complete path.</value>
+        [Obsolete("This will return InternalPath, because CompletePath relied on an HttpContext which isn't available in dotnetcore")]
+        public string CompletePath
+        {
+            get 
+            {
+                return InternalPath;
+            }
+        }
 
         /// <summary>
         /// The complete page path including the possible application path
@@ -462,12 +498,18 @@ namespace Sushi.Mediakiwi.Data
             var filter = connector.CreateDataFilter();
             filter.AddOrder(x => x.MasterID);
 
-            if (sort == PageSortBy.Name) 
+            if (sort == PageSortBy.Name)
+            {
                 filter.AddOrder(x => x.Name, Sushi.MicroORM.SortOrder.ASC);
-            else if (sort == PageSortBy.LinkText) 
+            }
+            else if (sort == PageSortBy.LinkText)
+            {
                 filter.AddOrder(x => x.LinkText, Sushi.MicroORM.SortOrder.ASC);
-            else if (sort == PageSortBy.SortOrder) 
+            }
+            else if (sort == PageSortBy.SortOrder)
+            {
                 filter.AddOrder(x => x.SortOrder, Sushi.MicroORM.SortOrder.ASC);
+            }
             else if (sort == PageSortBy.CustomDate)
             {
                 filter.AddOrder(x => x.CustomDate, Sushi.MicroORM.SortOrder.ASC);
@@ -482,20 +524,21 @@ namespace Sushi.Mediakiwi.Data
             switch (propertySet)
             {
                 case PageReturnProperySet.OnlyDefault:
-                    filter.Add(x => x.IsFolderDefault, true);
+                    {
+                        filter.Add(x => x.IsFolderDefault, true);
+                    }
                     break;
                 case PageReturnProperySet.AllExceptDefault:
-                    filter.Add(x => x.IsFolderDefault, false);
+                    {
+                        filter.Add(x => x.IsFolderDefault, false);
+                    }
                     break;
             }
 
             if (onlyReturnPublishedPages)
-                filter.Add(x => x.IsPublished, true);
-
-            if (onlyReturnPublishedPages)
             {
+                filter.Add(x => x.IsPublished, true);
                 filter.AddParameter("date", DateTime.UtcNow);
-
                 filter.AddSql("(Page_Publish is null or Page_Publish <= @date and (Page_Expire is null or Page_Expire >= @seadaterch)");
             }
 
@@ -583,23 +626,28 @@ namespace Sushi.Mediakiwi.Data
             }
         }
 
-        internal void SetCompletePath()
+        internal void SetInternalPath()
         {
             string replacement = Environment.Current["SPACE_REPLACEMENT"];
-            var path = this.Folder.CompletePath;
+            var path = Folder.CompletePath;
             if (path == null)
+            {
                 path = "/";
+            }
+
             if (!path.EndsWith("/"))
+            {
                 path += "/";
-            this.InternalPath = string.Concat(this.SitePath, path, this.Name).Replace(" ", replacement);
+            }
+
+            InternalPath = string.Concat(SitePath, path, Name).Replace(" ", replacement);
         }
 
         private string MatchAndReplaceTextForLinks(string value, List<Link> pageLinks = null)
         {
             if (value != null)
             {
-                return getWimLinks.Replace(value, delegate (Match match)
-                {
+                return getWimLinks.Replace(value, delegate (Match match) {
                     if (match.Groups.Count > 1)
                     {
                         string v = match.Groups[1].Value;
@@ -613,14 +661,20 @@ namespace Sushi.Mediakiwi.Data
                             newlink.Save();
 
                             if (pageLinks != null && newlink.PageID.HasValue)
+                            {
                                 pageLinks.Add(newlink);
+                            }
                             return $@"""wim:{newlink.ID.ToString()}""";
                         }
                         else
+                        {
                             return value;
+                        }
                     }
                     else
+                    {
                         return value;
+                    }
                 });
             }
             return null;
@@ -633,7 +687,7 @@ namespace Sushi.Mediakiwi.Data
         /// <returns></returns>
         public bool Save()
         {
-            SetCompletePath();
+            SetInternalPath();
 
             var connector = ConnectorFactory.CreateConnector<Page>(new PageMap(true));
             try
@@ -671,7 +725,7 @@ namespace Sushi.Mediakiwi.Data
         /// <returns></returns>
         public async Task<bool> SaveAsync()
         {
-            SetCompletePath();
+            SetInternalPath();
 
             var connector = ConnectorFactory.CreateConnector<Page>(new PageMap(true));
             try
@@ -708,13 +762,13 @@ namespace Sushi.Mediakiwi.Data
         /// <returns></returns>
         public bool Insert()
         {
-            if (this.ID == 0)
+            if (ID == 0)
             {
-                string name = this.Name;
-                this.Name = GetPageNameProposal(this.FolderID, this.Name);
-                if (!this.Name.Equals(name))
+                string name = Name;
+                Name = GetPageNameProposal(FolderID, Name);
+                if (!Name.Equals(name))
                 {
-                    this.InternalPath = $"{this.InternalPath.Substring(0, this.InternalPath.Length - name.Length)}{this.Name}";
+                    InternalPath = $"{InternalPath.Substring(0, InternalPath.Length - name.Length)}{Name}";
                 }
             }
 
@@ -736,13 +790,13 @@ namespace Sushi.Mediakiwi.Data
         /// <returns></returns>
         public async Task<bool> InsertAsync()
         {
-            if (this.ID == 0)
+            if (ID == 0)
             {
-                string name = this.Name;
-                this.Name = GetPageNameProposal(this.FolderID, this.Name);
-                if (!this.Name.Equals(name))
+                string name = Name;
+                Name = GetPageNameProposal(FolderID, Name);
+                if (!Name.Equals(name))
                 {
-                    this.InternalPath = $"{this.InternalPath.Substring(0, this.InternalPath.Length - name.Length)}{this.Name}";
+                    InternalPath = $"{InternalPath.Substring(0, InternalPath.Length - name.Length)}{Name}";
                 }
             }
 
@@ -800,8 +854,10 @@ namespace Sushi.Mediakiwi.Data
         /// </summary>
         public bool IsPageFullyCachable()
         {
-            if (!this.AddToOutputCache)
+            if (!AddToOutputCache)
+            {
                 return false;
+            }
 
             if (!m_IsPageFullyCachableSet)
             {
@@ -813,6 +869,7 @@ namespace Sushi.Mediakiwi.Data
                 m_IsPageFullyCachable = (count == 0);
                 m_IsPageFullyCachableSet = true;
             }
+
             return m_IsPageFullyCachable;
         }
 
@@ -830,17 +887,23 @@ namespace Sushi.Mediakiwi.Data
             if (pageArray1 != null)
             {
                 foreach (Page page in pageArray1)
+                {
                     pageList.Add(GetSortField(page, sortby), page);
+                }
             }
             if (pageArray2 != null)
             {
                 foreach (Page page in pageArray2)
+                {
                     pageList.Add(GetSortField(page, sortby), page);
+                }
             }
             List<Page> list = new List<Page>();
 
             foreach (KeyValuePair<string, Page> item in pageList)
+            {
                 list.Add(item.Value);
+            }
 
             return list;
         }
@@ -859,17 +922,23 @@ namespace Sushi.Mediakiwi.Data
             if (pageArray1 != null)
             {
                 foreach (Page page in pageArray1)
+                {
                     pageList.Add(GetSortField(page, sortby), page);
+                }
             }
             if (pageArray2 != null)
             {
                 foreach (Page page in pageArray2)
+                {
                     pageList.Add(GetSortField(page, sortby), page);
+                }
             }
             List<Page> list = new List<Page>();
 
             foreach (KeyValuePair<string, Page> item in pageList)
+            {
                 list.Add(item.Value);
+            }
 
             return list.ToArray();
         }
@@ -886,10 +955,14 @@ namespace Sushi.Mediakiwi.Data
         {
             m_count++;
             if (sortby == PageSortBy.Name)
-                return string.Format("{0}{1}", page.Name, m_count);
+            {
+                return string.Concat(page.Name, m_count);
+            }
 
             if (sortby == PageSortBy.LinkText)
-                return string.Format("{0}{1}", page.LinkText, m_count);
+            {
+                return string.Concat(page.LinkText, m_count);
+            }
 
             return string.Format("{0}{1}", page.CustomDate.GetValueOrDefault(page.Published.GetValueOrDefault()).Ticks, m_count);
         }
@@ -917,7 +990,9 @@ namespace Sushi.Mediakiwi.Data
             filter.Add(x => x.GUID, guid);
 
             if (returnOnlyPublishedPage)
+            {
                 filter.Add(x => x.IsPublished, true);
+            }
 
             return connector.FetchSingle(filter);
         }
@@ -935,7 +1010,9 @@ namespace Sushi.Mediakiwi.Data
             filter.Add(x => x.GUID, guid);
 
             if (returnOnlyPublishedPage)
+            {
                 filter.Add(x => x.IsPublished, true);
+            }
 
             return await connector.FetchSingleAsync(filter);
         }
@@ -1011,7 +1088,9 @@ namespace Sushi.Mediakiwi.Data
             filter.Add(x => x.SubFolderID, subFolderID);
 
             if (returnOnlyPublishedPage)
+            {
                 filter.Add(x => x.IsPublished, true);
+            }
 
             return connector.FetchSingle(filter);
         }
@@ -1030,7 +1109,9 @@ namespace Sushi.Mediakiwi.Data
             filter.Add(x => x.SubFolderID, subFolderID);
 
             if (returnOnlyPublishedPage)
+            {
                 filter.Add(x => x.IsPublished, true);
+            }
 
             return await connector.FetchSingleAsync(filter);
         }
@@ -1049,7 +1130,9 @@ namespace Sushi.Mediakiwi.Data
             filter.Add(x => x.ID, ID);
 
             if (returnOnlyPublishedPage)
+            {
                 filter.Add(x => x.IsPublished, true);
+            }
 
             return connector.FetchSingle(filter);
         }
@@ -1143,7 +1226,9 @@ namespace Sushi.Mediakiwi.Data
             filter.Add(x => x.ID, ID);
 
             if (returnOnlyPublishedPage)
+            {
                 filter.Add(x => x.IsPublished, true);
+            }
 
             return await connector.FetchSingleAsync(filter);
         }
@@ -1161,7 +1246,9 @@ namespace Sushi.Mediakiwi.Data
             filter.Add(x => x.InternalPath, string.Concat("%/", pageName), ComparisonOperator.Like);
 
             if (returnOnlyPublishedPage)
+            {
                 filter.Add(x => x.IsPublished, true);
+            }
 
             return connector.FetchSingle(filter);
         }
@@ -1179,7 +1266,9 @@ namespace Sushi.Mediakiwi.Data
             filter.Add(x => x.InternalPath, string.Concat("%/", pageName), ComparisonOperator.Like);
 
             if (returnOnlyPublishedPage)
+            {
                 filter.Add(x => x.IsPublished, true);
+            }
 
             return await connector.FetchSingleAsync(filter);
         }
@@ -1208,7 +1297,9 @@ namespace Sushi.Mediakiwi.Data
             filter.Add(x => x.IsFolderDefault, true);
 
             if (returnOnlyPublishedPage)
+            {
                 filter.Add(x => x.IsPublished, true);
+            }
 
             return connector.FetchSingle(filter);
         }
@@ -1227,7 +1318,9 @@ namespace Sushi.Mediakiwi.Data
             filter.Add(x => x.IsFolderDefault, true);
 
             if (returnOnlyPublishedPage)
+            {
                 filter.Add(x => x.IsPublished, true);
+            }
 
             return await connector.FetchSingleAsync(filter);
         }
@@ -1280,7 +1373,7 @@ namespace Sushi.Mediakiwi.Data
         /// <returns></returns>
         public string GetPageNameProposal(int folderID, string page)
         {
-            string nameProposal = Sushi.Mediakiwi.Data.Utility.GlobalRegularExpression.Implement.ReplaceNotAcceptableFilenameCharacter.Replace(page, "");
+            string nameProposal = Utility.GlobalRegularExpression.Implement.ReplaceNotAcceptableFilenameCharacter.Replace(page, "");
 
             bool pageExistsInFolder = IsPageAlreadyTaken(folderID, page);
             int nameExtentionCount = 0;
@@ -1330,13 +1423,13 @@ namespace Sushi.Mediakiwi.Data
         /// Deletes all component search references.
         /// </summary>
         /// <param name="ID">The page ID.</param>
-        private static void DeleteAllComponentSearchReferences(int ID)
+        public static async Task DeleteAllComponentSearchReferencesAsync(int ID)
         {
             var connector = ConnectorFactory.CreateConnector<Page>();
             var filter = connector.CreateDataFilter();
             filter.AddParameter("@pageId", ID);
 
-            connector.ExecuteNonQuery(@"
+            await connector.ExecuteNonQueryAsync(@"
                 DELETE FROM [wim_ComponentSearch]
                 WHERE
                         [ComponentSearch_Type] = 1
@@ -1348,23 +1441,22 @@ namespace Sushi.Mediakiwi.Data
                         WHERE
                             [Component_Page_Key] = @pageId)
             ", filter);
-			connector.Cache?.FlushRegion(connector.CacheRegion);
+            connector.Cache?.FlushRegion(connector.CacheRegion);
         }
 
         /// <summary>
         /// Clean up the component list after take done because some residual components could stil be present.
         /// </summary>
-        /// <param name="ID">The page ID.</param>
-        private void CleanUpAfterTakeDown(int ID)
+        public async Task CleanUpAfterTakeDownAsync()
         {
-            DeleteAllComponentSearchReferences(ID);
+            await DeleteAllComponentSearchReferencesAsync(ID);
 
             var connector = ConnectorFactory.CreateConnector<Page>();
             var filter = connector.CreateDataFilter();
             filter.AddParameter("@pageId", ID);
 
-            connector.ExecuteNonQuery(@"DELETE FROM [wim_Components] WHERE [Component_Page_Key] = @pageId", filter);
-			connector.Cache?.FlushRegion(connector.CacheRegion);
+            await connector.ExecuteNonQueryAsync(@"DELETE FROM [wim_Components] WHERE [Component_Page_Key] = @pageId", filter);
+            connector.Cache?.FlushRegion(connector.CacheRegion);
         }
 
         /// <summary>
@@ -1384,9 +1476,13 @@ namespace Sushi.Mediakiwi.Data
             string query = string.Format("%{0}%", searchQuery.Replace(" ", "%"));
             filter.AddParameter("@query", query);
             if (isPartOfPath)
+            {
                 filter.AddSql("([Page_Name] LIKE @query OR [Page_LinkText] LIKE @query OR [Page_Description] LIKE @query OR [Page_CompletePath] LIKE @query)");
+            }
             else
+            {
                 filter.AddSql("([Page_Name] LIKE @query OR [Page_LinkText] LIKE @query OR [Page_Description] LIKE @query)");
+            }
 
             return connector.FetchAll(filter).ToArray();
         }
@@ -1408,9 +1504,13 @@ namespace Sushi.Mediakiwi.Data
             string query = string.Format("%{0}%", searchQuery.Replace(" ", "%"));
             filter.AddParameter("@query", query);
             if (isPartOfPath)
+            {
                 filter.AddSql("([Page_Name] LIKE @query OR [Page_LinkText] LIKE @query OR [Page_Description] LIKE @query OR [Page_CompletePath] LIKE @query)");
+            }
             else
+            {
                 filter.AddSql("([Page_Name] LIKE @query OR [Page_LinkText] LIKE @query OR [Page_Description] LIKE @query)");
+            }
 
             var result = await connector.FetchAllAsync(filter);
             return result.ToArray();
@@ -1526,7 +1626,7 @@ namespace Sushi.Mediakiwi.Data
         /// <param name="pageID">The page ID.</param>
         /// <param name="siteID">The site ID.</param>
         /// <returns></returns>
-        public static Sushi.Mediakiwi.Data.Page SelectOneChild(int pageID, int siteID)
+        public static Page SelectOneChild(int pageID, int siteID)
         {
             return SelectOneChild(pageID, siteID, true);
         }
@@ -1545,8 +1645,11 @@ namespace Sushi.Mediakiwi.Data
             filter.AddSql("Page_Master_Key = @Page OR Page_Key = @Page");
             filter.AddParameter<int>("Page", pageID);
             filter.Add(x => x.SiteID, siteID);
+
             if (returnOnlyPublishedPage)
+            {
                 filter.Add(x => x.IsPublished, true);
+            }
 
             var result = connector.FetchSingle(filter);
             return result;
@@ -1654,12 +1757,18 @@ namespace Sushi.Mediakiwi.Data
             var filter = connector.CreateDataFilter();
 
             if (maxReturnCount != 0)
+            {
                 filter.MaxResults = maxReturnCount;
+            }
 
             if (desc)
+            {
                 filter.AddOrder(x => x.CustomDate, Sushi.MicroORM.SortOrder.DESC);
+            }
             else
+            {
                 filter.AddOrder(x => x.CustomDate, Sushi.MicroORM.SortOrder.ASC);
+            }
 
             filter.Add(x => x.FolderID, folderID);
             filter.Add(x => x.IsPublished, true);
@@ -1670,7 +1779,9 @@ namespace Sushi.Mediakiwi.Data
             filter.AddSql("([Page_Expire] IS NULL OR [Page_Expire] > @currentDate)");
 
             if (pageTemplateID.HasValue)
+            {
                 filter.Add(x => x.TemplateID, pageTemplateID.Value);
+            }
 
             return connector.FetchAll(filter).ToArray();
         }
@@ -1690,12 +1801,18 @@ namespace Sushi.Mediakiwi.Data
             var filter = connector.CreateDataFilter();
 
             if (maxReturnCount != 0)
+            {
                 filter.MaxResults = maxReturnCount;
+            }
 
             if (desc)
+            {
                 filter.AddOrder(x => x.CustomDate, Sushi.MicroORM.SortOrder.DESC);
+            }
             else
+            {
                 filter.AddOrder(x => x.CustomDate, Sushi.MicroORM.SortOrder.ASC);
+            }
 
             filter.Add(x => x.FolderID, folderID);
             filter.Add(x => x.IsPublished, true);
@@ -1706,7 +1823,9 @@ namespace Sushi.Mediakiwi.Data
             filter.AddSql("([Page_Expire] IS NULL OR [Page_Expire] > @currentDate)");
 
             if (pageTemplateID.HasValue)
+            {
                 filter.Add(x => x.TemplateID, pageTemplateID.Value);
+            }
 
             var result = await connector.FetchAllAsync(filter);
             return result.ToArray();

@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using Wim.Data;
 using Sushi.Mediakiwi.Framework;
 using Sushi.Mediakiwi.Data;
 
@@ -11,43 +7,46 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
 {
     public class PageHistory : BaseImplementation
     {
-        //public PageHistory()
-        //{
-        //    wim.SearchListCanClickThrough = false;
-        //    wim.DashBoardCanClickThrough = false;
-        //    ListSearch += PageHistory_ListSearch;
-        //}
+        public PageHistory()
+        {
+            wim.SearchListCanClickThrough = false;
+            wim.DashBoardCanClickThrough = false;
 
-        //private Task PageHistory_ListSearch(ComponentListSearchEventArgs arg)
-        //{
-        //    if (!String.IsNullOrEmpty(Request["rollback"]))
-        //    {
-        //        int rollbackVersion = Utility.ConvertToInt(Request.Query["rollback"]);
-        //        var pageVersion = PageVersion.SelectOne(rollbackVersion);
-        //        var page = Page.SelectOne(CurrentPageID);
-        //        page.CopyFromVersion(pageVersion, wim.CurrentApplicationUser);
+            ListSearch += PageHistory_ListSearch;
+        }
 
-        //        // Refresh after 
-        //        Response.Write(@"<script type=""text/javascript""> parent.location.href =parent.location.href; </script>");
-        //    }
-        //    var list = PageVersion.SelectAllOfPage(CurrentPageID);
-        //    foreach (var item in list)
-        //    {
-        //        item.RollBackTo = $@"<a href=""{wim.Console.GetSafeUrl()}&rollback={item.ID}"" class=""submit"">Restore</a>";
-        //    }
-        //    wim.ListDataColumns.Add("", "ID", ListDataColumnType.UniqueIdentifier);
-        //    wim.ListDataColumns.Add("Name", "Name", ListDataColumnType.HighlightPresent);
-        //    wim.ListDataColumns.Add("Published", "Created", 80);
+        private async Task PageHistory_ListSearch(ComponentListSearchEventArgs arg)
+        {
+            if (!String.IsNullOrEmpty(Context.Request.Query["rollback"]))
+            {
+                int rollbackVersion = Utility.ConvertToInt(Context.Request.Query["rollback"]);
+                var pageVersion = await PageVersion.SelectOneAsync(rollbackVersion);
+                var page = await Page.SelectOneAsync(CurrentPageID);
+                await page.CopyFromVersionAsync(pageVersion, wim.CurrentApplicationUser);
 
-        //    wim.ListDataColumns.Add(new ListDataColumn("", "RollBackTo") { ColumnWidth = 150 });
+                wim.Page.Body.Form.RefreshParent();
+                // Refresh after 
+              // Context.Response.Body..Write(@"<script type=""text/javascript""> parent.location.href =parent.location.href; </script>");
+            }
 
-        //    wim.ListDataApply<IPageVersion>(list);
+            var list = await PageVersion.SelectAllOfPageAsync(CurrentPageID);
+            foreach (var item in list)
+            {
+                item.RollBackTo = $@"<a href=""{wim.Console.GetSafeUrl()}&rollback={item.ID}"" class=""submit"">Restore</a>";
+            }
 
-        //}
+            wim.ListDataColumns.Add(new ListDataColumn("", nameof(IPageVersion.ID), ListDataColumnType.UniqueIdentifier));
+            wim.ListDataColumns.Add(new ListDataColumn("Name", nameof(IPageVersion.Name), ListDataColumnType.HighlightPresent));
+            wim.ListDataColumns.Add(new ListDataColumn("Published", nameof(IPageVersion.Created)) { ColumnWidth = 80 });
+            wim.ListDataColumns.Add(new ListDataColumn("", nameof(IPageVersion.RollBackTo)) { ColumnWidth = 150 });
 
-        //public int CurrentPageID
-        //{
-        //    get { return Wim.Utility.ConvertToInt(Request["pageItem"]); }
-        //}
+            wim.ListDataAdd<IPageVersion>(list);
+        }
+
+
+        public int CurrentPageID
+        {
+            get { return Utility.ConvertToInt(Context.Request.Query["pageItem"]); }
+        }
     }
 }

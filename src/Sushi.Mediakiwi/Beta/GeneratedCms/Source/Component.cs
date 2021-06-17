@@ -919,6 +919,12 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                 return;
             }
 
+            // [MR:17-06-2021] must be remoived, for testing purposes only
+            if (string.IsNullOrWhiteSpace(page.CompletePath))
+            {
+                page.SetInternalPath();
+            }
+
             var pageVersion = new PageVersion();
             pageVersion.ContentXML = m_CurrentPageVersionComponentXML;
             pageVersion.MetaDataXML = Utility.GetSerialized(page);

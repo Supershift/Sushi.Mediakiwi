@@ -127,6 +127,7 @@
     <Compile Include="Extention\EnvironmentExtension.cs" />
     <Compile Include="Extention\GalleryExtension.cs" />
     <Compile Include="Extention\LinkExtension.cs" />
+    <Compile Include="Extention\PageExtension.cs" />
     <Compile Include="Extention\PageTemplateExtension.cs" />
     <Compile Include="Extention\PropertyExtension.cs" />
     <Compile Include="Extention\SiteExtension.cs" />

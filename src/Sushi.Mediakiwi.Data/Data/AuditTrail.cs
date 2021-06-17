@@ -75,6 +75,27 @@ namespace Sushi.Mediakiwi.Data
 
         public string Message { get; set; }
         #endregion properties
+        
+        /// <summary>
+        /// Inserts the specified user.
+        /// </summary>
+        /// <param name="user">The user.</param>
+        /// <param name="page">The page.</param>
+        /// <param name="action">The action.</param>
+        /// <param name="versionID">The version ID.</param>
+        public static async Task InsertAsync(IApplicationUser user, Page page, ActionType action, int? versionID)
+        {
+            AuditTrail item = new AuditTrail();
+
+            item.EntityID = user == null ? 0 : user.ID;
+            item.Type = ItemType.Page;
+            item.ItemID = page.ID;
+            item.Action = action;
+            item.VersionID = versionID;
+            item.Message = (string.Format("{0} :: {1} :: {2}", user.Displayname, page.CompletePath, action.ToString()));
+
+            await item.InsertAsync();
+        }
 
         public void Insert()
         {
