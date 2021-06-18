@@ -130,7 +130,7 @@ namespace Sushi.Mediakiwi.Framework
         /// <returns></returns>
         public ContentSettings Section(string title, bool isClosedContainer = false, bool canOpenClose = false, bool canDelete = false)
         {
-            var element = new Sushi.Mediakiwi.Framework.ContentListItem.SectionAttribute(isClosedContainer, canOpenClose, canDelete, title);
+            var element = new SectionAttribute(isClosedContainer, canOpenClose, canDelete, title);
             Add(element);
             return new ContentSettings(element);
         }
@@ -143,7 +143,7 @@ namespace Sushi.Mediakiwi.Framework
         /// <returns></returns>
         public ContentSettings Checkbox(string title, bool autoPostback = false, string interactiveHelp = null)
         {
-            var element = new Sushi.Mediakiwi.Framework.ContentListItem.Choice_CheckboxAttribute(title, autoPostback, interactiveHelp);
+            var element = new Choice_CheckboxAttribute(title, autoPostback, interactiveHelp);
             Add(element);
             return new ContentSettings(element);
         }
@@ -159,7 +159,7 @@ namespace Sushi.Mediakiwi.Framework
         /// <returns></returns>
         public ContentSettings TextArea(string title, int? maxlength = null, bool mandatory = false, string interactiveHelp = null, string mustMatchRegex = null, bool isSourceCode = false)
         {
-            var element = new Sushi.Mediakiwi.Framework.ContentListItem.TextAreaAttribute(title, maxlength.GetValueOrDefault(), mandatory, interactiveHelp, mustMatchRegex, isSourceCode);
+            var element = new TextAreaAttribute(title, maxlength.GetValueOrDefault(), mandatory, interactiveHelp, mustMatchRegex, isSourceCode);
             Add(element);
             return new ContentSettings(element);
         }
@@ -171,7 +171,7 @@ namespace Sushi.Mediakiwi.Framework
         /// <returns></returns>
         public ButtonSettings Button(string title, ButtonTarget position = ButtonTarget.TopRight, bool triggerSave = true, bool triggerValidation = false, bool persistState = false)
         {
-            var element = new Sushi.Mediakiwi.Framework.ContentListItem.ButtonAttribute(title, triggerSave, triggerValidation, persistState);
+            var element = new ButtonAttribute(title, triggerSave, triggerValidation, persistState);
             element.IconTarget = position;
             Add(element);
             return new ButtonSettings(element);
@@ -186,7 +186,7 @@ namespace Sushi.Mediakiwi.Framework
         /// <returns></returns>
         public ContentSettings Document(string title, bool mandatory = false, string gallery = null, string interactiveHelp = null)
         {
-            var element = new Sushi.Mediakiwi.Framework.ContentListItem.Binary_DocumentAttribute(title, mandatory, gallery, interactiveHelp);
+            var element = new Binary_DocumentAttribute(title, mandatory, gallery, interactiveHelp);
             Add(element);
             return new ContentSettings(element);
         }
@@ -200,7 +200,7 @@ namespace Sushi.Mediakiwi.Framework
         /// <returns></returns>
         public ContentSettings Image(string title, bool mandatory = false, string gallery = null, string interactiveHelp = null)
         {
-            var element = new Sushi.Mediakiwi.Framework.ContentListItem.Binary_ImageAttribute(title, mandatory, gallery, interactiveHelp);
+            var element = new Binary_ImageAttribute(title, mandatory, gallery, interactiveHelp);
             Add(element);
             return new ContentSettings(element);
         }
@@ -214,7 +214,7 @@ namespace Sushi.Mediakiwi.Framework
         /// <returns></returns>
         public ContentSettings DateTime(string title, bool mandatory = false, bool isDbSortField = false, string interactiveHelp = null)
         {
-            var element = new Sushi.Mediakiwi.Framework.ContentListItem.DateTimeAttribute(title, mandatory, isDbSortField, interactiveHelp);
+            var element = new DateTimeAttribute(title, mandatory, isDbSortField, interactiveHelp);
             Add(element);
             return new ContentSettings(element);
         }
@@ -226,9 +226,9 @@ namespace Sushi.Mediakiwi.Framework
         /// <param name="type"></param>
         /// <param name="interactiveHelp"></param>
         /// <returns></returns>
-        public ContentSettings FolderSelect(string title, bool mandatory = false, Sushi.Mediakiwi.Data.FolderType type = Data.FolderType.List, string interactiveHelp = null)
+        public ContentSettings FolderSelect(string title, bool mandatory = false, Data.FolderType type = Data.FolderType.List, string interactiveHelp = null)
         {
-            var element = new Sushi.Mediakiwi.Framework.ContentListItem.FolderSelectAttribute(title, mandatory, type, interactiveHelp);
+            var element = new FolderSelectAttribute(title, mandatory, type, interactiveHelp);
             Add(element);
             return new ContentSettings(element);
         }
@@ -239,7 +239,7 @@ namespace Sushi.Mediakiwi.Framework
         /// <returns></returns>
         public ContentSettings HtmlContainer(bool noPadding = false)
         {
-            var element = new Sushi.Mediakiwi.Framework.ContentListItem.HtmlContainerAttribute(noPadding);
+            var element = new HtmlContainerAttribute(noPadding);
             Add(element);
             return new ContentSettings(element);
         }
@@ -252,7 +252,7 @@ namespace Sushi.Mediakiwi.Framework
         /// <returns></returns>
         public ContentSettings Hyperlink(string title, bool mandatory = false, string interactiveHelp = null)
         {
-            var element = new Sushi.Mediakiwi.Framework.ContentListItem.HyperlinkAttribute(title, mandatory, interactiveHelp);
+            var element = new HyperlinkAttribute(title, mandatory, interactiveHelp);
             Add(element);
             return new ContentSettings(element);
         }
@@ -266,7 +266,7 @@ namespace Sushi.Mediakiwi.Framework
         /// <returns></returns>
         public ContentSettings ListItemSelect(string title, string collectionPropertyName, bool mandatory = false, string interactiveHelp = null)
         {
-            var element = new Sushi.Mediakiwi.Framework.ContentListItem.ListItemSelectAttribute(title, collectionPropertyName, mandatory, interactiveHelp);
+            var element = new ListItemSelectAttribute(title, collectionPropertyName, mandatory, interactiveHelp);
             Add(element);
             return new ContentSettings(element);
         }
@@ -341,7 +341,7 @@ namespace Sushi.Mediakiwi.Framework
         /// <returns></returns>
         public ContentSettings RichText(string title, int? maxlength = null, bool mandatory = false, string interactiveHelp = null)
         {
-            var element = new Sushi.Mediakiwi.Framework.ContentListItem.RichTextAttribute(title, maxlength.GetValueOrDefault(), mandatory, interactiveHelp);
+            var element = new RichTextAttribute(title, maxlength.GetValueOrDefault(), mandatory, interactiveHelp);
             Add(element);
             return new ContentSettings(element);
         }
@@ -353,7 +353,7 @@ namespace Sushi.Mediakiwi.Framework
         /// <returns></returns>
         public ContentSettings SortList(string title, string interactiveHelp = null)
         {
-            var element = new Sushi.Mediakiwi.Framework.ContentListItem.SubListSelectAttribute(title, null, false, true, interactiveHelp);
+            var element = new SubListSelectAttribute(title, null, false, true, interactiveHelp);
             Add(element);
             return new ContentSettings(element);
         }
@@ -410,7 +410,7 @@ namespace Sushi.Mediakiwi.Framework
         /// <returns></returns>
         public ContentSettings TextLine(string title, bool IsClosedContainer = false, string interactiveHelp = null)
         {
-            var element = new Sushi.Mediakiwi.Framework.ContentListItem.TextLineAttribute(title, IsClosedContainer, interactiveHelp);
+            var element = new TextLineAttribute(title, IsClosedContainer, interactiveHelp);
             Add(element);
             return new ContentSettings(element);
         }

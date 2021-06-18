@@ -4,6 +4,6 @@ namespace Sushi.Mediakiwi.RichRext
 {
     public class BaseCleaner
     {
-        protected static RegexOptions DefaultOptions = RegexOptions.Multiline | RegexOptions.IgnoreCase | RegexOptions.IgnorePatternWhitespace;
+        static protected RegexOptions DefaultOptions = RegexOptions.Multiline | RegexOptions.IgnoreCase | RegexOptions.IgnorePatternWhitespace;
     }
 }

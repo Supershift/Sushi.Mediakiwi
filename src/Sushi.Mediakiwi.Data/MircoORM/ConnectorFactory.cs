@@ -1,6 +1,6 @@
-﻿using Sushi.MicroORM;
+﻿using Sushi.Mediakiwi.Data.Caching;
+using Sushi.MicroORM;
 using Sushi.MicroORM.Mapping;
-using Sushi.Mediakiwi.Data.Caching;
 
 namespace Sushi.Mediakiwi.Data.MicroORM
 {

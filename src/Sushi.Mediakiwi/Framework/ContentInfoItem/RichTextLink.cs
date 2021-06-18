@@ -52,14 +52,14 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
         internal string CreateCopy(Match m)
         {
             int linkKey;
-            if (Data.Utility.IsNumeric(m.Groups["TEXT"].Value, out linkKey))
+            if (Utility.IsNumeric(m.Groups["TEXT"].Value, out linkKey))
             {
-                Sushi.Mediakiwi.Data.Link link = Sushi.Mediakiwi.Data.Link.SelectOne(linkKey);
+                Link link = Link.SelectOne(linkKey);
                 if (link != null)
                 {
                     if (link.Type == LinkType.InternalPage)
                     {
-                        Sushi.Mediakiwi.Data.Page page = Sushi.Mediakiwi.Data.Page.SelectOneChild(link.PageID.Value, m_SiteID, false);
+                        Page page = Page.SelectOneChild(link.PageID.Value, m_SiteID, false);
                         if (page != null)
                         {
                             link.ID = 0;
@@ -82,20 +82,20 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
         internal string CreateTitle(Match m)
         {
             int linkKey;
-            if (Data.Utility.IsNumeric(m.Groups["TEXT"].Value, out linkKey))
+            if (Utility.IsNumeric(m.Groups["TEXT"].Value, out linkKey))
             {
-                Sushi.Mediakiwi.Data.Link link = Sushi.Mediakiwi.Data.Link.SelectOne(linkKey);
+                Link link = Link.SelectOne(linkKey);
                 if (link != null)
                 {
                     if (link.Type == LinkType.InternalPage)
                     {
-                        Sushi.Mediakiwi.Data.Page page = Sushi.Mediakiwi.Data.Page.SelectOne(link.PageID.Value, false);
+                        Page page = Page.SelectOne(link.PageID.Value, false);
                         if (page != null)
                             return string.Format("<a class=\"link\" title=\"{0}\" href=\"{0}\" target=\"blank\">", page.HRef);
                     }
                     else if (link.Type == LinkType.InternalAsset)
                     {
-                        Sushi.Mediakiwi.Data.Asset asset = Sushi.Mediakiwi.Data.Asset.SelectOne(link.AssetID.Value);
+                        Asset asset = Asset.SelectOne(link.AssetID.Value);
                         return string.Format("<a class=\"link\" title=\"{0}\" href=\"{1}\" target=\"blank\">", asset.Path, asset.DownloadUrl);
                     }
                     else if (link.Type == LinkType.ExternalUrl)
@@ -114,7 +114,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
         {
 
             int linkKey;
-            if (Data.Utility.IsNumeric(m.Groups["TEXT"].Value, out linkKey))
+            if (Utility.IsNumeric(m.Groups["TEXT"].Value, out linkKey))
             {
                 return string.Format("<a id=\"link_{0}\">", linkKey);
             }

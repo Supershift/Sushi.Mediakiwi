@@ -4,7 +4,7 @@ namespace Sushi.Mediakiwi.Framework
 {
     public class MultiFieldParser : IMultiFieldParser
     {
-        public virtual string WriteHTML(string serialized, Sushi.Mediakiwi.Data.Page page = null)
+        public virtual string WriteHTML(string serialized, Page page = null)
         {
             return WriteHTML(MultiField.GetDeserialized(serialized), page);
         }
@@ -13,7 +13,7 @@ namespace Sushi.Mediakiwi.Framework
         /// Write the HTML output
         /// </summary>
         /// <returns></returns>
-        public virtual string WriteHTML(MultiField[] fields, Sushi.Mediakiwi.Data.Page page = null)
+        public virtual string WriteHTML(MultiField[] fields, Page page = null)
         {
             if (fields == null || fields.Length == 0)
                 return null;

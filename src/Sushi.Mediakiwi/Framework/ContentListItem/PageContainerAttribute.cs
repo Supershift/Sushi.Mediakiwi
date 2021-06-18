@@ -23,7 +23,7 @@ namespace Sushi.Mediakiwi.Framework.ContentListItem
         {
         }
 
-        Data.Page m_PageInstance;
+        Page m_PageInstance;
 
         /// <summary>
         /// Sets the candidate.
@@ -32,7 +32,7 @@ namespace Sushi.Mediakiwi.Framework.ContentListItem
         /// <param name="isEditMode">if set to <c>true</c> [is edit mode].</param>
         public void SetCandidate(Field field, bool isEditMode)
         {
-            m_PageInstance = Property.GetValue(SenderInstance, null) as Data.Page;
+            m_PageInstance = Property.GetValue(SenderInstance, null) as Page;
         }
 
         /// <summary>
@@ -52,7 +52,7 @@ namespace Sushi.Mediakiwi.Framework.ContentListItem
                 Console.Item = m_PageInstance.ID;
                 Console.ItemType = RequestItemType.Page;
 
-                Sushi.Mediakiwi.Beta.GeneratedCms.Source.Component component = new Sushi.Mediakiwi.Beta.GeneratedCms.Source.Component();
+                Beta.GeneratedCms.Source.Component component = new Beta.GeneratedCms.Source.Component();
 
                 WimControlBuilder createdList2 = component.CreateContentList(this.Console, 0, false, out m_PageInstance, null, true);
                 build.Append(createdList2.ToString());

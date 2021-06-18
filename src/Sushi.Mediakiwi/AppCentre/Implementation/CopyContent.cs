@@ -1,7 +1,7 @@
-﻿using System;
-using System.Threading.Tasks;
-using Sushi.Mediakiwi.Framework;
+﻿using Sushi.Mediakiwi.Framework;
 using Sushi.Mediakiwi.UI;
+using System;
+using System.Threading.Tasks;
 
 namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
 {

@@ -152,7 +152,7 @@ namespace Sushi.Mediakiwi.Data
         /// </summary>
         /// <param name="type">The type.</param>
         /// <returns></returns>
-        public static WimServerPortal GetCurrentMappingConnection(System.Type type)
+        public static WimServerPortal GetCurrentMappingConnection(Type type)
         {
             return GetCurrentMappingConnection(type.ToString());
         }
@@ -301,7 +301,7 @@ namespace Sushi.Mediakiwi.Data
         /// <param name="name">The name.</param>
         /// <param name="throwExceptionWhenNotFound">if set to <c>true</c> [throw exception when not found].</param>
         /// <returns></returns>
-        /// <exception cref="System.Exception">Could not find the portal</exception>
+        /// <exception cref="Exception">Could not find the portal</exception>
         public static WimServerPortal GetPortal(string name, bool throwExceptionWhenNotFound)
         {
             if (string.IsNullOrEmpty(name))

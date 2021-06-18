@@ -1,22 +1,22 @@
-using System;
-using System.Linq;
-using System.Globalization;
-using System.Collections.Generic;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Security.Cryptography;
-using System.IO;
-using System.Xml;
-using System.Xml.Serialization;
-using System.Reflection;
 using Microsoft.AspNetCore.Http;
 using Sushi.Mediakiwi.Data;
-using Sushi.Mediakiwi.UI;
-using System.Net;
-using System.Diagnostics;
 using Sushi.Mediakiwi.Framework;
-using System.Threading.Tasks;
+using Sushi.Mediakiwi.UI;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Globalization;
+using System.IO;
+using System.Linq;
+using System.Net;
+using System.Reflection;
+using System.Security.Cryptography;
+using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
+using System.Threading.Tasks;
+using System.Xml;
+using System.Xml.Serialization;
 
 namespace Sushi.Mediakiwi
 {
@@ -135,7 +135,7 @@ namespace Sushi.Mediakiwi
             if (console.Context == null)
                 return null;
 
-            bool isAsyncCall = console.Form(UI.Constants.JSON_PARAM) == "1";
+            bool isAsyncCall = console.Form(Constants.JSON_PARAM) == "1";
             if (!isAsyncCall)
                 return null;
 
@@ -443,13 +443,13 @@ namespace Sushi.Mediakiwi
             if (propertyContainerFrom == null || propertyContainerTo == null) 
                 return;
 
-            System.Reflection.PropertyInfo[] propertiesFrom = propertyContainerFrom.GetType().GetProperties();
-            System.Reflection.PropertyInfo[] propertiesTo = propertyContainerTo.GetType().GetProperties();
+            PropertyInfo[] propertiesFrom = propertyContainerFrom.GetType().GetProperties();
+            PropertyInfo[] propertiesTo = propertyContainerTo.GetType().GetProperties();
 
-            foreach (System.Reflection.PropertyInfo from in propertiesFrom)
+            foreach (PropertyInfo from in propertiesFrom)
             {
                 if (!from.CanRead) continue;
-                foreach (System.Reflection.PropertyInfo to in propertiesTo)
+                foreach (PropertyInfo to in propertiesTo)
                 {
                     if (from.Name == to.Name)
                     {
@@ -478,14 +478,14 @@ namespace Sushi.Mediakiwi
                                 to.SetValue(propertyContainerTo, Utility.ConvertToCsvString((int[])fromPropertyValue), null);
                             }
 
-                            if (from.PropertyType == typeof(Data.SubList))
+                            if (from.PropertyType == typeof(SubList))
                             {
                                 if (fromPropertyValue == null)
                                     to.SetValue(propertyContainerTo, null, null);
                                 else
                                 {
                                     //  Sublist --> String
-                                    Data.SubList candidate = (Data.SubList)fromPropertyValue;
+                                    SubList candidate = (SubList)fromPropertyValue;
                                     if (candidate != null && candidate.Items != null && candidate.Items.Length > 0)
                                     {
                                         to.SetValue(propertyContainerTo, candidate.Serialized, null);
@@ -504,7 +504,7 @@ namespace Sushi.Mediakiwi
                                 decimal tmp;
                                 if (IsDecimal(fromPropertyValue, out tmp))
                                 {
-                                    System.Globalization.CultureInfo info = new System.Globalization.CultureInfo("en-US");
+                                    CultureInfo info = new CultureInfo("en-US");
                                     to.SetValue(propertyContainerTo, tmp.ToString(info), null);
                                 }
                             }
@@ -539,12 +539,12 @@ namespace Sushi.Mediakiwi
                                 to.SetValue(propertyContainerTo, Utility.ConvertToIntArray(fromPropertyValue.ToString().Split(',')), null);
                             }
 
-                            if (to.PropertyType == typeof(Data.SubList))
+                            if (to.PropertyType == typeof(SubList))
                             {
                                 //  String -- > Sublist
                                 if (fromPropertyValue != null && !string.IsNullOrEmpty(fromPropertyValue.ToString()))
                                 {
-                                    Data.SubList candidate = Data.SubList.GetDeserialized(fromPropertyValue.ToString());
+                                    SubList candidate = SubList.GetDeserialized(fromPropertyValue.ToString());
                                     to.SetValue(propertyContainerTo, candidate, null);
                                 }
                             }
@@ -716,11 +716,11 @@ namespace Sushi.Mediakiwi
             string candidate = input.Trim();
 
             bool hasLeadingPar = false;
-            if (candidate.StartsWith("<p>", true, System.Threading.Thread.CurrentThread.CurrentCulture))
+            if (candidate.StartsWith("<p>", true, Thread.CurrentThread.CurrentCulture))
             {
                 hasLeadingPar = true;
                 candidate = candidate.Remove(0, 3);
-                if (candidate.EndsWith("</p>", true, System.Threading.Thread.CurrentThread.CurrentCulture))
+                if (candidate.EndsWith("</p>", true, Thread.CurrentThread.CurrentCulture))
                     candidate = candidate.Substring(0, candidate.Length - 4);
             }
 
@@ -733,12 +733,12 @@ namespace Sushi.Mediakiwi
                 check = false;
                 foreach (string exception in exceptionList)
                 {
-                    if (candidate.EndsWith(exception, true, System.Threading.Thread.CurrentThread.CurrentCulture))
+                    if (candidate.EndsWith(exception, true, Thread.CurrentThread.CurrentCulture))
                     {
                         check = true;
                         candidate = candidate.Substring(0, candidate.Length - exception.Length).Trim();
                     }
-                    if (candidate.StartsWith(exception, true, System.Threading.Thread.CurrentThread.CurrentCulture))
+                    if (candidate.StartsWith(exception, true, Thread.CurrentThread.CurrentCulture))
                     {
                         check = true;
                         candidate = candidate.Remove(0, exception.Length).Trim();
@@ -762,7 +762,7 @@ namespace Sushi.Mediakiwi
         /// <param name="site">The site.</param>
         /// <param name="text">The text.</param>
         /// <returns></returns>
-        public static string ApplyRichtextLinks(Data.Site site, string text)
+        public static string ApplyRichtextLinks(Site site, string text)
         {
             return ApplyRichtextLinks(site, text, null);
         }
@@ -773,7 +773,7 @@ namespace Sushi.Mediakiwi
         /// <param name="site"></param>
         /// <param name="text"></param>
         /// <returns></returns>
-        public static string ApplyRichtextLinks(Data.Site site, string text, string databaseMap)
+        public static string ApplyRichtextLinks(Site site, string text, string databaseMap)
         {
             if (text == null) return null;
             Framework.Templates.RichLink rlink = new Framework.Templates.RichLink(site);
@@ -807,7 +807,7 @@ namespace Sushi.Mediakiwi
         /// <param name="site">The site.</param>
         /// <param name="text">The text.</param>
         /// <returns></returns>
-        public static string ApplyRichtext(Data.Site site, string text)
+        public static string ApplyRichtext(Site site, string text)
         {
             return ApplyRichtext(site, text, null);
         }
@@ -818,7 +818,7 @@ namespace Sushi.Mediakiwi
         /// <param name="site">The site.</param>
         /// <param name="text">The text.</param>
         /// <returns></returns>
-        public static string ApplyRichtext(Data.Site site, string text, string databaseMap)
+        public static string ApplyRichtext(Site site, string text, string databaseMap)
         {
             if (text == null) return null;
             text = ApplyRichtextLinks(site, text, databaseMap);
@@ -981,7 +981,7 @@ namespace Sushi.Mediakiwi
         /// <param name="list">The list.</param>
         /// <param name="listName">Name of the list.</param>
         /// <returns></returns>
-        public static ListItemCollection GetInstanceListCollection(Data.IComponentList list, string listName, HttpContext context)
+        public static ListItemCollection GetInstanceListCollection(IComponentList list, string listName, HttpContext context)
         {
             return GetInstanceListCollection(list, listName, null, context);
         }
@@ -1128,7 +1128,7 @@ namespace Sushi.Mediakiwi
         /// </summary>
         /// <param name="icon">The icon.</param>
         /// <returns></returns>
-        public static string GetIconImageString(Sushi.Mediakiwi.Beta.GeneratedCms.Console container, IconImage icon)
+        public static string GetIconImageString(Beta.GeneratedCms.Console container, IconImage icon)
         {
             return GetIconImageString(container, icon, null);
         }
@@ -1139,7 +1139,7 @@ namespace Sushi.Mediakiwi
         /// <param name="icon">The icon.</param>
         /// <param name="tooltip">The tooltip.</param>
         /// <returns></returns>
-        public static string GetIconImageString(Sushi.Mediakiwi.Beta.GeneratedCms.Console container, IconImage icon, string tooltip)
+        public static string GetIconImageString(Beta.GeneratedCms.Console container, IconImage icon, string tooltip)
         {
             return GetIconImageString(container, icon, IconSize.Small, tooltip);
         }
@@ -1151,7 +1151,7 @@ namespace Sushi.Mediakiwi
         /// <param name="size">The size.</param>
         /// <param name="tooltip">The tooltip.</param>
         /// <returns></returns>
-        public static string GetIconImageString(Sushi.Mediakiwi.Beta.GeneratedCms.Console container, IconImage icon, IconSize size, string tooltip)
+        public static string GetIconImageString(Beta.GeneratedCms.Console container, IconImage icon, IconSize size, string tooltip)
         {
             int width = (int)size, height = (int)size;
             
@@ -1237,7 +1237,7 @@ namespace Sushi.Mediakiwi
         /// <param name="tooltip">The tooltip.</param>
         /// <param name="url">The URL.</param>
         /// <returns></returns>
-        public static string GetIconImageString(Sushi.Mediakiwi.Beta.GeneratedCms.Console container, IconImage icon, IconSize size, string tooltip, string url)
+        public static string GetIconImageString(Beta.GeneratedCms.Console container, IconImage icon, IconSize size, string tooltip, string url)
         {
             return string.Format("<a href=\"{0}\" target=\"_blank\">{1}</a>", url, GetIconImageString(container, icon, size, tooltip));
         }
@@ -1249,7 +1249,7 @@ namespace Sushi.Mediakiwi
         /// <param name="tooltip">The tooltip.</param>
         /// <param name="url">The URL.</param>
         /// <returns></returns>
-        public static string GetIconImageString(Sushi.Mediakiwi.Beta.GeneratedCms.Console container, IconImage icon, string tooltip, string url)
+        public static string GetIconImageString(Beta.GeneratedCms.Console container, IconImage icon, string tooltip, string url)
         {
             return string.Format("<a href=\"{0}\">{1}</a>", url, GetIconImageString(container, icon, tooltip));
         }
@@ -1262,7 +1262,7 @@ namespace Sushi.Mediakiwi
         /// <param name="url">The URL.</param>
         /// <param name="text">The text.</param>
         /// <returns></returns>
-        public static string GetIconImageString(Sushi.Mediakiwi.Beta.GeneratedCms.Console container, IconImage icon, string tooltip, string url, string text)
+        public static string GetIconImageString(Beta.GeneratedCms.Console container, IconImage icon, string tooltip, string url, string text)
         {
             return string.Format("<a href=\"{0}\">{1} {2}</a>", url, GetIconImageString(container, icon, tooltip), text);
         }
@@ -1274,9 +1274,9 @@ namespace Sushi.Mediakiwi
         /// <param name="list">The list.</param>
         /// <param name="listName">Name of the list.</param>
         /// <returns></returns>
-        public static ListItemCollection GetInstanceListCollection(Data.IComponentList list, string listName, Data.Site site, HttpContext context)
+        public static ListItemCollection GetInstanceListCollection(IComponentList list, string listName, Site site, HttpContext context)
         {
-            Framework.IComponentListTemplate instance = list.GetInstance(context);
+            IComponentListTemplate instance = list.GetInstance(context);
             return GetInstanceListCollection(list, listName, site, instance);
         }
 
@@ -1288,17 +1288,17 @@ namespace Sushi.Mediakiwi
         /// <param name="site">The site.</param>
         /// <param name="instance">The instance.</param>
         /// <returns></returns>
-        public static ListItemCollection GetInstanceListCollection(Data.IComponentList list, string listName, Data.Site site, Framework.IComponentListTemplate instance)
+        public static ListItemCollection GetInstanceListCollection(IComponentList list, string listName, Site site, IComponentListTemplate instance)
         {
             //instance.CurrentList = list;
             //instance.CurrentSite = site;
 
-            System.Type type = instance.GetType();
+            Type type = instance.GetType();
             
             if (listName.Contains(":"))
             {
                 string[] split = listName.Split(':');
-                System.Reflection.MethodInfo method = type.GetMethod(split[0]);
+                MethodInfo method = type.GetMethod(split[0]);
                 object[] index = new object[1] { Convert.ToInt32(split[1]) };
 
                 if (method == null)
@@ -1308,7 +1308,7 @@ namespace Sushi.Mediakiwi
 
             }
 
-            System.Reflection.PropertyInfo info = type.GetProperty(listName);
+            PropertyInfo info = type.GetProperty(listName);
             if (info == null)
                 return new ListItemCollection();
             
@@ -1321,10 +1321,10 @@ namespace Sushi.Mediakiwi
         /// <param name="assembly">The assembly.</param>
         /// <param name="typeName">Name of the type.</param>
         /// <returns></returns>
-        public static Framework.iOption GetInstanceOptions(string assembly, string typeName)
+        public static iOption GetInstanceOptions(string assembly, string typeName)
         {
-            System.Type type = System.Type.GetType(typeName);
-            return CreateInstance(assembly, typeName) as Framework.iOption;
+            Type type = Type.GetType(typeName);
+            return CreateInstance(assembly, typeName) as iOption;
         }
 
         /// <summary>
@@ -1344,7 +1344,7 @@ namespace Sushi.Mediakiwi
         /// </summary>
         /// <param name="list">The list.</param>
         /// <returns></returns>
-        public static object CreateInstance(Data.IComponentList list)
+        public static object CreateInstance(IComponentList list)
         {
             Type type;
             return CreateInstance(list.AssemblyName, list.ClassName, out type);
@@ -1387,7 +1387,7 @@ namespace Sushi.Mediakiwi
 
             try
             {
-                System.IO.FileInfo nfo = null;
+                FileInfo nfo = null;
                 
                 //if (HttpContext.Current == null)
                 //{
@@ -1400,7 +1400,7 @@ namespace Sushi.Mediakiwi
                 //    }
                 //    else
                 //    {
-                        nfo = new System.IO.FileInfo(
+                        nfo = new FileInfo(
                         string.Concat(
                             Assembly.GetCallingAssembly().Location.Replace(string.Concat(Assembly.GetCallingAssembly().GetName().Name, ".dll"), string.Empty)
                             , assemblyName));
@@ -1429,7 +1429,7 @@ namespace Sushi.Mediakiwi
                 Assembly assem = Assembly.LoadFrom(nfo.FullName);
                 type = assem.GetType(className);
 
-                return System.Activator.CreateInstance(type);
+                return Activator.CreateInstance(type);
             }
             catch(Exception ex)
             {
@@ -1556,7 +1556,7 @@ namespace Sushi.Mediakiwi
                     get
                     {
                         if (m_CleanRelativePathSlash == null)
-                            m_CleanRelativePathSlash = new Regex(GlobalRegularExpression.ReplaceRelativePathSlash);
+                            m_CleanRelativePathSlash = new Regex(ReplaceRelativePathSlash);
                         return m_CleanRelativePathSlash;
                     }
                 }
@@ -1604,7 +1604,7 @@ namespace Sushi.Mediakiwi
         /// </summary>
         /// <param name="ex"></param>
         /// <returns></returns>
-        public static string GetHtmlFormattedLastServerError(System.Exception ex)
+        public static string GetHtmlFormattedLastServerError(Exception ex)
         {
             string error = "";
             while (ex != null)
@@ -1641,7 +1641,7 @@ namespace Sushi.Mediakiwi
         /// <param name="type">The type.</param>
         /// <param name="xml">The XML.</param>
         /// <returns></returns>
-        public static object GetDeserialized(System.Type type, string xml)
+        public static object GetDeserialized(Type type, string xml)
         {
             return GetDeserialized(type, xml, true);
         }
@@ -1653,11 +1653,11 @@ namespace Sushi.Mediakiwi
         /// <param name="xml">The XML.</param>
         /// <param name="onErrorThrowException">if set to <c>true</c> [on error throw exception].</param>
         /// <returns></returns>
-        public static object GetDeserialized(System.Type type, string xml, bool onErrorThrowException)
+        public static object GetDeserialized(Type type, string xml, bool onErrorThrowException)
         {
             if (string.IsNullOrEmpty(xml)) return null;
 
-            if (type == typeof(Data.CustomDataItem[]) && xml.Contains("ArrayOfField"))
+            if (type == typeof(CustomDataItem[]) && xml.Contains("ArrayOfField"))
             {
                 xml = xml.Replace("ArrayOfField", "ArrayOfData").Replace("<Field>", "<Data>").Replace("</Field>", "</Data>");
             }
@@ -1673,9 +1673,9 @@ namespace Sushi.Mediakiwi
                 XmlNodeReader reader = new XmlNodeReader(xmldoc.DocumentElement);
 
                 string typeName = type.Name;
-                foreach (Attribute att in type.GetCustomAttributes(typeof(System.Xml.Serialization.XmlTypeAttribute), true))
+                foreach (Attribute att in type.GetCustomAttributes(typeof(XmlTypeAttribute), true))
                 {
-                    typeName = ((System.Xml.Serialization.XmlTypeAttribute)att).TypeName;
+                    typeName = ((XmlTypeAttribute)att).TypeName;
                 }
 
                 if (xmldoc.DocumentElement.Name != typeName && !typeName.Contains("[]"))
@@ -1705,7 +1705,7 @@ namespace Sushi.Mediakiwi
                     if (onErrorThrowException)
                         throw new Exception(string.Format("Impossible to Deserialize XML with DocumentElement '{0}' to '{1}'", xmldoc.DocumentElement.Name, type.Name), ex);
 
-                    return System.Activator.CreateInstance(type);
+                    return Activator.CreateInstance(type);
                 }
             }
             catch (Exception ex)
@@ -1746,7 +1746,7 @@ namespace Sushi.Mediakiwi
         /// <param name="type"></param>
         /// <param name="content"></param>
         /// <returns></returns>
-        public static string GetSerialized(System.Type type, object content)
+        public static string GetSerialized(Type type, object content)
         {
             StringWriter writer = new StringWriter();
             XmlSerializer serializer = new XmlSerializer( type );
@@ -1886,7 +1886,7 @@ namespace Sushi.Mediakiwi
         public static string HashStringBySHA1(string textToHash, bool base64Response)
         {
             SHA1CryptoServiceProvider SHA1 = new SHA1CryptoServiceProvider();
-            byte[] byteValue = System.Text.Encoding.UTF8.GetBytes(textToHash);
+            byte[] byteValue = Encoding.UTF8.GetBytes(textToHash);
             byte[] byteHash = SHA1.ComputeHash(byteValue);
             SHA1.Clear();
 
@@ -1918,7 +1918,7 @@ namespace Sushi.Mediakiwi
         {
 
             MD5CryptoServiceProvider MD5 = new MD5CryptoServiceProvider();
-            byte[] byteValue = System.Text.Encoding.UTF8.GetBytes(textToHash);
+            byte[] byteValue = Encoding.UTF8.GetBytes(textToHash);
             byte[] byteHash = MD5.ComputeHash(byteValue);
             MD5.Clear();
 
@@ -1936,7 +1936,7 @@ namespace Sushi.Mediakiwi
         public static string CreateChecksum(string textToHash)
         {
             SHA256Managed SHA = new SHA256Managed();
-            byte[] byteValue = System.Text.Encoding.UTF8.GetBytes(textToHash);
+            byte[] byteValue = Encoding.UTF8.GetBytes(textToHash);
             byte[] byteHash = SHA.ComputeHash(byteValue);
             SHA.Clear();
             return Convert.ToBase64String(byteHash);
@@ -1952,17 +1952,17 @@ namespace Sushi.Mediakiwi
             if (candidate == null || candidate.ToString().Length == 0) return DateTime.MinValue;
 
             DateTime dt;
-            if (DateTime.TryParse(candidate.ToString(), WimCultureInfo, System.Globalization.DateTimeStyles.None, out dt))
+            if (DateTime.TryParse(candidate.ToString(), WimCultureInfo, DateTimeStyles.None, out dt))
                 return dt;
 
             return DateTime.MinValue;
         }
 
-        static System.Globalization.CultureInfo WimCultureInfo
+        static CultureInfo WimCultureInfo
         {
             get
             {
-                return new System.Globalization.CultureInfo("nl-NL");
+                return new CultureInfo("nl-NL");
             }
         }
 
@@ -2441,7 +2441,7 @@ namespace Sushi.Mediakiwi
         /// <param name="candidate">validation object</param>
         /// <param name="output">if the candidate is a valid GUID then this is set, else this parameter outs Guid.Empty</param>
         /// <returns>Is the supplied candidate a GUID?</returns>
-        public static bool IsGuid(object candidate, out System.Guid output)
+        public static bool IsGuid(object candidate, out Guid output)
         {
             if (candidate != null)
             {
@@ -2598,7 +2598,7 @@ namespace Sushi.Mediakiwi
             {
                 if (candidate.GetType() == typeof(decimal))
                 {
-                    System.Globalization.CultureInfo info = new System.Globalization.CultureInfo("en-US");
+                    CultureInfo info = new CultureInfo("en-US");
                     output = Convert.ToDecimal(candidate, info);
                     return true;
                 }
@@ -2608,7 +2608,7 @@ namespace Sushi.Mediakiwi
                 Regex test = new Regex(Utility.GlobalRegularExpression.OnlyDecimal);
                 if (test.IsMatch(testCandidate))
                 {
-                    System.Globalization.CultureInfo info = new System.Globalization.CultureInfo("en-US");
+                    CultureInfo info = new CultureInfo("en-US");
                     //  Only one comma or point is allowed by regex so the group separator can be replaced.
                     //testCandidate = testCandidate.Replace(
                     //    System.Threading.Thread.CurrentThread.CurrentCulture.NumberFormat.NumberGroupSeparator,
@@ -2639,7 +2639,7 @@ namespace Sushi.Mediakiwi
             {
                 if (candidate.GetType() == typeof(double))
                 {
-                    System.Globalization.CultureInfo info = new System.Globalization.CultureInfo("en-US");
+                    CultureInfo info = new CultureInfo("en-US");
                     output = Convert.ToDouble(candidate, info);
                     return true;
                 }
@@ -2649,7 +2649,7 @@ namespace Sushi.Mediakiwi
                 Regex test = new Regex(Utility.GlobalRegularExpression.OnlyDecimal);
                 if (test.IsMatch(testCandidate))
                 {
-                    System.Globalization.CultureInfo info = new System.Globalization.CultureInfo("en-US");
+                    CultureInfo info = new CultureInfo("en-US");
                     //  Only one comma or point is allowed by regex so the group separator can be replaced.
                     //testCandidate = testCandidate.Replace(
                     //    System.Threading.Thread.CurrentThread.CurrentCulture.NumberFormat.NumberGroupSeparator,
@@ -2701,7 +2701,7 @@ namespace Sushi.Mediakiwi
         /// <returns></returns>
         public static string ConvertToDecimalString(decimal item)
         {
-            if (System.Threading.Thread.CurrentThread.CurrentCulture.NumberFormat.CurrencyDecimalSeparator == ",")
+            if (Thread.CurrentThread.CurrentCulture.NumberFormat.CurrencyDecimalSeparator == ",")
                 return item.ToString().Replace(".", "").Replace(",", ".");
             return item.ToString().Replace(",", ".");
         }
@@ -2757,7 +2757,7 @@ namespace Sushi.Mediakiwi
         /// <returns></returns>
         public static string ConvertToDoubleString(decimal item)
         {
-            if (System.Threading.Thread.CurrentThread.CurrentCulture.NumberFormat.CurrencyDecimalSeparator == ",")
+            if (Thread.CurrentThread.CurrentCulture.NumberFormat.CurrencyDecimalSeparator == ",")
                 return item.ToString().Replace(".", "").Replace(",", ".");
             return item.ToString().Replace(",", ".");
         }

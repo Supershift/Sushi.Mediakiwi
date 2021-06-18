@@ -1,15 +1,15 @@
-﻿using Microsoft.AspNetCore.Http;
-using System;
+﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
-using System.Threading.Tasks;
-using Sushi.Mediakiwi.UI;
-using Microsoft.AspNetCore.Hosting;
-using System.Collections.Concurrent;
-using Sushi.Mediakiwi.Data.Caching;
-using Sushi.Mediakiwi.Framework;
-using Sushi.Mediakiwi.Data.Configuration;
-using Sushi.MicroORM;
 using Sushi.Mediakiwi.Controllers;
+using Sushi.Mediakiwi.Data.Caching;
+using Sushi.Mediakiwi.Data.Configuration;
+using Sushi.Mediakiwi.Framework;
+using Sushi.Mediakiwi.UI;
+using Sushi.MicroORM;
+using System;
+using System.Collections.Concurrent;
+using System.Threading.Tasks;
 
 namespace Sushi.Mediakiwi
 {

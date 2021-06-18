@@ -1,6 +1,6 @@
+using Sushi.Mediakiwi.UI;
 using System.Xml;
 using System.Xml.Serialization;
-using Sushi.Mediakiwi.UI;
 
 namespace Sushi.Mediakiwi.Framework
 {
@@ -24,7 +24,7 @@ namespace Sushi.Mediakiwi.Framework
         /// <summary>
         /// 
         /// </summary>
-        [Sushi.Mediakiwi.Framework.ContentListItem.TextField("Tag", 50)]
+        [ContentListItem.TextField("Tag", 50)]
         public string Name
         {
             set { m_Name = value; }
@@ -47,7 +47,7 @@ namespace Sushi.Mediakiwi.Framework
         /// 
         /// </summary>
         [XmlElement("title")]
-        [Sushi.Mediakiwi.Framework.ContentListItem.TextField("Title", 255)]
+        [ContentListItem.TextField("Title", 255)]
         public string Title
         {
             set { m_Title = value; }
@@ -59,7 +59,7 @@ namespace Sushi.Mediakiwi.Framework
         /// 
         /// </summary>
         [XmlElement("type")]
-        [Sushi.Mediakiwi.Framework.ContentListItem.Choice_Dropdown("Type", "ContentTypeSelectionList", true)]
+        [ContentListItem.Choice_Dropdown("Type", "ContentTypeSelectionList", true)]
         public string ContentTypeSelection
         {
             set { m_contenttype = value; }
@@ -136,7 +136,7 @@ namespace Sushi.Mediakiwi.Framework
         /// <summary>
         /// 
         /// </summary>
-        [Sushi.Mediakiwi.Framework.ContentListItem.Choice_Checkbox("Mandatory")]
+        [ContentListItem.Choice_Checkbox("Mandatory")]
         public string Mandatory
         {
             set { m_Mandatory = value; }
@@ -148,7 +148,7 @@ namespace Sushi.Mediakiwi.Framework
         /// 
         /// </summary>
         [XmlElement("length")]
-        [Sushi.Mediakiwi.Framework.ContentListItem.TextField("Maximum length", 10)]
+        [ContentListItem.TextField("Maximum length", 10)]
         public string MaxValueLength
         {
             set { m_MaxValueLength = value; }
@@ -236,9 +236,9 @@ namespace Sushi.Mediakiwi.Framework
         /// 
         /// </summary>
         /// <returns></returns>
-        public Sushi.Mediakiwi.UI.ListItemCollection GetCollection()
+        public ListItemCollection GetCollection()
         {
-            Sushi.Mediakiwi.UI.ListItemCollection Collection = new Sushi.Mediakiwi.UI.ListItemCollection();
+            ListItemCollection Collection = new ListItemCollection();
             if (CollectionList != null && CollectionList.Length > 0)
             {
                 foreach (MetaDataList item in CollectionList)

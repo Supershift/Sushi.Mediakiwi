@@ -1,16 +1,16 @@
-using System;
-using System.Linq;
-using System.IO;
-using System.Collections.Generic;
-using Newtonsoft.Json;
-using Sushi.Mediakiwi.Framework.Api;
-using Microsoft.AspNetCore.Http;
-using Sushi.Mediakiwi.Framework;
-using Sushi.Mediakiwi.Data;
-using System.Net;
 using Microsoft.AspNetCore.Hosting;
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
+using Sushi.Mediakiwi.Data;
+using Sushi.Mediakiwi.Framework;
+using Sushi.Mediakiwi.Framework.Api;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Net;
+using System.Threading.Tasks;
 
 namespace Sushi.Mediakiwi.Beta.GeneratedCms
 {
@@ -959,7 +959,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
         /// Applies the list.
         /// </summary>
         /// <param name="list">The list.</param>
-        internal bool ApplyList(Data.IComponentList list)
+        internal bool ApplyList(IComponentList list)
         {
             CurrentList = list;
             Logic = CurrentList.ID;

@@ -36,7 +36,7 @@ namespace Sushi.Mediakiwi.Framework.ContentListItem
         /// <param name="mandatory">if set to <c>true</c> [mandatory].</param>
         /// <param name="type">The type.</param>
         /// <param name="interactiveHelp">The interactive help.</param>
-        public FolderSelectAttribute(string title, bool mandatory, Sushi.Mediakiwi.Data.FolderType type, string interactiveHelp)
+        public FolderSelectAttribute(string title, bool mandatory, Data.FolderType type, string interactiveHelp)
             : base(title, mandatory, type, interactiveHelp) { }
     }
 }

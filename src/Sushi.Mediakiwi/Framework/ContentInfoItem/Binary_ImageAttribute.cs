@@ -297,7 +297,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                         {
                             var split = Collection.Split('/');
                             var root = Gallery.SelectOneRoot();
-                            gallery = new Data.Gallery()
+                            gallery = new Gallery()
                             {
                                 BaseGalleryID = root.ID,
                                 Name = split[split.Length - 1],

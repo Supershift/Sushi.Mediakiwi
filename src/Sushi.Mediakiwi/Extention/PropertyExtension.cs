@@ -148,7 +148,7 @@ public static class PropertyExtension
     /// <param name="filter">The filter.</param>
     /// <param name="customData">The custom data.</param>
     /// <param name="itemID">The item ID.</param>
-    public static void ApplyFilter(this Property inProperty, IDataFilter filter, Sushi.Mediakiwi.Data.CustomData customData, int itemID)
+    public static void ApplyFilter(this Property inProperty, IDataFilter filter, CustomData customData, int itemID)
     {
         switch (inProperty.ContentTypeID)
         {

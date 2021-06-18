@@ -190,7 +190,7 @@ namespace Sushi.Mediakiwi.Utilities
         }
         #endregion
 
-        void InitiateSplit(System.Collections.IEnumerator list)
+        void InitiateSplit(IEnumerator list)
         {
             bool hasAvailableCandidate = false;
 

@@ -1,9 +1,9 @@
+using Sushi.Mediakiwi.Data.MicroORM;
 using Sushi.MicroORM;
 using Sushi.MicroORM.Mapping;
 using System;
 using System.Data;
 using System.Threading.Tasks;
-using Sushi.Mediakiwi.Data.MicroORM;
 
 namespace Sushi.Mediakiwi.Data
 {
@@ -842,14 +842,14 @@ namespace Sushi.Mediakiwi.Data
 
         public bool Delete()
         {
-            var connector = ConnectorFactory.CreateConnector<ApplicationUser>(new ApplicationUserMap(true));
+            var connector = ConnectorFactory.CreateConnector(new ApplicationUserMap(true));
             connector.Delete(this);
             return true;
         }
 
         public async Task<bool> DeleteAsync()
         {
-            var connector = ConnectorFactory.CreateConnector<ApplicationUser>(new ApplicationUserMap(true));
+            var connector = ConnectorFactory.CreateConnector(new ApplicationUserMap(true));
             await connector.DeleteAsync(this);
             return true;
         }
@@ -885,7 +885,7 @@ namespace Sushi.Mediakiwi.Data
             if (HasEmail(Email, this?.ID))
                 throw new Exception("The applied email already exists");
 
-            var connector = ConnectorFactory.CreateConnector<ApplicationUser>(new ApplicationUserMap(true));
+            var connector = ConnectorFactory.CreateConnector(new ApplicationUserMap(true));
             connector.Save(this);
 
             return true;
@@ -906,7 +906,7 @@ namespace Sushi.Mediakiwi.Data
             if (await HasEmailAsync(Email, this?.ID))
                 throw new Exception("The applied email already exists");
 
-            var connector = ConnectorFactory.CreateConnector<ApplicationUser>(new ApplicationUserMap(true));
+            var connector = ConnectorFactory.CreateConnector(new ApplicationUserMap(true));
             await connector.SaveAsync(this);
 
             return true;
@@ -936,7 +936,7 @@ namespace Sushi.Mediakiwi.Data
         /// <param name="password">The password.</param>
         public void ApplyPassword(string password)
         {
-            this.Password = Sushi.Mediakiwi.Data.Utility.HashStringByMD5(string.Concat(this.Name, password));
+            this.Password = Utility.HashStringByMD5(string.Concat(this.Name, password));
             this.Type = 1;
         }
 

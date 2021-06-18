@@ -1,5 +1,5 @@
-﻿using System.Threading.Tasks;
-using Sushi.Mediakiwi.Framework;
+﻿using Sushi.Mediakiwi.Framework;
+using System.Threading.Tasks;
 
 namespace Sushi.Mediakiwi.AppCentre.UI
 {
@@ -48,8 +48,8 @@ namespace Sushi.Mediakiwi.AppCentre.UI
             return Task.CompletedTask;
         }
 
-        [Sushi.Mediakiwi.Framework.ContentListItem.DataList()]
-        public Sushi.Mediakiwi.Data.DataList Listing { get; set; }
+        [Framework.ContentListItem.DataList()]
+        public Mediakiwi.Data.DataList Listing { get; set; }
 
         //class ListVersionItem2 : ListVersionItem
         //{ }

@@ -94,7 +94,7 @@ namespace Sushi.Mediakiwi.Headless
             handler(this, new EventArgs());
         }
 
-        protected async Task NotifyContentSetAsync(PageHandlerExecutingContext context)
+        async protected Task NotifyContentSetAsync(PageHandlerExecutingContext context)
         {
             Func<PageHandlerExecutingContext, EventArgs, Task> handler = OnContentSetAsync;
 
@@ -114,7 +114,7 @@ namespace Sushi.Mediakiwi.Headless
             await Task.WhenAll(handlerTasks);
         }
 
-        public override async Task OnPageHandlerExecutionAsync(PageHandlerExecutingContext context, PageHandlerExecutionDelegate next)
+        public async override Task OnPageHandlerExecutionAsync(PageHandlerExecutingContext context, PageHandlerExecutionDelegate next)
         { 
             // Load config from requestservices
             Configuration = (T)context.HttpContext.RequestServices.GetService<ISushiApplicationSettings>();

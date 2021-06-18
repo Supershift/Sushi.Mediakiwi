@@ -39,7 +39,7 @@ namespace Sushi.Mediakiwi.RichRext
             if (allowedElements != null && allowedElements.Length > 0)
                 UnwantedElements = UnwantedElements.Except(allowedElements).ToArray();
 
-            System.Text.StringBuilder sb = new StringBuilder();
+            StringBuilder sb = new StringBuilder();
 
             foreach (string tag in UnwantedElements)
             {

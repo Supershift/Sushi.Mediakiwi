@@ -26,7 +26,7 @@ namespace Sushi.Mediakiwi.Data
             m_Fields.Add(new Field(filterProperty, type, value == null ? null : value.ToString()));
         }
 
-        internal Sushi.Mediakiwi.Data.IComponentList ComponentListOverride { get; set; }
+        internal IComponentList ComponentListOverride { get; set; }
 
         /// <summary>
         /// Sets the component list override.
@@ -34,14 +34,14 @@ namespace Sushi.Mediakiwi.Data
         /// <param name="guid">The GUID.</param>
         public void SetComponentListOverride(Guid guid)
         {
-            this.ComponentListOverride = Sushi.Mediakiwi.Data.ComponentList.SelectOne(guid);
+            this.ComponentListOverride = ComponentList.SelectOne(guid);
         }
 
         /// <summary>
         /// Sets the component list override.
         /// </summary>
         /// <param name="list">The list.</param>
-        public void SetComponentListOverride(Sushi.Mediakiwi.Data.IComponentList list)
+        public void SetComponentListOverride(IComponentList list)
         {
             this.ComponentListOverride = list;
         }
@@ -76,10 +76,10 @@ namespace Sushi.Mediakiwi.Framework.ContentListItem
         public bool IsPartOfForm { get; set; }
         public bool HidePaging { get; set; }
 
-        public DataListAttribute(System.Type T)
+        public DataListAttribute(Type T)
         {
             ContentTypeSelection = ContentType.DataList;
-            this.Collection = Sushi.Mediakiwi.Data.ComponentList.SelectOne(T.ToString()).GUID.ToString();
+            this.Collection = ComponentList.SelectOne(T.ToString()).GUID.ToString();
         }
 
         /// <summary>
@@ -89,7 +89,7 @@ namespace Sushi.Mediakiwi.Framework.ContentListItem
         public DataListAttribute(int componentListReferenceID)
         {
             ContentTypeSelection = ContentType.DataList;
-            this.Collection = Sushi.Mediakiwi.Data.ComponentList.SelectOneByReference(componentListReferenceID).GUID.ToString();
+            this.Collection = ComponentList.SelectOneByReference(componentListReferenceID).GUID.ToString();
         }
 
         public bool HasThumbnailOption { get; set; }
@@ -113,7 +113,7 @@ namespace Sushi.Mediakiwi.Framework.ContentListItem
             object value = Property.GetValue(SenderInstance, null);
             if (value != null)
             {
-                m_Candidate = value as Sushi.Mediakiwi.Data.DataList;
+                m_Candidate = value as DataList;
                 
                 if (m_Candidate.ComponentListOverride != null)
                 {
@@ -129,19 +129,19 @@ namespace Sushi.Mediakiwi.Framework.ContentListItem
             }
 
             int listInt;
-            if (Data.Utility.IsNumeric(this.Collection, out listInt))
-                m_List = Data.ComponentList.SelectOne(listInt);
+            if (Utility.IsNumeric(this.Collection, out listInt))
+                m_List = ComponentList.SelectOne(listInt);
 
             Guid listGuid;
-            if (Data.Utility.IsGuid(this.Collection, out listGuid))
-                m_List = Data.ComponentList.SelectOne(listGuid);
+            if (Utility.IsGuid(this.Collection, out listGuid))
+                m_List = ComponentList.SelectOne(listGuid);
 
             if (m_List.IsNewInstance)
                 throw new Exception(string.Format("Could not find the selected ComponentList[{0}]", Collection));
         }
 
-        internal Sushi.Mediakiwi.Data.DataList m_Candidate;
-        internal Data.IComponentList m_List;
+        internal DataList m_Candidate;
+        internal IComponentList m_List;
 
         /// <summary>
         /// Writes the candidate.
@@ -170,7 +170,7 @@ namespace Sushi.Mediakiwi.Framework.ContentListItem
 
             if (m_Candidate != null && m_Candidate.m_Fields != null)
             {
-                Data.Content content = new Sushi.Mediakiwi.Data.Content();
+                Content content = new Content();
                 content.Fields = m_Candidate.m_Fields.ToArray();
                 component.CreateSearchList(tmp, 0, content, true);
             }

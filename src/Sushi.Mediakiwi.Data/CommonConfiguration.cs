@@ -1,6 +1,6 @@
-﻿using System;
+﻿using Sushi.Mediakiwi.Data.Configuration;
+using System;
 using System.Reflection;
-using Sushi.Mediakiwi.Data.Configuration;
 
 namespace Sushi.Mediakiwi.Data
 {

@@ -9,7 +9,7 @@ namespace Sushi.Mediakiwi.Persistors
 {
     public class BlobPersister
     {
-        public BlobPersister() : this(Mediakiwi.Data.Common.GetConnection("azurestore"))
+        public BlobPersister() : this(Data.Common.GetConnection("azurestore"))
         {
         }
         public BlobPersister(string connectionString)
@@ -22,8 +22,8 @@ namespace Sushi.Mediakiwi.Persistors
             get; protected set;
         }
 
-        protected static string ContainerCachePrefix = Guid.NewGuid().ToString();
-        protected static ConcurrentDictionary<string, bool> Cache = new ConcurrentDictionary<string, bool>();
+        static protected string ContainerCachePrefix = Guid.NewGuid().ToString();
+        static protected ConcurrentDictionary<string, bool> Cache = new ConcurrentDictionary<string, bool>();
 
         public async Task<BlobClient> GetContainerAsync(string name)
         {

@@ -1,12 +1,12 @@
-using System;
-using System.Linq;
-using System.Collections.Generic;
-using System.Text;
-using System.Globalization;
-using static Sushi.Mediakiwi.Beta.GeneratedCms.Source.Component;
 using Microsoft.AspNetCore.Http;
 using Sushi.Mediakiwi.Data;
 using Sushi.Mediakiwi.UI;
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
+using System.Text;
+using static Sushi.Mediakiwi.Beta.GeneratedCms.Source.Component;
 
 namespace Sushi.Mediakiwi.Framework
 {
@@ -175,11 +175,11 @@ namespace Sushi.Mediakiwi.Framework
         /// <summary>
         /// 
         /// </summary>
-        protected internal CustomData m_ContentContainer;
+        internal protected CustomData m_ContentContainer;
         /// <summary>
         /// Sets the content container.
         /// </summary>
-        protected internal void SetContentContainer(Field field)
+        internal protected void SetContentContainer(Field field)
         {
             if (field == null)
             {
@@ -267,7 +267,7 @@ namespace Sushi.Mediakiwi.Framework
         /// <summary>
         /// 
         /// </summary>
-        protected internal bool m_CanHaveExpression;
+        internal protected bool m_CanHaveExpression;
         /// <summary>
         /// Gets a value indicating whether this instance can have expression.
         /// </summary>
@@ -356,7 +356,7 @@ namespace Sushi.Mediakiwi.Framework
         }
 
         public bool IsInheritedField { get; set; }
-        protected internal bool IsEnabled(bool isEnabled = true)
+        internal protected bool IsEnabled(bool isEnabled = true)
         {
             if (IsInheritedField && isEnabled && Console.CurrentPage != null && Console.CurrentPage.InheritContentEdited)
             {
@@ -365,7 +365,7 @@ namespace Sushi.Mediakiwi.Framework
             return isEnabled;
         }
 
-        protected internal void SetWriteEnvironment()
+        internal protected void SetWriteEnvironment()
         {
             //  TEMPORARY!
             if (ShowInheritedData)
@@ -399,7 +399,7 @@ namespace Sushi.Mediakiwi.Framework
             }
         }
 
-        protected internal class NameItemValue
+        internal protected class NameItemValue
         {
             public string Name { get; set; }
             public int? m_ID;
@@ -455,7 +455,7 @@ namespace Sushi.Mediakiwi.Framework
         /// <param name="items">The items.</param>
         /// <param name="hasScrollbar">if set to <c>true</c> [has scrollbar].</param>
         /// <param name="layerHeight">Height of the layer.</param>
-        protected internal void ApplyItemSelect(
+        internal protected void ApplyItemSelect(
             WimControlBuilder build,
             bool canContainSingleItem,
             bool itemIsClickable,
@@ -537,7 +537,7 @@ namespace Sushi.Mediakiwi.Framework
                             , item.Name
                             , item.Value
                             , item.TextID
-                            , Data.Utility.CleanFormatting(item.Value)
+                            , Utility.CleanFormatting(item.Value)
                             , itemIsClickable ? $" href=\"{string.Concat(url.Replace("&item=0", string.Empty), "&item=", item.TextID)}\"" : null //4
                             , specification.Parse() //1
                             , layerTitle
@@ -550,7 +550,7 @@ namespace Sushi.Mediakiwi.Framework
                             , item.Name
                             , item.Value
                             , item.TextID
-                            , Data.Utility.CleanFormatting(item.Value)
+                            , Utility.CleanFormatting(item.Value)
                             , itemIsClickable ? $" href=\"{string.Concat(url.Replace("&item=0", string.Empty), "&item=", item.TextID)}\"" : null //4
                             , specification.Parse() //1
                             , layerTitle
@@ -566,7 +566,7 @@ namespace Sushi.Mediakiwi.Framework
                             , item.Name
                             , item.Value
                             , item.TextID
-                            , Data.Utility.CleanFormatting(item.Value)
+                            , Utility.CleanFormatting(item.Value)
                             , itemIsClickable ? $" href=\"{string.Concat(url.Replace("&item=0", string.Empty), "&item=", item.TextID)}\"" : null //4
                             , specification.Parse() //1
                             , layerTitle
@@ -579,7 +579,7 @@ namespace Sushi.Mediakiwi.Framework
                             , item.Name
                             , item.Value
                             , item.TextID
-                            , Data.Utility.CleanFormatting(item.Value)
+                            , Utility.CleanFormatting(item.Value)
                             , itemIsClickable ? $" href=\"{string.Concat(url.Replace("&item=0", string.Empty), "&item=", item.TextID)}\"" : null //4
                             , specification.Parse() //1
                             , layerTitle

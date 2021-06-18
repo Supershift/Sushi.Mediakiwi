@@ -1,9 +1,9 @@
-﻿using Sushi.MicroORM.Mapping;
+﻿using Sushi.Mediakiwi.Data.MicroORM;
+using Sushi.MicroORM.Mapping;
 using System;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
-using Sushi.Mediakiwi.Data.MicroORM;
 
 namespace Sushi.Mediakiwi.Data
 {
@@ -330,7 +330,7 @@ namespace Sushi.Mediakiwi.Data
         /// <summary>
         /// Select a Component Template instance based on its type
         /// </summary>
-        public static ComponentTemplate SelectOne_BasedOnType(System.Type type)
+        public static ComponentTemplate SelectOne_BasedOnType(Type type)
         {
             var connector = ConnectorFactory.CreateConnector<ComponentTemplate>();
             var filter = connector.CreateDataFilter();
@@ -338,7 +338,7 @@ namespace Sushi.Mediakiwi.Data
             return connector.FetchSingle(filter);
         }
 
-        public static async Task<ComponentTemplate> SelectOne_BasedOnTypeAsync(System.Type type)
+        public static async Task<ComponentTemplate> SelectOne_BasedOnTypeAsync(Type type)
         {
             var connector = ConnectorFactory.CreateConnector<ComponentTemplate>();
             var filter = connector.CreateDataFilter();

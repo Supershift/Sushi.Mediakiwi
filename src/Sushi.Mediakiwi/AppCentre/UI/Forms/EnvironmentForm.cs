@@ -14,7 +14,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation.Forms
             Map(x => x.Timezone).Dropdown("Dropdown", nameof(AvailableTimeZones), true);
             Map(x => x.Version).TextLine("Version");
 
-            Map<EnvironmentForm>(x => x.Section1, this).Section("SMTP Settings");
+            Map(x => x.Section1, this).Section("SMTP Settings");
             Map(x => x.SmtpServer).TextField("Server", 250, true).Expression(OutputExpression.Alternating);
             Map(x => x.SmtpServerUser).TextField("User", 250, true).Expression(OutputExpression.Alternating);
             Map(x => x.SmtpEnableSSL).Checkbox("SSL").Expression(OutputExpression.Alternating);
@@ -43,7 +43,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation.Forms
                     m_AvailableTimeZones.Add(new ListItem("", ""));
                     try
                     {
-                        foreach (var tz in System.TimeZoneInfo.GetSystemTimeZones())
+                        foreach (var tz in TimeZoneInfo.GetSystemTimeZones())
                         {
                             m_AvailableTimeZones.Add(new ListItem(tz.DisplayName, tz.Id));
                         }
@@ -66,7 +66,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation.Forms
                 if (m_Sites != null) return m_Sites;
 
                 m_Sites = new ListItemCollection();
-                foreach (Sushi.Mediakiwi.Data.Site site in Sushi.Mediakiwi.Data.Site.SelectAll())
+                foreach (Mediakiwi.Data.Site site in Mediakiwi.Data.Site.SelectAll())
                 {
                     m_Sites.Add(new ListItem(site.Name, site.ID.ToString()));
                 }

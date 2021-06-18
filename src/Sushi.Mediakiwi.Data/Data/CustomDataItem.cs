@@ -118,7 +118,7 @@ namespace Sushi.Mediakiwi.Data
                 return null;
 
             long time;
-            if (Sushi.Mediakiwi.Data.Utility.IsNumeric(this.Value, out time))
+            if (Utility.IsNumeric(this.Value, out time))
             {
                 return new DateTime(time);
             }
@@ -135,7 +135,7 @@ namespace Sushi.Mediakiwi.Data
                 return new Document();
 
             int candidate;
-            if (Sushi.Mediakiwi.Data.Utility.IsNumeric(this.Value, out candidate))
+            if (Utility.IsNumeric(this.Value, out candidate))
             {
                 return Document.SelectOne(candidate);
             }
@@ -152,7 +152,7 @@ namespace Sushi.Mediakiwi.Data
                 return new Image();
 
             int candidate;
-            if (Sushi.Mediakiwi.Data.Utility.IsNumeric(this.Value, out candidate))
+            if (Utility.IsNumeric(this.Value, out candidate))
             {
                 return Image.SelectOne(candidate);
             }
@@ -165,7 +165,7 @@ namespace Sushi.Mediakiwi.Data
                 return new Link();
 
             int candidate;
-            if (Sushi.Mediakiwi.Data.Utility.IsNumeric(this.Value, out candidate))
+            if (Utility.IsNumeric(this.Value, out candidate))
             {
                 return Link.SelectOne(candidate);
             }
@@ -377,7 +377,7 @@ namespace Sushi.Mediakiwi.Data
             if (string.IsNullOrEmpty(Value))
                 return null;
 
-            return Sushi.Mediakiwi.Data.Utility.ConvertToDecimalNullable(Value);
+            return Utility.ConvertToDecimalNullable(Value);
         }
 
         /// <summary>
@@ -389,7 +389,7 @@ namespace Sushi.Mediakiwi.Data
             if (string.IsNullOrEmpty(Value))
                 return Guid.Empty;
 
-            return Sushi.Mediakiwi.Data.Utility.ConvertToGuid(Value);
+            return Utility.ConvertToGuid(Value);
         }
     }
 }

@@ -1,8 +1,8 @@
+using Sushi.Mediakiwi.Data;
 using System;
+using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
-using Sushi.Mediakiwi.Data;
-using System.Net;
 
 namespace Sushi.Mediakiwi.Framework
 {
@@ -108,9 +108,9 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
             else
             {
                 if (TextType == InputType.Money)
-                    MustMatch = new Regex(Data.Utility.GlobalRegularExpression.OnlyDecimal, RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+                    MustMatch = new Regex(Utility.GlobalRegularExpression.OnlyDecimal, RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
                 else if (TextType == InputType.Numeric)
-                    MustMatch = new Regex(Data.Utility.GlobalRegularExpression.OnlyNumeric, RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+                    MustMatch = new Regex(Utility.GlobalRegularExpression.OnlyNumeric, RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
             }
         }
 
@@ -177,7 +177,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
         {
             SetMultiFieldTitleHTML("Header", "icon-header");
 
-            if (Property != null && Property.PropertyType == typeof(Data.CustomData))
+            if (Property != null && Property.PropertyType == typeof(CustomData))
             {
                 SetContentContainer(field);
             }
@@ -195,7 +195,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                 }
                 else
                 {
-                    if (Property.PropertyType == typeof(Data.CustomData))
+                    if (Property.PropertyType == typeof(CustomData))
                     {
                         candidate = m_ContentContainer[field.Property].Value;
                     }
@@ -214,7 +214,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
             {
                 //  Possible return types: System.String, System.Int32, System.Decimal
 
-                if (Property.PropertyType == typeof(Data.CustomData))
+                if (Property.PropertyType == typeof(CustomData))
                 {
                     ApplyContentContainer(field, (candidate == null ? null : candidate.ToString()));
                 }
@@ -230,7 +230,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                         }
                         //enforce max length of string
                         if (MaxValueLength > 0)
-                            candidateString = Data.Utility.ConvertToFixedLengthText(candidateString, MaxValueLength);
+                            candidateString = Utility.ConvertToFixedLengthText(candidateString, MaxValueLength);
 
                         candidate = candidateString;
                     }
@@ -240,7 +240,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
 
                 else if (Property.PropertyType == typeof(int))
                 {
-                    candidate = Data.Utility.ConvertToInt(candidate);
+                    candidate = Utility.ConvertToInt(candidate);
                     Property.SetValue(SenderInstance, candidate, null);
                 }
                 else if (Property.PropertyType == typeof(int?))
@@ -248,7 +248,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                     if (candidate == null || candidate.ToString() == string.Empty)
                         Property.SetValue(SenderInstance, null, null);
                     else
-                        Property.SetValue(SenderInstance, Data.Utility.ConvertToInt(candidate), null);
+                        Property.SetValue(SenderInstance, Utility.ConvertToInt(candidate), null);
                 }
                 else if (Property.PropertyType == typeof(decimal))
                 {
@@ -260,8 +260,8 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                     }
                     
 
-                    decimal candidate2 = Data.Utility.ConvertToDecimal(candidate);
-                    if (TextType == InputType.Money) candidate = Data.Utility.ConvertToDecimalString(candidate2);
+                    decimal candidate2 = Utility.ConvertToDecimal(candidate);
+                    if (TextType == InputType.Money) candidate = Utility.ConvertToDecimalString(candidate2);
 
                     Property.SetValue(SenderInstance, candidate2, null);
                 }
@@ -275,7 +275,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                     }
                     
 
-                    double candidate2 = Data.Utility.ConvertToDouble(candidate);
+                    double candidate2 = Utility.ConvertToDouble(candidate);
                     Property.SetValue(SenderInstance, candidate2, null);
                 }
                 else if (Property.PropertyType == typeof(decimal?))
@@ -292,15 +292,15 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                                 .Replace(".", ",")
                                 .Replace(",", ".");
                         }
-                        decimal candidate2 = Data.Utility.ConvertToDecimal(candidate);
+                        decimal candidate2 = Utility.ConvertToDecimal(candidate);
                         if (TextType == InputType.Money)
-                            candidate = Data.Utility.ConvertToDecimalString(candidate2);
+                            candidate = Utility.ConvertToDecimalString(candidate2);
                         Property.SetValue(SenderInstance, candidate2, null);
                     }
                 }
                 else if (Property.PropertyType == typeof(Guid))
                 {
-                    candidate = Data.Utility.ConvertToGuid(candidate);
+                    candidate = Utility.ConvertToGuid(candidate);
                     Property.SetValue(SenderInstance, candidate, null);
                 }
             }
@@ -441,7 +441,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                     , IsPasswordField ? "autocomplete=\"new-password\"" : "autocomplete=\"off\"" // 9
                     , PreInputHtml // 10
                     , PostInputHtml // 11
-                    , string.IsNullOrWhiteSpace(InteractiveHelp) ? null : $" placeholder=\"{Data.Utility.CleanFormatting(InteractiveHelp)}\""
+                    , string.IsNullOrWhiteSpace(InteractiveHelp) ? null : $" placeholder=\"{Utility.CleanFormatting(InteractiveHelp)}\""
                     );
 
                 #endregion Element creation

@@ -331,7 +331,7 @@ namespace Sushi.Mediakiwi.UI
                 _Console.Response.Redirect(string.Concat(_Console.WimPagePath, "?page=", _Console.Item.Value, redirect));
             }
 
-            Data.Page pageInstance;
+            Page pageInstance;
 
             GlobalWimControlBuilder = component.CreateContentList(_Console, 0, selectedTab == 1, out pageInstance, section);
 
@@ -1105,7 +1105,7 @@ namespace Sushi.Mediakiwi.UI
             _Console.Item = Utility.ConvertToIntNullable(_Console.Request.Query["page"], false);
             if (_Console.Item.HasValue)
             {
-                _Console.ApplyList(Data.ComponentListType.Browsing);
+                _Console.ApplyList(ComponentListType.Browsing);
                 _Console.ItemType = RequestItemType.Page;
                 return;
             }
@@ -1113,7 +1113,7 @@ namespace Sushi.Mediakiwi.UI
             _Console.Item = Utility.ConvertToIntNullable(_Console.Request.Query["asset"], false);
             if (_Console.Item.HasValue)
             {
-                _Console.ApplyList(Data.ComponentListType.Documents);
+                _Console.ApplyList(ComponentListType.Documents);
                 _Console.ItemType = RequestItemType.Asset;
                 return;
             }

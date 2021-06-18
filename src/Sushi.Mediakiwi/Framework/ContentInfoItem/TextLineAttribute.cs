@@ -57,7 +57,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
         /// <param name="isEditMode">if set to <c>true</c> [is edit mode].</param>
         public void SetCandidate(Field field, bool isEditMode)
         {
-            if (Property != null && Property.PropertyType == typeof(Data.CustomData))
+            if (Property != null && Property.PropertyType == typeof(CustomData))
             {
                 SetContentContainer(field);
             }
@@ -71,7 +71,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
             }
             else
             {
-                if (Property.PropertyType == typeof(Data.CustomData))
+                if (Property.PropertyType == typeof(CustomData))
                 {
                     candidate = m_ContentContainer[field.Property].Value;
                     object ob = PropertyLogic.ConvertPropertyValue(field.Property, candidate, this.Console.CurrentList.ID, null);
@@ -81,7 +81,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                     if (candidate != null)
                     {
                         if (type == typeof(decimal))
-                            candidate = Data.Utility.ConvertToDecimalString(((decimal)ob));
+                            candidate = Utility.ConvertToDecimalString(((decimal)ob));
                         else if (type == typeof(DateTime) || type == typeof(DateTime?))
                         {
                             DateTime tmp = ((DateTime)ob);
@@ -106,7 +106,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                     if (value != null)
                     {
                         if (this.Property.PropertyType == typeof(decimal))
-                            candidate = Data.Utility.ConvertToDecimalString(((decimal)value));
+                            candidate = Utility.ConvertToDecimalString(((decimal)value));
                         else if (this.Property.PropertyType == typeof(DateTime) || this.Property.PropertyType == typeof(DateTime?))
                         {
                             DateTime tmp = ((DateTime)value);

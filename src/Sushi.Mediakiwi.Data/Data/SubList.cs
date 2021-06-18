@@ -258,7 +258,7 @@ namespace Sushi.Mediakiwi.Data
             [XmlIgnore()]
             public int ID
             {
-                get { return Sushi.Mediakiwi.Data.Utility.ConvertToInt(TextID); }
+                get { return Utility.ConvertToInt(TextID); }
                 set { TextID = value.ToString(); }
             }
 
@@ -314,7 +314,7 @@ namespace Sushi.Mediakiwi.Data
         {
             get
             {
-                return Sushi.Mediakiwi.Data.Utility.GetSerialized(typeof(SubList), this);
+                return Utility.GetSerialized(typeof(SubList), this);
             }
         }
 
@@ -353,13 +353,13 @@ namespace Sushi.Mediakiwi.Data
         public int GetID(int index)
         {
             if (this.Items == null || (index + 1) > this.Items.Length) return 0;
-            return Sushi.Mediakiwi.Data.Utility.ConvertToInt(this.Items[index].ID);
+            return Utility.ConvertToInt(this.Items[index].ID);
         }
 
         public int? GetIDNullable(int index)
         {
             if (this.Items == null || (index + 1) > this.Items.Length) return null;
-            return Sushi.Mediakiwi.Data.Utility.ConvertToInt(this.Items[index].ID);
+            return Utility.ConvertToInt(this.Items[index].ID);
         }
 
         /// <summary>

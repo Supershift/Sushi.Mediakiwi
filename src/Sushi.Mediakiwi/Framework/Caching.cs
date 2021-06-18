@@ -1,8 +1,8 @@
+using Microsoft.Extensions.Caching.Memory;
+using Sushi.Mediakiwi.Data;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using Microsoft.Extensions.Caching.Memory;
-using Sushi.Mediakiwi.Data;
 
 namespace Sushi.Mediakiwi.Framework
 {
@@ -74,7 +74,7 @@ namespace Sushi.Mediakiwi.Framework
                 return false;
             }
 
-            return Memory.TryGetValue<T>(key, out item);
+            return Memory.TryGetValue(key, out item);
         }
 
         public static bool IsCached<T>(string key, out List<T> item)
@@ -85,7 +85,7 @@ namespace Sushi.Mediakiwi.Framework
                 return false;
             }
 
-            return Memory.TryGetValue<List<T>>(key, out item);
+            return Memory.TryGetValue(key, out item);
         }
 
         /// <summary>
@@ -189,7 +189,7 @@ namespace Sushi.Mediakiwi.Framework
         /// <returns></returns>
         public static bool FlushCache(string cacheKey, bool igNoreLoadBalancedCacheCheck)
         {
-            if (Caching.IsCached(cacheKey))
+            if (IsCached(cacheKey))
             {
                 Memory.Remove(cacheKey);
 

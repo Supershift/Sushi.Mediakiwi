@@ -1,9 +1,9 @@
-using System;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Globalization;
 using Sushi.Mediakiwi.Data;
 using Sushi.Mediakiwi.RichRext;
+using System;
+using System.Globalization;
+using System.Text;
+using System.Text.RegularExpressions;
 
 namespace Sushi.Mediakiwi.Framework.ContentInfoItem
 {
@@ -17,7 +17,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
         public override MetaData GetMetaData(string name, string defaultValue)
         {
             MetaData meta = new MetaData();
-            Data.Utility.ReflectProperty(this, meta);
+            Utility.ReflectProperty(this, meta);
             meta.Name = name;
             meta.Default = defaultValue;
             meta.ContentTypeSelection = ((int)ContentTypeSelection).ToString();
@@ -109,7 +109,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
             //{
                 //useNewRichTextCleaning = true;
             //}
-            if (Property != null && Property.PropertyType == typeof(Data.CustomData))
+            if (Property != null && Property.PropertyType == typeof(CustomData))
                 SetContentContainer(field);
 
             string candidate = null;
@@ -124,7 +124,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                 }
                 else
                 {
-                    if (Property.PropertyType == typeof(Data.CustomData))
+                    if (Property.PropertyType == typeof(CustomData))
                     {
                         candidate = m_ContentContainer[field.Property].Value;
                     }
@@ -158,14 +158,14 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                 candidate = candidate.Replace("\t", string.Empty).Replace("\r\n", " ").Replace("\r", string.Empty).Replace("\n", string.Empty);
 
                 //if candidate is empy or contains only html tags and no real content, set candidate to null
-                if (string.IsNullOrEmpty(Data.Utility.CleanFormatting(candidate)))
+                if (string.IsNullOrEmpty(Utility.CleanFormatting(candidate)))
                     candidate = null;
                 else
                 {
                     string emptyTest = candidate.Replace("&nbsp;", string.Empty).Trim();
                     if (string.IsNullOrEmpty(emptyTest))
                         candidate = null;
-                    if (string.IsNullOrEmpty(Data.Utility.CleanFormatting(emptyTest)))
+                    if (string.IsNullOrEmpty(Utility.CleanFormatting(emptyTest)))
                         candidate = null;
                 }
             }
@@ -181,7 +181,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
             }
             if (!IsBluePrint && Property != null && Property.CanWrite)
             {
-                if (Property.PropertyType == typeof(Data.CustomData))
+                if (Property.PropertyType == typeof(CustomData))
                     ApplyContentContainer(field, candidate);
                 else if (Property.PropertyType == typeof(string))
                     Property.SetValue(SenderInstance, candidate, null);
@@ -218,7 +218,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
 
                 // To fill fails; if this part of the codes detects links with href="TOFILL" it means the editor fucked up
                 // First Log, then remove
-                if (tofillFails.IsMatch(candidate)) Sushi.Mediakiwi.Data.Notification.InsertOne("RichTextBoxEditor.Save", "Failed to create html link");
+                if (tofillFails.IsMatch(candidate)) Notification.InsertOne("RichTextBoxEditor.Save", "Failed to create html link");
                 candidate = tofillFails.Replace(candidate, "$1");
             }
             return candidate;
@@ -305,7 +305,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
 
             if (!string.IsNullOrEmpty(item) && item.StartsWith("<p>", StringComparison.OrdinalIgnoreCase))
             {
-                m_NewEditor.Content = Data.Utility.CleanParagraphWrap(item);
+                m_NewEditor.Content = Utility.CleanParagraphWrap(item);
             }
             else
                 m_NewEditor.Content = item;

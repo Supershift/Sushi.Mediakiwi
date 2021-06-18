@@ -1,7 +1,7 @@
-using System;
-using System.Threading.Tasks;
 using Sushi.Mediakiwi.Framework;
 using Sushi.Mediakiwi.UI;
+using System;
+using System.Threading.Tasks;
 
 namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
 {
@@ -36,7 +36,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             await m_Implement.DeleteAsync();
         }
 
-        Sushi.Mediakiwi.Data.IApplicationRole m_Implement;
+        Mediakiwi.Data.IApplicationRole m_Implement;
 
         async Task Role_ListSave(ComponentListEventArgs e)
         {
@@ -62,7 +62,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             if (AllSites || m_Implement.All_Sites)
             {
                 m_Implement.IsAccessSite = false;
-                await Sushi.Mediakiwi.Data.RoleRight.UpdateAsync(new int[0], Sushi.Mediakiwi.Data.RoleRightType.Site, m_Implement.ID);
+                await Mediakiwi.Data.RoleRight.UpdateAsync(new int[0], Mediakiwi.Data.RoleRightType.Site, m_Implement.ID);
             }
             else
             {
@@ -72,17 +72,17 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             if (AllLists || m_Implement.All_Lists)
             {
                 m_Implement.IsAccessList = false;
-                await Sushi.Mediakiwi.Data.RoleRight.UpdateAsync(new int[0], Sushi.Mediakiwi.Data.RoleRightType.List, m_Implement.ID);
+                await Mediakiwi.Data.RoleRight.UpdateAsync(new int[0], Mediakiwi.Data.RoleRightType.List, m_Implement.ID);
             }
             if (AllFolders || m_Implement.All_Folders)
             {
                 m_Implement.IsAccessFolder = false;
-                await Sushi.Mediakiwi.Data.RoleRight.UpdateAsync(new int[0], Sushi.Mediakiwi.Data.RoleRightType.Folder, m_Implement.ID);
+                await Mediakiwi.Data.RoleRight.UpdateAsync(new int[0], Mediakiwi.Data.RoleRightType.Folder, m_Implement.ID);
             }
             if (AllGalleries || m_Implement.All_Galleries)
             {
                 m_Implement.IsAccessGallery = false;
-                await Sushi.Mediakiwi.Data.RoleRight.UpdateAsync(new int[0], Sushi.Mediakiwi.Data.RoleRightType.Gallery, m_Implement.ID);
+                await Mediakiwi.Data.RoleRight.UpdateAsync(new int[0], Mediakiwi.Data.RoleRightType.Gallery, m_Implement.ID);
             }
 
             m_Implement.All_Sites = AllSites;
@@ -171,7 +171,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             //wim.ListDataColumns.Add("Folder (all)", "All_Folders");
             //wim.ListDataColumns.Add("Gallery (all)", "All_Galleries");
 
-            wim.ListDataAdd(await Sushi.Mediakiwi.Data.ApplicationRole.SelectAllAsync());
+            wim.ListDataAdd(await Mediakiwi.Data.ApplicationRole.SelectAllAsync());
         }
 
 
@@ -181,7 +181,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// Gets or sets the name of the role.
         /// </summary>
         /// <value>The name of the role.</value>
-        [Sushi.Mediakiwi.Framework.ContentListItem.TextField("Title", 50, true)]
+        [Framework.ContentListItem.TextField("Title", 50, true)]
         public string RoleName
         {
             get { return m_RoleName; }
@@ -193,7 +193,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// Gets or sets the description.
         /// </summary>
         /// <value>The description.</value>
-        [Sushi.Mediakiwi.Framework.ContentListItem.TextField("Description", 255, true)]
+        [Framework.ContentListItem.TextField("Description", 255, true)]
         public string Description
         {
             get { return m_Description; }
@@ -205,7 +205,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// Gets or sets the dashboard.
         /// </summary>
         /// <value>The dashboard.</value>
-        [Sushi.Mediakiwi.Framework.ContentListItem.Choice_Dropdown("Dashboard", "AvailableDashboards", false, false)]
+        [Framework.ContentListItem.Choice_Dropdown("Dashboard", "AvailableDashboards", false, false)]
         public int Dashboard
         {
             get { return m_Dashboard; }
@@ -217,7 +217,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// Gets or sets the sub text1.
         /// </summary>
         /// <value>The sub text1.</value>
-        [Sushi.Mediakiwi.Framework.ContentListItem.Section()]
+        [Framework.ContentListItem.Section()]
         public string SubText1
         {
             get { return m_SubText1; }
@@ -231,7 +231,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// <value>
         /// 	<c>true</c> if this instance can see page; otherwise, <c>false</c>.
         /// </value>
-        [Sushi.Mediakiwi.Framework.ContentListItem.Choice_Checkbox("Pages", true, "Does this role have the right to control pages?", Expression = OutputExpression.Alternating)]
+        [Framework.ContentListItem.Choice_Checkbox("Pages", true, "Does this role have the right to control pages?", Expression = OutputExpression.Alternating)]
         public bool CanSeePage
         {
             get { return m_CanSeePage; }
@@ -245,7 +245,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// <value>
         /// 	<c>true</c> if this instance can see list; otherwise, <c>false</c>.
         /// </value>
-        [Sushi.Mediakiwi.Framework.ContentListItem.Choice_Checkbox("Lists", true, "Does this role have the right to control lists?", Expression = OutputExpression.Alternating)]
+        [Framework.ContentListItem.Choice_Checkbox("Lists", true, "Does this role have the right to control lists?", Expression = OutputExpression.Alternating)]
         public bool CanSeeList
         {
             get { return m_CanSeeList; }
@@ -259,7 +259,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// <value>
         /// 	<c>true</c> if this instance can see gallery; otherwise, <c>false</c>.
         /// </value>
-        [Sushi.Mediakiwi.Framework.ContentListItem.Choice_Checkbox("Galleries", "Does this role have the right to control galleries?", Expression = OutputExpression.Alternating)]
+        [Framework.ContentListItem.Choice_Checkbox("Galleries", "Does this role have the right to control galleries?", Expression = OutputExpression.Alternating)]
         public bool CanSeeGallery
         {
             get { return m_CanSeeGallery; }
@@ -273,14 +273,14 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// <value>
         /// 	<c>true</c> if this instance can see admin; otherwise, <c>false</c>.
         /// </value>
-        [Sushi.Mediakiwi.Framework.ContentListItem.Choice_Checkbox("Administration", true, "Does this role have the right to access the administration section?", Expression = OutputExpression.Alternating)]
+        [Framework.ContentListItem.Choice_Checkbox("Administration", true, "Does this role have the right to access the administration section?", Expression = OutputExpression.Alternating)]
         public bool CanSeeAdmin
         {
             get { return m_CanSeeAdmin; }
             set { m_CanSeeAdmin = value; }
         }
 
-        [Sushi.Mediakiwi.Framework.ContentListItem.Choice_Checkbox("Folder", false, "Does this role have the right to access any folder view?", Expression = OutputExpression.Alternating)]
+        [Framework.ContentListItem.Choice_Checkbox("Folder", false, "Does this role have the right to access any folder view?", Expression = OutputExpression.Alternating)]
         public bool CanSeeFolder { get; set; }
 
         private string m_SubText2 = "Page rights";
@@ -288,8 +288,8 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// Gets or sets the sub text2.
         /// </summary>
         /// <value>The sub text2.</value>
-        [Sushi.Mediakiwi.Framework.OnlyVisibleWhenTrue("CanSeePage")]
-        [Sushi.Mediakiwi.Framework.ContentListItem.Section()]
+        [OnlyVisibleWhenTrue("CanSeePage")]
+        [Framework.ContentListItem.Section()]
         public string SubText2
         {
             get { return m_SubText2; }
@@ -303,8 +303,8 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// <value>
         /// 	<c>true</c> if this instance can change; otherwise, <c>false</c>.
         /// </value>
-        [Sushi.Mediakiwi.Framework.OnlyVisibleWhenTrue("CanSeePage")]
-        [Sushi.Mediakiwi.Framework.ContentListItem.Choice_Checkbox("Change", "The right to change content (pages)", Expression = OutputExpression.Alternating)]
+        [OnlyVisibleWhenTrue("CanSeePage")]
+        [Framework.ContentListItem.Choice_Checkbox("Change", "The right to change content (pages)", Expression = OutputExpression.Alternating)]
         public bool CanChange
         {
             get { return m_CanChange; }
@@ -318,8 +318,8 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// <value>
         /// 	<c>true</c> if this instance can create; otherwise, <c>false</c>.
         /// </value>
-        [Sushi.Mediakiwi.Framework.OnlyVisibleWhenTrue("CanSeePage")]
-        [Sushi.Mediakiwi.Framework.ContentListItem.Choice_Checkbox("Create", "The right to create content (pages and folders)", Expression = OutputExpression.Alternating)]
+        [OnlyVisibleWhenTrue("CanSeePage")]
+        [Framework.ContentListItem.Choice_Checkbox("Create", "The right to create content (pages and folders)", Expression = OutputExpression.Alternating)]
         public bool CanCreate
         {
             get { return m_CanCreate; }
@@ -333,8 +333,8 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// <value>
         /// 	<c>true</c> if this instance can publish; otherwise, <c>false</c>.
         /// </value>
-        [Sushi.Mediakiwi.Framework.OnlyVisibleWhenTrue("CanSeePage")]
-        [Sushi.Mediakiwi.Framework.ContentListItem.Choice_Checkbox("Publish", "The right to publish content (pages)", Expression = OutputExpression.Alternating)]
+        [OnlyVisibleWhenTrue("CanSeePage")]
+        [Framework.ContentListItem.Choice_Checkbox("Publish", "The right to publish content (pages)", Expression = OutputExpression.Alternating)]
         public bool CanPublish
         {
             get { return m_CanPublish; }
@@ -348,8 +348,8 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// <value>
         /// 	<c>true</c> if this instance can delete; otherwise, <c>false</c>.
         /// </value>
-        [Sushi.Mediakiwi.Framework.OnlyVisibleWhenTrue("CanSeePage")]
-        [Sushi.Mediakiwi.Framework.ContentListItem.Choice_Checkbox("Remove", "The right to remove content (pages and folders)", Expression = OutputExpression.Alternating)]
+        [OnlyVisibleWhenTrue("CanSeePage")]
+        [Framework.ContentListItem.Choice_Checkbox("Remove", "The right to remove content (pages and folders)", Expression = OutputExpression.Alternating)]
         public bool CanDelete
         {
             get { return m_CanDelete; }
@@ -361,8 +361,8 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// Gets or sets the sub text3.
         /// </summary>
         /// <value>The sub text3.</value>
-        [Sushi.Mediakiwi.Framework.OnlyVisibleWhenTrue("CanSeeList")]
-        [Sushi.Mediakiwi.Framework.ContentListItem.Section()]
+        [OnlyVisibleWhenTrue("CanSeeList")]
+        [Framework.ContentListItem.Section()]
         public string SubText4
         {
             get { return m_SubText4; }
@@ -376,8 +376,8 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// <value>
         /// 	<c>true</c> if this instance can create list; otherwise, <c>false</c>.
         /// </value>
-        [Sushi.Mediakiwi.Framework.OnlyVisibleWhenTrue("CanSeeList")]
-        [Sushi.Mediakiwi.Framework.ContentListItem.Choice_Checkbox("Create", "The right to create list instances / folder", Expression = OutputExpression.Alternating)]
+        [OnlyVisibleWhenTrue("CanSeeList")]
+        [Framework.ContentListItem.Choice_Checkbox("Create", "The right to create list instances / folder", Expression = OutputExpression.Alternating)]
         public bool CanCreateList
         {
             get { return m_CanCreateList; }
@@ -391,8 +391,8 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// <value>
         /// 	<c>true</c> if this instance can change list; otherwise, <c>false</c>.
         /// </value>
-        [Sushi.Mediakiwi.Framework.OnlyVisibleWhenTrue("CanSeeList")]
-        [Sushi.Mediakiwi.Framework.ContentListItem.Choice_Checkbox("Change", "The right to change list instances / folder", Expression = OutputExpression.Alternating)]
+        [OnlyVisibleWhenTrue("CanSeeList")]
+        [Framework.ContentListItem.Choice_Checkbox("Change", "The right to change list instances / folder", Expression = OutputExpression.Alternating)]
         public bool CanChangeList
         {
             get { return m_CanChangeList; }
@@ -405,7 +405,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// Gets or sets the sub text3.
         /// </summary>
         /// <value>The sub text3.</value>
-        [Sushi.Mediakiwi.Framework.ContentListItem.Section()]
+        [Framework.ContentListItem.Section()]
         public string SubText3
         {
             get { return m_SubText3; }
@@ -416,28 +416,28 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// Gets or sets a value indicating whether [all sites].
         /// </summary>
         /// <value><c>true</c> if [all sites]; otherwise, <c>false</c>.</value>
-        [Sushi.Mediakiwi.Framework.ContentListItem.Choice_Checkbox("All sites", false, "Access to all sites within Wim", AutoPostBack = true, Expression = OutputExpression.Alternating)]
+        [Framework.ContentListItem.Choice_Checkbox("All sites", false, "Access to all sites within Wim", AutoPostBack = true, Expression = OutputExpression.Alternating)]
         public bool AllSites { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether [all lists].
         /// </summary>
         /// <value><c>true</c> if [all lists]; otherwise, <c>false</c>.</value>
-        [Sushi.Mediakiwi.Framework.ContentListItem.Choice_Checkbox("All lists", false, "Access to all list (dependend of choice of accessible sites)", Expression = OutputExpression.Alternating)]
+        [Framework.ContentListItem.Choice_Checkbox("All lists", false, "Access to all list (dependend of choice of accessible sites)", Expression = OutputExpression.Alternating)]
         public bool AllLists{ get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether [all lists].
         /// </summary>
         /// <value><c>true</c> if [all lists]; otherwise, <c>false</c>.</value>
-        [Sushi.Mediakiwi.Framework.ContentListItem.Choice_Checkbox("All folders", false, "Access to all folders", Expression = OutputExpression.Alternating)]
+        [Framework.ContentListItem.Choice_Checkbox("All folders", false, "Access to all folders", Expression = OutputExpression.Alternating)]
         public bool AllFolders { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether [all lists].
         /// </summary>
         /// <value><c>true</c> if [all lists]; otherwise, <c>false</c>.</value>
-        [Sushi.Mediakiwi.Framework.ContentListItem.Choice_Checkbox("All galleries", false, "Access to all galleries", Expression = OutputExpression.Alternating)]
+        [Framework.ContentListItem.Choice_Checkbox("All galleries", false, "Access to all galleries", Expression = OutputExpression.Alternating)]
         public bool AllGalleries { get; set; }
 
         //[Sushi.Mediakiwi.Framework.ContentListItem.SubListSelect("Channels", "18b297dc-7e01-404d-bc45-bb3ea3eb344e", false)]
@@ -461,7 +461,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                 {
                     m_AvailableGalleries = new ListItemCollection();
                     m_AvailableGalleries.Add(new ListItem("", ""));
-                    foreach (Sushi.Mediakiwi.Data.Gallery item in Sushi.Mediakiwi.Data.Gallery.SelectAllAccessible(wim.CurrentApplicationUser))
+                    foreach (Mediakiwi.Data.Gallery item in Mediakiwi.Data.Gallery.SelectAllAccessible(wim.CurrentApplicationUser))
                     {
                         m_AvailableGalleries.Add(new ListItem(item.CompletePath, item.ID.ToString()));
                     }
@@ -491,7 +491,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                 if (m_AvailableDashboards == null)
                 {
                     m_AvailableDashboards = new ListItemCollection();
-                    foreach (Sushi.Mediakiwi.Data.Dashboard item in Sushi.Mediakiwi.Data.Dashboard.SelectAll())
+                    foreach (Mediakiwi.Data.Dashboard item in Mediakiwi.Data.Dashboard.SelectAll())
                     {
                         m_AvailableDashboards.Add(new ListItem(item.Name, item.ID.ToString()));
                     }

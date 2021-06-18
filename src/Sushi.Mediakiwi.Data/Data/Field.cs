@@ -78,7 +78,7 @@ namespace Sushi.Mediakiwi.Data
                 if (!string.IsNullOrEmpty(Value))
                 {
                     long ticks;
-                    if (Sushi.Mediakiwi.Data.Utility.IsNumeric(Value, out ticks))
+                    if (Utility.IsNumeric(Value, out ticks))
                     {
                         return new DateTime(ticks);
                     }
@@ -116,7 +116,7 @@ namespace Sushi.Mediakiwi.Data
 
             try
             {
-                return Sushi.Mediakiwi.Data.Utility.ConvertToIntNullable(Value, false);
+                return Utility.ConvertToIntNullable(Value, false);
             }
             catch (OverflowException ex)
             {

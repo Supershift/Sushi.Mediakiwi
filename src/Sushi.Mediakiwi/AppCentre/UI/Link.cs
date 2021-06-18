@@ -1,7 +1,7 @@
-using System;
-using Sushi.Mediakiwi.Framework;
-using Sushi.Mediakiwi.Data;
 using Sushi.Mediakiwi.AppCentre.UI.Forms;
+using Sushi.Mediakiwi.Data;
+using Sushi.Mediakiwi.Framework;
+using System;
 using System.Threading.Tasks;
 
 namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
@@ -105,14 +105,14 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                 switch (Form.Type)
                 {
                     case 1:
-                        Sushi.Mediakiwi.Data.Page page = await Sushi.Mediakiwi.Data.Page.SelectOneAsync(Implement.PageID.Value, false);
+                        Page page = await Page.SelectOneAsync(Implement.PageID.Value, false);
                         Implement.Text = page.LinkText; 
                         break;
                     //case 2: 
                     //    Implement.Text = Form.IsExternalLink; 
                     //    break;
                     case 3:
-                        Sushi.Mediakiwi.Data.Asset asset = await Sushi.Mediakiwi.Data.Asset.SelectOneAsync(Implement.AssetID.Value);
+                        Asset asset = await Asset.SelectOneAsync(Implement.AssetID.Value);
                         Implement.Text = asset.Title; 
                         break;
                 }
@@ -125,7 +125,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             {
                 if (Implement.PageID.HasValue)
                 {
-                    Sushi.Mediakiwi.Data.Page page = await Sushi.Mediakiwi.Data.Page.SelectOneAsync(Implement.PageID.Value, false);
+                    Page page = await Page.SelectOneAsync(Implement.PageID.Value, false);
                     if (page != null)
                         url = string.Format("{0}{1}.aspx", page.CompletePath, page.Name);
                 }
@@ -152,7 +152,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         }
 
         LinkForm Form { get; set; }
-        Sushi.Mediakiwi.Data.Link Implement { get; set; }
+        Mediakiwi.Data.Link Implement { get; set; }
 
         async Task Link_ListLoad(ComponentListEventArgs e)
         {

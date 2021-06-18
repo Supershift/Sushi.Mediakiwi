@@ -1,11 +1,11 @@
-﻿using Sushi.MicroORM;
+﻿using Sushi.Mediakiwi.Data.MicroORM;
+using Sushi.MicroORM;
 using Sushi.MicroORM.Mapping;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Sushi.Mediakiwi.Data.MicroORM;
 
 namespace Sushi.Mediakiwi.Data
 {
@@ -658,7 +658,7 @@ namespace Sushi.Mediakiwi.Data
         /// <returns></returns>
         public bool Update()
         {
-            var connector = ConnectorFactory.CreateConnector<Page>(new PageMap(true));
+            var connector = ConnectorFactory.CreateConnector(new PageMap(true));
             try
             {
                 connector.Update(this);
@@ -676,7 +676,7 @@ namespace Sushi.Mediakiwi.Data
         /// <returns></returns>
         public async Task<bool> UpdateAsync()
         {
-            var connector = ConnectorFactory.CreateConnector<Page>(new PageMap(true));
+            var connector = ConnectorFactory.CreateConnector(new PageMap(true));
             try
             {
                 await connector.UpdateAsync(this);
@@ -713,11 +713,11 @@ namespace Sushi.Mediakiwi.Data
                     if (match.Groups.Count > 1)
                     {
                         string v = match.Groups[1].Value;
-                        var link = Link.SelectOne(Sushi.Mediakiwi.Data.Utility.ConvertToInt(v));
+                        var link = Link.SelectOne(Utility.ConvertToInt(v));
                         if (link.ID > 0)
                         {
                             var newlink = new Link();
-                            Sushi.Mediakiwi.Data.Utility.ReflectProperty(link, newlink);
+                            Utility.ReflectProperty(link, newlink);
                             newlink.ID = 0;
                             newlink.GUID = Guid.NewGuid();
                             newlink.Save();
@@ -751,7 +751,7 @@ namespace Sushi.Mediakiwi.Data
         {
             SetInternalPath();
 
-            var connector = ConnectorFactory.CreateConnector<Page>(new PageMap(true));
+            var connector = ConnectorFactory.CreateConnector(new PageMap(true));
             try
             {
                 connector.Save(this);
@@ -789,7 +789,7 @@ namespace Sushi.Mediakiwi.Data
         {
             SetInternalPath();
 
-            var connector = ConnectorFactory.CreateConnector<Page>(new PageMap(true));
+            var connector = ConnectorFactory.CreateConnector(new PageMap(true));
             try
             {
                 await connector.SaveAsync(this);
@@ -836,7 +836,7 @@ namespace Sushi.Mediakiwi.Data
 
             try
             {
-                var connector = ConnectorFactory.CreateConnector<Page>(new PageMap(true));
+                var connector = ConnectorFactory.CreateConnector(new PageMap(true));
                 connector.Insert(this);
                 return true;
             }
@@ -864,7 +864,7 @@ namespace Sushi.Mediakiwi.Data
 
             try
             {
-                var connector = ConnectorFactory.CreateConnector<Page>(new PageMap(true));
+                var connector = ConnectorFactory.CreateConnector(new PageMap(true));
                 await connector.InsertAsync(this);
                 return true;
             }
@@ -880,7 +880,7 @@ namespace Sushi.Mediakiwi.Data
         /// <returns></returns>
         public bool Delete()
         {
-            var connector = ConnectorFactory.CreateConnector<Page>(new PageMap(true));
+            var connector = ConnectorFactory.CreateConnector(new PageMap(true));
             var filter = connector.CreateDataFilter();
             filter.AddParameter("@thisId", ID);
 
@@ -897,7 +897,7 @@ namespace Sushi.Mediakiwi.Data
         /// <returns></returns>
         public async Task<bool> DeleteAsync()
         {
-            var connector = ConnectorFactory.CreateConnector<Page>(new PageMap(true));
+            var connector = ConnectorFactory.CreateConnector(new PageMap(true));
             var filter = connector.CreateDataFilter();
             filter.AddParameter("@thisId", ID);
 
@@ -1730,7 +1730,7 @@ namespace Sushi.Mediakiwi.Data
             var connector = ConnectorFactory.CreateConnector<Page>();
             var filter = connector.CreateDataFilter();
             filter.AddSql("Page_Master_Key = @Page OR Page_Key = @Page");
-            filter.AddParameter<int>("Page", pageID);
+            filter.AddParameter("Page", pageID);
             filter.Add(x => x.SiteID, siteID);
 
             if (returnOnlyPublishedPage)

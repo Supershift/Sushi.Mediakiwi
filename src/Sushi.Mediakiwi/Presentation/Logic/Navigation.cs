@@ -1,13 +1,13 @@
+using Microsoft.Extensions.DependencyInjection;
+using Sushi.Mediakiwi.Data;
+using Sushi.Mediakiwi.Data.Interfaces;
+using Sushi.Mediakiwi.Framework.Api;
+using Sushi.Mediakiwi.Interfaces;
 using System;
-using System.Linq;
-using System.Text;
 using System.Collections.Generic;
 using System.Globalization;
-using Sushi.Mediakiwi.Data;
-using Sushi.Mediakiwi.Framework.Api;
-using Sushi.Mediakiwi.Data.Interfaces;
-using Sushi.Mediakiwi.Interfaces;
-using Microsoft.Extensions.DependencyInjection;
+using System.Linq;
+using System.Text;
 
 namespace Sushi.Mediakiwi.Framework.Presentation.Logic
 {
@@ -476,7 +476,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                     string itemTitle = container.CurrentList.SingleItemName;
 
                     //  Testcode
-                    List<Sushi.Mediakiwi.Framework.WimComponentListRoot.Tabular> tabularList = null;
+                    List<WimComponentListRoot.Tabular> tabularList = null;
                     if (!string.IsNullOrEmpty(container.Request.Query["group"]))
                     {
                         int groupId = Utility.ConvertToInt(container.Request.Query["group"]);
@@ -518,7 +518,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                     if (tabularList != null)
                     {
                         tabulars = "";
-                        foreach (Sushi.Mediakiwi.Framework.WimComponentListRoot.Tabular t in tabularList)
+                        foreach (WimComponentListRoot.Tabular t in tabularList)
                         {
                             if (t.List.IsNewInstance)
                                 continue;
@@ -541,7 +541,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                             {
                                 if (container.CurrentListInstance.wim.m_Collection != null)
                                 {
-                                    foreach (Sushi.Mediakiwi.Framework.WimComponentListRoot.Tabular t2 in container.CurrentListInstance.wim.m_Collection)
+                                    foreach (WimComponentListRoot.Tabular t2 in container.CurrentListInstance.wim.m_Collection)
                                     {
                                         ApplyTabularUrl(container, t2, 2);
 
@@ -573,7 +573,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
 
                                     if (cl.wim.m_Collection != null)
                                     {
-                                        foreach (Sushi.Mediakiwi.Framework.WimComponentListRoot.Tabular t2 in cl.wim.m_Collection)
+                                        foreach (WimComponentListRoot.Tabular t2 in cl.wim.m_Collection)
                                         {
                                             tabulars += string.Format(@"<li><a href=""{1}""{2}>{0}</a></li>"
                                                 , t2.TitleValue
@@ -591,7 +591,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                     }
 
 
-                    Sushi.Mediakiwi.Framework.WimComponentListRoot.Tabular tmp = new Sushi.Mediakiwi.Framework.WimComponentListRoot.Tabular();
+                    WimComponentListRoot.Tabular tmp = new WimComponentListRoot.Tabular();
                     tmp.SelectedItem = currentListItemId;
                     ApplyTabularUrl(container, tmp, 0, currentListId);
 
@@ -641,7 +641,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
             return tabTag;
         }
 
-        static void ApplyTabularUrl(Beta.GeneratedCms.Console container, Sushi.Mediakiwi.Framework.WimComponentListRoot.Tabular t, int levelEntry)
+        static void ApplyTabularUrl(Beta.GeneratedCms.Console container, WimComponentListRoot.Tabular t, int levelEntry)
         {
             ApplyTabularUrl(container, t, levelEntry, null);
         }
@@ -660,7 +660,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
             return addition;
         }
 
-        static void ApplyTabularUrl(Beta.GeneratedCms.Console container, Sushi.Mediakiwi.Framework.WimComponentListRoot.Tabular t, int levelEntry, int? currentListID)
+        static void ApplyTabularUrl(Beta.GeneratedCms.Console container, WimComponentListRoot.Tabular t, int levelEntry, int? currentListID)
         {
             int listID = container.CurrentList != null ? container.CurrentList.ID : Utility.ConvertToInt(container.Request.Query["list"]);
 
@@ -752,7 +752,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
             {
                 int currentListID = container.Group.HasValue ? container.Group.Value : container.CurrentList.ID;
 
-                Data.Gallery root = Data.Gallery.SelectOneRoot();
+                Gallery root = Gallery.SelectOneRoot();
 
                 int rootID = root.ID;
                 if (container.CurrentApplicationUser.Role().GalleryRoot.HasValue)
@@ -761,19 +761,19 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                 currentName = "Documents";
                 currentLink = container.UrlBuild.GetGalleryRequest(rootID);
 
-                Data.Gallery currentGallery = Data.Gallery.SelectOne(currentFolder.ID);
+                Gallery currentGallery = Gallery.SelectOne(currentFolder.ID);
 
-                Data.Gallery level1 = Data.Gallery.SelectOne(currentGallery, 1);
-                Data.Gallery level2 = Data.Gallery.SelectOne(currentGallery, 2);
-                Data.Gallery level3 = Data.Gallery.SelectOne(currentGallery, 3);
+                Gallery level1 = Gallery.SelectOne(currentGallery, 1);
+                Gallery level2 = Gallery.SelectOne(currentGallery, 2);
+                Gallery level3 = Gallery.SelectOne(currentGallery, 3);
 
                 //  LEVEL 1 : Folders
-                Data.Gallery[] galleries1 = Data.Gallery.SelectAllByParent(rootID);
+                Gallery[] galleries1 = Gallery.SelectAllByParent(rootID);
 
                 if (!CommonConfiguration.RIGHTS_GALLERY_SUBS_ARE_ALLOWED)
-                    galleries1 = Data.Gallery.ValidateAccessRight(galleries1, container.CurrentApplicationUser);
+                    galleries1 = Gallery.ValidateAccessRight(galleries1, container.CurrentApplicationUser);
 
-                foreach (Data.Gallery folder in galleries1)
+                foreach (Gallery folder in galleries1)
                 {
                     bool isActive = currentGallery.ID == folder.ID || level1.ID == folder.ID;
                     build.AppendFormat(@"<li><a href=""{0}"" class=""{1}{4}{3}"">{2}</a>", container.UrlBuild.GetGalleryRequest(folder), "folder", folder.Name, isActive ? " active" : "", isFirst ? " first" : null);
@@ -786,10 +786,10 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                         build.AppendFormat(@"<ul>");
 
                         //  LEVEL 2 : Folders
-                        Data.Gallery[] galleries2 = Data.Gallery.SelectAllByParent(folder.ID);
-                        galleries2 = Data.Gallery.ValidateAccessRight(galleries2, container.CurrentApplicationUser);
+                        Gallery[] galleries2 = Gallery.SelectAllByParent(folder.ID);
+                        galleries2 = Gallery.ValidateAccessRight(galleries2, container.CurrentApplicationUser);
 
-                        foreach (Data.Gallery folder2 in galleries2)
+                        foreach (Gallery folder2 in galleries2)
                         {
                             bool isActive2 = (folder2.ID == currentGallery.ID) || level2.ID == folder2.ID;
                             build.AppendFormat(@"<li><a href=""{0}"" class=""{1}{3}"">{2}</a>", container.UrlBuild.GetGalleryRequest(folder2), "folder", folder2.Name, isActive2 ? " active" : "");
@@ -799,7 +799,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                             {
                                 build.AppendFormat(@"<ul>");
                                 //  LEVEL 3 : Folders
-                                foreach (Data.Gallery folder3 in Data.Gallery.SelectAllByParent(folder2.ID))
+                                foreach (Gallery folder3 in Gallery.SelectAllByParent(folder2.ID))
                                 {
                                     bool isActive3 = (folder3.ID == currentGallery.ID) || level3.ID == folder3.ID;
                                     build.AppendFormat(@"<li><a href=""{0}"" class=""{1}{3}"">{2}</a>", container.UrlBuild.GetGalleryRequest(folder3), "folder", folder3.Name, isActive3 ? " active" : "");
@@ -850,7 +850,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                 }
                 else
                 {
-                    var lists = Data.ComponentList.SelectOne(currentListID);
+                    var lists = ComponentList.SelectOne(currentListID);
 
                     build.AppendFormat(@"<li class=""back""><span class=""icon-arrow-left-04""></span><a href=""{0}"">{1}</a></li>"
                         , container.UrlBuild.GetListRequest(lists)
@@ -860,11 +860,11 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
 
                 if (container.CurrentList.Type != ComponentListType.Browsing)
                 {
-                    Data.IComponentList[] lists1 = Data.ComponentList.SelectAll(currentFolder.ID);
+                    IComponentList[] lists1 = ComponentList.SelectAll(currentFolder.ID);
                     lists1 = ComponentList.ValidateAccessRight(lists1,
                         container.CurrentApplicationUser);
 
-                    foreach (Data.ComponentList list in lists1)
+                    foreach (ComponentList list in lists1)
                     {
                         if (container.Item.HasValue)
                         {
@@ -953,13 +953,13 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                 }
                 else
                 {
-                    Data.Folder root;
+                    Folder root;
                     if (isFirstLevelRootnavigation)
-                        root = Data.Folder.SelectOne(currentFolder, 1);
+                        root = Folder.SelectOne(currentFolder, 1);
                     else
-                        root = Data.Folder.SelectOneBySite(container.CurrentListInstance.wim.CurrentSite.ID, currentFolder.Type);
+                        root = Folder.SelectOneBySite(container.CurrentListInstance.wim.CurrentSite.ID, currentFolder.Type);
 
-                    var arr = Data.Folder.SelectAllByParent(root.ID);
+                    var arr = Folder.SelectAllByParent(root.ID);
 
                     foreach (var item in arr)
                     {
@@ -1281,7 +1281,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
              if (!button.OpenInPopupLayer)
                  return null;
 
-            Sushi.Mediakiwi.Framework.Grid.LayerSpecification specification = new Grid.LayerSpecification(layersize);
+            Grid.LayerSpecification specification = new Grid.LayerSpecification(layersize);
 
             if (button.PopupLayerHasScrollBar.HasValue)
                 specification.HasScrolling = button.PopupLayerHasScrollBar.Value;
@@ -1327,11 +1327,11 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
             if (string.IsNullOrEmpty(saveRecord))
                 saveRecord = Labels.ResourceManager.GetString("save", new CultureInfo(container.CurrentApplicationUser.LanguageCulture));
 
-            Data.FolderType section = container.CurrentListInstance.wim.CurrentFolder.Type;
+            FolderType section = container.CurrentListInstance.wim.CurrentFolder.Type;
 
             //  When in the page section, but on a property list page the actual section = list
-            if (section == Data.FolderType.Page && container.CurrentList.Type != ComponentListType.Browsing)
-                section = Data.FolderType.List;
+            if (section == FolderType.Page && container.CurrentList.Type != ComponentListType.Browsing)
+                section = FolderType.List;
 
             bool isEditMode = container.CurrentListInstance.wim.IsEditMode;
             bool isTextMode = !isEditMode;
@@ -1611,7 +1611,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
 
                     if (buttonList != null)
                     {
-                        buttonList.Where(x => (x.IconTarget == Sushi.Mediakiwi.Framework.ButtonTarget.TopLeft || x.IconTarget == ButtonTarget.TopRight))
+                        buttonList.Where(x => (x.IconTarget == ButtonTarget.TopLeft || x.IconTarget == ButtonTarget.TopRight))
                             .ToList()
                             .ForEach(button =>
                             {
@@ -1906,13 +1906,13 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
 
             if (container.CurrentListInstance.wim.CurrentFolder.Type != FolderType.Gallery)
             {
-                foreach (Data.Folder item in Data.Folder.SelectAllByBackwardTrail(container.CurrentListInstance.wim.CurrentFolder.ID))
+                foreach (Folder item in Folder.SelectAllByBackwardTrail(container.CurrentListInstance.wim.CurrentFolder.ID))
                 {
                     string url = string.Concat(container.WimPagePath, "?folder=", item.ID);
                     build.Append(string.Format("\n\t<li{2}><a href=\"{1}\">{0}</a>", item.Name, url, item.ID == container.CurrentListInstance.wim.CurrentFolder.ID ? " class=\"active\"" : string.Empty));
 
                     bool isFirst = false;
-                    foreach (Data.Folder item2 in Data.Folder.SelectAllByParent(item.ID, container.CurrentListInstance.wim.CurrentFolder.Type, false))
+                    foreach (Folder item2 in Folder.SelectAllByParent(item.ID, container.CurrentListInstance.wim.CurrentFolder.Type, false))
                     {
                         if (!isFirst)
                             build.Append("\n\t<ul>");
@@ -1930,13 +1930,13 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
             }
             else
             {
-                foreach (Data.Gallery item in Data.Gallery.SelectAllByBackwardTrail(container.CurrentListInstance.wim.CurrentFolder.ID))
+                foreach (Gallery item in Gallery.SelectAllByBackwardTrail(container.CurrentListInstance.wim.CurrentFolder.ID))
                 {
                     string url = string.Concat(container.WimPagePath, "?gallery=", item.ID);
                     build.Append(string.Format("\n\t<li{2}><a href=\"{1}\">{0}</a>", item.Name, url, item.ID == container.CurrentListInstance.wim.CurrentFolder.ID ? " class=\"active\"" : string.Empty));
 
                     bool isFirst = false;
-                    foreach (Data.Gallery item2 in Data.Gallery.SelectAllByParent(item.ID))
+                    foreach (Gallery item2 in Gallery.SelectAllByParent(item.ID))
                     {
                         if (!isFirst)
                             build.Append("\n\t<ul>");
@@ -1973,9 +1973,9 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
             if (isBrowseMode)
             {
                 previousUrl = string.Concat(container.WimPagePath, "?", "folder=", container.CurrentListInstance.wim.CurrentFolder.ParentID.GetValueOrDefault(0));
-                
-                Data.IComponentList list0 = Data.ComponentList.SelectOne(ComponentListType.Folders);
-                Data.IComponentList list1 = Data.ComponentList.SelectOne(ComponentListType.PageProperties);
+
+                IComponentList list0 = ComponentList.SelectOne(ComponentListType.Folders);
+                IComponentList list1 = ComponentList.SelectOne(ComponentListType.PageProperties);
 
                 if (container.CurrentListInstance.wim.CurrentApplicationUserRole.CanCreatePage)
                 {
@@ -2011,7 +2011,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
             {
                 Page page = Page.SelectOne(container.Item.Value, false);
 
-                Data.IComponentList list0 = Data.ComponentList.SelectOne(ComponentListType.PageProperties);
+                IComponentList list0 = ComponentList.SelectOne(ComponentListType.PageProperties);
                 previousUrl = string.Concat(container.WimPagePath, "?", "folder=", container.CurrentListInstance.wim.CurrentFolder.ID);
 
                 //  Edit
@@ -2114,8 +2114,8 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
             if (isBrowseMode)
             {
                 previousUrl = string.Concat(container.WimPagePath, "?", "folder=", container.CurrentListInstance.wim.CurrentFolder.ParentID.GetValueOrDefault(0));
-                Data.IComponentList list0 = Data.ComponentList.SelectOne(ComponentListType.Folders);
-                Data.IComponentList list1 = Data.ComponentList.SelectOne(ComponentListType.ComponentListInstance);
+                IComponentList list0 = ComponentList.SelectOne(ComponentListType.Folders);
+                IComponentList list1 = ComponentList.SelectOne(ComponentListType.ComponentListInstance);
 
                 if (container.CurrentListInstance.wim.CurrentApplicationUserRole.CanCreateList)
                 {
@@ -2137,7 +2137,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
             else if (isListMode)
             {
                 //  Create new element
-                Data.IComponentList list0 = Data.ComponentList.SelectOne(ComponentListType.ComponentListProperties);
+                IComponentList list0 = ComponentList.SelectOne(ComponentListType.ComponentListProperties);
 
                 previousUrl = string.Concat(container.WimPagePath, "?", "folder=", container.CurrentListInstance.wim.CurrentFolder.ID);
 
@@ -2182,7 +2182,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
             else if (isTextMode)
             {
 
-                Data.IComponentList list0 = Data.ComponentList.SelectOne(ComponentListType.ComponentListProperties);
+                IComponentList list0 = ComponentList.SelectOne(ComponentListType.ComponentListProperties);
 
                 if (container.CurrentListInstance.wim.CanContainSingleInstancePerDefinedList || container.CurrentList.Type == ComponentListType.Folders)
                     previousUrl = string.Concat(container.WimPagePath, "?", "folder=", container.CurrentListInstance.wim.CurrentFolder.ID);
@@ -2205,10 +2205,10 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                     build2.AppendFormat("<li><a href=\"{0}\" id=\"edit\" class=\"edit postBack\">Edit</a></li>", "#");
 
 
-                Data.IComponentList selectedList = container.CurrentList;
+                IComponentList selectedList = container.CurrentList;
                 if (container.Item.GetValueOrDefault(container.Logic) != container.CurrentList.ID)
                 {
-                    selectedList = Data.ComponentList.SelectOne(container.Item.GetValueOrDefault(container.Logic));
+                    selectedList = ComponentList.SelectOne(container.Item.GetValueOrDefault(container.Logic));
                 }
                 
                 if (container.CurrentList.Type != ComponentListType.ComponentListProperties || selectedList.Type == ComponentListType.Undefined)
@@ -2280,10 +2280,10 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
 
                     if (container.Item.GetValueOrDefault(0) != 0 && container.CurrentListInstance.wim.OpenInEditMode)
                     {
-                        Data.IComponentList selectedList = container.CurrentList;
+                        IComponentList selectedList = container.CurrentList;
                         if (container.Item.GetValueOrDefault(container.Logic) != container.CurrentList.ID)
                         {
-                            selectedList = Data.ComponentList.SelectOne(container.Item.GetValueOrDefault(container.Logic));
+                            selectedList = ComponentList.SelectOne(container.Item.GetValueOrDefault(container.Logic));
                         }
 
                         if (container.CurrentList.Type != ComponentListType.ComponentListProperties || selectedList.Type == ComponentListType.Undefined)
@@ -2346,8 +2346,8 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                 previousUrl = string.Concat(container.WimPagePath, "?", "gallery=", container.CurrentListInstance.wim.CurrentFolder.ParentID.GetValueOrDefault(0));
 
                 build.Append("<ul class=\"subNavigation\" class=\"pseudoHover\">");
-                Data.IComponentList list0 = Data.ComponentList.SelectOne(ComponentListType.ComponentListProperties);
-                Data.IComponentList list1 = Data.ComponentList.SelectOne(ComponentListType.Folders);
+                IComponentList list0 = ComponentList.SelectOne(ComponentListType.ComponentListProperties);
+                IComponentList list1 = ComponentList.SelectOne(ComponentListType.Folders);
 
                 previousUrl = string.Concat(container.WimPagePath, "?", "gallery=", container.CurrentListInstance.wim.CurrentFolder.ID);
                 //  Create new element
@@ -2411,8 +2411,8 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
             if (isBrowseMode)
             {
                 previousUrl = string.Concat(container.WimPagePath, "?", "folder=", container.CurrentListInstance.wim.CurrentFolder.ParentID.GetValueOrDefault(0));
-                Data.IComponentList list0 = Data.ComponentList.SelectOne(ComponentListType.Folders);
-                Data.IComponentList list1 = Data.ComponentList.SelectOne(ComponentListType.PageProperties);
+                IComponentList list0 = ComponentList.SelectOne(ComponentListType.Folders);
+                IComponentList list1 = ComponentList.SelectOne(ComponentListType.PageProperties);
 
                 build.Append("<ul class=\"subNavigation\" class=\"pseudoHover\">");
                 if (container.CurrentApplicationUser.ShowDetailView)
@@ -2424,7 +2424,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
             {
                 build.Append("<ul class=\"subNavigation\" class=\"pseudoHover\">");
 
-                Data.IComponentList list0 = Data.ComponentList.SelectOne(ComponentListType.ComponentListProperties);
+                IComponentList list0 = ComponentList.SelectOne(ComponentListType.ComponentListProperties);
 
                 previousUrl = string.Concat(container.WimPagePath, "?", "folder=", container.CurrentListInstance.wim.CurrentFolder.ID);
                 //  Create new element

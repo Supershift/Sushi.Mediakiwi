@@ -1,8 +1,8 @@
-﻿using Sushi.MicroORM.Mapping;
+﻿using Sushi.Mediakiwi.Data.MicroORM;
+using Sushi.MicroORM.Mapping;
 using System;
 using System.Data;
 using System.Threading.Tasks;
-using Sushi.Mediakiwi.Data.MicroORM;
 
 namespace Sushi.Mediakiwi.Data.Statistics
 {
@@ -129,7 +129,7 @@ namespace Sushi.Mediakiwi.Data.Statistics
         /// </summary>
         /// <param name="ID">The ID.</param>
         /// <returns></returns>
-        public async static Task<IVisitorClick> SelectOneAsync(int ID)
+        public static async Task<IVisitorClick> SelectOneAsync(int ID)
         {
             var connector = ConnectorFactory.CreateConnector<VisitorClick>();
             return await connector.FetchSingleAsync(ID);
@@ -145,8 +145,8 @@ namespace Sushi.Mediakiwi.Data.Statistics
         {
             var connector = ConnectorFactory.CreateConnector<VisitorClick>();
             var filter = connector.CreateDataFilter();
-            filter.AddParameter<DateTime>("@D1", from);
-            filter.AddParameter<DateTime>("@D2", to);
+            filter.AddParameter("@D1", from);
+            filter.AddParameter("@D2", to);
             filter.AddSql("[VisitorClick_Created] BETWEEN @D1 AND @D2");
 
             return connector.FetchAll(filter).ToArray();
@@ -162,8 +162,8 @@ namespace Sushi.Mediakiwi.Data.Statistics
         {
             var connector = ConnectorFactory.CreateConnector<VisitorClick>();
             var filter = connector.CreateDataFilter();
-            filter.AddParameter<DateTime>("@D1", from);
-            filter.AddParameter<DateTime>("@D2", to);
+            filter.AddParameter("@D1", from);
+            filter.AddParameter("@D2", to);
             filter.AddSql("[VisitorClick_Created] BETWEEN @D1 AND @D2");
 
             var result = await connector.FetchAllAsync(filter);

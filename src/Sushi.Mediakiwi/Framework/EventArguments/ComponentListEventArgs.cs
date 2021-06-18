@@ -1,6 +1,6 @@
+using Sushi.Mediakiwi.Beta.GeneratedCms.Source;
 using System;
 using System.Collections;
-using Sushi.Mediakiwi.Beta.GeneratedCms.Source;
 
 namespace Sushi.Mediakiwi.Framework
 {
@@ -176,8 +176,8 @@ namespace Sushi.Mediakiwi.Framework
         /// <value>
         /// The column.
         /// </value>
-        internal Framework.ListDataColumn[] Columns { get; set; }
-        public Framework.ListDataColumn Column { get; internal set; }
+        internal ListDataColumn[] Columns { get; set; }
+        public ListDataColumn Column { get; internal set; }
         /// <summary>
         /// Returns a <see cref="string" /> that represents this instance.
         /// </summary>
@@ -424,8 +424,8 @@ namespace Sushi.Mediakiwi.Framework
         public ASyncQueryType SearchType { get; set; }
 
         Component _component;
-        Sushi.Mediakiwi.Beta.GeneratedCms.Console _container;
-        internal void ApplyData(Component component, Sushi.Mediakiwi.Beta.GeneratedCms.Console container)
+        Beta.GeneratedCms.Console _container;
+        internal void ApplyData(Component component, Beta.GeneratedCms.Console container)
         {
             _component = component;
             _container = container;

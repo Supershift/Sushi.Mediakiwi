@@ -114,7 +114,7 @@ namespace Sushi.Mediakiwi.Headless.SectionHelper
             builder.CloseElement();
         }
 
-        protected async void Service_ChangesDone(object sender, EventArgs e)
+        async protected void Service_ChangesDone(object sender, EventArgs e)
         {
             await InvokeAsync(() =>
             {

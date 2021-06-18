@@ -1,10 +1,10 @@
-﻿using Sushi.MicroORM.Mapping;
+﻿using Sushi.Mediakiwi.Data.Interfaces;
+using Sushi.Mediakiwi.Data.MicroORM;
+using Sushi.MicroORM.Mapping;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Sushi.Mediakiwi.Data.MicroORM;
-using Sushi.Mediakiwi.Data.Interfaces;
 
 namespace Sushi.Mediakiwi.Data
 {
@@ -151,7 +151,7 @@ namespace Sushi.Mediakiwi.Data
         /// </summary>
         public void Delete()
         {
-            var connector = ConnectorFactory.CreateConnector<Subscription>(new SubscriptionMap(true));
+            var connector = ConnectorFactory.CreateConnector(new SubscriptionMap(true));
             connector.Delete(this);
         }
 
@@ -160,7 +160,7 @@ namespace Sushi.Mediakiwi.Data
         /// </summary>
         public async Task DeleteAsync()
         {
-            var connector = ConnectorFactory.CreateConnector<Subscription>(new SubscriptionMap(true));
+            var connector = ConnectorFactory.CreateConnector(new SubscriptionMap(true));
             await connector.DeleteAsync(this);
         }
 
@@ -270,16 +270,16 @@ namespace Sushi.Mediakiwi.Data
         /// </summary>
         public virtual void Save()
         {
-            var connector = ConnectorFactory.CreateConnector<Subscription>(new SubscriptionMap(true));
+            var connector = ConnectorFactory.CreateConnector(new SubscriptionMap(true));
             connector.Save(this);
         }
 
         /// <summary>
         /// Saves this subscription instance Async
         /// </summary>
-        public virtual async Task SaveAsync()
+        public async virtual Task SaveAsync()
         {
-            var connector = ConnectorFactory.CreateConnector<Subscription>(new SubscriptionMap(true));
+            var connector = ConnectorFactory.CreateConnector(new SubscriptionMap(true));
             await connector.SaveAsync(this);
         }
 

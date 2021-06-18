@@ -1,7 +1,7 @@
-using System;
-using System.Text;
-using System.Globalization;
 using Sushi.Mediakiwi.Data;
+using System;
+using System.Globalization;
+using System.Text;
 
 namespace Sushi.Mediakiwi.Framework.ContentInfoItem
 {

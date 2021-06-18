@@ -19,9 +19,9 @@ namespace Sushi.Mediakiwi.UI
         public bool StartOpen { get; set; }
         public List<PageComponentOption> Options { get; set; }
         private Page page;
-        private Sushi.Mediakiwi.Beta.GeneratedCms.Console container;
+        private Beta.GeneratedCms.Console container;
 
-        public AddPageComponentControl(Data.Page page, Beta.GeneratedCms.Console container)
+        public AddPageComponentControl(Page page, Beta.GeneratedCms.Console container)
         {
             Options = new List<PageComponentOption>();
             this.page = page;

@@ -3,7 +3,7 @@ namespace Sushi.Mediakiwi.Framework.ContentSettingItem
     /// <summary>
     /// Possible return types: System.String, System.Int32, System.Int32[nullable], System.Decimal, System.Decimal[nullable], System.Guid
     /// </summary>
-    public class TextFieldAttribute : Sushi.Mediakiwi.Framework.ContentInfoItem.TextFieldAttribute, IContentInfo, IContentSettingInfo
+    public class TextFieldAttribute : ContentInfoItem.TextFieldAttribute, IContentInfo, IContentSettingInfo
     {
         /// <summary>
         /// Possible return types: System.String, System.Int32, System.Int32[nullable], System.Decimal, System.Decimal[nullable], System.Guid

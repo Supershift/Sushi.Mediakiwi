@@ -13,7 +13,7 @@ namespace Sushi.Mediakiwi.AppCentre.UI.Forms
             Map(x => x.Text).TextField("Text", 500, false, false, "If no title is applied the external URL or linktext of the page will be used.").Show(HasCustomTitle);
             Map(x => x.Alt).TextField("Description", 500, false, false, "The alternative (alt) text of the link");
             Map(x => x.Target).Dropdown("Open in", "ListChoice");
-            Map<LinkForm>(x => x.Type, this).Radio("Type", "BoolChoice", "typedef", true, true);
+            Map(x => x.Type, this).Radio("Type", "BoolChoice", "typedef", true, true);
 
             Map(x => x.AssetID).Document("Document", true);
             Map(x => x.PageID).PageSelect("Internal URL", true);
@@ -112,7 +112,7 @@ namespace Sushi.Mediakiwi.AppCentre.UI.Forms
         /// Gets or sets a value indicating whether this <see cref="Link"/> is apply.
         /// </summary>
         /// <value><c>true</c> if apply; otherwise, <c>false</c>.</value>
-        [Sushi.Mediakiwi.Framework.ContentListItem.Button("Apply hyperlink", true, IconTarget = Sushi.Mediakiwi.Framework.ButtonTarget.TopLeft, IconType = Sushi.Mediakiwi.Framework.ButtonIconType.Approve)]
+        [Framework.ContentListItem.Button("Apply hyperlink", true, IconTarget = ButtonTarget.TopLeft, IconType = ButtonIconType.Approve)]
         public bool Apply
         {
             get { return m_Apply; }

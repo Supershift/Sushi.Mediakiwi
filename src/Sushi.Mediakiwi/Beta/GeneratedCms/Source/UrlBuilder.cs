@@ -1,8 +1,8 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using Sushi.Mediakiwi.Data;
+using System;
 using System.Linq;
 using System.Text;
-using Microsoft.AspNetCore.Http;
-using Sushi.Mediakiwi.Data;
 
 namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
 {
@@ -216,7 +216,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
             return string.Concat(Console.UrlBuild.GetListRequest(Console.CurrentList), querystring);
         }
 
-        public string GetUrl(Data.IComponentList componentlist, params KeyValue[] keyvalues)
+        public string GetUrl(IComponentList componentlist, params KeyValue[] keyvalues)
         {
             string querystring = GetCustomQueryString(Console.Context, keyvalues);
             return string.Concat(Console.UrlBuild.GetListRequest(componentlist), querystring);

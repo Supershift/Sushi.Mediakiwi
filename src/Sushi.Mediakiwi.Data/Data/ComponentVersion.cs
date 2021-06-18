@@ -1,8 +1,8 @@
-﻿using Sushi.MicroORM.Mapping;
+﻿using Sushi.Mediakiwi.Data.MicroORM;
+using Sushi.MicroORM.Mapping;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Sushi.Mediakiwi.Data.MicroORM;
 
 namespace Sushi.Mediakiwi.Data
 {
@@ -549,7 +549,7 @@ namespace Sushi.Mediakiwi.Data
 
         public bool Delete()
         {
-            var connector = ConnectorFactory.CreateConnector<ComponentVersion>(new ComponentVersionMap(true));
+            var connector = ConnectorFactory.CreateConnector(new ComponentVersionMap(true));
             try
             {
                 connector.Delete(this);
@@ -563,7 +563,7 @@ namespace Sushi.Mediakiwi.Data
 
         public async Task<bool> DeleteAsync()
         {
-            var connector = ConnectorFactory.CreateConnector<ComponentVersion>(new ComponentVersionMap(true));
+            var connector = ConnectorFactory.CreateConnector(new ComponentVersionMap(true));
             try
             {
                 await connector.DeleteAsync(this);
@@ -782,7 +782,7 @@ namespace Sushi.Mediakiwi.Data
         /// <returns></returns>
         public static bool DeleteAllOnPage(int pageKey)
         {
-            var connector = ConnectorFactory.CreateConnector<ComponentVersion>(new ComponentVersionMap(true));
+            var connector = ConnectorFactory.CreateConnector(new ComponentVersionMap(true));
             var filter = connector.CreateDataFilter();
             filter.AddParameter("@pageId", pageKey);
 
@@ -805,7 +805,7 @@ namespace Sushi.Mediakiwi.Data
         /// <returns></returns>
         public static async Task<bool> DeleteAllOnPageAsync(int pageKey)
         {
-            var connector = ConnectorFactory.CreateConnector<ComponentVersion>(new ComponentVersionMap(true));
+            var connector = ConnectorFactory.CreateConnector(new ComponentVersionMap(true));
             var filter = connector.CreateDataFilter();
             filter.AddParameter("@pageId", pageKey);
 
@@ -915,7 +915,7 @@ namespace Sushi.Mediakiwi.Data
         /// </summary>
         public void Save()
         {
-            var connector = ConnectorFactory.CreateConnector<ComponentVersion>(new ComponentVersionMap(true));
+            var connector = ConnectorFactory.CreateConnector(new ComponentVersionMap(true));
             connector.Save(this);
         }
 
@@ -924,7 +924,7 @@ namespace Sushi.Mediakiwi.Data
         /// </summary>
         public async Task SaveAsync()
         {
-            var connector = ConnectorFactory.CreateConnector<ComponentVersion>(new ComponentVersionMap(true));
+            var connector = ConnectorFactory.CreateConnector(new ComponentVersionMap(true));
             await connector.SaveAsync(this);
         }
 

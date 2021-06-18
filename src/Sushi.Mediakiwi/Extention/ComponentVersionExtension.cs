@@ -1,5 +1,5 @@
-﻿using System;
-using Sushi.Mediakiwi.Data;
+﻿using Sushi.Mediakiwi.Data;
+using System;
 
 public static class ComponentVersionExtension
 {   

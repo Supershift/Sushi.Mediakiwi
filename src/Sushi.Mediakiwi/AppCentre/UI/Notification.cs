@@ -1,11 +1,11 @@
+using Sushi.Mediakiwi.Data;
 using Sushi.Mediakiwi.Framework;
-//using ColorCode;
-using System.Xml;
+using Sushi.Mediakiwi.UI;
 using System.IO;
 using System.Text;
-using Sushi.Mediakiwi.Data;
-using Sushi.Mediakiwi.UI;
 using System.Threading.Tasks;
+//using ColorCode;
+using System.Xml;
 
 namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
 {
@@ -31,7 +31,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
 
         async Task Notification_ListAction(ComponentActionEventArgs e)
         {
-            await Sushi.Mediakiwi.Data.Notification.DeleteAllAsync(this.FilterGroup);
+            await Mediakiwi.Data.Notification.DeleteAllAsync(this.FilterGroup);
             Response.Redirect(wim.Console.GetSafeUrl());
         }
 
@@ -39,8 +39,8 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// Gets or sets a value indicating whether [clean notification].
         /// </summary>
         /// <value><c>true</c> if [clean notification]; otherwise, <c>false</c>.</value>
-        [Sushi.Mediakiwi.Framework.OnlyVisibleWhenTrue("CanClear")]
-        [Sushi.Mediakiwi.Framework.ContentListSearchItem.Button("Clear log", false, false, 0)]
+        [OnlyVisibleWhenTrue("CanClear")]
+        [Framework.ContentListSearchItem.Button("Clear log", false, false, 0)]
         public bool CleanNotification { get; set; }
 
         /// <summary>
@@ -106,7 +106,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                 wim.ListDataColumns.Add("Type", "Type", ListDataColumnType.HighlightPresent);
                 wim.ListDataColumns.Add("", "Count", 50);
                 wim.ListDataColumns.Add("Last notification", "Last", 80, Align.Right);
-                wim.ListDataAdd(Sushi.Mediakiwi.Data.NotificationOverview.SelectAll(FilterSelection));
+                wim.ListDataAdd(NotificationOverview.SelectAll(FilterSelection));
                 wim.SearchResultItemPassthroughParameterProperty = "Deeplink";
             }
             else
@@ -117,7 +117,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                 
                 int page = Utility.ConvertToInt(Context.Request.Query["set"], 0) - 1;
                 int step = wim.CurrentList.Option_Search_MaxResultPerPage;
-                wim.ListDataAdd(await Sushi.Mediakiwi.Data.Notification.SelectAllAsync(this.FilterGroup, this.FilterSelection, null));
+                wim.ListDataAdd(await Mediakiwi.Data.Notification.SelectAllAsync(this.FilterGroup, this.FilterSelection, null));
             }
         }
 
@@ -137,7 +137,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                 m_Collection = new ListItemCollection();
                 m_Collection.Add(new ListItem(""));
 
-                foreach (var group in Sushi.Mediakiwi.Data.NotificationOverview.SelectAll(FilterSelection))
+                foreach (var group in NotificationOverview.SelectAll(FilterSelection))
                 {
                     m_Collection.Add(new ListItem(group.Type));
                 }
@@ -168,7 +168,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// Gets or sets the filter selection.
         /// </summary>
         /// <value>The filter selection.</value>
-        [Sushi.Mediakiwi.Framework.ContentListSearchItem.Choice_Radio("Selection", "TypeCollection", "Sel", false, true)]
+        [Framework.ContentListSearchItem.Choice_Radio("Selection", "TypeCollection", "Sel", false, true)]
         public int FilterSelection { get; set; }
 
         private string m_SearchTemplateSite;
@@ -176,7 +176,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// Gets or sets the search template site.
         /// </summary>
         /// <value>The search template site.</value>
-        [Sushi.Mediakiwi.Framework.ContentListSearchItem.Choice_Dropdown("Group", "Collection", false, true)]
+        [Framework.ContentListSearchItem.Choice_Dropdown("Group", "Collection", false, true)]
         public string FilterGroup
         {
             get {
@@ -194,7 +194,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// Gets or sets the date.
         /// </summary>
         /// <value>The date.</value>
-        [Sushi.Mediakiwi.Framework.ContentListItem.TextLine("Date")]
+        [Framework.ContentListItem.TextLine("Date")]
         public string Date
         {
             get { return m_Date; }
@@ -206,7 +206,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// Gets or sets the type.
         /// </summary>
         /// <value>The type.</value>
-        [Sushi.Mediakiwi.Framework.ContentListItem.TextLine("Type")]
+        [Framework.ContentListItem.TextLine("Type")]
         public string Type
         {
             get { return m_Type; }
@@ -219,7 +219,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// Gets or sets the note.
         /// </summary>
         /// <value>The note.</value>
-        [Sushi.Mediakiwi.Framework.ContentListItem.TextLine("Notification")]
+        [Framework.ContentListItem.TextLine("Notification")]
         public string Note
         {
             get { return m_Note; }
@@ -232,7 +232,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// <value>
         /// The XML.
         /// </value>
-        [Sushi.Mediakiwi.Framework.ContentListItem.HtmlContainer(true)]
+        [Framework.ContentListItem.HtmlContainer(true)]
         public string XML { get; set; }
         #endregion List attributes
     }

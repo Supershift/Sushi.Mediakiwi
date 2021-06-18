@@ -11,7 +11,7 @@ namespace Sushi.Mediakiwi.AppCentre.UI.Forms
 
             if (asset.ID == 0)
             {
-                Map<DocumentForm>(x => x.File, this).FileUpload("Upload", true, "image/*");
+                Map(x => x.File, this).FileUpload("Upload", true, "image/*");
 
                 Map(x => x.Title).TextField("Title", 255, false);
                 Map(x => x.Description).TextArea("Description");
@@ -20,7 +20,7 @@ namespace Sushi.Mediakiwi.AppCentre.UI.Forms
             {
                 Map(x => x.Title).TextField("Title", 255, false);
                 Map(x => x.Description).TextArea("Description");
-                Map<DocumentForm>(x => x.File, this).FileUpload("Upload");
+                Map(x => x.File, this).FileUpload("Upload");
             }
 
             Map(x => x.GalleryID).FolderSelect("Folder", true, FolderType.Gallery);

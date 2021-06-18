@@ -1,8 +1,8 @@
-﻿using System;
+﻿using Sushi.Mediakiwi.Data;
+using Sushi.Mediakiwi.Framework;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Sushi.Mediakiwi.Data;
-using Sushi.Mediakiwi.Framework;
 
 namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
 {

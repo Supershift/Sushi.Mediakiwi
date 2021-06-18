@@ -13,7 +13,7 @@ namespace Sushi.Mediakiwi.Controllers
     /// </summary>
     internal class CheckSharedFieldController : BaseController
     {
-        public override async Task<string> CompleteAsync(HttpContext context)
+        public async override Task<string> CompleteAsync(HttpContext context)
         {
             var request = await GetPostAsync<CheckSharedFieldRequest>(context).ConfigureAwait(false);
 

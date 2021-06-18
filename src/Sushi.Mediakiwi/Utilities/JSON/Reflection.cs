@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Reflection.Emit;
 using System.Reflection;
+using System.Reflection.Emit;
 
 namespace Sushi.Mediakiwi.Utilities
 {
@@ -14,7 +14,7 @@ namespace Sushi.Mediakiwi.Utilities
 
     internal sealed class Reflection
     {
-        public readonly static Reflection Instance = new Reflection();
+        public static readonly Reflection Instance = new Reflection();
         private Reflection()
         {
         }

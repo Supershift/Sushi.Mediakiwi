@@ -1,5 +1,5 @@
-﻿using System.Linq;
-using Sushi.Mediakiwi.Data;
+﻿using Sushi.Mediakiwi.Data;
+using System.Linq;
 
 public static class GalleryExtension
 {

@@ -10,7 +10,7 @@ using System.Text.RegularExpressions;
 using System.Xml;
 using System.Xml.Serialization;
 
-[assembly: InternalsVisibleToAttribute("Sushi.Mediakiwi")]
+[assembly: InternalsVisibleTo("Sushi.Mediakiwi")]
 
 namespace Sushi.Mediakiwi.Data
 {
@@ -23,7 +23,7 @@ namespace Sushi.Mediakiwi.Data
                 .Replace(" ", "-");
         }
 
-        public static string GetHtmlFormattedLastServerError(System.Exception ex)
+        public static string GetHtmlFormattedLastServerError(Exception ex)
         {
             string error = "";
             while (ex != null)

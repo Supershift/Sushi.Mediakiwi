@@ -11,13 +11,13 @@ namespace Sushi.Mediakiwi.Framework.Inheritance
     {
         public static void CopyFolder(int folderToCopy, int copyTargetFolder)
         {
-            var source = Sushi.Mediakiwi.Data.Folder.SelectOne(folderToCopy);
-            var target = Sushi.Mediakiwi.Data.Folder.SelectOne(copyTargetFolder);
+            var source = Data.Folder.SelectOne(folderToCopy);
+            var target = Data.Folder.SelectOne(copyTargetFolder);
 
             var query = source.CompletePath;
             //  Connect the base page folder
-            var folders = Sushi.Mediakiwi.Data.Folder.SelectAll(source.Type, source.SiteID, query, true);
-            var pages = Sushi.Mediakiwi.Data.Page.SelectAll(query, true);
+            var folders = Data.Folder.SelectAll(source.Type, source.SiteID, query, true);
+            var pages = Data.Page.SelectAll(query, true);
 
             //if (!webFolder.MasterID.HasValue)
             //{
@@ -41,29 +41,29 @@ namespace Sushi.Mediakiwi.Framework.Inheritance
         /// <param name="siteID">The site ID.</param>
         /// <param name="type">The type.</param>
         /// <param name="isCopy">if set to <c>true</c> [is copy].</param>
-        public static void CreateFolderTree(int masterSiteID, int siteID, Sushi.Mediakiwi.Data.FolderType type)
+        public static void CreateFolderTree(int masterSiteID, int siteID, FolderType type)
         {
             if (siteID == 0)
                 return;
 
-            Sushi.Mediakiwi.Data.Site siteInfo = Sushi.Mediakiwi.Data.Site.SelectOne(siteID);
+            Site siteInfo = Site.SelectOne(siteID);
 
             //  Connect the base page folder
-            Sushi.Mediakiwi.Data.Folder webFolder = Sushi.Mediakiwi.Data.Folder.SelectOneBySite(siteID, type);
+            Data.Folder webFolder = Data.Folder.SelectOneBySite(siteID, type);
 
             if (webFolder == null || webFolder.IsNewInstance)
                 return;
             
             if (!webFolder.MasterID.HasValue)
             {
-                Sushi.Mediakiwi.Data.Folder masterFolder = Sushi.Mediakiwi.Data.Folder.SelectOneBySite(masterSiteID, type);
+                Data.Folder masterFolder = Data.Folder.SelectOneBySite(masterSiteID, type);
                 webFolder.MasterID = masterFolder.ID;
                 webFolder.Save();
             }
 
-            Sushi.Mediakiwi.Data.Folder[] masterFolders = Sushi.Mediakiwi.Data.Folder.SelectAllUninherited(masterSiteID, siteID, (int)type);
+            Data.Folder[] masterFolders = Data.Folder.SelectAllUninherited(masterSiteID, siteID, (int)type);
 
-            foreach (Sushi.Mediakiwi.Data.Folder folder in masterFolders)
+            foreach (Data.Folder folder in masterFolders)
             {
                 SetChildFolder(folder, siteInfo, siteID);
             }
@@ -74,9 +74,9 @@ namespace Sushi.Mediakiwi.Framework.Inheritance
         /// </summary>
         /// <param name="siteID">The site ID.</param>
         /// <param name="type">The type.</param>
-        internal static void RemoveInheritence(int siteID, Sushi.Mediakiwi.Data.FolderType type)
+        internal static void RemoveInheritence(int siteID, FolderType type)
         {
-            var items = Sushi.Mediakiwi.Data.Folder.SelectAll(type, siteID);
+            var items = Data.Folder.SelectAll(type, siteID);
             foreach (var item in items)
             {
                 item.MasterID = null;
@@ -92,21 +92,21 @@ namespace Sushi.Mediakiwi.Framework.Inheritance
         /// <param name="siteID">The site ID.</param>
         /// <param name="isCopy">if set to <c>true</c> [is copy].</param>
         /// <returns></returns>
-        static Sushi.Mediakiwi.Data.Folder SetChildFolder(Sushi.Mediakiwi.Data.Folder folder, Sushi.Mediakiwi.Data.Site currentSite, int siteID)
+        static Data.Folder SetChildFolder(Data.Folder folder, Site currentSite, int siteID)
         {
-            Sushi.Mediakiwi.Data.Folder childFolder = new Sushi.Mediakiwi.Data.Folder();
+            Data.Folder childFolder = new Data.Folder();
 
-            if (folder.Type == Sushi.Mediakiwi.Data.FolderType.Gallery || folder.Type == Sushi.Mediakiwi.Data.FolderType.Administration || folder.Type == Sushi.Mediakiwi.Data.FolderType.Undefined)
+            if (folder.Type == FolderType.Gallery || folder.Type == FolderType.Administration || folder.Type == FolderType.Undefined)
                 return null;
 
             //  If this channel has no pages, don't replicate the page folders
-            if (folder.Type == Sushi.Mediakiwi.Data.FolderType.Page && !currentSite.HasPages)
+            if (folder.Type == FolderType.Page && !currentSite.HasPages)
                 return null;
             //  If this channel has no lists, don't replicate the list folders
-            if (folder.Type == Sushi.Mediakiwi.Data.FolderType.List && !currentSite.HasLists)
+            if (folder.Type == FolderType.List && !currentSite.HasLists)
                 return null;
 
-            childFolder = new Sushi.Mediakiwi.Data.Folder();
+            childFolder = new Data.Folder();
             Utility.ReflectProperty(folder, childFolder);
             childFolder.ID = 0;
             childFolder.GUID = Guid.NewGuid();
@@ -114,11 +114,11 @@ namespace Sushi.Mediakiwi.Framework.Inheritance
             childFolder.MasterID = folder.ID;
 
             if (folder.ParentID.HasValue)
-                childFolder.ParentID = Sushi.Mediakiwi.Data.Folder.SelectOne(folder.ParentID.Value, siteID).ID;
+                childFolder.ParentID = Data.Folder.SelectOne(folder.ParentID.Value, siteID).ID;
             else
                 folder.ParentID = null;
 
-            childFolder.Changed = Sushi.Mediakiwi.Data.Common.DatabaseDateTime;
+            childFolder.Changed = Data.Common.DatabaseDateTime;
             childFolder.Save();
 
             return childFolder;
@@ -129,7 +129,7 @@ namespace Sushi.Mediakiwi.Framework.Inheritance
         /// </summary>
         /// <param name="folder">The folder.</param>
         /// <param name="currentSite">The current site.</param>
-        public static void CreateFolder(Sushi.Mediakiwi.Data.Folder folder, Sushi.Mediakiwi.Data.Site currentSite)
+        public static void CreateFolder(Data.Folder folder, Site currentSite)
         {
             if (!currentSite.HasChildren) return;
             CreateFolder(folder, currentSite, Site.SelectAll());
@@ -141,15 +141,15 @@ namespace Sushi.Mediakiwi.Framework.Inheritance
         /// <param name="folder">The folder.</param>
         /// <param name="currentSite">The current site.</param>
         /// <param name="sites">The sites.</param>
-        static void CreateFolder(Sushi.Mediakiwi.Data.Folder folder, Sushi.Mediakiwi.Data.Site currentSite, List<Site> sites)
+        static void CreateFolder(Data.Folder folder, Site currentSite, List<Site> sites)
         {
             if (!currentSite.HasChildren) return;
 
-            foreach (Sushi.Mediakiwi.Data.Site site in sites)
+            foreach (Site site in sites)
             {
                 if (site.MasterID.GetValueOrDefault() == currentSite.ID)
                 {
-                    Sushi.Mediakiwi.Data.Folder childFolder = SetChildFolder(folder, currentSite, site.ID);
+                    Data.Folder childFolder = SetChildFolder(folder, currentSite, site.ID);
                     CreateFolder(childFolder, site, sites);
                 }
             }

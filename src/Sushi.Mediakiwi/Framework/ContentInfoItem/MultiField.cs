@@ -1,8 +1,8 @@
-﻿using System;
-using System.Linq;
-using System.Collections.Generic;
+﻿using Microsoft.AspNetCore.Http;
 using Sushi.Mediakiwi.Data;
-using Microsoft.AspNetCore.Http;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Sushi.Mediakiwi.Framework
 {
@@ -40,14 +40,14 @@ namespace Sushi.Mediakiwi.Framework
                                 arr.Add(result); 
                         } );
 
-                        value = Data.Utility.ConvertToCsvString(arr.ToArray(), true);
+                        value = Utility.ConvertToCsvString(arr.ToArray(), true);
                     }
                 }
 
                 fields.Add(new MultiField(name, type, value));
             }
             //  Serialize and add as a value (fields in field.value)
-            serialized = Data.Utility.GetSerialized(fields.ToArray());
+            serialized = Utility.GetSerialized(fields.ToArray());
             return serialized;
         }
         /// <summary>
@@ -67,7 +67,7 @@ namespace Sushi.Mediakiwi.Framework
                 if (serialized.StartsWith("<?xml") || serialized.StartsWith("<ArrayOfMultiField")) //  If the text is of type XML, then try to Deserialize
                 {
                     // It is expected to be an array of MultiField classes
-                    candidate = Data.Utility.GetDeserialized(typeof(MultiField[]), serialized) as MultiField[];
+                    candidate = Utility.GetDeserialized(typeof(MultiField[]), serialized) as MultiField[];
 
                     // Return an empty array of Multifield when this resolves to NULL
                     if (candidate == null)

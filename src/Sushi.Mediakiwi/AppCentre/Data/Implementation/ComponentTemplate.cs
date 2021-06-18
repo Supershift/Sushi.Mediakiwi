@@ -1,10 +1,10 @@
-using System;
-using System.Linq;
-using System.Data;
-using System.Threading.Tasks;
 using Sushi.Mediakiwi.Data;
 using Sushi.Mediakiwi.Framework;
 using Sushi.Mediakiwi.UI;
+using System;
+using System.Data;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
 {
@@ -76,8 +76,8 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// Gets or sets a value indicating whether [set all page cache].
         /// </summary>
         /// <value><c>true</c> if [set all page cache]; otherwise, <c>false</c>.</value>
-        [Mediakiwi.Framework.OnlyVisibleWhenFalse("IS_HEADLESS")]
-        [Mediakiwi.Framework.ContentListSearchItem.Button("Set pagelevel cache", AskConfirmation = true, IconTarget = ButtonTarget.TopRight)]
+        [OnlyVisibleWhenFalse("IS_HEADLESS")]
+        [Framework.ContentListSearchItem.Button("Set pagelevel cache", AskConfirmation = true, IconTarget = ButtonTarget.TopRight)]
         public bool SetAllPageCache { get; set; }
 
         public bool IS_HEADLESS { get; set; }
@@ -166,8 +166,8 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                 wim.AddTab(new Guid("36fc7157-d5c7-433c-8317-b601226f9bd0"), e.SelectedKey);
             }
 
-            Map<Mediakiwi.Data.ComponentTemplate>(x => x.Name, Implement).TextField("Name", 50, true).Expression(OutputExpression.Alternating);
-            Map<Mediakiwi.Data.ComponentTemplate>(x => x.SourceTag, Implement).TextField("Source tag", 25).Expression(OutputExpression.Alternating);
+            Map(x => x.Name, Implement).TextField("Name", 50, true).Expression(OutputExpression.Alternating);
+            Map(x => x.SourceTag, Implement).TextField("Source tag", 25).Expression(OutputExpression.Alternating);
             this.FormMaps.Add(this);
 
             return Task.CompletedTask;
@@ -178,8 +178,8 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// Gets or sets the implement.
         /// </summary>
         /// <value>The implement.</value>
-        [Mediakiwi.Framework.ContentListItem.DataExtend()]
-        public Sushi.Mediakiwi.Data.ComponentTemplate Implement
+        [Framework.ContentListItem.DataExtend()]
+        public Mediakiwi.Data.ComponentTemplate Implement
         {
             get { return m_Implement; }
             set { m_Implement = value; }
@@ -214,7 +214,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// Gets or sets the filter client ID.
         /// </summary>
         /// <value>The filter client ID.</value>
-        [Mediakiwi.Framework.ContentListSearchItem.TextField("Search for", 50, AutoPostBack = true, Expression = OutputExpression.Alternating)]
+        [Framework.ContentListSearchItem.TextField("Search for", 50, AutoPostBack = true, Expression = OutputExpression.Alternating)]
         public string FilterText
         {
             get { return m_FilterText; }
@@ -225,7 +225,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// Gets or sets the filter site.
         /// </summary>
         /// <value>The filter site.</value>
-        [Mediakiwi.Framework.ContentListSearchItem.Choice_Dropdown("Part of site", "SearchSites", true, true, Expression = OutputExpression.Alternating)]
+        [Framework.ContentListSearchItem.Choice_Dropdown("Part of site", "SearchSites", true, true, Expression = OutputExpression.Alternating)]
         public int FilterSite { get; set; }
 
         private ListItemCollection m_Sites;
@@ -254,8 +254,8 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             }
         }
 
-        [Mediakiwi.Framework.OnlyVisibleWhenFalse("IS_HEADLESS")]
-        [Mediakiwi.Framework.ContentListSearchItem.Choice_Dropdown("Page template", "PageTemplates", true, true, Expression = OutputExpression.Alternating)]
+        [OnlyVisibleWhenFalse("IS_HEADLESS")]
+        [Framework.ContentListSearchItem.Choice_Dropdown("Page template", "PageTemplates", true, true, Expression = OutputExpression.Alternating)]
         public int FilterTemplate { get; set; }
 
 
@@ -285,8 +285,8 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             }
         }
 
-        [Mediakiwi.Framework.OnlyVisibleWhenFalse("IS_HEADLESS")]
-        [Mediakiwi.Framework.ContentListSearchItem.Choice_Dropdown("Target", "Targets", true, true, Expression = Mediakiwi.Framework.OutputExpression.Alternating)]
+        [OnlyVisibleWhenFalse("IS_HEADLESS")]
+        [Framework.ContentListSearchItem.Choice_Dropdown("Target", "Targets", true, true, Expression = OutputExpression.Alternating)]
         public int FilterTarget { get; set; }
 
         private ListItemCollection m_Targets;

@@ -1,6 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using Sushi.Mediakiwi.Data;
 using Sushi.Mediakiwi.Framework;
-using Sushi.Mediakiwi.Data;
+using System.Threading.Tasks;
 
 namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
 {
@@ -39,7 +39,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             wim.ListDataColumns.Add(new ListDataColumn("Published", nameof(IPageVersion.Created)) { ColumnWidth = 80 });
             wim.ListDataColumns.Add(new ListDataColumn("", nameof(IPageVersion.RollBackTo)) { ColumnWidth = 150 });
 
-            wim.ListDataAdd<IPageVersion>(list);
+            wim.ListDataAdd(list);
         }
 
 

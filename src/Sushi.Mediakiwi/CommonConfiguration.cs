@@ -47,16 +47,16 @@ namespace Sushi.Mediakiwi
             if (_FolderVersion == null)
             {
                 // CDN
-                if (string.IsNullOrEmpty(CommonConfiguration.LOCAL_FILE_PATH))
+                if (string.IsNullOrEmpty(LOCAL_FILE_PATH))
                 {
                     _FolderVersion = string.Concat(_Domain, Utils.Version.Replace(".", "-"), "/");
                 }
                 else
                 {
-                    if (CommonConfiguration.LOCAL_FILE_PATH.IndexOf("http", StringComparison.InvariantCultureIgnoreCase) > -1)
-                        _FolderVersion = CommonConfiguration.LOCAL_FILE_PATH;
+                    if (LOCAL_FILE_PATH.IndexOf("http", StringComparison.InvariantCultureIgnoreCase) > -1)
+                        _FolderVersion = LOCAL_FILE_PATH;
                     else
-                        _FolderVersion = wim.AddApplicationPath(CommonConfiguration.LOCAL_FILE_PATH, true);
+                        _FolderVersion = wim.AddApplicationPath(LOCAL_FILE_PATH, true);
                 }
             }
 
@@ -159,8 +159,8 @@ namespace Sushi.Mediakiwi
         /// </summary>
         public static decimal Version
         {
-            get { 
-                System.Version version = Assembly.GetExecutingAssembly().GetName().Version;
+            get {
+                Version version = Assembly.GetExecutingAssembly().GetName().Version;
                 return Convert.ToDecimal(string.Format("{0}{2}{1}", version.Major, version.Minor, System.Threading.Thread.CurrentThread.CurrentCulture.NumberFormat.NumberDecimalSeparator));
             }
         }
@@ -173,7 +173,7 @@ namespace Sushi.Mediakiwi
         {
             get
             {
-                System.Version version = Assembly.GetExecutingAssembly().GetName().Version;
+                Version version = Assembly.GetExecutingAssembly().GetName().Version;
                 return string.Format("{0}.{1:00}.{2:0000}.{3:0000}", version.Major, version.Minor, version.Build, version.Revision);
             }
         }
@@ -182,7 +182,7 @@ namespace Sushi.Mediakiwi
         {
             get
             {
-                System.Version version = Assembly.GetExecutingAssembly().GetName().Version;
+                Version version = Assembly.GetExecutingAssembly().GetName().Version;
                 return string.Format("{0}{1:00}{2:0000}{3:0000}", version.Major, version.Minor, version.Build, version.Revision);
             }
         }

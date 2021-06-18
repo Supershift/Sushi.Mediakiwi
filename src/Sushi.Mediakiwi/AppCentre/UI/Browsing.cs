@@ -1,11 +1,11 @@
+using Sushi.Mediakiwi.Data;
+using Sushi.Mediakiwi.Framework;
 using System;
-using System.Linq;
 using System.Collections.Generic;
 using System.Data;
-using Sushi.Mediakiwi.Framework;
 using System.Globalization;
+using System.Linq;
 using System.Text;
-using Sushi.Mediakiwi.Data;
 using System.Threading.Tasks;
 
 namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
@@ -20,7 +20,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// </summary>
         /// <value>The filter title.</value>
         //[Sushi.Mediakiwi.Framework.OnlyVisibleWhenTrue("IsGalleryOrHasRoot")]
-        [Sushi.Mediakiwi.Framework.ContentListSearchItem.TextField("_search_for", 50)]
+        [Framework.ContentListSearchItem.TextField("_search_for", 50)]
         public string FilterTitle { get; set; }
 
         /// <summary>
@@ -44,7 +44,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                 if (!m_IsGallerySet)
                 {
                     m_IsGallerySet = true;
-                    m_IsGallery = (wim.CurrentFolder.Type == Sushi.Mediakiwi.Data.FolderType.Gallery);
+                    m_IsGallery = (wim.CurrentFolder.Type == FolderType.Gallery);
                 }
                 return m_IsGallery; 
             }
@@ -58,7 +58,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         {
             get
             {
-                return (wim.CurrentFolder.Type == Sushi.Mediakiwi.Data.FolderType.Page);
+                return (wim.CurrentFolder.Type == FolderType.Page);
             }
         }
         /// <summary>
@@ -73,7 +73,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             {
                 if (IsGallery && string.IsNullOrEmpty(Request.Query["root"]))
                     return true;
-                if (wim.CurrentFolder.Type == Sushi.Mediakiwi.Data.FolderType.Page)
+                if (wim.CurrentFolder.Type == FolderType.Page)
                     return true;
 
                 return false;
@@ -114,7 +114,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// Handles the ListLoad event of the Browsing control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="Sushi.Mediakiwi.Framework.ComponentListEventArgs"/> instance containing the event data.</param>
+        /// <param name="e">The <see cref="ComponentListEventArgs"/> instance containing the event data.</param>
         Task Browsing_ListLoad(ComponentListEventArgs e)
         {
             return Task.CompletedTask;
@@ -124,16 +124,16 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// Handles the ListAction event of the Browsing control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="Sushi.Mediakiwi.Framework.ComponentActionEventArgs"/> instance containing the event data.</param>
+        /// <param name="e">The <see cref="ComponentActionEventArgs"/> instance containing the event data.</param>
         async Task Browsing_ListAction(ComponentActionEventArgs e)
         {
             int galleryId = Utility.ConvertToInt(Request.Query["gallery"]);
             if (galleryId > 0)
             {
-                Sushi.Mediakiwi.Data.Gallery gallery = await Sushi.Mediakiwi.Data.Gallery.SelectOneAsync(galleryId);
+                Gallery gallery = await Gallery.SelectOneAsync(galleryId);
                 if (!(gallery != null && gallery.ID == 0))
                 {
-                    Sushi.Mediakiwi.Data.IComponentList list = await Sushi.Mediakiwi.Data.ComponentList.SelectOneAsync(Sushi.Mediakiwi.Data.ComponentListType.Documents);
+                    IComponentList list = await Mediakiwi.Data.ComponentList.SelectOneAsync(ComponentListType.Documents);
                     Response.Redirect(wim.Console.GetSafeUrl() + "&item=0&list=" + list.ID);
                 }
             }
@@ -164,15 +164,15 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             List<BrowseItem> list = new List<BrowseItem>();
 
             bool isSearchInitiate = !string.IsNullOrEmpty(this.FilterTitle);
-            if (wim.CurrentFolder.Type == Sushi.Mediakiwi.Data.FolderType.Gallery)
+            if (wim.CurrentFolder.Type == FolderType.Gallery)
             {
                 GetGalleryList(isSearchInitiate, list);
             }
-            else if (wim.CurrentFolder.Type == Sushi.Mediakiwi.Data.FolderType.List || wim.CurrentFolder.Type == Sushi.Mediakiwi.Data.FolderType.Administration)
+            else if (wim.CurrentFolder.Type == FolderType.List || wim.CurrentFolder.Type == FolderType.Administration)
             {
                 GetListList(isSearchInitiate, list);
             }
-            else if (wim.CurrentFolder.Type == Sushi.Mediakiwi.Data.FolderType.Page)
+            else if (wim.CurrentFolder.Type == FolderType.Page)
             {
                 GetPageList(isSearchInitiate, list);
             }
@@ -203,27 +203,27 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             return status;
         }
 
-        Sushi.Mediakiwi.Data.PageSortBy GetSort(int? sorderOrderMethod)
+        PageSortBy GetSort(int? sorderOrderMethod)
         {
-            var sortBy = Sushi.Mediakiwi.Data.PageSortBy.SortOrder;
+            var sortBy = PageSortBy.SortOrder;
 
             switch (sorderOrderMethod)
             {
                 case 1:
-                    sortBy = Sushi.Mediakiwi.Data.PageSortBy.CustomDate;
+                    sortBy = PageSortBy.CustomDate;
                     break;
                 case 2:
-                    sortBy = Sushi.Mediakiwi.Data.PageSortBy.CustomDateDown;
+                    sortBy = PageSortBy.CustomDateDown;
                     break;
                 case 3:
-                    sortBy = Sushi.Mediakiwi.Data.PageSortBy.LinkText;
+                    sortBy = PageSortBy.LinkText;
                     break;
                 case 4:
-                    sortBy = Sushi.Mediakiwi.Data.PageSortBy.Name;
+                    sortBy = PageSortBy.Name;
                     break;
                 case 5:
                 default:
-                    sortBy = Sushi.Mediakiwi.Data.PageSortBy.SortOrder;
+                    sortBy = PageSortBy.SortOrder;
                     break;
             }
             return sortBy;
@@ -236,26 +236,26 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             _columns = 1;
 
             #region Folder navigation
-            Sushi.Mediakiwi.Data.Folder[] folders = null;
+            Mediakiwi.Data.Folder[] folders = null;
 
             bool isRootLevelView = false;
             if (isSearchInitiate || isRootLevelView)
             {
                 isRootLevelView = true;
-                folders = Sushi.Mediakiwi.Data.Folder.SelectAll(wim.CurrentFolder.Type, wim.CurrentSite.ID, this.FilterTitle, this.FilterPath);
+                folders = Mediakiwi.Data.Folder.SelectAll(wim.CurrentFolder.Type, wim.CurrentSite.ID, this.FilterTitle, this.FilterPath);
             }
             else
-                folders = Sushi.Mediakiwi.Data.Folder.SelectAllByParent(wim.CurrentFolder.ID, wim.CurrentFolder.Type, false);
+                folders = Mediakiwi.Data.Folder.SelectAllByParent(wim.CurrentFolder.ID, wim.CurrentFolder.Type, false);
 
             //  ACL determination
-            folders = Sushi.Mediakiwi.Data.Folder.ValidateAccessRight(folders, wim.CurrentApplicationUser);
+            folders = Mediakiwi.Data.Folder.ValidateAccessRight(folders, wim.CurrentApplicationUser);
 
             if (wim.CurrentFolder.Level == 0 && folders.Length == 0 && !isRootLevelView && !isSearchInitiate)
             {
                 isRootLevelView = true;
-                folders = Sushi.Mediakiwi.Data.Folder.SelectAll(wim.CurrentFolder.Type, wim.CurrentSite.ID, this.FilterTitle, this.FilterPath);
+                folders = Mediakiwi.Data.Folder.SelectAll(wim.CurrentFolder.Type, wim.CurrentSite.ID, this.FilterTitle, this.FilterPath);
                 //  ACL determination
-                folders = Sushi.Mediakiwi.Data.Folder.ValidateAccessRight(folders, wim.CurrentApplicationUser);
+                folders = Mediakiwi.Data.Folder.ValidateAccessRight(folders, wim.CurrentApplicationUser);
             }
             #endregion Folder navigation
 
@@ -267,7 +267,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                 pages = Page.SelectAll(this.FilterTitle, FilterPath);
             }
 
-            pages = Sushi.Mediakiwi.Data.Page.ValidateAccessRight(pages, wim.CurrentApplicationUser);
+            pages = Page.ValidateAccessRight(pages, wim.CurrentApplicationUser);
             StringBuilder build = null;
             build = new StringBuilder();
 
@@ -305,9 +305,9 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         }
 
         int _columns = 0;
-        void FindPage(Sushi.Mediakiwi.Data.Folder[] folders, StringBuilder build)
+        void FindPage(Mediakiwi.Data.Folder[] folders, StringBuilder build)
         {
-            foreach (Sushi.Mediakiwi.Data.Folder entry in folders)
+            foreach (Mediakiwi.Data.Folder entry in folders)
             {
                 if (!entry.IsVisible && !wim.CurrentApplicationUser.ShowHidden)
                     continue;
@@ -316,8 +316,8 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                 if (entry.Name == "/")
                     continue;
 
-                IEnumerable<Page> pages = Sushi.Mediakiwi.Data.Page.SelectAll(entry.ID, Sushi.Mediakiwi.Data.PageFolderSortType.Folder, Sushi.Mediakiwi.Data.PageReturnProperySet.All, GetSort(entry.SortOrderMethod), false);
-                pages = Sushi.Mediakiwi.Data.Page.ValidateAccessRight(pages, wim.CurrentApplicationUser);
+                IEnumerable<Page> pages = Page.SelectAll(entry.ID, PageFolderSortType.Folder, PageReturnProperySet.All, GetSort(entry.SortOrderMethod), false);
+                pages = Page.ValidateAccessRight(pages, wim.CurrentApplicationUser);
 
                 _columns++;
                 //class=\"abbr\" 
@@ -336,7 +336,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                 }
                 
                 build.AppendFormat("</div>");
-                var arr = Sushi.Mediakiwi.Data.Folder.SelectAllByParent(entry.ID);
+                var arr = Mediakiwi.Data.Folder.SelectAllByParent(entry.ID);
                 FindPage(arr, build);
             }
         }
@@ -345,12 +345,12 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         {
             int baseGalleryID = wim.CurrentApplicationUserRole.GalleryRoot.GetValueOrDefault();
 
-            Sushi.Mediakiwi.Data.IComponentList list0 = Sushi.Mediakiwi.Data.ComponentList.SelectOne(Sushi.Mediakiwi.Data.ComponentListType.Folders);
+            IComponentList list0 = Mediakiwi.Data.ComponentList.SelectOne(ComponentListType.Folders);
 
-            var folderSettings = Sushi.Mediakiwi.Data.ComponentList.SelectOne(new Guid("97292dd5-ebda-4318-8aaf-4c49e887cdad"));
+            var folderSettings = Mediakiwi.Data.ComponentList.SelectOne(new Guid("97292dd5-ebda-4318-8aaf-4c49e887cdad"));
 
-            Sushi.Mediakiwi.Data.Gallery[] galleries;
-            Sushi.Mediakiwi.Data.Gallery rootGallery = Sushi.Mediakiwi.Data.Gallery.SelectOne(Utility.ConvertToGuid(Request.Query["root"]));
+            Gallery[] galleries;
+            Gallery rootGallery = Gallery.SelectOne(Utility.ConvertToGuid(Request.Query["root"]));
             if (!IsPostBack || string.IsNullOrEmpty(this.FilterTitle))
             {
                 if (wim.CurrentFolder.ParentID.GetValueOrDefault(0) > 0 && wim.CurrentFolder.ID != rootGallery.ID && wim.CurrentFolder.ID != baseGalleryID)
@@ -369,12 +369,12 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                     list.Add(item);
                 }
 
-                Sushi.Mediakiwi.Data.Gallery current = Sushi.Mediakiwi.Data.Gallery.SelectOne(wim.CurrentFolder.ID);
+                Gallery current = Gallery.SelectOne(wim.CurrentFolder.ID);
 
-                galleries = Sushi.Mediakiwi.Data.Gallery.SelectAllByParent(wim.CurrentFolder.ID);
+                galleries = Gallery.SelectAllByParent(wim.CurrentFolder.ID);
             }
             else
-                galleries = Sushi.Mediakiwi.Data.Gallery.SelectAll(this.FilterTitle);
+                galleries = Gallery.SelectAll(this.FilterTitle);
 
             bool isRootLevelView = false;
             if (wim.CurrentFolder.Level == 0 && galleries.Length == 0 && !isRootLevelView && !isSearchInitiate)
@@ -382,7 +382,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                 isRootLevelView = true;
             }
 
-            foreach (Sushi.Mediakiwi.Data.Gallery entry in galleries)
+            foreach (Gallery entry in galleries)
             {
                 BrowseItem item = new BrowseItem();
                 item.ID = entry.ID;
@@ -406,7 +406,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             else
                 assets = Asset.SearchAll(this.FilterTitle);
 
-            foreach (Sushi.Mediakiwi.Data.Asset entry in assets)
+            foreach (Asset entry in assets)
             {
                 BrowseItem item = new BrowseItem();
                 item.ID = entry.ID;
@@ -437,7 +437,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         void GetListList(bool isSearchInitiate, List<BrowseItem> list)
         {
             StringBuilder build = new StringBuilder();
-            Sushi.Mediakiwi.Data.Folder[] f = new Sushi.Mediakiwi.Data.Folder[] { wim.CurrentFolder };
+            Mediakiwi.Data.Folder[] f = new Mediakiwi.Data.Folder[] { wim.CurrentFolder };
 
             FindList(f, build, false);
 
@@ -448,16 +448,16 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             wim.Page.Body.Grid.Add(build.ToString(), true);
         }
 
-        void FindList(Sushi.Mediakiwi.Data.Folder[] folders, StringBuilder build, bool ignoreHeader)
+        void FindList(Mediakiwi.Data.Folder[] folders, StringBuilder build, bool ignoreHeader)
         {
-            foreach (Sushi.Mediakiwi.Data.Folder entry in folders)
+            foreach (Mediakiwi.Data.Folder entry in folders)
             {
                 if (!entry.IsVisible && !wim.CurrentApplicationUser.ShowHidden)
                     continue;
 
-                Sushi.Mediakiwi.Data.IComponentList[] all_lists = Sushi.Mediakiwi.Data.ComponentList.SelectAll(entry.ID, wim.CurrentApplicationUser, true);
-                var allowed_lists = Sushi.Mediakiwi.Data.ComponentList.ValidateAccessRight(all_lists, wim.CurrentApplicationUser);
-                Sushi.Mediakiwi.Data.IComponentList[] selected_lists = null;
+                IComponentList[] all_lists = Mediakiwi.Data.ComponentList.SelectAll(entry.ID, wim.CurrentApplicationUser, true);
+                var allowed_lists = Mediakiwi.Data.ComponentList.ValidateAccessRight(all_lists, wim.CurrentApplicationUser);
+                IComponentList[] selected_lists = null;
 
                 if (wim.CurrentApplicationUser.ShowHidden)
                     selected_lists = allowed_lists;
@@ -514,7 +514,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
 
                     build.AppendFormat("</div>");
                 }
-                var arr = Sushi.Mediakiwi.Data.Folder.SelectAllByParent(entry.ID, Sushi.Mediakiwi.Data.FolderType.Undefined, !wim.CurrentApplicationUser.ShowHidden);
+                var arr = Mediakiwi.Data.Folder.SelectAllByParent(entry.ID, FolderType.Undefined, !wim.CurrentApplicationUser.ShowHidden);
 
                 FindList(arr, build, false);
             }

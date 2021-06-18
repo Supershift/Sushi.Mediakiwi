@@ -1,5 +1,5 @@
-﻿using Sushi.Mediakiwi.Framework;
-using Sushi.Mediakiwi.Data;
+﻿using Sushi.Mediakiwi.Data;
+using Sushi.Mediakiwi.Framework;
 using System.Threading.Tasks;
 
 namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
@@ -60,10 +60,10 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// Handles the ListLoad event of the ComponentListSettings control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="Sushi.Mediakiwi.Framework.ComponentListEventArgs"/> instance containing the event data.</param>
+        /// <param name="e">The <see cref="ComponentListEventArgs"/> instance containing the event data.</param>
         async Task ComponentListSettings_ListLoad(ComponentListEventArgs e)
         {
-            ComponentListInstance = await Sushi.Mediakiwi.Data.ComponentList.SelectOneAsync(e.SelectedGroupItemKey).ConfigureAwait(false);
+            ComponentListInstance = await Mediakiwi.Data.ComponentList.SelectOneAsync(e.SelectedGroupItemKey).ConfigureAwait(false);
             Implement = Utils.CreateInstance(ComponentListInstance) as ComponentListTemplate;
             Implement.SenderInstance = Implement;
 
@@ -74,14 +74,14 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// Gets or sets the implement.
         /// </summary>
         /// <value>The implement.</value>
-        [Sushi.Mediakiwi.Framework.ContentSettingItem.DataExtend()]
+        [Framework.ContentSettingItem.DataExtend()]
         public ComponentListTemplate Implement { get; set; }
 
         /// <summary>
         /// Gets or sets the componenent list instance.
         /// </summary>
         /// <value>The componenent list instance.</value>
-        public Sushi.Mediakiwi.Data.IComponentList ComponentListInstance { get; set; }
+        public IComponentList ComponentListInstance { get; set; }
 
     }
 }

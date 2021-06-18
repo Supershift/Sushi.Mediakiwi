@@ -1,8 +1,8 @@
-using System;
-using Sushi.Mediakiwi.Framework;
 using Sushi.Mediakiwi.Data;
-using Sushi.Mediakiwi.Utilities;
+using Sushi.Mediakiwi.Framework;
 using Sushi.Mediakiwi.UI;
+using Sushi.Mediakiwi.Utilities;
+using System;
 using System.Threading.Tasks;
 
 namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
@@ -75,23 +75,23 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         {
             wim.CanAddNewItem = true;
             wim.Page.HideTabs = true;
-            
-            Map<User>(x => x.m_SearchUserName, this).TextField("Username", 50).Expression(OutputExpression.Alternating);
-            Map<User>(x => x.m_SearchRole, this).Dropdown("Role2", nameof(AvailableRoles)).Expression(OutputExpression.Alternating);
+
+            Map(x => x.m_SearchUserName, this).TextField("Username", 50).Expression(OutputExpression.Alternating);
+            Map(x => x.m_SearchRole, this).Dropdown("Role2", nameof(AvailableRoles)).Expression(OutputExpression.Alternating);
 
             this.FormMaps.Add(this);
 
-            wim.ListDataColumns.Add(new ListDataColumn("ID", nameof(Sushi.Mediakiwi.Data.IApplicationUser.ID), ListDataColumnType.UniqueIdentifier));
-            wim.ListDataColumns.Add(new ListDataColumn("Name", nameof(Sushi.Mediakiwi.Data.IApplicationUser.Displayname), ListDataColumnType.HighlightPresent));
-            wim.ListDataColumns.Add(new ListDataColumn("Email address", nameof(Sushi.Mediakiwi.Data.IApplicationUser.Email))); 
-            wim.ListDataColumns.Add(new ListDataColumn("Role", nameof(Sushi.Mediakiwi.Data.IApplicationUser.RoleName)));
-            wim.ListDataColumns.Add(new ListDataColumn("Last login", nameof(Sushi.Mediakiwi.Data.IApplicationUser.LastLoggedVisit)) { ColumnWidth = 110, Alignment = Align.Center });
-            wim.ListDataColumns.Add(new ListDataColumn("Active", nameof(Sushi.Mediakiwi.Data.IApplicationUser.IsActive)) { ColumnWidth = 30, Alignment = Align.Center });
+            wim.ListDataColumns.Add(new ListDataColumn("ID", nameof(IApplicationUser.ID), ListDataColumnType.UniqueIdentifier));
+            wim.ListDataColumns.Add(new ListDataColumn("Name", nameof(IApplicationUser.Displayname), ListDataColumnType.HighlightPresent));
+            wim.ListDataColumns.Add(new ListDataColumn("Email address", nameof(IApplicationUser.Email))); 
+            wim.ListDataColumns.Add(new ListDataColumn("Role", nameof(IApplicationUser.RoleName)));
+            wim.ListDataColumns.Add(new ListDataColumn("Last login", nameof(IApplicationUser.LastLoggedVisit)) { ColumnWidth = 110, Alignment = Align.Center });
+            wim.ListDataColumns.Add(new ListDataColumn("Active", nameof(IApplicationUser.IsActive)) { ColumnWidth = 30, Alignment = Align.Center });
 
             if (wim.IsCachedSearchResult)
                 return;
 
-            var data = await Sushi.Mediakiwi.Data.ApplicationUser.SelectAllAsync(m_SearchUserName, Utility.ConvertToInt(m_SearchRole)).ConfigureAwait(false);
+            var data = await ApplicationUser.SelectAllAsync(m_SearchUserName, Utility.ConvertToInt(m_SearchRole)).ConfigureAwait(false);
             wim.ListDataAdd(data);
         }
 
@@ -155,8 +155,8 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         #region SetPasswordMask
         private void SetPasswordMask()
         {
-            Sushi.Mediakiwi.Data.Content content =
-                Sushi.Mediakiwi.Data.Content.GetDeserialized(wim.ComponentListVersion.Serialized_XML);
+            Content content =
+                Content.GetDeserialized(wim.ComponentListVersion.Serialized_XML);
 
             foreach (Field field in content.Fields)
             {
@@ -168,14 +168,14 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                 }
             }
 
-            wim.ComponentListVersion.Serialized_XML = Sushi.Mediakiwi.Data.Content.GetSerialized(content);
+            wim.ComponentListVersion.Serialized_XML = Content.GetSerialized(content);
             wim.ComponentListVersion.Save();
         }
         #endregion SetPasswordMask
 
         private string m_tempPassword;
 
-        public Sushi.Mediakiwi.Data.IApplicationUser m_Implement;
+        public IApplicationUser m_Implement;
         /// <summary>
         /// Handles the ListLoad event of the User control.
         /// </summary>
@@ -225,10 +225,10 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         [Framework.ContentSettingItem.TextField("Mail title", 50)]
         public string Mail_Title { get; set; }
 
-        [Sushi.Mediakiwi.Framework.ContentSettingItem.Binary_Image("Mail logo", CanOnlyAdd = true)]
+        [Framework.ContentSettingItem.Binary_Image("Mail logo", CanOnlyAdd = true)]
         public virtual int? Mail_Logo { get; set; }
 
-        [Sushi.Mediakiwi.Framework.ContentSettingItem.RichText("Mail intro", 0, InteractiveHelp = "Use [credentials], [name], [login], [email], [url] and http://url as placeholders.")]
+        [Framework.ContentSettingItem.RichText("Mail intro", 0, InteractiveHelp = "Use [credentials], [name], [login], [email], [url] and http://url as placeholders.")]
         public string Mail_Intro { get; set; }
 
         [Framework.ContentSettingItem.Section("Forgot password mail")]
@@ -387,7 +387,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                 //Page.Trace.Write("AvailableRoles get{}", string.Format("{0}-{1}", SearchRole, SearchRole2));
                 ListItemCollection collection = new ListItemCollection();
                 collection.Add(new ListItem("Select a role", ""));
-                foreach (Sushi.Mediakiwi.Data.ApplicationRole role in Sushi.Mediakiwi.Data.ApplicationRole.SelectAll())
+                foreach (ApplicationRole role in ApplicationRole.SelectAll())
                 {
                     collection.Add(new ListItem(role.Name, role.ID.ToString()));
                 }
@@ -406,7 +406,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                 //Page.Trace.Write("AvailableRoles2 get{}", string.Format("{0}-{1}", SearchRole, SearchRole2));
                 ListItemCollection collection = new ListItemCollection();
                 collection.Add(new ListItem("Select a role", ""));
-                foreach (Sushi.Mediakiwi.Data.ApplicationRole role in Sushi.Mediakiwi.Data.ApplicationRole.SelectAll())
+                foreach (ApplicationRole role in ApplicationRole.SelectAll())
                 {
                     collection.Add(new ListItem(role.Name, role.ID.ToString()));
                 }
@@ -438,14 +438,14 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// </summary>
         /// <value><c>true</c> if [send credentials]; otherwise, <c>false</c>.</value>
         //[Sushi.Mediakiwi.Framework.OnlyVisibleWhenTrue("IsTextMode")]
-        [Sushi.Mediakiwi.Framework.ContentListItem.Button("", true, ButtonClassName = "flaticon icon-envelope", InteractiveHelp = "Email login details")]
+        [Framework.ContentListItem.Button("", true, ButtonClassName = "flaticon icon-envelope", InteractiveHelp = "Email login details")]
         public bool SendCredentials
         {
             get { return m_SendCredentials; }
             set { m_SendCredentials = value; }
         }
 
-        [Sushi.Mediakiwi.Framework.ContentListItem.Button("", false, ButtonClassName = "flaticon icon-eye-slash", InteractiveHelp = "Impersonate this user")]
+        [Framework.ContentListItem.Button("", false, ButtonClassName = "flaticon icon-eye-slash", InteractiveHelp = "Impersonate this user")]
         public bool HijackUser { get; set; }
 
         //private bool m_CreateNewPassword;

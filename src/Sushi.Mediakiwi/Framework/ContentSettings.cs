@@ -130,7 +130,7 @@ namespace Sushi.Mediakiwi.Framework
             _element.IsPrimary = isPrimary;
             return new ButtonSettings(_element);
         }
-        public ButtonSettings OpenList(System.Type componentList, bool openInLayer = true)
+        public ButtonSettings OpenList(Type componentList, bool openInLayer = true)
         {
             var target = Data.ComponentList.SelectOne(componentList);
             if (target != null)

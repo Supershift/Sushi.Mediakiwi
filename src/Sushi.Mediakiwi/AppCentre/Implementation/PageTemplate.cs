@@ -1,10 +1,10 @@
-using System;
-using System.Linq;
-using System.Data;
-using System.Threading.Tasks;
 using Sushi.Mediakiwi.Data;
 using Sushi.Mediakiwi.Framework;
 using Sushi.Mediakiwi.UI;
+using System;
+using System.Data;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
 {
@@ -237,7 +237,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
 
         }
 
-        Sushi.Mediakiwi.Data.PageTemplate m_Instance;
+        Mediakiwi.Data.PageTemplate m_Instance;
         IAvailableTemplate[] m_AvailableTemplateList;
 
         void SetSourceVisibility()
@@ -260,7 +260,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             //}
 
             //var dt = new Wim.Data.DataTemplate();
-            m_Instance = Sushi.Mediakiwi.Data.PageTemplate.SelectOne(e.SelectedKey);
+            m_Instance = Mediakiwi.Data.PageTemplate.SelectOne(e.SelectedKey);
             if (e.SelectedKey == 0)
             {
                 m_Instance.IsAddedOutputCache = true;
@@ -353,7 +353,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                             candidate.Add(new SubList.SubListitem(string.Concat(item.ID, ".", item.ComponentTemplateID), name));
                         }
 
-                        wim.Form.AddElement(this, string.Format("T_{0}", section), true, true, new Sushi.Mediakiwi.Framework.ContentInfoItem.SubListSelectAttribute(title, "a0d67c61-0fee-4f96-86e7-cdd53d89dc43", false)
+                        wim.Form.AddElement(this, string.Format("T_{0}", section), true, true, new Framework.ContentInfoItem.SubListSelectAttribute(title, "a0d67c61-0fee-4f96-86e7-cdd53d89dc43", false)
                             , candidate, true);
 
                     }
@@ -380,7 +380,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             hasLegacy1 = false;
             hasLegacy2 = false;
 
-            wim.AddTab("Page list", Sushi.Mediakiwi.Data.ComponentList.SelectOne(ComponentListType.PageList));
+            wim.AddTab("Page list", Mediakiwi.Data.ComponentList.SelectOne(ComponentListType.PageList));
             return Task.CompletedTask;
         }
 
@@ -403,7 +403,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         
             wim.ForceLoad = true;
 
-            wim.ListData = Sushi.Mediakiwi.Data.PageTemplate.SearchAll(FilterSite, FilterText);
+            wim.ListData = Mediakiwi.Data.PageTemplate.SearchAll(FilterSite, FilterText);
             return Task.CompletedTask;
         }
 
@@ -412,7 +412,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// Gets or sets the filter client ID.
         /// </summary>
         /// <value>The filter client ID.</value>
-        [Sushi.Mediakiwi.Framework.ContentListSearchItem.TextField("Search for", 50, AutoPostBack = true, Expression = OutputExpression.Alternating)]
+        [Framework.ContentListSearchItem.TextField("Search for", 50, AutoPostBack = true, Expression = OutputExpression.Alternating)]
         public string FilterText
         {
             get { return m_FilterText; }
@@ -424,7 +424,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// Gets or sets the search template site.
         /// </summary>
         /// <value>The search template site.</value>
-        [Sushi.Mediakiwi.Framework.ContentListSearchItem.Choice_Dropdown("Part of site", "SearchSites", true, true, Expression = OutputExpression.Alternating)]
+        [Framework.ContentListSearchItem.Choice_Dropdown("Part of site", "SearchSites", true, true, Expression = OutputExpression.Alternating)]
         public int FilterSite
         {
             get { return m_FilterSite; }
@@ -446,7 +446,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                 ListItem li;
                 m_SearchSites.Add(new ListItem("-- select a site --", ""));
 
-                foreach (var site in Sushi.Mediakiwi.Data.Site.SelectAll())
+                foreach (var site in Mediakiwi.Data.Site.SelectAll())
                 {
                     if (site.MasterID.GetValueOrDefault() > 0) continue;
                     li = new ListItem(site.Name, site.ID.ToString());
@@ -463,7 +463,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// Gets or sets the name.
         /// </summary>
         /// <value>The name.</value>
-        [Sushi.Mediakiwi.Framework.ContentListItem.TextField("Title", 50, true, Expression = OutputExpression.Alternating)]
+        [Framework.ContentListItem.TextField("Title", 50, true, Expression = OutputExpression.Alternating)]
         public string Name
         {
             get { return m_Name; }
@@ -471,8 +471,8 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         }
 
 
-        [Sushi.Mediakiwi.Framework.OnlyVisibleWhenFalse("IS_HEADLESS")]
-        [Sushi.Mediakiwi.Framework.ContentListItem.Choice_Checkbox("Editable source", true, Expression = OutputExpression.Alternating)]
+        [OnlyVisibleWhenFalse("IS_HEADLESS")]
+        [Framework.ContentListItem.Choice_Checkbox("Editable source", true, Expression = OutputExpression.Alternating)]
         public bool IsSourceBased { get; set; }
 
 
@@ -481,23 +481,23 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// Gets or sets the location.
         /// </summary>
         /// <value>The location.</value>
-        [Sushi.Mediakiwi.Framework.ContentListItem.TextField("Location", 250, false, Expression = OutputExpression.Alternating)]
+        [Framework.ContentListItem.TextField("Location", 250, false, Expression = OutputExpression.Alternating)]
         public string Location
         {
             get { return m_Location; }
             set { m_Location = value; }
         }
 
-        [Sushi.Mediakiwi.Framework.OnlyVisibleWhenFalse("IS_HEADLESS")]
-        [Sushi.Mediakiwi.Framework.ContentListItem.TextArea("Code", 0, IsSourceCode = true)]
+        [OnlyVisibleWhenFalse("IS_HEADLESS")]
+        [Framework.ContentListItem.TextArea("Code", 0, IsSourceCode = true)]
         public string Source { get; set; }
 
         //[Sushi.Mediakiwi.Framework.ContentListItem.TextArea("Code2", 0, IsSourceCode = true)]
         public string Source2 { get; set; }
 
 
-        [Sushi.Mediakiwi.Framework.OnlyVisibleWhenFalse("IS_HEADLESS")]
-        [Sushi.Mediakiwi.Framework.ContentListItem.Section()]
+        [OnlyVisibleWhenFalse("IS_HEADLESS")]
+        [Framework.ContentListItem.Section()]
         public string SubText0 { get { return "Properties"; } set { } }
 
 
@@ -505,8 +505,8 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// Gets or sets the reference id.
         /// </summary>
         /// <value>The reference id.</value>
-        [Sushi.Mediakiwi.Framework.OnlyVisibleWhenFalse("IS_HEADLESS")]
-        [Sushi.Mediakiwi.Framework.ContentListItem.TextField("Reference", 5, false, false, null, Expression = OutputExpression.Alternating)]
+        [OnlyVisibleWhenFalse("IS_HEADLESS")]
+        [Framework.ContentListItem.TextField("Reference", 5, false, false, null, Expression = OutputExpression.Alternating)]
         public string ReferenceID { get; set; }
 
 
@@ -516,7 +516,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// Gets or sets the description.
         /// </summary>
         /// <value>The description.</value>
-        [Sushi.Mediakiwi.Framework.ContentListItem.TextField("Description", 500, false, Expression = OutputExpression.Alternating)]
+        [Framework.ContentListItem.TextField("Description", 500, false, Expression = OutputExpression.Alternating)]
         public string Description
         {
             get { return m_Description; }
@@ -531,7 +531,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// <value>
         /// 	<c>true</c> if [only one instance possible]; otherwise, <c>false</c>.
         /// </value>
-        [Sushi.Mediakiwi.Framework.ContentListItem.Choice_Checkbox("Has custom date", "Does this template require a custom (sortable) date?", Expression = OutputExpression.Alternating)]
+        [Framework.ContentListItem.Choice_Checkbox("Has custom date", "Does this template require a custom (sortable) date?", Expression = OutputExpression.Alternating)]
         public bool HasCustomDate
         {
             get { return m_HasCustomDate; }
@@ -545,7 +545,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// Gets or sets the site id.
         /// </summary>
         /// <value>The site id.</value>
-        [Sushi.Mediakiwi.Framework.ContentListItem.Choice_Dropdown("Channel", "Sites", false, false, "When a master site with children is chosen this also applies for a child sites.", Expression = OutputExpression.Alternating)]
+        [Framework.ContentListItem.Choice_Dropdown("Channel", "Sites", false, false, "When a master site with children is chosen this also applies for a child sites.", Expression = OutputExpression.Alternating)]
         public string SiteId
         {
             get { return m_Site; }
@@ -559,7 +559,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// <value>
         /// 	<c>true</c> if [only one instance possible]; otherwise, <c>false</c>.
         /// </value>
-        [Sushi.Mediakiwi.Framework.ContentListItem.Choice_Checkbox("Single use", "Can only be used one time for a page instance.", Expression = OutputExpression.Alternating)]
+        [Framework.ContentListItem.Choice_Checkbox("Single use", "Can only be used one time for a page instance.", Expression = OutputExpression.Alternating)]
         public bool OnlyOneInstancePossible
         {
             get { return m_OnlyOneInstancePossible; }
@@ -580,7 +580,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                 m_Sites = new ListItemCollection();
                 ListItem li;
                 m_Sites.Add(new ListItem("Available for all channels", ""));
-                foreach (var site in Sushi.Mediakiwi.Data.Site.SelectAll())
+                foreach (var site in Mediakiwi.Data.Site.SelectAll())
                 {
                     if (site.MasterID.HasValue) continue;
                     li = new ListItem(site.Name, site.ID.ToString());
@@ -605,7 +605,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                 m_AllSites = new ListItemCollection();
                 ListItem li;
                 m_AllSites.Add(new ListItem("", ""));
-                foreach (var site in Sushi.Mediakiwi.Data.Site.SelectAll())
+                foreach (var site in Mediakiwi.Data.Site.SelectAll())
                 { 
                     li = new ListItem(site.Name, site.ID.ToString());
                     m_AllSites.Add(li);
@@ -628,7 +628,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                 m_AllPageTemplates = new ListItemCollection();
                 ListItem li;
                 m_AllPageTemplates.Add(new ListItem("", ""));
-                foreach (var pt in Sushi.Mediakiwi.Data.PageTemplate.SelectAll())
+                foreach (var pt in Mediakiwi.Data.PageTemplate.SelectAll())
                 {
                     li = new ListItem(pt.Name, pt.ID.ToString());
                     m_AllPageTemplates.Add(li);
@@ -654,26 +654,26 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// <summary>
         /// Gets or sets a value indicating whether [uses output cache].
         /// </summary>
-        [Sushi.Mediakiwi.Framework.OnlyVisibleWhenFalse("IS_HEADLESS")]
-        [Sushi.Mediakiwi.Framework.ContentListItem.TextField("Cache duration", 10, InteractiveHelp ="Duration in the cache in seconds, if not applied the page is not cached.", TextType = InputType.Numeric, Expression = OutputExpression.Right)]
+        [OnlyVisibleWhenFalse("IS_HEADLESS")]
+        [Framework.ContentListItem.TextField("Cache duration", 10, InteractiveHelp ="Duration in the cache in seconds, if not applied the page is not cached.", TextType = InputType.Numeric, Expression = OutputExpression.Right)]
         public int? OutputCacheDuration { get; set; }
 
 
         // CB 15-09-2014; options for setting the pagetemplate of a specific channel to overwrite
-        [Sushi.Mediakiwi.Framework.OnlyVisibleWhenFalse("IS_HEADLESS")]
-        [Sushi.Mediakiwi.Framework.ContentListItem.Section()]
+        [OnlyVisibleWhenFalse("IS_HEADLESS")]
+        [Framework.ContentListItem.Section()]
         public string SEC_PageTemplateOverwrite { get { return "Overwrite options"; } }
 
-        [Sushi.Mediakiwi.Framework.OnlyVisibleWhenFalse("IS_HEADLESS")]
-        [Sushi.Mediakiwi.Framework.ContentListItem.TextLine("Info")]
+        [OnlyVisibleWhenFalse("IS_HEADLESS")]
+        [Framework.ContentListItem.TextLine("Info")]
         public string Info { get { return "If the seleted site and page template are requested this pagetemplate will load instead"; } }
 
-        [Sushi.Mediakiwi.Framework.OnlyVisibleWhenFalse("IS_HEADLESS")]
-        [Sushi.Mediakiwi.Framework.ContentListItem.Choice_Dropdown("Channel", "AllSites", Expression = OutputExpression.Left)]
+        [OnlyVisibleWhenFalse("IS_HEADLESS")]
+        [Framework.ContentListItem.Choice_Dropdown("Channel", "AllSites", Expression = OutputExpression.Left)]
         public int? OverwriteSiteKey { get; set; }
 
-        [Sushi.Mediakiwi.Framework.OnlyVisibleWhenFalse("IS_HEADLESS")]
-        [Sushi.Mediakiwi.Framework.ContentListItem.Choice_Dropdown("Page template", "AllPageTemplates", Expression = OutputExpression.Right)]
+        [OnlyVisibleWhenFalse("IS_HEADLESS")]
+        [Framework.ContentListItem.Choice_Dropdown("Page template", "AllPageTemplates", Expression = OutputExpression.Right)]
         public int? OverwriteTemplateKey { get; set; }
 
         private string m_SubText1 = "Primary container";
@@ -681,8 +681,8 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// Gets or sets the sub text1.
         /// </summary>
         /// <value>The sub text1.</value>
-        [Sushi.Mediakiwi.Framework.OnlyVisibleWhenTrue("hasLegacy1")]
-        [Sushi.Mediakiwi.Framework.ContentListItem.TextLine(null)]
+        [OnlyVisibleWhenTrue("hasLegacy1")]
+        [Framework.ContentListItem.TextLine(null)]
         public string SubText1
         {
             get { return m_SubText1; }
@@ -695,7 +695,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// </summary>
         /// <value>The available component.</value>
         //[Sushi.Mediakiwi.Framework.OnlyVisibleWhenTrue("hasLegacy1")]
-        [Sushi.Mediakiwi.Framework.ContentListItem.SubListSelect("Components", "a0d67c61-0fee-4f96-86e7-cdd53d89dc43", false)]
+        [Framework.ContentListItem.SubListSelect("Components", "a0d67c61-0fee-4f96-86e7-cdd53d89dc43", false)]
         public SubList AvailableComponent
         {
             get { return m_AvailableComponent; }
@@ -707,8 +707,8 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// Gets or sets the sub text2.
         /// </summary>
         /// <value>The sub text2.</value>
-        [Sushi.Mediakiwi.Framework.OnlyVisibleWhenTrue("hasLegacy2")]
-        [Sushi.Mediakiwi.Framework.ContentListItem.TextLine(null)]
+        [OnlyVisibleWhenTrue("hasLegacy2")]
+        [Framework.ContentListItem.TextLine(null)]
         public string SubText2
         {
             get { return m_SubText2; }
@@ -722,8 +722,8 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// <value>
         /// 	<c>true</c> if this instance has secundary; otherwise, <c>false</c>.
         /// </value>
-        [Sushi.Mediakiwi.Framework.OnlyVisibleWhenTrue("hasLegacy2")]
-        [Sushi.Mediakiwi.Framework.ContentListItem.Choice_Checkbox("Is available", "Does this template have a secundary content container?")]
+        [OnlyVisibleWhenTrue("hasLegacy2")]
+        [Framework.ContentListItem.Choice_Checkbox("Is available", "Does this template have a secundary content container?")]
         public bool HasSecundary
         {
             get { return m_HasSecundary; }
@@ -735,8 +735,8 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// Gets or sets the available service component.
         /// </summary>
         /// <value>The available service component.</value>
-        [Sushi.Mediakiwi.Framework.OnlyVisibleWhenTrue("hasLegacy2")]
-        [Sushi.Mediakiwi.Framework.ContentListItem.SubListSelect("Service components", "a0d67c61-0fee-4f96-86e7-cdd53d89dc43", false)]
+        [OnlyVisibleWhenTrue("hasLegacy2")]
+        [Framework.ContentListItem.SubListSelect("Service components", "a0d67c61-0fee-4f96-86e7-cdd53d89dc43", false)]
         public SubList AvailableServiceComponent
         {
             get { return m_AvailableServiceComponent; }
@@ -748,8 +748,8 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// Gets or sets the sub text2.
         /// </summary>
         /// <value>The sub text2.</value>
-        [Sushi.Mediakiwi.Framework.OnlyVisibleWhenTrue("hasNewContainers")]
-        [Sushi.Mediakiwi.Framework.ContentListItem.TextLine(null)]
+        [OnlyVisibleWhenTrue("hasNewContainers")]
+        [Framework.ContentListItem.TextLine(null)]
         public string SubText3 { get; set; }
 
     }

@@ -12,13 +12,13 @@ namespace Sushi.Mediakiwi.AppCentre.Data
         }
 
 
-        [Sushi.Mediakiwi.Framework.ContentListSearchItem.TextField("Search for", 50, AutoPostBack = false, Expression = OutputExpression.Alternating)]
+        [Framework.ContentListSearchItem.TextField("Search for", 50, AutoPostBack = false, Expression = OutputExpression.Alternating)]
         public string FilterText { get; set; }
 
-        [Sushi.Mediakiwi.Framework.ContentListSearchItem.Choice_Dropdown("Type", "FilterTypes", false, false, Expression = OutputExpression.Alternating)]
+        [Framework.ContentListSearchItem.Choice_Dropdown("Type", "FilterTypes", false, false, Expression = OutputExpression.Alternating)]
         public int? FilterType { get; set; }
 
-        [Sushi.Mediakiwi.Framework.ContentListSearchItem.Choice_Dropdown("Channel", "SearchSites", false, false, Expression = OutputExpression.Right)]
+        [Framework.ContentListSearchItem.Choice_Dropdown("Channel", "SearchSites", false, false, Expression = OutputExpression.Right)]
         public int? FilterSite { get; set; }
 
         private ListItemCollection m_SearchSites;
@@ -36,7 +36,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data
                 ListItem li;
                 m_SearchSites.Add(new ListItem("", ""));
 
-                foreach (Sushi.Mediakiwi.Data.Site site in Mediakiwi.Data.Site.SelectAll())
+                foreach (Mediakiwi.Data.Site site in Mediakiwi.Data.Site.SelectAll())
                 {
                     //if (site.MasterID.GetValueOrDefault() > 0) continue;
                     li = new ListItem(site.Name, site.ID.ToString());

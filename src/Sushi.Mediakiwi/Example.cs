@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using Sushi.Mediakiwi.Data.MicroORM;
+﻿using Sushi.Mediakiwi.Data.MicroORM;
 using Sushi.Mediakiwi.Framework;
 using Sushi.MicroORM.Mapping;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Sushi.Mediakiwi
 {
@@ -78,9 +78,9 @@ namespace Sushi.Mediakiwi
         {
             m_instance = await ItemData.SelectOneAsync(arg.SelectedKey).ConfigureAwait(false);
 
-            Map<ItemData>(x => x.Name, m_instance).TextField("Name", 50);
-            Map<ItemData>(x => x.Description, m_instance).RichText("Description");
-            Map<ItemData>(x => x.IsActive, m_instance).Checkbox("Is active");
+            Map(x => x.Name, m_instance).TextField("Name", 50);
+            Map(x => x.Description, m_instance).RichText("Description");
+            Map(x => x.IsActive, m_instance).Checkbox("Is active");
 
             this.FormMaps.Add(this);
         }

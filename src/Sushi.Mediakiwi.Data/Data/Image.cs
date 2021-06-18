@@ -1,11 +1,11 @@
-﻿using Sushi.MicroORM;
+﻿using Sushi.Mediakiwi.Data.MicroORM;
+using Sushi.MicroORM;
 using Sushi.MicroORM.Mapping;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
-using Sushi.Mediakiwi.Data.MicroORM;
 
 namespace Sushi.Mediakiwi.Data
 {
@@ -93,7 +93,7 @@ namespace Sushi.Mediakiwi.Data
         /// </summary>
         /// <param name="ID">The ID.</param>
         /// <returns></returns>
-        public static new async Task<Image> SelectOneAsync(int ID)
+        public static async new Task<Image> SelectOneAsync(int ID)
         {
             var connector = ConnectorFactory.CreateConnector<Image>();
 

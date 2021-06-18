@@ -1,15 +1,15 @@
-﻿using Sushi.Mediakiwi.Headless.Config;
-using System;
+﻿using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.DependencyInjection;
-using System.Net.Http;
 using Microsoft.Extensions.Logging;
-using System.Collections.Generic;
-using Microsoft.AspNetCore.WebUtilities;
-using System.Threading.Tasks;
+using Sushi.Mediakiwi.Headless.Config;
 using Sushi.Mediakiwi.Headless.HttpClients.Data;
-using System.Text.Json;
+using System;
+using System.Collections.Generic;
+using System.Net.Http;
 using System.Text;
+using System.Text.Json;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace Sushi.Mediakiwi.Headless.HttpClients
 {

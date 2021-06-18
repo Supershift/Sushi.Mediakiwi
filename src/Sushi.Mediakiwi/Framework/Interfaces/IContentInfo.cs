@@ -61,12 +61,12 @@ namespace Sushi.Mediakiwi.Framework
         /// 
         /// </summary>
         /// <returns></returns>
-        MetaData GetMetaData(string name, Sushi.Mediakiwi.UI.ListItemCollection collectionPropertyValue);
+        MetaData GetMetaData(string name, UI.ListItemCollection collectionPropertyValue);
         /// <summary>
         /// Sets the content container.
         /// </summary>
         /// <param name="listItems">The list items.</param>
-        void ApplyMetaDataList(Sushi.Mediakiwi.Framework.MetaDataList[] listItems);
+        void ApplyMetaDataList(MetaDataList[] listItems);
         /// <summary>
         /// 
         /// </summary>

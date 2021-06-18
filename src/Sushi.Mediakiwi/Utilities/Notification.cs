@@ -1,8 +1,8 @@
-using System.Collections.Generic;
-using System.Text;
 using Sushi.Mediakiwi.Data;
-using System.Net.Mail;
+using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Net.Mail;
+using System.Text;
 
 namespace Sushi.Mediakiwi.Utilities
 {
@@ -15,7 +15,7 @@ namespace Sushi.Mediakiwi.Utilities
         {
             public Payload()
             {
-                this.From = new MailAddress(Sushi.Mediakiwi.Data.Environment.Current.DefaultMailAddress, Sushi.Mediakiwi.Data.Environment.Current.DisplayName);
+                this.From = new MailAddress(Environment.Current.DefaultMailAddress, Environment.Current.DisplayName);
             }
 
             public MailAddress From { set; get; }
@@ -273,7 +273,7 @@ namespace Sushi.Mediakiwi.Utilities
 , payload.URL)
                 );
 
-            Sushi.Mediakiwi.Data.Environment.Current.SmtpClient().Send(message);
+            Environment.Current.SmtpClient().Send(message);
         }
     }
 }

@@ -6,7 +6,7 @@ namespace Sushi.Mediakiwi.AppCentre.UI
 {
     public class Demonstration : ComponentListTemplate
     {
-        [Sushi.Mediakiwi.Framework.ContentSettingItem.TextField("Setting", 50)]
+        [Framework.ContentSettingItem.TextField("Setting", 50)]
         public string Backend { get; set; }
 
         public string Backend2 { get; set; }
@@ -27,8 +27,8 @@ namespace Sushi.Mediakiwi.AppCentre.UI
         {
             this.SenderInstance = this;
 
-            Map<Demonstration>(x => x.Backend, this).TextField("Backend detais");
-            Map<Demonstration>(x => x.Backend2, this).TextField("Backend2");
+            Map(x => x.Backend, this).TextField("Backend detais");
+            Map(x => x.Backend2, this).TextField("Backend2");
             this.FormMaps.Add(this);
             return Task.CompletedTask;
         }
@@ -58,8 +58,8 @@ namespace Sushi.Mediakiwi.AppCentre.UI
         {
             Implement = new DemonstrationForm(wim.IsLayerMode);
 
-            Map<Demonstration>(x => x.TitleTest, this).TextField("Title");
-            Map<DemonstrationForm>(x => x.OuterTextField, Implement).TextField("Title (outer)");
+            Map(x => x.TitleTest, this).TextField("Title");
+            Map(x => x.OuterTextField, Implement).TextField("Title (outer)");
             
 
             this.FormMaps.Add(this);

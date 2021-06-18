@@ -1,10 +1,10 @@
-using System;
-using System.Linq;
-using System.Collections.Generic;
-using System.Text;
-using Sushi.Mediakiwi.UI;
 using Sushi.Mediakiwi.Data;
+using Sushi.Mediakiwi.UI;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net;
+using System.Text;
 
 namespace Sushi.Mediakiwi.Framework.ContentInfoItem
 {
@@ -20,7 +20,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
         public override MetaData GetMetaData(string name, ListItemCollection collectionPropertyValue)
         {
             MetaData meta = new MetaData();
-            Data.Utility.ReflectProperty(this, meta);
+            Utility.ReflectProperty(this, meta);
             meta.Name = name;
             meta.ContentTypeSelection = ((int)ContentTypeSelection).ToString();
 

@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http;
-using System.IO;
-using System.Threading.Tasks;
-using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
+using System.IO;
+using System.Text.Json;
+using System.Threading.Tasks;
 
 namespace Sushi.Mediakiwi.Controllers
 {
@@ -18,12 +18,12 @@ namespace Sushi.Mediakiwi.Controllers
              PropertyNamingPolicy = JsonNamingPolicy.CamelCase
          };
 
-        protected internal string GetResponse(object response)
+        internal protected string GetResponse(object response)
         {
             return JsonSerializer.Serialize(response, response.GetType(), Settings);
         }
 
-        protected internal async Task<T> GetPostAsync<T>(HttpContext context)
+        internal async protected Task<T> GetPostAsync<T>(HttpContext context)
         {
             var stream = context.Request.Body;
             using (StreamReader sr = new StreamReader(stream))
@@ -33,7 +33,7 @@ namespace Sushi.Mediakiwi.Controllers
             }
         }
 
-        public virtual async Task<string> CompleteAsync(HttpContext context)
+        public async virtual Task<string> CompleteAsync(HttpContext context)
         {
             return "";
         }

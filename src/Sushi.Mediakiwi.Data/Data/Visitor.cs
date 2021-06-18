@@ -1,8 +1,8 @@
-﻿using Sushi.MicroORM.Mapping;
+﻿using Sushi.Mediakiwi.Data.MicroORM;
+using Sushi.MicroORM.Mapping;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Sushi.Mediakiwi.Data.MicroORM;
 
 namespace Sushi.Mediakiwi.Data
 {
@@ -317,7 +317,7 @@ namespace Sushi.Mediakiwi.Data
             var filter = connector.CreateDataFilter();
             filter.Add(x => x.ProfileID, profileId);
 
-            int minutes = Sushi.Mediakiwi.Data.Utility.ConvertToInt(Environment.Current["EXPIRATION_COOKIE_PROFILE"], 0);
+            int minutes = Utility.ConvertToInt(Environment.Current["EXPIRATION_COOKIE_PROFILE"], 0);
 
             var result = connector.FetchAll(filter);
 
@@ -342,7 +342,7 @@ namespace Sushi.Mediakiwi.Data
             var filter = connector.CreateDataFilter();
             filter.Add(x => x.ProfileID, profileId);
 
-            int minutes = Sushi.Mediakiwi.Data.Utility.ConvertToInt(Environment.Current["EXPIRATION_COOKIE_PROFILE"], 0);
+            int minutes = Utility.ConvertToInt(Environment.Current["EXPIRATION_COOKIE_PROFILE"], 0);
 
             var result = await connector.FetchAllAsync(filter);
 

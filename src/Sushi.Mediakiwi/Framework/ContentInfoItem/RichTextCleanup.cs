@@ -62,7 +62,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
             this.Prepare = new RichTextPrepare();
         }
 
-        public Sushi.Mediakiwi.Framework.RichTextPrepare Prepare { get; set; }
+        public RichTextPrepare Prepare { get; set; }
 
         internal string OnlyReturnText(Match m)
         {

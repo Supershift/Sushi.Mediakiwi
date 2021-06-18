@@ -70,7 +70,7 @@ namespace Sushi.Mediakiwi.PageModules.ExportPage
             return true;
         }
 
-        static public string EncodeTo64(string toEncode)
+        public static string EncodeTo64(string toEncode)
         {
             byte[] toEncodeAsBytes = Encoding.ASCII.GetBytes(toEncode);
             return Convert.ToBase64String(toEncodeAsBytes);

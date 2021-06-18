@@ -10,13 +10,13 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source.Xml
             // [CB: 24-06-2015] With permision of marc I can omit this
             //build.Append(@"<?xml version=""1.0""?><root>");
 
-            container.ApplyList(Sushi.Mediakiwi.Data.ComponentListType.Browsing);
+            container.ApplyList(Data.ComponentListType.Browsing);
 
             container.Item = pageId;
             container.CurrentListInstance.wim.IsEditMode = true;
             container.ItemType = RequestItemType.Page;
 
-            GeneratedCms.Source.Component component = new GeneratedCms.Source.Component();
+            Source.Component component = new Source.Component();
             build.Append(component.CreateComponentContent(container, componentTemplateId, pageId, componentId, target).Replace("&", "&amp;"));
             // [CB: 24-06-2015] With permision of marc I can omit this
             //build.Append(@"</root>");

@@ -1,9 +1,9 @@
-using System;
-using System.Xml;
-using System.Xml.Serialization;
-using System.Collections.Generic;
 using Sushi.Mediakiwi.Data;
 using Sushi.Mediakiwi.UI;
+using System;
+using System.Collections.Generic;
+using System.Xml;
+using System.Xml.Serialization;
 
 namespace Sushi.Mediakiwi.Framework
 {
@@ -72,7 +72,7 @@ namespace Sushi.Mediakiwi.Framework
         /// <returns></returns>
         public IContentInfo GetContentInfo()
         {
-            int ContentTypeSelection = Data.Utility.ConvertToInt(this.ContentTypeSelection);
+            int ContentTypeSelection = Utility.ConvertToInt(this.ContentTypeSelection);
 
             if (ContentTypeSelection == (int)ContentType.Binary_Document)
                 return new ContentInfoItem.Binary_DocumentAttribute(Title, Mandatory == "1", InteractiveHelp);
@@ -180,7 +180,7 @@ namespace Sushi.Mediakiwi.Framework
                     return;
             }
             tags.Add(option);
-            this.Options = Data.Utility.ConvertToCsvString(tags.ToArray(), false);
+            this.Options = Utility.ConvertToCsvString(tags.ToArray(), false);
         }
 
         /// <summary>
@@ -197,7 +197,7 @@ namespace Sushi.Mediakiwi.Framework
             if (tags.Contains(option))
             {
                 tags.Remove(option);
-                this.Options = Data.Utility.ConvertToCsvString(tags.ToArray(), false);
+                this.Options = Utility.ConvertToCsvString(tags.ToArray(), false);
             }
         }
 
@@ -469,9 +469,9 @@ namespace Sushi.Mediakiwi.Framework
         /// 
         /// </summary>
         /// <returns></returns>
-        public Sushi.Mediakiwi.UI.ListItemCollection GetCollection()
+        public ListItemCollection GetCollection()
         {
-            Sushi.Mediakiwi.UI.ListItemCollection Collection = new Sushi.Mediakiwi.UI.ListItemCollection();
+            ListItemCollection Collection = new ListItemCollection();
             if (CollectionList != null && CollectionList.Length > 0)
             {
                 foreach (MetaDataList item in CollectionList)

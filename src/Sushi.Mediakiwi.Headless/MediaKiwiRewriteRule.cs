@@ -1,10 +1,10 @@
-﻿using Microsoft.AspNetCore.Rewrite;
-using System;
+﻿using Microsoft.AspNetCore.Http.Extensions;
+using Microsoft.AspNetCore.Rewrite;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Sushi.Mediakiwi.Headless.Config;
 using Sushi.Mediakiwi.Headless.Data;
-using Microsoft.Extensions.Logging;
-using Microsoft.AspNetCore.Http.Extensions;
+using System;
 
 namespace Sushi.Mediakiwi.Headless
 {

@@ -1,7 +1,7 @@
-﻿using Sushi.MicroORM.Mapping;
+﻿using Sushi.Mediakiwi.Data.MicroORM;
+using Sushi.MicroORM.Mapping;
 using System;
 using System.Threading.Tasks;
-using Sushi.Mediakiwi.Data.MicroORM;
 
 namespace Sushi.Mediakiwi.Data
 {
@@ -75,7 +75,7 @@ namespace Sushi.Mediakiwi.Data
             connector.Save(this);
         }
 
-        public virtual async Task SaveAsync()
+        public async virtual Task SaveAsync()
         {
             var connector = ConnectorFactory.CreateConnector<Registry>();
             await connector.SaveAsync(this);
@@ -87,7 +87,7 @@ namespace Sushi.Mediakiwi.Data
             connector.Delete(this);
         }
 
-        public virtual async Task DeleteAsync()
+        public async virtual Task DeleteAsync()
         {
             var connector = ConnectorFactory.CreateConnector<Registry>();
             await connector.DeleteAsync(this);

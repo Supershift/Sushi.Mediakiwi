@@ -1,9 +1,9 @@
-﻿using Sushi.MicroORM;
+﻿using Sushi.Mediakiwi.Data.MicroORM;
+using Sushi.MicroORM;
 using Sushi.MicroORM.Mapping;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Sushi.Mediakiwi.Data.MicroORM;
 
 namespace Sushi.Mediakiwi.Data
 {
@@ -526,7 +526,7 @@ namespace Sushi.Mediakiwi.Data
                 if (showEmptyTypes)
                 {
                     filter.AddSql("Property_List_Type_Key = @Type OR Property_List_Type_Key is null");
-                    filter.AddParameter<int>("Type", listTypeID.Value);
+                    filter.AddParameter("Type", listTypeID.Value);
                 }
                 else
                     filter.Add(x => x.ListTypeID, listTypeID);

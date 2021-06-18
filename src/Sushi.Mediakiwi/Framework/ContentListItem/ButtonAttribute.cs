@@ -196,7 +196,7 @@ namespace Sushi.Mediakiwi.Framework.ContentListItem
         /// <param name="width">The width.</param>
         /// <param name="interactiveHelp">The interactive help.</param>
         [Obsolete("Obsolete, please replace", false)]
-        public ButtonAttribute(string title, bool triggerSave, bool isFormElement, bool showAtBottom, int width, string interactiveHelp, Sushi.Mediakiwi.Framework.ButtonIconType icon)
+        public ButtonAttribute(string title, bool triggerSave, bool isFormElement, bool showAtBottom, int width, string interactiveHelp, ButtonIconType icon)
         {
             m_CanHaveExpression = true;
             ContentTypeSelection = ContentType.Button;

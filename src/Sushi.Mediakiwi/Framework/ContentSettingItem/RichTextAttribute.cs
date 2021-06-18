@@ -3,7 +3,7 @@ namespace Sushi.Mediakiwi.Framework.ContentSettingItem
     /// <summary>
     /// Possible return types: System.String
     /// </summary>
-    public class RichTextAttribute : Sushi.Mediakiwi.Framework.ContentInfoItem.RichTextAttribute, IContentSettingInfo
+    public class RichTextAttribute : ContentInfoItem.RichTextAttribute, IContentSettingInfo
     {
         /// <summary>
         /// Possible return types: System.String

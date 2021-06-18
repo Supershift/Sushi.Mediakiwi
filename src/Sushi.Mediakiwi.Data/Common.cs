@@ -1,7 +1,7 @@
-﻿using System;
+﻿using Sushi.Mediakiwi.Data.Configuration;
+using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
-using Sushi.Mediakiwi.Data.Configuration;
 
 namespace Sushi.Mediakiwi
 {
@@ -281,7 +281,7 @@ namespace Sushi.Mediakiwi
         /// <param name="name">The name.</param>
         /// <param name="throwExceptionWhenNotFound">if set to <c>true</c> [throw exception when not found].</param>
         /// <returns></returns>
-        /// <exception cref="System.Exception">Could not find the portal</exception>
+        /// <exception cref="Exception">Could not find the portal</exception>
         public static WimServerPortal GetPortal(string name, bool throwExceptionWhenNotFound)
         {
             if (string.IsNullOrEmpty(name))

@@ -1,5 +1,5 @@
-using Sushi.Mediakiwi.Framework;
 using Sushi.Mediakiwi.Data;
+using Sushi.Mediakiwi.Framework;
 using System.Threading.Tasks;
 
 namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
@@ -55,7 +55,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// Handles the ListDelete event of the Site control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="Sushi.Mediakiwi.Framework.ComponentListEventArgs"/> instance containing the event data.</param>
+        /// <param name="e">The <see cref="ComponentListEventArgs"/> instance containing the event data.</param>
         async Task Site_ListDelete(ComponentListEventArgs e)
         {
             await this.Implement.DeleteAsync();
@@ -86,14 +86,14 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// Handles the ListSave event of the Site control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="Sushi.Mediakiwi.Framework.ComponentListEventArgs"/> instance containing the event data.</param>
+        /// <param name="e">The <see cref="ComponentListEventArgs"/> instance containing the event data.</param>
         async Task Site_ListSave(ComponentListEventArgs e)
         {
             await this.Implement.SaveAsync();
 
             if (this.Implement.HasLists)
             {
-                var listsite = Sushi.Mediakiwi.Data.Folder.SelectOneBySite(this.Implement.ID, FolderType.List);
+                var listsite = Mediakiwi.Data.Folder.SelectOneBySite(this.Implement.ID, FolderType.List);
                 if (listsite == null || listsite.ID == 0)
                 {
                     var folder = new Mediakiwi.Data.Folder();
@@ -107,7 +107,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             }
             if (this.Implement.HasPages)
             {
-                var listsite = Sushi.Mediakiwi.Data.Folder.SelectOneBySite(this.Implement.ID, FolderType.Page);
+                var listsite = Mediakiwi.Data.Folder.SelectOneBySite(this.Implement.ID, FolderType.Page);
                 if (listsite == null || listsite.ID == 0)
                 {
                     var folder = new Mediakiwi.Data.Folder();
@@ -150,22 +150,22 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                 }
             }
             wim.FlushCache();
-            Sushi.Mediakiwi.Framework.Functions.FolderPathLogic.UpdateCompletePath();
+            Framework.Functions.FolderPathLogic.UpdateCompletePath();
 
             // if a master is connected, created the inheritance tree
             if (Implement.MasterID.HasValue && Implement.HasLists)
             {
-                Sushi.Mediakiwi.Framework.Inheritance.Folder.CreateFolderTree(Implement.MasterID.Value, Implement.ID, FolderType.List);
+                Framework.Inheritance.Folder.CreateFolderTree(Implement.MasterID.Value, Implement.ID, FolderType.List);
             }
         }
 
-        Sushi.Mediakiwi.Data.Site m_Implement;
+        Mediakiwi.Data.Site m_Implement;
         /// <summary>
         /// Gets or sets the implement.
         /// </summary>
         /// <value>The implement.</value>
-        [Sushi.Mediakiwi.Framework.ContentListItem.DataExtend()]
-        public Sushi.Mediakiwi.Data.Site Implement
+        [Framework.ContentListItem.DataExtend()]
+        public Mediakiwi.Data.Site Implement
         {
             get { return m_Implement; }
             set { m_Implement = value; }
@@ -175,7 +175,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// Handles the ListLoad event of the Site control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="Sushi.Mediakiwi.Framework.ComponentListEventArgs"/> instance containing the event data.</param>
+        /// <param name="e">The <see cref="ComponentListEventArgs"/> instance containing the event data.</param>
         async Task Site_ListLoad(ComponentListEventArgs e)
         {
             this.Implement = await Mediakiwi.Data.Site.SelectOneAsync(e.SelectedKey);
@@ -208,9 +208,9 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                 return;
 
             if (m_SearchSiteName == null)
-                wim.ListDataAdd(await Sushi.Mediakiwi.Data.Site.SelectAllAsync());
+                wim.ListDataAdd(await Mediakiwi.Data.Site.SelectAllAsync());
             else
-                wim.ListDataAdd(await Sushi.Mediakiwi.Data.Site.SelectAllAsync(m_SearchSiteName));
+                wim.ListDataAdd(await Mediakiwi.Data.Site.SelectAllAsync(m_SearchSiteName));
         }
 
         private string m_SearchSiteName;
@@ -218,7 +218,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// Gets or sets the name of the search site.
         /// </summary>
         /// <value>The name of the search site.</value>
-        [Sushi.Mediakiwi.Framework.ContentListSearchItem.TextField("Site title", 100, false)]
+        [Framework.ContentListSearchItem.TextField("Site title", 100, false)]
         public string SearchSiteName
         {
             get { return m_SearchSiteName; }

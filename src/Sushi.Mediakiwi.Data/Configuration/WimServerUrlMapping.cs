@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
-using System.Text.RegularExpressions;
 using System.Runtime.Serialization;
+using System.Text.RegularExpressions;
 
 namespace Sushi.Mediakiwi.Data.Configuration
 {

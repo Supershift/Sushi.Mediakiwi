@@ -1,9 +1,9 @@
-﻿using System;
+﻿using Sushi.Mediakiwi.Data;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using Sushi.Mediakiwi.Data;
 using static Sushi.Mediakiwi.Beta.GeneratedCms.Source.Component;
 
 namespace Sushi.Mediakiwi.Framework
@@ -168,7 +168,7 @@ namespace Sushi.Mediakiwi.Framework
 
         public T CreateInstance()
         {
-            return System.Activator.CreateInstance<T>();
+            return Activator.CreateInstance<T>();
         }
 
         public bool? IsHidden { get; set; }

@@ -151,7 +151,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                             {
                                 string[] timearr = Console.Form(ID + "T").ToString().Split(':');
 
-                                m_Candidate = tmp.AddHours(Utility.ConvertToInt(timearr[0])).AddMinutes(Data.Utility.ConvertToInt(timearr[1]));
+                                m_Candidate = tmp.AddHours(Utility.ConvertToInt(timearr[0])).AddMinutes(Utility.ConvertToInt(timearr[1]));
                             }
                             else
                             {

@@ -29,7 +29,7 @@ namespace Sushi.Mediakiwi.Controllers
 
         [HttpPost("GetFields")]
         [AllowAnonymous]
-        public override async Task<string> CompleteAsync(HttpContext context)
+        public async override Task<string> CompleteAsync(HttpContext context)
         {
             var request = await GetPostAsync<GetFieldsRequest>(context).ConfigureAwait(false);
 

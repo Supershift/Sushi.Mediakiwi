@@ -125,7 +125,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
         /// <param name="isEditMode">if set to <c>true</c> [is edit mode].</param>
         public void SetCandidate(Field field, bool isEditMode)
         {
-            if (Property != null && Property.PropertyType == typeof(Data.CustomData))
+            if (Property != null && Property.PropertyType == typeof(CustomData))
                 SetContentContainer(field);
 
             string candidate = null;
@@ -140,7 +140,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                 }
                 else
                 {
-                    if (Property.PropertyType == typeof(Data.CustomData))
+                    if (Property.PropertyType == typeof(CustomData))
                     {
                         candidate = m_ContentContainer[field.Property].Value;
                     }
@@ -175,10 +175,10 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
 
             if (!IsBluePrint)
             {
-                if (Property.PropertyType == typeof(Data.CustomData))
+                if (Property.PropertyType == typeof(CustomData))
                 {
-                    m_ListItemCollection = new Sushi.Mediakiwi.UI.ListItemCollection();
-                    foreach (Sushi.Mediakiwi.Data.PropertyOption option in field.PropertyInfo.Options)
+                    m_ListItemCollection = new ListItemCollection();
+                    foreach (PropertyOption option in field.PropertyInfo.Options)
                     {
                         m_ListItemCollection.Add(new ListItem(option.Name, option.Value));
                     }
@@ -191,10 +191,10 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
 
             if (!IsBluePrint && Property != null && Property.CanWrite)
             {
-                if (Property.PropertyType == typeof(Data.CustomData))
+                if (Property.PropertyType == typeof(CustomData))
                     ApplyContentContainer(field, candidate);
                 else if (Property.PropertyType == typeof(int))
-                    Property.SetValue(this.SenderInstance, Data.Utility.ConvertToInt(candidate), null);
+                    Property.SetValue(this.SenderInstance, Utility.ConvertToInt(candidate), null);
                 else if (Property.PropertyType == typeof(short))
                     Property.SetValue(this.SenderInstance, short.Parse(candidate), null);
                 else if (Property.PropertyType == typeof(int?))
@@ -202,7 +202,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                     if (string.IsNullOrEmpty(candidate) || candidate == "0")
                         Property.SetValue(SenderInstance, null, null);
                     else
-                        Property.SetValue(SenderInstance, Data.Utility.ConvertToInt(candidate), null);
+                        Property.SetValue(SenderInstance, Utility.ConvertToInt(candidate), null);
                 }
                 else if (Property.PropertyType == typeof(bool) || Property.PropertyType == typeof(bool?))
                 {

@@ -122,7 +122,7 @@ namespace Sushi.Mediakiwi.Data.Caching
             return result;
         }
 
-        public override async Task<SqlStatementResult<TResult>> ExecuteSqlStatementAsync<TResult>(SqlStatement<T> statement, CancellationToken cancellationToken)
+        public async override Task<SqlStatementResult<TResult>> ExecuteSqlStatementAsync<TResult>(SqlStatement<T> statement, CancellationToken cancellationToken)
         {
             SqlStatementResult<TResult> result = null;
 

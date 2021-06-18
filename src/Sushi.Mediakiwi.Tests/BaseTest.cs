@@ -1,10 +1,10 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Sushi.Mediakiwi.Data.Caching;
+using Sushi.Mediakiwi.Data.Configuration;
 using Sushi.MicroORM;
 using System;
 using System.Collections.Concurrent;
 using System.Linq;
-using Sushi.Mediakiwi.Data.Configuration;
-using Sushi.Mediakiwi.Data.Caching;
 
 namespace Sushi.Mediakiwi.Tests
 {

@@ -1,10 +1,10 @@
-﻿using System;
-using System.Linq;
+﻿using Sushi.Mediakiwi.Data;
+using Sushi.Mediakiwi.Framework;
+using Sushi.Mediakiwi.UI;
+using System;
 using System.Collections.Generic;
 using System.Data;
-using Sushi.Mediakiwi.Framework;
-using Sushi.Mediakiwi.Data;
-using Sushi.Mediakiwi.UI;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Sushi.Mediakiwi.AppCentre.Data
@@ -65,7 +65,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data
                 index++;
                 var split = item.TextID.Split('_');
                 var menuItem = (from mi in existingMenuItems where mi.Tag == item.TextID select mi).FirstOrDefault();
-                if (menuItem == null) menuItem = new Sushi.Mediakiwi.Data.MenuItem();
+                if (menuItem == null) menuItem = new MenuItem();
                 menuItem.MenuID = Implement.ID;
                 menuItem.ItemID = Convert.ToInt32(split[1]);
                 menuItem.TypeID = Convert.ToInt32(split[0].Replace("T", string.Empty));
@@ -81,13 +81,13 @@ namespace Sushi.Mediakiwi.AppCentre.Data
                 await item.DeleteAsync();
         }
 
-        Sushi.Mediakiwi.Data.IMenu Implement { get; set; }
-        Sushi.Mediakiwi.Data.IMenuItem[] Items { get; set; }
+        IMenu Implement { get; set; }
+        IMenuItem[] Items { get; set; }
 
         async Task MenuList_ListLoad(ComponentListEventArgs e)
         {
             Implement = await Menu.SelectOneAsync(e.SelectedKey);
-            if (Implement == null) Implement = new Sushi.Mediakiwi.Data.Menu();
+            if (Implement == null) Implement = new Menu();
 
             this.Name = Implement.Name;
             this.RoleID = Implement.RoleID;
@@ -142,47 +142,47 @@ namespace Sushi.Mediakiwi.AppCentre.Data
             wim.ListDataColumns.Add(new ListDataColumn("", "IsActive") { ColumnWidth = 30  });
 
             //if (wim.Grid.IsDataBinding)
-            wim.ListDataAdd(await Sushi.Mediakiwi.Data.Menu.SelectAllAsync());
+            wim.ListDataAdd(await Menu.SelectAllAsync());
         }
 
-        [Sushi.Mediakiwi.Framework.ContentListItem.TextField("Menu", 50, true, Expression = Sushi.Mediakiwi.Framework.OutputExpression.Alternating)]
+        [Framework.ContentListItem.TextField("Menu", 50, true, Expression = OutputExpression.Alternating)]
         public string Name { get; set; }
 
-        [Sushi.Mediakiwi.Framework.ContentListItem.Choice_Checkbox("Active", Expression = Sushi.Mediakiwi.Framework.OutputExpression.Alternating)]
+        [Framework.ContentListItem.Choice_Checkbox("Active", Expression = OutputExpression.Alternating)]
         public bool Active { get; set; }
 
-        [Sushi.Mediakiwi.Framework.ContentListItem.Choice_Dropdown("Role", "AvailableRoles", false, false, Expression = Sushi.Mediakiwi.Framework.OutputExpression.Alternating)]
+        [Framework.ContentListItem.Choice_Dropdown("Role", "AvailableRoles", false, false, Expression = OutputExpression.Alternating)]
         public int? RoleID { get; set; }
 
-        [Sushi.Mediakiwi.Framework.ContentListItem.Choice_Dropdown("Site", "AvailableSites", false, false, Expression = Sushi.Mediakiwi.Framework.OutputExpression.Alternating)]
+        [Framework.ContentListItem.Choice_Dropdown("Site", "AvailableSites", false, false, Expression = OutputExpression.Alternating)]
         public int? SiteID { get; set; }
 
-        [Sushi.Mediakiwi.Framework.ContentListItem.SubListSelect("Home", "1a1fe050-219c-4f63-a697-7e2e8e790521", true, "", CanContainOneItem = true)]
-        public Sushi.Mediakiwi.Data.SubList MenuItem0 { get; set; }
+        [Framework.ContentListItem.SubListSelect("Home", "1a1fe050-219c-4f63-a697-7e2e8e790521", true, "", CanContainOneItem = true)]
+        public SubList MenuItem0 { get; set; }
 
-        [Sushi.Mediakiwi.Framework.ContentListItem.SubListSelect("Position #1", "1a1fe050-219c-4f63-a697-7e2e8e790521", true, "")]
-        public Sushi.Mediakiwi.Data.SubList MenuItem1 { get; set; }
+        [Framework.ContentListItem.SubListSelect("Position #1", "1a1fe050-219c-4f63-a697-7e2e8e790521", true, "")]
+        public SubList MenuItem1 { get; set; }
 
-        [Sushi.Mediakiwi.Framework.ContentListItem.SubListSelect("Position #2", "1a1fe050-219c-4f63-a697-7e2e8e790521", false, "")]
-        public Sushi.Mediakiwi.Data.SubList MenuItem2 { get; set; }
+        [Framework.ContentListItem.SubListSelect("Position #2", "1a1fe050-219c-4f63-a697-7e2e8e790521", false, "")]
+        public SubList MenuItem2 { get; set; }
 
-        [Sushi.Mediakiwi.Framework.ContentListItem.SubListSelect("Position #3", "1a1fe050-219c-4f63-a697-7e2e8e790521", false, "")]
-        public Sushi.Mediakiwi.Data.SubList MenuItem3 { get; set; }
+        [Framework.ContentListItem.SubListSelect("Position #3", "1a1fe050-219c-4f63-a697-7e2e8e790521", false, "")]
+        public SubList MenuItem3 { get; set; }
 
-        [Sushi.Mediakiwi.Framework.ContentListItem.SubListSelect("Position #4", "1a1fe050-219c-4f63-a697-7e2e8e790521", false, "")]
-        public Sushi.Mediakiwi.Data.SubList MenuItem4 { get; set; }
+        [Framework.ContentListItem.SubListSelect("Position #4", "1a1fe050-219c-4f63-a697-7e2e8e790521", false, "")]
+        public SubList MenuItem4 { get; set; }
 
-        [Sushi.Mediakiwi.Framework.ContentListItem.SubListSelect("Position #5", "1a1fe050-219c-4f63-a697-7e2e8e790521", false, "")]
-        public Sushi.Mediakiwi.Data.SubList MenuItem5 { get; set; }
+        [Framework.ContentListItem.SubListSelect("Position #5", "1a1fe050-219c-4f63-a697-7e2e8e790521", false, "")]
+        public SubList MenuItem5 { get; set; }
 
-        [Sushi.Mediakiwi.Framework.ContentListItem.SubListSelect("Position #6", "1a1fe050-219c-4f63-a697-7e2e8e790521", false, "")]
-        public Sushi.Mediakiwi.Data.SubList MenuItem6 { get; set; }
+        [Framework.ContentListItem.SubListSelect("Position #6", "1a1fe050-219c-4f63-a697-7e2e8e790521", false, "")]
+        public SubList MenuItem6 { get; set; }
 
-        [Sushi.Mediakiwi.Framework.ContentListItem.SubListSelect("Position #7", "1a1fe050-219c-4f63-a697-7e2e8e790521", false, "")]
-        public Sushi.Mediakiwi.Data.SubList MenuItem7 { get; set; }
+        [Framework.ContentListItem.SubListSelect("Position #7", "1a1fe050-219c-4f63-a697-7e2e8e790521", false, "")]
+        public SubList MenuItem7 { get; set; }
 
-        [Sushi.Mediakiwi.Framework.ContentListItem.SubListSelect("Position #8", "1a1fe050-219c-4f63-a697-7e2e8e790521", false, "")]
-        public Sushi.Mediakiwi.Data.SubList MenuItem8 { get; set; }
+        [Framework.ContentListItem.SubListSelect("Position #8", "1a1fe050-219c-4f63-a697-7e2e8e790521", false, "")]
+        public SubList MenuItem8 { get; set; }
 
 
         ListItemCollection _AvailableRoles;
@@ -199,7 +199,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data
                     //Page.Trace.Write("AvailableRoles get{}", string.Format("{0}-{1}", SearchRole, SearchRole2));
                     _AvailableRoles = new ListItemCollection();
                     _AvailableRoles.Add(new ListItem("Select a role", ""));
-                    foreach (Sushi.Mediakiwi.Data.ApplicationRole role in Sushi.Mediakiwi.Data.ApplicationRole.SelectAll())
+                    foreach (ApplicationRole role in ApplicationRole.SelectAll())
                     {
                         _AvailableRoles.Add(new ListItem(role.Name, role.ID.ToString()));
                     }
@@ -222,7 +222,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data
                     //Page.Trace.Write("AvailableRoles get{}", string.Format("{0}-{1}", SearchRole, SearchRole2));
                     _AvailableSites = new ListItemCollection();
                     _AvailableSites.Add(new ListItem("Select a site", ""));
-                    foreach (Sushi.Mediakiwi.Data.Site site in Sushi.Mediakiwi.Data.Site.SelectAll())
+                    foreach (Site site in Site.SelectAll())
                     {
                         _AvailableSites.Add(new ListItem(site.Name, site.ID.ToString()));
                     }

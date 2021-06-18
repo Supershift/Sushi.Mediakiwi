@@ -1,10 +1,10 @@
-﻿using System;
+﻿using Sushi.Mediakiwi.Beta.GeneratedCms.Source;
+using Sushi.Mediakiwi.Data;
+using Sushi.Mediakiwi.Interfaces;
+using Sushi.Mediakiwi.UI;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using Sushi.Mediakiwi.Data;
-using Sushi.Mediakiwi.Beta.GeneratedCms.Source;
-using Sushi.Mediakiwi.UI;
-using Sushi.Mediakiwi.Interfaces;
 
 namespace Sushi.Mediakiwi.Framework.Presentation
 {
@@ -46,7 +46,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation
 
         Dictionary<CallbackTarget, List<ICallback>> m_Callbacks;
         Dictionary<GlobalPlaceholder, string> m_Placeholders;
-        Sushi.Mediakiwi.Beta.GeneratedCms.Console m_container;
+        Beta.GeneratedCms.Console m_container;
 
         bool _IsLocalTest = false;// CommonConfiguration.IS_LOCAL_TEST;
 
@@ -134,7 +134,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation
         /// <param name="container">The container.</param>
         /// <param name="builder">The builder.</param>
         /// <returns></returns>
-        public string GetTemplateWrapper(Sushi.Mediakiwi.Beta.GeneratedCms.Console container, Dictionary<GlobalPlaceholder, string> placeholders, Dictionary<CallbackTarget, List<ICallback>> callbacks, Sushi.Mediakiwi.Framework.WimControlBuilder builder)
+        public string GetTemplateWrapper(Beta.GeneratedCms.Console container, Dictionary<GlobalPlaceholder, string> placeholders, Dictionary<CallbackTarget, List<ICallback>> callbacks, WimControlBuilder builder)
         {
             m_container = container;
             m_Placeholders = placeholders;
@@ -348,7 +348,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation
 
                     #region Breadcrumbs
                     string bread = null;
-                    string urlAddition = Sushi.Mediakiwi.Framework.Presentation.Logic.Navigation.GetQueryStringRecording(container);
+                    string urlAddition = Logic.Navigation.GetQueryStringRecording(container);
 
                     bool hideBreadCrumb = CommonConfiguration.HIDE_BREADCRUMB;
 
@@ -358,8 +358,8 @@ namespace Sushi.Mediakiwi.Framework.Presentation
                         if (container.Group.HasValue)
                         {
 
-                            var c = Sushi.Mediakiwi.Data.ComponentList.SelectOne(container.Group.Value);
-                            var f = Sushi.Mediakiwi.Data.Folder.SelectOne(c.FolderID.GetValueOrDefault(0));
+                            var c = ComponentList.SelectOne(container.Group.Value);
+                            var f = Folder.SelectOne(c.FolderID.GetValueOrDefault(0));
 
                             bread = string.Format(@"
     <div class=""trail"">
@@ -415,11 +415,11 @@ namespace Sushi.Mediakiwi.Framework.Presentation
                                 , urlAddition //5
                                 );
                         }
-                        else if (container.CurrentList.Type == Data.ComponentListType.PageProperties)
+                        else if (container.CurrentList.Type == ComponentListType.PageProperties)
                         {
                             if (container.Item.GetValueOrDefault(0) == 0)
                             {
-                                Sushi.Mediakiwi.Data.Folder f = Sushi.Mediakiwi.Data.Folder.SelectOne(Utility.ConvertToInt(container.Request.Query["folder"]));
+                                Folder f = Folder.SelectOne(Utility.ConvertToInt(container.Request.Query["folder"]));
 
                                 var back = string.Concat("?folder=", f.ID);
 
@@ -449,7 +449,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation
                             }
                             else
                             {
-                                Sushi.Mediakiwi.Data.Page p = Sushi.Mediakiwi.Data.Page.SelectOne(container.Item.Value);
+                                Page p = Page.SelectOne(container.Item.Value);
 
                                 var back = string.Concat("?folder=", p.FolderID);
 
@@ -485,7 +485,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation
                         else if (container.Item.HasValue)
                         {
                             var back = string.Concat("?list=", container.CurrentList.ID);
-                            if (container.CurrentList.Type == Data.ComponentListType.ComponentListProperties)
+                            if (container.CurrentList.Type == ComponentListType.ComponentListProperties)
                             {
                                 if (container.Item.GetValueOrDefault(0) != 0)
                                     back = string.Concat("?list=", container.CurrentList.ID);
@@ -517,7 +517,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation
                         }
                         else
                         {
-                            if (container.CurrentList.Type == Data.ComponentListType.Browsing)
+                            if (container.CurrentList.Type == ComponentListType.Browsing)
                             {
                                 pageTitle = null;
                                 if (container.CurrentListInstance.wim.CurrentFolder.Name == "/")
@@ -603,8 +603,8 @@ namespace Sushi.Mediakiwi.Framework.Presentation
                         AddPageComponentControl addpageComponent = new AddPageComponentControl(container.CurrentPage, container);
 
                         var isSecundary = false;
-                        var components =  Sushi.Mediakiwi.Data.ComponentVersion.SelectAll(container.CurrentPage.ID);
-                        var visibleComponents = Sushi.Mediakiwi.Data.Component.VerifyVisualisation(container.CurrentPage.Template, components, target, ref isSecundary, true);
+                        var components = ComponentVersion.SelectAll(container.CurrentPage.ID);
+                        var visibleComponents = Data.Component.VerifyVisualisation(container.CurrentPage.Template, components, target, ref isSecundary, true);
 
                         addpageComponent.StartOpen = visibleComponents.Length == 0; //handig voor dev, hoef je dat ding niet steeds te openen
 
@@ -615,7 +615,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation
                             target = null;
                         }
 
-                        Sushi.Mediakiwi.Data.IAvailableTemplate[] availableComponentTemplates = null;
+                        IAvailableTemplate[] availableComponentTemplates = null;
 
                         //if (container.CurrentPage.Template.IsSourceBased)
                         //{
@@ -623,10 +623,10 @@ namespace Sushi.Mediakiwi.Framework.Presentation
                         //}
                         //else
                         //{
-                            availableComponentTemplates = Sushi.Mediakiwi.Data.AvailableTemplate.SelectAll(container.CurrentPage.TemplateID);
+                            availableComponentTemplates = AvailableTemplate.SelectAll(container.CurrentPage.TemplateID);
                         //}
 
-                        var visibleAvailableComponents = Sushi.Mediakiwi.Data.Component.VerifyVisualisation(container.CurrentPage.Template, availableComponentTemplates, target, ref isSecundary, true);
+                        var visibleAvailableComponents = Data.Component.VerifyVisualisation(container.CurrentPage.Template, availableComponentTemplates, target, ref isSecundary, true);
 
 
                         int selectableElements = 0;
@@ -736,8 +736,8 @@ namespace Sushi.Mediakiwi.Framework.Presentation
 
                     if (!string.IsNullOrEmpty(builder.Formdata))
                     {
-                        bool isListItem = (builder.Canvas.Type == Sushi.Mediakiwi.Framework.CanvasType.ListItem
-                            || builder.Canvas.Type == Sushi.Mediakiwi.Framework.CanvasType.ListItemInLayer
+                        bool isListItem = (builder.Canvas.Type == CanvasType.ListItem
+                            || builder.Canvas.Type == CanvasType.ListItemInLayer
                             );
 
                         section += string.Concat(
@@ -1053,14 +1053,14 @@ namespace Sushi.Mediakiwi.Framework.Presentation
             if (m_container.CurrentEnvironment["HIDE_CHANNEL", true, "0", "Hide the channel selection from the top navigation"] == "1")
                 return string.Empty;
 
-            Data.Site[] allAccessible = Data.Site.SelectAllAccessible(m_container.CurrentApplicationUser, Sushi.Mediakiwi.Data.AccessFilter.RoleAndUser);
+            Site[] allAccessible = Site.SelectAllAccessible(m_container.CurrentApplicationUser, AccessFilter.RoleAndUser);
 
             if (allAccessible.Count() < 2)
                 return string.Empty;
 
             string channels = "";
 
-            foreach (Data.Site site in allAccessible)
+            foreach (Site site in allAccessible)
             {
                 if (!site.HasLists && !site.HasPages && !site.IsActive)
                     continue;
@@ -1145,14 +1145,14 @@ namespace Sushi.Mediakiwi.Framework.Presentation
             {
                 if (container.CurrentVisitor.ApplicationUserID.HasValue)
                 {
-                    username2 = Data.ApplicationUser.SelectOne(container.CurrentVisitor.ApplicationUserID.Value).Email;
+                    username2 = ApplicationUser.SelectOne(container.CurrentVisitor.ApplicationUserID.Value).Email;
                 }
             }
 
             #region ForgotMyPassword
             if (!string.IsNullOrEmpty(emailaddress))
             {
-                Data.IApplicationUser appUser = Data.ApplicationUser.Select(emailaddress);
+                IApplicationUser appUser = ApplicationUser.Select(emailaddress);
 
                 if (appUser?.IsNewInstance == false)
                 {
@@ -1180,15 +1180,15 @@ namespace Sushi.Mediakiwi.Framework.Presentation
                 username2 = container.GetSafeGet("u");
                 Guid resetKey = Utility.ConvertToGuid(container.GetSafeGet("reset"));
 
-                Sushi.Mediakiwi.Data.IApplicationUser user = null;
+                IApplicationUser user = null;
                 if (string.IsNullOrEmpty(username2))
                 {
                     Guid userKey = Utility.ConvertToGuid(container.GetSafeGet("ug"));
-                    user = Sushi.Mediakiwi.Data.ApplicationUser.SelectOne(userKey);
+                    user = ApplicationUser.SelectOne(userKey);
                     username2 = user.Email;
                 }
                 else
-                    user = Sushi.Mediakiwi.Data.ApplicationUser.SelectOneByEmail(username2);
+                    user = ApplicationUser.SelectOneByEmail(username2);
 
                 if (user.ResetKey.Equals(resetKey))
                 {
@@ -1245,7 +1245,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation
             }
 
             // select by email only to verify the user
-            container.CurrentApplicationUser = Data.ApplicationUser.SelectOneByEmail(username);
+            container.CurrentApplicationUser = ApplicationUser.SelectOneByEmail(username);
 
             if (m_Callbacks != null && m_Callbacks.ContainsKey(CallbackTarget.POST_SIGNIN))
             {
@@ -1415,8 +1415,8 @@ namespace Sushi.Mediakiwi.Framework.Presentation
         }
 
 
-        Sushi.Mediakiwi.Data.CustomData _UserData;
-        Sushi.Mediakiwi.Data.CustomData UserData
+        CustomData _UserData;
+        CustomData UserData
         {
             get
             {
@@ -1424,11 +1424,11 @@ namespace Sushi.Mediakiwi.Framework.Presentation
                 {
                     try
                     {
-                        _UserData = Sushi.Mediakiwi.Data.ComponentList.SelectOne("Sushi.Mediakiwi.AppCentre.Data.Implementation.User").Settings;
+                        _UserData = ComponentList.SelectOne("Sushi.Mediakiwi.AppCentre.Data.Implementation.User").Settings;
                     }
                     catch (Exception)
                     {
-                        _UserData = new Data.CustomData();
+                        _UserData = new CustomData();
                     }
                 }
                 return _UserData;

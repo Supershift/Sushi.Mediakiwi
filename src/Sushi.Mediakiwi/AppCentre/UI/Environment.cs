@@ -1,5 +1,5 @@
-using Sushi.Mediakiwi.Framework;
 using Sushi.Mediakiwi.Data;
+using Sushi.Mediakiwi.Framework;
 using System.Threading.Tasks;
 
 namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
@@ -30,7 +30,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// Handles the ListSave event of the Environment control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="Sushi.Mediakiwi.Framework.ComponentListEventArgs"/> instance containing the event data.</param>
+        /// <param name="e">The <see cref="ComponentListEventArgs"/> instance containing the event data.</param>
         async Task Environment_ListSave(ComponentListEventArgs e)
         {
             if (!Implement.Password.Equals(m_PasswordAtStart))
@@ -47,10 +47,10 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// Handles the ListLoad event of the Environment control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="Sushi.Mediakiwi.Framework.ComponentListEventArgs"/> instance containing the event data.</param>
+        /// <param name="e">The <see cref="ComponentListEventArgs"/> instance containing the event data.</param>
         Task Environment_ListLoad(ComponentListEventArgs e)
         {
-            this.Implement = Sushi.Mediakiwi.Data.Environment.Current;
+            this.Implement = Mediakiwi.Data.Environment.Current;
             m_PasswordAtStart = this.Implement.Password;
             this.FormMaps.Add(new Forms.EnvironmentForm(this.Implement));
             return Task.CompletedTask;
@@ -60,6 +60,6 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// Gets or sets the implement.
         /// </summary>
         /// <value>The implement.</value>
-        public Sushi.Mediakiwi.Data.IEnvironment Implement { get; set; }
+        public IEnvironment Implement { get; set; }
     }
 }

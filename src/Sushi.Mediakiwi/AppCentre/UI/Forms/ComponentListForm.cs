@@ -15,7 +15,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation.Forms
             Map(x => x.SingleItemName).TextField("Form name", 30, true).Expression(OutputExpression.Alternating);
             Map(x => x.Description).TextArea("Description", 250);
 
-            Map<ComponentListForm>(x => x.Section0, this).Section("Settings");
+            Map(x => x.Section0, this).Section("Settings");
 
             Map(x => x.SiteID).Dropdown("Channel", "Sites", true, true).Expression(OutputExpression.Alternating);
 
@@ -29,19 +29,19 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation.Forms
             Map(x => x.IsInherited).Checkbox("Is inherited").Expression(OutputExpression.Alternating);
             Map(x => x.IsVisible).Checkbox("Is visible").Expression(OutputExpression.Alternating);
 
-           
-            Map<ComponentListForm>(x => x.Section1, this).Section("Search grid");
+
+            Map(x => x.Section1, this).Section("Search grid");
             Map(x => x.Option_Search_MaxResult).TextField("Maximum pages", 3, true).Expression(OutputExpression.Alternating);
             Map(x => x.Option_Search_MaxResultPerPage).TextField("Result per page", 3, true).Expression(OutputExpression.Alternating);
 
-            Map<ComponentListForm>(x => x.Section2, this).Section("Labels");
+            Map(x => x.Section2, this).Section("Labels");
 
             Map(x => x.Label_NewRecord).TextField("Label 'new'", 50).Expression(OutputExpression.Alternating);
             Map(x => x.Label_Save).TextField("Label 'save'", 50).Expression(OutputExpression.Alternating);
             Map(x => x.Label_Search).TextField("Label 'search'", 50).Expression(OutputExpression.Alternating);
             Map(x => x.Label_Saved).TextField("Label 'saved'", 50).Expression(OutputExpression.Alternating);
 
-            Map<ComponentListForm>(x => x.Section3, this).Section("Options");
+            Map(x => x.Section3, this).Section("Options");
 
             Map(x => x.Option_CanCreate).Checkbox("Create").Expression(OutputExpression.Alternating);
             Map(x => x.Option_CanSave).Checkbox("Save").Expression(OutputExpression.Alternating);
@@ -85,7 +85,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation.Forms
 
                 m_Sites.Add(new ListItem("", ""));
 
-                foreach (Sushi.Mediakiwi.Data.Site site in Sushi.Mediakiwi.Data.Site.SelectAll(false))
+                foreach (Mediakiwi.Data.Site site in Mediakiwi.Data.Site.SelectAll(false))
                 {
                     li = new ListItem(site.Name, site.ID.ToString());
                     m_Sites.Add(li);
@@ -159,7 +159,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation.Forms
 
                 string assemblyLoadName = string.Concat(directory, Instance.AssemblyName);
 
-                System.Reflection.Assembly assem = System.Reflection.Assembly.LoadFrom(assemblyLoadName);
+                Assembly assem = Assembly.LoadFrom(assemblyLoadName);
 
                 SortedList<string, string> list = new SortedList<string, string>();
 
@@ -171,10 +171,10 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation.Forms
                         Type innerType = type.BaseType;
                         while (innerType != null)
                         {
-                            if (innerType == typeof(Sushi.Mediakiwi.Framework.ComponentListTemplate)) break;
+                            if (innerType == typeof(ComponentListTemplate)) break;
                             innerType = innerType.BaseType;
                         }
-                        if (innerType != typeof(Sushi.Mediakiwi.Framework.ComponentListTemplate)) continue;
+                        if (innerType != typeof(ComponentListTemplate)) continue;
 
                         //  [20090410(MM): Exception introduced to avoid Generic selection. This can(should) be stripped in later versions]
                         if (type.FullName == "Wim.Templates.Templates.UI.GenericList"
@@ -194,7 +194,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation.Forms
                     }
                     return col;
                 }
-                catch (System.Reflection.ReflectionTypeLoadException ex)
+                catch (ReflectionTypeLoadException ex)
                 {
                     string messages = "";
                     foreach (Exception ex2 in ex.LoaderExceptions)
