@@ -16,9 +16,9 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         {
             wim.CanAddNewItem = false;
             
-            this.ListLoad += ComponentListSettings_ListLoad;
-            this.ListSave += ComponentListSettings_ListSave;
-            this.ListPreRender += ComponentListSettings_ListPreRender;
+            ListLoad += ComponentListSettings_ListLoad;
+            ListSave += ComponentListSettings_ListSave;
+            ListPreRender += ComponentListSettings_ListPreRender;
         }
 
         Task ComponentListSettings_ListPreRender(ComponentListEventArgs e)

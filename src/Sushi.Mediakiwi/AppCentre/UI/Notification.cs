@@ -24,9 +24,9 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             this.FilterSelection = 1;
             //ShowInFullWidthMode = true;
 
-            this.ListSearch += Notification_ListSearch;
-            this.ListLoad += Notification_ListLoad;
-            this.ListAction += Notification_ListAction;
+            ListSearch += Notification_ListSearch;
+            ListLoad += Notification_ListLoad;
+            ListAction += Notification_ListAction;
         }
 
         async Task Notification_ListAction(ComponentActionEventArgs e)

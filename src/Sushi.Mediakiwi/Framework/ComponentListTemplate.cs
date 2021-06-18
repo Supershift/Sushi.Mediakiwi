@@ -25,7 +25,7 @@ namespace Sushi.Mediakiwi.Framework
         public int Count
         {
             get {
-                return this.List.Count;
+                return List.Count;
             }
         }
 

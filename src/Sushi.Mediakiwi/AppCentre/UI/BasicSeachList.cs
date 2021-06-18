@@ -8,7 +8,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data
     {
         public BasicSearchList()
         {
-            this.ListSearch += BasicSeachList_ListSearch;
+            ListSearch += BasicSeachList_ListSearch;
         }
 
 
@@ -82,7 +82,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data
             wim.ListDataColumns.Add(new ListDataColumn("Description", "Description"));
             wim.ListDataColumns.Add(new ListDataColumn("Type", "Type") { ColumnWidth = 70 } );
 
-            if (string.IsNullOrEmpty(this.FilterText) && this.FilterType.GetValueOrDefault(0) == 0)
+            if (string.IsNullOrEmpty(FilterText) && FilterType.GetValueOrDefault(0) == 0)
                 return;
 
             wim.ListDataAdd(await Mediakiwi.Data.SearchView.SelectAllAsync(FilterSite, FilterType, FilterText));

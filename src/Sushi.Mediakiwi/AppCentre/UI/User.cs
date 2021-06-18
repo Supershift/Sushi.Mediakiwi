@@ -15,12 +15,12 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         public User()
         {
             //wim.OpenInEditMode = true;
-            this.ListAction += User_ListAction;
-            this.ListLoad += User_ListLoad;
-            this.ListSave += User_ListSave;
-            this.ListSearch += User_ListSearch;
-            this.ListPreRender += User_ListPreRender;
-            this.ListDelete += User_ListDelete;
+            ListAction += User_ListAction;
+            ListLoad += User_ListLoad;
+            ListSave += User_ListSave;
+            ListSearch += User_ListSearch;
+            ListPreRender += User_ListPreRender;
+            ListDelete += User_ListDelete;
         }
 
         async Task User_ListAction(ComponentActionEventArgs e)
@@ -79,7 +79,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             Map(x => x.m_SearchUserName, this).TextField("Username", 50).Expression(OutputExpression.Alternating);
             Map(x => x.m_SearchRole, this).Dropdown("Role2", nameof(AvailableRoles)).Expression(OutputExpression.Alternating);
 
-            this.FormMaps.Add(this);
+            FormMaps.Add(this);
 
             wim.ListDataColumns.Add(new ListDataColumn("ID", nameof(IApplicationUser.ID), ListDataColumnType.UniqueIdentifier));
             wim.ListDataColumns.Add(new ListDataColumn("Name", nameof(IApplicationUser.Displayname), ListDataColumnType.HighlightPresent));
@@ -139,7 +139,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             if (m_Implement.GUID == Guid.Empty)
                 m_Implement.GUID = Guid.NewGuid();
 
-            m_Implement.RoleID = this.RoleID;
+            m_Implement.RoleID = RoleID;
             m_Implement.IsActive = IsActive;
 
             //Parser.Save(m_Implement);

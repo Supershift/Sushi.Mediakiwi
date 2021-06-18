@@ -21,18 +21,18 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             wim.OpenInEditMode = true;
             IS_HEADLESS = true;
 
-            this.ListSave += ComponentTemplate_ListSave;
-            this.ListPreRender += ComponentTemplate_ListPreRender;
-            this.ListDelete += ComponentTemplate_ListDelete;
-            this.ListLoad += ComponentTemplate_ListLoad;
-            this.ListSearch += ComponentTemplate_ListSearch;
-            this.ListAction += ComponentTemplate_ListAction;
+            ListSave += ComponentTemplate_ListSave;
+            ListPreRender += ComponentTemplate_ListPreRender;
+            ListDelete += ComponentTemplate_ListDelete;
+            ListLoad += ComponentTemplate_ListLoad;
+            ListSearch += ComponentTemplate_ListSearch;
+            ListAction += ComponentTemplate_ListAction;
         }
 
         Task ComponentTemplate_ListPreRender(ComponentListEventArgs e)
         {
             if (IsPostBack)
-                SetSourceVisibility(this.Implement.HasEditableSource);
+                SetSourceVisibility(Implement.HasEditableSource);
 
             return Task.CompletedTask;
         }
@@ -159,7 +159,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                 Implement.AjaxType = 0;
                 Implement.Location = "#";
             }
-            this.Implement.HasEditableSource = (Implement.Location == "#");
+            Implement.HasEditableSource = (Implement.Location == "#");
             SetSourceVisibility(Implement.HasEditableSource);
             if (e.SelectedKey > 0 && Implement.HasEditableSource)
             {
@@ -168,7 +168,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
 
             Map(x => x.Name, Implement).TextField("Name", 50, true).Expression(OutputExpression.Alternating);
             Map(x => x.SourceTag, Implement).TextField("Source tag", 25).Expression(OutputExpression.Alternating);
-            this.FormMaps.Add(this);
+            FormMaps.Add(this);
 
             return Task.CompletedTask;
         }
@@ -192,7 +192,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// <param name="e">The <see cref="Wim.Framework.ComponentListEventArgs"/> instance containing the event data.</param>
         Task ComponentTemplate_ListDelete(ComponentListEventArgs e)
         {
-            this.Implement.Delete();
+            Implement.Delete();
             return Task.CompletedTask;
         }
 
@@ -203,7 +203,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// <param name="e">The <see cref="Wim.Framework.ComponentListEventArgs"/> instance containing the event data.</param>
         Task ComponentTemplate_ListSave(ComponentListEventArgs e)
         {
-            this.Implement.Save();
+            Implement.Save();
             return Task.CompletedTask;
         }
 

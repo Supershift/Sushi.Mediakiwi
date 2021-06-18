@@ -19,17 +19,17 @@ namespace Sushi.Mediakiwi.AppCentre.Data
         /// </summary>
         public MenuList()
         {
-            this.ListSave += MenuList_ListSave;
-            this.ListDelete += MenuList_ListDelete;
-            this.ListLoad += MenuList_ListLoad;
-            this.ListSearch += MenuList_ListSearch;
-            this.ListDelete += MenuList_ListDelete;
+            ListSave += MenuList_ListSave;
+            ListDelete += MenuList_ListDelete;
+            ListLoad += MenuList_ListLoad;
+            ListSearch += MenuList_ListSearch;
+            ListDelete += MenuList_ListDelete;
         }
 
         async Task MenuList_ListSave(ComponentListEventArgs e)
         {
             Implement.Name = this.Name;
-            Implement.RoleID = this.RoleID;
+            Implement.RoleID = RoleID;
             Implement.SiteID = this.SiteID;
             Implement.IsActive = this.Active;
             await Implement.SaveAsync();
@@ -90,7 +90,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data
             if (Implement == null) Implement = new Menu();
 
             this.Name = Implement.Name;
-            this.RoleID = Implement.RoleID;
+            RoleID = Implement.RoleID;
             this.SiteID = Implement.SiteID;
             this.Active = Implement.IsActive;
 

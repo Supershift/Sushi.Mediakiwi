@@ -1500,7 +1500,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation
 
         string GetLoginScreen(Beta.GeneratedCms.Console container, string username2, bool hasError)
         {
-            string intro = this.UserData["Page_Login"].Value;
+            string intro = UserData["Page_Login"].Value;
             if (!string.IsNullOrEmpty(intro)) intro = string.Format("<p>{0}</p>", intro);
 
             if (container.Request.QueryString != null &&

@@ -66,10 +66,10 @@ namespace Sushi.Mediakiwi
     {
         public Example()
         {
-            this.ListSearch += Example_ListSearch;
-            this.ListLoad += Example_ListLoad;
-            this.ListSave += Example_ListSave;
-            this.ListDelete += Example_ListDelete;
+            ListSearch += Example_ListSearch;
+            ListLoad += Example_ListLoad;
+            ListSave += Example_ListSave;
+            ListDelete += Example_ListDelete;
         }
 
         ItemData m_instance;
@@ -82,7 +82,7 @@ namespace Sushi.Mediakiwi
             Map(x => x.Description, m_instance).RichText("Description");
             Map(x => x.IsActive, m_instance).Checkbox("Is active");
 
-            this.FormMaps.Add(this);
+            FormMaps.Add(this);
         }
 
         private async Task Example_ListSave(ComponentListEventArgs arg)

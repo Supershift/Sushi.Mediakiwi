@@ -68,11 +68,11 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         {
             wim.OpenInEditMode = true;
 
-            this.ListSearch += ComponentList_ListSearch;
-            this.ListSave += ComponentList_ListSave;
-            this.ListDelete += ComponentList_ListDelete;
-            this.ListLoad += ComponentList_ListLoad;
-            this.ListPreRender += ComponentList_ListPreRender;
+            ListSearch += ComponentList_ListSearch;
+            ListSave += ComponentList_ListSave;
+            ListDelete += ComponentList_ListDelete;
+            ListLoad += ComponentList_ListLoad;
+            ListPreRender += ComponentList_ListPreRender;
         }
 
         async Task ComponentList_ListPreRender(ComponentListEventArgs e)
@@ -142,11 +142,11 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// </value>
         public bool IsGenerics
         {
-            get { return this.Implement.ClassName == "Wim.Templates.Templates.UI.GenericsList"
-                || this.Implement.ClassName == "Wim.Templates.Templates.UI.GenericList"
-                || this.Implement.ClassName == "Wim.Templates.Templates.UI.SimpleGenericsList"
-                || this.Implement.ClassName == "Wim.Templates.UI.GenericLinqList"
-                //|| this.Implement.GetInstance(Context) is Wim.Templates.UI.iGenericLinqList
+            get { return Implement.ClassName == "Wim.Templates.Templates.UI.GenericsList"
+                || Implement.ClassName == "Wim.Templates.Templates.UI.GenericList"
+                || Implement.ClassName == "Wim.Templates.Templates.UI.SimpleGenericsList"
+                || Implement.ClassName == "Wim.Templates.UI.GenericLinqList"
+                //|| Implement.GetInstance(Context) is Wim.Templates.UI.iGenericLinqList
                 ; }
         }
 
@@ -154,10 +154,10 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         {
             get
             {
-                return this.Implement.ClassName == "Wim.Templates.Templates.UI.GenericsList"
-                    || this.Implement.ClassName == "Wim.Templates.Templates.UI.GenericList"
-                    || this.Implement.ClassName == "Wim.Templates.Templates.UI.SimpleGenericsList"
-                    || this.Implement.ClassName == "Wim.Templates.UI.GenericLinqList"
+                return Implement.ClassName == "Wim.Templates.Templates.UI.GenericsList"
+                    || Implement.ClassName == "Wim.Templates.Templates.UI.GenericList"
+                    || Implement.ClassName == "Wim.Templates.Templates.UI.SimpleGenericsList"
+                    || Implement.ClassName == "Wim.Templates.UI.GenericLinqList"
                     ;
             }
         }
@@ -166,9 +166,9 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         {
             get
             {
-                return this.Implement.ClassName == "Wim.Templates.Templates.UI.GenericsList"
-                    || this.Implement.ClassName == "Wim.Templates.Templates.UI.GenericList"
-                    || this.Implement.ClassName == "Wim.Templates.Templates.UI.SimpleGenericsList"
+                return Implement.ClassName == "Wim.Templates.Templates.UI.GenericsList"
+                    || Implement.ClassName == "Wim.Templates.Templates.UI.GenericList"
+                    || Implement.ClassName == "Wim.Templates.Templates.UI.SimpleGenericsList"
                     ;
             }
         }
@@ -269,7 +269,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             //Implement.zz_Generics2 = "Search grid settings";
             //Implement.zz_Generics3 = "Generics";
 
-            this.FormMaps.Add(new Forms.ComponentListForm(Implement));
+            FormMaps.Add(new Forms.ComponentListForm(Implement));
         }
       
         public IComponentList CreateList(Guid guid)

@@ -18,10 +18,10 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             wim.OpenInEditMode = true;
             wim.HideOpenCloseToggle = true;
 
-            this.ListSearch += Role_ListSearch;
-            this.ListLoad += Role_ListLoad;
-            this.ListSave += Role_ListSave;
-            this.ListDelete += Role_ListDelete;
+            ListSearch += Role_ListSearch;
+            ListLoad += Role_ListLoad;
+            ListSave += Role_ListSave;
+            ListDelete += Role_ListDelete;
             ListPreRender += Role_ListPreRender;
         }
 
@@ -147,7 +147,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             //    wim.AddTab(new Guid("B502AA2C-8D85-4D2C-9470-DFC8A388AC72"));
 
             //Map<Role>(x => x.AllowedSites, this).SubListSelect("Sites", typeof(Site), false);
-            //this.FormMaps.Add(this);
+            //FormMaps.Add(this);
         }
 
 

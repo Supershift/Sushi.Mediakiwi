@@ -19,9 +19,9 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             wim.HideOpenCloseToggle = true;
             wim.HideSaveButtons = true;
             
-            this.ListSearch += RoleAccessSite_ListSearch;
-            this.ListAction += RoleAccessSite_ListAction;
-            this.ListLoad += RoleAccessSite_ListLoad;
+            ListSearch += RoleAccessSite_ListSearch;
+            ListAction += RoleAccessSite_ListAction;
+            ListLoad += RoleAccessSite_ListLoad;
         }
 
 
@@ -36,15 +36,15 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         Task RoleAccessSite_ListLoad(ComponentListEventArgs e)
         {
             IApplicationRole role = ApplicationRole.SelectOne(e.SelectedGroupItemKey);
-            this.Role = role.Name;
-            this.IsAccessAllowed = role.IsAccessSite;
+            Role = role.Name;
+            IsAccessAllowed = role.IsAccessSite;
 
             IComponentList list = Mediakiwi.Data.ComponentList.SelectOne(e.SelectedGroupKey);
             IsUserSection = (list.Type == ComponentListType.Users);
             if (IsUserSection)
             {
                 var user = ApplicationUser.SelectOne(e.SelectedGroupItemKey);
-                this.User = user.Displayname;
+                User = user.Displayname;
             }
             return Task.CompletedTask;
         }
@@ -105,7 +105,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                 }
                 RoleRight.Update(dict, RoleRightType.SiteByUser, user.ID);
 
-                //user.IsGrantedSite = this.IsAccessAllowed;
+                //user.IsGrantedSite = IsAccessAllowed;
                 //user.Save();
                 //
             }
@@ -113,7 +113,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             {
                 int[] checklist = wim.Grid.GetCheckboxChecked("HasAccess");
                 IApplicationRole role = ApplicationRole.SelectOne(e.SelectedGroupItemKey);
-                role.IsAccessSite = this.IsAccessAllowed;
+                role.IsAccessSite = IsAccessAllowed;
                 role.Save();
 
                 RoleRight.Update(checklist, RoleRightType.Site, role.ID);

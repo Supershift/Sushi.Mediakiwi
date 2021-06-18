@@ -16,10 +16,10 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         {
             wim.CanAddNewItem = true;
 
-            this.ListSearch += Site_ListSearch;
-            this.ListLoad += Site_ListLoad;
-            this.ListSave += Site_ListSave;
-            //this.ListAction += new ComponentActionEventHandler(Site_ListAction);
+            ListSearch += Site_ListSearch;
+            ListLoad += Site_ListLoad;
+            ListSave += Site_ListSave;
+            //ListAction += new ComponentActionEventHandler(Site_ListAction);
         }
 
         //[Sushi.Mediakiwi.Framework.ContentListItem.Button("Disconnect inheritence")]
@@ -58,7 +58,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// <param name="e">The <see cref="ComponentListEventArgs"/> instance containing the event data.</param>
         async Task Site_ListDelete(ComponentListEventArgs e)
         {
-            await this.Implement.DeleteAsync();
+            await Implement.DeleteAsync();
         }
 
         /// <summary>
@@ -89,11 +89,11 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// <param name="e">The <see cref="ComponentListEventArgs"/> instance containing the event data.</param>
         async Task Site_ListSave(ComponentListEventArgs e)
         {
-            await this.Implement.SaveAsync();
+            await Implement.SaveAsync();
 
-            if (this.Implement.HasLists)
+            if (Implement.HasLists)
             {
-                var listsite = Mediakiwi.Data.Folder.SelectOneBySite(this.Implement.ID, FolderType.List);
+                var listsite = Mediakiwi.Data.Folder.SelectOneBySite(Implement.ID, FolderType.List);
                 if (listsite == null || listsite.ID == 0)
                 {
                     var folder = new Mediakiwi.Data.Folder();
@@ -101,13 +101,13 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                     folder.Type = FolderType.List;
                     folder.Name = Common.FolderRoot;
                     folder.CompletePath = Common.FolderRoot;
-                    folder.SiteID = this.Implement.ID;
+                    folder.SiteID = Implement.ID;
                     folder.Save();
                 }
             }
-            if (this.Implement.HasPages)
+            if (Implement.HasPages)
             {
-                var listsite = Mediakiwi.Data.Folder.SelectOneBySite(this.Implement.ID, FolderType.Page);
+                var listsite = Mediakiwi.Data.Folder.SelectOneBySite(Implement.ID, FolderType.Page);
                 if (listsite == null || listsite.ID == 0)
                 {
                     var folder = new Mediakiwi.Data.Folder();
@@ -115,14 +115,14 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                     folder.Type = FolderType.Page;
                     folder.Name = Common.FolderRoot;
                     folder.CompletePath = Common.FolderRoot;
-                    folder.SiteID = this.Implement.ID;
+                    folder.SiteID = Implement.ID;
                     folder.Save();
                 }
             }
 
             ResetDefaultFolder();
 
-            Response.Redirect(wim.GetUrl(new KeyValue() { Key = "item", Value = this.Implement.ID }));
+            Response.Redirect(wim.GetUrl(new KeyValue() { Key = "item", Value = Implement.ID }));
         }
 
         /// <summary>
@@ -178,16 +178,16 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// <param name="e">The <see cref="ComponentListEventArgs"/> instance containing the event data.</param>
         async Task Site_ListLoad(ComponentListEventArgs e)
         {
-            this.Implement = await Mediakiwi.Data.Site.SelectOneAsync(e.SelectedKey);
-            this.m_InheritenceIsSet = this.Implement.MasterID.HasValue;
+            Implement = await Mediakiwi.Data.Site.SelectOneAsync(e.SelectedKey);
+            this.m_InheritenceIsSet = Implement.MasterID.HasValue;
 
             if (!Implement.HasPages && !Implement.HasLists)
-                this.ListDelete += Site_ListDelete;
+                ListDelete += Site_ListDelete;
 
             //ResetDefaultFolder();
 
-            wim.CurrentSite = this.Implement;
-            this.FormMaps.Add(new Forms.SiteForm(this.Implement));
+            wim.CurrentSite = Implement;
+            FormMaps.Add(new Forms.SiteForm(Implement));
         }
 
         /// <summary>

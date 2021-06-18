@@ -26,10 +26,10 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
 
             this.IsVisible = true;
 
-            this.ListLoad += Folder_ListLoad;
-            this.ListSave += Folder_ListSave;
-            this.ListPreRender += Folder_ListPreRender;
-            this.ListAction += Folder_ListAction;
+            ListLoad += Folder_ListLoad;
+            ListSave += Folder_ListSave;
+            ListPreRender += Folder_ListPreRender;
+            ListAction += Folder_ListAction;
         }
 
         async Task Folder_ListAction(ComponentActionEventArgs e)
@@ -40,10 +40,10 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
 
         Task Folder_ListPreRender(ComponentListEventArgs e)
         {
-            if (this.Implement == null || this.Implement.Parent == null)
+            if (Implement == null || Implement.Parent == null)
                 return Task.CompletedTask;
 
-            if (this.Implement.Type == FolderType.List && this.Implement.ParentID.GetValueOrDefault() == this.ParentFolder)
+            if (Implement.Type == FolderType.List && Implement.ParentID.GetValueOrDefault() == this.ParentFolder)
             {
                 wim.Notification.AddError("ParentID", "Can not assigned to self!");
             }
@@ -204,15 +204,15 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                 return;
             }
 
-            this.Implement = await Mediakiwi.Data.Folder.SelectOneAsync(e.SelectedKey);
+            Implement = await Mediakiwi.Data.Folder.SelectOneAsync(e.SelectedKey);
             this.ParentFolder = 
-                this.Implement.ParentID.GetValueOrDefault();
+                Implement.ParentID.GetValueOrDefault();
             
-            this.GUID = this.Implement.GUID.ToString();
-            this.IsVisible = this.Implement.IsVisible;
+            this.GUID = Implement.GUID.ToString();
+            this.IsVisible = Implement.IsVisible;
             if (e.SelectedKey == 0) return;
 
-            wim.ListTitle = this.Implement.Name;
+            wim.ListTitle = Implement.Name;
 
             Utility.ReflectProperty(m_Implement, this);
 
@@ -272,7 +272,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             }
 
             if (m_Implement.ChildCount == 0 && !m_Implement.MasterID.HasValue)
-                this.ListDelete += Folder_ListDelete;
+                ListDelete += Folder_ListDelete;
 
             if (m_Implement.Level > 0 && e.SelectedKey > 0)
                 m_ShowRoles = true;
@@ -284,18 +284,18 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
 
             if (e.SelectedKey == 0)
             {
-                this.ImplementGallery = new Gallery();
+                ImplementGallery = new Gallery();
                 return;
             }
 
-            this.ImplementGallery = Gallery.SelectOne(e.SelectedKey);
-            this.GUID = this.ImplementGallery.GUID.ToString();
+            ImplementGallery = Gallery.SelectOne(e.SelectedKey);
+            this.GUID = ImplementGallery.GUID.ToString();
             Utility.ReflectProperty(ImplementGallery, this);
 
             this.Name = ImplementGallery.Name;
             this.IsVisible = !ImplementGallery.IsHidden;
 
-            this.ListDelete += Gallery_ListDelete;
+            ListDelete += Gallery_ListDelete;
         }
 
         bool m_ShowRoles;

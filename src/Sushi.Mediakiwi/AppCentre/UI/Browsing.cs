@@ -34,10 +34,10 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         bool m_IsGallerySet;
         bool m_IsGallery;
         /// <summary>
-        /// Gets or sets a value indicating whether this instance is gallery.
+        /// Gets or sets a value indicating whether  instance is gallery.
         /// </summary>
         /// <value>
-        /// 	<c>true</c> if this instance is gallery; otherwise, <c>false</c>.
+        /// 	<c>true</c> if  instance is gallery; otherwise, <c>false</c>.
         /// </value>
         public bool IsGallery {
             get {
@@ -51,9 +51,9 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             set { m_IsGallery = value; }
         }
         /// <summary>
-        /// Gets a value indicating whether this instance is page.
+        /// Gets a value indicating whether  instance is page.
         /// </summary>
-        /// <value><c>true</c> if this instance is page; otherwise, <c>false</c>.</value>
+        /// <value><c>true</c> if  instance is page; otherwise, <c>false</c>.</value>
         public bool IsPage
         {
             get
@@ -62,10 +62,10 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             }
         }
         /// <summary>
-        /// Gets a value indicating whether this instance is gallery or has root.
+        /// Gets a value indicating whether  instance is gallery or has root.
         /// </summary>
         /// <value>
-        /// 	<c>true</c> if this instance is gallery or has root; otherwise, <c>false</c>.
+        /// 	<c>true</c> if  instance is gallery or has root; otherwise, <c>false</c>.
         /// </value>
         public bool IsGalleryOrHasRoot
         {
@@ -85,13 +85,13 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// </summary>
         public Browsing()
         {
-            this.FilterPath = false;
+            FilterPath = false;
             wim.HideProperties = true;
          
-            this.ListLoad += Browsing_ListLoad;
-            this.ListAction += Browsing_ListAction;
-            this.ListSave += Browsing_ListSave;
-            this.ListSearch += Browsing_ListSearch;
+            ListLoad += Browsing_ListLoad;
+            ListAction += Browsing_ListAction;
+            ListSave += Browsing_ListSave;
+            ListSearch += Browsing_ListSearch;
         }
 
         private Task Browsing_ListSearch(ComponentListSearchEventArgs arg)
@@ -163,7 +163,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
 
             List<BrowseItem> list = new List<BrowseItem>();
 
-            bool isSearchInitiate = !string.IsNullOrEmpty(this.FilterTitle);
+            bool isSearchInitiate = !string.IsNullOrEmpty(FilterTitle);
             if (wim.CurrentFolder.Type == FolderType.Gallery)
             {
                 GetGalleryList(isSearchInitiate, list);
@@ -242,7 +242,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             if (isSearchInitiate || isRootLevelView)
             {
                 isRootLevelView = true;
-                folders = Mediakiwi.Data.Folder.SelectAll(wim.CurrentFolder.Type, wim.CurrentSite.ID, this.FilterTitle, this.FilterPath);
+                folders = Mediakiwi.Data.Folder.SelectAll(wim.CurrentFolder.Type, wim.CurrentSite.ID, FilterTitle, FilterPath);
             }
             else
                 folders = Mediakiwi.Data.Folder.SelectAllByParent(wim.CurrentFolder.ID, wim.CurrentFolder.Type, false);
@@ -253,7 +253,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             if (wim.CurrentFolder.Level == 0 && folders.Length == 0 && !isRootLevelView && !isSearchInitiate)
             {
                 isRootLevelView = true;
-                folders = Mediakiwi.Data.Folder.SelectAll(wim.CurrentFolder.Type, wim.CurrentSite.ID, this.FilterTitle, this.FilterPath);
+                folders = Mediakiwi.Data.Folder.SelectAll(wim.CurrentFolder.Type, wim.CurrentSite.ID, FilterTitle, FilterPath);
                 //  ACL determination
                 folders = Mediakiwi.Data.Folder.ValidateAccessRight(folders, wim.CurrentApplicationUser);
             }
@@ -264,7 +264,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                 pages = Page.SelectAll(wim.CurrentFolder.ID, PageFolderSortType.Folder, PageReturnProperySet.All, GetSort(wim.CurrentFolder.ID), false);
             else
             {
-                pages = Page.SelectAll(this.FilterTitle, FilterPath);
+                pages = Page.SelectAll(FilterTitle, FilterPath);
             }
 
             pages = Page.ValidateAccessRight(pages, wim.CurrentApplicationUser);
@@ -351,7 +351,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
 
             Gallery[] galleries;
             Gallery rootGallery = Gallery.SelectOne(Utility.ConvertToGuid(Request.Query["root"]));
-            if (!IsPostBack || string.IsNullOrEmpty(this.FilterTitle))
+            if (!IsPostBack || string.IsNullOrEmpty(FilterTitle))
             {
                 if (wim.CurrentFolder.ParentID.GetValueOrDefault(0) > 0 && wim.CurrentFolder.ID != rootGallery.ID && wim.CurrentFolder.ID != baseGalleryID)
                 {
@@ -374,7 +374,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                 galleries = Gallery.SelectAllByParent(wim.CurrentFolder.ID);
             }
             else
-                galleries = Gallery.SelectAll(this.FilterTitle);
+                galleries = Gallery.SelectAll(FilterTitle);
 
             bool isRootLevelView = false;
             if (wim.CurrentFolder.Level == 0 && galleries.Length == 0 && !isRootLevelView && !isSearchInitiate)
@@ -401,10 +401,10 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
 
             List<Asset> assets;
 
-            if (!IsPostBack || string.IsNullOrEmpty(this.FilterTitle))
+            if (!IsPostBack || string.IsNullOrEmpty(FilterTitle))
                 assets = Asset.SelectAll(wim.CurrentFolder.ID);
             else
-                assets = Asset.SearchAll(this.FilterTitle);
+                assets = Asset.SearchAll(FilterTitle);
 
             foreach (Asset entry in assets)
             {

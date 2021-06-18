@@ -19,8 +19,8 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         {
             wim.CanContainSingleInstancePerDefinedList = true;
 
-            this.ListLoad += Environment_ListLoad;
-            this.ListSave += Environment_ListSave;
+            ListLoad += Environment_ListLoad;
+            ListSave += Environment_ListSave;
         }
 
 
@@ -34,9 +34,9 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         async Task Environment_ListSave(ComponentListEventArgs e)
         {
             if (!Implement.Password.Equals(m_PasswordAtStart))
-                this.Implement.Password = Utility.HashStringByMD5(Implement.Password);
+                Implement.Password = Utility.HashStringByMD5(Implement.Password);
 
-            await this.Implement.SaveAsync();
+            await Implement.SaveAsync();
 
             //  Redirect as path could be changed!
             Response.Redirect(wim.GetUrl());
@@ -50,9 +50,9 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// <param name="e">The <see cref="ComponentListEventArgs"/> instance containing the event data.</param>
         Task Environment_ListLoad(ComponentListEventArgs e)
         {
-            this.Implement = Mediakiwi.Data.Environment.Current;
-            m_PasswordAtStart = this.Implement.Password;
-            this.FormMaps.Add(new Forms.EnvironmentForm(this.Implement));
+            Implement = Mediakiwi.Data.Environment.Current;
+            m_PasswordAtStart = Implement.Password;
+            FormMaps.Add(new Forms.EnvironmentForm(Implement));
             return Task.CompletedTask;
         }
 

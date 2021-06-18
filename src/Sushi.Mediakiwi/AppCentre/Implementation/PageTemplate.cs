@@ -21,11 +21,11 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             wim.OpenInEditMode = true;
             IS_HEADLESS = true;
 
-            this.ListSearch += PageTemplate_ListSearch;
-            this.ListLoad += PageTemplate_ListLoad;
-            this.ListPreRender += PageTemplate_ListPreRender;
-            this.ListSave += PageTemplate_ListSave;
-            this.ListAction += PageTemplate_ListAction;
+            ListSearch += PageTemplate_ListSearch;
+            ListLoad += PageTemplate_ListLoad;
+            ListPreRender += PageTemplate_ListPreRender;
+            ListSave += PageTemplate_ListSave;
+            ListAction += PageTemplate_ListAction;
         }
 
         Task PageTemplate_ListPreRender(ComponentListEventArgs e)
@@ -48,16 +48,16 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         {
             if (SetCacheable)
             {
-                if (this.AvailableComponent != null)
-                    foreach (var item in this.AvailableComponent.Items)
+                if (AvailableComponent != null)
+                    foreach (var item in AvailableComponent.Items)
                     {
                         int templateID = Convert.ToInt32(item.TextID.Split('.')[1]);
                         var ct = Mediakiwi.Data.ComponentTemplate.SelectOne(templateID);
                         ct.CacheLevel = 2;
                         ct.Save();
                     }
-                if (this.AvailableServiceComponent != null)
-                    foreach (var item in this.AvailableServiceComponent.Items)
+                if (AvailableServiceComponent != null)
+                    foreach (var item in AvailableServiceComponent.Items)
                     {
                         int templateID = Convert.ToInt32(item.TextID.Split('.')[1]);
                         var ct = Mediakiwi.Data.ComponentTemplate.SelectOne(templateID);
@@ -163,20 +163,20 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             m_Instance.Name = m_Name;
 
             if (IS_HEADLESS)
-                this.IsSourceBased = true;
+                IsSourceBased = true;
 
-            m_Instance.OutputCacheDuration = this.OutputCacheDuration;
+            m_Instance.OutputCacheDuration = OutputCacheDuration;
             m_Instance.IsAddedOutputCache = m_UsesOutputCache;
             m_Instance.HasSecundaryContentContainer = m_HasSecundary;
             m_Instance.OnlyOneInstancePossible = m_OnlyOneInstancePossible;
             m_Instance.SiteID = null;
-            m_Instance.IsSourceBased = this.IsSourceBased;
+            m_Instance.IsSourceBased = IsSourceBased;
             m_Instance.Location = m_Location;
-            m_Instance.Source = this.Source;
+            m_Instance.Source = Source;
 
             //m_Instance.ReferenceID = ReferenceID;
-            m_Instance.Description = this.Description;
-            m_Instance.HasCustomDate = this.HasCustomDate;
+            m_Instance.Description = Description;
+            m_Instance.HasCustomDate = HasCustomDate;
 
             if (!string.IsNullOrEmpty(m_Site)) 
                 m_Instance.SiteID = Convert.ToInt32(m_Site);
@@ -231,7 +231,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
 
                 //  HTML
                 //var dt = new DataTemplate();
-                //dt.ParseSourceData(this.m_Instance);
+                //dt.ParseSourceData(m_Instance);
             }
             return Task.CompletedTask;
 
@@ -243,11 +243,11 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         void SetSourceVisibility()
         {
             //return;
-            //wim.SetPropertyRequired("Location", !this.IsSourceBased);
-            //wim.SetPropertyVisibility("AvailableComponent", !this.IsSourceBased);
-            //wim.SetPropertyVisibility("HasSecundary", !this.IsSourceBased);
-            //wim.SetPropertyVisibility("AvailableServiceComponent", !this.IsSourceBased);
-            //wim.SetPropertyVisibility("Source", this.IsSourceBased);
+            //wim.SetPropertyRequired("Location", !IsSourceBased);
+            //wim.SetPropertyVisibility("AvailableComponent", !IsSourceBased);
+            //wim.SetPropertyVisibility("HasSecundary", !IsSourceBased);
+            //wim.SetPropertyVisibility("AvailableServiceComponent", !IsSourceBased);
+            //wim.SetPropertyVisibility("Source", IsSourceBased);
         }
 
         Task PageTemplate_ListLoad(ComponentListEventArgs e)
@@ -268,11 +268,11 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             }
             else
             {
-                //dt.ParseSourceData(this.m_Instance);
+                //dt.ParseSourceData(m_Instance);
             }
 
             if (m_Instance.PageInstanceCount == 0)
-                this.ListDelete += PageTemplate_ListDelete;
+                ListDelete += PageTemplate_ListDelete;
 
             m_AvailableComponent = new SubList();
             m_AvailableServiceComponent = new SubList();
@@ -296,7 +296,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             m_Name = m_Instance.Name;
             m_Instance.OutputCacheDuration = m_Instance.OutputCacheDuration;
             m_UsesOutputCache = m_Instance.IsAddedOutputCache;
-            this.OutputCacheDuration = m_Instance.OutputCacheDuration;
+            OutputCacheDuration = m_Instance.OutputCacheDuration;
 
             m_Location = m_Instance.Location;
             m_HasSecundary = m_Instance.HasSecundaryContentContainer;
@@ -308,8 +308,8 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             //ReferenceID = m_Instance.ReferenceID;
             m_Description = m_Instance.Description;
 
-            //this.Source = dt.CompleteComponentTemplates(m_Instance.Source);
-            this.Source2 = m_Instance.Source;
+            //Source = dt.CompleteComponentTemplates(m_Instance.Source);
+            Source2 = m_Instance.Source;
 
 
             SetSourceVisibility();

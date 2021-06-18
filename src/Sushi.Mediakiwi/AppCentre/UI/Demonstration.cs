@@ -17,9 +17,9 @@ namespace Sushi.Mediakiwi.AppCentre.UI
         {
             wim.CanContainSingleInstancePerDefinedList = true;
 
-            this.ListLoad += Demonstration_ListLoad;
-            this.ListSave += Demonstration_ListSave;
-            this.ListAction += Demonstration_ListAction;
+            ListLoad += Demonstration_ListLoad;
+            ListSave += Demonstration_ListSave;
+            ListAction += Demonstration_ListAction;
             this.ListConfigure += Demonstration_ListConfigure;
         }
 
@@ -29,7 +29,7 @@ namespace Sushi.Mediakiwi.AppCentre.UI
 
             Map(x => x.Backend, this).TextField("Backend detais");
             Map(x => x.Backend2, this).TextField("Backend2");
-            this.FormMaps.Add(this);
+            FormMaps.Add(this);
             return Task.CompletedTask;
         }
 
@@ -62,8 +62,8 @@ namespace Sushi.Mediakiwi.AppCentre.UI
             Map(x => x.OuterTextField, Implement).TextField("Title (outer)");
             
 
-            this.FormMaps.Add(this);
-            this.FormMaps.Add(Implement);
+            FormMaps.Add(this);
+            FormMaps.Add(Implement);
 
             return Task.CompletedTask;
         }

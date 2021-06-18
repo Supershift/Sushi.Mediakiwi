@@ -154,10 +154,10 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             wim.HideOpenCloseToggle = true;
             wim.OpenInEditMode = true;
 
-            this.ListLoad += Document_ListLoad;
-            this.ListSave += Document_ListSave;
-            this.ListDelete += Document_ListDelete;
-            this.ListSearch += Document_ListSearch;
+            ListLoad += Document_ListLoad;
+            ListSave += Document_ListSave;
+            ListDelete += Document_ListDelete;
+            ListSearch += Document_ListSearch;
         }
 
         /// <summary>
@@ -828,7 +828,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             //else
             Implement = await Asset.SelectOneAsync(e.SelectedKey);
             _Form = new DocumentForm(Implement);
-            this.FormMaps.Add(_Form);
+            FormMaps.Add(_Form);
             
 
             //wim.Page.HideMenuBar = true;
@@ -851,7 +851,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             //{
             //    wim.SetPropertyVisibility("ButtonBack", true);
             //    wim.SetPropertyVisibility("File", false);
-            //    wim.SetPropertyVisibility("RemoteLocation", !string.IsNullOrEmpty(this.Implement.RemoteLocation));
+            //    wim.SetPropertyVisibility("RemoteLocation", !string.IsNullOrEmpty(Implement.RemoteLocation));
             //    wim.SetPropertyVisibility("RemoteDownload", false);
             //    wim.SetPropertyVisibility("AssignedGalleryID2", false);
             //    wim.SetPropertyVisibility("AssignedGalleryID", false);
@@ -864,7 +864,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             //    IsExistingImage = Implement.IsImage;
             //}
             //else
-            //    this.Implement.AssetTypeID = alternativeTypeID;
+            //    Implement.AssetTypeID = alternativeTypeID;
 
             //IsPopupRequest = !string.IsNullOrEmpty(Request.Query["openinframe"]) && !string.IsNullOrEmpty(Request.Query["gallery"]);
 

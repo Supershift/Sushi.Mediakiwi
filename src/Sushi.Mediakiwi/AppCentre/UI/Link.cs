@@ -23,11 +23,11 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             wim.ListDataDependendProperties.Add("External");
             wim.HideOpenCloseToggle = true;
 
-            this.ListLoad += Link_ListLoad;
-            this.ListPreRender += Link_ListPreRender;
-            this.ListSave += Link_ListSave;
-            this.ListDelete += Link_ListDelete;
-            this.ListAction += Link_ListAction;
+            ListLoad += Link_ListLoad;
+            ListPreRender += Link_ListPreRender;
+            ListSave += Link_ListSave;
+            ListDelete += Link_ListDelete;
+            ListAction += Link_ListAction;
         }
 
         Task Link_ListAction(ComponentActionEventArgs e)
@@ -159,7 +159,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             Implement = await Mediakiwi.Data.Link.SelectOneAsync(e.SelectedKey);
 
             Form = new LinkForm(Implement);
-            this.FormMaps.Add(Form);
+            FormMaps.Add(Form);
 
             wim.SetPropertyVisibility("Apply", false);
 
