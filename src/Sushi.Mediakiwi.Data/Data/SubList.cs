@@ -327,12 +327,18 @@ namespace Sushi.Mediakiwi.Data
         public void Add(ISubListitem item)
         {
             InitializeList();
-            if (item is SubListitem)
-                m_List.Add((SubListitem)item);
+            if (item is SubListitem listitem)
+            {
+                m_List.Add(listitem);
+            }
             else if (string.IsNullOrEmpty(item.TextID))
+            {
                 m_List.Add(new SubListitem(item.ID, item.Description));
+            }
             else
+            {
                 m_List.Add(new SubListitem(item.TextID, item.Description));
+            }
         }
         public void Add(string id, string description)
         {

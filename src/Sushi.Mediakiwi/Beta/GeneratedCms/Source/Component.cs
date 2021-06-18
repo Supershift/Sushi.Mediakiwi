@@ -469,7 +469,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                 {
                     if (component != null && component.TemplateIsShared && !container.IsComponent)
                     {
-                        title = title + " - [SHARED]";
+                        title += " - [SHARED]";
                     }
 
                     if (m_IsNewDesign)
@@ -590,9 +590,8 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
         /// <returns></returns>
         object GetProperty(Console container, object sender, string property)
         {
-            if (sender is MetaData)
+            if (sender is MetaData item)
             {
-                MetaData item = ((MetaData)sender);
                 return item.GetCollection();
             }
 
@@ -2061,13 +2060,11 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
             }
             else
             {
-                var instance = senderInstance as IComponentListTemplate;
-                if (instance != null)
+                if (senderInstance is IComponentListTemplate instance)
                 {
-                    var set = (IComponentListTemplate)senderInstance;
-                    if (set.FormMaps != null && set.FormMaps.Count > 0)
+                    if (instance.FormMaps != null && instance.FormMaps.Count > 0)
                     {
-                        Map(container, set.FormMaps.List, m_AllListProperties);
+                        Map(container, instance.FormMaps.List, m_AllListProperties);
                     }
                 }
 
@@ -2294,13 +2291,11 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
 
         void ValidateAllProperties(Console container, object senderInstance)
         {
-            var instance = senderInstance as IComponentListTemplate;
-            if (instance != null)
+            if (senderInstance is IComponentListTemplate instance)
             {
-                var set = (IComponentListTemplate)senderInstance;
-                if (set.FormMaps != null && set.FormMaps.Count > 0)
+                if (instance.FormMaps != null && instance.FormMaps.Count > 0)
                 {
-                    IterateMaps(set.FormMaps.List);
+                    IterateMaps(instance.FormMaps.List);
                 }
             }
         }
@@ -2396,23 +2391,18 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
         /// <param name="all">All.</param>
         void SetAllProperties(Console container, object senderInstance, System.Reflection.PropertyInfo[] infoList, ref Property[] properties, List<ListInfoItem> all)
         {
-            var instance = senderInstance as IComponentListTemplate;
-            if (instance != null)
+            if (senderInstance is IComponentListTemplate instance)
             {
-                var set = (IComponentListTemplate)senderInstance;
-                if (set.FormMaps != null && set.FormMaps.Count > 0)
+                if (instance.FormMaps != null && instance.FormMaps.Count > 0)
                 {
-                    Map(container, set.FormMaps.List, all);
+                    Map(container, instance.FormMaps.List, all);
                 }
             }
 
             foreach (System.Reflection.PropertyInfo info in infoList)
             {
-                bool isVisible;
                 bool isEditable = container.CurrentListInstance.wim.IsEditMode;
-                bool isRequired = false;
-
-                var contentitems = (GetContentInfo(info, container, senderInstance, ref isEditable, out isVisible, out isRequired));
+                var contentitems = (GetContentInfo(info, container, senderInstance, ref isEditable, out bool isVisible, out bool isRequired));
 
                 foreach (IContentInfo contentAttribute in contentitems)
                 {
@@ -2467,8 +2457,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                             sender = Activator.CreateInstance(info.PropertyType);
                         }
 
-                        var componentlist = sender as ComponentListTemplate;
-                        if (componentlist != null)
+                        if (sender is ComponentListTemplate componentlist)
                         {
                             componentlist.wim.Console = container;
                         }
@@ -2698,13 +2687,13 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
 
                         if (infoItem.ContentAttribute.ContentTypeSelection == ContentType.Section)
                         {
-                            if (infoItem.ContentAttribute is SectionAttribute)
+                            if (infoItem.ContentAttribute is SectionAttribute attribute)
                             {
-                                isContainerClosed = ((SectionAttribute)infoItem.ContentAttribute).m_IsClosedContainer;
-                                string isClosedStateReferringProperty = ((SectionAttribute)infoItem.ContentAttribute).m_IsClosedStateReferringProperty;
+                                isContainerClosed = attribute.m_IsClosedContainer;
+                                string isClosedStateReferringProperty = attribute.m_IsClosedStateReferringProperty;
                                 if (!string.IsNullOrEmpty(isClosedStateReferringProperty))
                                 {
-                                    isContainerClosed = ((SectionAttribute)infoItem.ContentAttribute).IsClosedStateReferringProperty;
+                                    isContainerClosed = attribute.IsClosedStateReferringProperty;
                                 }
                             }
                         }
@@ -2934,112 +2923,99 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                     arr.Add(contentAttribute);
                 }
 
-                if (attribute is OnlyEditableWhenTrue)
+                if (attribute is OnlyEditableWhenTrue onlyEditableWhenTrue && isEditable)
                 {
-                    if (isEditable)
-                    {
-                        OnlyEditableWhenTrue editable = (OnlyEditableWhenTrue)attribute;
-                        bool check = (bool)GetProperty(container, senderInstance, editable.Property);
+                    bool check = (bool)GetProperty(container, senderInstance, onlyEditableWhenTrue.Property);
 
-                        if (check && !editable.State)
-                        {
-                            isEditable = false;
-                        }
-                        if (!check && editable.State)
-                        {
-                            isEditable = false;
-                        }
+                    if (check && !onlyEditableWhenTrue.State)
+                    {
+                        isEditable = false;
+                    }
+                    if (!check && onlyEditableWhenTrue.State)
+                    {
+                        isEditable = false;
                     }
                 }
-                else if (attribute is OnlyEditableWhenFalse)
+                else if (attribute is OnlyEditableWhenFalse onlyEditableWhenFalse && isEditable)
                 {
-                    if (isEditable)
+                    bool check = (bool)GetProperty(container, senderInstance, onlyEditableWhenFalse.Property);
+
+                    //check = true && state = true
+                    if (check && onlyEditableWhenFalse.State)
                     {
-                        OnlyEditableWhenFalse editable = (OnlyEditableWhenFalse)attribute;
-                        bool check = (bool)GetProperty(container, senderInstance, editable.Property);
+                        isEditable = false;
+                    }
 
-                        //check = true && state = true
-                        if (check && editable.State)
-                        {
-                            isEditable = false;
-                        }
-
-                        //check = false && state = false
-                        if (!check && !editable.State)
-                        {
-                            isEditable = false;
-                        }
+                    //check = false && state = false
+                    if (!check && !onlyEditableWhenFalse.State)
+                    {
+                        isEditable = false;
                     }
                 }
-                if (attribute is OnlyVisibleWhenTrue)
+                if (attribute is OnlyVisibleWhenTrue onlyVisibleWhenTrue)
                 {
-                    OnlyVisibleWhenTrue visible = attribute as OnlyVisibleWhenTrue;
-                    bool check = (bool)GetProperty(container, senderInstance, visible.Property);
+                    bool check = (bool)GetProperty(container, senderInstance, onlyVisibleWhenTrue.Property);
 
                     //check = true && state = false
-                    if (check && !visible.State)
+                    if (check && !onlyVisibleWhenTrue.State)
                     {
                         isVisible = false;
                     }
 
                     //check = false && state = true
-                    if (!check && visible.State)
+                    if (!check && onlyVisibleWhenTrue.State)
                     {
                         isVisible = false;
                     }
                 }
-                else if (attribute is OnlyVisibleWhenFalse)
+                else if (attribute is OnlyVisibleWhenFalse onlyVisibleWhenFalse)
                 {
-                    OnlyVisibleWhenFalse visible = attribute as OnlyVisibleWhenFalse;
-                    bool check = (bool)GetProperty(container, senderInstance, visible.Property);
+                    bool check = (bool)GetProperty(container, senderInstance, onlyVisibleWhenFalse.Property);
 
                     //check = true && state = true
-                    if (check && visible.State)
+                    if (check && onlyVisibleWhenFalse.State)
                     {
                         isVisible = false;
                     }
 
                     //check = false && state = false
-                    if (!check && !visible.State)
+                    if (!check && !onlyVisibleWhenFalse.State)
                     {
                         isVisible = false;
                     }
                 }
-                if (attribute is OnlyRequiredWhenTrue)
+                if (attribute is OnlyRequiredWhenTrue onlyRequiredWhenTrue)
                 {
-                    OnlyRequiredWhenTrue required = attribute as OnlyRequiredWhenTrue;
-                    bool check = (bool)GetProperty(container, senderInstance, required.Property);
+                    bool check = (bool)GetProperty(container, senderInstance, onlyRequiredWhenTrue.Property);
 
                     //check = true && state = false
-                    if (check && !required.State)
+                    if (check && !onlyRequiredWhenTrue.State)
                     {
                         isRequiredOverride = false;
                     }
 
                     //check = false && state = true
-                    if (!check && required.State)
+                    if (!check && onlyRequiredWhenTrue.State)
                     {
                         isRequiredOverride = false;
                     }
                 }
-                else if (attribute is OnlyRequiredWhenFalse)
+                else if (attribute is OnlyRequiredWhenFalse onlyRequiredWhenFalse)
                 {
-                    OnlyRequiredWhenFalse required = attribute as OnlyRequiredWhenFalse;
-                    bool check = (bool)GetProperty(container, senderInstance, required.Property);
+                    bool check = (bool)GetProperty(container, senderInstance, onlyRequiredWhenFalse.Property);
 
                     //check = true && state = true
-                    if (check && required.State)
+                    if (check && onlyRequiredWhenFalse.State)
                     {
                         isRequiredOverride = false;
                     }
 
                     //check = false && state = false
-                    if (!check && !required.State)
+                    if (!check && !onlyRequiredWhenFalse.State)
                     {
                         isRequiredOverride = false;
                     }
                 }
-
             }
 
             if (contentAttribute != null)

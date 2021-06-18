@@ -29,13 +29,6 @@ namespace Sushi.Mediakiwi.Data
         public string CookieParserLog { get; set; }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Visitor"/> class.
-        /// </summary>
-        public Visitor()
-        {
-        }
-
-        /// <summary>
         /// Gets the last visited page (if none present an empty Page object is returned).
         /// </summary>
         /// <value>The last visited page.</value>

@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace Sushi.Mediakiwi.Framework.ContentInfoItem
 {
-    internal class SublistParsing
+    static internal class SublistParsing
     {
         internal static SubList Parse(
             HttpContext context, 

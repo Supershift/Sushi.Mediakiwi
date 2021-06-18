@@ -69,19 +69,18 @@ namespace Sushi.Mediakiwi.Framework
                         element.InfoItem.ContentAttribute.ID = $"{UniqueId}_{name}";
 
                     //  Set
-                    if (element is IContentInfo)
+                    if (element is IContentInfo contentInfoElement && wim.Console != null)
                     {
-                        if (wim.Console != null)
-                        {
-                            var field = new Field();
-                            field.Property = name;
-                            field.Type = (int)element.ContentTypeSelection;
+                        var field = new Field();
+                        field.Property = name;
+                        field.Type = (int)element.ContentTypeSelection;
 
-                            ((IContentInfo)element).Init(wim);
-                            if (wim.Console.IsPosted(element.InfoItem.ContentAttribute.ID))
-                                ((IContentInfo)element).SetCandidate(field, wim.IsEditMode);
-                            ((IContentInfo)element).Chain(element.InfoItem.ContentAttribute.ID);
+                        contentInfoElement.Init(wim);
+                        if (wim.Console.IsPosted(element.InfoItem.ContentAttribute.ID))
+                        {
+                            contentInfoElement.SetCandidate(field, wim.IsEditMode);
                         }
+                        contentInfoElement.Chain(element.InfoItem.ContentAttribute.ID);
                     }
                 }
             }
@@ -134,15 +133,14 @@ namespace Sushi.Mediakiwi.Framework
                         element.InfoItem.ContentAttribute.ID = $"{UniqueId}_{element.Property.Name}";
 
                     //  Set
-                    if (element is IContentInfo)
+                    if (element is IContentInfo contentInfoElement && wim.Console != null)
                     {
-                        if (wim.Console != null)
+                        contentInfoElement.Init(wim);
+                        if (wim.Console.IsPosted(element.InfoItem.ContentAttribute.ID))
                         {
-                            ((IContentInfo)element).Init(wim);
-                            if (wim.Console.IsPosted(element.InfoItem.ContentAttribute.ID))
-                                ((IContentInfo)element).SetCandidate(wim.IsEditMode);
-                            ((IContentInfo)element).Chain(element.InfoItem.ContentAttribute.ID);
+                            contentInfoElement.SetCandidate(wim.IsEditMode);
                         }
+                        contentInfoElement.Chain(element.InfoItem.ContentAttribute.ID);
                     }
                 }
             }

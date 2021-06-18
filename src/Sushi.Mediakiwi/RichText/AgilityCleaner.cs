@@ -12,7 +12,7 @@ namespace Sushi.Mediakiwi.RichRext
         /// <summary>
         /// 
         /// </summary>
-        string[] m_AllowedElements = new string[] { 
+        readonly string[] m_AllowedElements = new string[] { 
             "p", 
             //"div", 
             //"span", 
@@ -24,7 +24,7 @@ namespace Sushi.Mediakiwi.RichRext
         /// <summary>
         /// 
         /// </summary>
-        string[][] m_AllowedElementAttributes = new string[][] { 
+        readonly string[][] m_AllowedElementAttributes = new string[][] { 
             //new string[] { "div", "class" }, 
             new string[] { "a", "href" },
             new string[] { "ul", "style", "list-style-type: circle;" },

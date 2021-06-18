@@ -14,7 +14,7 @@ using System.Xml.Serialization;
 
 namespace Sushi.Mediakiwi.Data
 {
-    public class Utility
+    public static class Utility
     {
         public static string ConvertUrl(string path)
         {
@@ -92,7 +92,7 @@ namespace Sushi.Mediakiwi.Data
             /// <returns></returns>
             public static string Encode(long input)
             {
-                if (input < 0) throw new ArgumentOutOfRangeException("input", input, "input cannot be negative");
+                if (input < 0) throw new ArgumentOutOfRangeException(nameof(input), input, "input cannot be negative");
 
                 char[] clistarr = CharList.ToCharArray();
                 var result = new Stack<char>();
@@ -360,8 +360,7 @@ namespace Sushi.Mediakiwi.Data
                             else if (from.PropertyType == typeof(decimal))
                             {
                                 //  Decimal --> String
-                                decimal tmp;
-                                if (IsDecimal(fromPropertyValue, out tmp))
+                                if (IsDecimal(fromPropertyValue, out decimal tmp))
                                 {
                                     CultureInfo info = new CultureInfo("en-US");
                                     to.SetValue(propertyContainerTo, tmp.ToString(info), null);
@@ -418,8 +417,7 @@ namespace Sushi.Mediakiwi.Data
                             else if (to.PropertyType == typeof(decimal))
                             {
                                 //  String --> Decimal
-                                decimal tmp;
-                                if (IsDecimal(fromPropertyValue, out tmp))
+                                if (IsDecimal(fromPropertyValue, out decimal tmp))
                                 {
                                     to.SetValue(propertyContainerTo, tmp, null);
                                 }
@@ -448,9 +446,10 @@ namespace Sushi.Mediakiwi.Data
                             else if (from.PropertyType == typeof(Guid))
                             {
                                 //  String --> Guid
-                                Guid guid;
-                                if (IsGuid(fromPropertyValue, out guid))
+                                if (IsGuid(fromPropertyValue, out Guid guid))
+                                {
                                     to.SetValue(propertyContainerTo, guid, null);
+                                }
                             }
                         }
 
@@ -1121,11 +1120,15 @@ namespace Sushi.Mediakiwi.Data
         /// <returns></returns>
         public static DateTime ConvertWimDateTime(object candidate)
         {
-            if (candidate == null || candidate.ToString().Length == 0) return DateTime.MinValue;
+            if (candidate == null || candidate.ToString().Length == 0)
+            {
+                return DateTime.MinValue;
+            }
 
-            DateTime dt;
-            if (DateTime.TryParse(candidate.ToString(), WimCultureInfo, DateTimeStyles.None, out dt))
+            if (DateTime.TryParse(candidate.ToString(), WimCultureInfo, DateTimeStyles.None, out DateTime dt))
+            {
                 return dt;
+            }
 
             return DateTime.MinValue;
         }
@@ -1445,12 +1448,16 @@ namespace Sushi.Mediakiwi.Data
             {
                 Regex rex = new Regex(@"(?<TEXT>\S{0," + maxWordLength.ToString() + "})", RegexOptions.IgnoreCase);
 
-                Word word = new Word();
-                word.additionWhenLonger = additionWhenLonger;
+                Word word = new Word()
+                {
+                    additionWhenLonger = additionWhenLonger
+                };
 
                 string text = rex.Replace(m.Groups["TEXT"].Value, word.Breakup);
                 if (text.Length < additionWhenLonger.Length)
+                {
                     return text;
+                }
 
                 return text.Substring(0, text.Length - additionWhenLonger.Length);
             }
@@ -1549,26 +1556,40 @@ namespace Sushi.Mediakiwi.Data
             {
                 if (item == null) continue;
 
-                long itemInt;
-                if (IsNumeric(item, out itemInt))
+                if (IsNumeric(item, out long itemInt))
                 {
-                    if (build.Length == 0) build.Append(itemInt.ToString());
+                    if (build.Length == 0)
+                    {
+                        build.Append(itemInt.ToString());
+                    }
                     else
+                    {
                         build.Append(string.Concat(",", itemInt.ToString()));
+                    }
                 }
                 else
                 {
                     if (shouldUseQuoteForStringValues)
                     {
-                        if (build.Length == 0) build.Append(string.Concat("'", item.ToString(), "'"));
+                        if (build.Length == 0)
+                        {
+                            build.Append(string.Concat("'", item.ToString(), "'"));
+                        }
                         else
+                        {
                             build.Append(string.Concat(",'", item.ToString(), "'"));
+                        }
                     }
                     else
                     {
-                        if (build.Length == 0) build.Append(item.ToString());
+                        if (build.Length == 0)
+                        {
+                            build.Append(item.ToString());
+                        }
                         else
+                        {
                             build.Append(string.Concat(",", item.ToString()));
+                        }
                     }
                 }
             }
@@ -1864,11 +1885,15 @@ namespace Sushi.Mediakiwi.Data
         public static Guid ConvertToGuid(object item)
         {
             if (item == null || string.IsNullOrEmpty(item.ToString()))
+            {
                 return Guid.Empty;
+            }
 
-            Guid candidate;
-            if (IsGuid(item, out candidate))
+            if (IsGuid(item, out Guid candidate))
+            {
                 return candidate;
+            }
+
             return Guid.Empty;
         }
 
@@ -1878,7 +1903,10 @@ namespace Sushi.Mediakiwi.Data
         public static Guid ConvertToGuid(object item, Guid onError)
         {
             Guid candidate = ConvertToGuid(item);
-            if (candidate != Guid.Empty) return candidate;
+            if (candidate != Guid.Empty)
+            {
+                return candidate;
+            }
             return onError;
         }
 
@@ -1914,14 +1942,19 @@ namespace Sushi.Mediakiwi.Data
         public static decimal? ConvertToDecimalNullable(object item)
         {
             if (item == null)
+            {
                 return null;
+            }
 
             if (item.ToString().Trim().Length == 0)
+            {
                 return null;
+            }
 
-            decimal dec;
-            if (IsDecimal(item, out dec))
+            if (IsDecimal(item, out decimal dec))
+            {
                 return dec;
+            }
 
             return null;
         }
@@ -1932,11 +1965,15 @@ namespace Sushi.Mediakiwi.Data
         public static decimal ConvertToDecimal(object item, decimal onError)
         {
             if (item == null || item.ToString().Trim().Length == 0)
+            {
                 return onError;
+            }
 
-            decimal dec;
-            if (IsDecimal(item, out dec))
+            if (IsDecimal(item, out decimal dec))
+            {
                 return dec;
+            }
+
             return onError;
         }
 
@@ -1970,11 +2007,15 @@ namespace Sushi.Mediakiwi.Data
         public static double ConvertToDouble(object item, double onError)
         {
             if (item == null || item.ToString().Trim().Length == 0)
+            {
                 return onError;
+            }
 
-            double dec;
-            if (IsDouble(item, out dec))
+            if (IsDouble(item, out double dec))
+            {
                 return dec;
+            }
+
             return onError;
         }
 
