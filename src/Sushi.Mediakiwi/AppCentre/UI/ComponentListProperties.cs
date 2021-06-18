@@ -1,9 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Web;
-using Sushi.Mediakiwi.Framework;
-
 namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
 {
     /// <summary>

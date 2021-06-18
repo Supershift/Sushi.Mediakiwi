@@ -1,6 +1,5 @@
 using Sushi.Mediakiwi.Data;
 using System;
-using System.Collections.Generic;
 using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -228,7 +227,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
 
             //get the value of the property
             string outputValue = OutputText;
-            if (Property?.PropertyType == typeof(String) && CommonConfiguration.HTML_ENCODE_TEXTAREA_INPUT && !AllowHtmlTags)
+            if (Property?.PropertyType == typeof(string) && CommonConfiguration.HTML_ENCODE_TEXTAREA_INPUT && !AllowHtmlTags)
             {
                 //in this case the user input was HTML encoded. it needs to be decoded again to get back to its orignal value
                 outputValue = WebUtility.HtmlDecode(outputValue);

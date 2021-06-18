@@ -1,5 +1,4 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using SemanticComparison;
 using Sushi.Mediakiwi.Data;
 using System;
 using System.Collections.Generic;

@@ -1,5 +1,4 @@
-﻿using System;
-namespace Sushi.Mediakiwi.Framework
+﻿namespace Sushi.Mediakiwi.Framework
 {
     /// <summary>
     /// This interface exposes the page publication hooks.

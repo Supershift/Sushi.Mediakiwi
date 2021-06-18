@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Linq;
-using System.Collections.Generic;
-using System.Data;
-using Sushi.Mediakiwi.Framework;
 using Sushi.Mediakiwi.Data;
 using Microsoft.AspNetCore.Http;
 using Sushi.Mediakiwi.Utilities;

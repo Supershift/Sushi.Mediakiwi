@@ -1,7 +1,6 @@
 using Sushi.Mediakiwi.Data;
 using Sushi.Mediakiwi.UI;
 using System;
-using System.Collections.Generic;
 using System.Text;
 
 
@@ -194,10 +193,10 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
             {
                 if (Property.PropertyType == typeof(Data.CustomData))
                     ApplyContentContainer(field, candidate);
-                else if (Property.PropertyType == typeof(Int32))
+                else if (Property.PropertyType == typeof(int))
                     Property.SetValue(this.SenderInstance, Data.Utility.ConvertToInt(candidate), null);
-                else if (Property.PropertyType == typeof(Int16))
-                    Property.SetValue(this.SenderInstance, Int16.Parse(candidate), null);
+                else if (Property.PropertyType == typeof(short))
+                    Property.SetValue(this.SenderInstance, short.Parse(candidate), null);
                 else if (Property.PropertyType == typeof(int?))
                 {
                     if (string.IsNullOrEmpty(candidate) || candidate == "0")
@@ -274,7 +273,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
 
                 string options = "";
                 int count = 0;
-                if (!String.IsNullOrEmpty(SupplierChoiceHeaderProp))
+                if (!string.IsNullOrEmpty(SupplierChoiceHeaderProp))
                 {
                     options += GetProperty(Console.CurrentListInstance, SupplierChoiceHeaderProp);
                 }

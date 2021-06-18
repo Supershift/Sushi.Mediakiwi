@@ -3,7 +3,6 @@ using Sushi.Mediakiwi.UI;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-using System.Text;
 
 namespace Sushi.Mediakiwi.AppCentre.Data.Implementation.Forms
 {
@@ -152,7 +151,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation.Forms
 
                 ListItemCollection col = new ListItemCollection();
                
-                if (String.IsNullOrEmpty(Instance.AssemblyName)) return col;
+                if (string.IsNullOrEmpty(Instance.AssemblyName)) return col;
 
                 var file = Assembly.GetExecutingAssembly().ManifestModule.Name;
                 var folder = Assembly.GetExecutingAssembly().Location;

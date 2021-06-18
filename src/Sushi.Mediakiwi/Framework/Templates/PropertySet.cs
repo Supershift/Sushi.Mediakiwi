@@ -1,7 +1,4 @@
 using System;
-using System.Text.RegularExpressions;
-using System.Data;
-using System.Web;
 
 
 using Sushi.Mediakiwi.Data;
@@ -191,12 +188,12 @@ namespace Sushi.Mediakiwi.Framework.Templates
                                     case (int)ContentType.ListItemSelect:
                                         #region ContentListType.ListItemSelect
                                         string[] itemArr = itemValue.ToString().Split(',');
-                                        if ( info.PropertyType == typeof(System.String[]) )
+                                        if ( info.PropertyType == typeof(string[]) )
                                         {
                                             info.SetValue(loadedControl, itemArr, null );
                                             break;
                                         }
-                                        if (info.PropertyType == typeof(System.Int32[]))
+                                        if (info.PropertyType == typeof(int[]))
                                         {
                                             info.SetValue(loadedControl, Data.Utility.ConvertToIntArray(itemArr), null);
                                             break;
@@ -209,12 +206,12 @@ namespace Sushi.Mediakiwi.Framework.Templates
                                     case (int)ContentType.MultiImageSelect:
                                         #region ContentListType.MultiImageSelect
                                         string[] itemImageArr = itemValue.ToString().Split(',');
-                                        if (info.PropertyType == typeof(System.String[]))
+                                        if (info.PropertyType == typeof(string[]))
                                         {
                                             info.SetValue(loadedControl, itemImageArr, null);
                                             break;
                                         }
-                                        if (info.PropertyType == typeof(System.Int32[]))
+                                        if (info.PropertyType == typeof(int[]))
                                         {
                                             info.SetValue(loadedControl, Data.Utility.ConvertToIntArray(itemImageArr), null);
                                             break;
@@ -263,7 +260,7 @@ namespace Sushi.Mediakiwi.Framework.Templates
                                         }
 
                                         //  Choices: int, Sushi.Mediakiwi.Data.Link
-                                        if ( info.PropertyType == typeof(System.Int32) )
+                                        if ( info.PropertyType == typeof(int) )
                                         {
                                             info.SetValue(loadedControl, folderId, null );
                                             break;
@@ -286,7 +283,7 @@ namespace Sushi.Mediakiwi.Framework.Templates
                                         break;
                                         #endregion ContentType.FolderSelect
                                     case (int)ContentType.Button:
-                                        if (info.PropertyType == typeof(System.Boolean))
+                                        if (info.PropertyType == typeof(bool))
                                         {
                                             if (itemValue.ToString() == "1")
                                                 info.SetValue(loadedControl, true, null);
@@ -296,7 +293,7 @@ namespace Sushi.Mediakiwi.Framework.Templates
                                         break;
 
                                     case (int)ContentType.Choice_Checkbox:
-                                        if (info.PropertyType == typeof(System.Boolean))
+                                        if (info.PropertyType == typeof(bool))
                                         {
                                             if (itemValue.ToString() == "1")
                                                 info.SetValue(loadedControl, true, null);
@@ -338,7 +335,7 @@ namespace Sushi.Mediakiwi.Framework.Templates
                                         int pageId = Data.Utility.ConvertToInt( field.Value );
 
                                         //  Choices: int, Sushi.Mediakiwi.Data.Link
-                                        if (info.PropertyType == typeof(System.Int32))
+                                        if (info.PropertyType == typeof(int))
                                         {
                                             info.SetValue(loadedControl, pageId, null);
                                             break;
@@ -371,7 +368,7 @@ namespace Sushi.Mediakiwi.Framework.Templates
                                                 info.SetValue(loadedControl, page, null );
                                                 break;
                                             }
-                                            if ( info.PropertyType == typeof(System.String) )
+                                            if ( info.PropertyType == typeof(string) )
                                             {
                                                 info.SetValue(loadedControl, page.HRef, null );
                                                 break;
@@ -415,7 +412,7 @@ namespace Sushi.Mediakiwi.Framework.Templates
                                         //else
                                         //{
                                             //  Choices: int, Sushi.Mediakiwi.Data.Link
-                                            if ( info.PropertyType == typeof(System.Int32) )
+                                            if ( info.PropertyType == typeof(int) )
                                             {
                                                 info.SetValue(loadedControl, hyperlink, null );
                                                 break;
@@ -449,7 +446,7 @@ namespace Sushi.Mediakiwi.Framework.Templates
                                         if ( image == null )
                                             break;
 
-                                        if ( info.PropertyType == typeof(System.Int32) )
+                                        if ( info.PropertyType == typeof(int) )
                                         {
                                             info.SetValue(loadedControl, imageId, null );
                                             break;
@@ -462,7 +459,7 @@ namespace Sushi.Mediakiwi.Framework.Templates
                                             break;
                                         }
 
-                                        if ( info.PropertyType == typeof(System.String) )
+                                        if ( info.PropertyType == typeof(string) )
                                         {
                                             info.SetValue(loadedControl, image.Path, null );
                                             break;
@@ -490,7 +487,7 @@ namespace Sushi.Mediakiwi.Framework.Templates
                                         if ( document == null )
                                             break;
 
-                                        if ( info.PropertyType == typeof(System.Int32) )
+                                        if ( info.PropertyType == typeof(int) )
                                         {
                                             info.SetValue(loadedControl, documentId, null );
                                             break;
@@ -503,7 +500,7 @@ namespace Sushi.Mediakiwi.Framework.Templates
                                             break;
                                         }
 
-                                        if ( info.PropertyType == typeof(System.String) )
+                                        if ( info.PropertyType == typeof(string) )
                                         {
                                             info.SetValue(loadedControl, document.Path, null );
                                             break;
@@ -541,10 +538,10 @@ namespace Sushi.Mediakiwi.Framework.Templates
 
                                     case (int)ContentType.Choice_Dropdown:
 
-                                        if (info.PropertyType == typeof(System.String))
+                                        if (info.PropertyType == typeof(string))
                                             info.SetValue(loadedControl, itemValue, null);
 
-                                        else if (info.PropertyType == typeof(System.Int32))
+                                        else if (info.PropertyType == typeof(int))
                                             info.SetValue(loadedControl, Data.Utility.ConvertToInt(itemValue), null);
 
                                         break;
@@ -552,26 +549,26 @@ namespace Sushi.Mediakiwi.Framework.Templates
 
                                     case (int)ContentType.Choice_Radio:
 
-                                        if (info.PropertyType == typeof(System.String))
+                                        if (info.PropertyType == typeof(string))
                                             info.SetValue(loadedControl, itemValue, null);
 
-                                        else if (info.PropertyType == typeof(System.Int32))
+                                        else if (info.PropertyType == typeof(int))
                                             info.SetValue(loadedControl, Data.Utility.ConvertToInt(itemValue), null);
 
                                         break;
 
                                     case (int)ContentType.TextField:
 
-                                        if (info.PropertyType == typeof(System.String))
+                                        if (info.PropertyType == typeof(string))
                                             info.SetValue(loadedControl, itemValue, null);
 
-                                        else if (info.PropertyType == typeof(System.Int32))
+                                        else if (info.PropertyType == typeof(int))
                                             info.SetValue(loadedControl, Data.Utility.ConvertToInt(itemValue), null);
                                         // [CB] now the list search history works when paging
                                         else if (info.PropertyType == typeof(Nullable<System.Int32>))
                                             info.SetValue(loadedControl, Data.Utility.ConvertToIntNullable(itemValue), null);
 
-                                        else if (info.PropertyType == typeof(System.Decimal))
+                                        else if (info.PropertyType == typeof(decimal))
                                             info.SetValue(loadedControl, Data.Utility.ConvertToDecimal(itemValue), null);
                                         // [CB] now the list search history works when paging
                                         else if (info.PropertyType == typeof(Nullable<System.Decimal>))

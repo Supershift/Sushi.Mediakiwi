@@ -117,7 +117,7 @@ namespace Sushi.Mediakiwi.Data
         {
             get
             {
-                if (!String.IsNullOrEmpty(CompletePath))
+                if (!string.IsNullOrEmpty(CompletePath))
                 {
                     if (CompletePath == "/")
                         m_Level = 0;

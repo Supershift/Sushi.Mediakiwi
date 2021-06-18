@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Sushi.Mediakiwi.Framework
+﻿namespace Sushi.Mediakiwi.Framework
 {
     /// <summary>
     /// The page preview interface

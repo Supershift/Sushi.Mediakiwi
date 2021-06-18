@@ -1,9 +1,7 @@
-﻿using Sushi.Mediakiwi.Data.Data;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace Sushi.Mediakiwi.Data
@@ -177,7 +175,7 @@ namespace Sushi.Mediakiwi.Data
         internal System.Collections.Hashtable m_Table;
 
         /// <summary>
-        /// Gets the <see cref="System.String"/> with the specified property.
+        /// Gets the <see cref="string"/> with the specified property.
         /// </summary>
         /// <value></value>
         public CustomDataItem this[string property]

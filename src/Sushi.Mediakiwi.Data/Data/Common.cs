@@ -1,8 +1,6 @@
 ﻿using Sushi.Mediakiwi.Data.Configuration;
 using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
-using System.Text.RegularExpressions;
 
 namespace Sushi.Mediakiwi.Data
 {
@@ -339,7 +337,7 @@ namespace Sushi.Mediakiwi.Data
                     {
                         foreach (var map in config.UrlMappings)
                         {
-                            if (!String.IsNullOrEmpty(map.Name))
+                            if (!string.IsNullOrEmpty(map.Name))
                                 _WimServerUrlMappings.Add(map.Name, map.Path);
                         }
 

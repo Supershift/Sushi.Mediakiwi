@@ -6,7 +6,6 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Sushi.Mediakiwi.Data.MicroORM;
-using Microsoft.AspNetCore.Http;
 
 namespace Sushi.Mediakiwi.Data
 {
@@ -546,6 +545,69 @@ namespace Sushi.Mediakiwi.Data
         }
 
         /// <summary>
+        /// Select all pages in a folder.
+        /// The default setting is: select all published pages in the requested folder sorted by the linkText.
+        /// </summary>
+        /// <param name="folderID">The folder ID.</param>
+        /// <param name="folderType">Type of the folder.</param>
+        /// <param name="propertySet">The property set.</param>
+        /// <param name="sort">The sort.</param>
+        /// <param name="onlyReturnPublishedPages">if set to <c>true</c> [only return published pages].</param>
+        /// <returns></returns>
+        public static async Task<List<Page>> SelectAllAsync(int folderID, PageFolderSortType folderType = PageFolderSortType.Folder, PageReturnProperySet propertySet = PageReturnProperySet.All, PageSortBy sort = PageSortBy.SortOrder, bool onlyReturnPublishedPages = false)
+        {
+            var connector = ConnectorFactory.CreateConnector<Page>();
+            var filter = connector.CreateDataFilter();
+            filter.AddOrder(x => x.MasterID);
+
+            if (sort == PageSortBy.Name)
+            {
+                filter.AddOrder(x => x.Name, Sushi.MicroORM.SortOrder.ASC);
+            }
+            else if (sort == PageSortBy.LinkText)
+            {
+                filter.AddOrder(x => x.LinkText, Sushi.MicroORM.SortOrder.ASC);
+            }
+            else if (sort == PageSortBy.SortOrder)
+            {
+                filter.AddOrder(x => x.SortOrder, Sushi.MicroORM.SortOrder.ASC);
+            }
+            else if (sort == PageSortBy.CustomDate)
+            {
+                filter.AddOrder(x => x.CustomDate, Sushi.MicroORM.SortOrder.ASC);
+                filter.AddOrder(x => x.SortOrder, Sushi.MicroORM.SortOrder.ASC);
+            }
+            else if (sort == PageSortBy.CustomDateDown)
+            {
+                filter.AddOrder(x => x.CustomDate, Sushi.MicroORM.SortOrder.DESC);
+                filter.AddOrder(x => x.SortOrder, Sushi.MicroORM.SortOrder.ASC);
+            }
+
+            switch (propertySet)
+            {
+                case PageReturnProperySet.OnlyDefault:
+                    {
+                        filter.Add(x => x.IsFolderDefault, true);
+                    }
+                    break;
+                case PageReturnProperySet.AllExceptDefault:
+                    {
+                        filter.Add(x => x.IsFolderDefault, false);
+                    }
+                    break;
+            }
+
+            if (onlyReturnPublishedPages)
+            {
+                filter.Add(x => x.IsPublished, true);
+                filter.AddParameter("date", DateTime.UtcNow);
+                filter.AddSql("(Page_Publish is null or Page_Publish <= @date and (Page_Expire is null or Page_Expire >= @seadaterch)");
+            }
+
+            return await connector.FetchAllAsync(filter);
+        }
+
+        /// <summary>
         /// Selects all pages Async.
         /// </summary>
         /// <returns></returns>
@@ -793,7 +855,7 @@ namespace Sushi.Mediakiwi.Data
             if (ID == 0)
             {
                 string name = Name;
-                Name = GetPageNameProposal(FolderID, Name);
+                Name = await GetPageNameProposalAsync(FolderID, Name);
                 if (!Name.Equals(name))
                 {
                     InternalPath = $"{InternalPath.Substring(0, InternalPath.Length - name.Length)}{Name}";
@@ -1387,6 +1449,31 @@ namespace Sushi.Mediakiwi.Data
             return nameProposal;
         }
 
+
+        /// <summary>
+        /// Page names should always be unique within the system. When a pagename is existing this method can be
+        /// called to suggest a new prososed page name (internally also used for Page.Insert and Page.Update).
+        /// When the pagename doesn't exist the input name is returned.
+        /// </summary>
+        /// <param name="folderID">The folder ID.</param>
+        /// <param name="page">Page name</param>
+        /// <returns></returns>
+        public async Task<string> GetPageNameProposalAsync(int folderID, string page)
+        {
+            string nameProposal = Utility.GlobalRegularExpression.Implement.ReplaceNotAcceptableFilenameCharacter.Replace(page, "");
+
+            bool pageExistsInFolder = await IsPageAlreadyTakenAsync(folderID, page);
+            int nameExtentionCount = 0;
+
+            while (pageExistsInFolder)
+            {
+                nameExtentionCount++;
+                nameProposal = string.Format("{0}_{1}", page, nameExtentionCount);
+                pageExistsInFolder = await IsPageAlreadyTakenAsync(folderID, nameProposal);
+            }
+            return nameProposal;
+        }
+
         /// <summary>
         /// Verifies the existance of a particular page(name) in a folder.
         /// </summary>
@@ -1403,7 +1490,7 @@ namespace Sushi.Mediakiwi.Data
             return (count > 0);
         }
 
-        /// <summary>
+         /// <summary>
         /// Verifies the existance of a particular page(name) in a folder.
         /// </summary>
         /// <param name="folderID">The folder ID.</param>

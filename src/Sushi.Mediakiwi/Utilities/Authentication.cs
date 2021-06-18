@@ -1,11 +1,4 @@
 using System;
-using System.Diagnostics;
-using System.Linq;
-using System.Web;
-using System.ComponentModel;
-using System.Security.Cryptography;
-using System.Security.Principal;
-using System.Text;
 using System.Collections.Specialized;
 using Microsoft.AspNetCore.Http;
 using System.Net;
@@ -13,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Sushi.Mediakiwi.Utilities
 {
-	public class Authentication : IDisposable
+    public class Authentication : IDisposable
 	{
         private Wim.Utilities.EncryptionByRijndael m_Encryption = null;
 

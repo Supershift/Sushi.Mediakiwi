@@ -1,8 +1,5 @@
 ﻿using Sushi.Mediakiwi.Data;
 using Sushi.Mediakiwi.Framework;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Sushi.Mediakiwi.Interfaces
 {

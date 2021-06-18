@@ -64,7 +64,7 @@
 //                        wim.Notification.AddError("There was no response for this domain");
 //                        return;
 //                    }
-                    
+
 //                    Implement.Authenticode = authResponse.Authenticode;
 //                    //Implement.Authentication = Wim.Utility.HashStringBySHA1(string.Concat(DateTime.Now.Date.Ticks, 
 //                    //    Sushi.Mediakiwi.Framework.ThinCommunicationService.GetAuthenticode(ping, this.Username, authResponse.Hash, DateTime.Now.Date.Ticks.ToString())));

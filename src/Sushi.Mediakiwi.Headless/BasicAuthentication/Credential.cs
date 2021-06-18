@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Sushi.Mediakiwi.Headless.BasicAuthentication
+﻿namespace Sushi.Mediakiwi.Headless.BasicAuthentication
 {
     public class Credential
     {

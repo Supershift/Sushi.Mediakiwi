@@ -1,5 +1,4 @@
-﻿using Sushi.MicroORM;
-using Sushi.MicroORM.Mapping;
+﻿using Sushi.MicroORM.Mapping;
 using System;
 using System.Collections.Generic;
 using System.Data;

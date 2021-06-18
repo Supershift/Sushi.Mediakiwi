@@ -5,10 +5,10 @@ using System.Reflection;
 
 namespace Sushi.Mediakiwi
 {
-	/// <summary>
-	/// Summary description for CommonConfiguration.
-	/// </summary>
-	public class CommonConfiguration
+    /// <summary>
+    /// Summary description for CommonConfiguration.
+    /// </summary>
+    public class CommonConfiguration
     {
         public static string PORTAL_PATH
         {

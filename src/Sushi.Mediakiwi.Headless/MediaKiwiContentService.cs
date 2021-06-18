@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 
 namespace Sushi.Mediakiwi.Headless
 {
-  
+
     public static class MediaKiwiContentServiceExtensions
     {
         private static Action<HttpClient> DefaultHttpClient()

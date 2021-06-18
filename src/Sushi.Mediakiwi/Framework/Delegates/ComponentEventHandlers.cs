@@ -1,15 +1,3 @@
-using System;
-using System.Text.RegularExpressions;
-
-using System.Collections;
-using System.Collections.Generic;
-using System.Data;
-using System.Drawing;
-using System.Web;
-
-
-using Sushi.Mediakiwi.Data;
-
 namespace Sushi.Mediakiwi.Framework
 {
     public delegate void ComponentDataReportEventHandler(object sender, ComponentDataReportEventArgs e);

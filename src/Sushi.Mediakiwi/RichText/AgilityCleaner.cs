@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Linq;
-using System.Web;
-using System.Xml;
 using HtmlAgilityPack;
 
 namespace Sushi.Mediakiwi.RichRext

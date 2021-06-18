@@ -5,7 +5,6 @@ using Sushi.Mediakiwi.Data;
 using Sushi.Mediakiwi.Utilities;
 using Sushi.MicroORM;
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Sushi.Mediakiwi.Tests

@@ -1,15 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.IO;
-using System.Drawing;
-using Sushi.Mediakiwi.Beta.GeneratedCms;
-using System.Runtime.Serialization.Formatters.Binary;
 using Sushi.Mediakiwi.Data;
-using System.Web;
-using Wim.Utilities;
-using Sushi.Mediakiwi.Framework.Api;
 using Sushi.Mediakiwi.Beta.GeneratedCms.Source;
 using Sushi.Mediakiwi.UI;
 using Sushi.Mediakiwi.Interfaces;
@@ -602,7 +594,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation
                     if (container.CurrentPage != null && container.CurrentListInstance.wim.CanAddNewPageComponents)
                     {
                         var target = container.Request.Query["tab"].ToString();
-                        if (String.IsNullOrEmpty(target))
+                        if (string.IsNullOrEmpty(target))
                         {
                             var sections = container.CurrentPage.Template.GetPageSections();
                             if (sections != null)

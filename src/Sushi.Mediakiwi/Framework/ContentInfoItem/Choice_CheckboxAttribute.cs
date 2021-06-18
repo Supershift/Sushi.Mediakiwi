@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Text;
 using System.Globalization;
 using Sushi.Mediakiwi.Data;
@@ -100,7 +99,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                         {
                             if (Property.PropertyType == typeof(bool))
                             {
-                                m_Candidate = Boolean.Parse(value.ToString());
+                                m_Candidate = bool.Parse(value.ToString());
                             }
                             if (Property.PropertyType == typeof(string))
                             {

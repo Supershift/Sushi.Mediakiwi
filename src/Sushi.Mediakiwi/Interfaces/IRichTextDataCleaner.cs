@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Sushi.Mediakiwi
+﻿namespace Sushi.Mediakiwi
 {
     public interface IRichTextDataCleaner
     {

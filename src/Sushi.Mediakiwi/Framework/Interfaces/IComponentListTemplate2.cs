@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
-using System.Web;
 using Microsoft.AspNetCore.Http;
 using Sushi.Mediakiwi.Data;
 
@@ -9,7 +7,7 @@ namespace Sushi.Mediakiwi.Framework
 {
     public interface IComponentListTemplate
     {
-        Object SenderInstance { get; set; }
+        object SenderInstance { get; set; }
 
         void Init(HttpContext context);
         string FormState { get; set; }

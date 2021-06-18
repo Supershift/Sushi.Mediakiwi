@@ -1,7 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using Sushi.Mediakiwi.Data.Configuration;
 
 namespace Sushi.Mediakiwi.Tests.Config

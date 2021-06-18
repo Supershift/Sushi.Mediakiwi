@@ -208,7 +208,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
         static Regex tofillFails = new Regex(@"<a\shref=""TOFILL"">(.*?)</a>",  RegexOptions.Multiline | RegexOptions.IgnoreCase | RegexOptions.IgnorePatternWhitespace | RegexOptions.Compiled);
         private string PreCleanHTML(string candidate)
         {
-            if (!String.IsNullOrEmpty(candidate))
+            if (!string.IsNullOrEmpty(candidate))
             {
                 // Underline            
                 candidate = underlineFix.Replace(candidate, "<u>$1</u>");
@@ -321,13 +321,13 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
             {
                 if (isCloaked)
                 {
-                    return String.Format(@"<textarea class=""long {2}"" id=""{0}"" name=""{0}""{3}>{1}</textarea>",
+                    return string.Format(@"<textarea class=""long {2}"" id=""{0}"" name=""{0}""{3}>{1}</textarea>",
                        ID,
                        CleanUpBadChars(Content),
                        "hidden",
                        isEnabled ? null : " disabled=\"disabled\"");
                 }
-                return String.Format(@"<textarea class=""long {2}"" id=""{0}"" name=""{0}""{3}>{1}</textarea>",
+                return string.Format(@"<textarea class=""long {2}"" id=""{0}"" name=""{0}""{3}>{1}</textarea>",
                     ID, 
                     CleanUpBadChars(Content), 
                     hasTable ? "table_rte" : "rte", 

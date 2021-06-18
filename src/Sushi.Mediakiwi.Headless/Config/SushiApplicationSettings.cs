@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace Sushi.Mediakiwi.Headless.Config
+﻿namespace Sushi.Mediakiwi.Headless.Config
 {
     public class SushiApplicationSettings : ISushiApplicationSettings
     {

@@ -1,15 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
-using Sushi.Mediakiwi.Controllers.Data;
-using Sushi.Mediakiwi.Data;
-using Sushi.Mediakiwi.Framework;
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Text.Json;
-using System.Web.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Sushi.Mediakiwi.Controllers

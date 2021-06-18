@@ -1,11 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
-using System.Diagnostics;
-using System.Text;
 using System.Text.RegularExpressions;
 using Sushi.Mediakiwi.Data.Configuration;
-using Sushi.Mediakiwi.Data;
 
 namespace Sushi.Mediakiwi
 {
@@ -27,7 +23,7 @@ namespace Sushi.Mediakiwi
                     {
                         foreach (WimServerUrlMapping map in WimServerConfiguration.Instance.UrlMappings)
                         {
-                            if (!String.IsNullOrEmpty(map.Name))
+                            if (!string.IsNullOrEmpty(map.Name))
                                 _WimServerUrlMappings.Add(map.Name, map.Path);
                         }
                     }

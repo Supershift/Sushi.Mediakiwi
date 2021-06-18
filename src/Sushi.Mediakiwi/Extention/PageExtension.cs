@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using System.Web;
 using Sushi.Mediakiwi.Data;
 
 public static class PageExtension
@@ -104,7 +102,8 @@ public static class PageExtension
         inPage.Title = sourcePage.Title;
         await inPage.SaveAsync();
 
-        //Wim.Utilities.CacheItemManager.FlushIndexOfCacheObjects(string.Concat("Data_", inPage.GetType().ToString()));
+        Sushi.Mediakiwi.Framework.Caching.FlushIndexOfCache($"Data_{inPage.GetType()}");
+        //Wim.Utilities.CacheItemManager.FlushIndexOfCacheObjects(string.Concat(.ToString()));
     }
 
     ///// <summary>
@@ -349,7 +348,7 @@ public static class PageExtension
     /// Publishes the page.
     /// </summary>
     /// <param name="context">The context.</param>
-    internal static async Task PublishPageAsync(this Page inPage, int userId)
+    internal static async Task PublishPageAsync(this Page inPage)
     {
         inPage.SetInternalPath();
         try
@@ -359,7 +358,7 @@ public static class PageExtension
             inPage.IsPublished = true;
             inPage.InheritContent = inPage.InheritContentEdited;
 
-            await inPage.CopyComponentsAsync(userId);
+            await inPage.CopyComponentsAsync();
             await inPage.SaveAsync();
             await inPage.SubmitPageForSearchAsync();
         }
@@ -392,7 +391,6 @@ public static class PageExtension
     /// <param name="context">The context.</param>
     internal static async Task TakeDownPageAsync(this Page inPage)
     {
-        //  Page.ContextContainer c = (Page.ContextContainer)context;
         try
         {
             inPage.Updated = Common.DatabaseDateTime;
@@ -402,7 +400,7 @@ public static class PageExtension
 
             await CleanUpAfterTakeDownAsync(inPage);
 
-            //EnvironmentVersionLogic.Flush(true, c.Context);
+            Sushi.Mediakiwi.Framework.Caching.FlushAll();
         }
         catch (Exception ex)
         {
@@ -434,7 +432,7 @@ public static class PageExtension
 
         if (pagePublication.DoPrePublishValidation(user, inPage))
         {
-            await inPage.PublishPageAsync(user.ID);
+            await inPage.PublishPageAsync();
             //System.Threading.ThreadPool.QueueUserWorkItem(new System.Threading.WaitCallback(inPage.PublishPage), context);
 
             //if (!string.IsNullOrEmpty(inPage.HRef_Short))
@@ -462,7 +460,7 @@ public static class PageExtension
         await SaveThisVersionAsync(inPage, targetComponents, user);
         foreach (var c in targetComponents)
         {
-            c.Delete();
+           await c.DeleteAsync();
         }
 
         var sourceComponents = await ComponentVersion.SelectAllAsync(sourcePage.ID);
@@ -477,7 +475,8 @@ public static class PageExtension
             await c.SaveAsync();
         }
 
-        //Wim.Utilities.CacheItemManager.FlushIndexOfCacheObjects(string.Concat("Data_", inPage.GetType().ToString()));
+        Sushi.Mediakiwi.Framework.Caching.FlushIndexOfCache($"Data_{inPage.GetType()}");
+        //Wim.Utilities.CacheItemManager.FlushIndexOfCacheObjects();
         await inPage.SaveAsync();
         return true;
     }
@@ -533,22 +532,20 @@ public static class PageExtension
         await AuditTrail.InsertAsync(user, inPage, ActionType.Update, pvOld.ID);
     }
 
-    internal static async Task CopyComponentsAsync(this Page inPage, int userID)
+    internal static async Task CopyComponentsAsync(this Page inPage)
     {
         Component[] liveComponents = await Component.SelectAllInheritedAsync(inPage.ID, true);
         ComponentVersion[] stagingComponents = await ComponentVersion.SelectAllAsync(inPage.ID);
 
-        await inPage.CopyComponentsAsync(userID, liveComponents, stagingComponents);
+        await inPage.CopyComponentsAsync(liveComponents, stagingComponents);
     }
 
     /// <summary>
     /// Publishes the specified user ID.
     /// </summary>
     /// <param name="userID">The user ID.</param>
-    internal static async Task CopyComponentsAsync(this Page inPage, int userID, Component[] liveComponents, ComponentVersion[] stagingComponents)
+    internal static async Task CopyComponentsAsync(this Page inPage, Component[] liveComponents, ComponentVersion[] stagingComponents)
     {
-        Guid batchGuid = Guid.NewGuid();
-
         int sortOrderCount = 0;
 
         List<int> foundComponentArr = new List<int>();

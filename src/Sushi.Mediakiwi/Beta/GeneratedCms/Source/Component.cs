@@ -1870,7 +1870,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
         /// <param name="isContainerClosed">if set to <c>true</c> [is container closed].</param>
         /// <param name="skipHeader">if set to <c>true</c> [skip header].</param>
         /// <param name="previousContentType">Type of the previous content.</param>
-        void ScanClassProperties(Console container, Object senderInstance, ref WimControlBuilder build, bool writeOutput, bool forceLoadEvent, ref bool isValidInput, List<Field> fieldList, ref WimControlBuilder build2
+        void ScanClassProperties(Console container, object senderInstance, ref WimControlBuilder build, bool writeOutput, bool forceLoadEvent, ref bool isValidInput, List<Field> fieldList, ref WimControlBuilder build2
             , System.Reflection.PropertyInfo[] infoList
             , ref int count
             , ref string containerTitle
@@ -2262,8 +2262,8 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
             /// Gets or sets the sender instance.
             /// </summary>
             /// <value>The sender instance.</value>
-            public Object SenderInstance { get; set; }
-            public Object SenderSponsorInstance { get; set; }
+            public object SenderInstance { get; set; }
+            public object SenderSponsorInstance { get; set; }
             /// <summary>
             /// Gets or sets a value indicating whether this instance has top position.
             /// </summary>
@@ -2292,7 +2292,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
 
         ListInfoItem m_ContentContainerListInfoItem;
 
-        void ValidateAllProperties(Console container, Object senderInstance)
+        void ValidateAllProperties(Console container, object senderInstance)
         {
             var instance = senderInstance as IComponentListTemplate;
             if (instance != null)
@@ -2394,7 +2394,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
         /// <param name="infoList">The info list.</param>
         /// <param name="properties">The properties.</param>
         /// <param name="all">All.</param>
-        void SetAllProperties(Console container, Object senderInstance, System.Reflection.PropertyInfo[] infoList, ref Property[] properties, List<ListInfoItem> all)
+        void SetAllProperties(Console container, object senderInstance, System.Reflection.PropertyInfo[] infoList, ref Property[] properties, List<ListInfoItem> all)
         {
             var instance = senderInstance as IComponentListTemplate;
             if (instance != null)
@@ -2939,7 +2939,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                     if (isEditable)
                     {
                         OnlyEditableWhenTrue editable = (OnlyEditableWhenTrue)attribute;
-                        bool check = (Boolean)GetProperty(container, senderInstance, editable.Property);
+                        bool check = (bool)GetProperty(container, senderInstance, editable.Property);
 
                         if (check && !editable.State)
                         {
@@ -2956,7 +2956,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                     if (isEditable)
                     {
                         OnlyEditableWhenFalse editable = (OnlyEditableWhenFalse)attribute;
-                        bool check = (Boolean)GetProperty(container, senderInstance, editable.Property);
+                        bool check = (bool)GetProperty(container, senderInstance, editable.Property);
 
                         //check = true && state = true
                         if (check && editable.State)
@@ -2974,7 +2974,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                 if (attribute is OnlyVisibleWhenTrue)
                 {
                     OnlyVisibleWhenTrue visible = attribute as OnlyVisibleWhenTrue;
-                    bool check = (Boolean)GetProperty(container, senderInstance, visible.Property);
+                    bool check = (bool)GetProperty(container, senderInstance, visible.Property);
 
                     //check = true && state = false
                     if (check && !visible.State)
@@ -2991,7 +2991,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                 else if (attribute is OnlyVisibleWhenFalse)
                 {
                     OnlyVisibleWhenFalse visible = attribute as OnlyVisibleWhenFalse;
-                    bool check = (Boolean)GetProperty(container, senderInstance, visible.Property);
+                    bool check = (bool)GetProperty(container, senderInstance, visible.Property);
 
                     //check = true && state = true
                     if (check && visible.State)
@@ -3008,7 +3008,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                 if (attribute is OnlyRequiredWhenTrue)
                 {
                     OnlyRequiredWhenTrue required = attribute as OnlyRequiredWhenTrue;
-                    bool check = (Boolean)GetProperty(container, senderInstance, required.Property);
+                    bool check = (bool)GetProperty(container, senderInstance, required.Property);
 
                     //check = true && state = false
                     if (check && !required.State)
@@ -3025,7 +3025,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                 else if (attribute is OnlyRequiredWhenFalse)
                 {
                     OnlyRequiredWhenFalse required = attribute as OnlyRequiredWhenFalse;
-                    bool check = (Boolean)GetProperty(container, senderInstance, required.Property);
+                    bool check = (bool)GetProperty(container, senderInstance, required.Property);
 
                     //check = true && state = true
                     if (check && required.State)

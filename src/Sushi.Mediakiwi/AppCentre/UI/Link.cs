@@ -1,10 +1,6 @@
 using System;
-using System.IO;
-using System.Data;
-using System.Web;
 using Sushi.Mediakiwi.Framework;
 using Sushi.Mediakiwi.Data;
-using Sushi.Mediakiwi.UI;
 using Sushi.Mediakiwi.AppCentre.UI.Forms;
 using System.Threading.Tasks;
 

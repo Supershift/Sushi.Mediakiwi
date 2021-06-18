@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
-using Sushi.Mediakiwi.Data.Data;
 
 namespace Sushi.Mediakiwi.Framework.Api
 {

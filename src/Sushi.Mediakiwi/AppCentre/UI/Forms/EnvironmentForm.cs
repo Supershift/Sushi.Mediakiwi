@@ -1,9 +1,6 @@
 ﻿using Sushi.Mediakiwi.Framework;
 using Sushi.Mediakiwi.UI;
 using System;
-using System.Collections.Generic;
-using System.Reflection;
-using System.Text;
 
 namespace Sushi.Mediakiwi.AppCentre.Data.Implementation.Forms
 {

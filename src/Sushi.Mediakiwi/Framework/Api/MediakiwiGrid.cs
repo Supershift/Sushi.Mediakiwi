@@ -2,7 +2,6 @@
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 using System.Collections.Generic;
-using Sushi.Mediakiwi.Framework;
 
 namespace Sushi.Mediakiwi.Framework.Api
 {

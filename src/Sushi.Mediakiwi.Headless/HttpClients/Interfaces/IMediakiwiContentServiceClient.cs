@@ -1,5 +1,4 @@
-﻿using Sushi.Mediakiwi.Headless.Data;
-using System;
+﻿using System;
 using System.Threading.Tasks;
 
 namespace Sushi.Mediakiwi.Headless.HttpClients.Interfaces

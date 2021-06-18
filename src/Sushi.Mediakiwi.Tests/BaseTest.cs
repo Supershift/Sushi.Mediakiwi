@@ -1,15 +1,8 @@
-﻿using Microsoft.AspNetCore;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Sushi.Mediakiwi.Framework;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Sushi.MicroORM;
 using System;
 using System.Collections.Concurrent;
 using System.Linq;
-using Sushi.Mediakiwi.Data;
 using Sushi.Mediakiwi.Data.Configuration;
 using Sushi.Mediakiwi.Data.Caching;
 

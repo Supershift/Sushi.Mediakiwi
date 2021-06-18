@@ -258,7 +258,7 @@ namespace Sushi.Mediakiwi.Framework
         public LiteralControl[] FindObject(string text)
         {
             List<LiteralControl> list = new List<LiteralControl>();
-            foreach(System.Object obj in Controls)
+            foreach(object obj in Controls)
             {
                 if (obj.GetType() == typeof(LiteralControl))
                 {

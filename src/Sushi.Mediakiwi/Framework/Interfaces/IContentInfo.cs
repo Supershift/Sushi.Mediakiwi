@@ -1,10 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
-using Microsoft.AspNetCore.Http;
 using Sushi.Mediakiwi.Data;
-using Sushi.Mediakiwi.Framework;
-using Sushi.Mediakiwi.Framework.ContentInfoItem;
 using static Sushi.Mediakiwi.Beta.GeneratedCms.Source.Component;
 
 namespace Sushi.Mediakiwi.Framework
@@ -35,8 +29,8 @@ namespace Sushi.Mediakiwi.Framework
         /// <summary>
         /// 
         /// </summary>
-        Object SenderInstance { get; set; }
-        Object SenderSponsorInstance { get; set; }
+        object SenderInstance { get; set; }
+        object SenderSponsorInstance { get; set; }
         /// <summary>
         /// 
         /// </summary>

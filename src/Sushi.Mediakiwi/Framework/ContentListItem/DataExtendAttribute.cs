@@ -1,7 +1,4 @@
 using Sushi.Mediakiwi.Data;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Sushi.Mediakiwi.Framework.ContentListItem
 {
@@ -49,7 +46,7 @@ namespace Sushi.Mediakiwi.Framework.ContentListItem
             //    m_List = Data.ComponentList.SelectOne(listGuid);
         }
 
-        internal Object m_Implement;
+        internal object m_Implement;
 
         /// <summary>
         /// Writes the candidate.

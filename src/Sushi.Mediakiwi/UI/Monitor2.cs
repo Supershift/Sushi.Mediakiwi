@@ -17,7 +17,6 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Security.Claims;
-using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -45,7 +44,6 @@ namespace Sushi.Mediakiwi.UI
             _configuration = configuration;
             _Console = new Beta.GeneratedCms.Console(context, _env);
             _Console.Configuration = configuration;
-
             //Console.CurrentApplicationUser = user;
 
             _PresentationMonitor = new Framework.Presentation.Presentation();
@@ -219,35 +217,38 @@ namespace Sushi.Mediakiwi.UI
             int selectedTab = Utility.ConvertToInt(_Console.Request.Query["tab"]);
             string section = _Console.Request.Query["tab"];
 
-            // TO DO (restore)! [MR:26-03-2019] for Page Modules
-            //string pBack = string.Empty;
-            //if (_Console.PostBackStartsWith("pagemod_", out pBack))
-            //{
-                //    pBack = pBack.Replace("pagemod_", "");
+            string pBack = string.Empty;
+            if (_Console.PostBackStartsWith("pagemod_", out pBack))
+            {
+                pBack = pBack.Replace("pagemod_", "");
+                ICollection<IPageModule> pageModules = default(List<IPageModule>);
 
-                // 
-                //foreach (var pmodule in Data.Environment.GetPageModules())
-                //{
-                //    if (pmodule.GetType().Name == pBack)
-                //    {
-                //        var moduleResult = pmodule.Execute(_Console.CurrentPage, _Console.CurrentApplicationUser);
-                //        if (moduleResult.IsSuccess && string.IsNullOrWhiteSpace(moduleResult.WimNotificationOutput) == false)
-                //        {
-                //            _Console.CurrentListInstance.wim.Notification.AddNotification(moduleResult.WimNotificationOutput);
-                //        }
-                //        else if (string.IsNullOrWhiteSpace(moduleResult.WimNotificationOutput) == false)
-                //        {
-                //            _Console.CurrentListInstance.wim.Notification.AddError(moduleResult.WimNotificationOutput);
-                //        }
+                if (_Console.Context?.RequestServices?.GetServices<IPageModule>().Any() == true)
+                {
+                    pageModules = _Console.Context.RequestServices.GetServices<IPageModule>().ToList();
+                }
 
-                //        Data.Page page = Data.Page.SelectOne(_Console.Item.Value, false);
-                //        if (page?.ID > 0)
-                //        {
-                //            Framework2.Functions.AuditTrail.Insert(_Console.CurrentApplicationUser, page, Framework2.Functions.Auditing.ActionType.PageModuleExecution, null);
-                //        }
-                //    }
-                //}
-            //}
+                foreach (var pmodule in pageModules)
+                {
+                    if (pmodule.GetType().Name == pBack)
+                    {
+                        var moduleResult = await pmodule.ExecuteAsync(_Console.CurrentPage, _Console.CurrentApplicationUser, _Context);
+                        if (moduleResult.IsSuccess && string.IsNullOrWhiteSpace(moduleResult.WimNotificationOutput) == false)
+                        {
+                            _Console.CurrentListInstance.wim.Notification.AddNotification(moduleResult.WimNotificationOutput);
+                        }
+                        else if (string.IsNullOrWhiteSpace(moduleResult.WimNotificationOutput) == false)
+                        {
+                            _Console.CurrentListInstance.wim.Notification.AddError(moduleResult.WimNotificationOutput);
+                        }
+
+                        //if (page?.ID > 0)
+                        //{
+                        //    Framework2.Functions.AuditTrail.Insert(_Console.CurrentApplicationUser, page, Framework2.Functions.Auditing.ActionType.PageModuleExecution, null);
+                        //}
+                    }
+                }
+            }
 
             if (string.IsNullOrEmpty(section))
             {
@@ -1192,7 +1193,7 @@ namespace Sushi.Mediakiwi.UI
                 {
                     var page = Utility.ConvertToInt(_Console.Request.Query["page"]);
                     var target = _Console.Request.Query["tab"];
-                    if (String.IsNullOrEmpty(target) && page > 0)
+                    if (string.IsNullOrEmpty(target) && page > 0)
                     {
                         var pageInstance = Page.SelectOne(page);
                         var sections = pageInstance.Template.GetPageSections();

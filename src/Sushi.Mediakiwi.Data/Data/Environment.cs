@@ -1,5 +1,4 @@
-﻿using Sushi.MicroORM;
-using Sushi.MicroORM.Mapping;
+﻿using Sushi.MicroORM.Mapping;
 using System;
 using System.Collections;
 using System.Threading.Tasks;
@@ -288,7 +287,7 @@ namespace Sushi.Mediakiwi.Data
         #region registry
 
         /// <summary>
-        /// Gets the <see cref="System.String"/> with the specified registry. OnError returns String.Empty!
+        /// Gets the <see cref="string"/> with the specified registry. OnError returns String.Empty!
         /// </summary>
         /// <value></value>
         public virtual string this[string registry]
@@ -299,7 +298,7 @@ namespace Sushi.Mediakiwi.Data
             }
         }
 
-        private Object registerLock = new Object();
+        private object registerLock = new object();
 
         /// <summary>
         ///

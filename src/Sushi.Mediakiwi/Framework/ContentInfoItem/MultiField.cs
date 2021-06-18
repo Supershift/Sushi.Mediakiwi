@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Collections.Generic;
-using System.Text;
 using Sushi.Mediakiwi.Data;
-using System.Globalization;
-using System.Web;
 using Microsoft.AspNetCore.Http;
 
 namespace Sushi.Mediakiwi.Framework

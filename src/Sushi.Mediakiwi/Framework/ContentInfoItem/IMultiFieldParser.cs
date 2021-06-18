@@ -1,5 +1,4 @@
-﻿using System;
-namespace Sushi.Mediakiwi.Framework
+﻿namespace Sushi.Mediakiwi.Framework
 {
     public interface IMultiFieldParser
     {

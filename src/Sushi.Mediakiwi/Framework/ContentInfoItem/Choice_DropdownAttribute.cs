@@ -2,7 +2,6 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using System.Text;
-using System.Text.RegularExpressions;
 using Sushi.Mediakiwi.UI;
 using Sushi.Mediakiwi.Data;
 using System.Net;
@@ -785,9 +784,9 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                         , _OutputOption != null ? _OutputOption.Value : OutputText // 4
                         , Placeholder //5 
                         , AsyncMinInput.ToString()
-                        , _OutputOption == null || String.IsNullOrEmpty(_OutputOption.Text) ? null : string.Format(" data-text=\"{0}\"", _OutputOption.Text)
+                        , _OutputOption == null || string.IsNullOrEmpty(_OutputOption.Text) ? null : string.Format(" data-text=\"{0}\"", _OutputOption.Text)
                         , IsTagging ? " data-tags=\"true\" data-max=\"1\"" : null
-                        , _OutputOption == null || String.IsNullOrEmpty(_OutputOption.Text) ? null : _OutputOption.Text //9
+                        , _OutputOption == null || string.IsNullOrEmpty(_OutputOption.Text) ? null : _OutputOption.Text //9
                         , opt
                             );
                 }

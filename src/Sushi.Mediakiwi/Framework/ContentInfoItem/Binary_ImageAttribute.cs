@@ -1,8 +1,6 @@
 using Sushi.Mediakiwi.Data;
 using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Text;
 
 namespace Sushi.Mediakiwi.Framework.ContentInfoItem
 {
@@ -235,7 +233,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                     m_InheritedCandidate = Image.SelectOne(Utility.ConvertToInt(field.InheritedValue));
                     if (m_InheritedCandidate != null && m_InheritedCandidate.ID > 0)
                     {
-                        string inheritedImage = $"<img class=\"preview\" alt=\"Preview\" src=\"{Console.WimRepository.Replace("/wim", String.Empty, StringComparison.InvariantCultureIgnoreCase)}/thumbnail/{m_InheritedCandidate.ID}.jpg\"/>";
+                        string inheritedImage = $"<img class=\"preview\" alt=\"Preview\" src=\"{Console.WimRepository.Replace("/wim", string.Empty, StringComparison.InvariantCultureIgnoreCase)}/thumbnail/{m_InheritedCandidate.ID}.jpg\"/>";
                         InhertitedOutputText = $"{inheritedImage}{m_InheritedCandidate.Title} ({(m_InheritedCandidate.Size > 0 ? (m_InheritedCandidate.Size / 1024) : 0)} KB)</a>";
                     }
                 }

@@ -1,15 +1,6 @@
-using System;
 using System.Linq;
-using System.Collections;
 using System.Collections.Generic;
-using System.IO;
 using System.Data;
-using System.Data.SqlClient;
-using System.Drawing;
-using System.Drawing.Imaging;
-using System.Drawing.Drawing2D;
-using System.Web;
-using System.Threading;
 using System.Text;
 using Sushi.Mediakiwi.Data;
 using Microsoft.AspNetCore.Http;

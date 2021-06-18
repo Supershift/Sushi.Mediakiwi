@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Sushi.Mediakiwi.Data.Caching
+﻿namespace Sushi.Mediakiwi.Data.Caching
 {
     public interface ICacheManager
     {

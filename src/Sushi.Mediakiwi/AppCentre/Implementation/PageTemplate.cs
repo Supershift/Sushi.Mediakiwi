@@ -1,8 +1,6 @@
 using System;
 using System.Linq;
 using System.Data;
-using System.Drawing;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Sushi.Mediakiwi.Data;
 using Sushi.Mediakiwi.Framework;

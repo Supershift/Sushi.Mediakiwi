@@ -1,9 +1,5 @@
 ﻿using Sushi.Mediakiwi.Data;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Sushi.Mediakiwi.UI
 {
@@ -68,10 +64,10 @@ namespace Sushi.Mediakiwi.UI
                     if (item.OnlyOneUsage)
                         oneUsageAttr = @" removeAfterUse=""1"" ";
                     //                                                0         1       2           3       4
-                    string itemHTML = String.Format(HTML_CONTAINER_BLOCK, item.ID, item.Name, item.Icon, page.ID, container.Group.GetValueOrDefault(),
+                    string itemHTML = string.Format(HTML_CONTAINER_BLOCK, item.ID, item.Name, item.Icon, page.ID, container.Group.GetValueOrDefault(),
                                                 // 5
                                                 oneUsageAttr);
-                    optionCache = String.Concat(optionCache, "mediakiwi.pageComponentControl.options['", item.ID, "'] =  '", itemHTML.Replace("'", "\\'").Replace(System.Environment.NewLine, " "), "'; ", System.Environment.NewLine);
+                    optionCache = string.Concat(optionCache, "mediakiwi.pageComponentControl.options['", item.ID, "'] =  '", itemHTML.Replace("'", "\\'").Replace(System.Environment.NewLine, " "), "'; ", System.Environment.NewLine);
                     if (!item.HideOnInit) 
                         result += itemHTML;
                 }

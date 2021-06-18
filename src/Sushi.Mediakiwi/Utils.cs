@@ -149,7 +149,7 @@ namespace Sushi.Mediakiwi
         }
 
 
-        public static String ShortUrlEncoding(long input)
+        public static string ShortUrlEncoding(long input)
         {
             return Base36.Encode(input);
         }
@@ -169,7 +169,7 @@ namespace Sushi.Mediakiwi
             /// </summary>
             /// <param name="input"></param>
             /// <returns></returns>
-            public static String Encode(long input)
+            public static string Encode(long input)
             {
                 if (input < 0) throw new ArgumentOutOfRangeException("input", input, "input cannot be negative");
 
@@ -188,7 +188,7 @@ namespace Sushi.Mediakiwi
             /// </summary>
             /// <param name="input"></param>
             /// <returns></returns>
-            public static Int64 Decode(string input)
+            public static long Decode(string input)
             {
                 var reversed = input.Reverse();
                 long result = 0;
@@ -360,15 +360,15 @@ namespace Sushi.Mediakiwi
                 text = text.Substring(0, 47) + "...";
 
             if (!url.Contains("http://") && !url.Contains("https://") && !url.Contains("ftp://"))
-                url = String.Concat("http://", url);
+                url = string.Concat("http://", url);
 
-            return String.Format(@"{3}<a href=""{0}"" title=""{2}"">{1}</a> ", url.ToLower(), text, title, m.Value.StartsWith("\n") ? "\n" : " ");
+            return string.Format(@"{3}<a href=""{0}"" title=""{2}"">{1}</a> ", url.ToLower(), text, title, m.Value.StartsWith("\n") ? "\n" : " ");
         }
 
         public static string ConvertFirstToUpper(string p)
         {
-            if (String.IsNullOrEmpty(p))
-                return String.Empty;
+            if (string.IsNullOrEmpty(p))
+                return string.Empty;
             if (p.Length == 1)
                 return p.ToUpper();
             return p[0].ToString().ToUpper() + p.Substring(1);
@@ -501,7 +501,7 @@ namespace Sushi.Mediakiwi
                             else if (from.PropertyType == typeof(decimal))
                             {
                                 //  Decimal --> String
-                                Decimal tmp;
+                                decimal tmp;
                                 if (IsDecimal(fromPropertyValue, out tmp))
                                 {
                                     System.Globalization.CultureInfo info = new System.Globalization.CultureInfo("en-US");
@@ -556,7 +556,7 @@ namespace Sushi.Mediakiwi
                             else if (to.PropertyType == typeof(decimal))
                             {
                                 //  String --> Decimal
-                                Decimal tmp;
+                                decimal tmp;
                                 if (IsDecimal(fromPropertyValue, out tmp))
                                 {
                                     to.SetValue(propertyContainerTo, tmp, null);
@@ -1333,7 +1333,7 @@ namespace Sushi.Mediakiwi
         /// <param name="assemblyName">Name of the assembly.</param>
         /// <param name="className">Name of the class.</param>
         /// <returns></returns>
-        public static Object CreateInstance(string assemblyName, string className)
+        public static object CreateInstance(string assemblyName, string className)
         {
             Type type;
             return CreateInstance(assemblyName, className, out type);
@@ -1344,7 +1344,7 @@ namespace Sushi.Mediakiwi
         /// </summary>
         /// <param name="list">The list.</param>
         /// <returns></returns>
-        public static Object CreateInstance(Data.IComponentList list)
+        public static object CreateInstance(Data.IComponentList list)
         {
             Type type;
             return CreateInstance(list.AssemblyName, list.ClassName, out type);
@@ -1357,7 +1357,7 @@ namespace Sushi.Mediakiwi
         /// <param name="className">Name of the class.</param>
         /// <param name="type">The type.</param>
         /// <returns></returns>
-        public static Object CreateInstance(string assemblyName, string className, out Type type)
+        public static object CreateInstance(string assemblyName, string className, out Type type)
         {
             return CreateInstance(assemblyName, className, out type, true);
         }
@@ -1370,7 +1370,7 @@ namespace Sushi.Mediakiwi
         /// <param name="type">The type.</param>
         /// <param name="onExceptionThrow">if set to <c>true</c> [on exception throw].</param>
         /// <returns></returns>
-        public static Object CreateInstance(string assemblyName, string className, out Type type, bool onExceptionThrow)
+        public static object CreateInstance(string assemblyName, string className, out Type type, bool onExceptionThrow)
         {
             type = null;
             //if (string.IsNullOrEmpty(assemblyName) || string.IsNullOrEmpty(className))
@@ -2143,9 +2143,9 @@ namespace Sushi.Mediakiwi
                     returnItem += c;
                     continue;
                 }
-                Byte[] encoded = encoding.GetBytes(c.ToString());
+                byte[] encoded = encoding.GetBytes(c.ToString());
 
-                foreach (Byte b in encoded)
+                foreach (byte b in encoded)
                 {
                     if (firstByte)
                         tempChar = b.ToString("X");
@@ -2614,7 +2614,7 @@ namespace Sushi.Mediakiwi
                     //    System.Threading.Thread.CurrentThread.CurrentCulture.NumberFormat.NumberGroupSeparator,
                     //    System.Threading.Thread.CurrentThread.CurrentCulture.NumberFormat.NumberDecimalSeparator);
 
-                    if (Decimal.TryParse(testCandidate, NumberStyles.Any, info, out output))
+                    if (decimal.TryParse(testCandidate, NumberStyles.Any, info, out output))
                     {
                         return true;
                     }
@@ -2655,7 +2655,7 @@ namespace Sushi.Mediakiwi
                     //    System.Threading.Thread.CurrentThread.CurrentCulture.NumberFormat.NumberGroupSeparator,
                     //    System.Threading.Thread.CurrentThread.CurrentCulture.NumberFormat.NumberDecimalSeparator);
 
-                    if (Double.TryParse(testCandidate, NumberStyles.Any, info, out output))
+                    if (double.TryParse(testCandidate, NumberStyles.Any, info, out output))
                     {
                         return true;
                     }

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Sushi.Mediakiwi.Controllers.Data
+﻿namespace Sushi.Mediakiwi.Controllers.Data
 {
     public class DocumentTypeField
     {

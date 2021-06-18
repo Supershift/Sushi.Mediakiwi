@@ -1,8 +1,6 @@
 using Sushi.Mediakiwi.Data;
 using Sushi.Mediakiwi.UI;
 using System;
-
-using System.Collections.Generic;
 using System.Net;
 using System.Text;
 

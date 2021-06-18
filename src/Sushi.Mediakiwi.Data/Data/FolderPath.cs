@@ -1,8 +1,5 @@
-﻿using Sushi.MicroORM;
-using Sushi.MicroORM.Mapping;
-using System;
+﻿using Sushi.MicroORM.Mapping;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Sushi.Mediakiwi.Data.MicroORM;
 
@@ -58,11 +55,35 @@ namespace Sushi.Mediakiwi.Data
         /// Select all Folders
         /// </summary>
         /// <returns></returns>
+        public static async Task<List<FolderPath>> SelectAllAsync()
+        {
+            var connector = ConnectorFactory.CreateConnector<FolderPath>();
+            var filter = connector.CreateDataFilter();
+
+            return await connector.FetchAllAsync(filter);
+        }
+
+        /// <summary>
+        /// Select all Folders
+        /// </summary>
+        /// <returns></returns>
         public static FolderPath SelectOne(int id)
         {
             var connector = ConnectorFactory.CreateConnector<FolderPath>();
 
             return connector.FetchSingle(id);
+        }
+
+
+        /// <summary>
+        /// Select all Folders
+        /// </summary>
+        /// <returns></returns>
+        public static async Task<FolderPath> SelectOneAsync(int id)
+        {
+            var connector = ConnectorFactory.CreateConnector<FolderPath>();
+
+            return await connector.FetchSingleAsync(id);
         }
     }
 }

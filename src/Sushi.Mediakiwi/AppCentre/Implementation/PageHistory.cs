@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Sushi.Mediakiwi.Framework;
 using Sushi.Mediakiwi.Data;
 
@@ -17,7 +16,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
 
         private async Task PageHistory_ListSearch(ComponentListSearchEventArgs arg)
         {
-            if (!String.IsNullOrEmpty(Context.Request.Query["rollback"]))
+            if (!string.IsNullOrEmpty(Context.Request.Query["rollback"]))
             {
                 int rollbackVersion = Utility.ConvertToInt(Context.Request.Query["rollback"]);
                 var pageVersion = await PageVersion.SelectOneAsync(rollbackVersion);

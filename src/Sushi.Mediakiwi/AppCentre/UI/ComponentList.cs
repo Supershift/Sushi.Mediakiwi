@@ -1,8 +1,5 @@
 using System;
-using System.Collections.Generic;
-using System.Data;
 using System.Threading.Tasks;
-using System.Web;
 using Sushi.Mediakiwi.AppCentre.UI;
 using Sushi.Mediakiwi.Data;
 using Sushi.Mediakiwi.Framework;

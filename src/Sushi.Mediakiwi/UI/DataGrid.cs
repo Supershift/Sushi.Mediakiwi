@@ -1,6 +1,5 @@
 using System;
 using System.Net;
-using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
@@ -384,7 +383,7 @@ namespace Sushi.Mediakiwi.UI
                         int maxPageReferenceCount = 10;
 
                         //  Calculate boundaries
-                        Decimal surroundingCandidateCount = Decimal.Floor(Decimal.Divide((maxPageReferenceCount - 1), 2));
+                        decimal surroundingCandidateCount = decimal.Floor(decimal.Divide((maxPageReferenceCount - 1), 2));
 
                         int runtoPageReference = currentPage + (int)surroundingCandidateCount;
                         int startPageReference = (currentPage - (int)surroundingCandidateCount);
@@ -775,7 +774,7 @@ namespace Sushi.Mediakiwi.UI
 
                     if (propertyValue != null)
                     {
-                        if (propertyValue.GetType() == typeof(Decimal) || propertyValue.GetType() == typeof(int))
+                        if (propertyValue.GetType() == typeof(decimal) || propertyValue.GetType() == typeof(int))
                         {
                             
                             if (column.Total == Sushi.Mediakiwi.Framework.ListDataTotalType.Sum || column.Total == Sushi.Mediakiwi.Framework.ListDataTotalType.Average)
@@ -1098,17 +1097,17 @@ namespace Sushi.Mediakiwi.UI
                             {
                                 if (column.Alignment == Sushi.Mediakiwi.Framework.Align.Default)
                                 {
-                                    if (propertyValue.GetType() == typeof(DateTime) || propertyValue.GetType() == typeof(Decimal) || propertyValue.GetType() == typeof(DateTime?) || propertyValue.GetType() == typeof(Decimal?))
+                                    if (propertyValue.GetType() == typeof(DateTime) || propertyValue.GetType() == typeof(decimal) || propertyValue.GetType() == typeof(DateTime?) || propertyValue.GetType() == typeof(decimal?))
                                         cell_attribute.Style.Add("white-space", "nowrap");
 
-                                    if (propertyValue.GetType() == typeof(Decimal) || propertyValue.GetType() == typeof(int))
+                                    if (propertyValue.GetType() == typeof(decimal) || propertyValue.GetType() == typeof(int))
                                     {
                                         if (string.IsNullOrEmpty(cell_attribute.Class))
                                             cell_attribute.Class = "txt-r";
                                         else
                                             cell_attribute.Class += " txt-r";
                                     }
-                                    if (propertyValue.GetType() == typeof(Boolean))
+                                    if (propertyValue.GetType() == typeof(bool))
                                     {
                                         //cell_attribute.Align = "center";
                                         if (string.IsNullOrEmpty(cell_attribute.Class))
@@ -1286,7 +1285,7 @@ namespace Sushi.Mediakiwi.UI
 
 
                         RowHTML.Append("\n\t\t\t\t\t\t\t\t</tr>");
-                        if (!String.IsNullOrEmpty(accordionPanelAddition))
+                        if (!string.IsNullOrEmpty(accordionPanelAddition))
                             RowHTML.Append("\n\t\t\t\t\t\t\t\t"+ accordionPanelAddition);
                         if (!shouldSkipRowPresentation)
                             build2.Append(RowHTML);
@@ -1385,7 +1384,7 @@ namespace Sushi.Mediakiwi.UI
                         {
                             build.AppendFormat("\n\t\t\t\t\t\t\t\t\t<td class=\"txt-r{3}\"{4}>{0}{1}{2}</td>"
                                 , column.ColumnValuePrefix
-                                , OutputValue(container, Decimal.Divide(column.TotalValue, count), column)
+                                , OutputValue(container, decimal.Divide(column.TotalValue, count), column)
                                 , column.ColumnValueSuffix
                                 , column.ColumnIsFixed ? "fixed" : null
                                 , column.ColumnFixedLeftMargin > 0 ? string.Format(" style=\"margin-left:{0}px\"", column.ColumnFixedLeftMargin) : null
@@ -1956,7 +1955,7 @@ namespace Sushi.Mediakiwi.UI
                     }
                     else if (column.Total == Sushi.Mediakiwi.Framework.ListDataTotalType.Average)
                     {
-                        json.Sum.Add(DataGridForJSON.ConvertToColumnName(column), Decimal.Divide(column.TotalValue, count));
+                        json.Sum.Add(DataGridForJSON.ConvertToColumnName(column), decimal.Divide(column.TotalValue, count));
                         //build.AppendFormat("\n\t\t\t\t\t\t\t\t\t<th class=\"sum\" align=\"right\">{0}{1}{2}</th>", column.ColumnValuePrefix, OutputValue(container, Decimal.Divide(column.TotalValue, count), column), column.ColumnValueSuffix);
                     }
                     //else
@@ -2724,7 +2723,7 @@ namespace Sushi.Mediakiwi.UI
 
                             if (castType == typeof(DateTime))
                                 return cst[indexer].ParseDateTime();
-                            else if (castType == typeof(Decimal))
+                            else if (castType == typeof(decimal))
                                 return cst[indexer].ParseDecimal();
                             else if (castType == typeof(int))
                                 return cst[indexer].ParseInt();
@@ -2780,7 +2779,7 @@ namespace Sushi.Mediakiwi.UI
         }
         string m_InnerPropertyName;
         PropertyInfo[] m_InfoCollection2;
-        Object m_InnerObj;
+        object m_InnerObj;
 
         /// <summary>
         /// Gets the highlighted value.
@@ -3055,24 +3054,24 @@ namespace Sushi.Mediakiwi.UI
                     return tmp.ToString(container.DateFormatShort);
                 return tmp.ToString(container.DateTimeFormatShort);
             }
-            else if (candidate.GetType() == typeof(Boolean))
+            else if (candidate.GetType() == typeof(bool))
             {
                 if (column.ColumnWidth == 0)
                     column.ColumnWidth = 10;
 
-                return ((Boolean)candidate)
+                return ((bool)candidate)
                     ? Utils.GetIconImageString(container, Utils.IconImage.Yes)
                     : Utils.GetIconImageString(container, Utils.IconImage.No);
             }
-            else if (candidate.GetType() == typeof(Decimal))
+            else if (candidate.GetType() == typeof(decimal))
             {
                 if (convertToWimDecimal)
                 {
                     System.Threading.Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("EN-us");
-                    return ((Decimal)candidate).ToString("N");
+                    return ((decimal)candidate).ToString("N");
                 }
                 else
-                    return ((Decimal)candidate).ToString("N");
+                    return ((decimal)candidate).ToString("N");
             }
             return candidate;
         }

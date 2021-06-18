@@ -7,7 +7,7 @@ using Sushi.Mediakiwi.Data;
 namespace Sushi.Mediakiwi.Framework
 {
     //deze class is ook verhuis naar Sushi.Mediakiwi.Data.Standard
-    
+
     /// <summary>
     /// This class manages objects in server cache. 
     /// </summary>
@@ -37,7 +37,9 @@ namespace Sushi.Mediakiwi.Framework
             //    MemoryCache.Default.Dispose();
 
             if (_Memory == null)
+            {
                 return;
+            }
 
             var mem = _Memory;
             _Memory = new MemoryCache(new MemoryCacheOptions() { });
@@ -49,7 +51,9 @@ namespace Sushi.Mediakiwi.Framework
         public static bool IsCached(string key)
         {
             if (CommonConfiguration.DISABLE_CACHE)
+            {
                 return false;
+            }
 
             return Memory.TryGetValue(key, out _);
         }
@@ -66,7 +70,9 @@ namespace Sushi.Mediakiwi.Framework
         {
             item = default(T);
             if (CommonConfiguration.DISABLE_CACHE)
+            {
                 return false;
+            }
 
             return Memory.TryGetValue<T>(key, out item);
         }
@@ -75,7 +81,9 @@ namespace Sushi.Mediakiwi.Framework
         {
             item = default(List<T>);
             if (CommonConfiguration.DISABLE_CACHE)
+            {
                 return false;
+            }
 
             return Memory.TryGetValue<List<T>>(key, out item);
         }
@@ -92,7 +100,9 @@ namespace Sushi.Mediakiwi.Framework
             foreach(var key in _CacheLookup.Keys)
             {
                 if (key?.IndexOf(cacheKey) > -1)
+                {
                     return true;
+                }
             }
             return false;
         }
@@ -104,15 +114,16 @@ namespace Sushi.Mediakiwi.Framework
         /// <returns></returns>
         public T GetItem<T>(string key)
         {
-            T candidate;
-            IsCached(key, out candidate);
+            IsCached(key, out T candidate);
             return candidate;
         }
 
         public static void Add(string key, object item)
         {
             if (CommonConfiguration.DISABLE_CACHE)
+            {
                 return;
+            }
             Add(key, item, CommonConfiguration.DefaultCacheTime);
         }
 
@@ -125,7 +136,9 @@ namespace Sushi.Mediakiwi.Framework
         public static void Add(string key, object item, DateTime expiration)
         {
             if (CommonConfiguration.DISABLE_CACHE)
+            {
                 return;
+            }
 
             Memory.Set(key, item, expiration);
             _CacheLookup.TryAdd(key, DateTime.UtcNow);
@@ -145,7 +158,9 @@ namespace Sushi.Mediakiwi.Framework
         public static void Add(string key, object item, TimeSpan slidingExpiration)
         {
             if (CommonConfiguration.DISABLE_CACHE)
+            {
                 return;
+            }
             //if (Context != null)
             //    Context.Cache.Insert(key, item, null, Cache.NoAbsoluteExpiration, slidingExpiration);
             //else
@@ -179,7 +194,9 @@ namespace Sushi.Mediakiwi.Framework
                 Memory.Remove(cacheKey);
 
                 if (Data.CommonConfiguration.IS_LOAD_BALANCED && !igNoreLoadBalancedCacheCheck)
+                {
                     CacheItemLogic.ApplyLoadBalancedCacheCheckItem(cacheKey, false);
+                }
 
                 return true;
             }
@@ -190,31 +207,47 @@ namespace Sushi.Mediakiwi.Framework
         /// Flushes the index of cache objects.
         /// </summary>
         /// <param name="cacheKey">The cache key.</param>
-        /// <param name="igNoreLoadBalancedCacheCheck">if set to <c>true</c> [ig nore load balanced cache check].</param>
-        internal static void FlushIndexOfCache(string cacheKey, bool igNoreLoadBalancedCacheCheck = false)
+        internal static void FlushIndexOfCache(string cacheKey)
+        {
+            FlushIndexOfCache(cacheKey, false);
+        }
+
+        /// <summary>
+        /// Flushes the index of cache objects.
+        /// </summary>
+        /// <param name="cacheKey">The cache key.</param>
+        /// <param name="igNoreLoadBalancedCacheCheck">if set to <c>true</c> [ignore load balanced cache check].</param>
+        internal static void FlushIndexOfCache(string cacheKey, bool igNoreLoadBalancedCacheCheck)
         {
             bool hasFoundCachedItem = false;
             foreach (var key in _CacheLookup.Keys)
             {
-                if (key.IndexOf(cacheKey) > -1)
+                if (key.IndexOf(cacheKey) > -1 && IsCached(key))
                 {
-                    if (IsCached(key))
-                    {
-                        hasFoundCachedItem = true;
-                        Memory.Remove(key);
-                    }
+                    hasFoundCachedItem = true;
+                    Memory.Remove(key);
                 }
             }
+
             if (Data.CommonConfiguration.IS_LOAD_BALANCED && hasFoundCachedItem)
+            {
                 CacheItemLogic.ApplyLoadBalancedCacheCheckItem(cacheKey, true);
+            }
         }
 
         /// <summary>
         /// Flushes all.
         /// </summary>
-        /// <param name="Context">The context.</param>
+        public static void FlushAll()
+        {
+            FlushAll(false);
+        }
+
+        /// <summary>
+        /// Flushes all.
+        /// </summary>
         /// <param name="setEnvironment">if set to <c>true</c> [set environment].</param>
-        public static void FlushAll(bool setEnvironment = false)
+        public static void FlushAll(bool setEnvironment)
         {
             var keys = _CacheLookup.Keys;
             foreach (var key in keys)
@@ -229,7 +262,7 @@ namespace Sushi.Mediakiwi.Framework
            
             Reset(true);
             _CacheLookup.Clear();
-            Sushi.Mediakiwi.Portal.Caches.Clear();
+            Portal.Caches.Clear();
 
             //if (setEnvironment)
             //    EnvironmentVersionLogic.Flush(true);

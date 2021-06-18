@@ -5,14 +5,11 @@ using System.Collections;
 using System.Data;
 using System.Collections.Generic;
 using System.Text;
-using System.Web;
 using Sushi.Mediakiwi.Data;
-using System.Net;
 using System.Net.Mail;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Primitives;
 using Sushi.Mediakiwi.DataEntities;
-using Sushi.Mediakiwi.Beta.GeneratedCms.Source;
 
 namespace Sushi.Mediakiwi.Framework
 {
@@ -713,12 +710,12 @@ namespace Sushi.Mediakiwi.Framework
     public class GridDataItemAttribute
     {
         /// <summary>
-        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// Returns a <see cref="string" /> that represents this instance.
         /// </summary>
         /// <param name="value">The value.</param>
         /// <param name="column">The column.</param>
         /// <returns>
-        /// A <see cref="System.String" /> that represents this instance.
+        /// A <see cref="string" /> that represents this instance.
         /// </returns>
         public string ToString(object value, Framework.ListDataColumn column)
         {
@@ -829,10 +826,10 @@ namespace Sushi.Mediakiwi.Framework
 
         string m_Attribute;
         /// <summary>
-        /// Gets or sets the <see cref="System.String"/> with the specified name.
+        /// Gets or sets the <see cref="string"/> with the specified name.
         /// </summary>
         /// <value>
-        /// The <see cref="System.String"/>.
+        /// The <see cref="string"/>.
         /// </value>
         /// <param name="name">The name.</param>
         /// <returns></returns>
@@ -931,10 +928,10 @@ namespace Sushi.Mediakiwi.Framework
     public class StyleAttribute
     {
         /// <summary>
-        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// Returns a <see cref="string" /> that represents this instance.
         /// </summary>
         /// <returns>
-        /// A <see cref="System.String" /> that represents this instance.
+        /// A <see cref="string" /> that represents this instance.
         /// </returns>
         public override string ToString()
         {
@@ -974,10 +971,10 @@ namespace Sushi.Mediakiwi.Framework
 
         string m_Attribute;
         /// <summary>
-        /// Gets or sets the <see cref="System.String"/> with the specified name.
+        /// Gets or sets the <see cref="string"/> with the specified name.
         /// </summary>
         /// <value>
-        /// The <see cref="System.String"/>.
+        /// The <see cref="string"/>.
         /// </value>
         /// <param name="name">The name.</param>
         /// <returns></returns>
@@ -1363,7 +1360,7 @@ namespace Sushi.Mediakiwi.Framework
                         {
                             if (p.Name == item.ValidationProperty)
                             {
-                                bool isTrue = (Boolean)p.GetValue(sender, null);
+                                bool isTrue = (bool)p.GetValue(sender, null);
                                 if (!item.State)
                                     return !isTrue;
                                 return isTrue;
@@ -1375,7 +1372,7 @@ namespace Sushi.Mediakiwi.Framework
                             {
                                 if (p.Name == item.ValidationProperty)
                                 {
-                                    bool isTrue = (Boolean)p.GetValue(listContainer, null);
+                                    bool isTrue = (bool)p.GetValue(listContainer, null);
                                     if (!item.State)
                                         return !isTrue;
                                     return isTrue;
@@ -1418,7 +1415,7 @@ namespace Sushi.Mediakiwi.Framework
                         {
                             if (p.Name == item.ValidationProperty)
                             {
-                                bool isTrue = (Boolean)p.GetValue(sender, null);
+                                bool isTrue = (bool)p.GetValue(sender, null);
                                 if (!item.State)
                                     return !isTrue;
                                 return isTrue;
@@ -1430,7 +1427,7 @@ namespace Sushi.Mediakiwi.Framework
                             {
                                 if (p.Name == item.ValidationProperty)
                                 {
-                                    bool isTrue = (Boolean)p.GetValue(listContainer, null);
+                                    bool isTrue = (bool)p.GetValue(listContainer, null);
                                     if (!item.State)
                                         return !isTrue;
                                     return isTrue;
@@ -1468,7 +1465,7 @@ namespace Sushi.Mediakiwi.Framework
                         {
                             if (p.Name == item.ValidationProperty)
                             {
-                                bool isTrue = (Boolean)p.GetValue(sender, null);
+                                bool isTrue = (bool)p.GetValue(sender, null);
                                 if (!item.State)
                                     return !isTrue;
                                 return isTrue;
@@ -1480,7 +1477,7 @@ namespace Sushi.Mediakiwi.Framework
                             {
                                 if (p.Name == item.ValidationProperty)
                                 {
-                                    bool isTrue = (Boolean)p.GetValue(listContainer, null);
+                                    bool isTrue = (bool)p.GetValue(listContainer, null);
                                     if (!item.State)
                                         return !isTrue;
                                     return isTrue;
@@ -3291,7 +3288,7 @@ namespace Sushi.Mediakiwi.Framework
             /// <param name="isVisible">if set to <c>true</c> [is visible].</param>
             /// <param name="isEditable">if set to <c>true</c> [is editable].</param>
             /// <param name="contentInfo">The content info.</param>
-            public void AddElement(Object sender, string property, bool isVisible, bool isEditable, IContentInfo contentInfo)
+            public void AddElement(object sender, string property, bool isVisible, bool isEditable, IContentInfo contentInfo)
             {
                 AddElement(sender, property, isVisible, isEditable, contentInfo, null, false);
             }
@@ -3305,7 +3302,7 @@ namespace Sushi.Mediakiwi.Framework
             /// <param name="isEditable">if set to <c>true</c> [is editable].</param>
             /// <param name="contentInfo">The content info.</param>
             /// <param name="value">The value.</param>
-            public void AddElement(Object sender, string property, bool isVisible, bool isEditable, IContentInfo contentInfo, object value)
+            public void AddElement(object sender, string property, bool isVisible, bool isEditable, IContentInfo contentInfo, object value)
             {
                 AddElement(sender, property, isVisible, isEditable, contentInfo, value, true);
             }
@@ -3317,7 +3314,7 @@ namespace Sushi.Mediakiwi.Framework
             /// <param name="property">The property.</param>
             /// <param name="value">The value.</param>
             /// <param name="valueIsSet">if set to <c>true</c> [value is set].</param>
-            public void AddElement(Object sender, Sushi.Mediakiwi.Data.Property property, object value, bool valueIsSet)
+            public void AddElement(object sender, Sushi.Mediakiwi.Data.Property property, object value, bool valueIsSet)
             {
                 bool isEditable = !property.IsOnlyRead;
 
@@ -3374,7 +3371,7 @@ namespace Sushi.Mediakiwi.Framework
             /// <param name="contentInfo">The content info.</param>
             /// <param name="value">The value.</param>
             /// <param name="valueIsSet">if set to <c>true</c> [value is set].</param>
-            public void AddElement(Object sender, string property, bool isVisible, bool isEditable, IContentInfo contentInfo, object value, bool valueIsSet)
+            public void AddElement(object sender, string property, bool isVisible, bool isEditable, IContentInfo contentInfo, object value, bool valueIsSet)
             {
                 if (!m_Root.IsEditMode)
                     isEditable = false;
@@ -3427,7 +3424,7 @@ namespace Sushi.Mediakiwi.Framework
             /// <param name="sender">The sender.</param>
             /// <param name="property">The property.</param>
             /// <returns></returns>
-            public CustomDataItem GetValue(Object sender, string property)
+            public CustomDataItem GetValue(object sender, string property)
             {
                 if (CustomDataInstance != null && CustomDataInstance.HasProperty(property))
                     return CustomDataInstance[property];
@@ -3804,7 +3801,7 @@ namespace Sushi.Mediakiwi.Framework
             grid.m_IsLinqUsed = true;
             grid.m_ListDataRecordCount = GridDataCommunication.ResultCount.HasValue ? GridDataCommunication.ResultCount.Value : source.Count();
 
-            grid.m_ListDataRecordPageCount = grid.m_ListDataRecordCount == 0 ? 0 : Convert.ToInt32(decimal.Ceiling(((Decimal)grid.m_ListDataRecordCount / (Decimal)step)));
+            grid.m_ListDataRecordPageCount = grid.m_ListDataRecordCount == 0 ? 0 : Convert.ToInt32(decimal.Ceiling(((decimal)grid.m_ListDataRecordCount / (decimal)step)));
 
             if (!GridDataCommunication.ResultCount.HasValue)
             {
@@ -3892,7 +3889,7 @@ namespace Sushi.Mediakiwi.Framework
 
             this.m_ListDataRecordCount = GridDataCommunication.ResultCount.HasValue ? GridDataCommunication.ResultCount.Value : source.Count();
 
-            this.m_ListDataRecordPageCount = this.m_ListDataRecordCount == 0 ? 0 : Convert.ToInt32(decimal.Ceiling(((Decimal)this.m_ListDataRecordCount / (Decimal)step)));
+            this.m_ListDataRecordPageCount = this.m_ListDataRecordCount == 0 ? 0 : Convert.ToInt32(decimal.Ceiling(((decimal)this.m_ListDataRecordCount / (decimal)step)));
 
             if (!GridDataCommunication.ResultCount.HasValue)
             {
@@ -3951,7 +3948,7 @@ namespace Sushi.Mediakiwi.Framework
             this.m_DataTitle = title;
             this.m_IsLinqUsed = true;
             this.m_ListDataRecordCount = source.Count();
-            this.m_ListDataRecordPageCount = this.m_ListDataRecordCount == 0 ? 0 : Convert.ToInt32(decimal.Ceiling(((Decimal)this.m_ListDataRecordCount / (Decimal)step)));
+            this.m_ListDataRecordPageCount = this.m_ListDataRecordCount == 0 ? 0 : Convert.ToInt32(decimal.Ceiling(((decimal)this.m_ListDataRecordCount / (decimal)step)));
 
             int page = CurrentPage - 1;
             if (page < 0)
@@ -4003,7 +4000,7 @@ namespace Sushi.Mediakiwi.Framework
             grid.m_DataTitle = title;
             grid.m_IsLinqUsed = true;
             grid.m_ListDataRecordCount = source.Count();
-            grid.m_ListDataRecordPageCount = this.m_ListDataRecordCount == 0 ? 0 : Convert.ToInt32(decimal.Ceiling(((Decimal)grid.m_ListDataRecordCount / (Decimal)step)));
+            grid.m_ListDataRecordPageCount = this.m_ListDataRecordCount == 0 ? 0 : Convert.ToInt32(decimal.Ceiling(((decimal)grid.m_ListDataRecordCount / (decimal)step)));
 
             int page = CurrentPage - 1;
             if (page < 0)
@@ -4070,13 +4067,13 @@ namespace Sushi.Mediakiwi.Framework
         [Obsolete("This is not valid any more in mediakiwi", false)]
         public string ListDataClassNamePropertyValue { get; set; }
         
-        private List<String> m_ResetValueList;
+        private List<string> m_ResetValueList;
         /// <summary>
         /// These properties will be reset after the initial content has been applied. This can be used for dropdown dependency, et al.
         /// Applied values are the names of the properties.
         /// NOTE: This doesn't change values for OnSave and should be used for AutoPostback (dropdownlist) and Custom action buttons.
         /// </summary>
-        public List<String> ListDataDependendProperties
+        public List<string> ListDataDependendProperties
         {
             set
             {

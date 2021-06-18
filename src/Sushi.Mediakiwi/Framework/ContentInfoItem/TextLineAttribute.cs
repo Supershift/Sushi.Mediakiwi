@@ -1,8 +1,6 @@
 using Sushi.Mediakiwi.Data;
 using Sushi.Mediakiwi.Logic;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Sushi.Mediakiwi.Framework.ContentInfoItem
 {

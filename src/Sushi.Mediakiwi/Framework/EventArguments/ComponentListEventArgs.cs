@@ -1,7 +1,5 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Text;
 using Sushi.Mediakiwi.Beta.GeneratedCms.Source;
 
 namespace Sushi.Mediakiwi.Framework
@@ -72,7 +70,7 @@ namespace Sushi.Mediakiwi.Framework
         /// <value>
         /// The item.
         /// </value>
-        public Object Item { get; internal set; }
+        public object Item { get; internal set; }
 
         public void SetRowTitle(string title)
         {
@@ -181,10 +179,10 @@ namespace Sushi.Mediakiwi.Framework
         internal Framework.ListDataColumn[] Columns { get; set; }
         public Framework.ListDataColumn Column { get; internal set; }
         /// <summary>
-        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// Returns a <see cref="string" /> that represents this instance.
         /// </summary>
         /// <returns>
-        /// A <see cref="System.String" /> that represents this instance.
+        /// A <see cref="string" /> that represents this instance.
         /// </returns>
         public override string ToString()
         {

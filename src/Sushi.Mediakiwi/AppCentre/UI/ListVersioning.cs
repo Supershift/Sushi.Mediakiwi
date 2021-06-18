@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Sushi.Mediakiwi.Framework;
 
 namespace Sushi.Mediakiwi.AppCentre.UI

@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Sushi.Mediakiwi;
 using Sushi.Mediakiwi.Data;
@@ -51,7 +48,7 @@ public static class ComponentListExtension
     {
         IComponentListTemplate m_Instance = null;
         Type candidate = null;
-        Object instance = null;
+        object instance = null;
 
 
         if (m_Instance == null)

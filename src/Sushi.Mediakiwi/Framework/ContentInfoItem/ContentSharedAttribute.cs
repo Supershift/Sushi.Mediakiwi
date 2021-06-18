@@ -954,12 +954,12 @@ namespace Sushi.Mediakiwi.Framework
             get { return m_SenderInstance != null; }
         }
 
-        Object m_SenderInstance;
+        object m_SenderInstance;
         /// <summary>
         /// Gets the sender instance.
         /// </summary>
         /// <value>The sender instance.</value>
-        public Object SenderInstance
+        public object SenderInstance
         {
             get
             {
@@ -969,7 +969,7 @@ namespace Sushi.Mediakiwi.Framework
             }
             set { m_SenderInstance = value; }
         }
-        public Object SenderSponsorInstance { get; set; }
+        public object SenderSponsorInstance { get; set; }
 
         /// <summary>
         /// 

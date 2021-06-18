@@ -1,10 +1,6 @@
 ﻿using Newtonsoft.Json;
 using Sushi.Mediakiwi.UI;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Sushi.Mediakiwi.Framework2.Api.Logic
 {

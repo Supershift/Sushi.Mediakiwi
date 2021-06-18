@@ -9,7 +9,6 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
 using System.Xml.Serialization;
-using Sushi.Mediakiwi.Data;
 
 [assembly: InternalsVisibleToAttribute("Sushi.Mediakiwi")]
 
@@ -72,7 +71,7 @@ namespace Sushi.Mediakiwi.Data
             return epoch.AddSeconds(unixTime);
         }
 
-        public static String ShortUrlEncoding(long input)
+        public static string ShortUrlEncoding(long input)
         {
             return Base36.Encode(input);
         }
@@ -91,7 +90,7 @@ namespace Sushi.Mediakiwi.Data
             /// </summary>
             /// <param name="input"></param>
             /// <returns></returns>
-            public static String Encode(long input)
+            public static string Encode(long input)
             {
                 if (input < 0) throw new ArgumentOutOfRangeException("input", input, "input cannot be negative");
 
@@ -110,7 +109,7 @@ namespace Sushi.Mediakiwi.Data
             /// </summary>
             /// <param name="input"></param>
             /// <returns></returns>
-            public static Int64 Decode(string input)
+            public static long Decode(string input)
             {
                 var reversed = input.Reverse();
                 long result = 0;
@@ -267,15 +266,15 @@ namespace Sushi.Mediakiwi.Data
                 text = text.Substring(0, 47) + "...";
 
             if (!url.Contains("http://") && !url.Contains("https://") && !url.Contains("ftp://"))
-                url = String.Concat("http://", url);
+                url = string.Concat("http://", url);
 
-            return String.Format(@"{3}<a href=""{0}"" title=""{2}"">{1}</a> ", url.ToLower(), text, title, m.Value.StartsWith("\n") ? "\n" : " ");
+            return string.Format(@"{3}<a href=""{0}"" title=""{2}"">{1}</a> ", url.ToLower(), text, title, m.Value.StartsWith("\n") ? "\n" : " ");
         }
 
         public static string ConvertFirstToUpper(string p)
         {
-            if (String.IsNullOrEmpty(p))
-                return String.Empty;
+            if (string.IsNullOrEmpty(p))
+                return string.Empty;
             if (p.Length == 1)
                 return p.ToUpper();
             return p[0].ToString().ToUpper() + p.Substring(1);
@@ -361,7 +360,7 @@ namespace Sushi.Mediakiwi.Data
                             else if (from.PropertyType == typeof(decimal))
                             {
                                 //  Decimal --> String
-                                Decimal tmp;
+                                decimal tmp;
                                 if (IsDecimal(fromPropertyValue, out tmp))
                                 {
                                     CultureInfo info = new CultureInfo("en-US");
@@ -419,7 +418,7 @@ namespace Sushi.Mediakiwi.Data
                             else if (to.PropertyType == typeof(decimal))
                             {
                                 //  String --> Decimal
-                                Decimal tmp;
+                                decimal tmp;
                                 if (IsDecimal(fromPropertyValue, out tmp))
                                 {
                                     to.SetValue(propertyContainerTo, tmp, null);
@@ -1318,9 +1317,9 @@ namespace Sushi.Mediakiwi.Data
                     returnItem += c;
                     continue;
                 }
-                Byte[] encoded = encoding.GetBytes(c.ToString());
+                byte[] encoded = encoding.GetBytes(c.ToString());
 
-                foreach (Byte b in encoded)
+                foreach (byte b in encoded)
                 {
                     if (firstByte)
                         tempChar = b.ToString("X");
@@ -1803,7 +1802,7 @@ namespace Sushi.Mediakiwi.Data
                     //    System.Threading.Thread.CurrentThread.CurrentCulture.NumberFormat.NumberGroupSeparator,
                     //    System.Threading.Thread.CurrentThread.CurrentCulture.NumberFormat.NumberDecimalSeparator);
 
-                    if (Decimal.TryParse(testCandidate, NumberStyles.Any, info, out output))
+                    if (decimal.TryParse(testCandidate, NumberStyles.Any, info, out output))
                     {
                         return true;
                     }
@@ -1845,7 +1844,7 @@ namespace Sushi.Mediakiwi.Data
                     //    System.Threading.Thread.CurrentThread.CurrentCulture.NumberFormat.NumberGroupSeparator,
                     //    System.Threading.Thread.CurrentThread.CurrentCulture.NumberFormat.NumberDecimalSeparator);
 
-                    if (Double.TryParse(testCandidate, NumberStyles.Any, info, out output))
+                    if (double.TryParse(testCandidate, NumberStyles.Any, info, out output))
                     {
                         return true;
                     }
@@ -1994,7 +1993,7 @@ namespace Sushi.Mediakiwi.Data
         static bool m_HasCheckedSettings;
         static Wim.Data.Interfaces.IConfigurationSetting m_Settings;
 
-        public static String GetConfigurationSetting(string initialValue, string settingProperty)
+        public static string GetConfigurationSetting(string initialValue, string settingProperty)
         {
             if (!m_HasCheckedSettings)
                 m_HasCheckedSettings = true;

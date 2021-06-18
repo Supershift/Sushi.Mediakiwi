@@ -1,8 +1,5 @@
 ﻿using Sushi.Mediakiwi.AppCentre.UI.Forms;
 using Sushi.Mediakiwi.Framework;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Sushi.Mediakiwi.AppCentre.UI

@@ -160,7 +160,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                 if (pageLink.PageID.HasValue && oldNewPageMapping.ContainsKey(pageLink.PageID.Value))
                 {
                     pageLink.PageID = oldNewPageMapping[pageLink.PageID.Value].ID;
-                    pageLink.Save();
+                    await pageLink.SaveAsync();
                 }
             }
 
