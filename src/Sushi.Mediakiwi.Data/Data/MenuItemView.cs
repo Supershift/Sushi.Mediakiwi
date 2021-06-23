@@ -1,10 +1,7 @@
-﻿using Sushi.MicroORM;
+﻿using Sushi.Mediakiwi.Data.MicroORM;
 using Sushi.MicroORM.Mapping;
-using System.Data;
-using System.Threading.Tasks;
-using Sushi.Mediakiwi.Data.MicroORM;
 using System.Collections.Generic;
-using System.Linq;
+using System.Data;
 
 namespace Sushi.Mediakiwi.Data
 {

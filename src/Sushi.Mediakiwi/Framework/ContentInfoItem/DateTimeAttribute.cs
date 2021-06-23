@@ -1,6 +1,5 @@
 using Sushi.Mediakiwi.Data;
 using System;
-using System.Collections.Generic;
 using System.Text;
 
 namespace Sushi.Mediakiwi.Framework.ContentInfoItem
@@ -78,9 +77,6 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
             SetCandidate(null, isEditMode);
         }
 
-
- 
-
         public bool AutoPostBack
         {
             set { m_AutoPostBack = value; }
@@ -92,8 +88,10 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
         /// </summary>
         public void SetCandidate(Field field, bool isEditMode)
         {
-            if (Property != null && Property.PropertyType == typeof(Data.CustomData))
+            if (Property != null && Property.PropertyType == typeof(CustomData))
+            {
                 SetContentContainer(field);
+            }
 
             m_Candidate = null;
             if (IsInitialLoad || !isEditMode)
@@ -107,19 +105,20 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                             //  Previous WIM versions
                             DateTime tmp;
                             if (DateTime.TryParse(field.Value, new System.Globalization.CultureInfo("NL-nl"), System.Globalization.DateTimeStyles.None, out tmp))
+                            {
                                 m_Candidate = tmp;
+                            }
                         }
                         else
+                        {
                             m_Candidate = new DateTime(long.Parse(field.Value));
+                        }
                     }
                 }
                 else
                 {
-                    //if (Property.PropertyType == typeof(Data.ContentContainer))
-                    //{
-                    //    m_Candidate = m_ContentContainer[field.Property].GetDateValue();
-                    //}
-                    if (Property.PropertyType == typeof(Data.CustomData))
+
+                    if (Property.PropertyType == typeof(CustomData))
                     {
                         m_Candidate = m_ContentContainer[field.Property].ParseDateTime();
                     }
@@ -127,37 +126,44 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                     {
                         DateTime value = (DateTime)Property.GetValue(SenderInstance, null);
                         if (value != DateTime.MinValue)
+                        {
                             m_Candidate = value;
+                        }
                     }
                     else if (Property.PropertyType == typeof(DateTime?))
+                    {
                         m_Candidate = (DateTime?)Property.GetValue(SenderInstance, null);
+                    }
                 }
             }
             else
             {
 
-                if (!string.IsNullOrEmpty(Console.Form(this.ID)))
+                if (!string.IsNullOrEmpty(Console.Form(ID)))
                 {
                     try
                     {
-                        string candidate = Console.Form(this.ID);
+                        string candidate = Console.Form(ID);
                         DateTime tmp;
                         if (DateTime.TryParse(candidate, new System.Globalization.CultureInfo(Console.GlobalisationCulture), System.Globalization.DateTimeStyles.None, out tmp))
                         {
-                            if (!string.IsNullOrEmpty(Console.Form(this.ID + "T")))
+                            if (!string.IsNullOrEmpty(Console.Form(ID + "T")))
                             {
-                                string[] timearr = Console.Form(this.ID + "T").ToString().Split(':');
+                                string[] timearr = Console.Form(ID + "T").ToString().Split(':');
 
-                                m_Candidate = tmp.AddHours(Data.Utility.ConvertToInt(timearr[0])).AddMinutes(Data.Utility.ConvertToInt(timearr[1]));
+                                m_Candidate = tmp.AddHours(Utility.ConvertToInt(timearr[0])).AddMinutes(Utility.ConvertToInt(timearr[1]));
                             }
                             else
+                            {
                                 m_Candidate = tmp;
+                            }
                         }
 
                         // [MR:20-03-2019] Converts local timezone to UTC (database) time for saving
                         if (Console.CurrentList.Option_ConvertUTCToLocalTime && m_Candidate.HasValue && m_Candidate.Value.Kind != DateTimeKind.Utc)
+                        {
                             m_Candidate = m_Candidate.Value.ToUniversalTime();
-
+                        }
                     }
                     catch (Exception) { }
                 }
@@ -165,38 +171,44 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
 
             if (!IsBluePrint && Property != null && Property.CanWrite)
             {
-                if (Property.PropertyType == typeof(Data.CustomData))
+                if (Property.PropertyType == typeof(CustomData))
+                {
                     ApplyContentContainer(field, (m_Candidate == null || m_Candidate == DateTime.MinValue) ? null : m_Candidate.Value.Ticks.ToString());
+                }
                 else
                 {
                     if (m_Candidate.HasValue)
+                    {
                         Property.SetValue(SenderInstance, m_Candidate, null);
+                    }
                     else
+                    {
                         Property.SetValue(SenderInstance, null, null);
+                    }
                 }
             }
 
             OutputText = null;
             if (m_Candidate.HasValue)
             {
-
                 OutputText = m_Candidate.Value.ToString(Console.DateTimeFormat);
             }
 
             //  Inherited content section
-            if (ShowInheritedData)
+            if (ShowInheritedData && field != null && !string.IsNullOrEmpty(field.InheritedValue))
             {
-                if (field != null && !string.IsNullOrEmpty(field.InheritedValue))
+                if (field.InheritedValue.Contains("-"))
                 {
-                    if (field.InheritedValue.Contains("-"))
+                    //  Previous WIM versions
+                    DateTime tmp;
+                    if (DateTime.TryParse(field.InheritedValue, new System.Globalization.CultureInfo("NL-nl"), System.Globalization.DateTimeStyles.None, out tmp))
                     {
-                        //  Previous WIM versions
-                        DateTime tmp;
-                        if (DateTime.TryParse(field.InheritedValue, new System.Globalization.CultureInfo("NL-nl"), System.Globalization.DateTimeStyles.None, out tmp))
-                            InhertitedOutputText = tmp.ToString(Console.DateTimeFormat);
+                        InhertitedOutputText = tmp.ToString(Console.DateTimeFormat);
                     }
-                    else
-                        InhertitedOutputText = new DateTime(long.Parse(field.InheritedValue)).ToString(Console.DateTimeFormat);
+                }
+                else
+                {
+                    InhertitedOutputText = new DateTime(long.Parse(field.InheritedValue)).ToString(Console.DateTimeFormat);
                 }
             }
         }
@@ -213,33 +225,60 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
         /// <returns></returns>
         public Field WriteCandidate(WimControlBuilder build, bool isEditMode, bool isRequired, bool isCloaked)
         {
-            this.SetWriteEnvironment();
-            this.IsCloaked = isCloaked;
-            this.Mandatory = isRequired;
-            if (OverrideEditMode) isEditMode = false;
+            SetWriteEnvironment();
+            IsCloaked = isCloaked;
+            Mandatory = isRequired;
+            if (OverrideEditMode)
+            {
+                isEditMode = false;
+            }
+
+            bool isEnabled = IsEnabled();
+
+            // [MR:03-06-2021] Apply shared field clickable icon.
+            var sharedInfoApply = ApplySharedFieldInformation(isEnabled, OutputText);
+
+            // If we have a document assigned, overwrite the current one
+            if (sharedInfoApply.isShared)
+            {
+                // Enable readonly when shared
+                isEnabled = sharedInfoApply.isEnabled;
+
+                // When Currently not cloaked, do so if its a shared field
+                if (IsCloaked == false && sharedInfoApply.isHidden)
+                {
+                    IsCloaked = sharedInfoApply.isHidden;
+                }
+
+                if (string.IsNullOrWhiteSpace(sharedInfoApply.outputValue) == false)
+                {
+                    OutputText = sharedInfoApply.outputValue;
+                }
+            }
 
             if (!string.IsNullOrWhiteSpace(InputPostText))
             {
                 InputPostText = $"<label>{InputPostText}</label>";
             }
 
-            if (isEditMode)
+            if (isEditMode && isEnabled)
             {
                 #region Element creation
+
                 StringBuilder element = new StringBuilder();
 
-                element.AppendFormat("\n\t\t\t\t\t\t\t\t\t<input class=\"date datepicker{3}\" name=\"{0}\" type=\"text\" id=\"{0}\" maxlength=\"10\" value=\"{1}\" placeholder=\"{2}\"/>"
-                    , this.ID
+                element.AppendFormat("<input class=\"date datepicker{3}\" name=\"{0}\" type=\"text\" id=\"{0}\" maxlength=\"10\" value=\"{1}\" placeholder=\"{2}\"/>"
+                    , ID
                     , m_Candidate.HasValue ? m_Candidate.Value.ToString(Console.DateFormat) : string.Empty
                     , Console.DateFormat.ToLower()
                      , IsCloaked ? " hidden" : null
                     );
 
-                element.AppendFormat("\n\t\t\t\t\t\t\t\t\t<input class=\"time timepicker{3}{4}{5}\" type=\"text\" name=\"{0}T\" maxlength=\"5\" placeholder=\"00:00\" value=\"{1}\" />{2}"
-                   , this.ID
+                element.AppendFormat("<input class=\"time timepicker{3}{4}{5}\" type=\"text\" name=\"{0}T\" maxlength=\"5\" placeholder=\"00:00\" value=\"{1}\" />{2}"
+                   , ID
                    , m_Candidate.HasValue ? m_Candidate.Value.ToString("HH:mm") : "00:00"
-                   , IsCloaked ? "" : this.InputPostText
-                   , this.IsValid(isRequired) ? string.Empty : " error"
+                   , IsCloaked ? "" : InputPostText
+                   , IsValid(isRequired) ? string.Empty : " error"
                    , AutoPostBack ? " postBack" : string.Empty // 4
                     , IsCloaked ? " hidden" : null
                    );
@@ -253,63 +292,69 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                 else
                 {
                     #region Wrapper
+
                     string titleTag = string.Concat(Title, Mandatory ? "<em>*</em>" : "");
 
                     if (ShowInheritedData)
                     {
-                        this.ApplyTranslation(build);
+                        ApplyTranslation(build);
                     }
                     else
                     {
                         if ((Console.ExpressionPrevious == OutputExpression.Left && Expression == OutputExpression.FullWidth) || (Console.ExpressionPrevious == OutputExpression.Left && Expression == OutputExpression.Left))
-                            build.Append("\t\t\t\t\t\t\t<th><label>&nbsp;</label></th><td>&nbsp;</td></tr>");
+                        {
+                            build.Append("<th><label>&nbsp;</label></th><td>&nbsp;</td></tr>");
+                        }
 
                         if ((Console.ExpressionPrevious == OutputExpression.FullWidth && Expression == OutputExpression.Right) || (Console.ExpressionPrevious == OutputExpression.Right && Expression == OutputExpression.Right))
-                            build.Append("\t\t\t\t\t\t<tr><th><label>&nbsp;</label></th>\n\t\t\t\t\t\t\t<td>&nbsp;</td>");
+                        {
+                            build.Append("<tr><th><label>&nbsp;</label></th><td>&nbsp;</td>");
+                        }
 
                         if (Expression == OutputExpression.FullWidth || Expression == OutputExpression.Left)
-                            build.Append("\t\t\t\t\t\t<tr>");
+                        {
+                            build.Append("<tr>");
+                        }
                     }
 
-                    build.AppendFormat("\n\t\t\t\t\t\t\t<th><label for=\"{0}\">{1}</label></th>", this.ID, this.TitleLabel);
+                    build.Append($"<th><label for=\"{ID}\">{TitleLabel}</label></th>");
 
-                    //if (ShowInheritedData)
-                    //    build.AppendFormat("\t\t\t\t\t\t\t<th class=\"local\"><label>{0}:</label></th>\t\t\t\t\t\t</tr>\t\t\t\t\t\t<tr>\t\t\t\t\t\t\t<td><div class=\"description\">{1}</div></td>\n", this.ID, this.TitleLabel);
-
-                    build.AppendFormat("\n\t\t\t\t\t\t\t<td{0}{1}>{2}"
+                    build.AppendFormat("<td{0}{1}>{2}"
                         , (Expression == OutputExpression.FullWidth && Console.HasDoubleCols) ? " colspan=\"3\"" : null
-                        , this.InputCellClassName(this.IsValid(isRequired))
+                        , InputCellClassName(IsValid(isRequired))
                         , CustomErrorText
                         );
 
-                    build.AppendFormat("\n\t\t\t\t\t\t\t\t<div class=\"{0}\">", (Expression == OutputExpression.FullWidth) ? this.Class_Wide : "half");
+                    build.Append($"<div class=\"{((Expression == OutputExpression.FullWidth) ? Class_Wide : "half")}\">");
 
                     build.Append(element.ToString());
 
-                    build.Append("\n\t\t\t\t\t\t\t\t</div>");
-                    build.Append("\n\t\t\t\t\t\t\t</td>");
+                    build.Append("</div></td>");
 
                     if (Expression == OutputExpression.FullWidth || Expression == OutputExpression.Right)
-                        build.Append("\n\t\t\t\t\t\t</tr>\n");
+                    {
+                        build.Append("</tr>");
+                    }
 
                     #endregion Wrapper
                 }
             }
             else
             {
-                build.Append(GetSimpleTextElement(this.Title, this.Mandatory, OutputText, this.InteractiveHelp));
+                build.Append(GetSimpleTextElement(OutputText));
             }
 
             build.ApiResponse.Fields.Add(new Api.MediakiwiField()
             {
                 Event = AutoPostBack ? Api.MediakiwiJSEvent.change : Api.MediakiwiJSEvent.none,
-                Title = MandatoryWrap(this.Title),
-                Value = this.OutputText,
-                Expression = this.Expression,
-                PropertyName = this.ID,
+                Title = MandatoryWrap(Title),
+                Value = OutputText,
+                Expression = Expression,
+                PropertyName = ID,
                 PropertyType = (Property == null) ? typeof(DateTime).FullName : Property.PropertyType.FullName,
                 VueType = Api.MediakiwiFormVueType.wimDateTime,
-                ReadOnly = this.IsReadOnly
+                ReadOnly = IsReadOnly,
+                ContentTypeID = ContentTypeSelection
             });
 
             return ReadCandidate(m_Candidate.HasValue ? m_Candidate.Value.Ticks.ToString() : null);
@@ -321,15 +366,19 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
         /// <returns></returns>
         public override bool IsValid(bool isRequired)
         {
-            this.Mandatory = isRequired;
+            Mandatory = isRequired;
             if (Console.CurrentListInstance.wim.IsSaveMode)
             {
                 //  Custom error validation
                 if (!base.IsValid(isRequired))
+                {
                     return false;
+                }
 
                 if (Mandatory)
+                {
                     return m_Candidate.HasValue;
+                }
             }
             return true;
 

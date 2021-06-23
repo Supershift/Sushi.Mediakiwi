@@ -1,7 +1,4 @@
-﻿using System;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Collections.Generic;
+﻿using System.Text.RegularExpressions;
 
 namespace Sushi.Mediakiwi.Framework.ContentInfoItem
 {
@@ -65,7 +62,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
             this.Prepare = new RichTextPrepare();
         }
 
-        public Sushi.Mediakiwi.Framework.RichTextPrepare Prepare { get; set; }
+        public RichTextPrepare Prepare { get; set; }
 
         internal string OnlyReturnText(Match m)
         {

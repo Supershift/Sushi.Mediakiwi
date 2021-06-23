@@ -1,11 +1,11 @@
-﻿using Sushi.MicroORM;
+﻿using Sushi.Mediakiwi.Data.MicroORM;
+using Sushi.MicroORM;
 using Sushi.MicroORM.Mapping;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Sushi.Mediakiwi.Data.MicroORM;
 
 namespace Sushi.Mediakiwi.Data
 {
@@ -171,7 +171,7 @@ namespace Sushi.Mediakiwi.Data
             if (BackgroundRgb.Split('.').Length != 3)
                 return null;
 
-            return Sushi.Mediakiwi.Data.Utility.ConvertToIntArray(BackgroundRgb.Split('.'));
+            return Utility.ConvertToIntArray(BackgroundRgb.Split('.'));
         }
 
         private string m_CompletePath;
@@ -498,7 +498,7 @@ namespace Sushi.Mediakiwi.Data
         /// <param name="gallery">The gallery.</param>
         /// <param name="level">The level.</param>
         /// <returns></returns>
-        public static Gallery SelectOne(Sushi.Mediakiwi.Data.Gallery gallery, int level)
+        public static Gallery SelectOne(Gallery gallery, int level)
         {
             if (level < 1) return new Gallery();
             if (gallery == null || gallery.ID == 0) return new Gallery();
@@ -797,7 +797,7 @@ namespace Sushi.Mediakiwi.Data
         /// <returns></returns>
         private string GetPageNameProposal(int galleryID, string gallery)
         {
-            string nameProposal = Sushi.Mediakiwi.Data.Utility.GlobalRegularExpression.Implement.ReplaceNotAcceptableFilenameCharacter.Replace(gallery, string.Empty);
+            string nameProposal = Utility.GlobalRegularExpression.Implement.ReplaceNotAcceptableFilenameCharacter.Replace(gallery, string.Empty);
 
             bool galleryExistsInFolder = IsGalleryAlreadyTaken(galleryID, gallery);
             int nameExtentionCount = 0;
@@ -1046,7 +1046,7 @@ WHERE [Gallery_Key] = @thisId", filter);
                 string candidate = "";
                 foreach (string item in split)
                 {
-                    string tmp = Sushi.Mediakiwi.Data.Utility.GlobalRegularExpression.Implement.ReplaceNotAcceptableFilenameCharacter.Replace(item, string.Empty);
+                    string tmp = Utility.GlobalRegularExpression.Implement.ReplaceNotAcceptableFilenameCharacter.Replace(item, string.Empty);
                     candidate += candidate == "/" ? tmp : string.Concat("/", tmp);
                 }
                 this.CompletePath = candidate;

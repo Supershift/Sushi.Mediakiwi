@@ -1,10 +1,6 @@
-﻿using Microsoft.AspNetCore.Http;
-using Sushi.Mediakiwi.Framework;
+﻿using Sushi.Mediakiwi.Framework;
 using Sushi.Mediakiwi.UI;
 using System;
-using System.Collections.Generic;
-using System.Net.Http.Headers;
-using System.Text;
 
 namespace Sushi.Mediakiwi.AppCentre.UI.Forms
 {
@@ -38,7 +34,7 @@ namespace Sushi.Mediakiwi.AppCentre.UI.Forms
             Map(x => x.Dropdown2).Dropdown("Dropdown-multi", "List", mandatory, false, true, "Interactive help");
             Map(x => x.Tagging).Tagging("Tagging", "List", mandatory, false, "Interactive help");
             Map(x => x.SubListSelect).SubListSelect("SubListSelect"
-                , typeof(Sushi.Mediakiwi.AppCentre.Data.Implementation.ComponentList)
+                , typeof(Data.Implementation.ComponentList)
                 , mandatory, false, true, "Interactive help")
                     .OnlyOneItem()
                     .Width(90, true)

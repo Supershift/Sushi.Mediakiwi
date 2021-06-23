@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Components.Rendering;
 using Sushi.Mediakiwi.Headless.SectionHelper.Elements;
 using Sushi.Mediakiwi.Headless.SectionHelper.Interfaces;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace Sushi.Mediakiwi.Headless.SectionHelper
@@ -115,7 +114,7 @@ namespace Sushi.Mediakiwi.Headless.SectionHelper
             builder.CloseElement();
         }
 
-        protected async void Service_ChangesDone(object sender, EventArgs e)
+        async protected void Service_ChangesDone(object sender, EventArgs e)
         {
             await InvokeAsync(() =>
             {

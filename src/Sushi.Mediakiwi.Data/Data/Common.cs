@@ -1,8 +1,6 @@
 ﻿using Sushi.Mediakiwi.Data.Configuration;
 using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
-using System.Text.RegularExpressions;
 
 namespace Sushi.Mediakiwi.Data
 {
@@ -154,7 +152,7 @@ namespace Sushi.Mediakiwi.Data
         /// </summary>
         /// <param name="type">The type.</param>
         /// <returns></returns>
-        public static WimServerPortal GetCurrentMappingConnection(System.Type type)
+        public static WimServerPortal GetCurrentMappingConnection(Type type)
         {
             return GetCurrentMappingConnection(type.ToString());
         }
@@ -303,7 +301,7 @@ namespace Sushi.Mediakiwi.Data
         /// <param name="name">The name.</param>
         /// <param name="throwExceptionWhenNotFound">if set to <c>true</c> [throw exception when not found].</param>
         /// <returns></returns>
-        /// <exception cref="System.Exception">Could not find the portal</exception>
+        /// <exception cref="Exception">Could not find the portal</exception>
         public static WimServerPortal GetPortal(string name, bool throwExceptionWhenNotFound)
         {
             if (string.IsNullOrEmpty(name))
@@ -339,7 +337,7 @@ namespace Sushi.Mediakiwi.Data
                     {
                         foreach (var map in config.UrlMappings)
                         {
-                            if (!String.IsNullOrEmpty(map.Name))
+                            if (!string.IsNullOrEmpty(map.Name))
                                 _WimServerUrlMappings.Add(map.Name, map.Path);
                         }
 

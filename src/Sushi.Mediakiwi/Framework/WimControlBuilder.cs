@@ -1,9 +1,9 @@
-﻿using System;
+﻿using Sushi.Mediakiwi.Framework.Api;
+using Sushi.Mediakiwi.UI;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
-using Sushi.Mediakiwi.Framework.Api;
-using Sushi.Mediakiwi.UI;
 
 namespace Sushi.Mediakiwi.Framework
 {
@@ -258,7 +258,7 @@ namespace Sushi.Mediakiwi.Framework
         public LiteralControl[] FindObject(string text)
         {
             List<LiteralControl> list = new List<LiteralControl>();
-            foreach(System.Object obj in Controls)
+            foreach(object obj in Controls)
             {
                 if (obj.GetType() == typeof(LiteralControl))
                 {

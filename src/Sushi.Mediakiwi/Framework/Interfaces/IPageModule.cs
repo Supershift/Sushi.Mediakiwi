@@ -1,7 +1,6 @@
-﻿using Sushi.Mediakiwi.Data;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using Microsoft.AspNetCore.Http;
+using Sushi.Mediakiwi.Data;
+using System.Threading.Tasks;
 
 namespace Sushi.Mediakiwi.Framework
 {
@@ -24,8 +23,9 @@ namespace Sushi.Mediakiwi.Framework
         /// </summary>
         /// <param name="inPage">The page being viewed</param>
         /// <param name="inUser">The user viewing the page</param>
+        /// <param name="context">The executing HttpContext pipeline</param>
         /// <returns><see cref="ModuleExecutionResult"/></returns>
-        ModuleExecutionResult Execute(Page inPage, IApplicationUser inUser);
+        Task<ModuleExecutionResult> ExecuteAsync(Page inPage, IApplicationUser inUser, HttpContext context);
 
         /// <summary>
         /// The Icon CssClass to apply (mediakiwi internal)

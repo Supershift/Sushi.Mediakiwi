@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Sushi.Mediakiwi.Framework
 {
@@ -10,6 +8,6 @@ namespace Sushi.Mediakiwi.Framework
     [AttributeUsage(AttributeTargets.Property)]
     public class ContentEditableSharedAttribute : ContentSharedAttribute
     {
-
+    
     }
 }

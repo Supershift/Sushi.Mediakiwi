@@ -1,10 +1,9 @@
-﻿using Sushi.MicroORM;
+﻿using Sushi.Mediakiwi.Data.MicroORM;
 using Sushi.MicroORM.Mapping;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Sushi.Mediakiwi.Data.MicroORM;
 
 namespace Sushi.Mediakiwi.Data
 {
@@ -107,7 +106,7 @@ namespace Sushi.Mediakiwi.Data
         /// Saves this PageVersion Instance Async
         /// </summary>
         /// <returns></returns>
-        public virtual async Task<bool> SaveAsync()
+        public async virtual Task<bool> SaveAsync()
         {
             var connector = ConnectorFactory.CreateConnector<PageVersion>();
             await connector.SaveAsync(this);

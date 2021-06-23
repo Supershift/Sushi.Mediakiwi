@@ -1,7 +1,6 @@
-﻿using Sushi.MicroORM;
+﻿using Sushi.Mediakiwi.Data.MicroORM;
 using Sushi.MicroORM.Mapping;
 using System.Threading.Tasks;
-using Sushi.Mediakiwi.Data.MicroORM;
 
 namespace Sushi.Mediakiwi.Data
 {
@@ -101,6 +100,30 @@ namespace Sushi.Mediakiwi.Data
                 await connector.ExecuteNonQueryAsync("UPDATE [wim_PropertyOptions] SET [PropertyOption_SortOrder] = [PropertyOption_Key] WHERE [PropertyOption_Key] = @thisID", filter);
                 connector.Cache?.FlushRegion(connector.CacheRegion);
             }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Delete an implementation record.
+        /// </summary>
+        /// <returns></returns>
+        public bool Delete()
+        {
+            var connector = ConnectorFactory.CreateConnector<PropertyOption>();
+            connector.Delete(this);
+
+            return true;
+        }
+
+        /// <summary>
+        /// Delete an implementation record.
+        /// </summary>
+        /// <returns></returns>
+        public async Task<bool> DeleteAsync()
+        {
+            var connector = ConnectorFactory.CreateConnector<PropertyOption>();
+            await connector.DeleteAsync(this);
 
             return true;
         }

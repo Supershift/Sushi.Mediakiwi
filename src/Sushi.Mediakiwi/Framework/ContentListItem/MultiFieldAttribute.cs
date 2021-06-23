@@ -1,12 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Collections.Generic;
-using System.Text;
-using Sushi.Mediakiwi.Data;
-using System.Globalization;
-using Sushi.Mediakiwi.Framework.ContentInfoItem;
-
-namespace Sushi.Mediakiwi.Framework.ContentListItem
+﻿namespace Sushi.Mediakiwi.Framework.ContentListItem
 {
     /// <summary>
     /// Possible return types: System.String

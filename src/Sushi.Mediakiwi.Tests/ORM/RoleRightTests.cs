@@ -1,11 +1,9 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SemanticComparison;
-using System;
+using Sushi.Mediakiwi.Data;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
-using Sushi.Mediakiwi.Data;
-using Sushi.Mediakiwi.Data.MicroORM;
 
 namespace Sushi.Mediakiwi.Tests.ORM
 {

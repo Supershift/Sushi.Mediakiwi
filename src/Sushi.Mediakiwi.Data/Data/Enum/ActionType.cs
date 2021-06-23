@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Sushi.Mediakiwi.Data
+﻿namespace Sushi.Mediakiwi.Data
 {
     /// <summary>
     /// 
@@ -27,10 +23,10 @@ namespace Sushi.Mediakiwi.Data
         ///// 
         ///// </summary>
         //Add = 3,
-        ///// <summary>
-        ///// 
-        ///// </summary>
-        //Update = 4,
+        /// <summary>
+        /// 
+        /// </summary>
+        Update = 4,
         ///// <summary>
         ///// 
         ///// </summary>

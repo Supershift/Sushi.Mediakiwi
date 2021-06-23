@@ -1,12 +1,11 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using SemanticComparison;
+using Sushi.Mediakiwi.Data;
+using Sushi.Mediakiwi.Data.MicroORM;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
-using Sushi.Mediakiwi.Data;
-using Sushi.Mediakiwi.Data.MicroORM;
 
 namespace Sushi.Mediakiwi.Tests.ORM
 {
@@ -25,7 +24,7 @@ namespace Sushi.Mediakiwi.Tests.ORM
             Title = "xUNIT TESTx",
             IsPresentProperty = true,
             FieldName = "Test",
-            TypeID = 10,
+            ContentTypeID = ContentType.TextField,
             FilterType = null,
             OptionListSelect = null,
             IsShort = false,
@@ -49,7 +48,7 @@ namespace Sushi.Mediakiwi.Tests.ORM
             Title = "xASYNC UNIT TESTx",
             IsPresentProperty = true,
             FieldName = "ASYNC Test",
-            TypeID = 10,
+            ContentTypeID = ContentType.TextField,
             FilterType = null,
             OptionListSelect = null,
             IsShort = false,

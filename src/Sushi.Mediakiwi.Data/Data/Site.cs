@@ -1,11 +1,11 @@
-﻿using Sushi.MicroORM;
+﻿using Sushi.Mediakiwi.Data.Interfaces;
+using Sushi.Mediakiwi.Data.MicroORM;
+using Sushi.MicroORM;
 using Sushi.MicroORM.Mapping;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Sushi.Mediakiwi.Data.MicroORM;
-using Sushi.Mediakiwi.Data.Interfaces;
 
 namespace Sushi.Mediakiwi.Data
 {
@@ -133,7 +133,7 @@ namespace Sushi.Mediakiwi.Data
             get
             {
                 if (m_Country == null && CountryID.HasValue)
-                    m_Country = Sushi.Mediakiwi.Data.Country.SelectOne(CountryID.Value);
+                    m_Country = Mediakiwi.Data.Country.SelectOne(CountryID.Value);
                 return m_Country;
             }
         }
@@ -312,7 +312,7 @@ namespace Sushi.Mediakiwi.Data
             get
             {
                 if (m_MasterImplement == null && MasterID.GetValueOrDefault(0) > 0)
-                    m_MasterImplement = Site.SelectOne(MasterID.Value);
+                    m_MasterImplement = SelectOne(MasterID.Value);
 
                 return m_MasterImplement;
             }

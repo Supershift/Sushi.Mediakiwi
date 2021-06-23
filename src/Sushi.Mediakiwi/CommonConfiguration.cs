@@ -1,13 +1,14 @@
 using Sushi.Mediakiwi.Data.Configuration;
+using Sushi.Mediakiwi.Framework;
 using System;
 using System.Reflection;
 
 namespace Sushi.Mediakiwi
 {
-	/// <summary>
-	/// Summary description for CommonConfiguration.
-	/// </summary>
-	public class CommonConfiguration
+    /// <summary>
+    /// Summary description for CommonConfiguration.
+    /// </summary>
+    public class CommonConfiguration
     {
         public static string PORTAL_PATH
         {
@@ -36,6 +37,40 @@ namespace Sushi.Mediakiwi
         public static string LOGIN_BACKGROUND { 
             get { 
                 return WimServerConfiguration.Instance.Login_Background_Url; 
+            }
+        }
+
+        static string _Domain = "https://sushi-mediakiwi.azureedge.net/";
+        static string _FolderVersion;
+        internal static string CDN_Folder(WimComponentListRoot wim, string subfolder)
+        {
+            if (_FolderVersion == null)
+            {
+                // CDN
+                if (string.IsNullOrEmpty(LOCAL_FILE_PATH))
+                {
+                    _FolderVersion = string.Concat(_Domain, Utils.Version.Replace(".", "-"), "/");
+                }
+                else
+                {
+                    if (LOCAL_FILE_PATH.IndexOf("http", StringComparison.InvariantCultureIgnoreCase) > -1)
+                        _FolderVersion = LOCAL_FILE_PATH;
+                    else
+                        _FolderVersion = wim.AddApplicationPath(LOCAL_FILE_PATH, true);
+                }
+            }
+
+            if (!string.IsNullOrWhiteSpace(subfolder))
+                return string.Concat(_FolderVersion, subfolder);
+
+            return _FolderVersion;
+        }
+
+        public static string FILE_VERSION
+        {
+            get
+            {
+                return WimServerConfiguration.Instance.File_Version;
             }
         }
         public static string LOGIN_BOXLOGO
@@ -124,8 +159,8 @@ namespace Sushi.Mediakiwi
         /// </summary>
         public static decimal Version
         {
-            get { 
-                System.Version version = Assembly.GetExecutingAssembly().GetName().Version;
+            get {
+                Version version = Assembly.GetExecutingAssembly().GetName().Version;
                 return Convert.ToDecimal(string.Format("{0}{2}{1}", version.Major, version.Minor, System.Threading.Thread.CurrentThread.CurrentCulture.NumberFormat.NumberDecimalSeparator));
             }
         }
@@ -138,7 +173,7 @@ namespace Sushi.Mediakiwi
         {
             get
             {
-                System.Version version = Assembly.GetExecutingAssembly().GetName().Version;
+                Version version = Assembly.GetExecutingAssembly().GetName().Version;
                 return string.Format("{0}.{1:00}.{2:0000}.{3:0000}", version.Major, version.Minor, version.Build, version.Revision);
             }
         }
@@ -147,7 +182,7 @@ namespace Sushi.Mediakiwi
         {
             get
             {
-                System.Version version = Assembly.GetExecutingAssembly().GetName().Version;
+                Version version = Assembly.GetExecutingAssembly().GetName().Version;
                 return string.Format("{0}{1:00}{2:0000}{3:0000}", version.Major, version.Minor, version.Build, version.Revision);
             }
         }

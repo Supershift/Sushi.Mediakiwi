@@ -1,4 +1,4 @@
-	CREATE TABLE wim_Installers(
+ï»¿	CREATE TABLE wim_Installers(
 	    Installer_Key int IDENTITY(1,1) NOT NULL,
 	    Installer_GUID uniqueidentifier NOT NULL,
 	    Installer_Folder_Key int NULL,
@@ -205,17 +205,14 @@
 	    Environment_Smtp varchar(250) NULL,
 	    Environment_DefaultMail varchar(255) NULL,
 	    Environment_ErrorMail varchar(255) NULL,
-	    Environment_Url varchar(255) NULL,
 	    Environment_Version decimal(18,2) NOT NULL,
 	    Environment_Default_Site_Key int NULL,
-	    Environment_Path varchar(50) NULL,
 	    Environment_Update datetime NULL,
 	    Environment_Title nvarchar(50) NULL,
 	    Environment_Password varchar(50) NULL,
 	    Environment_SmtpUser varchar(250) NULL,
 	    Environment_SmtpPass varchar(250) NULL,
 		Environment_SmtpEnableSSL bit NULL,
-		Environment_LogoL int NULL
 		);
 	    
     --PK_Environment_Key;
@@ -437,8 +434,13 @@
 	    Property_OptionList_Key int NULL,
 	    Property_CanFilter bit NULL,
 	    Property_IsHidden bit NULL,
-	    Property_OnlyInput bit NULL);
-	    
+	    Property_OnlyInput bit NULL,
+		Property_Template_Key int NULL,
+		Property_Help nvarchar(max) NULL,
+		Property_IsRequired bit NULL,
+		Property_MaxInput INT NULL,
+		Property_Default nvarchar(max) NULL,
+		Property_IsShared BIT NULL DEFAULT(0));
 	    
     --PK_Property_Key;
 	IF:select COUNT(*) from sys.indexes where name = 'PK_Property_Key';    
@@ -693,7 +695,9 @@
 	    AvailableTemplates_Timestamp timestamp NULL,
 	    AvailableTemplates_IsPresent bit NOT NULL,
 	    AvailableTemplates_SortOrder int NULL,
-	    AvailableTemplates_Fixed_Id nvarchar(50) NULL);
+	    AvailableTemplates_Fixed_Id nvarchar(50) NULL,
+		AvailableTemplates_Slot int NULL
+		);
 	    
     --PK_AvailableTemplates_Key;
 	IF:select COUNT(*) from sys.indexes where name = 'PK_AvailableTemplates_Key';    
@@ -1068,7 +1072,7 @@
     --Countries;
     IF:select count(*) from wim_Countries;
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('7DDE3F1A-3900-4597-B3B0-CB967DC43BD4','Afghanistan','Afghanistan', 1);
-    THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('D5FFCB53-7A85-4DB8-A51D-E9C6373D9C3E','Albania','Albanië', 1);
+    THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('D5FFCB53-7A85-4DB8-A51D-E9C6373D9C3E','Albania','Albaniï¿½', 1);
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('47D70827-CE04-4BEA-9A41-418A6BFD614B','Algeria','Algerije', 1);
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('F618BB9B-AC76-4D6C-A275-B58F4BE4ED0F','American Samoa', 'Amerikaans-Samoa', 1);
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('181AB5B5-7777-499F-8BD0-293F98F005A0','Andorra','Andorra', 1);
@@ -1076,11 +1080,11 @@
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('F3AABDBC-E23F-4B85-B979-AF7E800BB1E0','Anguilla','Anguilla', 1);
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('C6265D06-BEC5-49AD-ADC1-2DDDD309F129','Antarctica','Antarctica', 1);
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('9EB390A2-5549-49C7-99E4-ECDA84D119A7','Antigua and Barbuda','Antigua en Barbuda', 1); 
-    THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('7BF608A0-81EF-4617-B77D-18F1CCB50258','Argentina','Argentinië', 1);
-    THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('653873C1-339B-4457-A270-44F383EFA1DC','Armenia','Armenië', 1);
+    THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('7BF608A0-81EF-4617-B77D-18F1CCB50258','Argentina','Argentiniï¿½', 1);
+    THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('653873C1-339B-4457-A270-44F383EFA1DC','Armenia','Armeniï¿½', 1);
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('084CD41D-9C9D-4FC9-9640-64CE0685EF62','Aruba','Aruba', 1);
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('7A8F42B6-8AE8-4AB6-809E-BBBEA510F538','Ashmore and Cartier Islands','Ashmore en Cartier Eilanden', 1); 
-    THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('2745CD0C-AD00-4E81-8B22-79C48B225D64','Australia','Australië', 1);
+    THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('2745CD0C-AD00-4E81-8B22-79C48B225D64','Australia','Australiï¿½', 1);
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('EA80BBAD-65A2-4787-9FD7-D45C41B33713','Austria','Oostenrijk', 1);
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('845A1322-6432-4DB9-9EC3-DC8E6787AAB3','Azerbaijan','Azerbeidjaan', 1);
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('0572E205-7809-4A0E-AD32-F1657F9D6A2B','Bahamas, The', 'Bahama''s, De', 1); 
@@ -1090,16 +1094,16 @@
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('B73699A1-530C-4D8B-A297-B8318714ED9A','Barbados','Barbados', 1); 
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('04254F51-4DC9-464F-8C1D-5869005765BA','Bassas da India','Bassas da India', 1); 
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('5915314D-3E5B-4CE0-9791-1C3F7DD98F8C','Belarus', 'Wit Rusland', 1);
-    THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('E49D19DC-BCD9-40AB-B19C-1851996353DC','Belgium','België', 1); 
+    THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('E49D19DC-BCD9-40AB-B19C-1851996353DC','Belgium','Belgiï¿½', 1); 
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('E3A0D2B4-5E7C-4415-9450-1C64EF14E5D7','Belize','Belize', 1); 
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('9A649BB7-C1FB-4AC4-AE8D-02B3D1EB8AB2','Benin','Benin', 1); 
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('3E1662BF-DF9C-4139-8CA0-0B65AE66B93D','Bermuda','Bermuda', 1); 
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('36E773EC-A037-477E-86A9-47981BD1DDA9','Bhutan','Bhutan', 1); 
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('BC528468-9E9D-45C6-B12C-20C8F5C276C6','Bolivia','Bolivia', 1); 
-    THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('BBA8DEBB-6AF6-4426-84FF-1C2D18267326','Bosnia and Herzegovina','Bosnië-Herzegovina', 1); 
+    THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('BBA8DEBB-6AF6-4426-84FF-1C2D18267326','Bosnia and Herzegovina','Bosniï¿½-Herzegovina', 1); 
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('9D94A33E-47D6-454F-83D0-BA0718D36D02','Botswana','Botswana', 1);
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('90084534-78EA-4B74-B7D8-EC5101740B49','Bouvet Island','Bouvet Eiland', 1); 
-    THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('92FCAC4C-958A-4FF7-BCFB-D8AFFE99E333','Brazil','Brazilië', 1); 
+    THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('92FCAC4C-958A-4FF7-BCFB-D8AFFE99E333','Brazil','Braziliï¿½', 1); 
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('828668BD-B7E4-4187-8630-DB0BB0C972A3','British Virgin Islands','Britse Maagden Eilanden', 1);
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('74F4285B-5E50-48C7-BEFB-F9497B26A808','Brunei','Brunei', 1); 
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('1370E1E1-E7F1-4136-ABDF-CDF2D5BD550B','Bulgaria','Bulgarije', 1); 
@@ -1120,16 +1124,16 @@
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('A5ED8AFD-3DF2-4118-99E2-CD0C6C0225AE','Cocos (Keeling) Islands', 'Cocoseilanden', 1); 
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('7DE5DB59-7AF4-4413-9124-AD8C9EFF5A68','Colombia','Colombia', 1); 
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('6E0D4BEC-E70C-4539-96AB-873FFE3EC15E','Comoros','Comoros', 1); 
-    THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('B8497CBF-E6ED-410F-BDF7-FA9F0885FB33','Congo, Democratic Republic of the','Zaïre (Democr. Rep. Kongo)', 1); 
+    THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('B8497CBF-E6ED-410F-BDF7-FA9F0885FB33','Congo, Democratic Republic of the','Zaï¿½re (Democr. Rep. Kongo)', 1); 
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('0149EE6E-1F52-44F7-BE1B-7736ECEDD2CF','Congo, Republic of the','Kongo', 1); 
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('BC8E76DF-025C-470C-87C2-1AEBF05E224B','Cook Islands', 'Cook eilanden', 1); 
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('9D4B372D-D8CB-4D2F-A3EB-A9FAD599FBF6','Coral Sea Islands', 'Koraal zee eilanden', 1); 
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('6DCE4C0B-0A40-4BFB-B065-0C1A9155BFFE','Costa Rica','Costa Rica', 1); 
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('CB22FCD3-0453-49F9-AA96-A5BC881026DB','Cote d''Ivoire','Ivoorkust', 1); 
-    THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('8AAC5EBC-7F9E-403B-9D5E-23762859C265','Croatia','Kroatië', 1); 
+    THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('8AAC5EBC-7F9E-403B-9D5E-23762859C265','Croatia','Kroatiï¿½', 1); 
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('41962439-F680-420B-9007-629C2C42B400','Cuba','Cuba', 1); 
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('24CE8E34-22AB-447B-9AE6-6E85FE2382FB','Cyprus','Cyprus', 1); 
-    THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('A23E9082-735F-4E9D-97BD-90F375E7408C','Czech Republic', 'Tsjechië', 1); 
+    THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('A23E9082-735F-4E9D-97BD-90F375E7408C','Czech Republic', 'Tsjechiï¿½', 1); 
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('3192E7EA-BF9D-4B04-8CA4-7EF55B002765','Denmark','Denemarken', 1); 
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('91DF004A-1488-4FCE-83F4-EF5812A37F27','Djibouti','Djibouti', 1); 
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('7404B2EE-4369-488A-988F-B3A0F91D5595','Dominica','Dominica', 1); 
@@ -1141,7 +1145,7 @@
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('D233778F-48C3-48B6-A8FD-4C28E9C491D4','Equatorial Guinea', 'Equatoriaal Guinea', 1); 
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('818D587C-568A-4ABC-BAF1-A6B4401F2AA7','Eritrea','Eritrea', 1); 
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('B2748474-16CA-4D70-9C7F-0F21681E9955','Estonia', 'Estland', 1); 
-    THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('6A2F28FA-F3EC-4F67-8488-BE04BAA3A072','Ethiopia','Ethiopië', 1); 
+    THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('6A2F28FA-F3EC-4F67-8488-BE04BAA3A072','Ethiopia','Ethiopiï¿½', 1); 
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('F09C19A9-F5C9-41EE-A5BE-8D887EBDF810','Europa Island', 'Europa-eiland', 1);
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('89576455-F3A6-458E-B95F-9BD37C5357FB','Falkland Islands (Islas Malvinas)', 'Falkland eilanden', 1); 
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('392F14BB-F94C-48FE-BE49-28D70A6F7189','Faroe Islands', 'Faroe eilanden', 1); 
@@ -1149,11 +1153,11 @@
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('177991DA-8C7C-4C56-97B6-D9F6B17514C8','Finland','Finland', 1); 
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('E5B67165-A266-4738-B09A-14FA523EC2BA','France','Frankrijk', 1); 
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('4B13BB7F-3EB5-4B25-9517-A2419E95F322','French Guiana', 'Frans Guyana', 1); 
-    THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('7CAEEA8D-F648-43B0-86A5-6F10E2417881','French Polynesia', 'Frans Polynesië', 1); 
+    THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('7CAEEA8D-F648-43B0-86A5-6F10E2417881','French Polynesia', 'Frans Polynesiï¿½', 1); 
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('85A10D97-1EF6-4A8F-92F6-478FEA3ED98F','Gabon', 'Gabon', 1); 
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('C0D5B8B3-ECBE-4363-9F0C-1713598FFCB0','Gambia, The','Gambia', 1); 
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('ACD021D8-858E-47B6-AEF9-1F4570CF382B','Gaza Strip','Gaza Strook', 1); 
-    THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('7AD127AE-8CC9-4F28-BC98-917CA82D9376','Georgia','Georgië', 1); 
+    THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('7AD127AE-8CC9-4F28-BC98-917CA82D9376','Georgia','Georgiï¿½', 1); 
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('DC126F80-2DEF-4A9C-9608-ED90275DDD20','Germany','Duitsland', 1); 
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('481F7E50-9D13-4828-8DC1-E99EA78C652C','Ghana','Ghana', 1);
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('5F940BB6-CA54-4031-B58A-99CEBCE0CE5D','Gibraltar','Gibraltar', 1);
@@ -1168,7 +1172,7 @@
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('E62554F2-1F24-4E31-BA97-F5CA2776B920','Guinea','Guinee', 1); 
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('1A90D2D4-9E8F-406D-965B-FC68E1B669EB','Guinea-Bissau', 'Guinea-Bissau', 1); 
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('6F088CEC-2B0B-4F95-8B83-8874C8C1EA25','Guyana','Guyana', 1); 
-    THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('ACB10842-7563-4FC0-A9AF-E9EE13A31433','Haiti','Haïti', 1); 
+    THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('ACB10842-7563-4FC0-A9AF-E9EE13A31433','Haiti','Haï¿½ti', 1); 
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('E0D8AE29-C12B-4CE4-86FD-DEC2BE87FB80','Heard Island and McDonald Islands', 'Heard en McDonaldeilanden, De', 1); 
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('4A99A549-31D3-4ACC-B27B-7CB9F15B1476','Holy See (Vatican City)', 'Vaticaan stad', 1); 
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('010B5E34-D061-4DF9-953B-59F60DAB2144','Honduras','Honduras', 1); 
@@ -1177,19 +1181,19 @@
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('0A80115A-7E42-4D3E-BA12-0A684A03F8F7','Hungary','Hongarije', 1); 
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('D3F62BDB-F205-44BA-A622-59A20B9583C9','Iceland','IJsland', 1); 
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('4C6E44F9-E70B-403D-9D17-0220F172380A','India','India', 1); 
-    THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('24862B32-5792-4684-AB73-207BE79E9040','Indonesia','Indonesië', 1); 
+    THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('24862B32-5792-4684-AB73-207BE79E9040','Indonesia','Indonesiï¿½', 1); 
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('406A9D38-F5C8-4CE2-83D4-25640B3159EB','Iran','Iran', 1);
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('986A00D1-5608-4652-930E-F12F32065420','Iraq','Irak', 1); 
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('99BEB1B9-4A16-441C-B9BB-0B124724F4C8','Ireland','Ierland', 1); 
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('ECA15D64-DBB8-439B-9FBF-0B28F2A70BC0','Isle of Man','Man Eiland', 1); 
-    THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('CC075053-0C85-475D-B3B8-3BB863250CCB','Israel','Israël', 1); 
-    THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('FCB30221-B506-4A24-BF0F-34E884FA2213','Italy','Italië', 1); 
+    THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('CC075053-0C85-475D-B3B8-3BB863250CCB','Israel','Israï¿½l', 1); 
+    THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('FCB30221-B506-4A24-BF0F-34E884FA2213','Italy','Italiï¿½', 1); 
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('77785234-C8EB-48CB-90BD-D41222F606FE','Jamaica','Jamaica', 1); 
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('DE0FA844-BE45-4284-9437-758DFDD4BD5B','Jan Mayen','Jan Mayen', 1); 
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('7F1BCAA5-3909-4FAA-8175-C91AAE187E83','Japan','Japan', 1); 
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('0CBFF522-7D7F-45BE-B7F7-66056F7AB94B','Jarvis Island', 'Jarvis Eiland', 1); 
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('60024F1A-5F8C-4521-8D71-239D8D45B198','Jersey','Jersey', 1); 
-    THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('F29E425F-7BFD-4BC3-B776-C28120D36472','Jordan','Jordanië', 1); 
+    THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('F29E425F-7BFD-4BC3-B776-C28120D36472','Jordan','Jordaniï¿½', 1); 
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('A33EF724-CBDE-4A98-B149-0C3B07043F8B','Kazakhstan','Kazachstan', 1); 
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('BB40B210-64D7-4130-9BEF-B0554E52795E','Kenya','Kenia', 1); 
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('B69A6807-A6D9-4F83-B9E5-18558FBC9750','Kiribati','Kiribati', 1); 
@@ -1202,32 +1206,32 @@
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('CB94D1BB-F500-467B-BA01-8D9C851F0171','Lebanon','Libanon', 1); 
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('0FC3208F-1D21-4EFC-B5AB-8915DF98C4C5','Lesotho','Lesotho', 1);
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('AEDFB27D-5E2C-469F-A328-12DC0212D93C','Liberia','Liberia', 1); 
-    THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('E0FE82AB-8839-418A-A48E-CDC14E3EF486','Libya','Libië', 1); 
+    THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('E0FE82AB-8839-418A-A48E-CDC14E3EF486','Libya','Libiï¿½', 1); 
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('14FB37F8-944A-4CDD-AAD8-F567BBD471F1','Liechtenstein','Liechtenstein', 1); 
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('122CAD8F-7B1B-4EE2-9556-6497CFB525BC','Lithuania','Litouwen', 1); 
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('3742295F-DE77-40F1-B679-28C554DB8852','Luxembourg','Luxemburg', 1); 
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('C28F2CD8-E683-41C6-B87F-DC0B965736AD','Macau','Macau', 1); 
-    THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('72DE2CA8-EE5D-425C-A0EC-65920EE6529A','Macedonia','Macedonië', 1); 
+    THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('72DE2CA8-EE5D-425C-A0EC-65920EE6529A','Macedonia','Macedoniï¿½', 1); 
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('6A8FFAD3-2AF9-40CD-A16D-766BA39E4F2F','Madagascar','Madagascar', 1); 
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('C9DE1C4B-4706-4B8A-A864-FA3405B93809','Malawi','Malawi', 1); 
-    THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('F412CB26-9D87-4131-A1B2-622DCF721B7F','Malaysia','Maleisië', 1); 
+    THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('F412CB26-9D87-4131-A1B2-622DCF721B7F','Malaysia','Maleisiï¿½', 1); 
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('22135C46-B0CF-4ACC-8FC2-506DD5547A30','Maldives','Maladiven', 1); 
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('73603881-1943-473E-B0A7-D348A9295577','Mali','Mali', 1); 
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('FA8D5815-C066-42BF-9342-D09D3204F044','Malta','Malta', 1); 
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('E874A7FD-211A-4D46-A4F0-C791551A3172','Marshall Islands','Marshall Eilanden', 1); 
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('262427EE-ED6B-4413-9F69-E2F951A1C830','Martinique','Martinique', 1); 
-    THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('1C618A33-F2EA-4F9B-9866-0BBB95A6841A','Mauritania','Mauritanië', 1); 
+    THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('1C618A33-F2EA-4F9B-9866-0BBB95A6841A','Mauritania','Mauritaniï¿½', 1); 
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('D99ACB43-A89B-4806-8CB4-0E12BE216435','Mauritius','Mauritius', 1); 
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('0D45640F-711D-4F5D-AB8A-902FFFE7AB16','Mexico','Mexico', 1); 
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('A63A16C1-6C12-4E3D-81AD-9EED7BA1CC17','Micronesia, Federated States of', 'Micronesia, De Federale Staten van', 1); 
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('AAD7DDE3-5282-4A06-B3C1-B537BC984E38','Midway Islands','Midway Eilanden', 1); 
-    THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('23139945-409A-4F34-8045-1273302BC0C2','Moldova','Moldavië', 1); 
+    THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('23139945-409A-4F34-8045-1273302BC0C2','Moldova','Moldaviï¿½', 1); 
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('EC6C611A-B6D8-4ED0-B4AC-88CA93BDF65B','Monaco','Monaco', 1); 
-    THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('7E5BA6B9-CC2F-4302-9B70-BBDE9E956913','Mongolia','Mongolië', 1); 
+    THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('7E5BA6B9-CC2F-4302-9B70-BBDE9E956913','Mongolia','Mongoliï¿½', 1); 
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('996DD671-9EA5-4931-A54A-AE07112507D7','Montserrat','Montserrat', 1); 
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('8436C445-F3A2-4F42-939A-44A2E50667D4','Morocco','Marokko', 1); 
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('095757A6-384A-4B03-BA96-D82A0E5135D4','Mozambique','Mozambique ', 1); 
-    THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('492495F1-9177-47B3-BE48-DD9A85AB706C','Namibia','Namibië', 1); 
+    THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('492495F1-9177-47B3-BE48-DD9A85AB706C','Namibia','Namibiï¿½', 1); 
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('C1AD0565-6E33-4278-847F-CDC767C8DA29','Nauru','Nauru', 1); 
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('2F5F1149-D258-480E-990F-29A547644236','Navassa Island', 'Navassa Eland', 1); 
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('A588362F-E5BC-431E-9F82-179D63C6EE66','Nepal','Nepal', 1); 
@@ -1256,7 +1260,7 @@
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('FC1F1156-322C-427F-A60D-0137B596FAAC','Portugal','Portugal', 1); 
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('3954E64D-CB5F-4DB6-9B62-52A99A7657CB','Puerto Rico','Puerto Rico', 1); 
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('7962E69E-1B0C-42FD-A905-518179AF99CE','Qatar','Qatar', 1); 
-    THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('F9AE3A2C-D65C-45E0-BBCD-528706854CA3','Reunion', 'Réunion', 1); 
+    THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('F9AE3A2C-D65C-45E0-BBCD-528706854CA3','Reunion', 'Rï¿½union', 1); 
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('2A4AB3DD-3A58-4426-9FB0-2123D2CEBA14','Romania','Roemenie', 1); 
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('D087110E-6D17-4940-8EB6-2822375D91D4','Russia','Rusland', 1);
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('967E047D-CC6B-49E1-87ED-F6B71BA69266','Rwanda','Rwanda', 1); 
@@ -1267,17 +1271,17 @@
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('65B9119F-CC24-489F-BA3D-EF4B07D43179','Saint Vincent and the Grenadines', 'Saint Vincent en de Grenadines', 1); 
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('13EAD65F-68AD-4869-985F-8EECF99D1379','Samoa', 'Samoa', 1); 
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('94207C8F-C04E-4ADB-B842-0F60351E730C','San Marino', 'San Marino', 1); 
-    THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('CA10FF1F-E54B-461E-B478-33D2B8E3605C','Sao Tome and Principe', 'Sao Tomé en Principe', 1); 
-    THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('012C8FEB-BF96-4466-84F4-FE949921F424','Saudi Arabia','Saudi-Arabië', 1);
+    THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('CA10FF1F-E54B-461E-B478-33D2B8E3605C','Sao Tome and Principe', 'Sao Tomï¿½ en Principe', 1); 
+    THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('012C8FEB-BF96-4466-84F4-FE949921F424','Saudi Arabia','Saudi-Arabiï¿½', 1);
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('A47B65A1-FD21-4772-AFD6-AB79B79D6258','Senegal','Senegal', 1);
-    THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('A4BC1314-1414-48A8-B82F-F469963AF016','Serbia and Montenegro', 'Servië en Montenegro', 1); 
+    THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('A4BC1314-1414-48A8-B82F-F469963AF016','Serbia and Montenegro', 'Serviï¿½ en Montenegro', 1); 
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('BFD46EDE-54CC-4258-8E1C-493C8F11BFCC','Seychelles','Seychellen', 1); 
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('7E8E7701-6955-4336-991A-90377F88829A','Sierra Leone','Sierra-Leone', 1); 
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('0B94FA2D-9EFC-4F6C-8863-C160702547D7','Singapore','Singapore', 1); 
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('FB58361D-17F3-4EC8-A110-3F49B9C1C69C','Slovakia','Slowakije', 1); 
-    THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('C8507FDB-67B1-47DC-AF13-D8644D06CC01','Slovenia','Slovenië', 1); 
+    THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('C8507FDB-67B1-47DC-AF13-D8644D06CC01','Slovenia','Sloveniï¿½', 1); 
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('28BA0E79-4127-4B6B-A62B-4A2AF272BCB9','Solomon Islands', 'Solomon Eilanden', 1); 
-    THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('C7BB4429-0251-4307-9AA9-DFF4E53189E6','Somalia','Somalië', 1);
+    THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('C7BB4429-0251-4307-9AA9-DFF4E53189E6','Somalia','Somaliï¿½', 1);
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('9E1B95F6-22A2-47D3-8E8B-E95BAF2B3438','South Africa','Zuid Afrika', 1);
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('53DBA583-0F16-4890-B99E-FDB3A83C023B','South Georgia and the South Sandwich Islands', 'South Sandwich en de South Georgia eilanden', 1); 
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('A8DF3CA5-8CA9-4AF3-B9DB-27ACDF6B0CF8','Spain','Spanje', 1); 
@@ -1289,7 +1293,7 @@
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('729848FF-C7D6-4F4A-9DC5-208820BA130F','Swaziland', 'Swaziland', 1); 
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('CD819E7E-55AE-4B09-854C-C619E8AA49D0','Sweden','Zweden', 1); 
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('4738F155-A549-4806-A6FE-7E57E5E5153D','Switzerland','Zwitserland', 1); 
-    THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('FB3840F9-692C-4D64-9677-2F474F9D088C','Syria','Syrië', 1); 
+    THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('FB3840F9-692C-4D64-9677-2F474F9D088C','Syria','Syriï¿½', 1); 
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('F9A794E4-DECE-485E-A4C8-F9057AD24629','Taiwan', 'Taiwan', 1);
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('29282062-C20C-4DFA-96E0-D9FA6168BA7B','Tajikistan','Tajikistan', 1); 
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('5119DDB9-3825-4455-B85F-D0C0082E3EC2','Tanzania','Tanzania', 1); 
@@ -1299,13 +1303,13 @@
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('A65B3AEB-65C1-4176-9536-F96F6B16A8F7','Tonga','Tonga', 1); 
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('497B8CDF-9B19-4180-8489-53CF44A432EC','Trinidad and Tobago','Trinidad en Tobago', 1); 
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('CAAE6C58-443A-493C-A0FD-8813D1A427B6','Tromelin Island', 'Tromelin eiland', 1); 
-    THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('13617303-979C-404E-AB63-DDA603F0FC61','Tunisia','Tunesië', 1); 
+    THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('13617303-979C-404E-AB63-DDA603F0FC61','Tunisia','Tunesiï¿½', 1); 
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('2AA1668A-6987-4811-BD4D-F2A97E131D91','Turkey','Turkije', 1); 
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('676AF278-C203-4212-88D8-A8B4525D7542','Turkmenistan','Turkmenistan', 1); 
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('96AF2A6E-5DA7-4DCD-9B9C-917D766399FE','Turks and Caicos Islands', 'Turks and Caicos Islands', 1); 
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('E7537D08-BBB7-4EF2-87FE-C26240566E96','Tuvalu', 'Tuvalu', 1); 
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('B8460A69-0C21-405A-939B-909B04040C17','Uganda','Uganda', 1); 
-    THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('C9BDF17F-3AA2-4DEE-ACF2-DE330B49EE24','Ukraine','Oekraïne', 1); 
+    THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('C9BDF17F-3AA2-4DEE-ACF2-DE330B49EE24','Ukraine','Oekraï¿½ne', 1); 
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('54B03A66-76F0-44DE-B060-51C525B52E2C','United Arab Emirates', 'Verenigde Arabische Emiraten', 1); 
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('B4F5D68B-92FF-4B91-9D86-ABA798C0044C','United Kingdom','Groot Brittanie', 1); 
     THEN: INSERT INTO wim_Countries(Country_Guid, Country_Name_EN, Country_Name_NL, Country_IsActive) values('BA17E0BB-54E7-47F4-9E97-10052F87EDAB','United States','Verenigde Staten van Amerika', 1);
@@ -1501,6 +1505,16 @@
     IF: select count(*) from wim_ComponentLists where ComponentList_GUID = 'D03439F0-73D7-4C78-B51E-50310A00F6DA';
     THEN: INSERT INTO wim_ComponentLists(ComponentList_Folder_Key, ComponentList_Assembly, ComponentList_ClassName, ComponentList_TargetType, ComponentList_Name, ComponentList_SingleItemName, ComponentList_Description,ComponentList_Type, ComponentList_GUID, ComponentList_IsVisible, ComponentList_ContainsOneChild, ComponentList_IsInherited) VALUES(null, 'Sushi.Mediakiwi.Framework.dll', 'Sushi.Mediakiwi.AppCentre.UI.WikiList', 2, 'Wiki', 'Wiki', null, null, 'D03439F0-73D7-4C78-B51E-50310A00F6DA', 0, 1, 0);
 
+    -- Document Type properties;
+    IF: select count(*) from wim_ComponentLists where ComponentList_GUID = '36fc7157-d5c7-433c-8317-b601226f9bd0';
+    THEN: 
+	INSERT INTO wim_ComponentLists (ComponentList_Folder_Key, ComponentList_Assembly, ComponentList_ClassName, ComponentList_TargetType, ComponentList_Name, ComponentList_SingleItemName, ComponentList_Description,ComponentList_Type, ComponentList_GUID, ComponentList_IsVisible, ComponentList_ContainsOneChild, ComponentList_IsInherited) VALUES(null, 'Sushi.Mediakiwi.dll', 'Sushi.Mediakiwi.AppCentre.UI.DocumentType_List', 2, 'DT Definition', 'DT Definition', null, null, '36fc7157-d5c7-433c-8317-b601226f9bd0', 0, 1, 0);
+	
+	-- SharedFieldList
+	IF: select count(*) from wim_ComponentLists where ComponentList_GUID = '937C843E-C586-4CAE-A923-7305685242C4';
+    THEN: INSERT INTO wim_ComponentLists(ComponentList_Folder_Key, ComponentList_Assembly, ComponentList_ClassName, ComponentList_TargetType, ComponentList_Name, ComponentList_SingleItemName, ComponentList_Description,ComponentList_Type, ComponentList_GUID, ComponentList_IsVisible, ComponentList_ContainsOneChild, ComponentList_IsInherited) VALUES(4, 'Sushi.Mediakiwi.dll', 'Sushi.Mediakiwi.AppCentre.Data.Implementation.SharedFieldList', 2, 'Shared Fields', 'Shared Field', null, 47, '937C843E-C586-4CAE-A923-7305685242C4', 1, 1, 0);
+
+
 
     -- MAIN_DOMAIN_COOKIE_HOST;
     IF: select count(*) from wim_Registry where Registry_GUID = '8FA687E9-81C0-4561-9755-BAB02E9B055C';
@@ -1643,3 +1657,58 @@
 	IF:select COUNT(*) from wim_Environments where Environment_Version >= 4.46;
 	THEN: update wim_Pages set Page_InheritContentEdited = Page_InheritContent where Page_InheritContentEdited is null; 
  
+	-- Add Wim_SharedFields table
+	IF:select COUNT(*) from sys.indexes where name = 'PK_Wim_SharedFields';   
+	THEN:CREATE TABLE [dbo].[wim_SharedFields](
+	[SharedField_Key] [int] IDENTITY(1,1) NOT NULL,
+	[SharedField_ContentTypeID] [int] NOT NULL,
+	[SharedField_FieldName] [nvarchar](200) NOT NULL,
+	[SharedField_IsHiddenOnPage] [bit] NOT NULL,
+	CONSTRAINT [PK_Wim_SharedFields] PRIMARY KEY CLUSTERED 
+	(
+		[SharedField_Key] ASC
+	) WITH (STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+	) ON [PRIMARY];
+
+	-- Add Wim_SharedFieldTranslations table
+	IF:select COUNT(*) from sys.indexes where name = 'PK_Wim_SharedFieldTranslations';   
+	THEN:CREATE TABLE [wim_SharedFieldTranslations](
+		[SharedFieldTranslation_Key] [int] IDENTITY(1,1) NOT NULL,
+		[SharedFieldTranslation_Field_Key] [int] NOT NULL,
+		[SharedFieldTranslation_Site_Key] [int] NOT NULL,
+		[SharedFieldTranslation_EditValue] [nvarchar](max) NOT NULL,
+		[SharedFieldTranslation_Value] [nvarchar](max) NULL,
+	 CONSTRAINT [PK_Wim_SharedFieldTranslations] PRIMARY KEY CLUSTERED 
+	(
+		[SharedFieldTranslation_Key] ASC
+	)WITH (STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+	) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY];
+
+	-- Add Wim_SharedFieldTranslation -> Wim_SharedFields FK
+	IF:select COUNT(*) from sys.indexes where name = 'FK_Wim_SharedFieldTranslations_Wim_SharedFields';   
+	THEN:ALTER TABLE [wim_SharedFieldTranslations] WITH CHECK ADD CONSTRAINT [FK_Wim_SharedFieldTranslations_Wim_SharedFields] FOREIGN KEY([SharedFieldTranslation_Field_Key])
+	REFERENCES [wim_SharedFields] ([SharedField_Key])
+	ALTER TABLE [wim_SharedFieldTranslations] CHECK CONSTRAINT [FK_Wim_SharedFieldTranslations_Wim_SharedFields];
+	
+	-- Add Wim_SharedFieldTranslation -> Wim_Sites FK
+	IF:select COUNT(*) from sys.indexes where name = 'FK_Wim_SharedFieldTranslations_wim_Sites';   
+	THEN:ALTER TABLE [wim_SharedFieldTranslations] WITH CHECK ADD CONSTRAINT [FK_Wim_SharedFieldTranslations_wim_Sites] FOREIGN KEY([SharedFieldTranslation_Site_Key])
+	REFERENCES [wim_Sites] ([Site_Key])
+	ALTER TABLE [wim_SharedFieldTranslations] CHECK CONSTRAINT [FK_Wim_SharedFieldTranslations_wim_Sites];
+
+
+	-- ADD vw_SharedFields
+	IF:select COUNT(*) FROM sys.views where name = 'vw_SharedFields';
+	THEN:CREATE VIEW [vw_SharedFields] as
+	select [SharedFieldTranslation_Key]
+	  ,[SharedFieldTranslation_Field_Key]
+	  ,[SharedFieldTranslation_Site_Key]
+	  ,[SharedFieldTranslation_EditValue]
+	  ,[SharedFieldTranslation_Value]
+	  ,[SharedField_FieldName]
+	  ,[SharedField_ContentTypeID]
+	  from [wim_SharedFieldTranslations]
+	left join [wim_SharedFields] as fields
+	on [SharedFieldTranslation_Field_Key] = fields.SharedField_Key;
+	
+	

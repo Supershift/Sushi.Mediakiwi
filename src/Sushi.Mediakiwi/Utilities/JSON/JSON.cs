@@ -2,9 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
 using System.Reflection;
-using System.Reflection.Emit;
 
 namespace Sushi.Mediakiwi.Utilities
 {
@@ -71,7 +69,10 @@ namespace Sushi.Mediakiwi.Utilities
 
         public static JSON Instance
         {
-            get { return _instance ?? (_instance = new JSON()); }
+            get
+            {
+                return _instance ?? (_instance = new JSON());
+            }
         }
 
         private JSON()
@@ -181,8 +182,12 @@ namespace Sushi.Mediakiwi.Utilities
             _params = Parameters;
             _params.FixValues();
             Reflection.Instance.ShowReadOnlyProperties = _params.ShowReadOnlyProperties;
-            Dictionary<string, object> ht = new JsonParser(json, Parameters.IgnoreCaseOnDeserialize).Decode() as Dictionary<string, object>;
-            if (ht == null) return null;
+            
+            if (!(new JsonParser(json, Parameters.IgnoreCaseOnDeserialize).Decode() is Dictionary<string, object> ht))
+            {
+                return null;
+            }
+
             return ParseDictionary(ht, null, input.GetType(), input);
         }
 
@@ -258,8 +263,7 @@ namespace Sushi.Mediakiwi.Utilities
         SafeDictionary<string, SafeDictionary<string, myPropInfo>> _propertycache = new SafeDictionary<string, SafeDictionary<string, myPropInfo>>();
         private SafeDictionary<string, myPropInfo> Getproperties(Type type, string typename)
         {
-            SafeDictionary<string, myPropInfo> sd = null;
-            if (_propertycache.TryGetValue(typename, out sd))
+            if (_propertycache.TryGetValue(typename, out SafeDictionary<string, myPropInfo> sd))
             {
                 return sd;
             }
@@ -363,11 +367,14 @@ namespace Sushi.Mediakiwi.Utilities
             {
                 _usingglobals = false;
                 object v = k;
-                if (k is Dictionary<string, object>)
-                    v = ParseDictionary(k as Dictionary<string, object>, null, gtypes[0], null);
+                if (k is Dictionary<string, object> dict)
+                {
+                    v = ParseDictionary(dict, null, gtypes[0], null);
+                }
                 else
+                {
                     v = ChangeType(k, gtypes[0]);
-
+                }
                 o.Add(v);
             }
             return o;
@@ -376,27 +383,37 @@ namespace Sushi.Mediakiwi.Utilities
         private object RootDictionary(object parse, Type type)
         {
             Type[] gtypes = type.GetGenericArguments();
-            if (parse is Dictionary<string, object>)
+            if (parse is Dictionary<string, object> dict)
             {
                 IDictionary o = (IDictionary)Reflection.Instance.FastCreateInstance(type);
 
-                foreach (var kv in (Dictionary<string, object>)parse)
+                foreach (var kv in dict)
                 {
                     object v;
                     object k = ChangeType(kv.Key, gtypes[0]);
-                    if (kv.Value is Dictionary<string, object>)
-                        v = ParseDictionary(kv.Value as Dictionary<string, object>, null, gtypes[1], null);
-                    else if (kv.Value is List<object>)
-                        v = CreateArray(kv.Value as List<object>, typeof(object), typeof(object), null);
+                    if (kv.Value is Dictionary<string, object> childDict)
+                    {
+                        v = ParseDictionary(childDict, null, gtypes[1], null);
+                    }
+                    else if (kv.Value is List<object> childDict2)
+                    {
+                        v = CreateArray(childDict2, typeof(object), typeof(object), null);
+                    }
                     else
+                    {
                         v = ChangeType(kv.Value, gtypes[1]);
+                    }
+
                     o.Add(k, v);
                 }
 
                 return o;
             }
-            if (parse is List<object>)
-                return CreateDictionary(parse as List<object>, type, gtypes, null);
+
+            if (parse is List<object> objList)
+            {
+                return CreateDictionary(objList, type, gtypes, null);
+            }
 
             return null;
         }
@@ -441,15 +458,22 @@ namespace Sushi.Mediakiwi.Utilities
             foreach (string n in d.Keys)
             {
                 string name = n;
-                if (_params.IgnoreCaseOnDeserialize) name = name.ToLower();
+                if (_params.IgnoreCaseOnDeserialize)
+                {
+                    name = name.ToLower();
+                }
+
                 if (name == "$map")
                 {
                     ProcessMap(o, props, (Dictionary<string, object>)d[name]);
                     continue;
                 }
-                myPropInfo pi;
-                if (props.TryGetValue(name, out pi) == false)
+
+                if (props.TryGetValue(name, out myPropInfo pi) == false)
+                {
                     continue;
+                }
+
                 if (pi.filled && pi.CanWrite)
                 {
                     object v = d[name];
@@ -459,55 +483,75 @@ namespace Sushi.Mediakiwi.Utilities
                         object oset = null;
 
                         if (pi.isInt)
+                        {
                             oset = (int)((long)v);
+                        }
 #if CUSTOMTYPE
                         else if (pi.isCustomType)
+                        {
                             oset = CreateCustom((string)v, pi.pt);
+                        }
 #endif
                         else if (pi.isLong)
+                        {
                             oset = (long)v;
-
+                        }
                         else if (pi.isString)
+                        {
                             oset = (string)v;
-
+                        }
                         else if (pi.isBool)
+                        {
                             oset = (bool)v;
-
-                        else if (pi.isGenericType && pi.isValueType == false && pi.isDictionary == false && v is List<object>)
-                            oset = CreateGenericList((List<object>)v, pi.pt, pi.bt, globaltypes);
-
+                        }
+                        else if (pi.isGenericType && pi.isValueType == false && pi.isDictionary == false && v is List<object> list)
+                        {
+                            oset = CreateGenericList(list, pi.pt, pi.bt, globaltypes);
+                        }
                         else if (pi.isByteArray)
+                        {
                             oset = Convert.FromBase64String((string)v);
-
+                        }
                         else if (pi.isArray && pi.isValueType == false)
+                        {
                             oset = CreateArray((List<object>)v, pi.pt, pi.bt, globaltypes);
-
+                        }
                         else if (pi.isGuid)
+                        {
                             oset = CreateGuid((string)v);
-
+                        }
                         else if (pi.isStringDictionary)
+                        {
                             oset = CreateStringKeyDictionary((Dictionary<string, object>)v, pi.pt, pi.GenericTypes, globaltypes);
+                        }
                         else if (pi.isDictionary)
-
+                        {
                             oset = CreateDictionary((List<object>)v, pi.pt, pi.GenericTypes, globaltypes);
-
+                        }
                         else if (pi.isEnum)
+                        {
                             oset = CreateEnum(pi.pt, (string)v);
-
+                        }
                         else if (pi.isDateTime)
+                        {
                             oset = CreateDateTime((string)v);
-
-                        else if (pi.isClass && v is Dictionary<string, object>)
-                            oset = ParseDictionary((Dictionary<string, object>)v, globaltypes, pi.pt, pi.getter(o));
-
+                        }
+                        else if (pi.isClass && v is Dictionary<string, object> dict)
+                        {
+                            oset = ParseDictionary(dict, globaltypes, pi.pt, pi.getter(o));
+                        }
                         else if (pi.isValueType)
+                        {
                             oset = ChangeType(v, pi.changeType);
-
-                        else if (v is List<object>)
-                            oset = CreateArray((List<object>)v, pi.pt, typeof(object), globaltypes);
-
+                        }
+                        else if (v is List<object> objList)
+                        {
+                            oset = CreateArray(objList, pi.pt, typeof(object), globaltypes);
+                        }
                         else
+                        {
                             oset = v;
+                        }
 
                         o = pi.setter(o, oset);
                     }
@@ -525,7 +569,7 @@ namespace Sushi.Mediakiwi.Utilities
         }
 #endif
 
-        private void ProcessMap(object obj, SafeDictionary<string, JSON.myPropInfo> props, Dictionary<string, object> dic)
+        private void ProcessMap(object obj, SafeDictionary<string, myPropInfo> props, Dictionary<string, object> dic)
         {
             foreach (KeyValuePair<string, object> kv in dic)
             {
@@ -620,13 +664,17 @@ namespace Sushi.Mediakiwi.Utilities
             foreach (object ob in data)
             {
                 if (ob is IDictionary)
+                {
                     col.Add(ParseDictionary((Dictionary<string, object>)ob, globalTypes, bt, null));
-
-                else if (ob is List<object>)
-                    col.Add(((List<object>)ob).ToArray());
-
+                }
+                else if (ob is List<object> objList)
+                {
+                    col.Add(objList.ToArray());
+                }
                 else
+                {
                     col.Add(ChangeType(ob, bt));
+                }
             }
             return col;
         }
@@ -645,11 +693,15 @@ namespace Sushi.Mediakiwi.Utilities
             foreach (KeyValuePair<string, object> values in reader)
             {
                 var key = values.Key;//ChangeType(values.Key, t1);
-                object val = null;
-                if (values.Value is Dictionary<string, object>)
-                    val = ParseDictionary((Dictionary<string, object>)values.Value, globalTypes, t2, null);
+                object val;
+                if (values.Value is Dictionary<string, object> objDict)
+                {
+                    val = ParseDictionary(objDict, globalTypes, t2, null);
+                }
                 else
+                {
                     val = ChangeType(values.Value, t2);
+                }
                 col.Add(key, val);
             }
 
@@ -672,15 +724,23 @@ namespace Sushi.Mediakiwi.Utilities
                 object key = values["k"];
                 object val = values["v"];
 
-                if (key is Dictionary<string, object>)
-                    key = ParseDictionary((Dictionary<string, object>)key, globalTypes, t1, null);
+                if (key is Dictionary<string, object> objDict)
+                {
+                    key = ParseDictionary(objDict, globalTypes, t1, null);
+                }
                 else
+                {
                     key = ChangeType(key, t1);
+                }
 
-                if (val is Dictionary<string, object>)
-                    val = ParseDictionary((Dictionary<string, object>)val, globalTypes, t2, null);
+                if (val is Dictionary<string, object> objDict2)
+                {
+                    val = ParseDictionary(objDict2, globalTypes, t2, null);
+                }
                 else
+                {
                     val = ChangeType(val, t2);
+                }
 
                 col.Add(key, val);
             }

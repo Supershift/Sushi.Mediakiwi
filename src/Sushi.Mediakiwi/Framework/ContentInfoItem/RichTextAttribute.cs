@@ -1,9 +1,9 @@
-using System;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Globalization;
 using Sushi.Mediakiwi.Data;
 using Sushi.Mediakiwi.RichRext;
+using System;
+using System.Globalization;
+using System.Text;
+using System.Text.RegularExpressions;
 
 namespace Sushi.Mediakiwi.Framework.ContentInfoItem
 {
@@ -17,7 +17,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
         public override MetaData GetMetaData(string name, string defaultValue)
         {
             MetaData meta = new MetaData();
-            Data.Utility.ReflectProperty(this, meta);
+            Utility.ReflectProperty(this, meta);
             meta.Name = name;
             meta.Default = defaultValue;
             meta.ContentTypeSelection = ((int)ContentTypeSelection).ToString();
@@ -109,7 +109,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
             //{
                 //useNewRichTextCleaning = true;
             //}
-            if (Property != null && Property.PropertyType == typeof(Data.CustomData))
+            if (Property != null && Property.PropertyType == typeof(CustomData))
                 SetContentContainer(field);
 
             string candidate = null;
@@ -124,7 +124,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                 }
                 else
                 {
-                    if (Property.PropertyType == typeof(Data.CustomData))
+                    if (Property.PropertyType == typeof(CustomData))
                     {
                         candidate = m_ContentContainer[field.Property].Value;
                     }
@@ -158,14 +158,14 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                 candidate = candidate.Replace("\t", string.Empty).Replace("\r\n", " ").Replace("\r", string.Empty).Replace("\n", string.Empty);
 
                 //if candidate is empy or contains only html tags and no real content, set candidate to null
-                if (string.IsNullOrEmpty(Data.Utility.CleanFormatting(candidate)))
+                if (string.IsNullOrEmpty(Utility.CleanFormatting(candidate)))
                     candidate = null;
                 else
                 {
                     string emptyTest = candidate.Replace("&nbsp;", string.Empty).Trim();
                     if (string.IsNullOrEmpty(emptyTest))
                         candidate = null;
-                    if (string.IsNullOrEmpty(Data.Utility.CleanFormatting(emptyTest)))
+                    if (string.IsNullOrEmpty(Utility.CleanFormatting(emptyTest)))
                         candidate = null;
                 }
             }
@@ -181,7 +181,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
             }
             if (!IsBluePrint && Property != null && Property.CanWrite)
             {
-                if (Property.PropertyType == typeof(Data.CustomData))
+                if (Property.PropertyType == typeof(CustomData))
                     ApplyContentContainer(field, candidate);
                 else if (Property.PropertyType == typeof(string))
                     Property.SetValue(SenderInstance, candidate, null);
@@ -208,7 +208,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
         static Regex tofillFails = new Regex(@"<a\shref=""TOFILL"">(.*?)</a>",  RegexOptions.Multiline | RegexOptions.IgnoreCase | RegexOptions.IgnorePatternWhitespace | RegexOptions.Compiled);
         private string PreCleanHTML(string candidate)
         {
-            if (!String.IsNullOrEmpty(candidate))
+            if (!string.IsNullOrEmpty(candidate))
             {
                 // Underline            
                 candidate = underlineFix.Replace(candidate, "<u>$1</u>");
@@ -218,7 +218,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
 
                 // To fill fails; if this part of the codes detects links with href="TOFILL" it means the editor fucked up
                 // First Log, then remove
-                if (tofillFails.IsMatch(candidate)) Sushi.Mediakiwi.Data.Notification.InsertOne("RichTextBoxEditor.Save", "Failed to create html link");
+                if (tofillFails.IsMatch(candidate)) Notification.InsertOne("RichTextBoxEditor.Save", "Failed to create html link");
                 candidate = tofillFails.Replace(candidate, "$1");
             }
             return candidate;
@@ -305,7 +305,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
 
             if (!string.IsNullOrEmpty(item) && item.StartsWith("<p>", StringComparison.OrdinalIgnoreCase))
             {
-                m_NewEditor.Content = Data.Utility.CleanParagraphWrap(item);
+                m_NewEditor.Content = Utility.CleanParagraphWrap(item);
             }
             else
                 m_NewEditor.Content = item;
@@ -321,13 +321,13 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
             {
                 if (isCloaked)
                 {
-                    return String.Format(@"<textarea class=""long {2}"" id=""{0}"" name=""{0}""{3}>{1}</textarea>",
+                    return string.Format(@"<textarea class=""long {2}"" id=""{0}"" name=""{0}""{3}>{1}</textarea>",
                        ID,
                        CleanUpBadChars(Content),
                        "hidden",
                        isEnabled ? null : " disabled=\"disabled\"");
                 }
-                return String.Format(@"<textarea class=""long {2}"" id=""{0}"" name=""{0}""{3}>{1}</textarea>",
+                return string.Format(@"<textarea class=""long {2}"" id=""{0}"" name=""{0}""{3}>{1}</textarea>",
                     ID, 
                     CleanUpBadChars(Content), 
                     hasTable ? "table_rte" : "rte", 
@@ -358,15 +358,43 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
         /// <returns></returns>
         public Field WriteCandidate(WimControlBuilder build, bool isEditMode, bool isRequired, bool isCloaked)
         {
-            this.SetWriteEnvironment();
-            this.IsCloaked = isCloaked;
-            this.Mandatory = isRequired;
-            if (OverrideEditMode) isEditMode = false;
-            if (isEditMode && this.IsEnabled())
+            SetWriteEnvironment();
+            IsCloaked = isCloaked;
+            Mandatory = isRequired;
+            if (OverrideEditMode)
+            {
+                isEditMode = false;
+            }
+
+            string outputValue = OutputText;
+
+            var isEnabled = IsEnabled();
+
+            // [MR:03-06-2021] Apply shared field clickable icon.
+            var sharedInfoApply = ApplySharedFieldInformation(isEnabled, outputValue);
+
+            // If we have a document assigned, overwrite the current one
+            if (sharedInfoApply.isShared)
+            {
+                // Enable readonly when shared
+                isEnabled = sharedInfoApply.isEnabled;
+
+                // When Currently not cloaked, do so if its a shared field
+                if (IsCloaked == false && sharedInfoApply.isHidden)
+                {
+                    IsCloaked = sharedInfoApply.isHidden;
+                }
+
+                OutputText = sharedInfoApply.outputValue;
+            }
+
+            if (isEditMode && isEnabled)
             {
                 #region Element creation
+
                 StringBuilder element = new StringBuilder();
-                element.AppendFormat(NewEditor.EditorHTML(this.IsEnabled(), this.EnableTable, this.IsCloaked));
+                element.AppendFormat(NewEditor.EditorHTML(isEnabled, EnableTable, IsCloaked));
+
                 #endregion Element creation
 
                 if (IsCloaked)
@@ -377,9 +405,8 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                 {
                     #region Wrapper
 
-            
+                    //string titleTag = string.Concat(Title, Mandatory ? "<em>*</em>" : "");
 
-                    string titleTag = string.Concat(Title, Mandatory ? "<em>*</em>" : "");
                     //  If set all table cell/row creation will be ignored
                     if (!OverrideTableGeneration)
                     {
@@ -396,7 +423,14 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                                 build.Append("\t\t\t\t\t\t<tr>");
                         }
 
-                        build.AppendFormat("\n\t\t\t\t\t\t\t<th><label for=\"{0}\">{1}</label></th>", this.ID, this.TitleLabel);
+                        if (string.IsNullOrWhiteSpace(EditSharedFieldLink) == false)
+                        {
+                            build.Append($"<th><label for=\"{ID}\">{EditSharedFieldLink.Replace("[LABEL]", this.TitleLabel)}</label></th>");
+                        }
+                        else
+                        {
+                            build.Append($"<th><label for=\"{ID}\">{TitleLabel}</label></th>");
+                        }
 
                         //if (ShowInheritedData)
                         //    build.AppendFormat("\t\t\t\t\t\t\t<th class=\"local\"><label>{0}:</label></th>\t\t\t\t\t\t</tr>\t\t\t\t\t\t<tr>\t\t\t\t\t\t\t<td><div class=\"description\">{1}</div></td>\n", this.ID, this.TitleLabel);
@@ -411,6 +445,12 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                     build.AppendFormat("\n\t\t\t\t\t\t\t\t<div class=\"{0}\">", (Expression == OutputExpression.FullWidth) ? this.Class_Wide
                         : (OverrideTableGeneration ? "halfer" : "half")
                     );
+
+                    // Add Shared Icon (if any)
+                    if (string.IsNullOrWhiteSpace(SharedIcon) == false && IsCloaked == false)
+                    {
+                        build.Append(SharedIcon);
+                    }
 
                     build.Append(element.ToString());
 
@@ -432,7 +472,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                 string candidate = OutputText;
                 RichTextLink.CreateLinkPreview(ref candidate);
 
-                build.Append(GetSimpleTextElement(this.Title, this.Mandatory, candidate, this.InteractiveHelp));
+                build.Append(GetSimpleTextElement(candidate));
             }
 
             build.ApiResponse.Fields.Add(new Api.MediakiwiField()
@@ -444,7 +484,8 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                 PropertyName = this.ID,
                 PropertyType = (Property == null) ? typeof(string).FullName : Property.PropertyType.FullName,
                 VueType = Api.MediakiwiFormVueType.wimRichText,
-                ReadOnly = this.IsReadOnly
+                ReadOnly = this.IsReadOnly,
+                ContentTypeID = ContentTypeSelection
             });
 
             return ReadCandidate(this.OutputText);

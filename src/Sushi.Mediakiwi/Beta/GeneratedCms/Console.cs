@@ -1,19 +1,16 @@
-using System;
-using System.Linq;
-using System.Data;
-using System.IO;
-using System.Collections.Generic;
-using Newtonsoft.Json;
-using Sushi.Mediakiwi.Framework.Api;
-using Microsoft.AspNetCore.Http;
-using Sushi.Mediakiwi.Framework;
-using Sushi.Mediakiwi.Data;
-using System.Net;
 using Microsoft.AspNetCore.Hosting;
-using System.Threading.Tasks;
-using System.Security.Claims;
-using System.Security.Principal;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
+using Sushi.Mediakiwi.Data;
+using Sushi.Mediakiwi.Framework;
+using Sushi.Mediakiwi.Framework.Api;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Net;
+using System.Threading.Tasks;
 
 namespace Sushi.Mediakiwi.Beta.GeneratedCms
 {
@@ -41,26 +38,41 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
         public string GetSafePost(string name, bool allowHTML)
         {
             if (Context == null)
+            {
                 return null;
+            }
 
             if (Context.Request == null)
+            {
                 return null;
+            }
 
             if (!Context.Request.HasFormContentType)
+            {
                 return null;
+            }
 
             if (Context.Request.Form.Count == 0)
+            {
                 return null;
+            }
 
             if (Context.Request.Headers["Referer"].FirstOrDefault() == null)
+            {
                 return null;
+            }
 
             var referer = new Uri(Context.Request.Headers["Referer"]);
             if (!referer.Host.Equals(Context.Request.Host.Host, StringComparison.CurrentCultureIgnoreCase))
+            {
                 return null;
+            }
 
             if (allowHTML)
+            {
                 return Context.Request.Form[name];
+            }
+
             return WebUtility.HtmlEncode(Context.Request.Form[name].FirstOrDefault());
         }
 
@@ -88,16 +100,24 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
         public string GetSafeGet(string name, bool allowHTML)
         {
             if (Context == null)
+            {
                 return null;
+            }
 
             if (Context.Request == null)
+            {
                 return null;
+            }
 
             if (Context.Request.Query.Count == 0)
+            {
                 return null;
+            }
 
             if (allowHTML)
+            {
                 return Context.Request.Query[name];
+            }
             return WebUtility.HtmlEncode(Context.Request.Query[name]);
         }
 
@@ -110,66 +130,72 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
                 {
                     return JsonConvert.DeserializeObject<string[]>(value);
                 }
-                return null;
+                return default(string[]);
             }
             else
+            {
                 return value.Split(',');
+            }
         }
 
         internal bool IsPosted(string name)
         {
-
-
             if (IsJson)
             {
                 if (JsonForm != null)
+                {
                     return JsonForm.ContainsKey(name);
+                }
                 return false;
             }
             else
             {
                 if (!Context.Request.HasFormContentType)
+                {
                     return false;
+                }
 
                 return Context.Request.Form.ContainsKey(name);
             }
         }
 
-        internal bool HasPost
-        {
-            get
-            {
-                if (!Context.Request.HasFormContentType)
-                    return false;
+        //internal bool HasPost
+        //{
+        //    get
+        //    {
+        //        if (!Context.Request.HasFormContentType)
+        //            return false;
 
-                if (IsJson)
-                {
-                    if (JsonForm != null)
-                    {
-                        if (JsonForm.Count == 0) return false;
-                        return true;
-                    }
-                    return false;
-                }
-                else
-                {
-                    if (!Context.Request.HasFormContentType)
-                        return false;
+        //        if (IsJson)
+        //        {
+        //            if (JsonForm != null)
+        //            {
+        //                if (JsonForm.Count == 0) return false;
+        //                return true;
+        //            }
+        //            return false;
+        //        }
+        //        else
+        //        {
+        //            if (!Context.Request.HasFormContentType)
+        //                return false;
 
-                    if (Context.Request.Form.Count == 0) 
-                        return false;
+        //            if (Context.Request.Form.Count == 0) 
+        //                return false;
 
-                    return true;
-                }
-            }
-        }
+        //            return true;
+        //        }
+        //    }
+        //}
 
         public string JsonReferrer
         {
             get
             {
                 if (m_JsonRequest == null)
+                {
                     return string.Empty;
+                }
 
                 return m_JsonRequest.Referrer;
             }
@@ -181,7 +207,9 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
             get
             {
                 if (!m_IsJson.HasValue)
+                {
                     m_IsJson = (Request.ContentType != null && Request.ContentType.Contains("json"));
+                }
 
                 return m_IsJson.Value;
             }
@@ -193,7 +221,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
         {
             if (IsJson)
             {
-                var jsonString = String.Empty;
+                var jsonString = string.Empty;
 
                 Context.Request.EnableBuffering();
                 using (var reader = new StreamReader(Context.Request.Body))
@@ -203,7 +231,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
                         reader.BaseStream.Seek(0, SeekOrigin.Begin);
                         jsonString = await reader.ReadToEndAsync();
                     }
-                    catch(Exception ex)
+                    catch (Exception ex)
                     {
                         throw ex;
                     }
@@ -217,21 +245,14 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
                         string json = JsonConvert.SerializeObject(m_JsonRequest.FormFields);
                         if (!string.IsNullOrWhiteSpace(json))
                         {
-                            m_JsonForm = JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
+                            JsonForm = JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
                         }
                     }
                 }
             }
         }
 
-        Dictionary<string, object> m_JsonForm;
-        public Dictionary<string, object> JsonForm
-        {
-            get
-            {
-                return m_JsonForm;
-            }
-        }
+        public Dictionary<string, object> JsonForm { get; set; }
 
 
         internal void SetDateFormat()
@@ -256,28 +277,25 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
                 DateTimeFormatShort = EN_SHORT_DATETIME;
             }
         }
-        string NL_SHORT_DATE = "dd-MM-yy";
-        string EN_SHORT_DATE = "dd-MM-yy";
-        string US_SHORT_DATE = "MM/dd/yy";
 
-        string NL_SHORT_DATETIME = "dd-MM-yy HH:mm";
-        string EN_SHORT_DATETIME = "dd-MM-yy HH:mm";
-        string US_SHORT_DATETIME = "MM/dd/yy HH:mm";
+        readonly string NL_SHORT_DATE = "dd-MM-yy";
+        readonly string EN_SHORT_DATE = "dd-MM-yy";
 
-        string NL_DATE = "dd-MM-yyyy";
-        string EN_DATE = "dd-MM-yyyy";
-        string US_DATE = "MM/dd/yyyy";
+        readonly string NL_SHORT_DATETIME = "dd-MM-yy HH:mm";
+        readonly string EN_SHORT_DATETIME = "dd-MM-yy HH:mm";
 
-        string NL_DATETIME = "dd-MM-yyyy HH:mm";
-        string EN_DATETIME = "dd-MM-yyyy HH:mm";
-        string US_DATETIME = "MM/dd/yyyy HH:mm";
+        readonly string NL_DATE = "dd-MM-yyyy";
+        readonly string EN_DATE = "dd-MM-yyyy";
+
+        readonly string NL_DATETIME = "dd-MM-yyyy HH:mm";
+        readonly string EN_DATETIME = "dd-MM-yyyy HH:mm";
 
         public string DateFormat { get; private set; }
         public string DateTimeFormat { get; private set; }
         public string DateFormatShort { get; private set; }
         public string DateTimeFormatShort { get; private set; }
-        public string GlobalisationCulture { get; private set;  }
-    
+        public string GlobalisationCulture { get; private set; }
+
 
         /// <summary>
         /// Adds the trace.
@@ -292,29 +310,35 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
         public string AddApplicationPath(string path, bool appendUrl = false)
         {
             if (path.StartsWith("http", StringComparison.CurrentCultureIgnoreCase))
+            {
                 return path;
+            }
 
             if (path.StartsWith("~"))
             {
                 path = path.Replace("~", Request.PathBase);
                 if (appendUrl)
-                    return String.Concat(CurrentDomain, path);
+                {
+                    return string.Concat(CurrentDomain, path);
+                }
                 return path;
             }
 
             if (appendUrl)
-                return String.Concat(CurrentDomain, Request.PathBase, path);
-            return String.Concat(Request.PathBase, path);
+            {
+                return string.Concat(CurrentDomain, Request.PathBase, path);
+            }
+            return string.Concat(Request.PathBase, path);
         }
 
         public string Url
         {
             get
             {
-                return String.Concat(CurrentDomain, Request.PathBase, Request.Path, Request.QueryString);
+                return string.Concat(CurrentDomain, Request.PathBase, Request.Path, Request.QueryString);
             }
         }
-        
+
         public string PortalUrl
         {
             get
@@ -325,20 +349,14 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
 
         public string Query(string query)
         {
-            return String.Concat(Request.Scheme, "://", Request.Host.ToString(), Request.PathBase, Request.Path, "?", query);
+            return string.Concat(Request.Scheme, "://", Request.Host.ToString(), Request.PathBase, Request.Path, "?", query);
         }
 
-
-        Sushi.Mediakiwi.Framework.OutputExpression m_ExpressionPrevious;
         /// <summary>
         /// Gets or sets the expression previous.
         /// </summary>
         /// <value>The expression previous.</value>
-        public Sushi.Mediakiwi.Framework.OutputExpression ExpressionPrevious
-        {
-            get { return m_ExpressionPrevious; }
-            set { m_ExpressionPrevious = value; }
-        }
+        public OutputExpression ExpressionPrevious { get; set; }
 
         internal int RowCount;
         internal bool HasDoubleCols;
@@ -350,12 +368,16 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
         /// </value>
         public bool IsSortorderOn
         {
-            get {
-
+            get
+            {
                 if (!Request.HasFormContentType)
+                {
                     return false;
-                return Request.Form["sortOrder"] == "1" || PostbackValue == "sortOrder"; }
+                }
+                return Request.Form["sortOrder"] == "1" || PostbackValue == "sortOrder";
+            }
         }
+
         /// <summary>
         /// 
         /// </summary>
@@ -374,16 +396,19 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
         /// </summary>
         public HttpResponse Response { get; set; }
 
-        Sushi.Mediakiwi.Beta.GeneratedCms.Source.UrlBuilder m_UrlBuild;
+        Source.UrlBuilder m_UrlBuild;
         /// <summary>
         /// Gets the URL build.
         /// </summary>
         /// <value>The URL build.</value>
-        public Sushi.Mediakiwi.Beta.GeneratedCms.Source.UrlBuilder UrlBuild
+        public Source.UrlBuilder UrlBuild
         {
-            get {
+            get
+            {
                 if (m_UrlBuild == null)
-                    m_UrlBuild = new Sushi.Mediakiwi.Beta.GeneratedCms.Source.UrlBuilder(this);
+                {
+                    m_UrlBuild = new Source.UrlBuilder(this);
+                }
                 return m_UrlBuild;
             }
         }
@@ -393,24 +418,23 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
         /// </summary>
         /// <param name="list">The list.</param>
         /// <returns></returns>
-        internal Console ReplicateInstance(Data.IComponentList list)
+        internal Console ReplicateInstance(IComponentList list)
         {
             Console candidate = new Console(m_Application, _env);
 
             candidate.CurrentList = list;
-
             candidate.CurrentListInstance = list.GetInstance(m_Application);
             //candidate.ApplyInstance(list.AssemblyName, list.ClassName);
 
             candidate.CurrentListInstance.wim.Console = this;
-            //candidate.CurrentListInstance.wim = this.CurrentListInstance.wim;
+            //candidate.CurrentListInstance.wim = CurrentListInstance.wim;
             candidate.CurrentListInstance.wim.CurrentList = list;
-            candidate.CurrentListInstance.wim.IsDashboardMode = this.CurrentListInstance.wim.IsDashboardMode;
-            candidate.CurrentListInstance.wim.IsEditMode = this.CurrentListInstance.wim.IsEditMode;
-            candidate.CurrentListInstance.wim.CurrentEnvironment = this.CurrentEnvironment;
-            candidate.CurrentListInstance.wim.CurrentApplicationUser = this.CurrentApplicationUser;
-            candidate.CurrentListInstance.wim.CurrentApplicationUserRole = this.CurrentListInstance.wim.CurrentApplicationUserRole;
-            candidate.CurrentListInstance.wim.CurrentSite = this.CurrentListInstance.wim.CurrentSite;
+            candidate.CurrentListInstance.wim.IsDashboardMode = CurrentListInstance.wim.IsDashboardMode;
+            candidate.CurrentListInstance.wim.IsEditMode = CurrentListInstance.wim.IsEditMode;
+            candidate.CurrentListInstance.wim.CurrentEnvironment = CurrentEnvironment;
+            candidate.CurrentListInstance.wim.CurrentApplicationUser = CurrentApplicationUser;
+            candidate.CurrentListInstance.wim.CurrentApplicationUserRole = CurrentListInstance.wim.CurrentApplicationUserRole;
+            candidate.CurrentListInstance.wim.CurrentSite = CurrentListInstance.wim.CurrentSite;
 
             return candidate;
         }
@@ -418,7 +442,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
         public string MapPath(string path)
         {
             var webRoot = _env.ContentRootPath;
-            return String.Concat(webRoot, path);
+            return string.Concat(webRoot, path);
         }
 
         private IHostingEnvironment _env;
@@ -435,9 +459,8 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
             Request = m_Application.Request;
             Context = m_Application;
 
-
-            this.WimRepository = string.Concat(this.CurrentDomain, AddApplicationPath("testdrive/files"));
-            this.BaseRepository = string.Concat(this.CurrentDomain, AddApplicationPath("repository"));
+            WimRepository = string.Concat(CurrentDomain, AddApplicationPath("testdrive/files"));
+            BaseRepository = string.Concat(CurrentDomain, AddApplicationPath("repository"));
 
             _VisitorManager = new VisitorManager(application);
         }
@@ -445,25 +468,22 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
         internal string Form(string name)
         {
             if (string.IsNullOrEmpty(name))
+            {
                 return null;
+            }
 
             if (Context != null)
             {
                 if (IsJson)
                 {
-                    if (JsonForm != null)
+                    if (JsonForm?.ContainsKey(name) == true && JsonForm[name] != null)
                     {
-                        if (JsonForm.ContainsKey(name))
-                        {
-                            if (JsonForm[name] != null)
-                                return JsonForm[name].ToString();
-                        }
+                        return JsonForm[name].ToString();
                     }
                     return null;
                 }
                 else if (Context.Request.HasFormContentType)
                 {
-                    
                     return Context.Request.Form[name];
                 }
             }
@@ -478,11 +498,14 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
                 if (m_Channel == null)
                 {
                     var candidate = Site.SelectOne(ChannelIndentifier);
-                    if (!Sushi.Mediakiwi.Data.Environment.Current.DefaultSiteID.GetValueOrDefault().Equals(candidate.ID))
+                    if (!Data.Environment.Current.DefaultSiteID.GetValueOrDefault().Equals(candidate.ID))
+                    {
                         m_Channel = Utils.ToUrl(candidate.Name);
+                    }
                     else
+                    {
                         m_Channel = string.Empty;
-
+                    }
                 }
                 return m_Channel;
             }
@@ -495,12 +518,14 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
             {
                 bool isChanged = !string.IsNullOrEmpty(Form("channel"));
                 if (isChanged)
+                {
                     isChanged = Form("autopostback") == "channel";
+                }
 
                 //  Topnavigation postback (channel change)
                 if (isChanged)
                 {
-                    var postedChannel = Data.Utility.ConvertToInt(Form("channel"));
+                    var postedChannel = Utility.ConvertToInt(Form("channel"));
                     if (postedChannel > 0)
                     {
                         ValidateChannelSwitch(m_ChannelIndentifier, postedChannel);
@@ -513,14 +538,15 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
             {
                 m_ChannelIndentifier = value;
             }
-
         }
 
         internal bool IsPostBack(string postBackValue)
         {
             //  [MM:10.12.14] Reserved word save, also set as an ID extention $save
             if (postBackValue == "save")
+            {
                 return IsPostBackSave;
+            }
             return PostbackValue.Equals(postBackValue, StringComparison.InvariantCultureIgnoreCase);
         }
 
@@ -545,16 +571,20 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
                 if (!_IsPostBackSave.HasValue)
                 {
                     _IsPostBackSave = false;
-                    if (Context != null) 
+                    if (Context != null)
                     {
                         var value = IsJson ? JsonReferrer : Form("autopostback");
-                        if (value != null) 
+                        if (value != null)
                         {
                             if (value.EndsWith("$save", StringComparison.InvariantCultureIgnoreCase))
+                            {
                                 _IsPostBackSave = true;
+                            }
 
                             if (value.Equals("save", StringComparison.InvariantCultureIgnoreCase))
+                            {
                                 _IsPostBackSave = true;
+                            }
                         }
                     }
                 }
@@ -567,9 +597,13 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
         public void Redirect(string url, bool endresponse = false)
         {
             if (IsJson)
+            {
                 RedirectionUrl = url;
+            }
             else
+            {
                 Context.Response.Redirect(url, endresponse);
+            }
         }
 
         internal string PostbackValue
@@ -580,11 +614,16 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
                 if (Context == null) return value;
 
                 value = IsJson ? JsonReferrer : Form("autopostback");
-                if (value == null) value = "";
+                if (value == null)
+                {
+                    value = "";
+                }
                 else
                 {
                     if (value.Contains("$"))
+                    {
                         value = value.Split('$')[0];
+                    }
                 }
                 return value;
             }
@@ -598,14 +637,18 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
         public IComponentListTemplate CurrentListInstance
         {
             get { return m_CurrentListInstance; }
-            set { m_CurrentListInstance = value;
-
-            if (this.CurrentVisitor != null)
+            set
             {
-                if (value == null || value.wim == null)
-                    throw new Exception("You forgot to add Sushi.Mediakiwi.AppCentre.dll add as reference");
-                value.wim.CurrentVisitor = this.CurrentVisitor;
-            }
+                m_CurrentListInstance = value;
+
+                if (CurrentVisitor != null)
+                {
+                    if (value == null || value.wim == null)
+                    {
+                        throw new Exception("You forgot to add Sushi.Mediakiwi.AppCentre.dll add as reference");
+                    }
+                    value.wim.CurrentVisitor = CurrentVisitor;
+                }
             }
         }
 
@@ -614,31 +657,35 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
         /// Use for code generation purposes.
         /// </summary>
         /// <value>The current list instance item.</value>
-        public Object CurrentListInstanceItem { get; set; }
+        public object CurrentListInstanceItem { get; set; }
 
-        Data.IApplicationUser m_CurrentApplicationUser;
+       IApplicationUser m_CurrentApplicationUser;
         /// <summary>
         /// Gets or sets the current application user.
         /// </summary>
         /// <value>The current application user.</value>
-        public Data.IApplicationUser CurrentApplicationUser
+        public IApplicationUser CurrentApplicationUser
         {
-            get {
+            get
+            {
                 //  [20090411:MM] Patch
-                if (m_CurrentApplicationUser == null 
-                    && CurrentVisitor != null 
+                if (m_CurrentApplicationUser == null
+                    && CurrentVisitor != null
                     && CurrentVisitor.ApplicationUserID.HasValue
                     && CurrentVisitor.ApplicationUserID.Value > 0
                     )
                 {
-                    m_CurrentApplicationUser = Data.ApplicationUser.SelectOne(CurrentVisitor.ApplicationUserID.Value, true);
+                    m_CurrentApplicationUser = ApplicationUser.SelectOne(CurrentVisitor.ApplicationUserID.Value, true);
                     return m_CurrentApplicationUser;
                 }
 
                 if (m_CurrentApplicationUser == null && m_CurrentListInstance != null)
+                {
                     m_CurrentApplicationUser = m_CurrentListInstance.wim.CurrentApplicationUser;
+                }
 
-                return m_CurrentApplicationUser; }
+                return m_CurrentApplicationUser;
+            }
             set { m_CurrentApplicationUser = value; }
         }
 
@@ -666,35 +713,30 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
             set { m_CurrentVisitor = value; }
         }
 
-        public Data.Folder CurrentFolder
-        {
-            get;set;
-        }
+        public Folder CurrentFolder { get; set; }
 
-        Data.IComponentList m_CurrentList;
         /// <summary>
         /// Gets or sets the current list.
         /// </summary>
         /// <value>The current list.</value>
-        public Data.IComponentList CurrentList
-        {
-            get { return m_CurrentList; }
-            set { m_CurrentList = value; }
-        }
+        public IComponentList CurrentList { get; set; }
 
-        Sushi.Mediakiwi.Data.Page m_CurrentPage;
-        public Sushi.Mediakiwi.Data.Page CurrentPage
+        Page m_CurrentPage;
+        public Page CurrentPage
         {
             get
             {
-
                 if (Context == null)
+                {
                     return null;
+                }
 
                 if (Context.Items["Wim.Page"] == null)
+                {
                     return null;
+                }
 
-                m_CurrentPage = Context.Items["Wim.Page"] as Sushi.Mediakiwi.Data.Page;
+                m_CurrentPage = Context.Items["Wim.Page"] as Page;
 
                 return m_CurrentPage;
             }
@@ -704,7 +746,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
         /// Gets or sets the current environment.
         /// </summary>
         /// <value>The current environment.</value>
-        internal Data.IEnvironment CurrentEnvironment { get; set; }
+        internal IEnvironment CurrentEnvironment { get; set; }
       
         internal bool IsCodeUpdate;
 
@@ -717,29 +759,30 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
         {
             CurrentListInstance = (IComponentListTemplate)Utils.CreateInstance(assemblyName, className);
             if (CurrentListInstance.wim.PassOverClassInstance != null)
+            {
                 CurrentListInstance = CurrentListInstance.wim.PassOverClassInstance;
+            }
         }
 
-        internal bool ApplyList(System.Type classname)
+        internal bool ApplyList(Type classname)
         {
-            m_CurrentList = Data.ComponentList.SelectOne(classname.ToString());
-            if (m_CurrentList == null || m_CurrentList.ID == 0)
+            CurrentList =ComponentList.SelectOne(classname.ToString());
+            if (CurrentList == null || CurrentList.ID == 0)
             {
                 //TMP REMOVE!
                 var find = classname.ToString().Replace("Sushi.Mediakiwi", "Wim");
-                m_CurrentList = Data.ComponentList.SelectOne(find);
-
+                CurrentList =ComponentList.SelectOne(find);
             }
-            if (m_CurrentList == null || m_CurrentList.ID == 0)
+            if (CurrentList == null || CurrentList.ID == 0)
             {
                 throw new Exception($"Mediakiwi - Could not initialize {classname}");
             }
             return ApplyList();
         }
 
-        internal bool ApplyList(Data.ComponentListType type)
+        internal bool ApplyList(ComponentListType type)
         {
-            m_CurrentList = Data.ComponentList.SelectOne(type);
+            CurrentList =ComponentList.SelectOne(type);
             return ApplyList();
         }
 
@@ -749,64 +792,74 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
         /// <param name="typeId">The type id.</param>
         bool ApplyList()
         {
-            if (m_CurrentList.IsNewInstance)
+            if (CurrentList.IsNewInstance)
             {
                 //throw new Exception("This list does not exists.");
                 return false;
-                //m_CurrentList = Data.ComponentList.SelectOne(Sushi.Mediakiwi.Data.ComponentListType.VersionUpdater);
+                //m_CurrentList =ComponentList.SelectOne(ComponentListType.VersionUpdater);
             }
 
-            IComponentListTemplate tmp = m_CurrentList.GetInstance(this.m_Application);
+            IComponentListTemplate tmp = CurrentList.GetInstance(m_Application);
             if (tmp == null)
-                throw new Exception(string.Format("Could not find '{0}' or there could be a problem with initializing the class, this could be the case if there is coding present in the CTor!", m_CurrentList.ClassName));
+            {
+                throw new Exception(string.Format("Could not find '{0}' or there could be a problem with initializing the class, this could be the case if there is coding present in the CTor!", CurrentList.ClassName));
+            }
+
             CurrentListInstance = tmp;
             CurrentListInstance.wim.Console = this;
-            CurrentListInstance.wim.CurrentList = this.m_CurrentList;
-            CurrentListInstance.wim.CurrentEnvironment = this.CurrentEnvironment;
-            CurrentListInstance.wim.CurrentApplicationUser = this.CurrentApplicationUser;
-            CurrentListInstance.wim.CurrentApplicationUserRole = Data.ApplicationRole.SelectOne(this.CurrentApplicationUser.RoleID);
+            CurrentListInstance.wim.CurrentList = CurrentList;
+            CurrentListInstance.wim.CurrentEnvironment = CurrentEnvironment;
+            CurrentListInstance.wim.CurrentApplicationUser = CurrentApplicationUser;
+            CurrentListInstance.wim.CurrentApplicationUserRole = ApplicationRole.SelectOne(CurrentApplicationUser.RoleID);
 
-            this.AddTrace("Monitor", "Start.ApplyComponentList.ApplyList.GetInstance");
+            AddTrace("Monitor", "Start.ApplyComponentList.ApplyList.GetInstance");
 
             //Response.Write(Request.Path.ToString());
-            
-            //int channel = Data.Utility.ConvertToInt(this.Request.Form["channel"], this.CurrentApplicationUser.Channel);
-            int channel = Data.Utility.ConvertToInt(this.ChannelIndentifier, CurrentEnvironment.DefaultSiteID.GetValueOrDefault());
+
+            //int channel =Utility.ConvertToInt(Request.Form["channel"], CurrentApplicationUser.Channel);
+            int channel = Utility.ConvertToInt(ChannelIndentifier, CurrentEnvironment.DefaultSiteID.GetValueOrDefault());
             if (channel == 0)
             {
-                this.AddTrace("Monitor", "Start.ApplyComponentList.ApplyList.GetAllSites");
+                AddTrace("Monitor", "Start.ApplyComponentList.ApplyList.GetAllSites");
 
-                var list = Data.Site.SelectAll();
+                var list = Site.SelectAll();
                 if (list.Count > 0)
+                {
                     channel = list[0].ID;
+                }
             }
 
-            CurrentListInstance.wim.CurrentSite = Data.Site.SelectOne(channel);
+            CurrentListInstance.wim.CurrentSite = Site.SelectOne(channel);
 
             if (CurrentListInstance.wim.CurrentSite == null)
-                CurrentListInstance.wim.CurrentSite = Data.Site.SelectOne(Sushi.Mediakiwi.Data.Environment.Current.DefaultSiteID.Value);
+            {
+                CurrentListInstance.wim.CurrentSite = Site.SelectOne(Data.Environment.Current.DefaultSiteID.Value);
+            }
 
             System.Threading.Thread.CurrentThread.CurrentCulture = CurrentListInstance.wim.CurrentCulture;
             System.Threading.Thread.CurrentThread.CurrentUICulture = CurrentListInstance.wim.CurrentCulture;
 
             if (Form("thumbview") == "1")
             {
-                this.CurrentApplicationUser.ShowDetailView = false;
-                this.CurrentApplicationUser.Save();
+                CurrentApplicationUser.ShowDetailView = false;
+                CurrentApplicationUser.Save();
             }
+
             if (Form("detailview") == "1")
             {
-                this.CurrentApplicationUser.ShowDetailView = true;
-                this.CurrentApplicationUser.Save();
-            }            
+                CurrentApplicationUser.ShowDetailView = true;
+                CurrentApplicationUser.Save();
+            }
 
             //  Set the currentSite
-            if (!this.CurrentListInstance.wim.CanAddNewItemIsSet
-                && this.CurrentListInstance.wim.CurrentList != null 
-                && this.CurrentListInstance.wim.CurrentList.Data != null 
-                && !this.CurrentListInstance.wim.CurrentList.Data.HasProperty("wim_CanCreate")
+            if (!CurrentListInstance.wim.CanAddNewItemIsSet
+                && CurrentListInstance.wim.CurrentList != null
+                && CurrentListInstance.wim.CurrentList.Data != null
+                && !CurrentListInstance.wim.CurrentList.Data.HasProperty("wim_CanCreate")
                 )
-                this.CurrentListInstance.wim.CanAddNewItem = true;
+            {
+                CurrentListInstance.wim.CanAddNewItem = true;
+            }
 
             return true;
         }
@@ -816,45 +869,45 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
         /// </summary>
         //void SwitchChannel()
         //{
-        //    string url = this.WimPagePath;
+        //    string url = WimPagePath;
         //    //  Channel switch
-        //    if (this.CurrentListInstance.wim.CurrentFolder.SiteID != this.CurrentApplicationUser.Channel)
+        //    if (CurrentListInstance.wim.CurrentFolder.SiteID != CurrentApplicationUser.Channel)
         //    {
-        //        Data.Folder folder = Data.Folder.SelectOneChild(this.CurrentListInstance.wim.CurrentFolder.MasterID.GetValueOrDefault(this.CurrentListInstance.wim.CurrentFolder.ID), this.CurrentApplicationUser.Channel);
+        //       Folder folder =Folder.SelectOneChild(CurrentListInstance.wim.CurrentFolder.MasterID.GetValueOrDefault(CurrentListInstance.wim.CurrentFolder.ID), CurrentApplicationUser.Channel);
         //        if (folder == null)
         //        {
-        //            switch (this.CurrentListInstance.wim.CurrentFolder.Type)
+        //            switch (CurrentListInstance.wim.CurrentFolder.Type)
         //            {
-        //                case Sushi.Mediakiwi.Data.FolderType.Page: url = string.Concat(this.WimPagePath, "?top=1"); break;
-        //                case Sushi.Mediakiwi.Data.FolderType.List: url = string.Concat(this.WimPagePath, "?top=2"); break;
-        //                case Sushi.Mediakiwi.Data.FolderType.Gallery: url = string.Concat(this.WimPagePath, "?top=3"); break;
-        //                case Sushi.Mediakiwi.Data.FolderType.Administration: url = string.Concat(this.WimPagePath, "?top=4"); break;
+        //                case FolderType.Page: url = string.Concat(WimPagePath, "?top=1"); break;
+        //                case FolderType.List: url = string.Concat(WimPagePath, "?top=2"); break;
+        //                case FolderType.Gallery: url = string.Concat(WimPagePath, "?top=3"); break;
+        //                case FolderType.Administration: url = string.Concat(WimPagePath, "?top=4"); break;
         //            }
                    
         //        }
         //        else
         //        {
-        //            url = string.Concat(this.WimPagePath, "?folder=", folder.ID);
+        //            url = string.Concat(WimPagePath, "?folder=", folder.ID);
         //        }
         //    }
-        //    this.Response.Redirect(url, true);
+        //    Response.Redirect(url, true);
         //}
 
         void ValidateChannelSwitch(int currentChannelID, int requestedChannelID)
         {
             if (currentChannelID == requestedChannelID)
+            {
                 return;
+            }
 
-            var currentChannel = Sushi.Mediakiwi.Data.Site.SelectOne(currentChannelID);
-            var requestedChannel = Sushi.Mediakiwi.Data.Site.SelectOne(requestedChannelID);
+            var currentChannel = Site.SelectOne(currentChannelID);
+            var requestedChannel = Site.SelectOne(requestedChannelID);
 
-            int masterID = requestedChannel.MasterID.GetValueOrDefault();
-
-            this.ValidateChannelSwitchPageInheritance(currentChannel, requestedChannel);
+            ValidateChannelSwitchPageInheritance(currentChannel, requestedChannel);
 
             //if (CurrentList != null && CurrentList.IsInherited && CurrentFolder != null)
             //{
-            //    var requestedFolder = Data.Folder.SelectOneChild(CurrentFolder.ID, requestedChannel.ID);
+            //    var requestedFolder =Folder.SelectOneChild(CurrentFolder.ID, requestedChannel.ID);
             //    if (requestedFolder != null && !requestedFolder.IsNewInstance)
             //    {
             //        Response.Redirect(UrlBuild.GetListRequest(CurrentList, null, requestedChannel.ID));
@@ -862,16 +915,18 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
             //}
 
             //  [16 nov 14:MM] Validate inherited pages, folder
-            Response.Redirect(string.Concat(this.GetWimPagePath(requestedChannel.ID)));
+            Response.Redirect(string.Concat(GetWimPagePath(requestedChannel.ID)));
         }
 
-        void ValidateChannelSwitchPageInheritance(Sushi.Mediakiwi.Data.Site currentChannel, Sushi.Mediakiwi.Data.Site requestedChannel)
+        void ValidateChannelSwitchPageInheritance(Site currentChannel, Site requestedChannel)
         {
-            var pageID = Data.Utility.ConvertToIntNullable(Request.Query["page"]);
+            var pageID =Utility.ConvertToIntNullable(Request.Query["page"]);
             if (!pageID.HasValue)
+            {
                 return;
+            }
 
-            var page = Sushi.Mediakiwi.Data.Page.SelectOne(pageID.Value);
+            var page = Page.SelectOne(pageID.Value);
 
             if (requestedChannel.MasterID.HasValue && requestedChannel.MasterID.Value == currentChannel.ID)
             {
@@ -881,7 +936,9 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
                     var pageCandidate = Page.SelectOneChild(page.ID, requestedChannel.ID, false);
 
                     if (pageCandidate != null && pageCandidate.ID != 0)
-                        Response.Redirect(string.Concat(this.GetWimPagePath(requestedChannel.ID), "?page=", pageCandidate.ID));
+                    {
+                        Response.Redirect(string.Concat(GetWimPagePath(requestedChannel.ID), "?page=", pageCandidate.ID));
+                    }
                 }
             }
             else if (currentChannel.MasterID.HasValue && currentChannel.MasterID.Value == requestedChannel.ID)
@@ -889,9 +946,11 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
                 //  The current channel is the master of the requested channel
                 if (page != null && page.ID != 0 && page.MasterID.HasValue)
                 {
-                    var pageCandidate = Sushi.Mediakiwi.Data.Page.SelectOne(page.MasterID.Value);
+                    var pageCandidate = Page.SelectOne(page.MasterID.Value);
                     if (pageCandidate != null && pageCandidate.ID != 0)
-                        Response.Redirect(string.Concat(this.GetWimPagePath(requestedChannel.ID), "?page=", pageCandidate.ID));
+                    {
+                        Response.Redirect(string.Concat(GetWimPagePath(requestedChannel.ID), "?page=", pageCandidate.ID));
+                    }
                 }
             }
         }
@@ -900,11 +959,11 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
         /// Applies the list.
         /// </summary>
         /// <param name="list">The list.</param>
-        internal bool ApplyList(Data.IComponentList list)
+        internal bool ApplyList(IComponentList list)
         {
-            m_CurrentList = list;
-            this.Logic = m_CurrentList.ID;
-            this.Title = m_CurrentList.Name;
+            CurrentList = list;
+            Logic = CurrentList.ID;
+            Title = CurrentList.Name;
             return ApplyList();
         }
 
@@ -914,22 +973,28 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
         /// <param name="listInformation">The list information (can be GUID or ID).</param>
         internal bool ApplyList(string listInformation)
         {
-            var list = default(Data.IComponentList);
+            IComponentList list;
 
-            int candidate1;
-            if (Data.Utility.IsNumeric(listInformation, out candidate1))
-                list = Data.ComponentList.SelectOne(candidate1);
+            if (Utility.IsNumeric(listInformation, out int candidate1))
+            {
+                list = ComponentList.SelectOne(candidate1);
+            }
             else
             {
-                Guid candidate2;
-                if (Data.Utility.IsGuid(listInformation, out candidate2))
-                    list = Data.ComponentList.SelectOne(candidate2);
+                if (Utility.IsGuid(listInformation, out Guid candidate2))
+                {
+                    list = ComponentList.SelectOne(candidate2);
+                }
                 else
-                    list = Data.ComponentList.SelectOne(listInformation);
+                {
+                    list = ComponentList.SelectOne(listInformation);
+                }
             }
 
             if (list == null && list.IsNewInstance)
+            {
                 throw new Exception($"Could not find the requested list with information [{listInformation}]");
+            }
 
             return ApplyList(list);
         }
@@ -937,49 +1002,34 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
         /// <summary>
         /// Applies the list.
         /// </summary>
-        internal bool ApplyList(Data.ComponentList list)
+        internal bool ApplyList(ComponentList list)
         {
-            m_CurrentList = list;
+            CurrentList = list;
 
-            this.Logic = m_CurrentList.ID;
-            this.Title = m_CurrentList.Name;
-            this.AddTrace("Monitor", "Start.ApplyComponentList.ApplyList.end");
+            Logic = CurrentList.ID;
+            Title = CurrentList.Name;
+            AddTrace("Monitor", "Start.ApplyComponentList.ApplyList.end");
 
             return ApplyList();
         }
 
-        int m_Logic;
         /// <summary>
         /// Gets or sets the logic.
         /// </summary>
         /// <value>The logic.</value>
-        public int Logic
-        {
-            get { return m_Logic; }
-            set { m_Logic = value; }
-        }
+        public int Logic { get; set; }
 
-        int m_View;
         /// <summary>
         /// Gets or sets the view.
         /// </summary>
         /// <value>The view.</value>
-        public int View
-        {
-            get { return m_View; }
-            set { m_View = value; }
-        }
+        public int View { get; set; }
 
-        string m_ListPagingValue;
         /// <summary>
         /// Gets or sets the list paging value.
         /// </summary>
         /// <value>The list paging value.</value>
-        public string ListPagingValue
-        {
-            get { return m_ListPagingValue; }
-            set { m_ListPagingValue = value; }
-        }
+        public string ListPagingValue { get; set; }
 
         int? m_OpenInFrame;
         /// <summary>
@@ -987,49 +1037,37 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
         /// </summary>
         public int OpenInFrame
         {
-            get {
+            get
+            {
                 if (!m_OpenInFrame.HasValue)
-                    m_OpenInFrame = Data.Utility.ConvertToInt(Request.Query["openinframe"]);
+                {
+                    m_OpenInFrame = Utility.ConvertToInt(Request.Query["openinframe"]);
+                }
                 return m_OpenInFrame.Value;
             }
         }
 
-        int? m_Item;
         /// <summary>
         /// Gets or sets the item.
         /// </summary>
         /// <value>The item.</value>
-        public int? Item
-        {
-            get { return m_Item; }
-            set { m_Item = value; }
-        }
+        public int? Item { get; set; }
 
-        int? m_Group;
         /// <summary>
         /// Gets or sets the group.
         /// </summary>
         /// <value>The group.</value>
-        public int? Group
-        {
-            get { return m_Group; }
-            set { m_Group = value; }
-        }
+        public int? Group { get; set; }
 
-        int? m_GroupItem;
         /// <summary>
         /// Gets or sets the group item.
         /// </summary>
         /// <value>The group item.</value>
-        public int? GroupItem
-        {
-            get { return m_GroupItem; }
-            set { m_GroupItem = value; }
-        }
+        public int? GroupItem { get; set; }
 
         public bool IsComponent
         {
-            get { return this.CurrentListInstance.wim.ItemIsComponent; }
+            get { return CurrentListInstance.wim.ItemIsComponent; }
         }
 
         internal IConfiguration Configuration
@@ -1041,6 +1079,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
         {
             return Configuration.GetValue<T>(value);
         }
+
         public string ConfigurationValue(string value)
         {
             return Configuration.GetValue<string>(value);
@@ -1059,17 +1098,9 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
             get { return Request.Query["nf"] == "1"; }
         }
 
-        internal bool HasAsyncEvent
-        {
-            get;
-            set;
-        }
+        internal bool HasAsyncEvent { get; set; }
 
-        public bool IsAdminFooter
-        {
-            get;
-            set; 
-        }
+        public bool IsAdminFooter { get; set; }
 
         /// <summary>
         /// Gets or sets the type of the item.
@@ -1077,16 +1108,11 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
         /// <value>The type of the item.</value>
         public RequestItemType ItemType { get; set; }
 
-        string m_Title;
         /// <summary>
         /// Gets or sets the title.
         /// </summary>
         /// <value>The title.</value>
-        public string Title
-        {
-            get { return m_Title; }
-            set { m_Title = value; }
-        }
+        public string Title { get; set; }
 
         /// <summary>
         /// Gets or sets the current domain (host including schema).
@@ -1096,9 +1122,10 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
         {
             get
             {
-
                 if (string.IsNullOrWhiteSpace(Request.Headers["X-Forwarded-Host"]))
+                {
                     return string.Concat(Request.Scheme, "://", Request.Host.ToString());
+                }
 
                 return string.Concat(Request.Scheme, "://", Request.Headers["X-Forwarded-Host"]);
             }
@@ -1110,10 +1137,12 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
         /// <value>The current host.</value>
         public string CurrentHost
         {
-            get {
-
+            get
+            {
                 if (string.IsNullOrWhiteSpace(Request.Headers["X-Forwarded-Host"]))
+                {
                     return string.Concat(Request.Host.ToString());
+                }
 
                 return string.Concat(Request.Headers["X-Forwarded-Host"]);
             }
@@ -1142,16 +1171,16 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
         /// <value>The wim group page path.</value>
         public string WimGroupPagePath
         {
-            get {
-                int group2ID = Data.Utility.ConvertToInt(this.Request.Query["group2"]);
+            get
+            {
+                int group2ID = Utility.ConvertToInt(Request.Query["group2"]);
 
                 if (group2ID > 0)
                 {
-                    int group2ItemID = Data.Utility.ConvertToInt(this.Request.Query["group2item"]);
-                    return string.Concat(this.WimPagePath, "?group=", this.Group.GetValueOrDefault(), "&groupitem=", this.GroupItem.GetValueOrDefault(), "&group2=", group2ID, "&group2item=", group2ItemID); 
+                    int group2ItemID = Utility.ConvertToInt(Request.Query["group2item"]);
+                    return string.Concat(WimPagePath, "?group=", Group.GetValueOrDefault(), "&groupitem=", GroupItem.GetValueOrDefault(), "&group2=", group2ID, "&group2item=", group2ItemID);
                 }
-                return string.Concat(this.WimPagePath, "?group=", this.Group.GetValueOrDefault(), "&groupitem=", this.GroupItem.GetValueOrDefault()); 
-                
+                return string.Concat(WimPagePath, "?group=", Group.GetValueOrDefault(), "&groupitem=", GroupItem.GetValueOrDefault());
             }
         }
 
@@ -1159,7 +1188,8 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
         /// Gets or sets the wim page path.
         /// </summary>
         /// <value>The wim page path.</value>
-        public string WimPagePath {
+        public string WimPagePath
+        {
             get
             {
                 // set the correct wim page
@@ -1188,26 +1218,16 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
             return AddApplicationPath(string.Concat(CommonConfiguration.PORTAL_PATH), true);
         }
 
-        string m_WimRepository;
         /// <summary>
         /// Gets or sets the wim repository.
         /// </summary>
         /// <value>The wim repository.</value>
-        public string WimRepository
-        {
-            get { return m_WimRepository; }
-            set { m_WimRepository = value; }
-        }
+        public string WimRepository { get; set; }
 
-        string m_BaseRepository;
         /// <summary>
         /// Gets or sets the base repository.
         /// </summary>
         /// <value>The base repository.</value>
-        public string BaseRepository
-        {
-            get { return m_BaseRepository; }
-            set { m_BaseRepository = value; }
-        }
+        public string BaseRepository { get; set; }
     }
 }

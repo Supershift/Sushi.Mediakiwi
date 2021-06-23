@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
-
 namespace Sushi.Mediakiwi.Framework.ContentSettingItem
 {
     /// <summary>
@@ -40,7 +36,7 @@ namespace Sushi.Mediakiwi.Framework.ContentSettingItem
         /// <param name="mandatory">if set to <c>true</c> [mandatory].</param>
         /// <param name="type">The type.</param>
         /// <param name="interactiveHelp">The interactive help.</param>
-        public FolderSelectAttribute(string title, bool mandatory, Sushi.Mediakiwi.Data.FolderType type, string interactiveHelp)
+        public FolderSelectAttribute(string title, bool mandatory, Data.FolderType type, string interactiveHelp)
             : base(title, mandatory, type, interactiveHelp) { }
     }
 }

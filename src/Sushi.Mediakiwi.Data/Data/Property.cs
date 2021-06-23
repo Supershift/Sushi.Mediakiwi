@@ -1,9 +1,9 @@
-﻿using Sushi.MicroORM;
+﻿using Sushi.Mediakiwi.Data.MicroORM;
+using Sushi.MicroORM;
 using Sushi.MicroORM.Mapping;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Sushi.Mediakiwi.Data.MicroORM;
 
 namespace Sushi.Mediakiwi.Data
 {
@@ -25,7 +25,7 @@ namespace Sushi.Mediakiwi.Data
                 Map(x => x.Title, "Property_Title").Length(255);
                 Map(x => x.IsPresentProperty, "Property_IsPresent");
                 Map(x => x.FieldName, "Property_FieldName").Length(35);
-                Map(x => x.TypeID, "Property_Type");
+                Map(x => x.ContentTypeID, "Property_Type");
                 Map(x => x.FilterType, "Property_ColumnType").Length(15);
                 Map(x => x.OptionListSelect, "Property_OptionList_Key");
                 Map(x => x.IsShort, "Property_IsShort");
@@ -39,10 +39,19 @@ namespace Sushi.Mediakiwi.Data
                 Map(x => x.IsFixed, "Property_IsFixed");
                 Map(x => x.InheritedID, "Property_Property_Key");
                 Map(x => x.SortOrder, "Property_SortOrder");
+                Map(x => x.TemplateID, "Property_Template_Key");
+                Map(x => x.InteractiveHelp, "Property_Help").Length(512);
+                Map(x => x.IsMandatory, "Property_IsRequired");
+                Map(x => x.MaxValueLength, "Property_MaxInput");
+                Map(x => x.DefaultValue, "Property_Default");
+                Map(x => x.IsSharedField, "Property_IsShared");
             }
         }
 
         #region Properties
+
+        public int TemplateID { get; set; }
+        public string DefaultValue { get; set; }
 
         /// <summary>
         /// Gets or sets the ID.
@@ -90,6 +99,8 @@ namespace Sushi.Mediakiwi.Data
         /// <value>The title.</value>
         public string Title { get; set; }
 
+        public string Section { get; set; }
+
         /// <summary>
         /// Gets or sets a value indicating whether this instance is present property.
         /// </summary>
@@ -99,9 +110,9 @@ namespace Sushi.Mediakiwi.Data
 
         public string FieldName2 { get; set; }
 
-        public string MaxValueLength { get; set; }
+        public int? MaxValueLength { get; set; }
 
-        public int TypeID { get; set; }
+        public ContentType ContentTypeID { get; set; }
 
         public string Mandatory { get; set; }
 
@@ -127,6 +138,10 @@ namespace Sushi.Mediakiwi.Data
         public bool IsMandatory
         {
             get { return Mandatory == "1"; }
+            set
+            {
+                Mandatory = (value ? "1" : "0");
+            }
         }
 
         public string OnlyRead { get; set; }
@@ -168,7 +183,24 @@ namespace Sushi.Mediakiwi.Data
         /// Gets or sets the list select.
         /// </summary>
         /// <value>The list select.</value>
-        public string CanContainOneItem { get; set; }
+        public bool CanContainOneItem
+        {
+            get
+            {
+                return this.MaxValueLength.GetValueOrDefault(0) == 1;
+            }
+            set
+            {
+                if (value)
+                {
+                    this.MaxValueLength = 1;
+                }
+                else
+                {
+                    this.MaxValueLength = null;
+                }
+            }
+        }
 
         /// <summary>
         /// Gets or sets the list select.
@@ -223,6 +255,11 @@ namespace Sushi.Mediakiwi.Data
         /// </summary>
         /// <value>The data.</value>
         public bool IsFixed { get; set; }
+
+        /// <summary>
+        /// Is this property Marked as a Shared Field ?
+        /// </summary>
+        public bool IsSharedField { get; set; }
 
         /// <summary>
         /// Gets or sets the inherited ID. This property is inherited of a template property list.
@@ -327,10 +364,28 @@ namespace Sushi.Mediakiwi.Data
             var filter = connector.CreateDataFilter();
             filter.Add(x => x.ListID, listID);
             if (listTypeID.HasValue)
-                filter.Add(x => x.TypeID, listTypeID.Value);
+                filter.Add(x => x.ContentTypeID, listTypeID.Value);
             filter.Add(x => x.FieldName, fieldName);
 
             return connector.FetchSingle(filter);
+        }
+
+        public static List<Property> SelectAllByTemplate(int templateid)
+        {
+            var connector = new Connector<Property>();
+            var filter = connector.CreateDataFilter();
+            filter.Add(x => x.TemplateID, templateid);
+            filter.AddOrder(x => x.SortOrder);
+            return connector.FetchAll(filter);
+        }
+
+        public static async Task<List<Property>> SelectAllByTemplateAsync(int templateid)
+        {
+            var connector = new Connector<Property>();
+            var filter = connector.CreateDataFilter();
+            filter.Add(x => x.TemplateID, templateid);
+            filter.AddOrder(x => x.SortOrder);
+            return await connector.FetchAllAsync(filter);
         }
 
         /// <summary>
@@ -346,7 +401,7 @@ namespace Sushi.Mediakiwi.Data
             var filter = connector.CreateDataFilter();
             filter.Add(x => x.ListID, listID);
             if (listTypeID.HasValue)
-                filter.Add(x => x.TypeID, listTypeID.Value);
+                filter.Add(x => x.ContentTypeID, listTypeID.Value);
             filter.Add(x => x.FieldName, fieldName);
 
             return await connector.FetchSingleAsync(filter);
@@ -361,7 +416,7 @@ namespace Sushi.Mediakiwi.Data
             var connector = ConnectorFactory.CreateConnector<Property>();
             var filter = connector.CreateDataFilter();
             filter.Add(x => x.ListID, listID);
-            filter.Add(x => x.TypeID, 35);
+            filter.Add(x => x.ContentTypeID, ContentType.ContentContainer);
 
             Property tmp = connector.FetchSingle(filter);
             return (tmp?.ID > 0);
@@ -376,7 +431,7 @@ namespace Sushi.Mediakiwi.Data
             var connector = ConnectorFactory.CreateConnector<Property>();
             var filter = connector.CreateDataFilter();
             filter.Add(x => x.ListID, listID);
-            filter.Add(x => x.TypeID, 35);
+            filter.Add(x => x.ContentTypeID, ContentType.ContentContainer);
 
             Property tmp = await connector.FetchSingleAsync(filter);
             return (tmp?.ID > 0);
@@ -408,6 +463,30 @@ namespace Sushi.Mediakiwi.Data
         ///// This is a memory allocation list for when using command line tools
         ///// </summary>
         //private static List<MemoryItemProperty> MemoryAllocationList;
+
+        /// <summary>
+        /// Selects all Async.
+        /// </summary>
+        /// <returns></returns>
+        public static List<Property> SelectAllByFieldName(string fieldName)
+        {
+            var connector = new Connector<Property>();
+            var filter = connector.CreateDataFilter();
+            filter.Add(x => x.FieldName, fieldName);
+            return connector.FetchAll(filter);
+        }
+
+        /// <summary>
+        /// Selects all Async.
+        /// </summary>
+        /// <returns></returns>
+        public static async Task<List<Property>> SelectAllByFieldNameAsync(string fieldName)
+        {
+            var connector = new Connector<Property>();
+            var filter = connector.CreateDataFilter();
+            filter.Add(x => x.FieldName, fieldName);
+            return await connector.FetchAllAsync(filter);
+        }
 
         /// <summary>
         /// Selects all in the supplied ID array.
@@ -447,7 +526,7 @@ namespace Sushi.Mediakiwi.Data
                 if (showEmptyTypes)
                 {
                     filter.AddSql("Property_List_Type_Key = @Type OR Property_List_Type_Key is null");
-                    filter.AddParameter<int>("Type", listTypeID.Value);
+                    filter.AddParameter("Type", listTypeID.Value);
                 }
                 else
                     filter.Add(x => x.ListTypeID, listTypeID);

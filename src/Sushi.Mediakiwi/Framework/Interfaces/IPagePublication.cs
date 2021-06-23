@@ -1,5 +1,4 @@
-﻿using System;
-namespace Sushi.Mediakiwi.Framework
+﻿namespace Sushi.Mediakiwi.Framework
 {
     /// <summary>
     /// This interface exposes the page publication hooks.
@@ -31,33 +30,33 @@ namespace Sushi.Mediakiwi.Framework
         /// </summary>
         /// <param name="user">The user entity</param>
         /// <param name="page">The page entity</param>
-        void DoPostPublishValidation(Sushi.Mediakiwi.Data.IApplicationUser user, Sushi.Mediakiwi.Data.Page page);
+        void DoPostPublishValidation(Data.IApplicationUser user, Data.Page page);
         /// <summary>
         /// Perform pre publication validation processes, if the publication should not commence than return false.
         /// </summary>
         /// <param name="user">The user entity</param>
         /// <param name="page">The page entity</param>
         /// <returns>Can the publication process proceed?</returns>
-        bool DoPrePublishValidation(Sushi.Mediakiwi.Data.IApplicationUser user, Sushi.Mediakiwi.Data.Page page);
+        bool DoPrePublishValidation(Data.IApplicationUser user, Data.Page page);
         /// <summary>
         /// Is the current application user allowed to publish this page? 
         /// </summary>
         /// <param name="user">The user entity</param>
         /// <param name="page">The page entity</param>
         /// <returns>If true than the publish button will be visible</returns>
-        bool CanPublish(Sushi.Mediakiwi.Data.IApplicationUser user, Sushi.Mediakiwi.Data.Page page);
+        bool CanPublish(Data.IApplicationUser user, Data.Page page);
         /// <summary>
         /// Is the current application user allowed to take this page offline? 
         /// </summary>
         /// <param name="user">The user entity</param>
         /// <param name="page">The page entity</param>
         /// <returns>If true than the take offline button will be visible</returns>
-        bool CanTakeOffline(Sushi.Mediakiwi.Data.IApplicationUser user, Sushi.Mediakiwi.Data.Page page);
+        bool CanTakeOffline(Data.IApplicationUser user, Data.Page page);
         /// <summary>
         /// The confirmation properties should be set in this method.
         /// </summary>
         /// <param name="user">The user entity</param>
         /// <param name="page">The page entity</param>
-        void ValidateConfirmation(Sushi.Mediakiwi.Data.IApplicationUser user, Sushi.Mediakiwi.Data.Page page);
+        void ValidateConfirmation(Data.IApplicationUser user, Data.Page page);
     }
 }

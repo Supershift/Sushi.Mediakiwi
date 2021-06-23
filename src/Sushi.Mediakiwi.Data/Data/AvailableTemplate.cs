@@ -1,9 +1,8 @@
-﻿using Sushi.MicroORM;
+﻿using Sushi.Mediakiwi.Data.MicroORM;
 using Sushi.MicroORM.Mapping;
 using System;
 using System.Data;
 using System.Threading.Tasks;
-using Sushi.Mediakiwi.Data.MicroORM;
 
 namespace Sushi.Mediakiwi.Data
 {
@@ -127,7 +126,20 @@ namespace Sushi.Mediakiwi.Data
             }
         }
 
-        ComponentTemplate IComponent.Template { get; }
+        ComponentTemplate m_Template;
+        /// <summary>
+        /// Gets the template.
+        /// </summary>
+        /// <value>The template.</value>
+        public ComponentTemplate Template
+        {
+            get
+            {
+                if (m_Template == null)
+                    m_Template = Mediakiwi.Data.ComponentTemplate.SelectOne(this.ComponentTemplateID);
+                return m_Template;
+            }
+        }
 
         #endregion properties
 
@@ -242,6 +254,16 @@ namespace Sushi.Mediakiwi.Data
             return result.ToArray();
         }
 
+        public static IAvailableTemplate[] SelectAllByComponentTemplate(int componentTemplateID)
+        {
+            var connector = ConnectorFactory.CreateConnector<AvailableTemplate>();
+            var filter = connector.CreateDataFilter();
+            filter.Add(x => x.ComponentTemplateID, componentTemplateID);
+            filter.AddOrder(x => x.SortOrder);
+            var result = connector.FetchAll(filter);
+            return result.ToArray();
+        }
+
         public static IAvailableTemplate[] SelectAllBySlot(int slotID)
         {
             var connector = ConnectorFactory.CreateConnector<AvailableTemplate>();
@@ -350,7 +372,7 @@ namespace Sushi.Mediakiwi.Data
         /// </summary>
         public void Save()
         {
-            var connector = ConnectorFactory.CreateConnector<AvailableTemplate>(new AvailableTemplateMap(true));
+            var connector = ConnectorFactory.CreateConnector(new AvailableTemplateMap(true));
             connector.Save(this);
         }
 
@@ -359,7 +381,7 @@ namespace Sushi.Mediakiwi.Data
         /// </summary>
         public async Task SaveAsync()
         {
-            var connector = ConnectorFactory.CreateConnector<AvailableTemplate>(new AvailableTemplateMap(true));
+            var connector = ConnectorFactory.CreateConnector(new AvailableTemplateMap(true));
             await connector.SaveAsync(this);
         }
 
@@ -368,7 +390,7 @@ namespace Sushi.Mediakiwi.Data
         /// </summary>
         public void Delete()
         {
-            var connector = ConnectorFactory.CreateConnector<AvailableTemplate>(new AvailableTemplateMap(true));
+            var connector = ConnectorFactory.CreateConnector(new AvailableTemplateMap(true));
             connector.Delete(this);
         }
 
@@ -377,7 +399,7 @@ namespace Sushi.Mediakiwi.Data
         /// </summary>
         public async Task DeleteAsync()
         {
-            var connector = ConnectorFactory.CreateConnector<AvailableTemplate>(new AvailableTemplateMap(true));
+            var connector = ConnectorFactory.CreateConnector(new AvailableTemplateMap(true));
             await connector.DeleteAsync(this);
         }
 
@@ -395,7 +417,7 @@ namespace Sushi.Mediakiwi.Data
             //    AvailableTemplate.ConnectionType = Common.GetPortal(portal).Type;
             //}
 
-            var connector = ConnectorFactory.CreateConnector<AvailableTemplate>(new AvailableTemplateMap(true));
+            var connector = ConnectorFactory.CreateConnector(new AvailableTemplateMap(true));
             var filter = connector.CreateDataFilter();
             filter.Add(x => x.PageTemplateID, pageTemplateID);
             connector.Delete(filter);
@@ -409,7 +431,7 @@ namespace Sushi.Mediakiwi.Data
         /// <param name="target">The target.</param>
         public static void Delete(int pageTemplateID, bool isSecundary, string target)
         {
-            var connector = ConnectorFactory.CreateConnector<AvailableTemplate>(new AvailableTemplateMap(true));
+            var connector = ConnectorFactory.CreateConnector(new AvailableTemplateMap(true));
             var filter = connector.CreateDataFilter();
             filter.Add(x => x.PageTemplateID, pageTemplateID);
             filter.Add(x => x.IsSecundary, isSecundary);

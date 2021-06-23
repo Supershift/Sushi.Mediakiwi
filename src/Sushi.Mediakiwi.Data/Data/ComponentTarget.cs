@@ -1,8 +1,7 @@
-﻿using Sushi.MicroORM;
+﻿using Sushi.Mediakiwi.Data.MicroORM;
 using Sushi.MicroORM.Mapping;
 using System;
 using System.Threading.Tasks;
-using Sushi.Mediakiwi.Data.MicroORM;
 
 namespace Sushi.Mediakiwi.Data
 {
@@ -127,7 +126,7 @@ AND NOT [ComponentTarget_Component_Source] = @thisSource", filter);
         /// Deletes all from Component Targets on the same page and with
         /// the same target Async
         /// </summary>
-        public virtual async Task DeleteCompleteAsync()
+        public async virtual Task DeleteCompleteAsync()
         {
             var connector = ConnectorFactory.CreateConnector<ComponentTarget>();
             var filter = connector.CreateDataFilter();
@@ -194,7 +193,7 @@ AND NOT [ComponentTarget_Component_Source] = @thisSource", filter);
         /// Saves this instance Async
         /// </summary>
         /// <returns></returns>
-        public virtual async Task<bool> SaveAsync()
+        public async virtual Task<bool> SaveAsync()
         {
             var connector = ConnectorFactory.CreateConnector<ComponentTarget>();
             try

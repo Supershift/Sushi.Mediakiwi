@@ -66,7 +66,7 @@ namespace Sushi.Mediakiwi.Data
         }
 
         /// <summary>
-        /// Gets the <see cref="Wim.Data.Content.Field"/> with the specified property.
+        /// Gets the <see cref="Data.Content.Field"/> with the specified property.
         /// </summary>
         /// <value></value>
         /// <returns></returns>

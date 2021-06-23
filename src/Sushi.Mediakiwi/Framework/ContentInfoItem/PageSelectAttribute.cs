@@ -1,26 +1,24 @@
 using Sushi.Mediakiwi.Data;
 using System;
 using System.Linq;
-using System.Collections.Generic;
 using System.Text;
-
 
 namespace Sushi.Mediakiwi.Framework.ContentInfoItem
 {
     /// <summary>
-    /// Possible return types: System.Int32, Sushi.Mediakiwi.Data.Page
+    /// Possible return types: System.Int32, Page
     /// </summary>
     public class PageSelectAttribute : ContentSharedAttribute, IContentInfo
     {
         /// <summary>
-        /// Possible return types: System.Int32, Sushi.Mediakiwi.Data.Page
+        /// Possible return types: System.Int32, Page
         /// </summary>
         /// <param name="title"></param>
         public PageSelectAttribute(string title)
             : this(title, false) { }
 
         /// <summary>
-        /// Possible return types: System.Int32, Sushi.Mediakiwi.Data.Page
+        /// Possible return types: System.Int32, Page
         /// </summary>
         /// <param name="title"></param>
         /// <param name="mandatory"></param>
@@ -28,7 +26,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
             : this(title, mandatory, null) { }
 
         /// <summary>
-        /// Possible return types: System.Int32, Sushi.Mediakiwi.Data.Page
+        /// Possible return types: System.Int32, Page
         /// </summary>
         /// <param name="title"></param>
         /// <param name="mandatory"></param>
@@ -55,89 +53,112 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
         /// </summary>
         public void SetCandidate(Field field, bool isEditMode)
         {
-            if (Property != null && Property.PropertyType == typeof(Data.CustomData))
+            if (Property != null && Property.PropertyType == typeof(CustomData))
+            {
                 SetContentContainer(field);
+            }
 
-            m_Candidate = new Sushi.Mediakiwi.Data.Page();
+            m_Candidate = new Page();
             if (IsInitialLoad || !isEditMode)
             {
                 if (IsBluePrint)
                 {
                     if (field != null)
                     {
-                        int candidate = Data.Utility.ConvertToInt(field.Value);
+                        int candidate = Utility.ConvertToInt(field.Value);
                         if (candidate > 0)
-                            m_Candidate = Data.Page.SelectOne(candidate, false);
+                        {
+                            m_Candidate = Page.SelectOne(candidate, false);
+                        }
                     }
                 }
                 else
                 {
-                    if (Property.PropertyType == typeof(Data.CustomData))
+                    if (Property.PropertyType == typeof(CustomData))
                     {
-                        int candidate = Data.Utility.ConvertToInt(m_ContentContainer[field.Property].Value);
+                        int candidate = Utility.ConvertToInt(m_ContentContainer[field.Property].Value);
                         if (candidate > 0)
-                            m_Candidate = Data.Page.SelectOne(candidate, false);
+                        {
+                            m_Candidate = Page.SelectOne(candidate, false);
+                        }
                     }
-                    else if (Property.PropertyType == typeof(Data.Page))
-                        m_Candidate = Property.GetValue(SenderInstance, null) as Data.Page;
+                    else if (Property.PropertyType == typeof(Page))
+                    {
+                        m_Candidate = Property.GetValue(SenderInstance, null) as Page;
+                    }
                     else if (Property.PropertyType == typeof(int))
                     {
-                        int candidate = Data.Utility.ConvertToInt(Property.GetValue(SenderInstance, null));
+                        int candidate = Utility.ConvertToInt(Property.GetValue(SenderInstance, null));
                         if (candidate > 0)
-                            m_Candidate = Data.Page.SelectOne(candidate, false);
+                        {
+                            m_Candidate = Page.SelectOne(candidate, false);
+                        }
                     }
                     else if (Property.PropertyType == typeof(int?))
                     {
-                        object candidate = Data.Utility.ConvertToInt(Property.GetValue(SenderInstance, null));
+                        object candidate = Utility.ConvertToInt(Property.GetValue(SenderInstance, null));
                         if (candidate != null)
-                            m_Candidate = Data.Page.SelectOne(Data.Utility.ConvertToInt(candidate));
+                        {
+                            m_Candidate = Page.SelectOne(Utility.ConvertToInt(candidate));
+                        }
                     }
                 }
             }
             else
             {
-                int candidate = Data.Utility.ConvertToInt(Console.Form(this.ID));
+                int candidate = Utility.ConvertToInt(Console.Form(ID));
                 if (candidate > 0)
-                    m_Candidate = Data.Page.SelectOne(candidate, false);
+                {
+                    m_Candidate = Page.SelectOne(candidate, false);
+                }
             }
 
-            //  Possible return types: System.Int32, Sushi.Mediakiwi.Data.Page
+            //  Possible return types: System.Int32, Page
             if (!IsBluePrint && Property != null && Property.CanWrite)
             {
-                if (Property.PropertyType == typeof(Data.CustomData))
+                if (Property.PropertyType == typeof(CustomData))
+                {
                     ApplyContentContainer(field, m_Candidate.ID.ToString());
+                }
                 else if (Property.PropertyType == typeof(int))
+                {
                     Property.SetValue(SenderInstance, m_Candidate.ID, null);
+                }
                 else if (Property.PropertyType == typeof(int?))
                 {
                     if (m_Candidate != null && m_Candidate.ID != 0)
+                    {
                         Property.SetValue(SenderInstance, m_Candidate.ID, null);
+                    }
                     else
+                    {
                         Property.SetValue(SenderInstance, null, null);
+                    }
                 }
                 else
+                {
                     Property.SetValue(SenderInstance, m_Candidate, null);
+                }
             }
             OutputText = m_Candidate.HRef;
 
 
             //  Inherited content section
-            if (ShowInheritedData)
+            if (ShowInheritedData && field != null && !string.IsNullOrEmpty(field.InheritedValue))
             {
-                if (field != null && !string.IsNullOrEmpty(field.InheritedValue))
+                int candidate2 = Utility.ConvertToInt(field.InheritedValue);
+                if (candidate2 > 0)
                 {
-                    int candidate2 = Data.Utility.ConvertToInt(field.InheritedValue);
-                    if (candidate2 > 0)
+                    Page page = Page.SelectOne(candidate2);
+                    if (page != null && page.ID != 0)
                     {
-                        Data.Page page = Data.Page.SelectOne(candidate2);
-                        if (page != null && page.ID != 0)
-                            InhertitedOutputText = page.HRef.Replace("+", " ");
+                        InhertitedOutputText = page.HRef.Replace("+", " ");
                     }
                 }
             }
         }
 
-        Sushi.Mediakiwi.Data.Page m_Candidate;
+        Page m_Candidate;
 
 
         /// <summary>
@@ -148,66 +169,97 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
         /// <returns></returns>
         public Field WriteCandidate(WimControlBuilder build, bool isEditMode, bool isRequired, bool isCloaked)
         {
-            this.SetWriteEnvironment();
-            this.IsCloaked = isCloaked;
-            this.Mandatory = isRequired;
-            if (OverrideEditMode) isEditMode = false;
-            if (isEditMode)
+            SetWriteEnvironment();
+            IsCloaked = isCloaked;
+            Mandatory = isRequired;
+            if (OverrideEditMode)
+            {
+                isEditMode = false;
+            }
+
+
+            bool isEnabled = IsEnabled();
+            string outputValue = OutputText;
+
+            // [MR:03-06-2021] Apply shared field clickable icon.
+            var sharedInfoApply = ApplySharedFieldInformation(isEnabled, outputValue);
+            // If we have a document assigned, overwrite the current one
+            if (sharedInfoApply.isShared)
+            {
+                // Enable readonly when shared
+                isEnabled = sharedInfoApply.isEnabled;
+
+                // When Currently not cloaked, do so if its a shared field
+                if (IsCloaked == false && sharedInfoApply.isHidden)
+                {
+                    IsCloaked = sharedInfoApply.isHidden;
+                }
+
+                OutputText = sharedInfoApply.outputValue;
+            }
+
+            if (isEditMode && isEnabled)
             {
                 #region Element creation
 
-                Sushi.Mediakiwi.Data.Folder currentFolder;
+                Folder currentFolder;
 
                 if (m_Candidate.FolderID == 0)
                 {
                     int siteWithPages = 0;
-                    if (this.Console.CurrentListInstance.wim.CurrentSite.HasPages)
+                    if (Console.CurrentListInstance.wim.CurrentSite.HasPages)
                     {
-                        siteWithPages = this.Console.CurrentListInstance.wim.CurrentSite.ID;
+                        siteWithPages = Console.CurrentListInstance.wim.CurrentSite.ID;
                     }
                     else
                     {
-                        if (Sushi.Mediakiwi.Data.Environment.Current.DefaultSiteID.HasValue)
+                        if (Data.Environment.Current.DefaultSiteID.HasValue)
                         {
-                            Sushi.Mediakiwi.Data.Site defaultSite = Sushi.Mediakiwi.Data.Site.SelectOne(Sushi.Mediakiwi.Data.Environment.Current.DefaultSiteID.Value);
+                            Site defaultSite = Site.SelectOne(Data.Environment.Current.DefaultSiteID.Value);
                             if (defaultSite.HasPages)
+                            {
                                 siteWithPages = defaultSite.ID;
+                            }
                         }
                     }
-                    currentFolder = Sushi.Mediakiwi.Data.Folder.SelectOneBySite(siteWithPages, Sushi.Mediakiwi.Data.FolderType.Page);
+                    currentFolder = Folder.SelectOneBySite(siteWithPages, FolderType.Page);
                 }
                 else
+                {
                     currentFolder = m_Candidate.Folder;
+                }
 
                 string titleTag = string.Concat(Title, Mandatory ? "<em>*</em>" : "");
 
-                var pages = Data.Page.SelectAll().OrderBy(x => x.InternalPath);
+                var pages = Page.SelectAll().OrderBy(x => x.InternalPath);
 
                 string options = null;
-                string key = "Sushi.Mediakiwi.Data.Page.Options";
-              
+                string key = "Page.Options";
+
                 StringBuilder optiondata = new StringBuilder();
                 optiondata.Append("<option></option>");
                 int count = 0;
                 foreach (var item in pages)
                 {
                     count++;
-                    optiondata.AppendFormat("\n\t\t\t\t\t\t\t\t\t\t<option value=\"{0}\"{2}>{1}</option>"
-                        , item.ID, item.InternalPath, m_Candidate.ID == item.ID ? " selected=\"selected\"" : string.Empty);
+                    optiondata.AppendFormat("<option value=\"{0}\"{2}>{1}</option>"
+                        , item.ID
+                        , item.InternalPath
+                        , m_Candidate.ID == item.ID ? " selected=\"selected\"" : string.Empty);
                 }
                 options = optiondata.ToString();
-              
+
                 System.Diagnostics.Trace.WriteLine($"step 3a");
 
                 StringBuilder element = new StringBuilder();
 
-                element.AppendFormat("\n\t\t\t\t\t\t\t\t\t<select id=\"{0}\"{1} name=\"{0}\">{2}"
-                 , this.ID
-                 , this.InputClassName(IsValid(isRequired), "styled")
+                element.AppendFormat("<select id=\"{0}\"{1} name=\"{0}\">{2}"
+                 , ID
+                 , InputClassName(IsValid(isRequired), "styled")
                  //, isEnabled ? null : " disabled=\"disabled\""
                  , options
                  );
-                element.Append("\n\t\t\t\t\t\t\t\t\t</select>");
+                element.Append("</select>");
 
 
                 System.Diagnostics.Trace.WriteLine($"step 4");
@@ -223,42 +275,47 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                     #region Wrapper
                     if (ShowInheritedData)
                     {
-                        this.ApplyTranslation(build);
+                        ApplyTranslation(build);
                     }
                     else
                     {
                         if ((Console.ExpressionPrevious == OutputExpression.Left && Expression == OutputExpression.FullWidth) || (Console.ExpressionPrevious == OutputExpression.Left && Expression == OutputExpression.Left))
-                            build.Append("\t\t\t\t\t\t\t<th><label>&nbsp;</label></th><td>&nbsp;</td></tr>");
+                            build.Append("<th><label>&nbsp;</label></th><td>&nbsp;</td></tr>");
 
                         if ((Console.ExpressionPrevious == OutputExpression.FullWidth && Expression == OutputExpression.Right) || (Console.ExpressionPrevious == OutputExpression.Right && Expression == OutputExpression.Right))
-                            build.Append("\t\t\t\t\t\t<tr><th><label>&nbsp;</label></th>\n\t\t\t\t\t\t\t<td>&nbsp;</td>");
+                            build.Append("<tr><th><label>&nbsp;</label></th><td>&nbsp;</td>");
 
                         if (Expression == OutputExpression.FullWidth || Expression == OutputExpression.Left)
-                            build.Append("\t\t\t\t\t\t<tr>");
+                            build.Append("<tr>");
                     }
 
-                    build.AppendFormat("\n\t\t\t\t\t\t\t<th><label for=\"{0}\">{1}</label></th>", this.ID, this.TitleLabel);
+                    build.AppendFormat("<th><label for=\"{0}\">{1}</label></th>", ID, TitleLabel);
 
-                    build.AppendFormat("\n\t\t\t\t\t\t\t<td{0}{1}>{2}"
+                    build.AppendFormat("<td{0}{1}>{2}"
                         , (Expression == OutputExpression.FullWidth && Console.HasDoubleCols) ? " colspan=\"3\"" : null
-                        , this.InputCellClassName(this.IsValid(isRequired))
+                        , InputCellClassName(IsValid(isRequired))
                         , CustomErrorText
                         );
 
-                    build.AppendFormat("\n\t\t\t\t\t\t\t\t<div class=\"{0}\">", (Expression == OutputExpression.FullWidth) ? this.Class_Wide : "half");
+                    build.AppendFormat("<div class=\"{0}\">", (Expression == OutputExpression.FullWidth) ? Class_Wide : "half");
 
                     build.Append(element.ToString());
-                    build.Append("\n\t\t\t\t\t\t\t\t</div>");
-                    build.Append("\n\t\t\t\t\t\t\t</td>");
+                    build.Append("</div></td>");
 
                     if (Expression == OutputExpression.FullWidth || Expression == OutputExpression.Right)
-                        build.Append("\n\t\t\t\t\t\t</tr>\n");
+                    {
+                        build.Append("</tr>");
+                    }
+
                     #endregion Wrapper
                 }
 
             }
             else
-                build.Append(GetSimpleTextElement(this.Title, this.Mandatory, this.OutputText, this.InteractiveHelp));
+            {
+                build.Append(GetSimpleTextElement(OutputText));
+            }
+
             return ReadCandidate(m_Candidate.ID);
         }
 
@@ -267,22 +324,24 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
         /// </summary>
         /// <value><c>true</c> if this instance is valid; otherwise, <c>false</c>.</value>
         /// <returns></returns>
-            public override bool IsValid(bool isRequired)
+        public override bool IsValid(bool isRequired)
         {
-            this.Mandatory = isRequired;
-                if (Console.CurrentListInstance.wim.IsSaveMode)
+            Mandatory = isRequired;
+            if (Console.CurrentListInstance.wim.IsSaveMode)
+            {
+                //  Custom error validation
+                if (!base.IsValid(isRequired))
                 {
-                    //  Custom error validation
-                    if (!base.IsValid(isRequired))
-                        return false;
-
-                    if (Mandatory)
-                        return !(m_Candidate == null || m_Candidate.ID == 0);
+                    return false;
                 }
-                return true;
-            
+
+                if (Mandatory)
+                {
+                    return !(m_Candidate == null || m_Candidate.ID == 0);
+                }
+            }
+            return true;
+
         }
-
-
     }
 }

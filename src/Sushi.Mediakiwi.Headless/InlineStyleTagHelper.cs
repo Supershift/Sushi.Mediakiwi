@@ -40,7 +40,7 @@ namespace Sushi.Mediakiwi.Headless
             return await ReadFileContentAsync(file).ConfigureAwait(false);
         }
 
-        public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
+        public async override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
         {
             var path = Href;
             var version = string.Empty;

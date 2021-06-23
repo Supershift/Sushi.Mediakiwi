@@ -1,19 +1,15 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using System;
 using Microsoft.Extensions.Configuration;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
-using Sushi.Mediakiwi.Data;
-using Sushi.Mediakiwi.UI;
-using Microsoft.AspNetCore.Hosting;
-using System.Collections.Concurrent;
+using Sushi.Mediakiwi.Controllers;
 using Sushi.Mediakiwi.Data.Caching;
-using Sushi.Mediakiwi.Framework;
 using Sushi.Mediakiwi.Data.Configuration;
+using Sushi.Mediakiwi.Framework;
+using Sushi.Mediakiwi.UI;
 using Sushi.MicroORM;
-using System.Linq;
+using System;
+using System.Collections.Concurrent;
+using System.Threading.Tasks;
 
 namespace Sushi.Mediakiwi
 {
@@ -22,12 +18,14 @@ namespace Sushi.Mediakiwi
         private IHostingEnvironment _env;
         private readonly RequestDelegate _next;
         private readonly IConfiguration _configuration;
+        private readonly IServiceProvider _serviceProvider;
 
-        public Portal(RequestDelegate next, IHostingEnvironment env, IConfiguration configuration)
+        public Portal(RequestDelegate next, IHostingEnvironment env, IConfiguration configuration, IServiceProvider serviceProvider)
         {
             _env = env;
             _next = next;
             _configuration = configuration;
+            _serviceProvider = serviceProvider;
         }
 
         internal static ConcurrentDictionary<string, ICacheManager> Caches;
@@ -49,8 +47,10 @@ namespace Sushi.Mediakiwi
 
                 // Assign json section to config
                 WimServerConfiguration.LoadJsonConfig(_configuration);
-                
                 DatabaseConfiguration.SetDefaultConnectionString(Common.DatabaseConnectionString);
+
+                ControllerRegister.AddRoute("api/documentype/getfields", new DocumentTypeController(), true);
+                ControllerRegister.AddRoute("api/documentype/checksharedfield", new CheckSharedFieldController(), true);
             }
         }
 
@@ -66,35 +66,35 @@ namespace Sushi.Mediakiwi
             var url = GetSafeUrl(context);
             var portal = _configuration.GetValue<string>("mediakiwi:portal_path");
 
-            if (
-                url.Equals(portal, StringComparison.CurrentCultureIgnoreCase)
-                || url.StartsWith($"{portal}/", StringComparison.CurrentCultureIgnoreCase)
+            Configure(context);
 
-                //|| url.EndsWith(portal, StringComparison.CurrentCultureIgnoreCase)
-                )
+            if (!await Monitor.StartControllerAsync(context, _env, _configuration, _serviceProvider ))
             {
-                if (_env.IsDevelopment())
-                {
-                    Configure(context);
-                    Monitor monitor = new Monitor(context, _env, _configuration);
-                    await monitor.StartAsync();
-                }
-                else
-                {
-                    try
-                    {
-                        Configure(context);
 
+                if (
+                    url.Equals(portal, StringComparison.CurrentCultureIgnoreCase)
+                    || url.StartsWith($"{portal}/", StringComparison.CurrentCultureIgnoreCase)
+                    )
+                {
+                    if (_env.IsDevelopment())
+                    {
                         Monitor monitor = new Monitor(context, _env, _configuration);
                         await monitor.StartAsync();
                     }
-                    catch (Exception ex)
+                    else
                     {
-                        throw ex;
+                        try
+                        {
+                            Monitor monitor = new Monitor(context, _env, _configuration);
+                            await monitor.StartAsync();
+                        }
+                        catch (Exception ex)
+                        {
+                            throw ex;
+                        }
                     }
                 }
             }
-
             await _next.Invoke(context);
         }
     }

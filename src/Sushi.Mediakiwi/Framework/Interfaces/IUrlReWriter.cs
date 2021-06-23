@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace Sushi.Mediakiwi.Framework
+﻿namespace Sushi.Mediakiwi.Framework
 {
     /// <summary>
     /// 
@@ -17,6 +12,6 @@ namespace Sushi.Mediakiwi.Framework
         /// <param name="page"></param>
         /// <param name="queryString"></param>
         /// <returns></returns>
-        bool IsExistingPage(string foldername, string pagename, out Sushi.Mediakiwi.Data.Page page, out string queryString);
+        bool IsExistingPage(string foldername, string pagename, out Data.Page page, out string queryString);
     }
 }

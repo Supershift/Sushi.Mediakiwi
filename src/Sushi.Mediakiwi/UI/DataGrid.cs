@@ -1,14 +1,13 @@
+using Sushi.Mediakiwi.Data;
+using Sushi.Mediakiwi.Framework;
+using Sushi.Mediakiwi.Logic;
+using Sushi.Mediakiwi.Utilities;
 using System;
-using System.Net;
-using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
-using System.Text;
+using System.Net;
 using System.Reflection;
-using Sushi.Mediakiwi.Utilities;
-using Sushi.Mediakiwi.Data;
-using Sushi.Mediakiwi.Logic;
-using Sushi.Mediakiwi.Framework;
+using System.Text;
 
 namespace Sushi.Mediakiwi.UI
 {
@@ -24,7 +23,7 @@ namespace Sushi.Mediakiwi.UI
         /// <param name="container">The container.</param>
         /// <param name="type">The type.</param>
         /// <returns></returns>
-        internal string GetSingleItemGridFromListInstance(Framework.WimComponentListRoot root, Sushi.Mediakiwi.Beta.GeneratedCms.Console container, int type)
+        internal string GetSingleItemGridFromListInstance(WimComponentListRoot root, Beta.GeneratedCms.Console container, int type)
         {
             //  Trigger list search event
             container.CurrentListInstance.wim.DoListSearch();
@@ -89,7 +88,7 @@ namespace Sushi.Mediakiwi.UI
                 );
         }
 
-        internal string GetGridFromListInstanceForXLS(Sushi.Mediakiwi.Beta.GeneratedCms.Console container, IComponentListTemplate listInstance, int type)
+        internal string GetGridFromListInstanceForXLS(Beta.GeneratedCms.Console container, IComponentListTemplate listInstance, int type)
         {
             //if (listInstance == null)
             //    listInstance = container.CurrentListInstance;
@@ -290,17 +289,17 @@ namespace Sushi.Mediakiwi.UI
         /// <param name="container">The container.</param>
         /// <param name="type">The type.</param>
         /// <returns></returns>
-        public string GetGridFromListInstance(Framework.WimComponentListRoot root, Sushi.Mediakiwi.Beta.GeneratedCms.Console container, int type, bool isNewDesignOutput)
+        public string GetGridFromListInstance(WimComponentListRoot root, Beta.GeneratedCms.Console container, int type, bool isNewDesignOutput)
         {
             return GetGridFromListInstance(root, container, type, false, isNewDesignOutput);
         }
 
-        string GetListPaging(Sushi.Mediakiwi.Beta.GeneratedCms.Console container, Splitlist splitlist, int currentPage, bool isTop)
+        string GetListPaging(Beta.GeneratedCms.Console container, Splitlist splitlist, int currentPage, bool isTop)
         {
             return GetListPaging(container, splitlist, currentPage, false, isTop);
         }
 
-        List<Dictionary<string, object>> GetListPagingForJSON(Sushi.Mediakiwi.Beta.GeneratedCms.Console container, Utilities.Splitlist splitlist, int currentPage)
+        List<Dictionary<string, object>> GetListPagingForJSON(Beta.GeneratedCms.Console container, Splitlist splitlist, int currentPage)
         {
             var pager = new List<Dictionary<string, object>>();
             Dictionary<string, object> item = null;
@@ -384,7 +383,7 @@ namespace Sushi.Mediakiwi.UI
                         int maxPageReferenceCount = 10;
 
                         //  Calculate boundaries
-                        Decimal surroundingCandidateCount = Decimal.Floor(Decimal.Divide((maxPageReferenceCount - 1), 2));
+                        decimal surroundingCandidateCount = decimal.Floor(decimal.Divide((maxPageReferenceCount - 1), 2));
 
                         int runtoPageReference = currentPage + (int)surroundingCandidateCount;
                         int startPageReference = (currentPage - (int)surroundingCandidateCount);
@@ -453,12 +452,12 @@ namespace Sushi.Mediakiwi.UI
             return pager;
         }
 
-        string GetUri(Sushi.Mediakiwi.Beta.GeneratedCms.Console container, int page)
+        string GetUri(Beta.GeneratedCms.Console container, int page)
         {
             return container.CurrentListInstance.wim.GetUrl(new KeyValue() { Key = "set", Value = page.ToString() });
         }
 
-        string GetListPaging(Sushi.Mediakiwi.Beta.GeneratedCms.Console container, Utilities.Splitlist splitlist, int currentPage, bool knockout, bool isTop)
+        string GetListPaging(Beta.GeneratedCms.Console container, Splitlist splitlist, int currentPage, bool knockout, bool isTop)
         {
             if (container.CurrentListInstance.wim.Page.Body.Grid.HidePager) 
                 return null;
@@ -644,7 +643,7 @@ namespace Sushi.Mediakiwi.UI
             return paging.ToString();
         }
 
-        Dictionary<string, object> GetPageLinkForJSON(Sushi.Mediakiwi.Beta.GeneratedCms.Console container, bool isSelected, string text, int page, string additionalClass)
+        Dictionary<string, object> GetPageLinkForJSON(Beta.GeneratedCms.Console container, bool isSelected, string text, int page, string additionalClass)
         {
             var item = new Dictionary<string, object>();
             if (page == 0)
@@ -662,7 +661,7 @@ namespace Sushi.Mediakiwi.UI
             return item;
         }
 
-        void GetPageLink(Sushi.Mediakiwi.Beta.GeneratedCms.Console container, ref StringBuilder paging, bool isSelected, int page)
+        void GetPageLink(Beta.GeneratedCms.Console container, ref StringBuilder paging, bool isSelected, int page)
         {
             if (isSelected)
             {
@@ -672,7 +671,7 @@ namespace Sushi.Mediakiwi.UI
             paging.AppendFormat("\n\t\t\t\t\t\t\t\t\t\t<li><a href=\"{1}\">{0}</a></li>", page, BuildUrl(container, "set", page.ToString()));
         }
 
-        void GetPageLink(Sushi.Mediakiwi.Beta.GeneratedCms.Console container, ref StringBuilder paging, string text, int page, string additionalClass, bool isEnabled)
+        void GetPageLink(Beta.GeneratedCms.Console container, ref StringBuilder paging, string text, int page, string additionalClass, bool isEnabled)
         {
             if (!isEnabled)
             {
@@ -685,7 +684,7 @@ namespace Sushi.Mediakiwi.UI
                 paging.AppendFormat("\n\t\t\t\t\t\t\t\t\t\t<li class=\"{0}\"><a href=\"{2}\">{1}</a></li>", additionalClass, text, BuildUrl(container, "set", page.ToString()));
         }
 
-        string BuildUrl(Sushi.Mediakiwi.Beta.GeneratedCms.Console container, string queryStringPropertyToApply, string value)
+        string BuildUrl(Beta.GeneratedCms.Console container, string queryStringPropertyToApply, string value)
         {
             string url = container.WimPagePath;
 
@@ -738,7 +737,7 @@ namespace Sushi.Mediakiwi.UI
         /// </summary>
         /// <param name="isDataTable">if set to <c>true</c> [is data table].</param>
         /// <param name="root">The root.</param>
-        bool ApplyTotalInformation(bool isDataTable, Framework.WimComponentListRoot root)
+        bool ApplyTotalInformation(bool isDataTable, WimComponentListRoot root)
         {
             this.ResetTotalInformation(root);
 
@@ -761,7 +760,7 @@ namespace Sushi.Mediakiwi.UI
                 if (!isDataTable)
                     infoCollection = item.GetType().GetProperties();
 
-                foreach (Framework.ListDataColumn column in root.ListDataColumns.List)
+                foreach (ListDataColumn column in root.ListDataColumns.List)
                 {
                     object propertyValue;
 
@@ -770,15 +769,15 @@ namespace Sushi.Mediakiwi.UI
                     else
                         propertyValue = GetValue(infoCollection, item, column);
 
-                    if (column.Total == Sushi.Mediakiwi.Framework.ListDataTotalType.Sum || column.Total == Sushi.Mediakiwi.Framework.ListDataTotalType.Average)
+                    if (column.Total == ListDataTotalType.Sum || column.Total == ListDataTotalType.Average)
                         hasTotal = true;
 
                     if (propertyValue != null)
                     {
-                        if (propertyValue.GetType() == typeof(Decimal) || propertyValue.GetType() == typeof(int))
+                        if (propertyValue.GetType() == typeof(decimal) || propertyValue.GetType() == typeof(int))
                         {
                             
-                            if (column.Total == Sushi.Mediakiwi.Framework.ListDataTotalType.Sum || column.Total == Sushi.Mediakiwi.Framework.ListDataTotalType.Average)
+                            if (column.Total == ListDataTotalType.Sum || column.Total == ListDataTotalType.Average)
                             {
                                 column.TotalValueType = propertyValue.GetType();
                                 column.TotalValue += Utility.ConvertToDecimal(propertyValue);
@@ -791,9 +790,9 @@ namespace Sushi.Mediakiwi.UI
             return hasTotal;
         }
 
-        void ResetTotalInformation(Framework.WimComponentListRoot root)
+        void ResetTotalInformation(WimComponentListRoot root)
         {
-            foreach (Framework.ListDataColumn column in root.ListDataColumns.List)
+            foreach (ListDataColumn column in root.ListDataColumns.List)
                 column.TotalValue = 0;
         }
 
@@ -808,7 +807,7 @@ namespace Sushi.Mediakiwi.UI
         /// <param name="includeExportFields">if set to <c>true</c> [include export fields].</param>
         /// <param name="isNewDesignOutput">if set to <c>true</c> [is new design output].</param>
         /// <returns></returns>
-        internal string GetGridFromListInstance(Framework.WimComponentListRoot root, Sushi.Mediakiwi.Beta.GeneratedCms.Console container, int type, bool includeExportFields, bool isNewDesignOutput, bool hidePaging = false)
+        internal string GetGridFromListInstance(WimComponentListRoot root, Beta.GeneratedCms.Console container, int type, bool includeExportFields, bool isNewDesignOutput, bool hidePaging = false)
         {
 
             container.ListPagingValue = root.CurrentPage.ToString();// container.Request.Params["set"];
@@ -860,7 +859,7 @@ namespace Sushi.Mediakiwi.UI
             }
             else
             {
-                Utilities.Splitlist splitlist = null;
+                Splitlist splitlist = null;
 
                 int maxViewItemCount = root.IsDashboardMode ? root.SearchViewDashboardMaxLength : root.CurrentList.Option_Search_MaxResultPerPage;
                 if (container.ListPagingValue == "-1")
@@ -943,7 +942,7 @@ namespace Sushi.Mediakiwi.UI
             else
             {
                 ListDataSoure source = new ListDataSoure();
-                foreach (Framework.ListDataColumn c in root.ListDataColumns.List)
+                foreach (ListDataColumn c in root.ListDataColumns.List)
                 {
                     if (c.EditConfiguration != null)
                         hasEditProperties = true;
@@ -1031,12 +1030,12 @@ namespace Sushi.Mediakiwi.UI
                         int columnCount = 0;
                         bool isFirstData = true;
                         string accordionPanelAddition = string.Empty;
-                        foreach (Framework.ListDataColumn column in root.ListDataColumns.List)
+                        foreach (ListDataColumn column in root.ListDataColumns.List)
                         {
                             object propertyValue = null;
-                            System.Reflection.PropertyInfo info = null;
+                            PropertyInfo info = null;
 
-                            if (column.Type != Sushi.Mediakiwi.Framework.ListDataColumnType.Checkbox || column.Type == Sushi.Mediakiwi.Framework.ListDataColumnType.RadioBox)
+                            if (column.Type != ListDataColumnType.Checkbox || column.Type == ListDataColumnType.RadioBox)
                             {
                                 if (isDataTable)
                                     propertyValue = ((System.Data.DataRow)item)[column.ColumnValuePropertyName];
@@ -1051,7 +1050,7 @@ namespace Sushi.Mediakiwi.UI
                             //    listTypeID = ((Sushi.Mediakiwi.Data.DalReflection.BaseSqlEntity)item).m_PropertyListTypeID;
 
 
-                            if (column.Type == Sushi.Mediakiwi.Framework.ListDataColumnType.Checkbox || column.Type == Sushi.Mediakiwi.Framework.ListDataColumnType.RadioBox)
+                            if (column.Type == ListDataColumnType.Checkbox || column.Type == ListDataColumnType.RadioBox)
                             {
                                 //  Is set in later code (twice!!!)
                                 propertyValue = "#";
@@ -1096,19 +1095,19 @@ namespace Sushi.Mediakiwi.UI
                             #region Value specific cell markup
                             if (propertyValue != null)
                             {
-                                if (column.Alignment == Sushi.Mediakiwi.Framework.Align.Default)
+                                if (column.Alignment == Align.Default)
                                 {
-                                    if (propertyValue.GetType() == typeof(DateTime) || propertyValue.GetType() == typeof(Decimal) || propertyValue.GetType() == typeof(DateTime?) || propertyValue.GetType() == typeof(Decimal?))
+                                    if (propertyValue.GetType() == typeof(DateTime) || propertyValue.GetType() == typeof(decimal) || propertyValue.GetType() == typeof(DateTime?) || propertyValue.GetType() == typeof(decimal?))
                                         cell_attribute.Style.Add("white-space", "nowrap");
 
-                                    if (propertyValue.GetType() == typeof(Decimal) || propertyValue.GetType() == typeof(int))
+                                    if (propertyValue.GetType() == typeof(decimal) || propertyValue.GetType() == typeof(int))
                                     {
                                         if (string.IsNullOrEmpty(cell_attribute.Class))
                                             cell_attribute.Class = "txt-r";
                                         else
                                             cell_attribute.Class += " txt-r";
                                     }
-                                    if (propertyValue.GetType() == typeof(Boolean))
+                                    if (propertyValue.GetType() == typeof(bool))
                                     {
                                         //cell_attribute.Align = "center";
                                         if (string.IsNullOrEmpty(cell_attribute.Class))
@@ -1121,14 +1120,14 @@ namespace Sushi.Mediakiwi.UI
                                 {
                                     switch (column.Alignment)
                                     {
-                                        case Sushi.Mediakiwi.Framework.Align.Center:
+                                        case Align.Center:
                                             if (string.IsNullOrEmpty(cell_attribute.Class))
                                                 cell_attribute.Class = "txt-c";
                                             else
                                                 cell_attribute.Class += " txt-c";
 
                                             break;
-                                        case Sushi.Mediakiwi.Framework.Align.Right:
+                                        case Align.Right:
                                             if (string.IsNullOrEmpty(cell_attribute.Class))
                                                 cell_attribute.Class = "txt-r";
                                             else
@@ -1286,7 +1285,7 @@ namespace Sushi.Mediakiwi.UI
 
 
                         RowHTML.Append("\n\t\t\t\t\t\t\t\t</tr>");
-                        if (!String.IsNullOrEmpty(accordionPanelAddition))
+                        if (!string.IsNullOrEmpty(accordionPanelAddition))
                             RowHTML.Append("\n\t\t\t\t\t\t\t\t"+ accordionPanelAddition);
                         if (!shouldSkipRowPresentation)
                             build2.Append(RowHTML);
@@ -1298,7 +1297,7 @@ namespace Sushi.Mediakiwi.UI
             //  Set header
             #region Header
             build.Append("\n\t\t\t\t\t\t\t<thead>\n\t\t\t\t\t\t\t\t<tr class=\"first\">");
-            foreach (Framework.ListDataColumn c in root.ListDataColumns.List)
+            foreach (ListDataColumn c in root.ListDataColumns.List)
             {
                 if (c.EditConfiguration != null)
                     hasEditProperties = true;
@@ -1352,15 +1351,15 @@ namespace Sushi.Mediakiwi.UI
                     else
                         build.Append("\n\t\t\t\t\t\t\t\t<tr class=\"sum nosort\">");
 
-                    foreach (Framework.ListDataColumn column in root.ListDataColumns.List)
+                    foreach (ListDataColumn column in root.ListDataColumns.List)
                     {
                         if (!IsVisibleColumn(column.Type, includeExportFields)) continue;
-                        if (column.Total == Sushi.Mediakiwi.Framework.ListDataTotalType.Sum)
+                        if (column.Total == ListDataTotalType.Sum)
                         {
                             decimal total = column.TotalValue;
                             if (root.GridDataCommunication.HasAppliedData)
                             {
-                                var tmp = root.GridDataCommunication.GetResultData(Framework.ListDataTotalType.Sum, column.ColumnValuePropertyName);
+                                var tmp = root.GridDataCommunication.GetResultData(ListDataTotalType.Sum, column.ColumnValuePropertyName);
                                 total = Utility.ConvertToDecimal(tmp, total);
                             }
 
@@ -1381,11 +1380,11 @@ namespace Sushi.Mediakiwi.UI
                                     , column.ColumnFixedLeftMargin > 0 ? string.Format(" style=\"margin-left:{0}px\"", column.ColumnFixedLeftMargin) : null
                                     );
                         }
-                        else if (column.Total == Sushi.Mediakiwi.Framework.ListDataTotalType.Average)
+                        else if (column.Total == ListDataTotalType.Average)
                         {
                             build.AppendFormat("\n\t\t\t\t\t\t\t\t\t<td class=\"txt-r{3}\"{4}>{0}{1}{2}</td>"
                                 , column.ColumnValuePrefix
-                                , OutputValue(container, Decimal.Divide(column.TotalValue, count), column)
+                                , OutputValue(container, decimal.Divide(column.TotalValue, count), column)
                                 , column.ColumnValueSuffix
                                 , column.ColumnIsFixed ? "fixed" : null
                                 , column.ColumnFixedLeftMargin > 0 ? string.Format(" style=\"margin-left:{0}px\"", column.ColumnFixedLeftMargin) : null
@@ -1481,7 +1480,7 @@ namespace Sushi.Mediakiwi.UI
         /// <param name="includeExportFields">if set to <c>true</c> [include export fields].</param>
         /// <param name="isNewDesignOutput">if set to <c>true</c> [is new design output].</param>
         /// <returns></returns>
-        internal string GetGridFromListInstanceForJSON(Framework.WimComponentListRoot root, Sushi.Mediakiwi.Beta.GeneratedCms.Console container, int type, bool includeExportFields, bool isNewDesignOutput)
+        internal string GetGridFromListInstanceForJSON(WimComponentListRoot root, Beta.GeneratedCms.Console container, int type, bool includeExportFields, bool isNewDesignOutput)
         {
             container.ListPagingValue = root.CurrentPage.ToString();// container.Request.Params["set"];
 
@@ -1563,7 +1562,7 @@ namespace Sushi.Mediakiwi.UI
             }
             else
             {
-                Utilities.Splitlist splitlist = null;
+                Splitlist splitlist = null;
 
                 if (isDataTable)
                 {
@@ -1658,11 +1657,11 @@ namespace Sushi.Mediakiwi.UI
 
                     var row = new Dictionary<string, object>();
 
-                    foreach (Framework.ListDataColumn column in root.ListDataColumns.List)
+                    foreach (ListDataColumn column in root.ListDataColumns.List)
                     {
                         object propertyValue = null;
 
-                        if (column.Type != Sushi.Mediakiwi.Framework.ListDataColumnType.Checkbox || column.Type == Sushi.Mediakiwi.Framework.ListDataColumnType.RadioBox)
+                        if (column.Type != ListDataColumnType.Checkbox || column.Type == ListDataColumnType.RadioBox)
                         {
                             if (isDataTable)
                                 propertyValue = ((System.Data.DataRow)item)[column.ColumnValuePropertyName];
@@ -1677,7 +1676,7 @@ namespace Sushi.Mediakiwi.UI
                         //    listTypeID = ((Sushi.Mediakiwi.Data.DalReflection.BaseSqlEntity)item).m_PropertyListTypeID;
 
 
-                        if (column.Type == Sushi.Mediakiwi.Framework.ListDataColumnType.Checkbox || column.Type == Sushi.Mediakiwi.Framework.ListDataColumnType.RadioBox)
+                        if (column.Type == ListDataColumnType.Checkbox || column.Type == ListDataColumnType.RadioBox)
                         {
                             //  Is set in later code (twice!!!)
                             propertyValue = "#";
@@ -1935,15 +1934,15 @@ namespace Sushi.Mediakiwi.UI
 
                 //build.Append("\n\t\t\t\t\t\t\t\t</tr>\n\t\t\t\t\t\t\t\t<tr>");
 
-                foreach (Framework.ListDataColumn column in root.ListDataColumns.List)
+                foreach (ListDataColumn column in root.ListDataColumns.List)
                 {
                     if (!IsVisibleColumn(column.Type, includeExportFields)) continue;
-                    if (column.Total == Sushi.Mediakiwi.Framework.ListDataTotalType.Sum)
+                    if (column.Total == ListDataTotalType.Sum)
                     {
                         decimal total = column.TotalValue;
                         if (root.GridDataCommunication.HasAppliedData)
                         {
-                            var tmp = root.GridDataCommunication.GetResultData(Framework.ListDataTotalType.Sum, column.ColumnValuePropertyName);
+                            var tmp = root.GridDataCommunication.GetResultData(ListDataTotalType.Sum, column.ColumnValuePropertyName);
                             total = Utility.ConvertToDecimal(tmp, total);
                         }
 
@@ -1954,9 +1953,9 @@ namespace Sushi.Mediakiwi.UI
                         //else
                         //    build.AppendFormat("\n\t\t\t\t\t\t\t\t\t<th class=\"sum\" align=\"right\">{0}{1}{2}</th>", column.ColumnValuePrefix, OutputValue(container, total, column), column.ColumnValueSuffix);
                     }
-                    else if (column.Total == Sushi.Mediakiwi.Framework.ListDataTotalType.Average)
+                    else if (column.Total == ListDataTotalType.Average)
                     {
-                        json.Sum.Add(DataGridForJSON.ConvertToColumnName(column), Decimal.Divide(column.TotalValue, count));
+                        json.Sum.Add(DataGridForJSON.ConvertToColumnName(column), decimal.Divide(column.TotalValue, count));
                         //build.AppendFormat("\n\t\t\t\t\t\t\t\t\t<th class=\"sum\" align=\"right\">{0}{1}{2}</th>", column.ColumnValuePrefix, OutputValue(container, Decimal.Divide(column.TotalValue, count), column), column.ColumnValueSuffix);
                     }
                     //else
@@ -2016,10 +2015,10 @@ namespace Sushi.Mediakiwi.UI
         /// <param name="column">The column.</param>
         /// <param name="uniqueIdentifier">The unique identifier.</param>
         /// <param name="propertyValue">The property value.</param>
-        void ApplyCheckboxTableCell(Sushi.Mediakiwi.Beta.GeneratedCms.Console container, Framework.ListDataColumn column, string uniqueIdentifier, ref object propertyValue)
+        void ApplyCheckboxTableCell(Beta.GeneratedCms.Console container, ListDataColumn column, string uniqueIdentifier, ref object propertyValue)
         {
-            if (column.Type == Sushi.Mediakiwi.Framework.ListDataColumnType.Checkbox
-                || column.Type == Sushi.Mediakiwi.Framework.ListDataColumnType.RadioBox
+            if (column.Type == ListDataColumnType.Checkbox
+                || column.Type == ListDataColumnType.RadioBox
                 )
             {
                 string key = string.Format("{0}_{1}", column.ColumnValuePropertyName, uniqueIdentifier);
@@ -2027,7 +2026,7 @@ namespace Sushi.Mediakiwi.UI
                 bool isChecked = false;
                 bool isEnabled = true;
                 //  Custom
-                if (column.Type == Sushi.Mediakiwi.Framework.ListDataColumnType.Checkbox && container.CurrentListInstance.wim.AddedCheckboxStateCollection != null)
+                if (column.Type == ListDataColumnType.Checkbox && container.CurrentListInstance.wim.AddedCheckboxStateCollection != null)
                 {
                     string value = container.CurrentListInstance.wim.AddedCheckboxStateCollection[key];
                     if (!string.IsNullOrEmpty(value))
@@ -2035,7 +2034,7 @@ namespace Sushi.Mediakiwi.UI
                         isEnabled = (value == "1");
                     }
                 }
-                else if (column.Type == Sushi.Mediakiwi.Framework.ListDataColumnType.RadioBox && container.CurrentListInstance.wim.AddedRadioboxStateCollection != null)
+                else if (column.Type == ListDataColumnType.RadioBox && container.CurrentListInstance.wim.AddedRadioboxStateCollection != null)
                 {
                     string value = container.CurrentListInstance.wim.AddedRadioboxStateCollection[key];
                     if (!string.IsNullOrEmpty(value))
@@ -2046,7 +2045,7 @@ namespace Sushi.Mediakiwi.UI
 
                 //  Custom
                 
-                if (column.Type == Sushi.Mediakiwi.Framework.ListDataColumnType.Checkbox && container.CurrentListInstance.wim.AddedCheckboxPostCollection != null)
+                if (column.Type == ListDataColumnType.Checkbox && container.CurrentListInstance.wim.AddedCheckboxPostCollection != null)
                 {
                     string value = container.CurrentListInstance.wim.AddedCheckboxPostCollection[key];
                     if (!string.IsNullOrEmpty(value))
@@ -2063,7 +2062,7 @@ namespace Sushi.Mediakiwi.UI
                     isChecked = container.Form(key) == "1";
                 }
 
-                if (column.Type == Sushi.Mediakiwi.Framework.ListDataColumnType.Checkbox)
+                if (column.Type == ListDataColumnType.Checkbox)
                 {
                     propertyValue = string.Format("<input id=\"{0}\" name=\"{0}\" value=\"1\"{1}{2} type=\"checkbox\">"
                         , key
@@ -2086,7 +2085,7 @@ namespace Sushi.Mediakiwi.UI
                 else
                 {
                     string value = "";
-                    if (column.Type == Sushi.Mediakiwi.Framework.ListDataColumnType.RadioBox && container.CurrentListInstance.wim.AddedRadioboxPostCollection != null)
+                    if (column.Type == ListDataColumnType.RadioBox && container.CurrentListInstance.wim.AddedRadioboxPostCollection != null)
                         value = container.CurrentListInstance.wim.AddedRadioboxPostCollection[key];
 
                     propertyValue = string.Format("<input name=\"{0}\" value=\"{3}\"{1}{2} type=\"radio\">"
@@ -2099,14 +2098,14 @@ namespace Sushi.Mediakiwi.UI
             }
         }
 
-        void SetPolution(Sushi.Mediakiwi.Beta.GeneratedCms.Console container, object sender)
+        void SetPolution(Beta.GeneratedCms.Console container, object sender)
         {
             if (container.CurrentListInstance.wim.m_ChangedSearchGridItem == null)
                 container.CurrentListInstance.wim.m_ChangedSearchGridItem = new List<object>();
             container.CurrentListInstance.wim.m_ChangedSearchGridItem.Add(sender);
         }
 
-        bool HasPostItem(Sushi.Mediakiwi.Beta.GeneratedCms.Console container, string name)
+        bool HasPostItem(Beta.GeneratedCms.Console container, string name)
         {
             if (container.Request.HasFormContentType)
             {
@@ -2120,7 +2119,7 @@ namespace Sushi.Mediakiwi.UI
             return false;
         }
 
-        void AddFormCell(Sushi.Mediakiwi.Beta.GeneratedCms.Console container, object item, PropertyInfo[] infoCollection, Framework.ListDataColumn column, string uniqueIdentifier, object propertyHelp, ref object propertyValue, ref bool shouldSkipRowPresentation, ref bool hasInnerLink)
+        void AddFormCell(Beta.GeneratedCms.Console container, object item, PropertyInfo[] infoCollection, ListDataColumn column, string uniqueIdentifier, object propertyHelp, ref object propertyValue, ref bool shouldSkipRowPresentation, ref bool hasInnerLink)
         {
             ApplyCheckboxTableCell(container, column, uniqueIdentifier, ref propertyValue);
 
@@ -2135,7 +2134,7 @@ namespace Sushi.Mediakiwi.UI
             }
         }
 
-        void ApplyEditConfiguration(Sushi.Mediakiwi.Beta.GeneratedCms.Console container, object sender, Framework.ListDataColumn column, string uniqueIdentifier, object propertyHelp, ref object properyValue, ref bool shouldSkipRowPresentation)
+        void ApplyEditConfiguration(Beta.GeneratedCms.Console container, object sender, ListDataColumn column, string uniqueIdentifier, object propertyHelp, ref object properyValue, ref bool shouldSkipRowPresentation)
         {
             shouldSkipRowPresentation = false;
             string propertyName = column.EditConfiguration.PropertyToSet == null ? column.ColumnValuePropertyName : column.EditConfiguration.PropertyToSet;
@@ -2156,7 +2155,7 @@ namespace Sushi.Mediakiwi.UI
             bool skipRowOption = column.EditConfiguration.HideTableRowIfChanged;
 
             string htmlCandidate = null;
-            if (column.EditConfiguration.Type == Sushi.Mediakiwi.Framework.ListDataEditConfigurationType.Dropdown)
+            if (column.EditConfiguration.Type == ListDataEditConfigurationType.Dropdown)
             {
                 if (!string.IsNullOrEmpty(column.EditConfiguration.CollectionProperty))
                 {
@@ -2200,7 +2199,7 @@ namespace Sushi.Mediakiwi.UI
                 }
                 properyValue = htmlCandidate;
             }
-            else if (column.EditConfiguration.Type == Sushi.Mediakiwi.Framework.ListDataEditConfigurationType.Checkbox)
+            else if (column.EditConfiguration.Type == ListDataEditConfigurationType.Checkbox)
             {
                 bool? value = null;
 
@@ -2234,7 +2233,7 @@ namespace Sushi.Mediakiwi.UI
                     );
                 properyValue = htmlCandidate;
             }
-            else if (column.EditConfiguration.Type == Sushi.Mediakiwi.Framework.ListDataEditConfigurationType.TextField)
+            else if (column.EditConfiguration.Type == ListDataEditConfigurationType.TextField)
             {
                 if (container.Request.HasFormContentType && container.Request.Form.Count > 0 && HasPostItem(container, name) &&
                               ((properyValue == null && !string.IsNullOrEmpty(container.Form(name))) ||
@@ -2261,7 +2260,7 @@ namespace Sushi.Mediakiwi.UI
             }
         }
 
-        bool CheckState(Sushi.Mediakiwi.Beta.GeneratedCms.Console container, object sender, Framework.ListDataColumn column, ref object properyValue, ref string enabledTag)
+        bool CheckState(Beta.GeneratedCms.Console container, object sender, ListDataColumn column, ref object properyValue, ref string enabledTag)
         {
             bool isEnabled = true;
             enabledTag = string.Empty;
@@ -2303,9 +2302,9 @@ namespace Sushi.Mediakiwi.UI
         }
 
 
-        System.Reflection.PropertyInfo GetPropertyInfo(Sushi.Mediakiwi.Beta.GeneratedCms.Console container, object sender, string property)
+        PropertyInfo GetPropertyInfo(Beta.GeneratedCms.Console container, object sender, string property)
         {
-            foreach (System.Reflection.PropertyInfo info in sender.GetType().GetProperties())
+            foreach (PropertyInfo info in sender.GetType().GetProperties())
             {   //  Get all public properties
                 if (info.CanRead)
                 {   // Get all writable public properties
@@ -2318,7 +2317,7 @@ namespace Sushi.Mediakiwi.UI
             //  Fall back
             if (container.CurrentListInstance != sender)
             {
-                foreach (System.Reflection.PropertyInfo info in container.CurrentListInstance.GetType().GetProperties())
+                foreach (PropertyInfo info in container.CurrentListInstance.GetType().GetProperties())
                 {   //  Get all public properties
                     if (info.CanRead)
                     {   // Get all writable public properties
@@ -2332,9 +2331,9 @@ namespace Sushi.Mediakiwi.UI
             throw new Exception(string.Format("Could not find the '{0}' property.", property));
         }
 
-        object GetProperty(Sushi.Mediakiwi.Beta.GeneratedCms.Console container, object sender, string property)
+        object GetProperty(Beta.GeneratedCms.Console container, object sender, string property)
         {
-            foreach (System.Reflection.PropertyInfo info in sender.GetType().GetProperties())
+            foreach (PropertyInfo info in sender.GetType().GetProperties())
             {   //  Get all public properties
                 if (info.CanRead)
                 {   // Get all writable public properties
@@ -2347,7 +2346,7 @@ namespace Sushi.Mediakiwi.UI
             //  Fall back
             if (container.CurrentListInstance != sender)
             {
-                foreach (System.Reflection.PropertyInfo info in container.CurrentListInstance.GetType().GetProperties())
+                foreach (PropertyInfo info in container.CurrentListInstance.GetType().GetProperties())
                 {   //  Get all public properties
                     if (info.CanRead)
                     {   // Get all writable public properties
@@ -2361,7 +2360,7 @@ namespace Sushi.Mediakiwi.UI
             throw new Exception(string.Format("Could not find the '{0}' property.", property));
         }
 
-        internal string GetThumbnailGridFromListInstance(Framework.WimComponentListRoot root, Sushi.Mediakiwi.Beta.GeneratedCms.Console container, int type, bool includeExportFields)
+        internal string GetThumbnailGridFromListInstance(WimComponentListRoot root, Beta.GeneratedCms.Console container, int type, bool includeExportFields)
         {
             //  Trigger list search event
             container.CurrentListInstance.wim.DoListSearch();
@@ -2376,7 +2375,7 @@ namespace Sushi.Mediakiwi.UI
             bool isDataTable = root.ListData == null;
 
             IEnumerator whilelist = null;
-            Utilities.Splitlist splitlist;
+            Splitlist splitlist;
 
             int currentPage = Utility.ConvertToInt(container.ListPagingValue, 1);
             if (currentPage < 1) currentPage = 1;
@@ -2433,7 +2432,7 @@ namespace Sushi.Mediakiwi.UI
                     string url = "#";
                     int id = 0;
 
-                    foreach (Framework.ListDataColumn column in root.ListDataColumns.List)
+                    foreach (ListDataColumn column in root.ListDataColumns.List)
                     {
                         object propertyValue;
 
@@ -2547,12 +2546,12 @@ namespace Sushi.Mediakiwi.UI
         /// <returns>
         /// 	<c>true</c> if [is key column] [the specified type]; otherwise, <c>false</c>.
         /// </returns>
-        bool IsKeyColumn(Framework.ListDataColumnType type)
+        bool IsKeyColumn(ListDataColumnType type)
         {
-            if (type == Sushi.Mediakiwi.Framework.ListDataColumnType.UniqueHighlightedIdentifier ||
-                type == Sushi.Mediakiwi.Framework.ListDataColumnType.UniqueHighlightedIdentifierPresent ||
-                type == Sushi.Mediakiwi.Framework.ListDataColumnType.UniqueIdentifier ||
-                type == Sushi.Mediakiwi.Framework.ListDataColumnType.UniqueIdentifierPresent)
+            if (type == ListDataColumnType.UniqueHighlightedIdentifier ||
+                type == ListDataColumnType.UniqueHighlightedIdentifierPresent ||
+                type == ListDataColumnType.UniqueIdentifier ||
+                type == ListDataColumnType.UniqueIdentifierPresent)
                 return true;
             return false;
         }
@@ -2564,12 +2563,12 @@ namespace Sushi.Mediakiwi.UI
         /// <returns>
         /// 	<c>true</c> if [is highlight column] [the specified type]; otherwise, <c>false</c>.
         /// </returns>
-        bool IsHighlightColumn(Framework.ListDataColumnType type)
+        bool IsHighlightColumn(ListDataColumnType type)
         {
-            if (type == Sushi.Mediakiwi.Framework.ListDataColumnType.UniqueHighlightedIdentifier ||
-                type == Sushi.Mediakiwi.Framework.ListDataColumnType.UniqueHighlightedIdentifierPresent ||
-                type == Sushi.Mediakiwi.Framework.ListDataColumnType.Highlight ||
-                type == Sushi.Mediakiwi.Framework.ListDataColumnType.HighlightPresent)
+            if (type == ListDataColumnType.UniqueHighlightedIdentifier ||
+                type == ListDataColumnType.UniqueHighlightedIdentifierPresent ||
+                type == ListDataColumnType.Highlight ||
+                type == ListDataColumnType.HighlightPresent)
                 return true;
             return false;
         }
@@ -2580,7 +2579,7 @@ namespace Sushi.Mediakiwi.UI
         /// <param name="root">The root.</param>
         /// <param name="item">The item.</param>
         /// <returns></returns>
-        string GetPassThroughValue(Framework.WimComponentListRoot root, System.Data.DataRow item)
+        string GetPassThroughValue(WimComponentListRoot root, System.Data.DataRow item)
         {
             if (!string.IsNullOrEmpty(root.SearchResultItemPassthroughParameterProperty))
             {
@@ -2600,13 +2599,13 @@ namespace Sushi.Mediakiwi.UI
         /// <param name="root">The root.</param>
         /// <param name="item">The item.</param>
         /// <returns></returns>
-        string GetPassThroughValue(PropertyInfo[] infoCollection, Framework.WimComponentListRoot root, object item)
+        string GetPassThroughValue(PropertyInfo[] infoCollection, WimComponentListRoot root, object item)
         {
             if (!string.IsNullOrEmpty(root.SearchResultItemPassthroughParameterProperty))
             {
                 for (int index = 0; index < infoCollection.Length; index++)
                 {
-                    System.Reflection.PropertyInfo info = infoCollection[index];
+                    PropertyInfo info = infoCollection[index];
                     if (info.Name == root.SearchResultItemPassthroughParameterProperty)
                     {
                         return info.GetValue(item, null).ToString();
@@ -2627,9 +2626,9 @@ namespace Sushi.Mediakiwi.UI
         /// <param name="item">The item.</param>
         /// <param name="column">The column.</param>
         /// <returns></returns>
-        object GetValue(PropertyInfo[] infoCollection, object item, Framework.ListDataColumn column)
+        object GetValue(PropertyInfo[] infoCollection, object item, ListDataColumn column)
         {
-            System.Reflection.PropertyInfo info;
+            PropertyInfo info;
             return GetValue(infoCollection, item, column.ColumnValuePropertyName, column.DataType, out info);
         }
 
@@ -2641,7 +2640,7 @@ namespace Sushi.Mediakiwi.UI
         /// <param name="column">The column.</param>
         /// <param name="info">The info.</param>
         /// <returns></returns>
-        object GetValue(PropertyInfo[] infoCollection, object item, Framework.ListDataColumn column, out System.Reflection.PropertyInfo info)
+        object GetValue(PropertyInfo[] infoCollection, object item, ListDataColumn column, out PropertyInfo info)
         {
             return GetValue(infoCollection, item, column.ColumnValuePropertyName, column.DataType, out info);
         }
@@ -2656,7 +2655,7 @@ namespace Sushi.Mediakiwi.UI
         /// <returns></returns>
         object GetValue(PropertyInfo[] infoCollection, object item, string propertyName)
         {
-            System.Reflection.PropertyInfo info;
+            PropertyInfo info;
             return GetValue(infoCollection, item, propertyName, null, out info);
         }
 
@@ -2668,7 +2667,7 @@ namespace Sushi.Mediakiwi.UI
         /// <param name="propertyName">Name of the property.</param>
         /// <param name="info">The info.</param>
         /// <returns></returns>
-        object GetValue(PropertyInfo[] infoCollection, object item, string propertyName, out System.Reflection.PropertyInfo info)
+        object GetValue(PropertyInfo[] infoCollection, object item, string propertyName, out PropertyInfo info)
         {
             return GetValue(infoCollection, item, propertyName, null, out info);
         }
@@ -2682,7 +2681,7 @@ namespace Sushi.Mediakiwi.UI
         /// <param name="castType">Type of the cast.</param>
         /// <param name="info">The info.</param>
         /// <returns></returns>
-        object GetValue(PropertyInfo[] infoCollection, object item, string propertyName, Type castType, out System.Reflection.PropertyInfo info)
+        object GetValue(PropertyInfo[] infoCollection, object item, string propertyName, Type castType, out PropertyInfo info)
         {
             return GetValue(infoCollection, item, propertyName, castType, true, out info);
         }
@@ -2697,7 +2696,7 @@ namespace Sushi.Mediakiwi.UI
         /// <param name="ifNullRecallWithData">if set to <c>true</c> [if null recall with data].</param>
         /// <param name="info">The info.</param>
         /// <returns></returns>
-        object GetValue(PropertyInfo[] infoCollection, object item, string propertyName, Type castType, bool ifNullRecallWithData, out System.Reflection.PropertyInfo info)
+        object GetValue(PropertyInfo[] infoCollection, object item, string propertyName, Type castType, bool ifNullRecallWithData, out PropertyInfo info)
         {
             info = null;
             string indexer = null;
@@ -2718,13 +2717,13 @@ namespace Sushi.Mediakiwi.UI
                     {
                         if (propertyName.Equals("data", StringComparison.OrdinalIgnoreCase))
                         {
-                            Sushi.Mediakiwi.Data.CustomData cst = info.GetValue(item, null) as Sushi.Mediakiwi.Data.CustomData;
+                            CustomData cst = info.GetValue(item, null) as CustomData;
 
                             if (cst == null) return null;
 
                             if (castType == typeof(DateTime))
                                 return cst[indexer].ParseDateTime();
-                            else if (castType == typeof(Decimal))
+                            else if (castType == typeof(decimal))
                                 return cst[indexer].ParseDecimal();
                             else if (castType == typeof(int))
                                 return cst[indexer].ParseInt();
@@ -2750,7 +2749,7 @@ namespace Sushi.Mediakiwi.UI
 
                                     for (int index2 = 0; index2 < m_InfoCollection2.Length; index2++)
                                     {
-                                        System.Reflection.PropertyInfo info2 = m_InfoCollection2[index2];
+                                    PropertyInfo info2 = m_InfoCollection2[index2];
                                         if (info2.Name == indexer)
                                         {
                                             return info2.GetValue(m_InnerObj, null);
@@ -2764,7 +2763,7 @@ namespace Sushi.Mediakiwi.UI
                     //column.PropertyIndex = index;
                     if (info.PropertyType != null && info.PropertyType.BaseType != null)
                     {
-                        if (info.PropertyType.BaseType.Equals(typeof(System.Enum)))
+                        if (info.PropertyType.BaseType.Equals(typeof(Enum)))
                         {
                             return (int)info.GetValue(item, null);
                         }
@@ -2780,7 +2779,7 @@ namespace Sushi.Mediakiwi.UI
         }
         string m_InnerPropertyName;
         PropertyInfo[] m_InfoCollection2;
-        Object m_InnerObj;
+        object m_InnerObj;
 
         /// <summary>
         /// Gets the highlighted value.
@@ -2788,9 +2787,9 @@ namespace Sushi.Mediakiwi.UI
         /// <param name="item">The item.</param>
         /// <param name="list">The list.</param>
         /// <returns></returns>
-        string GetHighlightedValue(System.Data.DataRow item, List<Framework.ListDataColumn> list)
+        string GetHighlightedValue(System.Data.DataRow item, List<ListDataColumn> list)
         {
-            foreach (Framework.ListDataColumn column in list)
+            foreach (ListDataColumn column in list)
             {
                 
                 if (IsHighlightColumn(column.Type))
@@ -2802,9 +2801,9 @@ namespace Sushi.Mediakiwi.UI
             //throw new Exception(string.Format("Cound not find the object highlight on [{0}]", item.GetType()));
         }
 
-        string GetHighlightedColumn(System.Data.DataRow item, List<Framework.ListDataColumn> list)
+        string GetHighlightedColumn(System.Data.DataRow item, List<ListDataColumn> list)
         {
-            foreach (Framework.ListDataColumn column in list)
+            foreach (ListDataColumn column in list)
             {
                 if (IsHighlightColumn(column.Type))
                 {
@@ -2821,9 +2820,9 @@ namespace Sushi.Mediakiwi.UI
         /// <param name="item">The item.</param>
         /// <param name="list">The list.</param>
         /// <returns></returns>
-        string GetIndentifierKey(System.Data.DataRow item, List<Framework.ListDataColumn> list)
+        string GetIndentifierKey(System.Data.DataRow item, List<ListDataColumn> list)
         {
-            foreach (Framework.ListDataColumn column in list)
+            foreach (ListDataColumn column in list)
             {
                 if (IsKeyColumn(column.Type))
                 {
@@ -2841,9 +2840,9 @@ namespace Sushi.Mediakiwi.UI
         /// <param name="item">The item.</param>
         /// <param name="list">The list.</param>
         /// <returns></returns>
-        string GetHighlightedValue(PropertyInfo[] infoCollection, object item, List<Framework.ListDataColumn> list)
+        string GetHighlightedValue(PropertyInfo[] infoCollection, object item, List<ListDataColumn> list)
         {
-            foreach (Framework.ListDataColumn column in list)
+            foreach (ListDataColumn column in list)
             {
                 if (IsHighlightColumn(column.Type))
                 {
@@ -2866,9 +2865,9 @@ namespace Sushi.Mediakiwi.UI
             //throw new Exception(string.Format("Cound not find the object highlight on [{0}]", item.GetType()));
         }
 
-        string GetHighlightedColumn(PropertyInfo[] infoCollection, object item, List<Framework.ListDataColumn> list)
+        string GetHighlightedColumn(PropertyInfo[] infoCollection, object item, List<ListDataColumn> list)
         {
-            foreach (Framework.ListDataColumn column in list)
+            foreach (ListDataColumn column in list)
             {
                 if (IsHighlightColumn(column.Type))
                     return column.ColumnValuePropertyName;
@@ -2884,9 +2883,9 @@ namespace Sushi.Mediakiwi.UI
         /// <param name="item">The item.</param>
         /// <param name="list">The list.</param>
         /// <returns></returns>
-        string GetIndentifierKey(PropertyInfo[] infoCollection, object item, List<Framework.ListDataColumn> list)
+        string GetIndentifierKey(PropertyInfo[] infoCollection, object item, List<ListDataColumn> list)
         {
-            foreach (Framework.ListDataColumn column in list)
+            foreach (ListDataColumn column in list)
             {
                 if (IsKeyColumn(column.Type))
                 {
@@ -2921,9 +2920,9 @@ namespace Sushi.Mediakiwi.UI
         /// <param name="item">The item.</param>
         /// <param name="list">The list.</param>
         /// <returns></returns>
-        string GetColumnUrl(PropertyInfo[] infoCollection, object item, List<Framework.ListDataColumn> list)
+        string GetColumnUrl(PropertyInfo[] infoCollection, object item, List<ListDataColumn> list)
         {
-            foreach (Framework.ListDataColumn column in list)
+            foreach (ListDataColumn column in list)
             {
                 if (IsKeyColumn(column.Type))
                 {
@@ -2941,12 +2940,12 @@ namespace Sushi.Mediakiwi.UI
         /// <returns>
         /// 	<c>true</c> if [is visible column] [the specified type]; otherwise, <c>false</c>.
         /// </returns>
-        bool IsVisibleColumn(Framework.ListDataColumnType type)
+        bool IsVisibleColumn(ListDataColumnType type)
         {
-            if (type == Sushi.Mediakiwi.Framework.ListDataColumnType.ExportOnly ||
-                type == Sushi.Mediakiwi.Framework.ListDataColumnType.Highlight ||
-                type == Sushi.Mediakiwi.Framework.ListDataColumnType.UniqueHighlightedIdentifier ||
-                type == Sushi.Mediakiwi.Framework.ListDataColumnType.UniqueIdentifier)
+            if (type == ListDataColumnType.ExportOnly ||
+                type == ListDataColumnType.Highlight ||
+                type == ListDataColumnType.UniqueHighlightedIdentifier ||
+                type == ListDataColumnType.UniqueIdentifier)
                 return false;
 
             return true;
@@ -2960,9 +2959,9 @@ namespace Sushi.Mediakiwi.UI
         /// <returns>
         /// 	<c>true</c> if [is visible column] [the specified type]; otherwise, <c>false</c>.
         /// </returns>
-        bool IsVisibleColumn(Framework.ListDataColumnType type, bool includeExportFields)
+        bool IsVisibleColumn(ListDataColumnType type, bool includeExportFields)
         {
-            if (includeExportFields && type == Sushi.Mediakiwi.Framework.ListDataColumnType.ExportOnly && type != Framework.ListDataColumnType.ViewOnly)
+            if (includeExportFields && type == ListDataColumnType.ExportOnly && type != ListDataColumnType.ViewOnly)
                 return true;
 
             return IsVisibleColumn(type);
@@ -2976,12 +2975,12 @@ namespace Sushi.Mediakiwi.UI
         /// <returns>
         ///   <c>true</c> if [is visible export column] [the specified type]; otherwise, <c>false</c>.
         /// </returns>
-        bool IsVisibleExportColumn(Framework.ListDataColumnType type)
+        bool IsVisibleExportColumn(ListDataColumnType type)
         {
-            if (type == Sushi.Mediakiwi.Framework.ListDataColumnType.Highlight ||
-                type == Sushi.Mediakiwi.Framework.ListDataColumnType.UniqueHighlightedIdentifier ||
-                type == Sushi.Mediakiwi.Framework.ListDataColumnType.UniqueIdentifier ||
-                type == Sushi.Mediakiwi.Framework.ListDataColumnType.ViewOnly)
+            if (type == ListDataColumnType.Highlight ||
+                type == ListDataColumnType.UniqueHighlightedIdentifier ||
+                type == ListDataColumnType.UniqueIdentifier ||
+                type == ListDataColumnType.ViewOnly)
                 return false;
 
             return true;
@@ -2994,7 +2993,7 @@ namespace Sushi.Mediakiwi.UI
         /// <param name="candidate">The candidate.</param>
         /// <param name="column">The column.</param>
         /// <returns></returns>
-        object OutputValue(Sushi.Mediakiwi.Beta.GeneratedCms.Console container, object candidate, Framework.ListDataColumn column)
+        object OutputValue(Beta.GeneratedCms.Console container, object candidate, ListDataColumn column)
         {
             string cellClassName;
             return OutputValue(container, candidate, true, out cellClassName, column);
@@ -3008,7 +3007,7 @@ namespace Sushi.Mediakiwi.UI
         /// <param name="cellClassName">Name of the cell class.</param>
         /// <param name="column">The column.</param>
         /// <returns></returns>
-        object OutputValue(Sushi.Mediakiwi.Beta.GeneratedCms.Console container, object candidate, out string cellClassName, Framework.ListDataColumn column)
+        object OutputValue(Beta.GeneratedCms.Console container, object candidate, out string cellClassName, ListDataColumn column)
         {
             return OutputValue(container, candidate, true, out cellClassName, column);
         }
@@ -3022,7 +3021,7 @@ namespace Sushi.Mediakiwi.UI
         /// <param name="cellClassName">Name of the cell class.</param>
         /// <param name="column">The column.</param>
         /// <returns></returns>
-        object OutputValue(Sushi.Mediakiwi.Beta.GeneratedCms.Console container, object candidate, bool convertToWimDecimal, out string cellClassName, Framework.ListDataColumn column)
+        object OutputValue(Beta.GeneratedCms.Console container, object candidate, bool convertToWimDecimal, out string cellClassName, ListDataColumn column)
         {
             cellClassName = null;
 
@@ -3055,24 +3054,24 @@ namespace Sushi.Mediakiwi.UI
                     return tmp.ToString(container.DateFormatShort);
                 return tmp.ToString(container.DateTimeFormatShort);
             }
-            else if (candidate.GetType() == typeof(Boolean))
+            else if (candidate.GetType() == typeof(bool))
             {
                 if (column.ColumnWidth == 0)
                     column.ColumnWidth = 10;
 
-                return ((Boolean)candidate)
+                return ((bool)candidate)
                     ? Utils.GetIconImageString(container, Utils.IconImage.Yes)
                     : Utils.GetIconImageString(container, Utils.IconImage.No);
             }
-            else if (candidate.GetType() == typeof(Decimal))
+            else if (candidate.GetType() == typeof(decimal))
             {
                 if (convertToWimDecimal)
                 {
                     System.Threading.Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("EN-us");
-                    return ((Decimal)candidate).ToString("N");
+                    return ((decimal)candidate).ToString("N");
                 }
                 else
-                    return ((Decimal)candidate).ToString("N");
+                    return ((decimal)candidate).ToString("N");
             }
             return candidate;
         }

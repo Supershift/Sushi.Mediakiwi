@@ -1,9 +1,7 @@
-﻿using Sushi.Mediakiwi.Data.Data;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace Sushi.Mediakiwi.Data
@@ -78,7 +76,7 @@ namespace Sushi.Mediakiwi.Data
         /// <param name="value">The value.</param>
         public void Apply(string property, decimal value)
         {
-            Apply(property, Sushi.Mediakiwi.Data.Utility.ConvertToDecimalString(value));
+            Apply(property, Utility.ConvertToDecimalString(value));
         }
 
         /// <summary>
@@ -115,9 +113,9 @@ namespace Sushi.Mediakiwi.Data
             else if (value.GetType() == typeof(SubList))
                 Apply(property, ((SubList)value).Serialized);
             else if (value.GetType() == typeof(int[]))
-                Apply(property, Sushi.Mediakiwi.Data.Utility.ConvertToCsvString(value as int[]));
+                Apply(property, Utility.ConvertToCsvString(value as int[]));
             else if (value.GetType() == typeof(List<int>))
-                Apply(property, Sushi.Mediakiwi.Data.Utility.ConvertToCsvString(((List<int>)value).ToArray()));
+                Apply(property, Utility.ConvertToCsvString(((List<int>)value).ToArray()));
             else
                 Apply(property, value.ToString());
         }
@@ -177,7 +175,7 @@ namespace Sushi.Mediakiwi.Data
         internal System.Collections.Hashtable m_Table;
 
         /// <summary>
-        /// Gets the <see cref="System.String"/> with the specified property.
+        /// Gets the <see cref="string"/> with the specified property.
         /// </summary>
         /// <value></value>
         public CustomDataItem this[string property]
@@ -250,7 +248,7 @@ namespace Sushi.Mediakiwi.Data
                 if (Items == null || Items.Length == 0)
                     return null;
 
-                return Sushi.Mediakiwi.Data.Utility.GetSerialized(Items);
+                return Utility.GetSerialized(Items);
             }
         }
 
@@ -275,9 +273,9 @@ namespace Sushi.Mediakiwi.Data
             if (string.IsNullOrEmpty(serializedData) || serializedData == @"<ArrayOfCustomDataItem xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"" xmlns:xsd=""http://www.w3.org/2001/XMLSchema"" />")
                 return;
 
-            serializedData = Sushi.Mediakiwi.Data.Utility.CleanXmlData(serializedData, true);
+            serializedData = Utility.CleanXmlData(serializedData, true);
 
-            CustomDataItem[] fields = Sushi.Mediakiwi.Data.Utility.GetDeserialized(typeof(CustomDataItem[]), serializedData) as CustomDataItem[];
+            CustomDataItem[] fields = Utility.GetDeserialized(typeof(CustomDataItem[]), serializedData) as CustomDataItem[];
 
             if (fields == null) return;
 

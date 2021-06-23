@@ -1,11 +1,7 @@
-﻿using System;
+﻿using Sushi.Mediakiwi.Data.Configuration;
+using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
-using System.Diagnostics;
-using System.Text;
 using System.Text.RegularExpressions;
-using Sushi.Mediakiwi.Data.Configuration;
-using Sushi.Mediakiwi.Data;
 
 namespace Sushi.Mediakiwi
 {
@@ -27,7 +23,7 @@ namespace Sushi.Mediakiwi
                     {
                         foreach (WimServerUrlMapping map in WimServerConfiguration.Instance.UrlMappings)
                         {
-                            if (!String.IsNullOrEmpty(map.Name))
+                            if (!string.IsNullOrEmpty(map.Name))
                                 _WimServerUrlMappings.Add(map.Name, map.Path);
                         }
                     }
@@ -285,7 +281,7 @@ namespace Sushi.Mediakiwi
         /// <param name="name">The name.</param>
         /// <param name="throwExceptionWhenNotFound">if set to <c>true</c> [throw exception when not found].</param>
         /// <returns></returns>
-        /// <exception cref="System.Exception">Could not find the portal</exception>
+        /// <exception cref="Exception">Could not find the portal</exception>
         public static WimServerPortal GetPortal(string name, bool throwExceptionWhenNotFound)
         {
             if (string.IsNullOrEmpty(name))

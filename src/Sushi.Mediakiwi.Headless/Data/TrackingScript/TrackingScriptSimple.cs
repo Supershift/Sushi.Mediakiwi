@@ -23,7 +23,7 @@ namespace Sushi.Mediakiwi.Headless.Data.TrackingScript
             get
             {
                 TagPosition pos = TagPosition.BodyAfterCloseTag;
-                Enum.TryParse<TagPosition>(PositionID.ToString(), out pos);
+                Enum.TryParse(PositionID.ToString(), out pos);
                 return pos;
             }
         }

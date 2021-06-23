@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
-using System.Collections.Generic;
+using Sushi.Mediakiwi.Data;
 using Sushi.Mediakiwi.Framework2.Api.Logic;
 using Sushi.Mediakiwi.UI;
 
@@ -10,6 +10,8 @@ namespace Sushi.Mediakiwi.Framework.Api
     [JsonObject(ItemNullValueHandling = NullValueHandling.Ignore, NamingStrategyType = typeof(CamelCaseNamingStrategy))]
     public class MediakiwiField
     {
+        [JsonConverter(typeof(StringEnumConverter))]
+        public ContentType ContentTypeID { get; set; }
         public string PropertyName { get; set; }
         public string PropertyType { get; set; }
         public string Title { get; set; }

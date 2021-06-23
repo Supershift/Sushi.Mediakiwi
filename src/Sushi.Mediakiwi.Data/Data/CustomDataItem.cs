@@ -118,7 +118,7 @@ namespace Sushi.Mediakiwi.Data
                 return null;
 
             long time;
-            if (Sushi.Mediakiwi.Data.Utility.IsNumeric(this.Value, out time))
+            if (Utility.IsNumeric(this.Value, out time))
             {
                 return new DateTime(time);
             }
@@ -135,7 +135,7 @@ namespace Sushi.Mediakiwi.Data
                 return new Document();
 
             int candidate;
-            if (Sushi.Mediakiwi.Data.Utility.IsNumeric(this.Value, out candidate))
+            if (Utility.IsNumeric(this.Value, out candidate))
             {
                 return Document.SelectOne(candidate);
             }
@@ -152,7 +152,7 @@ namespace Sushi.Mediakiwi.Data
                 return new Image();
 
             int candidate;
-            if (Sushi.Mediakiwi.Data.Utility.IsNumeric(this.Value, out candidate))
+            if (Utility.IsNumeric(this.Value, out candidate))
             {
                 return Image.SelectOne(candidate);
             }
@@ -165,7 +165,7 @@ namespace Sushi.Mediakiwi.Data
                 return new Link();
 
             int candidate;
-            if (Sushi.Mediakiwi.Data.Utility.IsNumeric(this.Value, out candidate))
+            if (Utility.IsNumeric(this.Value, out candidate))
             {
                 return Link.SelectOne(candidate);
             }
@@ -184,10 +184,12 @@ namespace Sushi.Mediakiwi.Data
         public Asset ParseAsset()
         {
             if (string.IsNullOrEmpty(Value))
+            {
                 return new Asset();
+            }
 
             int candidate;
-            if (Sushi.Mediakiwi.Data.Utility.IsNumeric(this.Value, out candidate))
+            if (Utility.IsNumeric(this.Value, out candidate))
             {
                 return Asset.SelectOne(candidate);
             }
@@ -201,10 +203,12 @@ namespace Sushi.Mediakiwi.Data
         public Page ParsePage()
         {
             if (string.IsNullOrEmpty(Value))
+            {
                 return new Page();
+            }
 
             int candidate;
-            if (Sushi.Mediakiwi.Data.Utility.IsNumeric(this.Value, out candidate))
+            if (Utility.IsNumeric(this.Value, out candidate))
             {
                 return Page.SelectOne(candidate);
             }
@@ -214,10 +218,12 @@ namespace Sushi.Mediakiwi.Data
         public Folder ParseFolder()
         {
             if (string.IsNullOrEmpty(Value))
+            {
                 return new Folder();
+            }
 
             int candidate;
-            if (Sushi.Mediakiwi.Data.Utility.IsNumeric(this.Value, out candidate))
+            if (Utility.IsNumeric(this.Value, out candidate))
             {
                 return Folder.SelectOne(candidate);
             }
@@ -231,7 +237,9 @@ namespace Sushi.Mediakiwi.Data
         public bool ParseBoolean()
         {
             if (string.IsNullOrEmpty(Value))
+            {
                 return false;
+            }
 
             return Value == "1";
         }
@@ -244,7 +252,9 @@ namespace Sushi.Mediakiwi.Data
         public bool ParseBoolean(bool defaultValue)
         {
             if (string.IsNullOrEmpty(Value))
+            {
                 return defaultValue;
+            }
 
             return Value == "1";
         }
@@ -256,11 +266,13 @@ namespace Sushi.Mediakiwi.Data
         public int? ParseInt()
         {
             if (string.IsNullOrEmpty(Value))
+            {
                 return null;
+            }
 
             try
             {
-                var candidate = Sushi.Mediakiwi.Data.Utility.ConvertToIntNullable(Value, false);
+                var candidate = Utility.ConvertToIntNullable(Value, false);
                 if (candidate == null)
                 {
                     var sublist = SubList.GetDeserialized(Value);
@@ -281,11 +293,13 @@ namespace Sushi.Mediakiwi.Data
         public long? ParseLong()
         {
             if (string.IsNullOrEmpty(Value))
+            {
                 return null;
+            }
 
             try
             {
-                return Sushi.Mediakiwi.Data.Utility.ConvertToLongNullable(Value);
+                return Utility.ConvertToLongNullable(Value);
             }
             catch (OverflowException ex)
             {
@@ -300,9 +314,11 @@ namespace Sushi.Mediakiwi.Data
         public int[] ParseIntArray()
         {
             if (string.IsNullOrEmpty(Value))
+            {
                 return default;
+            }
 
-            return Sushi.Mediakiwi.Data.Utility.ConvertToIntArray(Value.Split(','));
+            return Utility.ConvertToIntArray(Value.Split(','));
         }
 
         /// <summary>
@@ -312,9 +328,11 @@ namespace Sushi.Mediakiwi.Data
         public List<int> ParseIntList()
         {
             if (string.IsNullOrEmpty(Value))
+            {
                 return null;
+            }
 
-            return Sushi.Mediakiwi.Data.Utility.ConvertToIntList(Value.Split(','));
+            return Utility.ConvertToIntList(Value.Split(','));
         }
 
         /// <summary>
@@ -359,7 +377,7 @@ namespace Sushi.Mediakiwi.Data
             if (string.IsNullOrEmpty(Value))
                 return null;
 
-            return Sushi.Mediakiwi.Data.Utility.ConvertToDecimalNullable(Value);
+            return Utility.ConvertToDecimalNullable(Value);
         }
 
         /// <summary>
@@ -371,7 +389,7 @@ namespace Sushi.Mediakiwi.Data
             if (string.IsNullOrEmpty(Value))
                 return Guid.Empty;
 
-            return Sushi.Mediakiwi.Data.Utility.ConvertToGuid(Value);
+            return Utility.ConvertToGuid(Value);
         }
     }
 }

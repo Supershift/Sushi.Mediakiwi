@@ -1,10 +1,10 @@
-﻿using Sushi.MicroORM;
+﻿using Sushi.Mediakiwi.Data.MicroORM;
+using Sushi.MicroORM;
 using Sushi.MicroORM.Mapping;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Sushi.Mediakiwi.Data.MicroORM;
 
 namespace Sushi.Mediakiwi.Data
 {
@@ -117,7 +117,7 @@ namespace Sushi.Mediakiwi.Data
         {
             get
             {
-                if (!String.IsNullOrEmpty(CompletePath))
+                if (!string.IsNullOrEmpty(CompletePath))
                 {
                     if (CompletePath == "/")
                         m_Level = 0;
@@ -304,7 +304,7 @@ FROM [Wim_ComponentLists] WHERE [ComponentList_Folder_Key] in (SELECT [Folder_Ke
         public Folder Clone()
         {
             Folder clone = new Folder();
-            Sushi.Mediakiwi.Data.Utility.ReflectProperty(this, clone);
+            Utility.ReflectProperty(this, clone);
             clone.GUID = Guid.NewGuid();
             clone.ID = 0;
             return clone;
@@ -1090,7 +1090,7 @@ FROM [Wim_ComponentLists] WHERE [ComponentList_Folder_Key] in (SELECT [Folder_Ke
             if (folder == Common.FolderRoot || string.IsNullOrEmpty(folder))
                 return folder;
 
-            string nameProposal = Sushi.Mediakiwi.Data.Utility.GlobalRegularExpression.Implement.ReplaceNotAcceptableFilenameCharacter.Replace(folder, string.Empty);
+            string nameProposal = Utility.GlobalRegularExpression.Implement.ReplaceNotAcceptableFilenameCharacter.Replace(folder, string.Empty);
 
             bool pageExistsInFolder = IsFolderAlreadyTaken(folderID, folder);
             int nameExtentionCount = 0;
@@ -1115,7 +1115,7 @@ FROM [Wim_ComponentLists] WHERE [ComponentList_Folder_Key] in (SELECT [Folder_Ke
             if (folder == Common.FolderRoot || string.IsNullOrEmpty(folder))
                 return folder;
 
-            string nameProposal = Sushi.Mediakiwi.Data.Utility.GlobalRegularExpression.Implement.ReplaceNotAcceptableFilenameCharacter.Replace(folder, string.Empty);
+            string nameProposal = Utility.GlobalRegularExpression.Implement.ReplaceNotAcceptableFilenameCharacter.Replace(folder, string.Empty);
 
             bool pageExistsInFolder = await IsFolderAlreadyTakenAsync(folderID, folder);
             int nameExtentionCount = 0;

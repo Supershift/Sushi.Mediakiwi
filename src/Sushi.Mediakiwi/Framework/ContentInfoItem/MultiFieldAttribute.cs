@@ -1,9 +1,8 @@
-﻿using System;
-using System.Linq;
+﻿using Sushi.Mediakiwi.Data;
+using System;
 using System.Collections.Generic;
-using System.Text;
-using Sushi.Mediakiwi.Data;
 using System.Globalization;
+using System.Linq;
 
 namespace Sushi.Mediakiwi.Framework
 {
@@ -20,8 +19,6 @@ namespace Sushi.Mediakiwi.Framework
 namespace Sushi.Mediakiwi.Framework.ContentInfoItem
 {
 
-   
-
     /// <summary>
     /// Possible return types: System.String
     /// </summary>
@@ -35,12 +32,11 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
         /// </summary>
         public ForceContentTypes? ForceContentTypeSelection
         {
-            set { this._forceContenttype = value; }
-            get { return this._forceContenttype; }
+            set { _forceContenttype = value; }
+            get { return _forceContenttype; }
         }
 
-        public MultiFieldAttribute(string title) 
-            : this(title, null) { }
+        public MultiFieldAttribute(string title)  : this(title, null) { }
 
         public MultiFieldAttribute(string title, string interactiveHelp)
         {
@@ -87,7 +83,9 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                 if (IsBluePrint)
                 {
                     if (field != null)
+                    {
                         serialized = field.Value;
+                    }
                 }
                 else
                 {
@@ -99,20 +97,37 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
             }
             else
             {
-                if (this.Console.Request.HasFormContentType)
+                if (Console.Request.HasFormContentType)
                 {
-                    var keys = this.Console.Request.Form.Keys;
-                    var multiFound = (from x in keys where x.StartsWith(string.Concat(this.ID, "__")) select x).ToList();
+                    var keys = Console.Request.Form.Keys;
+                    var multiFound = (from x in keys where x.StartsWith(string.Concat(ID, "__")) select x).ToList();
                     if (multiFound.Count > 0)
                     {
-                        serialized = MultiField.GetSerialized(this.Console.Request, multiFound.ToArray());
+                        serialized = MultiField.GetSerialized(Console.Request, multiFound.ToArray());
                     }
                 }
                 else
+                {
                     serialized = null;
+                }
             }
 
-            this._MultiFields = MultiField.GetDeserialized(serialized, this.ID);
+            // [MR:03-06-2021] Apply shared field clickable icon.
+            var sharedInfoApply = ApplySharedFieldInformation(true, serialized);
+
+            // If we have a Multifield assigned, overwrite the current one
+            if (sharedInfoApply.isShared)
+            {
+                // When Currently not cloaked, do so if its a shared field
+                if (IsCloaked == false && sharedInfoApply.isHidden)
+                {
+                    IsCloaked = sharedInfoApply.isHidden;
+                }
+
+                serialized = sharedInfoApply.outputValue;
+            }
+
+            _MultiFields = MultiField.GetDeserialized(serialized, ID);
 
             if (Property != null && Property.PropertyType == typeof(string))
             {
@@ -122,9 +137,9 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
             int count = 0;
             List<IContentInfo> contentFields = new List<IContentInfo>();
 
-            if (this._MultiFields != null)
+            if (_MultiFields != null)
             {
-                foreach (var fieldinstance in this._MultiFields)
+                foreach (var fieldinstance in _MultiFields)
                 {
                     MetaData meta = new MetaData() { ContentTypeSelection = fieldinstance.Type.ToString(), Name = fieldinstance.Property };
                     var element = meta.GetContentInfo();
@@ -132,18 +147,18 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                     {
                         contentFields.Add(element);
 
-                        ((Framework.ContentSharedAttribute)element).Console = this.Console;
-                        ((Framework.ContentSharedAttribute)element).IsBluePrint = true;
+                        ((ContentSharedAttribute)element).Console = Console;
+                        ((ContentSharedAttribute)element).IsBluePrint = true;
                         count++;
 
                         //element.ID = fieldinstance.p
-                        element.ID = string.Concat(this.ID, "__", meta.ContentTypeSelection, "__", count);
-                        ((Framework.ContentSharedAttribute)element).m_ListItemCollection = meta.GetCollection();
-                        //((Framework.ContentSharedAttribute)element).Collection = this.Collection;
+                        element.ID = string.Concat(ID, "__", meta.ContentTypeSelection, "__", count);
+                        ((ContentSharedAttribute)element).m_ListItemCollection = meta.GetCollection();
+                        //((Framework.ContentSharedAttribute)element).Collection = Collection;
 
                         if (element.ContentTypeSelection == ContentType.Binary_Image)
                         {
-                            ((Framework.ContentInfoItem.Binary_ImageAttribute)element).GalleryProperty = this.GalleryProperty;
+                            ((Binary_ImageAttribute)element).GalleryProperty = GalleryProperty;
                         }
                    
                         element.SetCandidate(fieldinstance, Console.CurrentListInstance.wim.IsEditMode);
@@ -151,7 +166,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                     element.OverrideTableGeneration = true;
                 }
             }
-            this.ContentFields = contentFields.ToArray();
+            ContentFields = contentFields.ToArray();
         }
 
 
@@ -164,58 +179,106 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
         /// <returns></returns>
         public Field WriteCandidate(WimControlBuilder build, bool isEditMode, bool isRequired, bool isCloaked)
         {
-            this.IsCloaked = isCloaked;
+            IsCloaked = isCloaked;
 
             if (ShowInheritedData)
             {
-                this.ApplyTranslation(build);
+                ApplyTranslation(build);
                 Expression = OutputExpression.Right;
             }
             else
             {
                 //Expression = OutputExpression.Right;
                 if ((Console.ExpressionPrevious == OutputExpression.Left && Expression == OutputExpression.FullWidth) || (Console.ExpressionPrevious == OutputExpression.Left && Expression == OutputExpression.Left))
-                    build.Append("\t\t\t\t\t\t\t<th><label>&nbsp;</label></th><td>&nbsp;</td></tr>");
+                {
+                    build.Append("<th><label>&nbsp;</label></th><td>&nbsp;</td></tr>");
+                }
 
                 if ((Console.ExpressionPrevious == OutputExpression.FullWidth && Expression == OutputExpression.Right) || (Console.ExpressionPrevious == OutputExpression.Right && Expression == OutputExpression.Right))
-                    build.Append("\t\t\t\t\t\t<tr><th><label>&nbsp;</label></th>\n\t\t\t\t\t\t\t<td>&nbsp;</td>");
+                {
+                    build.Append("<tr><th><label>&nbsp;</label></th><td>&nbsp;</td>");
+                }
 
                 if (Expression == OutputExpression.FullWidth || Expression == OutputExpression.Left)
-                    build.Append("\t\t\t\t\t\t<tr>");
+                {
+                    build.Append("<tr>");
+                }
+            }
+
+            bool isEnabled = IsEnabled();
+            string outputValue = OutputText;
+
+            // [MR:03-06-2021] Apply shared field clickable icon.
+            var sharedInfoApply = ApplySharedFieldInformation(isEnabled, outputValue);
+
+            // If we have a document assigned, overwrite the current one
+            if (sharedInfoApply.isShared)
+            {
+                // Enable readonly when shared
+                isEnabled = sharedInfoApply.isEnabled;
+
+                // When Currently not cloaked, do so if its a shared field
+                if (IsCloaked == false && sharedInfoApply.isHidden)
+                {
+                    IsCloaked = sharedInfoApply.isHidden;
+                }
+
+                outputValue = sharedInfoApply.outputValue;
             }
 
             //if (Expression == OutputExpression.FullWidth)
-            //    build.AppendFormat("\n\t\t\t\t\t\t\t<th colspan=\"{1}\"><label>{0}</label></th></tr></tr>", this.TitleLabel, Console.HasDoubleCols ? "4" : "2");
-
-            build.AppendFormat("\n\t\t\t\t\t\t\t<th><label>{0}</label></th>", this.TitleLabel);
-
-            build.AppendFormat("\n\t\t\t\t\t\t\t<td{0}{1}><div class=\"{3}\"> {2}"
+            //    build.AppendFormat("\n\t\t\t\t\t\t\t<th colspan=\"{1}\"><label>{0}</label></th></tr></tr>", TitleLabel, Console.HasDoubleCols ? "4" : "2");
+           
+         
+            if (string.IsNullOrWhiteSpace(EditSharedFieldLink) == false)
+            {
+                build.Append($"<th><label for=\"{ID}\">{EditSharedFieldLink.Replace("[LABEL]", TitleLabel)}</label></th>");
+            }
+            else
+            {
+                build.Append($"<th><label for=\"{ID}\">{TitleLabel}</label></th>");
+            }
+ 
+            build.AppendFormat("<td{0}{1}><div class=\"{3}\"> {2}"
                 , (Expression == OutputExpression.FullWidth && Console.HasDoubleCols) ? " colspan=\"3\"" : null
                     //: " colspan=\"2\""//(Expression != OutputExpression.FullWidth) ? " colspan=\"2\"" : null
-                , this.InputCellClassName(this.IsValid(isRequired))
+                , InputCellClassName(IsValid(isRequired))
                 , CustomErrorText
                 , isEditMode ? "multitarget" : "text"
             );
 
             if (Expression != OutputExpression.FullWidth)
-                build.AppendFormat("\n\t\t\t\t\t\t\t\t<div>{0}</div>", this.TitleLabel);
+            {
+                if (string.IsNullOrWhiteSpace(EditSharedFieldLink) == false)
+                {
+                    build.Append($"<div>{EditSharedFieldLink.Replace("[LABEL]", TitleLabel)}</div>");
+                }
+                else
+                {
+                    build.Append($"<div>{TitleLabel}</div>");
+                }
+            }
 
             List<Field> fields = new List<Field>();
-            foreach (var contentField in this.ContentFields)
+            int idx = 0;
+
+            foreach (var contentField in ContentFields)
             {
-                
+                idx++;
+                string sharedIcon = (string.IsNullOrWhiteSpace(SharedIcon) == false && IsCloaked == false && idx == 1) ? SharedIcon : "";
+
                 build.AppendFormat(@"
                     <div class=""cmsable"">
-                        {0}
-                        <table class=""formTable"">", contentField.GetMultiFieldTitleHTML(isEditMode));
+                        {0}{1}
+                        <table class=""formTable"">", sharedIcon , contentField.GetMultiFieldTitleHTML(isEditMode && isEnabled));
 
                 build.AppendFormat(@"
                         <tbody>
                         <tr>
                         <td>");
 
-                contentField.Expression = this.Expression;
-                var outcome = contentField.WriteCandidate(build, Console.CurrentListInstance.wim.IsEditMode, contentField.Mandatory, contentField.IsCloaked);
+                contentField.Expression = Expression;
+                var outcome = contentField.WriteCandidate(build, Console.CurrentListInstance.wim.IsEditMode && isEnabled, contentField.Mandatory, contentField.IsCloaked);
                 fields.Add(outcome);
 
                 build.AppendFormat(@"
@@ -228,25 +291,29 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                     </div>");
             }
             Console.CurrentListInstance.wim.Page.Head.EnableColorCodingLibrary = true;
-            if (isEditMode)
+
+            if (isEditMode && isEnabled)
             {
                 string galleryUrlParam = null;
-                Data.Gallery gallery = null;
-                if (!string.IsNullOrEmpty(this.GalleryProperty))
+                Gallery gallery = null;
+                if (!string.IsNullOrEmpty(GalleryProperty))
                 {
-                    var galleryProperty = this.SenderInstance.GetType().GetProperty(this.GalleryProperty);
-                    var value = galleryProperty.GetValue(this.SenderInstance, null);
+                    var galleryProperty = SenderInstance.GetType().GetProperty(GalleryProperty);
+                    var value = galleryProperty.GetValue(SenderInstance, null);
 
-                    if (value is Sushi.Mediakiwi.Data.Gallery)
+                    if (value is Gallery gallery1)
                     {
-                        gallery = (Sushi.Mediakiwi.Data.Gallery)value;
+                        gallery = gallery1;
                     }
                     if (gallery != null && gallery.ID != 0)
+                    {
                         galleryUrlParam = gallery.ID.ToString();//gallery.DatabaseMappingPortal == null ? gallery.ID.ToString() : gallery.CompletePath;
+                    }
                 }
-                build.AppendFormat(@"                            </div><div class=""controls"" data-gallery=""{6}"" data-name=""{0}"" data-width=""{5}"" data-count=""{1}"">
+
+                build.AppendFormat(@"</div><div class=""controls"" data-gallery=""{6}"" data-name=""{0}"" data-width=""{5}"" data-count=""{1}"">
                     <div class=""cmsBlocks"">
-                        <input type=""hidden"" id=""{0}""  name=""{0}"" value=""1"" />", this.ID, this.ContentFields.Length.ToString()
+                        <input type=""hidden"" id=""{0}""  name=""{0}"" value=""1"" />", ID, ContentFields.Length.ToString()
                                          , Labels.ResourceManager.GetString("input_richtext", new CultureInfo(Console.CurrentApplicationUser.LanguageCulture))
                                          , Labels.ResourceManager.GetString("input_image", new CultureInfo(Console.CurrentApplicationUser.LanguageCulture))
                                          , Labels.ResourceManager.GetString("input_code", new CultureInfo(Console.CurrentApplicationUser.LanguageCulture))
@@ -257,71 +324,73 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                 /// Text adding - RTE
                 if (!ForceContentTypeSelection.HasValue || (ForceContentTypeSelection & ForceContentTypes.Text) != 0)
                 {
-                      build.AppendFormat(@"  <a href=""#"" class=""block addContentType"" data-type=""12"">
+                      build.AppendFormat(@"<a href=""#"" class=""block addContentType"" data-type=""12"">
                                           <span class=""icon-align-justify""></span>
                                           {0}
                                       </a>", Labels.ResourceManager.GetString("input_richtext", new CultureInfo(Console.CurrentApplicationUser.LanguageCulture)));
                 }
+
                 /// Header - textline
                 if (!ForceContentTypeSelection.HasValue || (ForceContentTypeSelection & ForceContentTypes.Header) != 0)
                 {
-                    build.Append(@"  
-                                      <a href=""#"" class=""block addContentType"" data-type=""10"">
+                    build.Append(@"<a href=""#"" class=""block addContentType"" data-type=""10"">
                                           <span class=""icon-header""></span>
                                           Header
                                       </a>");
                 }
+
                 /// Image
                 if (!ForceContentTypeSelection.HasValue || (ForceContentTypeSelection & ForceContentTypes.Image) != 0)
                 {
-                    build.AppendFormat(@"  
-                                          
-                                      <a href=""#"" class=""block addContentType"" data-type=""19"">
+                    build.AppendFormat(@"<a href=""#"" class=""block addContentType"" data-type=""19"">
                                           <span class=""icon-photo""></span>
                                           {0}
                                       </a>",  Labels.ResourceManager.GetString("input_image", new CultureInfo(Console.CurrentApplicationUser.LanguageCulture)));
                 }
+
                 // code
                 if (!ForceContentTypeSelection.HasValue || (ForceContentTypeSelection &  ForceContentTypes.SourceCode) != 0)
                 {
-                    build.AppendFormat(@"  
-                                       <a href=""#"" class=""block addContentType"" data-type=""39"">
+                    build.AppendFormat(@"<a href=""#"" class=""block addContentType"" data-type=""39"">
                                           <span class=""icon-code""></span>
                                           {0}
                                       </a>", Labels.ResourceManager.GetString("input_code", new CultureInfo(Console.CurrentApplicationUser.LanguageCulture)));
                 }
+
                 // link
                 if (!ForceContentTypeSelection.HasValue || (ForceContentTypeSelection &  ForceContentTypes.Hyperlink ) != 0)
                 {
-                    build.Append(@"  
-                                        <a href=""#"" class=""block addContentType"" data-type=""21"">
+                    build.Append(@"<a href=""#"" class=""block addContentType"" data-type=""21"">
                                           <span class=""icon-external-link""></span>
                                           Link
                                       </a>");
                 }
+
                 // File
                 if (!ForceContentTypeSelection.HasValue || (ForceContentTypeSelection & ForceContentTypes.File) != 0)
                 {
-                    build.Append(@"  
-                                        <a href=""#"" class=""block addContentType"" data-type=""20"">
+                    build.Append(@"<a href=""#"" class=""block addContentType"" data-type=""20"">
                                           <span class=""icon-file""></span>
                                           File
                                       </a>");
                 }
                 
                
-                build.Append(@"   
-                                  </div>
-                              </div>");
+                build.Append(@"</div></div>");
             }
-            build.Append("\t\t\t\t\t\t\t</td>");
-            build.Append("\t\t\t\t\t\t</tr>");
 
-            //this._output.Content = new Content() { Fields = fields.ToArray() };
+            build.Append("</td></tr>");
+            //_output.Content = new Content() { Fields = fields.ToArray() };
 
             string serialized = null;
-            if (this._MultiFields != null)
-                serialized = Data.Utility.GetSerialized(this._MultiFields);
+            if (sharedInfoApply.isShared)
+            {
+                serialized = sharedInfoApply.outputValue;
+            }
+            else if (_MultiFields != null)
+            {
+                serialized = Utility.GetSerialized(_MultiFields);
+            }
 
             return ReadCandidate(serialized);
         }
@@ -332,7 +401,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
         /// <returns></returns>
         public override bool IsValid(bool isRequired)
         {
-            this.Mandatory = isRequired;
+            Mandatory = isRequired;
             return true;
         }
     }

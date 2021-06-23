@@ -73,7 +73,12 @@
 
   <ItemGroup>
     <Compile Include="AppCentre\Data\BaseImplementation.cs" />
+    <Compile Include="AppCentre\Data\Implementation\ComponentTemplate.cs" />
     <Compile Include="AppCentre\Data\Implementation\RoleAccessSite.cs" />
+    <Compile Include="AppCentre\UI\Forms\SharedFieldForm.cs" />
+    <Compile Include="AppCentre\UI\SharedFieldList.cs" />
+    <Compile Include="AppCentre\Implementation\PageInstance.cs" />
+    <Compile Include="AppCentre\Implementation\PageTemplate.cs" />
     <Compile Include="AppCentre\UI\BaseImplementation.cs" />
     <Compile Include="AppCentre\UI\BasicSeachList.cs" />
     <Compile Include="AppCentre\UI\BrowseItem.cs" />
@@ -85,9 +90,12 @@
     <Compile Include="AppCentre\UI\ComponentListSettings.cs" />
     <Compile Include="AppCentre\UI\Demonstration.cs" />
     <Compile Include="AppCentre\UI\Document.cs" />
+    <Compile Include="AppCentre\UI\DocumentType_List.cs" />
     <Compile Include="AppCentre\UI\Environment.cs" />
     <Compile Include="AppCentre\UI\Folder.cs" />
     <Compile Include="AppCentre\UI\Forms\DocumentForm.cs" />
+    <Compile Include="AppCentre\UI\Forms\DocumentTypeForm.cs" />
+    <Compile Include="AppCentre\UI\Forms\FieldPropertiesForm.cs" />
     <Compile Include="AppCentre\UI\Forms\LinkForm.cs" />
     <Compile Include="AppCentre\UI\Forms\DemonstrationForm.cs" />
     <Compile Include="AppCentre\UI\Forms\SiteForm.cs" />
@@ -116,9 +124,9 @@
     <Compile Include="DataEntities\GridExtention.cs" />
     <Compile Include="Extention\ApplicationUserExtention.cs" />
     <Compile Include="Extention\ComponentVersionExtension.cs" />
-    <Compile Include="Extention\EnvironmentExtension.cs" />
     <Compile Include="Extention\GalleryExtension.cs" />
     <Compile Include="Extention\LinkExtension.cs" />
+    <Compile Include="Extention\PageExtension.cs" />
     <Compile Include="Extention\PageTemplateExtension.cs" />
     <Compile Include="Extention\PropertyExtension.cs" />
     <Compile Include="Extention\SiteExtension.cs" />
@@ -134,7 +142,9 @@
     <Compile Include="Framework\TopListPosition.cs" />
     <Compile Include="Logic\ApplicationUserLogic.cs" />
     <Compile Include="Logic\FolderLogic.cs" />
+    <Compile Include="Logic\PageLogic.cs" />
     <Compile Include="Logic\PropertyLogic.cs" />
+    <Compile Include="Logic\SearchLogic.cs" />
     <Compile Include="Presentation\Logic\Navigation.cs" />
     <Compile Include="Presentation\Monitor.cs" />
     <Compile Include="UI\AddPageComponentControl.cs" />
@@ -322,17 +332,22 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Azure.Storage.Blobs" Version="12.8.0" />
+    <PackageReference Include="Azure.Storage.Blobs" Version="12.9.0" />
     <PackageReference Include="HtmlAgilityPack" Version="1.11.30" />
+    <PackageReference Include="Microsoft.AspNet.Mvc" Version="5.2.7" />
+    <PackageReference Include="Microsoft.AspNet.WebApi.Core" Version="5.2.7" />
     <PackageReference Include="Microsoft.AspNetCore.Hosting.Abstractions" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.2.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="3.1.9" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.1" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
     <PackageReference Include="SonarAnalyzer.CSharp" Version="8.17.0.26580">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="System.Drawing.Common" Version="5.0.0" />
+    <PackageReference Include="WindowsAzure.Storage" Version="9.3.3" />
   </ItemGroup>
 
   <ItemGroup>

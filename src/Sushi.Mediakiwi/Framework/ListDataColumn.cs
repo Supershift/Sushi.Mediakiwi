@@ -1,7 +1,4 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Sushi.Mediakiwi.Framework
 {
@@ -46,7 +43,7 @@ namespace Sushi.Mediakiwi.Framework
             this.Type = type;
         }
 
-        System.Type _type;
+        Type _type;
         int _maxInputLength;
         bool _containsSpaces;
         /// <summary>
@@ -153,7 +150,7 @@ namespace Sushi.Mediakiwi.Framework
         /// <summary>
         /// To which type should the value be cast?
         /// </summary>
-        public System.Type DataType;
+        public Type DataType;
         /// <summary>
         /// This field is used internally for the calculation of the total type. 
         /// </summary>

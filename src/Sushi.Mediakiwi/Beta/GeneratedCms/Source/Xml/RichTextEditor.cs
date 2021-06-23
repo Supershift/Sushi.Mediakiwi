@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using System.Text;
 
 namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source.Xml
@@ -20,7 +18,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source.Xml
         {
             StringBuilder build = new StringBuilder();
 
-            var list = Sushi.Mediakiwi.Data.ComponentList.SelectOne(Sushi.Mediakiwi.Data.ComponentListType.Links);
+            var list = Data.ComponentList.SelectOne(Data.ComponentListType.Links);
 
             build.Append(@"<?xml version=""1.0""?>
 <root>
@@ -65,7 +63,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source.Xml
                 repositoryPath, string.Format("{0}?list={1}&openinframe=1&notitle=1", wimPath, list.GUID)
                 );
 
-            if (Sushi.Mediakiwi.Data.Environment.Current["RICHTEXT_FONTCOLOR"] == "1")
+            if (Data.Environment.Current["RICHTEXT_FONTCOLOR"] == "1")
             {
                 build.AppendFormat(@"
 			<li>&nbsp;<button class=""toggleNextNode link family_0 srcMouseHover"" title=""Font Color""><img alt=""Font Color"" src=""{0}/images/cmd_forecolor_link.png""/></button>

@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Sushi.Mediakiwi.Framework
+﻿namespace Sushi.Mediakiwi.Framework
 {
     /// <summary>
     /// The page preview interface
@@ -12,13 +10,13 @@ namespace Sushi.Mediakiwi.Framework
         /// </summary>
         /// <param name="page">The page.</param>
         /// <returns></returns>
-        System.Uri GetPreviewUrl(Sushi.Mediakiwi.Data.Page page);
+        System.Uri GetPreviewUrl(Data.Page page);
         /// <summary>
         /// Gets the online URL.
         /// </summary>
         /// <param name="page">The page.</param>
         /// <returns></returns>
-        System.Uri GetOnlineUrl(Sushi.Mediakiwi.Data.Page page);
+        System.Uri GetOnlineUrl(Data.Page page);
     }
 
     public class PagePublication : IPagePublication

@@ -1,12 +1,6 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Web;
-using System.IO;
 using System.Data;
-using System.Data.SqlClient;
-using System.Diagnostics;
 
 namespace Sushi.Mediakiwi.Utilities
 {
@@ -196,7 +190,7 @@ namespace Sushi.Mediakiwi.Utilities
         }
         #endregion
 
-        void InitiateSplit(System.Collections.IEnumerator list)
+        void InitiateSplit(IEnumerator list)
         {
             bool hasAvailableCandidate = false;
 

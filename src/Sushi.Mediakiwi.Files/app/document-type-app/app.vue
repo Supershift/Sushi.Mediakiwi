@@ -17,7 +17,7 @@
                                            v-bind:class="getClass(field, 'Title')">
                                 </div>
                                 <div>
-                                    <select v-model="field.typeID"
+                                    <select v-model="field.contentTypeID"
                                             :id="'field_type_' + field.id"
                                             class="selectX"
                                             style="width:100%"
@@ -55,6 +55,7 @@
                                         <i class="fas fa-check-circle check" title="Saved" v-if="field.status === fieldStatus.saved"></i>
                                         <i class="far fa-exclamation-triangle warning" title="Warning" v-if="field.status === fieldStatus.invalid"></i>
                                     </transition>
+                                    <i class="fas fa-retweet sharedField" title="Shared field" v-if="field.isSharedField"></i>
                                     <i class="fas fa-trash delete" title="Delete" @click.stop="deleteField(field.id)"></i>
                                     <i class="fas fa-bars sort" title="Move"></i>
                                 </div>
@@ -113,7 +114,7 @@
 
                 FormMap_Title: "Title",
                 FormMap_IsMandatory: "IsMandatory",
-                FormMap_TypeID: "TypeID",
+                FormMap_TypeID: "ContentTypeID",
 
                 fieldStatus: {
                     default: 0,
@@ -150,10 +151,12 @@
                 return this.fieldsCollection.map(r => {
                     return {
                         id: r.id,
-                        typeID: r.typeID,
+                        contentTypeID: r.contentTypeID,
                         title: r.title,
                         isMandatory: r.isMandatory,
                         sortOrder: r.sortOrder,
+                        isSharedField: r.isSharedField,
+                        fieldName: r.fieldName
                     }
                 });
             },
@@ -322,11 +325,13 @@
                 this.fieldsCollection.push({
                     id: this.getNewID(),
                     title: '',
-                    typeID: '',
+                    contentTypeID: '',
                     isMandatory: false,
                     fields: [],
                     notifications: [],
                     status: this.fieldStatus.edited,
+                    isSharedField: false,
+                    fieldName: ''
                 });
             },
             deleteField(fieldID) {
@@ -379,6 +384,7 @@
                 };
 
                 // loop through all form fields and get the value
+
                 for (let fieldProperty of field.fields) {
                     if (fieldProperty && fieldProperty.propertyName) {
                         request.FormFields[fieldProperty.propertyName] = fieldProperty.value;
@@ -391,7 +397,7 @@
                 request.FormFields["SortOrder"] = field.sortOrder;
 
                 request.FormFields["Title"] = field.title;
-                request.FormFields["TypeID"] = parseInt(field.typeID);
+                request.FormFields["ContentTypeID"] = parseInt(field.contentTypeID);
                 request.FormFields["IsMandatory"] = field.isMandatory;
 
                 request.FormFields["FieldName"] = this.camelCase(request.FormFields["Title"]);
@@ -549,12 +555,63 @@
                 this.fieldsCollection[i].fields = form.fields;
                 this.fieldsCollection[i].notifications = form.notifications;
             },
+            async checkSharedField(isChecked) {
+                this.loading = true;
+
+                let request = {
+                    fieldName: this.selectedField.fieldName,
+                    isChecked: isChecked
+                };
+                let result = undefined;
+
+                await this.$http.post(`${this.rootPath}/api/documentype/checksharedfield`, request, {
+                    before(request) {
+                        if (this.previousFetchFieldsRequest) {
+                            this.previousFetchFieldsRequest.abort();
+                        }
+                        this.previousFetchFieldsRequest = request;
+                    }
+                }).then(response => {
+                    // success
+                    if (typeof (response.data) === "string")
+                        result = JSON.parse(response.data);
+                    else
+                        result = response.data;
+
+                    // Check if we have an impact on other pages,
+                    // if so, display a dialog box about that
+                    if (result.pages && result.pages.length > 0) {
+                        console.log(result.pages);
+                        // Create page list
+                        var ul = $('<ul/>');
+                        for (var i = 0; i < result.pages.length; i++) {
+                            var li = $('<li/>').html(result.pages[i].pagePath);
+                            ul.append(li);
+                        }
+
+                        // Enabling shared field
+                        if (isChecked) {
+                            this.$dialog.alert(`<h2>Caution</h2>When enabling shared field '<i> ${this.selectedField.fieldName}</i>', the following pages will also be updated: ${ul[0].outerHTML}`, { html: true });
+                        }
+                        else {
+                            this.$dialog.alert(`<h2>Caution</h2>When disabling shared field '<i> ${this.selectedField.fieldName}</i>', the following pages will also be updated: ${ul[0].outerHTML}`, { html: true });
+                        }
+                    }
+
+                    this.loading = false;
+                }, response => {
+                    // error
+                    if (response && response.status)
+                        this.loading = false;
+                });
+
+            },
             async saveFieldProperties(field) {
                 let target = "Save";
 
                 let request = {
                     Referrer: target,
-                    FormFields: {}
+                    FormFields: {} 
                 };
 
                 // loop through all form fields and get the value
@@ -564,16 +621,24 @@
                     }
                 }
 
+                // Log what we're posting
+                console.log('posting content:');
+                console.dir(field.fields);
+
                 // Add order
                 let fieldID = (field.id < 0) ? 0 : field.id;
                 request.FormFields["ID"] = fieldID;
                 request.FormFields["SortOrder"] = field.sortOrder;
 
                 request.FormFields["Title"] = field.title;
-                request.FormFields["TypeID"] = parseInt(field.typeID);
+                request.FormFields["ContentTypeID"] = parseInt(field.contentTypeID);
                 request.FormFields["IsMandatory"] = field.isMandatory;
 
                 request.FormFields["FieldName"] = this.camelCase(request.FormFields["Title"]);
+                //console.log('ohjajoh');
+                //console.log('isSharedField:' + field.isSharedField);
+                //console.dir(field);
+                //request.FormFields["IsSharedField"] = field.isSharedField; 
 
                 let headers = this.headers;
                 let success = undefined;
@@ -623,13 +688,15 @@
                     return {
                         id: r.id,
                         title: r.title,
-                        typeID: r.typeID,
+                        contentTypeID: r.contentTypeID,
                         isMandatory: r.isMandatory,
                         sortOrder: r.sortOrder,
                         className: r.className,
                         fields: [],
                         notifications: [],
                         status: 0,
+                        isSharedField: r.isSharedField,
+                        fieldName: r.fieldName
                     }
                 }).sort((a, b) => (a.sortOrder > b.sortOrder) ? 1 : -1);
 
@@ -640,13 +707,15 @@
                     this.fieldsCollection.push({
                         id: -1,
                         title: '',
-                        typeID: 0,
+                        contentTypeID: 0,
                         isMandatory: false,
                         sortOrder: -1,
                         className: '',
                         fields: [],
                         notifications: [],
                         status: 0,
+                        isSharedField: false,
+                        fieldName: ''
                     });
                 }
 

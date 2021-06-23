@@ -1,9 +1,8 @@
-﻿using Sushi.MicroORM;
+﻿using Sushi.Mediakiwi.Data.MicroORM;
 using Sushi.MicroORM.Mapping;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Sushi.Mediakiwi.Data.MicroORM;
 
 namespace Sushi.Mediakiwi.Data
 {
@@ -28,13 +27,6 @@ namespace Sushi.Mediakiwi.Data
         #region Properties
 
         public string CookieParserLog { get; set; }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Visitor"/> class.
-        /// </summary>
-        public Visitor()
-        {
-        }
 
         /// <summary>
         /// Gets the last visited page (if none present an empty Page object is returned).
@@ -318,7 +310,7 @@ namespace Sushi.Mediakiwi.Data
             var filter = connector.CreateDataFilter();
             filter.Add(x => x.ProfileID, profileId);
 
-            int minutes = Sushi.Mediakiwi.Data.Utility.ConvertToInt(Environment.Current["EXPIRATION_COOKIE_PROFILE"], 0);
+            int minutes = Utility.ConvertToInt(Environment.Current["EXPIRATION_COOKIE_PROFILE"], 0);
 
             var result = connector.FetchAll(filter);
 
@@ -343,7 +335,7 @@ namespace Sushi.Mediakiwi.Data
             var filter = connector.CreateDataFilter();
             filter.Add(x => x.ProfileID, profileId);
 
-            int minutes = Sushi.Mediakiwi.Data.Utility.ConvertToInt(Environment.Current["EXPIRATION_COOKIE_PROFILE"], 0);
+            int minutes = Utility.ConvertToInt(Environment.Current["EXPIRATION_COOKIE_PROFILE"], 0);
 
             var result = await connector.FetchAllAsync(filter);
 

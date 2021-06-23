@@ -1,8 +1,8 @@
-﻿using Sushi.MicroORM;
+﻿using Sushi.Mediakiwi.Data.MicroORM;
+using Sushi.MicroORM;
 using Sushi.MicroORM.Mapping;
 using System;
 using System.Threading.Tasks;
-using Sushi.Mediakiwi.Data.MicroORM;
 
 namespace Sushi.Mediakiwi.Data
 {
@@ -137,8 +137,8 @@ namespace Sushi.Mediakiwi.Data
                     }
                     else
                     {
-                        string check1 = Sushi.Mediakiwi.Data.Utility.CreateChecksum(m_Source);
-                        string check2 = Sushi.Mediakiwi.Data.Utility.CreateChecksum(value);
+                        string check1 = Utility.CreateChecksum(m_Source);
+                        string check2 = Utility.CreateChecksum(value);
 
                         if (!check1.Equals(check2))
                             m_IsSourceChanged = true;
@@ -246,7 +246,7 @@ namespace Sushi.Mediakiwi.Data
         /// Gets or sets the last write time UTC of the page template (ASPX).
         /// </summary>
         /// <value>The last write time UTC.</value>
-        public DateTime LastWriteTimeUtc { get; set; }
+        public DateTime? LastWriteTimeUtc { get; set; }
 
         public DateTime? Updated
         {

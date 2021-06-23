@@ -1,13 +1,10 @@
 ﻿using Sushi.Mediakiwi.Data;
-using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Data;
-using System.Data.SqlClient;
+using System.Threading.Tasks;
 
 namespace Sushi.Mediakiwi.Framework.Functions
 {
-    public class FolderPathLogic 
+    public class FolderPathLogic
     {
         /// <summary>
         /// Selects all.
@@ -18,19 +15,41 @@ namespace Sushi.Mediakiwi.Framework.Functions
             return FolderPath.SelectAll();
         }
 
+        /// <summary>
+        /// Selects all.
+        /// </summary>
+        /// <returns></returns>
+        static async Task<List<FolderPath>> SelectAllAsync()
+        {
+            return await FolderPath.SelectAllAsync();
+        }
+
 
         /// <summary>
         /// Updates the complete page path.
         /// </summary>
         /// <param name="folderID">The folder ID.</param>
-        /// <param name="path">The path.</param>
         /// <param name="replacement">The replacement.</param>
-        static void UpdateCompletePagePath(int folderID, string path, string replacement)
+        static void UpdateCompletePagePath(int folderID, string replacement)
         {
-            foreach (Sushi.Mediakiwi.Data.Page page in Sushi.Mediakiwi.Data.Page.SelectAll(folderID,  Sushi.Mediakiwi.Data.PageFolderSortType.Folder, Sushi.Mediakiwi.Data.PageReturnProperySet.All, Sushi.Mediakiwi.Data.PageSortBy.SortOrder, false))
+            foreach (Page page in Page.SelectAll(folderID, PageFolderSortType.Folder, PageReturnProperySet.All, PageSortBy.SortOrder, false))
             {
                 page.InternalPath = string.Concat(page.SitePath, page.Folder.CompletePath, page.Name).Replace(" ", replacement);
                 page.Save();
+            }
+        }
+
+        /// <summary>
+        /// Updates the complete page path.
+        /// </summary>
+        /// <param name="folderID">The folder ID.</param>
+        /// <param name="replacement">The replacement.</param>
+        static async Task UpdateCompletePagePathAsync(int folderID, string replacement)
+        {
+            foreach (Page page in await Page.SelectAllAsync(folderID, PageFolderSortType.Folder, PageReturnProperySet.All, PageSortBy.SortOrder, false))
+            {
+                page.InternalPath = string.Concat(page.SitePath, page.Folder.CompletePath, page.Name).Replace(" ", replacement);
+                await page.SaveAsync();
             }
         }
 
@@ -39,10 +58,25 @@ namespace Sushi.Mediakiwi.Framework.Functions
         /// </summary>
         public static void UpdateCompletePath()
         {
-            string replacement = Data.Environment.Current["SPACE_REPLACEMENT"];
+            string replacement = Environment.Current["SPACE_REPLACEMENT"];
 
             foreach (var item in SelectAll())
-                UpdateCompletePagePath(item.ID, string.Concat(item.DefaultFolder, item.CompletePath), replacement);
+            {
+                UpdateCompletePagePath(item.ID, replacement);
+            }
+        }
+
+        /// <summary>
+        /// Updates the complete path off all pages in the portal
+        /// </summary>
+        public static async Task UpdateCompletePathAsync()
+        {
+            string replacement = Environment.Current["SPACE_REPLACEMENT"];
+
+            foreach (var item in await SelectAllAsync())
+            {
+                await UpdateCompletePagePathAsync(item.ID, replacement);
+            }
         }
 
         /// <summary>
@@ -52,11 +86,31 @@ namespace Sushi.Mediakiwi.Framework.Functions
         public static void UpdateCompletePath(int folderID)
         {
             FolderPath item = FolderPath.SelectOne(folderID);
-            if (item.IsNewInstance) return;
+            if (item.IsNewInstance)
+            {
+                return;
+            }
 
-            string replacement = Data.Environment.Current["SPACE_REPLACEMENT"];
+            string replacement = Environment.Current["SPACE_REPLACEMENT"];
 
-            UpdateCompletePagePath(item.ID, string.Concat(item.DefaultFolder, item.CompletePath), replacement);
+            UpdateCompletePagePath(item.ID, replacement);
+        }
+
+        /// <summary>
+        /// Updates the complete path.
+        /// </summary>
+        /// <param name="folderID">The folder ID.</param>
+        public static async Task UpdateCompletePathAsync(int folderID)
+        {
+            FolderPath item = await FolderPath.SelectOneAsync(folderID);
+            if (item.IsNewInstance)
+            {
+                return;
+            }
+
+            string replacement = Environment.Current["SPACE_REPLACEMENT"];
+
+            UpdateCompletePagePath(item.ID, replacement);
         }
     }
 }

@@ -1,11 +1,9 @@
-﻿using Sushi.MicroORM;
+﻿using Sushi.Mediakiwi.Data.MicroORM;
 using Sushi.MicroORM.Mapping;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
-using Sushi.Mediakiwi.Data.Caching;
-using Sushi.Mediakiwi.Data.MicroORM;
 
 namespace Sushi.Mediakiwi.Data
 {
@@ -337,7 +335,7 @@ namespace Sushi.Mediakiwi.Data
         /// </summary>
         public void Save()
         {
-            var connector = ConnectorFactory.CreateConnector<Component>(new ComponentMap(true));
+            var connector = ConnectorFactory.CreateConnector(new ComponentMap(true));
             connector.Save(this);
         }
 
@@ -346,7 +344,7 @@ namespace Sushi.Mediakiwi.Data
         /// </summary>
         public async Task SaveAsync()
         {
-            var connector = ConnectorFactory.CreateConnector<Component>(new ComponentMap(true));
+            var connector = ConnectorFactory.CreateConnector(new ComponentMap(true));
             await connector.SaveAsync(this);
         }
 
@@ -355,7 +353,7 @@ namespace Sushi.Mediakiwi.Data
         /// </summary>
         public void Delete()
         {
-            var connector = ConnectorFactory.CreateConnector<Component>(new ComponentMap(true));
+            var connector = ConnectorFactory.CreateConnector(new ComponentMap(true));
             connector.Delete(this);
         }
 
@@ -364,7 +362,7 @@ namespace Sushi.Mediakiwi.Data
         /// </summary>
         public async Task DeleteAsync()
         {
-            var connector = ConnectorFactory.CreateConnector<Component>(new ComponentMap(true));
+            var connector = ConnectorFactory.CreateConnector(new ComponentMap(true));
             await connector.DeleteAsync(this);
         }
 

@@ -1,18 +1,15 @@
-using System;
-using System.Linq;
-using System.Text.RegularExpressions;
-using System.Collections;
-using System.Data;
-using System.Collections.Generic;
-using System.Text;
-using System.Web;
-using Sushi.Mediakiwi.Data;
-using System.Net;
-using System.Net.Mail;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Primitives;
+using Sushi.Mediakiwi.Data;
 using Sushi.Mediakiwi.DataEntities;
-using Sushi.Mediakiwi.Beta.GeneratedCms.Source;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
+using System.Net.Mail;
+using System.Text;
+using System.Text.RegularExpressions;
 
 namespace Sushi.Mediakiwi.Framework
 {
@@ -20,7 +17,7 @@ namespace Sushi.Mediakiwi.Framework
     {
         public bool ShowInFullWidthMode { get; set; }
         internal string _FrameUrl;
-        public void AddFrameUrl(System.Uri uri, bool showInFullWidthMode)
+        public void AddFrameUrl(Uri uri, bool showInFullWidthMode)
         {
             this._FrameUrl = uri.ToString();
             this.ShowInFullWidthMode = showInFullWidthMode;
@@ -30,8 +27,8 @@ namespace Sushi.Mediakiwi.Framework
         internal StringBuilder _BodyAddition;
         internal BodyTarget _BodyTarget = BodyTarget.Below;
 
-        Sushi.Mediakiwi.Framework.WimComponentListRoot _instance;
-        public Body(Sushi.Mediakiwi.Framework.WimComponentListRoot instance)
+        WimComponentListRoot _instance;
+        public Body(WimComponentListRoot instance)
         {
             _instance = instance;
             this.Grid = new Grid(instance);
@@ -74,7 +71,7 @@ namespace Sushi.Mediakiwi.Framework
         /// <param name="hasScrolling">if set to <c>true</c> [has scrolling].</param>
         public void AddLayer(string url, LayerSize defaultSize, int? alternativeHeight = null, bool hasScrolling = true, bool hasIframe = true)
         {
-            var specs = new Sushi.Mediakiwi.Framework.Grid.LayerSpecification(defaultSize);
+            var specs = new Grid.LayerSpecification(defaultSize);
             specs.HasScrolling = hasScrolling;
             specs.InFrame = hasIframe;
             if (alternativeHeight.HasValue)
@@ -127,8 +124,8 @@ namespace Sushi.Mediakiwi.Framework
         ///   <c>true</c> if [disable default setup]; otherwise, <c>false</c>.
         /// </value>
         public bool DisableDefaultSetup { get; set; }
-        Sushi.Mediakiwi.Framework.WimComponentListRoot _instance;
-        public Filter(Sushi.Mediakiwi.Framework.WimComponentListRoot instance)
+        WimComponentListRoot _instance;
+        public Filter(WimComponentListRoot instance)
         {
             _instance = instance;
         }
@@ -136,8 +133,8 @@ namespace Sushi.Mediakiwi.Framework
 
     public class Navigation
     {
-        Sushi.Mediakiwi.Framework.WimComponentListRoot _instance;
-        public Navigation(Sushi.Mediakiwi.Framework.WimComponentListRoot instance)
+        WimComponentListRoot _instance;
+        public Navigation(WimComponentListRoot instance)
         {
             _instance = instance;
             this.Side = new SideNavigation(instance);
@@ -154,8 +151,8 @@ namespace Sushi.Mediakiwi.Framework
             Below
         }
 
-        Sushi.Mediakiwi.Framework.WimComponentListRoot _instance;
-        public SideNavigation(Sushi.Mediakiwi.Framework.WimComponentListRoot instance)
+        WimComponentListRoot _instance;
+        public SideNavigation(WimComponentListRoot instance)
         {
             _instance = instance;
         }
@@ -344,7 +341,7 @@ namespace Sushi.Mediakiwi.Framework
         /// </summary>
         /// <param name="button">The button.</param>
         /// <returns></returns>
-        public bool IsPrimairyAction(Framework.ContentListItem.ButtonAttribute button)
+        public bool IsPrimairyAction(ContentListItem.ButtonAttribute button)
         {
             if (button.IsPrimary)
             {
@@ -359,8 +356,8 @@ namespace Sushi.Mediakiwi.Framework
             return false;
         }
 
-        Sushi.Mediakiwi.Framework.WimComponentListRoot _instance;
-        public Form(Sushi.Mediakiwi.Framework.WimComponentListRoot instance)
+        WimComponentListRoot _instance;
+        public Form(WimComponentListRoot instance)
         {
             _instance = instance;
         }
@@ -378,7 +375,7 @@ namespace Sushi.Mediakiwi.Framework
         public string ClassName { get; set; }
 
 
-        Sushi.Mediakiwi.Framework.WimComponentListRoot _instance;
+        WimComponentListRoot _instance;
         public Table(WimComponentListRoot instance)
         {
             _instance = instance;
@@ -410,7 +407,7 @@ namespace Sushi.Mediakiwi.Framework
         internal bool _ClearGridBase = false;
         internal StringBuilder _GridAddition;
 
-        Sushi.Mediakiwi.Framework.WimComponentListRoot _instance;
+        WimComponentListRoot _instance;
         public Grid(WimComponentListRoot instance)
         {
             _instance = instance;
@@ -629,8 +626,8 @@ namespace Sushi.Mediakiwi.Framework
         internal StringBuilder _HeadAddition;
 
         WimComponentListRoot _root;
-        Sushi.Mediakiwi.Framework.WimComponentListRoot.PageData _instance;
-        public Head(Sushi.Mediakiwi.Framework.WimComponentListRoot.PageData instance, WimComponentListRoot root)
+        WimComponentListRoot.PageData _instance;
+        public Head(WimComponentListRoot.PageData instance, WimComponentListRoot root)
         {
             _root = root;
             _instance = instance;
@@ -643,8 +640,14 @@ namespace Sushi.Mediakiwi.Framework
         public void AddScript(string path, bool appendApplicationPath = true)
         {
             string _path = (appendApplicationPath) ? _root.AddApplicationPath(path) : path;
-            Add(string.Format(@"<script type=""text/javascript"" src=""{0}""></script>",
-                _path));
+
+            if (string.IsNullOrWhiteSpace(CommonConfiguration.FILE_VERSION))
+            {
+                Add($"<script type=\"text/javascript\" src=\"{_path}\"></script>");
+                return;
+            }
+
+            Add($"<script type=\"text/javascript\" src=\"{_path}?v={CommonConfiguration.FILE_VERSION}\"></script>");
         }
 
         /// <summary>
@@ -654,8 +657,9 @@ namespace Sushi.Mediakiwi.Framework
         /// <param name="appendApplicationPath">when false the application path will not be added to the path param</param>
         public void AddStyle(string path, bool appendApplicationPath = true)
         {
+            string fileVersion = CommonConfiguration.FILE_VERSION;
             string _path = (appendApplicationPath) ? _root.AddApplicationPath(path) : path;
-            Add(string.Format(@"<link rel=""stylesheet"" href=""{0}"" type=""text/css"" media=""all"" />", _path));
+            Add($"<link rel=\"stylesheet\" href=\"{_path}?v={fileVersion}\" type=\"text/css\" media=\"all\" />");
         }
 
         /// <summary>
@@ -706,14 +710,14 @@ namespace Sushi.Mediakiwi.Framework
     public class GridDataItemAttribute
     {
         /// <summary>
-        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// Returns a <see cref="string" /> that represents this instance.
         /// </summary>
         /// <param name="value">The value.</param>
         /// <param name="column">The column.</param>
         /// <returns>
-        /// A <see cref="System.String" /> that represents this instance.
+        /// A <see cref="string" /> that represents this instance.
         /// </returns>
-        public string ToString(object value, Framework.ListDataColumn column)
+        public string ToString(object value, ListDataColumn column)
         {
             string candidate = value == null ? string.Empty : value.ToString();
             
@@ -822,14 +826,14 @@ namespace Sushi.Mediakiwi.Framework
 
         string m_Attribute;
         /// <summary>
-        /// Gets or sets the <see cref="System.String"/> with the specified name.
+        /// Gets or sets the <see cref="string"/> with the specified name.
         /// </summary>
         /// <value>
-        /// The <see cref="System.String"/>.
+        /// The <see cref="string"/>.
         /// </value>
         /// <param name="name">The name.</param>
         /// <returns></returns>
-        /// <exception cref="System.Exception">
+        /// <exception cref="Exception">
         /// Please use the Style object
         /// or
         /// Please use the Style object
@@ -924,10 +928,10 @@ namespace Sushi.Mediakiwi.Framework
     public class StyleAttribute
     {
         /// <summary>
-        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// Returns a <see cref="string" /> that represents this instance.
         /// </summary>
         /// <returns>
-        /// A <see cref="System.String" /> that represents this instance.
+        /// A <see cref="string" /> that represents this instance.
         /// </returns>
         public override string ToString()
         {
@@ -967,10 +971,10 @@ namespace Sushi.Mediakiwi.Framework
 
         string m_Attribute;
         /// <summary>
-        /// Gets or sets the <see cref="System.String"/> with the specified name.
+        /// Gets or sets the <see cref="string"/> with the specified name.
         /// </summary>
         /// <value>
-        /// The <see cref="System.String"/>.
+        /// The <see cref="string"/>.
         /// </value>
         /// <param name="name">The name.</param>
         /// <returns></returns>
@@ -1171,8 +1175,8 @@ namespace Sushi.Mediakiwi.Framework
         }
         internal ListDataItemCreatedEventArgs DoListDataItemCreated(
             DataItemType type,
-            Framework.ListDataColumn[] columns,
-            Framework.ListDataColumn column,
+            ListDataColumn[] columns,
+            ListDataColumn column,
             object item,
             string itemKey,
             object propertyValue,
@@ -1356,7 +1360,7 @@ namespace Sushi.Mediakiwi.Framework
                         {
                             if (p.Name == item.ValidationProperty)
                             {
-                                bool isTrue = (Boolean)p.GetValue(sender, null);
+                                bool isTrue = (bool)p.GetValue(sender, null);
                                 if (!item.State)
                                     return !isTrue;
                                 return isTrue;
@@ -1368,7 +1372,7 @@ namespace Sushi.Mediakiwi.Framework
                             {
                                 if (p.Name == item.ValidationProperty)
                                 {
-                                    bool isTrue = (Boolean)p.GetValue(listContainer, null);
+                                    bool isTrue = (bool)p.GetValue(listContainer, null);
                                     if (!item.State)
                                         return !isTrue;
                                     return isTrue;
@@ -1411,7 +1415,7 @@ namespace Sushi.Mediakiwi.Framework
                         {
                             if (p.Name == item.ValidationProperty)
                             {
-                                bool isTrue = (Boolean)p.GetValue(sender, null);
+                                bool isTrue = (bool)p.GetValue(sender, null);
                                 if (!item.State)
                                     return !isTrue;
                                 return isTrue;
@@ -1423,7 +1427,7 @@ namespace Sushi.Mediakiwi.Framework
                             {
                                 if (p.Name == item.ValidationProperty)
                                 {
-                                    bool isTrue = (Boolean)p.GetValue(listContainer, null);
+                                    bool isTrue = (bool)p.GetValue(listContainer, null);
                                     if (!item.State)
                                         return !isTrue;
                                     return isTrue;
@@ -1461,7 +1465,7 @@ namespace Sushi.Mediakiwi.Framework
                         {
                             if (p.Name == item.ValidationProperty)
                             {
-                                bool isTrue = (Boolean)p.GetValue(sender, null);
+                                bool isTrue = (bool)p.GetValue(sender, null);
                                 if (!item.State)
                                     return !isTrue;
                                 return isTrue;
@@ -1473,7 +1477,7 @@ namespace Sushi.Mediakiwi.Framework
                             {
                                 if (p.Name == item.ValidationProperty)
                                 {
-                                    bool isTrue = (Boolean)p.GetValue(listContainer, null);
+                                    bool isTrue = (bool)p.GetValue(listContainer, null);
                                     if (!item.State)
                                         return !isTrue;
                                     return isTrue;
@@ -1866,33 +1870,33 @@ namespace Sushi.Mediakiwi.Framework
         }
 
 
-        private Sushi.Mediakiwi.Data.IComponentList m_currentList;
+        private IComponentList m_currentList;
         /// <summary>
         /// Gets or sets the current list.
         /// </summary>
         /// <value>The current list.</value>
-        public Sushi.Mediakiwi.Data.IComponentList CurrentList
+        public IComponentList CurrentList
         {
             set { m_currentList = value; }
             get {
                 if (m_currentList == null && Context != null)
-                    m_currentList = Sushi.Mediakiwi.Data.ComponentList.SelectOne(Utility.ConvertToInt(Context.Request.Query["list"]));
+                    m_currentList = ComponentList.SelectOne(Utility.ConvertToInt(Context.Request.Query["list"]));
                 return m_currentList; 
             }
         }
 
-        private Sushi.Mediakiwi.Data.Dashboard m_currentDashboard;
+        private Dashboard m_currentDashboard;
         /// <summary>
         /// Gets or sets the current dashboard.
         /// </summary>
         /// <value>The current list.</value>
-        public Sushi.Mediakiwi.Data.Dashboard CurrentDashboard
+        public Dashboard CurrentDashboard
         {
             set { m_currentDashboard = value; }
             get
             {
                 if (m_currentDashboard == null && Context != null)
-                    m_currentDashboard = Sushi.Mediakiwi.Data.Dashboard.SelectOne(Utility.ConvertToInt(Context.Request.Query["dashboard"]));
+                    m_currentDashboard = Dashboard.SelectOne(Utility.ConvertToInt(Context.Request.Query["dashboard"]));
                 return m_currentDashboard;
             }
         }
@@ -1920,7 +1924,7 @@ namespace Sushi.Mediakiwi.Framework
         /// <value>
         /// The property list ignore list.
         /// </value>
-        public Sushi.Mediakiwi.Data.Property[] PropertyListIgnoreList { get; set; }
+        public Property[] PropertyListIgnoreList { get; set; }
 
         /// <summary>
         /// Gets or sets the pass over class instance.
@@ -2040,14 +2044,14 @@ namespace Sushi.Mediakiwi.Framework
         /// Gets or sets the current environment.
         /// </summary>
         /// <value>The current environment.</value>
-        public Sushi.Mediakiwi.Data.IEnvironment CurrentEnvironment { get; set; }
+        public IEnvironment CurrentEnvironment { get; set; }
 
-        private Sushi.Mediakiwi.Data.IApplicationRole m_CurrentApplicationUserRole;
+        private IApplicationRole m_CurrentApplicationUserRole;
         /// <summary>
         /// Gets or sets the current user role.
         /// </summary>
         /// <value>The current user role.</value>
-        public Sushi.Mediakiwi.Data.IApplicationRole CurrentApplicationUserRole
+        public IApplicationRole CurrentApplicationUserRole
         {
             set { m_CurrentApplicationUserRole = value; }
             get { return m_CurrentApplicationUserRole; }
@@ -2067,10 +2071,10 @@ namespace Sushi.Mediakiwi.Framework
         /// Gets or sets the current application user.
         /// </summary>
         /// <value>The current application user.</value>
-        public Sushi.Mediakiwi.Data.IApplicationUser CurrentApplicationUser
+        public IApplicationUser CurrentApplicationUser
         {
             get {
-                var candidate = Context.Items["wim.applicationuser"] as Sushi.Mediakiwi.Data.IApplicationUser;
+                var candidate = Context.Items["wim.applicationuser"] as IApplicationUser;
                 return candidate;
             }
             set { Context.Items["wim.applicationuser"] = value; }
@@ -2094,11 +2098,11 @@ namespace Sushi.Mediakiwi.Framework
             }
         }
 
-        private Sushi.Mediakiwi.Data.Site m_CurrentSite;
+        private Site m_CurrentSite;
         /// <summary>
         /// The current site in which this list is viewed.
         /// </summary>
-        public Sushi.Mediakiwi.Data.Site CurrentSite
+        public Site CurrentSite
         {
             set { m_CurrentSite = value; }
             get { return m_CurrentSite; }
@@ -2372,7 +2376,7 @@ namespace Sushi.Mediakiwi.Framework
         /// <param name="ID">The ID.</param>
         public void AddTab(Guid ID)
         {
-            var list = Sushi.Mediakiwi.Data.ComponentList.SelectOne(ID);
+            var list = ComponentList.SelectOne(ID);
             AddTab(list);
         }
 
@@ -2383,7 +2387,7 @@ namespace Sushi.Mediakiwi.Framework
         /// <param name="selectionID">The selection ID.</param>
         public void AddTab(Guid ID, int selectionID)
         {
-            var list = Sushi.Mediakiwi.Data.ComponentList.SelectOne(ID);
+            var list = ComponentList.SelectOne(ID);
             AddTab(list, selectionID);
         }
 
@@ -2391,9 +2395,9 @@ namespace Sushi.Mediakiwi.Framework
         /// Adds the tab.
         /// </summary>
         /// <param name="type">The type.</param>
-        public void AddTab(System.Type type)
+        public void AddTab(Type type)
         {
-            var list = Sushi.Mediakiwi.Data.ComponentList.SelectOne(type.ToString());
+            var list = ComponentList.SelectOne(type.ToString());
             AddTab(list);
         }
 
@@ -2402,9 +2406,9 @@ namespace Sushi.Mediakiwi.Framework
         /// </summary>
         /// <param name="type">The type.</param>
         /// <param name="selectionID">The selection ID.</param>
-        public void AddTab(System.Type type, int selectionID)
+        public void AddTab(Type type, int selectionID)
         {
-            var list = Sushi.Mediakiwi.Data.ComponentList.SelectOne(type.ToString());
+            var list = ComponentList.SelectOne(type.ToString());
             AddTab(list, selectionID);
         }
 
@@ -2414,9 +2418,9 @@ namespace Sushi.Mediakiwi.Framework
         /// <param name="type">The type.</param>
         /// <param name="selectionID">The selection identifier.</param>
         /// <param name="count">The count.</param>
-        public void AddTab(System.Type type, int selectionID, int? count)
+        public void AddTab(Type type, int selectionID, int? count)
         {
-            var list = Sushi.Mediakiwi.Data.ComponentList.SelectOne(type.ToString());
+            var list = ComponentList.SelectOne(type.ToString());
             AddTab(list.Name, list, selectionID, count);
         }
 
@@ -2426,9 +2430,9 @@ namespace Sushi.Mediakiwi.Framework
         /// <param name="type">The type.</param>
         /// <param name="title">The title.</param>
         /// <param name="selectionID">The selection ID.</param>
-        public void AddTab(System.Type type, string title, int selectionID)
+        public void AddTab(Type type, string title, int selectionID)
         {
-            var list = Sushi.Mediakiwi.Data.ComponentList.SelectOne(type.ToString());
+            var list = ComponentList.SelectOne(type.ToString());
             AddTab(title, list, selectionID);
         }
 
@@ -2438,9 +2442,9 @@ namespace Sushi.Mediakiwi.Framework
         /// <param name="id">The id.</param>
         /// <param name="title">The title.</param>
         /// <param name="selectionID">The selection ID.</param>
-        public void AddTab(System.Guid id, string title, int selectionID)
+        public void AddTab(Guid id, string title, int selectionID)
         {
-            var list = Sushi.Mediakiwi.Data.ComponentList.SelectOne(id);
+            var list = ComponentList.SelectOne(id);
             AddTab(title, list, selectionID);
         }
 
@@ -2449,7 +2453,7 @@ namespace Sushi.Mediakiwi.Framework
         /// Adds the tab. These should be added in the ListLoad event
         /// </summary>
         /// <param name="list">The list.</param>
-        public void AddTab(Data.IComponentList list)
+        public void AddTab(IComponentList list)
         {
             AddTab(list.Name, list, 0);
         }
@@ -2459,7 +2463,7 @@ namespace Sushi.Mediakiwi.Framework
         /// </summary>
         /// <param name="list">The list.</param>
         /// <param name="selectedItem">The selected item.</param>
-        public void AddTab(Data.IComponentList list, int selectedItem)
+        public void AddTab(IComponentList list, int selectedItem)
         {
             AddTab(list.Name, list, selectedItem);
         }
@@ -2469,7 +2473,7 @@ namespace Sushi.Mediakiwi.Framework
         /// </summary>
         /// <param name="title">The title.</param>
         /// <param name="list">The list.</param>
-        public void AddTab(string title, Data.IComponentList list)
+        public void AddTab(string title, IComponentList list)
         {
             AddTab(title, list, 0);
         }
@@ -2480,7 +2484,7 @@ namespace Sushi.Mediakiwi.Framework
         /// <param name="title">The title.</param>
         /// <param name="list">The list.</param>
         /// <param name="selectedItem">The selected item.</param>
-        public void AddTab(string title, Data.IComponentList list, int selectedItem)
+        public void AddTab(string title, IComponentList list, int selectedItem)
         {
             AddTab(title, list, selectedItem, null);
         }
@@ -2492,7 +2496,7 @@ namespace Sushi.Mediakiwi.Framework
         /// <param name="list">The list.</param>
         /// <param name="selectedItem">The selected item.</param>
         /// <param name="count">The count.</param>
-        public void AddTab(string title, Data.IComponentList list, int selectedItem, int? count)
+        public void AddTab(string title, IComponentList list, int selectedItem, int? count)
         {
             if (!list.HasRoleAccess(this.CurrentApplicationUser))
                 return;
@@ -2802,7 +2806,7 @@ namespace Sushi.Mediakiwi.Framework
             /// <value>
             /// The type of the data bind.
             /// </value>
-            public System.Type DataBindTemplate { get; set; }
+            public Type DataBindTemplate { get; set; }
 
             //internal bool IsAsyncRequest;
             //internal bool? _IsDataBind;
@@ -3220,7 +3224,7 @@ namespace Sushi.Mediakiwi.Framework
                 m_Root = root;
             }
 
-            Sushi.Mediakiwi.Data.Content m_Content;
+            Content m_Content;
             /// <summary>
             /// Gets the filter field.
             /// </summary>
@@ -3230,7 +3234,7 @@ namespace Sushi.Mediakiwi.Framework
             {
                 if (string.IsNullOrEmpty(m_Root.CurrentVisitor.Data.Serialized)) return new Field();
                 if (m_Content == null)
-                    m_Content = Sushi.Mediakiwi.Data.Content.GetDeserialized(m_Root.CurrentVisitor.Data["wim_FilterInfo"].Value);
+                    m_Content = Content.GetDeserialized(m_Root.CurrentVisitor.Data["wim_FilterInfo"].Value);
                 if (m_Content == null) return new Field();
 
                 return m_Content[property];
@@ -3246,7 +3250,7 @@ namespace Sushi.Mediakiwi.Framework
                 //m_Root.CurrentVisitor.Data.Apply("wim_FilterInfo", 
                 //if (string.IsNullOrEmpty(m_Root.CurrentVisitor.Data.Serialized)) return new Content.Field();
                 if (m_Content == null)
-                    m_Content = Sushi.Mediakiwi.Data.Content.GetDeserialized(m_Root.CurrentVisitor.Data["wim_FilterInfo"].Value);
+                    m_Content = Content.GetDeserialized(m_Root.CurrentVisitor.Data["wim_FilterInfo"].Value);
                 if (m_Content == null)
                     m_Content = new Content();
 
@@ -3268,7 +3272,7 @@ namespace Sushi.Mediakiwi.Framework
                     m_Content[property].Property = property;
                     m_Content[property].Value = value == null ? null : value.ToString();
                 }
-                m_Root.CurrentVisitor.Data.Apply("wim_FilterInfo", Sushi.Mediakiwi.Data.Content.GetSerialized(m_Content));
+                m_Root.CurrentVisitor.Data.Apply("wim_FilterInfo", Content.GetSerialized(m_Content));
             }
 
             public void ClearFilter()
@@ -3284,7 +3288,7 @@ namespace Sushi.Mediakiwi.Framework
             /// <param name="isVisible">if set to <c>true</c> [is visible].</param>
             /// <param name="isEditable">if set to <c>true</c> [is editable].</param>
             /// <param name="contentInfo">The content info.</param>
-            public void AddElement(Object sender, string property, bool isVisible, bool isEditable, IContentInfo contentInfo)
+            public void AddElement(object sender, string property, bool isVisible, bool isEditable, IContentInfo contentInfo)
             {
                 AddElement(sender, property, isVisible, isEditable, contentInfo, null, false);
             }
@@ -3298,7 +3302,7 @@ namespace Sushi.Mediakiwi.Framework
             /// <param name="isEditable">if set to <c>true</c> [is editable].</param>
             /// <param name="contentInfo">The content info.</param>
             /// <param name="value">The value.</param>
-            public void AddElement(Object sender, string property, bool isVisible, bool isEditable, IContentInfo contentInfo, object value)
+            public void AddElement(object sender, string property, bool isVisible, bool isEditable, IContentInfo contentInfo, object value)
             {
                 AddElement(sender, property, isVisible, isEditable, contentInfo, value, true);
             }
@@ -3310,7 +3314,7 @@ namespace Sushi.Mediakiwi.Framework
             /// <param name="property">The property.</param>
             /// <param name="value">The value.</param>
             /// <param name="valueIsSet">if set to <c>true</c> [value is set].</param>
-            public void AddElement(Object sender, Sushi.Mediakiwi.Data.Property property, object value, bool valueIsSet)
+            public void AddElement(object sender, Property property, object value, bool valueIsSet)
             {
                 bool isEditable = !property.IsOnlyRead;
 
@@ -3319,12 +3323,12 @@ namespace Sushi.Mediakiwi.Framework
 
                 if (m_Root.m_infoList == null)
                 {
-                    m_Root.m_infoList = new List<Sushi.Mediakiwi.Beta.GeneratedCms.Source.Component.ListInfoItem>();
+                    m_Root.m_infoList = new List<Beta.GeneratedCms.Source.Component.ListInfoItem>();
                     if (this.CustomDataInstance == null)
                         this.CustomDataInstance = new CustomData();
                 }
 
-                Sushi.Mediakiwi.Beta.GeneratedCms.Source.Component.ListInfoItem tmp = new Sushi.Mediakiwi.Beta.GeneratedCms.Source.Component.ListInfoItem();
+                Beta.GeneratedCms.Source.Component.ListInfoItem tmp = new Beta.GeneratedCms.Source.Component.ListInfoItem();
                 //tmp.ContentAttribute = contentInfo;
                 tmp.SenderInstance = sender;
 
@@ -3367,7 +3371,7 @@ namespace Sushi.Mediakiwi.Framework
             /// <param name="contentInfo">The content info.</param>
             /// <param name="value">The value.</param>
             /// <param name="valueIsSet">if set to <c>true</c> [value is set].</param>
-            public void AddElement(Object sender, string property, bool isVisible, bool isEditable, IContentInfo contentInfo, object value, bool valueIsSet)
+            public void AddElement(object sender, string property, bool isVisible, bool isEditable, IContentInfo contentInfo, object value, bool valueIsSet)
             {
                 if (!m_Root.IsEditMode)
                     isEditable = false;
@@ -3377,12 +3381,12 @@ namespace Sushi.Mediakiwi.Framework
 
                 if (m_Root.m_infoList == null)
                 {
-                    m_Root.m_infoList = new List<Sushi.Mediakiwi.Beta.GeneratedCms.Source.Component.ListInfoItem>();
+                    m_Root.m_infoList = new List<Beta.GeneratedCms.Source.Component.ListInfoItem>();
                     if (this.CustomDataInstance == null)
                         this.CustomDataInstance = new CustomData();
                 }
 
-                Sushi.Mediakiwi.Beta.GeneratedCms.Source.Component.ListInfoItem tmp = new Sushi.Mediakiwi.Beta.GeneratedCms.Source.Component.ListInfoItem();
+                Beta.GeneratedCms.Source.Component.ListInfoItem tmp = new Beta.GeneratedCms.Source.Component.ListInfoItem();
                 tmp.ContentAttribute = contentInfo;
                 tmp.SenderInstance = sender;
                 
@@ -3420,7 +3424,7 @@ namespace Sushi.Mediakiwi.Framework
             /// <param name="sender">The sender.</param>
             /// <param name="property">The property.</param>
             /// <returns></returns>
-            public CustomDataItem GetValue(Object sender, string property)
+            public CustomDataItem GetValue(object sender, string property)
             {
                 if (CustomDataInstance != null && CustomDataInstance.HasProperty(property))
                     return CustomDataInstance[property];
@@ -3475,9 +3479,9 @@ namespace Sushi.Mediakiwi.Framework
             /// Gets or sets the list item element list.
             /// </summary>
             /// <value>The list item element list.</value>
-            public List<Sushi.Mediakiwi.Beta.GeneratedCms.Source.Component.ListInfoItem> ListItemElementList { get; set; }
+            public List<Beta.GeneratedCms.Source.Component.ListInfoItem> ListItemElementList { get; set; }
 
-            System.Collections.Generic.Dictionary<string, object> m_TranslationValues;
+            Dictionary<string, object> m_TranslationValues;
             bool m_ShowTranslationData;
             internal bool m_ShowTranslationDataStart;
             internal bool ShowTranslationData {
@@ -3545,7 +3549,7 @@ namespace Sushi.Mediakiwi.Framework
             public void AddTextElement(string property, string title, int maxLength, bool isMandatory, bool isEditable, InputType inputType, string interactiveHelp, object sender)
             {
                 IContentInfo info = null;
-                info = new Sushi.Mediakiwi.Framework.ContentListItem.TextFieldAttribute(title, maxLength) { TextType = inputType }; 
+                info = new ContentListItem.TextFieldAttribute(title, maxLength) { TextType = inputType }; 
                 if (info == null) return;
 
                 AddElement(sender, property, true, isEditable, info);
@@ -3561,7 +3565,7 @@ namespace Sushi.Mediakiwi.Framework
             public void AddInfoElement(string property, string title, string value)
             {
                 IContentInfo info = null;
-                info = new Sushi.Mediakiwi.Framework.ContentListItem.TextLineAttribute(title);
+                info = new ContentListItem.TextLineAttribute(title);
                 if (info == null) return;
 
                 AddElement(null, property, true, true, info, value, true);
@@ -3571,7 +3575,7 @@ namespace Sushi.Mediakiwi.Framework
             /// Gets or sets the custom data.
             /// </summary>
             /// <value>The custom data.</value>
-            public Data.CustomData CustomDataInstance { get; set; }
+            public CustomData CustomDataInstance { get; set; }
 
             public void ApplyCustomDataInstance(System.Xml.Linq.XElement element)
             {
@@ -3582,7 +3586,7 @@ namespace Sushi.Mediakiwi.Framework
 
         }
         
-        internal List<Sushi.Mediakiwi.Beta.GeneratedCms.Source.Component.ListInfoItem> m_infoList;
+        internal List<Beta.GeneratedCms.Source.Component.ListInfoItem> m_infoList;
 
 
         /// <summary>
@@ -3638,7 +3642,7 @@ namespace Sushi.Mediakiwi.Framework
             public GridInstance()
             { }
 
-            public void ApplyListDataColumns(Sushi.Mediakiwi.Framework.ListDataColumns listDataColumns)
+            public void ApplyListDataColumns(ListDataColumns listDataColumns)
             {
                 m_ListDataColumns = new ListDataColumns();
                 ListDataColumn[] arr = new ListDataColumn[listDataColumns.List.Count];
@@ -3653,11 +3657,11 @@ namespace Sushi.Mediakiwi.Framework
             internal bool m_IsLinqUsed;
             internal int m_ListDataRecordCount;
             internal int m_ListDataRecordPageCount;
-            internal Sushi.Mediakiwi.Framework.ListDataColumns m_ListDataColumns;
+            internal ListDataColumns m_ListDataColumns;
             internal string m_DataTitle;
         }
 
-        private Sushi.Mediakiwi.Framework.ListDataColumns m_ListDataColumnsBackup;
+        private ListDataColumns m_ListDataColumnsBackup;
         /// <summary>
         /// Set the backup grid for when having multiple grids.
         /// </summary>
@@ -3731,17 +3735,17 @@ namespace Sushi.Mediakiwi.Framework
             }
         }
 
-        private Sushi.Mediakiwi.Framework.ListDataColumns m_ListDataColumns;
+        private ListDataColumns m_ListDataColumns;
         /// <summary>
         /// The columns that are used in the search result
         /// </summary>
-        public Sushi.Mediakiwi.Framework.ListDataColumns ListDataColumns
+        public ListDataColumns ListDataColumns
         {
             set { m_ListDataColumns = value; }
             get
             {
                 if (m_ListDataColumns == null)
-                    m_ListDataColumns = new Sushi.Mediakiwi.Framework.ListDataColumns();
+                    m_ListDataColumns = new ListDataColumns();
                 return m_ListDataColumns;
             }
         }
@@ -3750,7 +3754,7 @@ namespace Sushi.Mediakiwi.Framework
         /// <summary>
         /// The search result. Add columns by using ListDataColumns.Add
         /// </summary>
-        //[Obsolete("[20120715:MM] Please use ListDataApply", false)]
+        [Obsolete("[20120715:MM] Please use ListDataAdd", false)]
         internal IList ListData { get; set; }
 
         internal bool m_IsListDataScrollable;
@@ -3774,7 +3778,7 @@ namespace Sushi.Mediakiwi.Framework
         /// <param name="source">The source.</param>
         public void ListDataAdd<T>(IEnumerable<T> source)
         {
-            ListDataAdd<T>(source, null);
+            ListDataAdd(source, null);
         }
 
         /// <summary>
@@ -3797,7 +3801,7 @@ namespace Sushi.Mediakiwi.Framework
             grid.m_IsLinqUsed = true;
             grid.m_ListDataRecordCount = GridDataCommunication.ResultCount.HasValue ? GridDataCommunication.ResultCount.Value : source.Count();
 
-            grid.m_ListDataRecordPageCount = grid.m_ListDataRecordCount == 0 ? 0 : Convert.ToInt32(decimal.Ceiling(((Decimal)grid.m_ListDataRecordCount / (Decimal)step)));
+            grid.m_ListDataRecordPageCount = grid.m_ListDataRecordCount == 0 ? 0 : Convert.ToInt32(decimal.Ceiling(((decimal)grid.m_ListDataRecordCount / (decimal)step)));
 
             if (!GridDataCommunication.ResultCount.HasValue)
             {
@@ -3839,7 +3843,7 @@ namespace Sushi.Mediakiwi.Framework
         /// <param name="source">The source.</param>
         public void ListDataApply<T>(IEnumerable<T> source)
         {
-            ListDataApply<T>(source, null);
+            ListDataApply(source, null);
         }
 
         /// <summary>
@@ -3850,7 +3854,7 @@ namespace Sushi.Mediakiwi.Framework
         /// <param name="isScrollable">if set to <c>true</c> [is scrollable].</param>
         public void ListDataApply<T>(IEnumerable<T> source, bool isScrollable)
         {
-            ListDataApply<T>(source, null, isScrollable);
+            ListDataApply(source, null, isScrollable);
         }
 
         /// <summary>
@@ -3861,7 +3865,7 @@ namespace Sushi.Mediakiwi.Framework
         /// <param name="title">The title.</param>
         public void ListDataApply<T>(IEnumerable<T> source, string title)
         {
-            ListDataApply<T>(source, title, false);
+            ListDataApply(source, title, false);
         }
 
         /// <summary>
@@ -3885,7 +3889,7 @@ namespace Sushi.Mediakiwi.Framework
 
             this.m_ListDataRecordCount = GridDataCommunication.ResultCount.HasValue ? GridDataCommunication.ResultCount.Value : source.Count();
 
-            this.m_ListDataRecordPageCount = this.m_ListDataRecordCount == 0 ? 0 : Convert.ToInt32(decimal.Ceiling(((Decimal)this.m_ListDataRecordCount / (Decimal)step)));
+            this.m_ListDataRecordPageCount = this.m_ListDataRecordCount == 0 ? 0 : Convert.ToInt32(decimal.Ceiling(((decimal)this.m_ListDataRecordCount / (decimal)step)));
 
             if (!GridDataCommunication.ResultCount.HasValue)
             {
@@ -3924,7 +3928,7 @@ namespace Sushi.Mediakiwi.Framework
         /// <param name="source">The source.</param>
         public void ListDataApply<T>(IQueryable<T> source)
         {
-            ListDataApply<T>(source, null);
+            ListDataApply(source, null);
         }
 
         /// <summary>
@@ -3944,7 +3948,7 @@ namespace Sushi.Mediakiwi.Framework
             this.m_DataTitle = title;
             this.m_IsLinqUsed = true;
             this.m_ListDataRecordCount = source.Count();
-            this.m_ListDataRecordPageCount = this.m_ListDataRecordCount == 0 ? 0 : Convert.ToInt32(decimal.Ceiling(((Decimal)this.m_ListDataRecordCount / (Decimal)step)));
+            this.m_ListDataRecordPageCount = this.m_ListDataRecordCount == 0 ? 0 : Convert.ToInt32(decimal.Ceiling(((decimal)this.m_ListDataRecordCount / (decimal)step)));
 
             int page = CurrentPage - 1;
             if (page < 0)
@@ -3972,7 +3976,7 @@ namespace Sushi.Mediakiwi.Framework
         /// <param name="source">The source.</param>
         public void ListDataAdd<T>(IQueryable<T> source)
         {
-            ListDataAdd<T>(source, null);
+            ListDataAdd(source, null);
         }
 
         /// <summary>
@@ -3996,7 +4000,7 @@ namespace Sushi.Mediakiwi.Framework
             grid.m_DataTitle = title;
             grid.m_IsLinqUsed = true;
             grid.m_ListDataRecordCount = source.Count();
-            grid.m_ListDataRecordPageCount = this.m_ListDataRecordCount == 0 ? 0 : Convert.ToInt32(decimal.Ceiling(((Decimal)grid.m_ListDataRecordCount / (Decimal)step)));
+            grid.m_ListDataRecordPageCount = this.m_ListDataRecordCount == 0 ? 0 : Convert.ToInt32(decimal.Ceiling(((decimal)grid.m_ListDataRecordCount / (decimal)step)));
 
             int page = CurrentPage - 1;
             if (page < 0)
@@ -4063,13 +4067,13 @@ namespace Sushi.Mediakiwi.Framework
         [Obsolete("This is not valid any more in mediakiwi", false)]
         public string ListDataClassNamePropertyValue { get; set; }
         
-        private List<String> m_ResetValueList;
+        private List<string> m_ResetValueList;
         /// <summary>
         /// These properties will be reset after the initial content has been applied. This can be used for dropdown dependency, et al.
         /// Applied values are the names of the properties.
         /// NOTE: This doesn't change values for OnSave and should be used for AutoPostback (dropdownlist) and Custom action buttons.
         /// </summary>
-        public List<String> ListDataDependendProperties
+        public List<string> ListDataDependendProperties
         {
             set
             {
@@ -4727,12 +4731,12 @@ namespace Sushi.Mediakiwi.Framework
             get { return m_ForceLoad; }
         }
 
-        internal Sushi.Mediakiwi.Data.Folder m_CurrentFolder;
+        internal Folder m_CurrentFolder;
         /// <summary>
         /// Gets the current folder.
         /// </summary>
         /// <value>The current folder.</value>
-        public Sushi.Mediakiwi.Data.Folder CurrentFolder
+        public Folder CurrentFolder
         {
             get {
                 try
@@ -4746,7 +4750,7 @@ namespace Sushi.Mediakiwi.Framework
                             int page = Utility.ConvertToInt(Context.Request.Query["page"]);
                             if (page > 0)
                             {
-                                Sushi.Mediakiwi.Data.Page pageInstance = Sushi.Mediakiwi.Data.Page.SelectOne(page, false);
+                                Page pageInstance = Mediakiwi.Data.Page.SelectOne(page, false);
 
                                 //if (pageInstance.FolderID == 0)
                                 //{
@@ -4758,11 +4762,11 @@ namespace Sushi.Mediakiwi.Framework
                                 return m_CurrentFolder;
                             }
 
-                            Data.Folder folderEntity = null;
+                            Folder folderEntity = null;
 
                             if (!string.IsNullOrEmpty(Context.Request.Query["gallery"]))
                             {
-                                Sushi.Mediakiwi.Data.Gallery gallery = Sushi.Mediakiwi.Data.Gallery
+                                Gallery gallery = Gallery
                                     .Identify(Context.Request.Query["gallery"]);
 
                                 if (!(gallery == null || gallery.ID == 0))
@@ -4782,13 +4786,13 @@ namespace Sushi.Mediakiwi.Framework
                             {
                                 int galleryId = 0;
 
-                                Sushi.Mediakiwi.Data.Asset asset = Sushi.Mediakiwi.Data.Asset.SelectOne(Utility.ConvertToInt(Context.Request.Query["asset"]));
+                                Asset asset = Asset.SelectOne(Utility.ConvertToInt(Context.Request.Query["asset"]));
                                 if (!(asset == null || asset.ID == 0))
                                     galleryId = asset.GalleryID;
 
                                 if (galleryId > 0)
                                 {
-                                    Sushi.Mediakiwi.Data.Gallery gallery = Sushi.Mediakiwi.Data.Gallery.SelectOne(galleryId);
+                                    Gallery gallery = Gallery.SelectOne(galleryId);
                                     if (!(gallery == null || gallery.ID == 0))
                                     {
                                         folderEntity = new Folder();
@@ -4802,7 +4806,7 @@ namespace Sushi.Mediakiwi.Framework
                             else if (this.Console.ItemType == RequestItemType.Undefined && this.CurrentList.FolderID.HasValue)
                             {
                                 if (this.CurrentList.Target == ComponentListTarget.List)
-                                    folderEntity = Sushi.Mediakiwi.Data.Folder.SelectOneChild(this.CurrentList.FolderID.Value, this.CurrentSite.ID);
+                                    folderEntity = Folder.SelectOneChild(this.CurrentList.FolderID.Value, this.CurrentSite.ID);
                                 else
                                     folder = this.CurrentList.FolderID.Value;
                             }
@@ -4810,13 +4814,13 @@ namespace Sushi.Mediakiwi.Framework
                             {
                                 int galleryId = 0;
 
-                                Sushi.Mediakiwi.Data.Asset asset = Sushi.Mediakiwi.Data.Asset.SelectOne(Utility.ConvertToInt(Context.Request.Query["asset"]));
+                                Asset asset = Asset.SelectOne(Utility.ConvertToInt(Context.Request.Query["asset"]));
                                 if (!(asset == null || asset.ID == 0))
                                     galleryId = asset.GalleryID;
 
                                 if (galleryId > 0)
                                 {
-                                    Sushi.Mediakiwi.Data.Gallery gallery = Sushi.Mediakiwi.Data.Gallery.SelectOne(galleryId);
+                                    Gallery gallery = Gallery.SelectOne(galleryId);
                                     if (!(gallery == null || gallery.ID == 0))
                                     {
                                         folderEntity = new Folder();
@@ -4852,20 +4856,20 @@ namespace Sushi.Mediakiwi.Framework
                                             break;
 
                                         case 1:
-                                            folderEntity = Sushi.Mediakiwi.Data.Folder.SelectOneBySite(this.CurrentSite.ID, Sushi.Mediakiwi.Data.FolderType.Page);
+                                            folderEntity = Folder.SelectOneBySite(this.CurrentSite.ID, FolderType.Page);
                                             break;
                                         case 2:
-                                            folderEntity = Sushi.Mediakiwi.Data.Folder.SelectOneBySite(this.CurrentSite.ID, Sushi.Mediakiwi.Data.FolderType.List);
+                                            folderEntity = Folder.SelectOneBySite(this.CurrentSite.ID, FolderType.List);
                                             break;
                                         case 3:
-                                            Sushi.Mediakiwi.Data.Gallery gallery = Sushi.Mediakiwi.Data.Gallery.SelectOneRoot();
+                                            Gallery gallery = Gallery.SelectOneRoot();
                                             folderEntity = new Folder();
                                             folderEntity.ID = gallery.ID;
                                             folderEntity.Name = gallery.Name;
                                             folderEntity.Type = FolderType.Gallery;
                                             break;
                                         case 4:
-                                            folderEntity = Sushi.Mediakiwi.Data.Folder.SelectOneBySite(this.CurrentSite.ID, Sushi.Mediakiwi.Data.FolderType.Administration);
+                                            folderEntity = Folder.SelectOneBySite(this.CurrentSite.ID, FolderType.Administration);
                                             break;
 
                                     }
@@ -4877,7 +4881,7 @@ namespace Sushi.Mediakiwi.Framework
                             }
                         }
                         if (folder > 0)
-                            m_CurrentFolder = Sushi.Mediakiwi.Data.Folder.SelectOne(folder);
+                            m_CurrentFolder = Folder.SelectOne(folder);
 
                     }
                     return m_CurrentFolder;

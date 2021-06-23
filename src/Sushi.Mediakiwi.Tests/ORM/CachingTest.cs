@@ -1,11 +1,9 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Sushi.Mediakiwi.Data.MicroORM;
 using Sushi.Mediakiwi.Data;
+using Sushi.Mediakiwi.Data.MicroORM;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Sushi.Mediakiwi.Tests.ORM
 {
@@ -121,7 +119,7 @@ namespace Sushi.Mediakiwi.Tests.ORM
 
             //run a delete command on the entity 'Page'
             //this will not delete anything in DB, but still will trigger a flush
-            var connector = ConnectorFactory.CreateConnector<Page>(new Page.PageMap(true));
+            var connector = ConnectorFactory.CreateConnector(new Page.PageMap(true));
             var filter = connector.CreateDataFilter();
             filter.Add(x => x.ID, -1);
             connector.Delete(filter);
@@ -144,7 +142,7 @@ namespace Sushi.Mediakiwi.Tests.ORM
 
             //run a delete command on the entity 'Page'
             //this will not delete anything in DB, but still will trigger a flush
-            var connector = ConnectorFactory.CreateConnector<Page>(new Page.PageMap(true));
+            var connector = ConnectorFactory.CreateConnector(new Page.PageMap(true));
             var filter = connector.CreateDataFilter();
             filter.Add(x => x.ID, -1);
             await connector.DeleteAsync(filter);

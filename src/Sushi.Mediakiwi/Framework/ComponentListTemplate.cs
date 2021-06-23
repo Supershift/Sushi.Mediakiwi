@@ -1,12 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Linq.Expressions;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Sushi.Mediakiwi.Data;
 using Sushi.Mediakiwi.UI;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Sushi.Mediakiwi.Framework
 {
@@ -28,7 +25,7 @@ namespace Sushi.Mediakiwi.Framework
         public int Count
         {
             get {
-                return this.List.Count;
+                return List.Count;
             }
         }
 
@@ -115,7 +112,7 @@ namespace Sushi.Mediakiwi.Framework
         /// <param name="componentlistGUID">The componentlist GUID.</param>
         /// <param name="site">The site.</param>
         /// <returns></returns>
-        public bool ApplyContent(Guid componentlistGUID, Sushi.Mediakiwi.Data.Site site)
+        public bool ApplyContent(Guid componentlistGUID, Site site)
         {
             return ApplyContent(componentlistGUID, site, true);
         }
@@ -138,8 +135,8 @@ namespace Sushi.Mediakiwi.Framework
                 return false;
             }
 
-            Sushi.Mediakiwi.Data.IComponentList list = Sushi.Mediakiwi.Data.ComponentList.SelectOne(componentlistGUID);
-            Sushi.Mediakiwi.Data.ComponentListVersion version = Sushi.Mediakiwi.Data.ComponentListVersion.SelectOne(list.ID, site.ID);
+            IComponentList list = ComponentList.SelectOne(componentlistGUID);
+            ComponentListVersion version = ComponentListVersion.SelectOne(list.ID, site.ID);
             if (version == null)
             {
                 if (!exceptionAvoided)
@@ -147,7 +144,7 @@ namespace Sushi.Mediakiwi.Framework
                 return false;
             }
 
-            Sushi.Mediakiwi.Framework.Templates.PropertySet pset = new Sushi.Mediakiwi.Framework.Templates.PropertySet();
+            Templates.PropertySet pset = new Templates.PropertySet();
             pset.SetValue(site, this, version.Content, null);
             return true;
         }
@@ -257,7 +254,7 @@ namespace Sushi.Mediakiwi.Framework
         /// <summary>
         /// Raises the <see cref="E:ListLoad"/> event.
         /// </summary>
-        /// <param name="e">The <see cref="Sushi.Mediakiwi.Framework.ComponentListEventArgs"/> instance containing the event data.</param>
+        /// <param name="e">The <see cref="ComponentListEventArgs"/> instance containing the event data.</param>
         internal void OnListDataReport(ComponentDataReportEventArgs e)
         {
             if (ListDataReport != null)
@@ -483,7 +480,7 @@ namespace Sushi.Mediakiwi.Framework
         /// Applies the list settings.
         /// </summary>
         /// <param name="list">The list.</param>
-        public void ApplyListSettings(Sushi.Mediakiwi.Data.IComponentList list)
+        public void ApplyListSettings(IComponentList list)
         {
             if (list == null || list.Settings == null || list.Settings.Items == null || list.Settings.Items.Length == 0)
                 return;

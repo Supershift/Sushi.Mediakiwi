@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Sushi.Mediakiwi.Data;
-using Sushi.Mediakiwi.UI;
+﻿using Sushi.Mediakiwi.Data;
 
 public static class PropertyExtension
 {
@@ -123,26 +117,26 @@ public static class PropertyExtension
     public static Sushi.Mediakiwi.Framework.IContentInfo GetContentInfo(this Property inProperty)
     {
         Sushi.Mediakiwi.Framework.IContentInfo contentAttribute = null;
-        switch (inProperty.TypeID)
+        switch (inProperty.ContentTypeID)
         {
             default:
-            case (int)ContentType.Binary_Document:
-            case (int)ContentType.Binary_Image:
-            case (int)ContentType.Choice_Dropdown:
-            case (int)ContentType.Choice_Radio:
-            case (int)ContentType.FolderSelect:
-            case (int)ContentType.PageSelect:
-            case (int)ContentType.Choice_Checkbox:
-            case (int)ContentType.DateTime:
-            case (int)ContentType.Date:
+            case ContentType.Binary_Document:
+            case ContentType.Binary_Image:
+            case ContentType.Choice_Dropdown:
+            case ContentType.Choice_Radio:
+            case ContentType.FolderSelect:
+            case ContentType.PageSelect:
+            case ContentType.Choice_Checkbox:
+            case ContentType.DateTime:
+            case ContentType.Date:
                 break;
-            case (int)ContentType.TextLine:
+            case ContentType.TextLine:
                 return new Sushi.Mediakiwi.Framework.ContentInfoItem.TextLineAttribute(inProperty.Title);
-            case (int)ContentType.TextField:
+            case ContentType.TextField:
                 return new Sushi.Mediakiwi.Framework.ContentInfoItem.TextFieldAttribute(inProperty.Title,Utility.ConvertToInt(inProperty.MaxValueLength), inProperty.IsMandatory, inProperty.InteractiveHelp);
-            case (int)ContentType.TextArea:
+            case ContentType.TextArea:
                 return new Sushi.Mediakiwi.Framework.ContentInfoItem.TextAreaAttribute(inProperty.Title, Utility.ConvertToInt(inProperty.MaxValueLength), inProperty.IsMandatory, inProperty.InteractiveHelp);
-            case (int)ContentType.RichText:
+            case ContentType.RichText:
                 return new Sushi.Mediakiwi.Framework.ContentInfoItem.RichTextAttribute(inProperty.Title, Utility.ConvertToInt(inProperty.MaxValueLength), inProperty.IsMandatory, inProperty.InteractiveHelp);
         }
         return contentAttribute;
@@ -154,19 +148,19 @@ public static class PropertyExtension
     /// <param name="filter">The filter.</param>
     /// <param name="customData">The custom data.</param>
     /// <param name="itemID">The item ID.</param>
-    public static void ApplyFilter(this Property inProperty, IDataFilter filter, Sushi.Mediakiwi.Data.CustomData customData, int itemID)
+    public static void ApplyFilter(this Property inProperty, IDataFilter filter, CustomData customData, int itemID)
     {
-        switch (inProperty.TypeID)
+        switch (inProperty.ContentTypeID)
         {
             default:
                 return;
 
-            case (int)ContentType.Binary_Document:
-            case (int)ContentType.Binary_Image:
-            case (int)ContentType.Choice_Dropdown:
-            case (int)ContentType.Choice_Radio:
-            case (int)ContentType.FolderSelect:
-            case (int)ContentType.PageSelect:
+            case ContentType.Binary_Document:
+            case ContentType.Binary_Image:
+            case ContentType.Choice_Dropdown:
+            case ContentType.Choice_Radio:
+            case ContentType.FolderSelect:
+            case ContentType.PageSelect:
                 filter.FilterI = customData[inProperty.FieldName].ParseInt();
 
                 if (!filter.FilterI.HasValue && !filter.IsNewInstance)
@@ -177,12 +171,12 @@ public static class PropertyExtension
 
                 break;
 
-            case (int)ContentType.Choice_Checkbox:
+            case ContentType.Choice_Checkbox:
                 filter.FilterB = customData[inProperty.FieldName].ParseBoolean();
                 break;
 
-            case (int)ContentType.DateTime:
-            case (int)ContentType.Date:
+            case ContentType.DateTime:
+            case ContentType.Date:
                 filter.FilterT = customData[inProperty.FieldName].ParseDateTime();
 
                 if (!filter.FilterT.HasValue && !filter.IsNewInstance)
@@ -193,10 +187,10 @@ public static class PropertyExtension
 
                 break;
 
-            case (int)ContentType.TextLine:
-            case (int)ContentType.TextField:
-            case (int)ContentType.TextArea:
-            case (int)ContentType.RichText:
+            case ContentType.TextLine:
+            case ContentType.TextField:
+            case ContentType.TextArea:
+            case ContentType.RichText:
 
                 //if (prop.ContentType == "Decimal")
                 //{

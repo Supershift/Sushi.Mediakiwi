@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
 using System.Text;
 
 namespace Sushi.Mediakiwi.Utilities
@@ -221,7 +220,7 @@ namespace Sushi.Mediakiwi.Utilities
                     if (o != null && _params.UseExtensions)
                     {
                         Type tt = o.GetType();
-                        if (tt == typeof(System.Object))
+                        if (tt == typeof(object))
                             map.Add(p.Name, tt.ToString());
                     }
                     append = true;

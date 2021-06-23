@@ -9,13 +9,12 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
 using System.Xml.Serialization;
-using Sushi.Mediakiwi.Data;
 
-[assembly: InternalsVisibleToAttribute("Sushi.Mediakiwi")]
+[assembly: InternalsVisibleTo("Sushi.Mediakiwi")]
 
 namespace Sushi.Mediakiwi.Data
 {
-    public class Utility
+    public static class Utility
     {
         public static string ConvertUrl(string path)
         {
@@ -24,7 +23,7 @@ namespace Sushi.Mediakiwi.Data
                 .Replace(" ", "-");
         }
 
-        public static string GetHtmlFormattedLastServerError(System.Exception ex)
+        public static string GetHtmlFormattedLastServerError(Exception ex)
         {
             string error = "";
             while (ex != null)
@@ -72,7 +71,7 @@ namespace Sushi.Mediakiwi.Data
             return epoch.AddSeconds(unixTime);
         }
 
-        public static String ShortUrlEncoding(long input)
+        public static string ShortUrlEncoding(long input)
         {
             return Base36.Encode(input);
         }
@@ -91,9 +90,9 @@ namespace Sushi.Mediakiwi.Data
             /// </summary>
             /// <param name="input"></param>
             /// <returns></returns>
-            public static String Encode(long input)
+            public static string Encode(long input)
             {
-                if (input < 0) throw new ArgumentOutOfRangeException("input", input, "input cannot be negative");
+                if (input < 0) throw new ArgumentOutOfRangeException(nameof(input), input, "input cannot be negative");
 
                 char[] clistarr = CharList.ToCharArray();
                 var result = new Stack<char>();
@@ -110,7 +109,7 @@ namespace Sushi.Mediakiwi.Data
             /// </summary>
             /// <param name="input"></param>
             /// <returns></returns>
-            public static Int64 Decode(string input)
+            public static long Decode(string input)
             {
                 var reversed = input.Reverse();
                 long result = 0;
@@ -267,15 +266,15 @@ namespace Sushi.Mediakiwi.Data
                 text = text.Substring(0, 47) + "...";
 
             if (!url.Contains("http://") && !url.Contains("https://") && !url.Contains("ftp://"))
-                url = String.Concat("http://", url);
+                url = string.Concat("http://", url);
 
-            return String.Format(@"{3}<a href=""{0}"" title=""{2}"">{1}</a> ", url.ToLower(), text, title, m.Value.StartsWith("\n") ? "\n" : " ");
+            return string.Format(@"{3}<a href=""{0}"" title=""{2}"">{1}</a> ", url.ToLower(), text, title, m.Value.StartsWith("\n") ? "\n" : " ");
         }
 
         public static string ConvertFirstToUpper(string p)
         {
-            if (String.IsNullOrEmpty(p))
-                return String.Empty;
+            if (string.IsNullOrEmpty(p))
+                return string.Empty;
             if (p.Length == 1)
                 return p.ToUpper();
             return p[0].ToString().ToUpper() + p.Substring(1);
@@ -361,8 +360,7 @@ namespace Sushi.Mediakiwi.Data
                             else if (from.PropertyType == typeof(decimal))
                             {
                                 //  Decimal --> String
-                                Decimal tmp;
-                                if (IsDecimal(fromPropertyValue, out tmp))
+                                if (IsDecimal(fromPropertyValue, out decimal tmp))
                                 {
                                     CultureInfo info = new CultureInfo("en-US");
                                     to.SetValue(propertyContainerTo, tmp.ToString(info), null);
@@ -419,8 +417,7 @@ namespace Sushi.Mediakiwi.Data
                             else if (to.PropertyType == typeof(decimal))
                             {
                                 //  String --> Decimal
-                                Decimal tmp;
-                                if (IsDecimal(fromPropertyValue, out tmp))
+                                if (IsDecimal(fromPropertyValue, out decimal tmp))
                                 {
                                     to.SetValue(propertyContainerTo, tmp, null);
                                 }
@@ -449,9 +446,10 @@ namespace Sushi.Mediakiwi.Data
                             else if (from.PropertyType == typeof(Guid))
                             {
                                 //  String --> Guid
-                                Guid guid;
-                                if (IsGuid(fromPropertyValue, out guid))
+                                if (IsGuid(fromPropertyValue, out Guid guid))
+                                {
                                     to.SetValue(propertyContainerTo, guid, null);
+                                }
                             }
                         }
 
@@ -1122,11 +1120,15 @@ namespace Sushi.Mediakiwi.Data
         /// <returns></returns>
         public static DateTime ConvertWimDateTime(object candidate)
         {
-            if (candidate == null || candidate.ToString().Length == 0) return DateTime.MinValue;
+            if (candidate == null || candidate.ToString().Length == 0)
+            {
+                return DateTime.MinValue;
+            }
 
-            DateTime dt;
-            if (DateTime.TryParse(candidate.ToString(), WimCultureInfo, DateTimeStyles.None, out dt))
+            if (DateTime.TryParse(candidate.ToString(), WimCultureInfo, DateTimeStyles.None, out DateTime dt))
+            {
                 return dt;
+            }
 
             return DateTime.MinValue;
         }
@@ -1318,9 +1320,9 @@ namespace Sushi.Mediakiwi.Data
                     returnItem += c;
                     continue;
                 }
-                Byte[] encoded = encoding.GetBytes(c.ToString());
+                byte[] encoded = encoding.GetBytes(c.ToString());
 
-                foreach (Byte b in encoded)
+                foreach (byte b in encoded)
                 {
                     if (firstByte)
                         tempChar = b.ToString("X");
@@ -1446,12 +1448,16 @@ namespace Sushi.Mediakiwi.Data
             {
                 Regex rex = new Regex(@"(?<TEXT>\S{0," + maxWordLength.ToString() + "})", RegexOptions.IgnoreCase);
 
-                Word word = new Word();
-                word.additionWhenLonger = additionWhenLonger;
+                Word word = new Word()
+                {
+                    additionWhenLonger = additionWhenLonger
+                };
 
                 string text = rex.Replace(m.Groups["TEXT"].Value, word.Breakup);
                 if (text.Length < additionWhenLonger.Length)
+                {
                     return text;
+                }
 
                 return text.Substring(0, text.Length - additionWhenLonger.Length);
             }
@@ -1550,26 +1556,40 @@ namespace Sushi.Mediakiwi.Data
             {
                 if (item == null) continue;
 
-                long itemInt;
-                if (IsNumeric(item, out itemInt))
+                if (IsNumeric(item, out long itemInt))
                 {
-                    if (build.Length == 0) build.Append(itemInt.ToString());
+                    if (build.Length == 0)
+                    {
+                        build.Append(itemInt.ToString());
+                    }
                     else
+                    {
                         build.Append(string.Concat(",", itemInt.ToString()));
+                    }
                 }
                 else
                 {
                     if (shouldUseQuoteForStringValues)
                     {
-                        if (build.Length == 0) build.Append(string.Concat("'", item.ToString(), "'"));
+                        if (build.Length == 0)
+                        {
+                            build.Append(string.Concat("'", item.ToString(), "'"));
+                        }
                         else
+                        {
                             build.Append(string.Concat(",'", item.ToString(), "'"));
+                        }
                     }
                     else
                     {
-                        if (build.Length == 0) build.Append(item.ToString());
+                        if (build.Length == 0)
+                        {
+                            build.Append(item.ToString());
+                        }
                         else
+                        {
                             build.Append(string.Concat(",", item.ToString()));
+                        }
                     }
                 }
             }
@@ -1803,7 +1823,7 @@ namespace Sushi.Mediakiwi.Data
                     //    System.Threading.Thread.CurrentThread.CurrentCulture.NumberFormat.NumberGroupSeparator,
                     //    System.Threading.Thread.CurrentThread.CurrentCulture.NumberFormat.NumberDecimalSeparator);
 
-                    if (Decimal.TryParse(testCandidate, NumberStyles.Any, info, out output))
+                    if (decimal.TryParse(testCandidate, NumberStyles.Any, info, out output))
                     {
                         return true;
                     }
@@ -1845,7 +1865,7 @@ namespace Sushi.Mediakiwi.Data
                     //    System.Threading.Thread.CurrentThread.CurrentCulture.NumberFormat.NumberGroupSeparator,
                     //    System.Threading.Thread.CurrentThread.CurrentCulture.NumberFormat.NumberDecimalSeparator);
 
-                    if (Double.TryParse(testCandidate, NumberStyles.Any, info, out output))
+                    if (double.TryParse(testCandidate, NumberStyles.Any, info, out output))
                     {
                         return true;
                     }
@@ -1865,11 +1885,15 @@ namespace Sushi.Mediakiwi.Data
         public static Guid ConvertToGuid(object item)
         {
             if (item == null || string.IsNullOrEmpty(item.ToString()))
+            {
                 return Guid.Empty;
+            }
 
-            Guid candidate;
-            if (IsGuid(item, out candidate))
+            if (IsGuid(item, out Guid candidate))
+            {
                 return candidate;
+            }
+
             return Guid.Empty;
         }
 
@@ -1879,7 +1903,10 @@ namespace Sushi.Mediakiwi.Data
         public static Guid ConvertToGuid(object item, Guid onError)
         {
             Guid candidate = ConvertToGuid(item);
-            if (candidate != Guid.Empty) return candidate;
+            if (candidate != Guid.Empty)
+            {
+                return candidate;
+            }
             return onError;
         }
 
@@ -1915,14 +1942,19 @@ namespace Sushi.Mediakiwi.Data
         public static decimal? ConvertToDecimalNullable(object item)
         {
             if (item == null)
+            {
                 return null;
+            }
 
             if (item.ToString().Trim().Length == 0)
+            {
                 return null;
+            }
 
-            decimal dec;
-            if (IsDecimal(item, out dec))
+            if (IsDecimal(item, out decimal dec))
+            {
                 return dec;
+            }
 
             return null;
         }
@@ -1933,11 +1965,15 @@ namespace Sushi.Mediakiwi.Data
         public static decimal ConvertToDecimal(object item, decimal onError)
         {
             if (item == null || item.ToString().Trim().Length == 0)
+            {
                 return onError;
+            }
 
-            decimal dec;
-            if (IsDecimal(item, out dec))
+            if (IsDecimal(item, out decimal dec))
+            {
                 return dec;
+            }
+
             return onError;
         }
 
@@ -1971,11 +2007,15 @@ namespace Sushi.Mediakiwi.Data
         public static double ConvertToDouble(object item, double onError)
         {
             if (item == null || item.ToString().Trim().Length == 0)
+            {
                 return onError;
+            }
 
-            double dec;
-            if (IsDouble(item, out dec))
+            if (IsDouble(item, out double dec))
+            {
                 return dec;
+            }
+
             return onError;
         }
 
@@ -1994,7 +2034,7 @@ namespace Sushi.Mediakiwi.Data
         static bool m_HasCheckedSettings;
         static Wim.Data.Interfaces.IConfigurationSetting m_Settings;
 
-        public static String GetConfigurationSetting(string initialValue, string settingProperty)
+        public static string GetConfigurationSetting(string initialValue, string settingProperty)
         {
             if (!m_HasCheckedSettings)
                 m_HasCheckedSettings = true;

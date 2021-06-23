@@ -1,11 +1,11 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Sushi.Mediakiwi.Data;
+using Sushi.Mediakiwi.Data.MicroORM;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
-using Sushi.Mediakiwi.Data;
-using Sushi.Mediakiwi.Data.MicroORM;
 
 namespace Sushi.Mediakiwi.Tests.ORM
 {
@@ -346,7 +346,7 @@ namespace Sushi.Mediakiwi.Tests.ORM
                 if (a?.ID > 0)
                 {
                     // Asset does not contain a Delete(), Replace code below when Delete() is added.
-                    var connector = ConnectorFactory.CreateConnector<Asset>(new Asset.AssetMap(true));
+                    var connector = ConnectorFactory.CreateConnector(new Asset.AssetMap(true));
                     connector.Delete(a);
                     Trace.WriteLine($"DELETE Asset: {a?.ID}");
 
@@ -380,7 +380,7 @@ namespace Sushi.Mediakiwi.Tests.ORM
                 if (a?.ID > 0)
                 {
                     // Asset does not contain a DeleteAsync(), Replace code below when DeleteAsync() is added.
-                    var connector = ConnectorFactory.CreateConnector<Asset>(new Asset.AssetMap(true));
+                    var connector = ConnectorFactory.CreateConnector(new Asset.AssetMap(true));
                     await connector.DeleteAsync(a);
                     Trace.WriteLine($"DELETE Asset: {a?.ID}");
 

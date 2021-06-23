@@ -1,7 +1,6 @@
 using Sushi.Mediakiwi.Data;
 using Sushi.Mediakiwi.UI;
 using System;
-using System.Collections.Generic;
 using System.Text;
 
 
@@ -126,7 +125,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
         /// <param name="isEditMode">if set to <c>true</c> [is edit mode].</param>
         public void SetCandidate(Field field, bool isEditMode)
         {
-            if (Property != null && Property.PropertyType == typeof(Data.CustomData))
+            if (Property != null && Property.PropertyType == typeof(CustomData))
                 SetContentContainer(field);
 
             string candidate = null;
@@ -141,7 +140,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                 }
                 else
                 {
-                    if (Property.PropertyType == typeof(Data.CustomData))
+                    if (Property.PropertyType == typeof(CustomData))
                     {
                         candidate = m_ContentContainer[field.Property].Value;
                     }
@@ -176,10 +175,10 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
 
             if (!IsBluePrint)
             {
-                if (Property.PropertyType == typeof(Data.CustomData))
+                if (Property.PropertyType == typeof(CustomData))
                 {
-                    m_ListItemCollection = new Sushi.Mediakiwi.UI.ListItemCollection();
-                    foreach (Sushi.Mediakiwi.Data.PropertyOption option in field.PropertyInfo.Options)
+                    m_ListItemCollection = new ListItemCollection();
+                    foreach (PropertyOption option in field.PropertyInfo.Options)
                     {
                         m_ListItemCollection.Add(new ListItem(option.Name, option.Value));
                     }
@@ -192,18 +191,18 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
 
             if (!IsBluePrint && Property != null && Property.CanWrite)
             {
-                if (Property.PropertyType == typeof(Data.CustomData))
+                if (Property.PropertyType == typeof(CustomData))
                     ApplyContentContainer(field, candidate);
-                else if (Property.PropertyType == typeof(Int32))
-                    Property.SetValue(this.SenderInstance, Data.Utility.ConvertToInt(candidate), null);
-                else if (Property.PropertyType == typeof(Int16))
-                    Property.SetValue(this.SenderInstance, Int16.Parse(candidate), null);
+                else if (Property.PropertyType == typeof(int))
+                    Property.SetValue(this.SenderInstance, Utility.ConvertToInt(candidate), null);
+                else if (Property.PropertyType == typeof(short))
+                    Property.SetValue(this.SenderInstance, short.Parse(candidate), null);
                 else if (Property.PropertyType == typeof(int?))
                 {
                     if (string.IsNullOrEmpty(candidate) || candidate == "0")
                         Property.SetValue(SenderInstance, null, null);
                     else
-                        Property.SetValue(SenderInstance, Data.Utility.ConvertToInt(candidate), null);
+                        Property.SetValue(SenderInstance, Utility.ConvertToInt(candidate), null);
                 }
                 else if (Property.PropertyType == typeof(bool) || Property.PropertyType == typeof(bool?))
                 {
@@ -274,7 +273,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
 
                 string options = "";
                 int count = 0;
-                if (!String.IsNullOrEmpty(SupplierChoiceHeaderProp))
+                if (!string.IsNullOrEmpty(SupplierChoiceHeaderProp))
                 {
                     options += GetProperty(Console.CurrentListInstance, SupplierChoiceHeaderProp);
                 }
@@ -392,7 +391,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                         break;
                     }
 
-                build.Append(GetSimpleTextElement(this.Title, this.Mandatory, candidate, this.InteractiveHelp));
+                build.Append(GetSimpleTextElement(candidate));
             }
 
             build.ApiResponse.Fields.Add(new Api.MediakiwiField()
@@ -406,7 +405,8 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                 VueType = Api.MediakiwiFormVueType.wimChoiceRadio,
                 Options = optionsList,
                 GroupName = Groupname,
-                ReadOnly = this.IsReadOnly
+                ReadOnly = this.IsReadOnly,
+                ContentTypeID = ContentTypeSelection
             });
 
             return ReadCandidate(OutputText);

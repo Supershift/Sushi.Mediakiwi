@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq.Expressions;
+﻿using System.Collections.Generic;
 
 namespace Sushi.Mediakiwi.Framework
 {
@@ -12,7 +10,7 @@ namespace Sushi.Mediakiwi.Framework
         void Evaluate();
 
         List<IContentInfo> Elements { get; set; }
-        Object SenderInstance { get; set; }
+        object SenderInstance { get; set; }
         bool? IsHidden { get; set; }
         bool? IsCloacked { get; set; }
         bool? IsReadOnly { get; set; }

@@ -1,12 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Threading.Tasks;
-using System.Web;
 using Sushi.Mediakiwi.AppCentre.UI;
 using Sushi.Mediakiwi.Data;
 using Sushi.Mediakiwi.Framework;
 using Sushi.Mediakiwi.UI;
+using System;
+using System.Threading.Tasks;
 
 namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
 {
@@ -20,7 +17,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// Gets or sets the filter client ID.
         /// </summary>
         /// <value>The filter client ID.</value>
-        [Sushi.Mediakiwi.Framework.ContentListSearchItem.TextField("Search for", 50, AutoPostBack = false, Expression = Sushi.Mediakiwi.Framework.OutputExpression.Alternating)]
+        [Framework.ContentListSearchItem.TextField("Search for", 50, AutoPostBack = false, Expression = OutputExpression.Alternating)]
         public string FilterText
         {
             get { return m_FilterText; }
@@ -32,7 +29,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// Gets or sets the search template site.
         /// </summary>
         /// <value>The search template site.</value>
-        [Sushi.Mediakiwi.Framework.ContentListSearchItem.Choice_Dropdown("Channel", "SearchSites", false, false, Expression = Sushi.Mediakiwi.Framework.OutputExpression.Alternating)]
+        [Framework.ContentListSearchItem.Choice_Dropdown("Channel", "SearchSites", false, false, Expression = OutputExpression.Alternating)]
         public int FilterSite
         {
             get { return m_FilterSite; }
@@ -54,7 +51,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                 ListItem li;
                 m_SearchSites.Add(new ListItem("-- select a site --", ""));
 
-                foreach (Sushi.Mediakiwi.Data.Site site in Sushi.Mediakiwi.Data.Site.SelectAll())
+                foreach (Mediakiwi.Data.Site site in Mediakiwi.Data.Site.SelectAll())
                 {
                     if (site.MasterID.GetValueOrDefault() > 0) continue;
                     li = new ListItem(site.Name, site.ID.ToString());
@@ -71,17 +68,17 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         {
             wim.OpenInEditMode = true;
 
-            this.ListSearch += ComponentList_ListSearch;
-            this.ListSave += ComponentList_ListSave;
-            this.ListDelete += ComponentList_ListDelete;
-            this.ListLoad += ComponentList_ListLoad;
-            this.ListPreRender += ComponentList_ListPreRender;
+            ListSearch += ComponentList_ListSearch;
+            ListSave += ComponentList_ListSave;
+            ListDelete += ComponentList_ListDelete;
+            ListLoad += ComponentList_ListLoad;
+            ListPreRender += ComponentList_ListPreRender;
         }
 
         async Task ComponentList_ListPreRender(ComponentListEventArgs e)
         {
             if (Implement.SiteID.HasValue)
-                wim.CurrentSite = await Sushi.Mediakiwi.Data.Site.SelectOneAsync(Implement.SiteID.Value);
+                wim.CurrentSite = await Mediakiwi.Data.Site.SelectOneAsync(Implement.SiteID.Value);
         }
 
         bool m_IsConfiguration_Template;
@@ -127,7 +124,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// Gets or sets the implement.
         /// </summary>
         /// <value>The implement.</value>
-        public Sushi.Mediakiwi.Data.IComponentList Implement { get; set; }
+        public IComponentList Implement { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether this instance is wim type.
@@ -145,11 +142,11 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// </value>
         public bool IsGenerics
         {
-            get { return this.Implement.ClassName == "Wim.Templates.Templates.UI.GenericsList"
-                || this.Implement.ClassName == "Wim.Templates.Templates.UI.GenericList"
-                || this.Implement.ClassName == "Wim.Templates.Templates.UI.SimpleGenericsList"
-                || this.Implement.ClassName == "Wim.Templates.UI.GenericLinqList"
-                //|| this.Implement.GetInstance(Context) is Wim.Templates.UI.iGenericLinqList
+            get { return Implement.ClassName == "Wim.Templates.Templates.UI.GenericsList"
+                || Implement.ClassName == "Wim.Templates.Templates.UI.GenericList"
+                || Implement.ClassName == "Wim.Templates.Templates.UI.SimpleGenericsList"
+                || Implement.ClassName == "Wim.Templates.UI.GenericLinqList"
+                //|| Implement.GetInstance(Context) is Wim.Templates.UI.iGenericLinqList
                 ; }
         }
 
@@ -157,10 +154,10 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         {
             get
             {
-                return this.Implement.ClassName == "Wim.Templates.Templates.UI.GenericsList"
-                    || this.Implement.ClassName == "Wim.Templates.Templates.UI.GenericList"
-                    || this.Implement.ClassName == "Wim.Templates.Templates.UI.SimpleGenericsList"
-                    || this.Implement.ClassName == "Wim.Templates.UI.GenericLinqList"
+                return Implement.ClassName == "Wim.Templates.Templates.UI.GenericsList"
+                    || Implement.ClassName == "Wim.Templates.Templates.UI.GenericList"
+                    || Implement.ClassName == "Wim.Templates.Templates.UI.SimpleGenericsList"
+                    || Implement.ClassName == "Wim.Templates.UI.GenericLinqList"
                     ;
             }
         }
@@ -169,9 +166,9 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         {
             get
             {
-                return this.Implement.ClassName == "Wim.Templates.Templates.UI.GenericsList"
-                    || this.Implement.ClassName == "Wim.Templates.Templates.UI.GenericList"
-                    || this.Implement.ClassName == "Wim.Templates.Templates.UI.SimpleGenericsList"
+                return Implement.ClassName == "Wim.Templates.Templates.UI.GenericsList"
+                    || Implement.ClassName == "Wim.Templates.Templates.UI.GenericList"
+                    || Implement.ClassName == "Wim.Templates.Templates.UI.SimpleGenericsList"
                     ;
             }
         }
@@ -197,18 +194,18 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// Handles the ListLoad event of the ComponentList control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="Sushi.Mediakiwi.Framework.ComponentListEventArgs"/> instance containing the event data.</param>
+        /// <param name="e">The <see cref="ComponentListEventArgs"/> instance containing the event data.</param>
         async Task ComponentList_ListLoad(ComponentListEventArgs e)
         {
-            if (wim.CurrentList.Type == Sushi.Mediakiwi.Data.ComponentListType.ComponentLists || wim.CurrentList.Type == Sushi.Mediakiwi.Data.ComponentListType.ComponentListProperties)
+            if (wim.CurrentList.Type == ComponentListType.ComponentLists || wim.CurrentList.Type == ComponentListType.ComponentListProperties)
                 this.IsConfiguration_Template = true;
-            else if (wim.CurrentList.Type == Sushi.Mediakiwi.Data.ComponentListType.ComponentListScheduling)
+            else if (wim.CurrentList.Type == ComponentListType.ComponentListScheduling)
                 this.IsConfiguration_Sense = true;
-            else if (wim.CurrentList.Type == Sushi.Mediakiwi.Data.ComponentListType.ComponentListData)
+            else if (wim.CurrentList.Type == ComponentListType.ComponentListData)
                 this.IsConfiguration_Data = true;
 
             bool isListPropertySection = false;
-            if (wim.CurrentList.Type == Sushi.Mediakiwi.Data.ComponentListType.ComponentListProperties || wim.CurrentList.Type == Sushi.Mediakiwi.Data.ComponentListType.ComponentListScheduling)
+            if (wim.CurrentList.Type == ComponentListType.ComponentListProperties || wim.CurrentList.Type == ComponentListType.ComponentListScheduling)
             {
                 isListPropertySection = true;
                 //wim.ShowInFullWidthMode = true;
@@ -220,7 +217,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             wim.CanSaveAndAddNew = true;
             wim.CanAddNewItem = true;
 
-            Implement = await Sushi.Mediakiwi.Data.ComponentList.SelectOneAsync(selectedKey);
+            Implement = await Mediakiwi.Data.ComponentList.SelectOneAsync(selectedKey);
 
             this.IsWimType = Implement.Type > 0;
 
@@ -241,28 +238,28 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
 
             //Implement.HasServiceCall = (Implement.SenseInterval > 0);
 
-            if (e.SelectedKey > 0 && (wim.CurrentList.Type == Sushi.Mediakiwi.Data.ComponentListType.ComponentLists || wim.CurrentList.Type == Sushi.Mediakiwi.Data.ComponentListType.ComponentListProperties))
+            if (e.SelectedKey > 0 && (wim.CurrentList.Type == ComponentListType.ComponentLists || wim.CurrentList.Type == ComponentListType.ComponentListProperties))
             {
                 //  Settings
-                wim.AddTab(await Sushi.Mediakiwi.Data.ComponentList.SelectOneAsync(new Guid("15C30414-F187-4021-B991-386653677767")), e.SelectedKey);
+                wim.AddTab(await Mediakiwi.Data.ComponentList.SelectOneAsync(new Guid("15C30414-F187-4021-B991-386653677767")), e.SelectedKey);
 
                 if (isListPropertySection)
                 {
                     if (string.IsNullOrEmpty(Implement.ClassName)) return;
-                    if (Implement.Type == Sushi.Mediakiwi.Data.ComponentListType.Undefined && !Implement.ClassName.StartsWith("Wim.Module.", StringComparison.OrdinalIgnoreCase))
+                    if (Implement.Type == ComponentListType.Undefined && !Implement.ClassName.StartsWith("Wim.Module.", StringComparison.OrdinalIgnoreCase))
                     {
                         //  Fields
-                        Sushi.Mediakiwi.Data.IComponentList fieldList = await Sushi.Mediakiwi.Data.ComponentList.SelectOneAsync(new Guid("6a7d5e6c-9daa-4a6f-aeea-21bd4782da1e"));
+                        IComponentList fieldList = await Mediakiwi.Data.ComponentList.SelectOneAsync(new Guid("6a7d5e6c-9daa-4a6f-aeea-21bd4782da1e"));
                         wim.AddTab(fieldList, 0);
 
                         //  Columns
-                        wim.AddTab(await Sushi.Mediakiwi.Data.ComponentList.SelectOneAsync(new Guid("c7b2c21d-0121-4e58-a0c9-616b31c2e1b1")), 0);
+                        wim.AddTab(await Mediakiwi.Data.ComponentList.SelectOneAsync(new Guid("c7b2c21d-0121-4e58-a0c9-616b31c2e1b1")), 0);
                         //  Schedule
-                        wim.AddTab(await Sushi.Mediakiwi.Data.ComponentList.SelectOneAsync(new Guid("937A7D82-EABD-4747-A74A-7B9106E697B1")), e.SelectedKey);
+                        wim.AddTab(await Mediakiwi.Data.ComponentList.SelectOneAsync(new Guid("937A7D82-EABD-4747-A74A-7B9106E697B1")), e.SelectedKey);
                     }
                 }
 
-                var list = await Sushi.Mediakiwi.Data.ComponentList.SelectOneAsync(new Guid("DAD14066-B9E3-4ED9-B951-BE64C93AE2D3"));
+                var list = await Mediakiwi.Data.ComponentList.SelectOneAsync(new Guid("DAD14066-B9E3-4ED9-B951-BE64C93AE2D3"));
                 //  Compare
                 //wim.AddTab(Sushi.Mediakiwi.Data.ComponentList.SelectOne(new Guid("3ed45f19-2b30-4fcd-9a39-7a5855f7ebca")), e.SelectedKey);
                 wim.AddTab(list, e.SelectedKey);
@@ -272,25 +269,25 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             //Implement.zz_Generics2 = "Search grid settings";
             //Implement.zz_Generics3 = "Generics";
 
-            this.FormMaps.Add(new Forms.ComponentListForm(Implement));
+            FormMaps.Add(new Forms.ComponentListForm(Implement));
         }
       
-        public Sushi.Mediakiwi.Data.IComponentList CreateList(Guid guid)
+        public IComponentList CreateList(Guid guid)
         {
-            return Sushi.Mediakiwi.Data.ComponentList.Add(
+            return Mediakiwi.Data.ComponentList.Add(
                 guid, typeof(ListVersioning),
                 "Versioning", 
                 "Version", 
                 wim.CurrentFolder.ID, wim.CurrentSite.ID, false
             );
         }
-    
+
 
         /// <summary>
         /// Handles the ListDelete event of the ComponentList control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="Sushi.Mediakiwi.Framework.ComponentListEventArgs"/> instance containing the event data.</param>
+        /// <param name="e">The <see cref="ComponentListEventArgs"/> instance containing the event data.</param>
         async Task ComponentList_ListDelete(ComponentListEventArgs e)
         {
             await Implement.DeleteAsync();
@@ -300,29 +297,29 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// Handles the ListSave event of the ComponentList control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="Sushi.Mediakiwi.Framework.ComponentListEventArgs"/> instance containing the event data.</param>
+        /// <param name="e">The <see cref="ComponentListEventArgs"/> instance containing the event data.</param>
         async Task ComponentList_ListSave(ComponentListEventArgs e)
         {
             Implement.IsTemplate = true;
-            Implement.Target = Sushi.Mediakiwi.Data.ComponentListTarget.List;
+            Implement.Target = ComponentListTarget.List;
 
             //  [12.05.13:MM] Set the correct target type when moving to the Administration section.
             if (Implement.SiteID.HasValue)
             {
-                var site = await Sushi.Mediakiwi.Data.Site.SelectOneAsync(Implement.SiteID.Value);
+                var site = await Mediakiwi.Data.Site.SelectOneAsync(Implement.SiteID.Value);
                 if (site.Type.HasValue)
-                    Implement.Target = Sushi.Mediakiwi.Data.ComponentListTarget.Administration;
+                    Implement.Target = ComponentListTarget.Administration;
             }
 
             if (!Implement.FolderID.HasValue && Implement.SiteID.HasValue)
             {
-                Sushi.Mediakiwi.Data.Folder Folder = await Sushi.Mediakiwi.Data.Folder.SelectOneBySiteAsync(Implement.SiteID.Value, Sushi.Mediakiwi.Data.FolderType.List);
+                Mediakiwi.Data.Folder Folder = await Mediakiwi.Data.Folder.SelectOneBySiteAsync(Implement.SiteID.Value, FolderType.List);
 
                 if (!Folder.IsNewInstance)
                 {
                     if (Implement.FolderID.HasValue)
                     {
-                        Sushi.Mediakiwi.Data.Folder Folder2 = await Sushi.Mediakiwi.Data.Folder.SelectOneAsync(Implement.FolderID.Value);
+                        Mediakiwi.Data.Folder Folder2 = await Mediakiwi.Data.Folder.SelectOneAsync(Implement.FolderID.Value);
                         if (Folder2.SiteID != Folder.SiteID)
                         {
                             //  New channel: reset folder
@@ -371,7 +368,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
 
             wim.ForceLoad = true;
 
-            var result = await Sushi.Mediakiwi.Data.ComponentList.SelectAllAsync(this.FilterText, this.FilterSite);
+            var result = await Mediakiwi.Data.ComponentList.SelectAllAsync(this.FilterText, this.FilterSite);
             wim.ListDataAdd(result);
         }
 
@@ -399,7 +396,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
 
                 m_Catalogs.Add(new ListItem("", ""));
 
-                foreach (Sushi.Mediakiwi.Data.Catalog item in Sushi.Mediakiwi.Data.Catalog.SelectAll())
+                foreach (Catalog item in Catalog.SelectAll())
                 {
                     if (!item.IsActive)
                         continue;

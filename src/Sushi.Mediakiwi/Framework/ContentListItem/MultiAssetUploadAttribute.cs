@@ -1,8 +1,6 @@
 using Sushi.Mediakiwi.Data;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace Sushi.Mediakiwi.Framework.ContentListItem
 {
@@ -71,7 +69,7 @@ namespace Sushi.Mediakiwi.Framework.ContentListItem
                 var raw = Console.Form(this.ID);
                 foreach (string item in raw.Split(','))
                 {
-                    var p = Data.Utility.ConvertToInt(item);
+                    var p = Utility.ConvertToInt(item);
                     if (p > 0)
                         items.Add(p);
                 }

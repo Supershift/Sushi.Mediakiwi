@@ -1,6 +1,9 @@
-﻿using System.Collections.Generic;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Sushi.Mediakiwi.Framework.Api
 {
@@ -23,7 +26,7 @@ namespace Sushi.Mediakiwi.Framework.Api
         /// Form fields
         /// </summary>
         public List<MediakiwiField> Fields { get; set; }
-        
+
         /// <summary>
         /// Buttons
         /// </summary>
@@ -39,7 +42,59 @@ namespace Sushi.Mediakiwi.Framework.Api
         /// </summary>
         public string RedirectUrl { get; set; }
 
-        public string ListDescription { get; set; } 
+        /// <summary>
+        /// The description for this list
+        /// </summary>
+        public string ListDescription { get; set; }
+
+        /// <summary>
+        /// The settings URL for this list
+        /// </summary>
         public string ListSettingsUrl { get; set; }
+
+        /// <summary>
+        /// To which site (channel) does this response belong ?
+        /// </summary>
+        public int CurrentSiteID { get; set; }
+
+        /// <summary>
+        /// Is this field a shared field ?
+        /// </summary>
+        public bool IsSharedField { get; set; }
+
+        /// <summary>
+        /// What is the current value of this shared field
+        /// </summary>
+        public string SharedFieldValue { get; set; }
+
+        /// <summary>
+        /// Apply the data (if any) for shared fields in this API response
+        /// </summary>
+        public async Task ApplySharedFieldDataAsync()
+        {
+            try
+            {
+                var _fieldName = Fields?.FirstOrDefault(x => string.IsNullOrWhiteSpace(x.PropertyName) == false && x.PropertyName == "FieldName" && x.Value != null);
+
+                if (_fieldName != null)
+                {
+                    var _sharedField = await Data.SharedField.FetchSingleAsync(_fieldName.Value.ToString().ToUpperInvariant(), _fieldName.ContentTypeID);
+                    if (_sharedField?.ID > 0)
+                    {
+                        IsSharedField = true;
+                        var _sharedFieldValue = await Data.SharedFieldTranslation.FetchSingleForFieldAndSiteAsync(_sharedField.ID, CurrentSiteID);
+
+                        if (_sharedFieldValue?.ID > 0)
+                        {
+                            SharedFieldValue = _sharedFieldValue.Value;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                await Data.Notification.InsertOneAsync("Monitor.ApplySharedFieldInformation", Data.NotificationType.Error, ex.Message);
+            }
+        }
     }
 }

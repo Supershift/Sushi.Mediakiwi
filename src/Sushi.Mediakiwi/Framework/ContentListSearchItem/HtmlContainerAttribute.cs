@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Sushi.Mediakiwi.Framework.ContentListSearchItem
+﻿namespace Sushi.Mediakiwi.Framework.ContentListSearchItem
 {
     /// <summary>
     /// Possible return types: System.String

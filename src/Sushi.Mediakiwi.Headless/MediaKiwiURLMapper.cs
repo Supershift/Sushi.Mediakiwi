@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
-using System;
-using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
 using Sushi.Mediakiwi.Headless.Config;
+using System;
+using System.Linq;
 
 namespace Sushi.Mediakiwi.Headless
 {

@@ -1,10 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
-using Microsoft.AspNetCore.Http;
 using Sushi.Mediakiwi.Data;
-using Sushi.Mediakiwi.Framework;
-using Sushi.Mediakiwi.Framework.ContentInfoItem;
 using static Sushi.Mediakiwi.Beta.GeneratedCms.Source.Component;
 
 namespace Sushi.Mediakiwi.Framework
@@ -35,8 +29,8 @@ namespace Sushi.Mediakiwi.Framework
         /// <summary>
         /// 
         /// </summary>
-        Object SenderInstance { get; set; }
-        Object SenderSponsorInstance { get; set; }
+        object SenderInstance { get; set; }
+        object SenderSponsorInstance { get; set; }
         /// <summary>
         /// 
         /// </summary>
@@ -61,16 +55,18 @@ namespace Sushi.Mediakiwi.Framework
         /// 
         /// </summary>
         int MaxValueLength { get; set; }
+
+        bool IsSharedField { get; set; }
         /// <summary>
         /// 
         /// </summary>
         /// <returns></returns>
-        MetaData GetMetaData(string name, Sushi.Mediakiwi.UI.ListItemCollection collectionPropertyValue);
+        MetaData GetMetaData(string name, UI.ListItemCollection collectionPropertyValue);
         /// <summary>
         /// Sets the content container.
         /// </summary>
         /// <param name="listItems">The list items.</param>
-        void ApplyMetaDataList(Sushi.Mediakiwi.Framework.MetaDataList[] listItems);
+        void ApplyMetaDataList(MetaDataList[] listItems);
         /// <summary>
         /// 
         /// </summary>
@@ -143,7 +139,6 @@ namespace Sushi.Mediakiwi.Framework
         bool CanHaveExpression { get; }
         bool OverrideTableGeneration { set; get; }
         string GetMultiFieldTitleHTML(bool isEditMode);
-
         bool IsHidden { get; set; }
         bool IsReadOnly { get; set; }
         bool IsCloaked { get; set; }

@@ -1,11 +1,9 @@
-﻿using Sushi.MicroORM;
+﻿using Sushi.Mediakiwi.Data.MicroORM;
 using Sushi.MicroORM.Mapping;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.IO;
 using System.Threading.Tasks;
-using Sushi.Mediakiwi.Data.MicroORM;
 
 namespace Sushi.Mediakiwi.Data
 {
@@ -336,7 +334,7 @@ namespace Sushi.Mediakiwi.Data
                 if (m_Image == null && this.IsImage)
                 {
                     m_Image = new Image();
-                    Sushi.Mediakiwi.Data.Utility.ReflectProperty(this, m_Image);
+                    Utility.ReflectProperty(this, m_Image);
                 }
                 return m_Image;
             }
@@ -355,7 +353,7 @@ namespace Sushi.Mediakiwi.Data
                 if (m_Document == null)
                 {
                     m_Document = new Document();
-                    Sushi.Mediakiwi.Data.Utility.ReflectProperty(this, m_Document);
+                    Utility.ReflectProperty(this, m_Document);
                 }
                 return m_Document;
             }
@@ -517,7 +515,7 @@ where
         {
             Updated = Common.DatabaseDateTime;
 
-            var connector = ConnectorFactory.CreateConnector<Asset>(new AssetMap(true));
+            var connector = ConnectorFactory.CreateConnector(new AssetMap(true));
 
             connector.Save(this);
             bool shouldSetSortorder = (this.ID == 0);
@@ -534,7 +532,7 @@ where
         {
             Updated = Common.DatabaseDateTime;
 
-            var connector = ConnectorFactory.CreateConnector<Asset>(new AssetMap(true));
+            var connector = ConnectorFactory.CreateConnector(new AssetMap(true));
 
             await connector.SaveAsync(this);
             bool shouldSetSortorder = (this.ID == 0);

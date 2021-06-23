@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Text;
 
 namespace Sushi.Mediakiwi.Utilities
@@ -66,7 +65,7 @@ namespace Sushi.Mediakiwi.Utilities
             return Generate(length, PossibleCharacters);
         }
 
-        static Random rnd = new Random(System.Environment.TickCount);
+        static Random rnd = new Random(Environment.TickCount);
 
         /// <summary>
         /// Generates the specified length.

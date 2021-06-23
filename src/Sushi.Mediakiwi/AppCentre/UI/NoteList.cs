@@ -1,10 +1,6 @@
-﻿using System;
-using System.Data;
-using System.Configuration;
-using System.Web;
+﻿using Sushi.Mediakiwi.Data;
 using Sushi.Mediakiwi.Framework;
-using System.Globalization;
-using Sushi.Mediakiwi.Data;
+using System;
 using System.Threading.Tasks;
 
 namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
@@ -35,13 +31,13 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             errorShort = errorShort.Split(new string[] { string.Concat(errorCode, ":") }, StringSplitOptions.RemoveEmptyEntries)[0];
 
             if (errorCode == 0)
-                errorShort = Sushi.Mediakiwi.Framework.ErrorCode.GetCultureText("err_0", wim.CurrentApplicationUser.LanguageCulture);
+                errorShort = ErrorCode.GetCultureText("err_0", wim.CurrentApplicationUser.LanguageCulture);
 
             wim.CurrentList.Option_HideBreadCrumbs = true;
             if (CommonConfiguration.IS_LOCAL_DEVELOPMENT || wim.CurrentApplicationUser.IsDeveloper)
             {
                 wim.ListInfoApply(
-                    Sushi.Mediakiwi.Framework.ErrorCode.GetCultureText("ErrorText", wim.CurrentApplicationUser.LanguageCulture), 
+                    ErrorCode.GetCultureText("ErrorText", wim.CurrentApplicationUser.LanguageCulture), 
                     errorShort, 
                     null);
 
@@ -49,7 +45,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             }
             else
             {
-                wim.ListTitle =Sushi.Mediakiwi.Framework.ErrorCode.GetCultureText("ErrorText", wim.CurrentApplicationUser.LanguageCulture);
+                wim.ListTitle = ErrorCode.GetCultureText("ErrorText", wim.CurrentApplicationUser.LanguageCulture);
                 wim.Notification.AddError(errorShort);
             }
            

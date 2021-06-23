@@ -2,7 +2,6 @@
 using Sushi.MicroORM.Mapping;
 using Sushi.MicroORM.Supporting;
 using System;
-using System.Collections.Generic;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -123,7 +122,7 @@ namespace Sushi.Mediakiwi.Data.Caching
             return result;
         }
 
-        public override async Task<SqlStatementResult<TResult>> ExecuteSqlStatementAsync<TResult>(SqlStatement<T> statement, CancellationToken cancellationToken)
+        public async override Task<SqlStatementResult<TResult>> ExecuteSqlStatementAsync<TResult>(SqlStatement<T> statement, CancellationToken cancellationToken)
         {
             SqlStatementResult<TResult> result = null;
 

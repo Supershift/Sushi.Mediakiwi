@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Sushi.Mediakiwi.Data.Configuration;
+using System;
 using System.Reflection;
-using System.Text;
-using Sushi.Mediakiwi.Data;
-using Sushi.Mediakiwi.Data.Configuration;
 
 namespace Sushi.Mediakiwi.Data
 {

@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -39,7 +37,7 @@ namespace Sushi.Mediakiwi.RichRext
                 allowedElements = allowedElements.Except(unallowedElements).ToArray();
             }
 
-            System.Text.StringBuilder sb = new StringBuilder();
+            StringBuilder sb = new StringBuilder();
 
             foreach (string tag in allowedElements)
             {

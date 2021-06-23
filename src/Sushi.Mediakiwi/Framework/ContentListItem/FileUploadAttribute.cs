@@ -1,9 +1,5 @@
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Internal;
 using Sushi.Mediakiwi.Data;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Sushi.Mediakiwi.Framework.ContentListItem
 {

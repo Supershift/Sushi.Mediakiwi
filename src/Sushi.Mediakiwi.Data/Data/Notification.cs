@@ -1,11 +1,10 @@
-﻿using Sushi.MicroORM;
+﻿using Sushi.Mediakiwi.Data.MicroORM;
 using Sushi.MicroORM.Mapping;
 using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Xml;
-using Sushi.Mediakiwi.Data.MicroORM;
 
 namespace Sushi.Mediakiwi.Data
 {
@@ -334,14 +333,14 @@ namespace Sushi.Mediakiwi.Data
         /// <param name="xml">The XML objects.</param>
         /// <param name="visitorID">The visitor ID.</param>
         /// <returns></returns>
-        public static int InsertOne(string groupName, NotificationType type, IApplicationUser currentApplicationUser, string notification, int? pageID, int? visitorID, params System.Xml.XmlDocument[] xml)
+        public static int InsertOne(string groupName, NotificationType type, IApplicationUser currentApplicationUser, string notification, int? pageID, int? visitorID, params XmlDocument[] xml)
         {
             var implement = new Notification();
 
             if (xml != null && xml.Any())
             {
                 implement.XML = new XmlDocument();
-                implement.XML.LoadXml(Sushi.Mediakiwi.Data.Utility.GetSerialized(new XMLArray() { MessageCount = xml.Length }));
+                implement.XML.LoadXml(Utility.GetSerialized(new XMLArray() { MessageCount = xml.Length }));
                 foreach (var item in xml)
                 {
                     XmlNode importedDocument = implement.XML.ImportNode(item.DocumentElement, true);
@@ -355,7 +354,7 @@ namespace Sushi.Mediakiwi.Data
             if (string.IsNullOrEmpty(groupName))
                 groupName = "";
             else if (groupName.Length > 50)
-                groupName = Sushi.Mediakiwi.Data.Utility.ConvertToFixedLengthText(groupName, 47, "..");
+                groupName = Utility.ConvertToFixedLengthText(groupName, 47, "..");
 
             implement.Group = groupName;
 
@@ -430,14 +429,14 @@ namespace Sushi.Mediakiwi.Data
         /// <param name="xml">The XML objects.</param>
         /// <param name="visitorID">The visitor ID.</param>
         /// <returns></returns>
-        public static async Task<int> InsertOneAsync(string groupName, NotificationType type, IApplicationUser currentApplicationUser, string notification, int? pageID, int? visitorID, params System.Xml.XmlDocument[] xml)
+        public static async Task<int> InsertOneAsync(string groupName, NotificationType type, IApplicationUser currentApplicationUser, string notification, int? pageID, int? visitorID, params XmlDocument[] xml)
         {
             var implement = new Notification();
 
             if (xml != null && xml.Any())
             {
                 implement.XML = new XmlDocument();
-                implement.XML.LoadXml(Sushi.Mediakiwi.Data.Utility.GetSerialized(new XMLArray() { MessageCount = xml.Length }));
+                implement.XML.LoadXml(Utility.GetSerialized(new XMLArray() { MessageCount = xml.Length }));
                 foreach (var item in xml)
                 {
                     XmlNode importedDocument = implement.XML.ImportNode(item.DocumentElement, true);
@@ -451,7 +450,7 @@ namespace Sushi.Mediakiwi.Data
             if (string.IsNullOrEmpty(groupName))
                 groupName = "";
             else if (groupName.Length > 50)
-                groupName = Sushi.Mediakiwi.Data.Utility.ConvertToFixedLengthText(groupName, 47, "..");
+                groupName = Utility.ConvertToFixedLengthText(groupName, 47, "..");
 
             implement.Group = groupName;
 
@@ -481,7 +480,7 @@ namespace Sushi.Mediakiwi.Data
                     continue;
 
                 XmlDocument doc = new XmlDocument();
-                doc.LoadXml(Sushi.Mediakiwi.Data.Utility.GetSerialized(item));
+                doc.LoadXml(Utility.GetSerialized(item));
                 tmp.Add(doc);
             }
             return tmp.ToArray();

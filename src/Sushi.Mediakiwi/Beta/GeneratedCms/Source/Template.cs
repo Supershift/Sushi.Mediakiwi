@@ -1,11 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Globalization;
-using System.Web;
-using Sushi.Mediakiwi.Framework;
 using Sushi.Mediakiwi.Data;
-using System.Net;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Text;
 
 namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
 {
@@ -14,7 +10,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
     /// </summary>
     class Template
     {
-        static void ApplyTabularUrl(Console container, Sushi.Mediakiwi.Framework.WimComponentListRoot.Tabular t, int levelEntry)
+        static void ApplyTabularUrl(Console container, Framework.WimComponentListRoot.Tabular t, int levelEntry)
         {
             ApplyTabularUrl(container, t, levelEntry, null);
         }
@@ -32,7 +28,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
             return addition;
         }
 
-        static void ApplyTabularUrl(Console container, Sushi.Mediakiwi.Framework.WimComponentListRoot.Tabular t, int levelEntry, int? currentListID)
+        static void ApplyTabularUrl(Console container, Framework.WimComponentListRoot.Tabular t, int levelEntry, int? currentListID)
         {
             int listID = currentListID.HasValue ? currentListID.Value : Utility.ConvertToInt(container.Request.Query["list"]);
 
@@ -93,7 +89,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
 
             string tabTag = null;
             #region Browsing
-            if (container.CurrentList.Type == Sushi.Mediakiwi.Data.ComponentListType.Browsing)
+            if (container.CurrentList.Type == ComponentListType.Browsing)
             {
                 title = Labels.ResourceManager.GetString("list_browsing", new CultureInfo(container.CurrentApplicationUser.LanguageCulture));
                 #region PAGE
@@ -168,7 +164,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
             }
             #endregion
             #region Folder & page
-            else if (container.CurrentList.Type == Sushi.Mediakiwi.Data.ComponentListType.Folders || container.CurrentList.Type == Sushi.Mediakiwi.Data.ComponentListType.PageProperties)
+            else if (container.CurrentList.Type == ComponentListType.Folders || container.CurrentList.Type == ComponentListType.PageProperties)
             {
                 tabTag = string.Format(@"
 			            <li><a href=""{1}"" class=""active"">{0}</a></li>"
@@ -178,14 +174,14 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
             }
             #endregion
             #region Assets
-            else if (container.CurrentList.Type == Sushi.Mediakiwi.Data.ComponentListType.Documents || container.CurrentList.Type == Sushi.Mediakiwi.Data.ComponentListType.Images)
+            else if (container.CurrentList.Type == ComponentListType.Documents || container.CurrentList.Type == ComponentListType.Images)
             {
                 title = "Browsing";
 
                 int galleryID = Utility.ConvertToInt(container.Request.Query["gallery"]);
                 if (galleryID == 0)
                 {
-                    galleryID = Sushi.Mediakiwi.Data.Asset.SelectOne(container.Item.Value).GalleryID;
+                    galleryID = Asset.SelectOne(container.Item.Value).GalleryID;
                     //if (container.CurrentList.Type == Sushi.Mediakiwi.Data.ComponentListType.Documents)
                     //    galleryID = Sushi.Mediakiwi.Data.Document.SelectOne(container.Item.Value).GalleryID;
                     //else if (container.CurrentList.Type == Sushi.Mediakiwi.Data.ComponentListType.Images)
@@ -197,7 +193,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                         <li><a href=""{2}""{3}>{4}</a></li>"
                     , title
                     , string.Concat(container.WimPagePath, "?gallery=", galleryID)
-                    , string.Concat(container.WimPagePath, "?gallery=", galleryID, (container.CurrentList.Type == Sushi.Mediakiwi.Data.ComponentListType.Documents ? "&gfx=" : "&gfx=")
+                    , string.Concat(container.WimPagePath, "?gallery=", galleryID, (container.CurrentList.Type == ComponentListType.Documents ? "&gfx=" : "&gfx=")
                     , container.Item.GetValueOrDefault())
                     , selectedTab == 0 ? " class=\"active\"" : null
                     , container.CurrentList.SingleItemName
@@ -229,7 +225,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                     string itemTitle = container.CurrentList.SingleItemName;
 
                     //  Testcode
-                    List<Sushi.Mediakiwi.Framework.WimComponentListRoot.Tabular> tabularList = null;
+                    List<Framework.WimComponentListRoot.Tabular> tabularList = null;
                     if (!string.IsNullOrEmpty(container.Request.Query["group"]))
                     {
                         int groupId = Utility.ConvertToInt(container.Request.Query["group"]);
@@ -237,13 +233,13 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                         if (groupId != container.CurrentList.ID)
                         {
 
-                            if (container.CurrentList.Type == Sushi.Mediakiwi.Data.ComponentListType.ComponentListProperties)
+                            if (container.CurrentList.Type == ComponentListType.ComponentListProperties)
                             {
                                 tabularList = container.CurrentListInstance.wim.m_Collection;
                             }
                             else
                             {
-                                var innerlist = Sushi.Mediakiwi.Data.ComponentList.SelectOne(groupId);
+                                var innerlist = ComponentList.SelectOne(groupId);
 
                                 //  The current requested list is not the list that is the base of the tabular menu
                                 master = container.ReplicateInstance(innerlist);
@@ -268,7 +264,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                     if (tabularList != null)
                     {
                         tabulars = "";
-                        foreach (Sushi.Mediakiwi.Framework.WimComponentListRoot.Tabular t in tabularList)
+                        foreach (Framework.WimComponentListRoot.Tabular t in tabularList)
                         {
                             if (t.List.IsNewInstance)
                                 continue;
@@ -291,7 +287,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                             {
                                 if (container.CurrentListInstance.wim.m_Collection != null)
                                 {
-                                    foreach (Sushi.Mediakiwi.Framework.WimComponentListRoot.Tabular t2 in container.CurrentListInstance.wim.m_Collection)
+                                    foreach (Framework.WimComponentListRoot.Tabular t2 in container.CurrentListInstance.wim.m_Collection)
                                     {
                                         ApplyTabularUrl(container, t2, 2);
 
@@ -323,7 +319,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
 
                                     if (cl.wim.m_Collection != null)
                                     {
-                                        foreach (Sushi.Mediakiwi.Framework.WimComponentListRoot.Tabular t2 in cl.wim.m_Collection)
+                                        foreach (Framework.WimComponentListRoot.Tabular t2 in cl.wim.m_Collection)
                                         {
                                             tabulars += string.Format(@"<li><a href=""{1}""{2}>{0}</a></li>"
                                                 , t2.TitleValue
@@ -341,7 +337,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                     }
 
 
-                    Sushi.Mediakiwi.Framework.WimComponentListRoot.Tabular tmp = new Sushi.Mediakiwi.Framework.WimComponentListRoot.Tabular();
+                    Framework.WimComponentListRoot.Tabular tmp = new Framework.WimComponentListRoot.Tabular();
                     tmp.SelectedItem = currentListItemId;
                     ApplyTabularUrl(container, tmp, 0, currentListId);
 
@@ -349,7 +345,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                     int baseID = Utility.ConvertToInt(container.Request.Query["base"]);
                     if (baseID > 0)
                     {
-                        var list = Sushi.Mediakiwi.Data.ComponentList.SelectOne(baseID);
+                        var list = ComponentList.SelectOne(baseID);
                         title = list.Name;
                         currentListId = list.ID;
                     }
@@ -407,7 +403,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
         {
             string tabTag = null;
             #region Browsing
-            if (container.CurrentList.Type == Sushi.Mediakiwi.Data.ComponentListType.Browsing)
+            if (container.CurrentList.Type == ComponentListType.Browsing)
             {
                 title = Labels.ResourceManager.GetString("list_browsing", new CultureInfo(container.CurrentApplicationUser.LanguageCulture));
                 if (container.ItemType == RequestItemType.Page)
@@ -476,7 +472,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
             }
             #endregion
             #region Folder & page
-            else if (container.CurrentList.Type == Sushi.Mediakiwi.Data.ComponentListType.Folders || container.CurrentList.Type == Sushi.Mediakiwi.Data.ComponentListType.PageProperties)
+            else if (container.CurrentList.Type == ComponentListType.Folders || container.CurrentList.Type == ComponentListType.PageProperties)
             {
                 tabTag = string.Format(@"
 		            <ul id=""tabNavigation"">
@@ -488,14 +484,14 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
             }
             #endregion
             #region Assets
-            else if (container.CurrentList.Type == Sushi.Mediakiwi.Data.ComponentListType.Documents || container.CurrentList.Type == Sushi.Mediakiwi.Data.ComponentListType.Images)
+            else if (container.CurrentList.Type == ComponentListType.Documents || container.CurrentList.Type == ComponentListType.Images)
             {
                 title = "Browsing";
 
                 int galleryID = Utility.ConvertToInt(container.Request.Query["gallery"]);
                 if (galleryID == 0)
                 {
-                    galleryID = Sushi.Mediakiwi.Data.Asset.SelectOne(container.Item.Value).GalleryID;
+                    galleryID = Asset.SelectOne(container.Item.Value).GalleryID;
                     //if (container.CurrentList.Type == Sushi.Mediakiwi.Data.ComponentListType.Documents)
                     //    galleryID = Sushi.Mediakiwi.Data.Document.SelectOne(container.Item.Value).GalleryID;
                     //else if (container.CurrentList.Type == Sushi.Mediakiwi.Data.ComponentListType.Images)
@@ -509,7 +505,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
 		            </ul>"
                     , title
                     , string.Concat(container.WimPagePath, "?gallery=", galleryID)
-                    , string.Concat(container.WimPagePath, "?gallery=", galleryID, (container.CurrentList.Type == Sushi.Mediakiwi.Data.ComponentListType.Documents ? "&gfx=" : "&gfx=")
+                    , string.Concat(container.WimPagePath, "?gallery=", galleryID, (container.CurrentList.Type == ComponentListType.Documents ? "&gfx=" : "&gfx=")
                     , container.Item.GetValueOrDefault())
                     , selectedTab == 0 ? " class=\"active\"" : null
                     , container.CurrentList.SingleItemName
@@ -529,7 +525,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                     string itemTitle = container.CurrentListInstance.wim.ListTitle;
 
                     //  Testcode
-                    List<Sushi.Mediakiwi.Framework.WimComponentListRoot.Tabular> tabularList = null;
+                    List<Framework.WimComponentListRoot.Tabular> tabularList = null;
                     if (!string.IsNullOrEmpty(container.Request.Query["group"]))
                     {
                         int groupId = Utility.ConvertToInt(container.Request.Query["group"]);
@@ -537,13 +533,13 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                         if (groupId != container.CurrentList.ID)
                         {
 
-                            if (container.CurrentList.Type == Sushi.Mediakiwi.Data.ComponentListType.ComponentListProperties)
+                            if (container.CurrentList.Type == ComponentListType.ComponentListProperties)
                             {
                                 tabularList = container.CurrentListInstance.wim.m_Collection;
                             }
                             else
                             {
-                                var innerlist = Sushi.Mediakiwi.Data.ComponentList.SelectOne(groupId);
+                                var innerlist = ComponentList.SelectOne(groupId);
 
                                 //  The current requested list is not the list that is the base of the tabular menu
                                 master = container.ReplicateInstance(innerlist);
@@ -573,7 +569,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                     if (tabularList != null)
                     {
                         tabulars = "";
-                        foreach (Sushi.Mediakiwi.Framework.WimComponentListRoot.Tabular t in tabularList)
+                        foreach (Framework.WimComponentListRoot.Tabular t in tabularList)
                         {
                             if (t.List.IsNewInstance)
                                 continue;
@@ -596,7 +592,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                             {
                                 if (container.CurrentListInstance.wim.m_Collection != null)
                                 {
-                                    foreach (Sushi.Mediakiwi.Framework.WimComponentListRoot.Tabular t2 in container.CurrentListInstance.wim.m_Collection)
+                                    foreach (Framework.WimComponentListRoot.Tabular t2 in container.CurrentListInstance.wim.m_Collection)
                                     {
                                         ApplyTabularUrl(container, t2, 2);
 
@@ -628,7 +624,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
 
                                     if (cl.wim.m_Collection != null)
                                     {
-                                        foreach (Sushi.Mediakiwi.Framework.WimComponentListRoot.Tabular t2 in cl.wim.m_Collection)
+                                        foreach (Framework.WimComponentListRoot.Tabular t2 in cl.wim.m_Collection)
                                         {
                                             tabulars += string.Format(@"<li><a href=""{1}""{2}><span>{0}</span></a></li>"
                                                 , t2.TitleValue
@@ -646,7 +642,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                     }
 
 
-                    Sushi.Mediakiwi.Framework.WimComponentListRoot.Tabular tmp = new Sushi.Mediakiwi.Framework.WimComponentListRoot.Tabular();
+                    Framework.WimComponentListRoot.Tabular tmp = new Framework.WimComponentListRoot.Tabular();
                     tmp.SelectedItem = currentListItemId;
                     ApplyTabularUrl(container, tmp, 0, currentListId);
 
@@ -654,7 +650,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                     int baseID = Utility.ConvertToInt(container.Request.Query["base"]);
                     if (baseID > 0)
                     {
-                        var list = Sushi.Mediakiwi.Data.ComponentList.SelectOne(baseID);
+                        var list = ComponentList.SelectOne(baseID);
                         title = list.Name;
                         currentListId = list.ID;
                     }

@@ -5,8 +5,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Reflection;
-using System.Text;
 
 namespace Sushi.Mediakiwi.AppCentre.Data.Implementation.Forms
 {
@@ -18,13 +16,14 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation.Forms
 
             Map(x => x.Name).TextField("Title", 50, true).Expression(OutputExpression.Alternating);
             Map(x => x.IsActive).Checkbox("Active").Expression(OutputExpression.Alternating);
-            Map(x => x.CountryID).Dropdown("Country", nameof(SiteForm.AvailableCountries), false).Expression(OutputExpression.Alternating); ;
-            Map(x => x.TimeZoneIndex).Dropdown("Timezone", nameof(SiteForm.AvailableTimeZones), false).Expression(OutputExpression.Alternating); ;
-            Map(x => x.Language).Dropdown("Language", nameof(SiteForm.AvailableCulturesCollection), false).Expression(OutputExpression.Alternating); ;
-            Map(x => x.Culture).Dropdown("Culture", nameof(SiteForm.AvailableCulturesCollection), false).Expression(OutputExpression.Alternating); ;
-            Map(x => x.MasterID).Dropdown("Inherit from", nameof(SiteForm.AvailableSitesCollection), false);
-            
-            Map<SiteForm>(x => x.Section1, this).Section("Settings");
+            Map(x => x.CountryID).Dropdown("Country", nameof(AvailableCountries), false).Expression(OutputExpression.Alternating);
+            Map(x => x.TimeZoneIndex).Dropdown("Timezone", nameof(AvailableTimeZones), false).Expression(OutputExpression.Alternating);
+            Map(x => x.Language).Dropdown("Language", nameof(AvailableCulturesCollection), false).Expression(OutputExpression.Alternating);
+            Map(x => x.Culture).Dropdown("Culture", nameof(AvailableCulturesCollection), false).Expression(OutputExpression.Alternating);
+            Map(x => x.MasterID).Dropdown("Inherit from", nameof(AvailableSitesCollection), false);
+            Map(x => x.Domain).TextField("Domain", 50, false, false, "https://www.website.com");
+
+            Map(x => x.Section1, this).Section("Settings");
 
             Map(x => x.HasLists).Checkbox("Lists").Expression(OutputExpression.Alternating);
             Map(x => x.HasPages).Checkbox("Pages").Expression(OutputExpression.Alternating);
@@ -92,7 +91,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation.Forms
                     m_AvailableTimeZones.Add(new ListItem("", ""));
                     try
                     {
-                        foreach (var tz in System.TimeZoneInfo.GetSystemTimeZones())
+                        foreach (var tz in TimeZoneInfo.GetSystemTimeZones())
                         {
                             m_AvailableTimeZones.Add(new ListItem(tz.DisplayName, tz.Id));
                         }

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Sushi.Mediakiwi.Data
+﻿namespace Sushi.Mediakiwi.Data
 {
     public class CacheItemLogic
     {
@@ -15,8 +9,10 @@ namespace Sushi.Mediakiwi.Data
         /// <param name="isIndexKey">if set to <c>true</c> [is index key].</param>
         public static void ApplyLoadBalancedCacheCheckItem(string key, bool isIndexKey)
         {
-            if (!CommonConfiguration.IS_LOAD_BALANCED) 
+            if (!CommonConfiguration.IS_LOAD_BALANCED)
+            {
                 return;
+            }
 
             var cache = new CacheItem();
             cache.Name = key;

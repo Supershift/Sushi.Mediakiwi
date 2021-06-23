@@ -1,7 +1,6 @@
 ﻿using Sushi.Mediakiwi.Data;
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Sushi.Mediakiwi.Framework
 {
@@ -106,9 +105,9 @@ namespace Sushi.Mediakiwi.Framework
                     this.Add("", columnUniqueIdentifierPropertyName, ListDataColumnType.UniqueIdentifier);
             }
 
-            foreach (Sushi.Mediakiwi.Data.PropertySearchColumn psc in Sushi.Mediakiwi.Data.PropertySearchColumn.SelectAll(listID))
+            foreach (PropertySearchColumn psc in PropertySearchColumn.SelectAll(listID))
             {
-                Sushi.Mediakiwi.Framework.ListDataColumnType lct = ListDataColumnType.Default;
+                ListDataColumnType lct = ListDataColumnType.Default;
                 if (psc.IsHighlight)
                 {
                     if (psc.IsOnlyExport)
@@ -118,18 +117,18 @@ namespace Sushi.Mediakiwi.Framework
                 }
                 else if (psc.IsOnlyExport)
                 {
-                    lct = Sushi.Mediakiwi.Framework.ListDataColumnType.ExportOnly;
+                    lct = ListDataColumnType.ExportOnly;
                 }
 
                 this.Add(psc.DisplayTitle
                     , (psc.Property.IsFixed || psc.Property.IsPresentProperty || hasColumnMapping) ? psc.Property.FieldName : string.Concat("Data.", psc.Property.FieldName)
                     , lct
-                    , Sushi.Mediakiwi.Framework.ListDataContentType.Default
+                    , ListDataContentType.Default
                     , null
-                    , (Sushi.Mediakiwi.Framework.ListDataTotalType)psc.TotalType
+                    , (ListDataTotalType)psc.TotalType
                     , null
                     , psc.ColumnWidth.GetValueOrDefault()
-                    , (psc.Property.TypeID == (int)ContentType.Date || psc.Property.TypeID == (int)ContentType.DateTime)
+                    , (psc.Property.ContentTypeID == ContentType.Date || psc.Property.ContentTypeID == ContentType.DateTime)
                         ? typeof(DateTime)
                         : null
                     );
@@ -337,7 +336,7 @@ namespace Sushi.Mediakiwi.Framework
         /// <param name="columnWidth">Width of the column.</param>
         /// <param name="type">The type.</param>
         [Obsolete("Please use Add(new ListDataColumn(\"columnName\", \"columnPropertyName\") { .. })", false)]
-        public void Add(string columnName, string columnPropertyName, ListDataColumnType columnType, ListDataContentType contentType, string queryStringAdditionProperty, ListDataTotalType totalType, ListDataEditConfiguration editConfiguration, int columnWidth, System.Type type)
+        public void Add(string columnName, string columnPropertyName, ListDataColumnType columnType, ListDataContentType contentType, string queryStringAdditionProperty, ListDataTotalType totalType, ListDataEditConfiguration editConfiguration, int columnWidth, Type type)
         {
             Add(columnName, columnPropertyName, columnType, contentType, queryStringAdditionProperty, totalType, editConfiguration, columnWidth, type, Align.Default);
         }
@@ -369,9 +368,9 @@ namespace Sushi.Mediakiwi.Framework
         /// <param name="type">The type.</param>
         /// <param name="alignment">The alignment.</param>
         [Obsolete("Please use Add(new ListDataColumn(\"columnName\", \"columnPropertyName\") { .. })", false)]
-        public void Add(string columnName, string columnPropertyName, ListDataColumnType columnType, ListDataContentType contentType, string queryStringAdditionProperty, ListDataTotalType totalType, ListDataEditConfiguration editConfiguration, int columnWidth, System.Type type, Align alignment)
+        public void Add(string columnName, string columnPropertyName, ListDataColumnType columnType, ListDataContentType contentType, string queryStringAdditionProperty, ListDataTotalType totalType, ListDataEditConfiguration editConfiguration, int columnWidth, Type type, Align alignment)
         {
-            if (columnType == ListDataColumnType.Checkbox || columnType == Sushi.Mediakiwi.Framework.ListDataColumnType.RadioBox)
+            if (columnType == ListDataColumnType.Checkbox || columnType == ListDataColumnType.RadioBox)
             {
                 //if (columnWidth == 0)
                 //    columnWidth = 20;

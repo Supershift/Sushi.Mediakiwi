@@ -1,8 +1,7 @@
 ﻿using Microsoft.AspNetCore.Builder;
-using System;
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using System.Text;
+using Microsoft.Extensions.DependencyInjection;
+using Sushi.Mediakiwi.Framework;
+using Sushi.Mediakiwi.PageModules.ExportPage;
 
 
 namespace Sushi.Mediakiwi
@@ -12,6 +11,11 @@ namespace Sushi.Mediakiwi
         public static IApplicationBuilder UseMediakiwi(this IApplicationBuilder app)
         {
             return app.UseMiddleware<Portal>();
+        }
+
+        public static void AddMediakiwi(this IServiceCollection services)
+        {
+            services.AddSingleton<IPageModule, ExportPageModule>();
         }
     }
 }

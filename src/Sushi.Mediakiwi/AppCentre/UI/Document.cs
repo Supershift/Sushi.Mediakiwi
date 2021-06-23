@@ -1,24 +1,15 @@
-using System;
-using System.Linq;
-using System.Collections;
-using System.Collections.Generic;
-using System.IO;
-using System.Data;
-using System.Data.SqlClient;
-using System.Drawing;
-using System.Drawing.Imaging;
-using System.Drawing.Drawing2D;
-using System.Web;
-using System.Threading;
-using System.Text;
-using Sushi.Mediakiwi.Data;
 using Microsoft.AspNetCore.Http;
-using Sushi.Mediakiwi.UI;
 using Sushi.Mediakiwi.AppCentre.UI.Forms;
-using System.Threading.Tasks;
+using Sushi.Mediakiwi.Data;
+using Sushi.Mediakiwi.Data.Configuration;
 using Sushi.Mediakiwi.Framework;
 using Sushi.Mediakiwi.Persistors;
-using Sushi.Mediakiwi.Data.Configuration;
+using Sushi.Mediakiwi.UI;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
 {
@@ -145,7 +136,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                 {
                     m_AssetTypes = new ListItemCollection();
                     m_AssetTypes.Add(new ListItem(""));
-                    var selection = from item in Sushi.Mediakiwi.Data.AssetType.SelectAll() orderby item.Name select item;
+                    var selection = from item in AssetType.SelectAll() orderby item.Name select item;
                     foreach (var item in selection)
                     {
                         m_AssetTypes.Add(new ListItem(item.Name, item.ID.ToString()));
@@ -163,21 +154,21 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             wim.HideOpenCloseToggle = true;
             wim.OpenInEditMode = true;
 
-            this.ListLoad += Document_ListLoad;
-            this.ListSave += Document_ListSave;
-            this.ListDelete += Document_ListDelete;
-            this.ListSearch += Document_ListSearch;
+            ListLoad += Document_ListLoad;
+            ListSave += Document_ListSave;
+            ListDelete += Document_ListDelete;
+            ListSearch += Document_ListSearch;
         }
 
         /// <summary>
         /// Handles the ListDelete event of the Document control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="Sushi.Mediakiwi.Framework.ComponentListEventArgs"/> instance containing the event data.</param>
+        /// <param name="e">The <see cref="ComponentListEventArgs"/> instance containing the event data.</param>
         async Task Document_ListDelete(ComponentListEventArgs e)
         {
             if (m_Implement == null)
-                m_Implement = await Sushi.Mediakiwi.Data.Document.SelectOneAsync(e.SelectedKey);
+                m_Implement = await Mediakiwi.Data.Document.SelectOneAsync(e.SelectedKey);
 
             //m_Implement.CloudDelete();
 
@@ -218,23 +209,23 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// Handles the ListSave event of the Document control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="Sushi.Mediakiwi.Framework.ComponentListEventArgs"/> instance containing the event data.</param>
+        /// <param name="e">The <see cref="ComponentListEventArgs"/> instance containing the event data.</param>
         async Task Document_ListSave(ComponentListEventArgs e)
         {
             if (m_Implement == null)
-                m_Implement = await Sushi.Mediakiwi.Data.Document.SelectOneAsync(e.SelectedKey);
+                m_Implement = await Mediakiwi.Data.Document.SelectOneAsync(e.SelectedKey);
 
             int? parent = Utility.ConvertToIntNullable(Request.Query["base"]);
             if (parent.HasValue)
                 m_Implement.ParentID = parent;
 
-            Sushi.Mediakiwi.Data.Asset currentAsset = m_Implement;
+            Asset currentAsset = m_Implement;
             if (m_Implement.ParentID.HasValue)
             {
                 //if (wim.CurrentFolder.DatabaseMappingPortal != null)
                 //    currentAsset = Sushi.Mediakiwi.Data.Asset.SelectOneByPortal(m_Implement.ParentID.Value, wim.CurrentFolder.DatabaseMappingPortal.Name);
                 //else
-                currentAsset = Sushi.Mediakiwi.Data.Asset.SelectOne(m_Implement.ParentID.Value);
+                currentAsset = Asset.SelectOne(m_Implement.ParentID.Value);
 
                 m_Implement.GalleryID = currentAsset.GalleryID;
             }
@@ -304,7 +295,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// Sets the push thread.
         /// </summary>
         /// <param name="document">The document.</param>
-        private void SetPushThread(Sushi.Mediakiwi.Data.Document document)
+        private void SetPushThread(Mediakiwi.Data.Document document)
         {
             //List<string> urlList = new List<string>();
             //foreach (Sushi.Mediakiwi.Data.Site site in Sushi.Mediakiwi.Data.Site.SelectAll())
@@ -385,37 +376,37 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
 
 
 
-        [Sushi.Mediakiwi.Framework.OnlyVisibleWhenTrue("ShowButtonMulti")]
-        [Sushi.Mediakiwi.Framework.ContentListItem.Choice_Dropdown("Gallery", "GalleryCollection", true, true)]
+        [OnlyVisibleWhenTrue("ShowButtonMulti")]
+        [Framework.ContentListItem.Choice_Dropdown("Gallery", "GalleryCollection", true, true)]
         public int AssignedGalleryID2 { get; set; }
 
         /// <summary>
         /// Gets or sets the multi file.
         /// </summary>
         /// <value>The multi file.</value>
-        [Sushi.Mediakiwi.Framework.OnlyVisibleWhenTrue("ShowButtonMulti")]
-        [Sushi.Mediakiwi.Framework.ContentListItem.HtmlContainer(true)]
+        [OnlyVisibleWhenTrue("ShowButtonMulti")]
+        [Framework.ContentListItem.HtmlContainer(true)]
         public string MultiFile { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether [button multi].
         /// </summary>
         /// <value><c>true</c> if [button multi]; otherwise, <c>false</c>.</value>
-        [Sushi.Mediakiwi.Framework.OnlyVisibleWhenTrue("ShowButtonMulti", false)]
-        [Sushi.Mediakiwi.Framework.ContentListItem.Button("Multi-file upload", false)]
+        [OnlyVisibleWhenTrue("ShowButtonMulti", false)]
+        [Framework.ContentListItem.Button("Multi-file upload", false)]
         public bool ButtonMulti { get; set; }
 
         public string ButtonBack2URL { get; set; }
-        [Sushi.Mediakiwi.Framework.ContentListItem.Button("", false, ButtonClassName = "flaticon icon-home", IconTarget = Sushi.Mediakiwi.Framework.ButtonTarget.TopRight
+        [Framework.ContentListItem.Button("", false, ButtonClassName = "flaticon icon-home", IconTarget = ButtonTarget.TopRight
             , CustomUrlProperty = "ButtonBack2URL")]
         public bool ButtonBack2 { get; set; }
 
 
-        [Sushi.Mediakiwi.Framework.ContentListItem.Button("", false, ButtonClassName = "flaticon icon-rotate", IconTarget = Sushi.Mediakiwi.Framework.ButtonTarget.TopRight, InteractiveHelp = "Redo upload")]
+        [Framework.ContentListItem.Button("", false, ButtonClassName = "flaticon icon-rotate", IconTarget = ButtonTarget.TopRight, InteractiveHelp = "Redo upload")]
         public bool ButtonBack { get; set; }
 
         public string AlternativeURL { get; set; }
-        [Sushi.Mediakiwi.Framework.ContentListItem.Button("", false, ButtonClassName = "flaticon icon-platforms", IconTarget = Sushi.Mediakiwi.Framework.ButtonTarget.TopRight, InteractiveHelp = "Add/update alternative image"
+        [Framework.ContentListItem.Button("", false, ButtonClassName = "flaticon icon-platforms", IconTarget = ButtonTarget.TopRight, InteractiveHelp = "Add/update alternative image"
             , CustomUrlProperty = "AlternativeURL")]
         public bool ButtonAlternative { get; set; }
 
@@ -454,8 +445,8 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// Gets or sets a value indicating whether [button single].
         /// </summary>
         /// <value><c>true</c> if [button single]; otherwise, <c>false</c>.</value>
-        [Sushi.Mediakiwi.Framework.OnlyVisibleWhenTrue("ShowButtonMulti")]
-        [Sushi.Mediakiwi.Framework.ContentListItem.Button("Single file upload", false)]
+        [OnlyVisibleWhenTrue("ShowButtonMulti")]
+        [Framework.ContentListItem.Button("Single file upload", false)]
         public bool ButtonSingle { get; set; }
 
         void LoadMultiUpload()
@@ -491,7 +482,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                 var range = Utility.ConvertToIntArray(collection.Split(','));
 
 
-                var asset = Sushi.Mediakiwi.Data.Asset.SelectRange(range);
+                var asset = Asset.SelectRange(range);
 
                 StringBuilder build = new StringBuilder();
                 bool isFormValid = true;
@@ -666,8 +657,8 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         }
 
 
-        [Sushi.Mediakiwi.Framework.ContentListItem.DataList()]
-        public Sushi.Mediakiwi.Data.DataList AssetTypeSelectionList { get; set; }
+        [Framework.ContentListItem.DataList()]
+        public DataList AssetTypeSelectionList { get; set; }
 
         public class AssetTypeMapper
         {
@@ -709,36 +700,36 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             public string PassthroughParameter { get; set; }
         }
 
-        async Task Document_ListSearch(Framework.ComponentListSearchEventArgs e)
+        async Task Document_ListSearch(ComponentListSearchEventArgs e)
         {
             int rootAsset = Utility.ConvertToInt(Request.Query["base"]);
 
             var url = wim.GetUrl(new KeyValue() { Key = "item", RemoveKey = true }
                 );
-            var types = await Sushi.Mediakiwi.Data.AssetType.SelectAllAsync(true);
-            var assets = await Sushi.Mediakiwi.Data.Asset.SelectAll_VariantAsync(rootAsset, Request.Query["gallery"]);
+            var types = await AssetType.SelectAllAsync(true);
+            var assets = await Asset.SelectAll_VariantAsync(rootAsset, Request.Query["gallery"]);
             AssetTypeMapper mapper = new AssetTypeMapper();
             var mapped = mapper.Map(types, assets, url);
 
-            wim.ListDataColumns.Add(new Framework.ListDataColumn("ID", "AssetID", Framework.ListDataColumnType.UniqueIdentifier));
-            wim.ListDataColumns.Add(new Framework.ListDataColumn("Type", "AssetType", Framework.ListDataColumnType.HighlightPresent));
-            wim.ListDataColumns.Add(new Framework.ListDataColumn("File", "DisplayName"));
-            wim.ListDataColumns.Add(new Framework.ListDataColumn("", "HasAsset") { ColumnWidth = 30 });
+            wim.ListDataColumns.Add(new ListDataColumn("ID", "AssetID", ListDataColumnType.UniqueIdentifier));
+            wim.ListDataColumns.Add(new ListDataColumn("Type", "AssetType", ListDataColumnType.HighlightPresent));
+            wim.ListDataColumns.Add(new ListDataColumn("File", "DisplayName"));
+            wim.ListDataColumns.Add(new ListDataColumn("", "HasAsset") { ColumnWidth = 30 });
             wim.ListDataAdd(mapped);
             wim.SearchResultItemPassthroughParameterProperty = "PassthroughParameter";
             wim.Page.Body.Grid.IgnoreInLayerSubSelect = true;
         }
 
         DocumentForm _Form;
-        Sushi.Mediakiwi.Data.Asset m_Implement;
+        Asset m_Implement;
         /// <summary>
         /// Handles the ListLoad event of the Document control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="Sushi.Mediakiwi.Framework.ComponentListEventArgs"/> instance containing the event data.</param>
+        /// <param name="e">The <see cref="ComponentListEventArgs"/> instance containing the event data.</param>
         async Task Document_ListLoad(ComponentListEventArgs e)
         {
-            this.AssetTypeSelectionList = new Sushi.Mediakiwi.Data.DataList();
+            this.AssetTypeSelectionList = new DataList();
 
             int rootAsset = Utility.ConvertToInt(Request.Query["base"], e.SelectedKey);
             bool isAlternativeImage = !string.IsNullOrEmpty(Request.Query["base"]);
@@ -753,7 +744,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
 
             if (e.SelectedKey > 0)
             {
-                var variantTypes = await Sushi.Mediakiwi.Data.AssetType.SelectAllAsync(true);
+                var variantTypes = await AssetType.SelectAllAsync(true);
                 if (variantTypes.Length > 0)
                     wim.SetPropertyVisibility("ButtonAlternative", true);
             }
@@ -835,9 +826,9 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             //if (wim.CurrentFolder.DatabaseMappingPortal != null)
             //    Implement = Sushi.Mediakiwi.Data.Asset.SelectOneByPortal(e.SelectedKey, wim.CurrentFolder.DatabaseMappingPortal.Name);
             //else
-            Implement = await Sushi.Mediakiwi.Data.Asset.SelectOneAsync(e.SelectedKey);
+            Implement = await Asset.SelectOneAsync(e.SelectedKey);
             _Form = new DocumentForm(Implement);
-            this.FormMaps.Add(_Form);
+            FormMaps.Add(_Form);
             
 
             //wim.Page.HideMenuBar = true;
@@ -860,7 +851,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             //{
             //    wim.SetPropertyVisibility("ButtonBack", true);
             //    wim.SetPropertyVisibility("File", false);
-            //    wim.SetPropertyVisibility("RemoteLocation", !string.IsNullOrEmpty(this.Implement.RemoteLocation));
+            //    wim.SetPropertyVisibility("RemoteLocation", !string.IsNullOrEmpty(Implement.RemoteLocation));
             //    wim.SetPropertyVisibility("RemoteDownload", false);
             //    wim.SetPropertyVisibility("AssignedGalleryID2", false);
             //    wim.SetPropertyVisibility("AssignedGalleryID", false);
@@ -873,7 +864,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             //    IsExistingImage = Implement.IsImage;
             //}
             //else
-            //    this.Implement.AssetTypeID = alternativeTypeID;
+            //    Implement.AssetTypeID = alternativeTypeID;
 
             //IsPopupRequest = !string.IsNullOrEmpty(Request.Query["openinframe"]) && !string.IsNullOrEmpty(Request.Query["gallery"]);
 
@@ -928,7 +919,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// Gets or sets the implement.
         /// </summary>
         /// <value>The implement.</value>
-        public Sushi.Mediakiwi.Data.Asset Implement
+        public Asset Implement
         {
             get { return m_Implement; }
             set { m_Implement = value; }
@@ -948,9 +939,9 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
 
                 m_GalleryCollection = new ListItemCollection();
 
-                Sushi.Mediakiwi.Data.Gallery[] galleries = Sushi.Mediakiwi.Data.Gallery.SelectAllAccessible(wim.CurrentApplicationUser);
+                Gallery[] galleries = Gallery.SelectAllAccessible(wim.CurrentApplicationUser);
 
-                foreach (Sushi.Mediakiwi.Data.Gallery gallery in galleries)
+                foreach (Gallery gallery in galleries)
                 {
                     m_GalleryCollection.Add(new ListItem(gallery.CompletePath, gallery.ID.ToString()));
                 }
@@ -964,8 +955,8 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// Gets or sets the gallery.
         /// </summary>
         /// <value>The gallery.</value>
-        [Sushi.Mediakiwi.Framework.OnlyEditableWhenTrue("IsPopupRequest", false)]
-        [Sushi.Mediakiwi.Framework.OnlyVisibleWhenTrue("IsPresentOnServerOrSingleMultifile")]
+        [OnlyEditableWhenTrue("IsPopupRequest", false)]
+        [OnlyVisibleWhenTrue("IsPresentOnServerOrSingleMultifile")]
         //[Sushi.Mediakiwi.Framework.ContentListItem.Choice_Dropdown("Gallery", "GalleryCollection")]
         public int AssignedGalleryID
         {
@@ -986,7 +977,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// Gets or sets the thumbnail.
         /// </summary>
         /// <value>The thumbnail.</value>
-        [Sushi.Mediakiwi.Framework.OnlyVisibleWhenTrue("IsExistingImage")]
+        [OnlyVisibleWhenTrue("IsExistingImage")]
         //[Sushi.Mediakiwi.Framework.ContentListItem.TextLine("Thumbnail")]
         public string Thumbnail
         {
@@ -999,7 +990,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// Gets or sets the size of the file.
         /// </summary>
         /// <value>The size of the file.</value>
-        [Sushi.Mediakiwi.Framework.OnlyVisibleWhenTrue("IsExisting")]
+        [OnlyVisibleWhenTrue("IsExisting")]
         //[Sushi.Mediakiwi.Framework.ContentListItem.TextLine("_filesize")]
         public string FileSize
         {
@@ -1010,7 +1001,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         //plugins_advimage_img_sample
 
 
-        [Sushi.Mediakiwi.Framework.OnlyVisibleWhenTrue("IsRTE_Set_Version")]
+        [OnlyVisibleWhenTrue("IsRTE_Set_Version")]
         //[Sushi.Mediakiwi.Framework.ContentListItem.TextLine("Alignment", Expression = Sushi.Mediakiwi.Framework.OutputExpression.Left)]
         public string RTE_Alignment
         {

@@ -1,7 +1,4 @@
 using Sushi.Mediakiwi.Data;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Sushi.Mediakiwi.Framework.ContentSettingItem
 {
@@ -107,7 +104,7 @@ namespace Sushi.Mediakiwi.Framework.ContentSettingItem
             this.Mandatory = isRequired;
             this.IsCloaked = isCloaked;
 
-            build.Append(GetSimpleTextElement(this.Title, this.Mandatory, this.OutputText, this.InteractiveHelp));
+            build.Append(GetSimpleTextElement(OutputText));
             return null;
         }
 

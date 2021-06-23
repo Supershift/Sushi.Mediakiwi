@@ -16,11 +16,11 @@
 //        /// </summary>
 //        public PortalList()
 //        {
-//            this.ListLoad += new ComponentListEventHandler(PortalList_ListLoad);
-//            this.ListSave += new ComponentListEventHandler(PortalList_ListSave);
-//            this.ListSearch += new ComponentSearchEventHandler(PortalList_ListSearch);
-//            this.ListDelete += new ComponentListEventHandler(PortalList_ListDelete);
-//            this.ListPreRender += new ComponentListEventHandler(PortalList_ListPreRender);
+//            ListLoad += new ComponentListEventHandler(PortalList_ListLoad);
+//            ListSave += new ComponentListEventHandler(PortalList_ListSave);
+//            ListSearch += new ComponentSearchEventHandler(PortalList_ListSearch);
+//            ListDelete += new ComponentListEventHandler(PortalList_ListDelete);
+//            ListPreRender += new ComponentListEventHandler(PortalList_ListPreRender);
 
 //            this.Section1 = "Local username and portal specific password";
 //            this.Section2 = "Remote username and portal specific password";
@@ -47,7 +47,7 @@
 //                    //}
 
 //                    wimServerCommunication.Authenticate auth = new Wim.wimServerCommunication.Authenticate();
-//                    auth.Username = this.Username;
+//                    auth.Username = Username;
 //                    auth.Password = Wim.Utility.HashStringByMD5(this.Password);
 //                    auth.UsernameLocal = user.Name;
 //                    auth.PasswordLocal = Wim.Utility.HashStringByMD5(this.PasswordLocal);
@@ -64,10 +64,10 @@
 //                        wim.Notification.AddError("There was no response for this domain");
 //                        return;
 //                    }
-                    
+
 //                    Implement.Authenticode = authResponse.Authenticode;
 //                    //Implement.Authentication = Wim.Utility.HashStringBySHA1(string.Concat(DateTime.Now.Date.Ticks, 
-//                    //    Sushi.Mediakiwi.Framework.ThinCommunicationService.GetAuthenticode(ping, this.Username, authResponse.Hash, DateTime.Now.Date.Ticks.ToString())));
+//                    //    Sushi.Mediakiwi.Framework.ThinCommunicationService.GetAuthenticode(ping, Username, authResponse.Hash, DateTime.Now.Date.Ticks.ToString())));
 
 //                    Implement.Authentication = authResponse.Hash;
 //                    Implement.Name = authResponse.Portal;
@@ -106,8 +106,8 @@
 //        void PortalList_ListLoad(object sender, ComponentListEventArgs e)
 //        {
 //            Implement = Portal.SelectOne(e.SelectedKey);
-//            this.UsernameLocal = Sushi.Mediakiwi.Data.ApplicationUser.SelectOne(e.SelectedGroupItemKey).Name;
-//            this.Username = Sushi.Mediakiwi.Data.ApplicationUser.SelectOne(e.SelectedGroupItemKey).Name;
+//            UsernameLocal = Sushi.Mediakiwi.Data.ApplicationUser.SelectOne(e.SelectedGroupItemKey).Name;
+//            Username = Sushi.Mediakiwi.Data.ApplicationUser.SelectOne(e.SelectedGroupItemKey).Name;
 //        }
 
 //        public bool CanEdit { get; set; }

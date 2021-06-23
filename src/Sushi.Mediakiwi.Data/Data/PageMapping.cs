@@ -1,9 +1,9 @@
-﻿using Sushi.MicroORM;
+﻿using Sushi.Mediakiwi.Data.MicroORM;
+using Sushi.MicroORM;
 using Sushi.MicroORM.Mapping;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Sushi.Mediakiwi.Data.MicroORM;
 
 namespace Sushi.Mediakiwi.Data
 {
@@ -156,7 +156,7 @@ namespace Sushi.Mediakiwi.Data
         /// <param name="listID">The list ID (NOT USED IN THE QUERY).</param>
         /// <param name="itemID">The item ID.</param>
         /// <returns></returns>
-        public virtual async Task<IPageMapping> SelectOneAsync(int? listID, int itemID)
+        public async virtual Task<IPageMapping> SelectOneAsync(int? listID, int itemID)
         {
             var connector = ConnectorFactory.CreateConnector<PageMapping>();
             var filter = connector.CreateDataFilter();
@@ -414,7 +414,7 @@ namespace Sushi.Mediakiwi.Data
             }
         }
 
-        public virtual async Task<bool> SaveAsync()
+        public async virtual Task<bool> SaveAsync()
         {
             var connector = ConnectorFactory.CreateConnector<PageMapping>();
             try
@@ -434,7 +434,7 @@ namespace Sushi.Mediakiwi.Data
             connector.Delete(this);
         }
 
-        public virtual async Task DeleteAsync()
+        public async virtual Task DeleteAsync()
         {
             var connector = ConnectorFactory.CreateConnector<PageMapping>();
             await connector.DeleteAsync(this);

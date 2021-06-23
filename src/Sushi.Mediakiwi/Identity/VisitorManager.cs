@@ -1,11 +1,7 @@
-﻿using System;
-using System.Linq;
-using System.Collections.Generic;
-using System.Data;
-using Sushi.Mediakiwi.Framework;
+﻿using Microsoft.AspNetCore.Http;
 using Sushi.Mediakiwi.Data;
-using Microsoft.AspNetCore.Http;
 using Sushi.Mediakiwi.Utilities;
+using System;
 
 namespace Sushi.Mediakiwi
 {
@@ -71,7 +67,7 @@ namespace Sushi.Mediakiwi
                 if (Context != null)
                 {
                     var v = auth.GetValue("v");
-                    if (!string.IsNullOrWhiteSpace(v) && Data.Utility.IsGuid(v, out var id))
+                    if (!string.IsNullOrWhiteSpace(v) && Utility.IsGuid(v, out var id))
                     {
                         visitor = Visitor.Select(id);
                     }
@@ -81,7 +77,7 @@ namespace Sushi.Mediakiwi
                     return Reset();
 
                 long lastVisit;
-                if (Data.Utility.IsNumeric(auth.GetValue(m_Attribute_TimeStamp), out lastVisit))
+                if (Utility.IsNumeric(auth.GetValue(m_Attribute_TimeStamp), out lastVisit))
                 {
                     visitor.LastVisit = new DateTime(lastVisit);
                 }
@@ -116,7 +112,7 @@ namespace Sushi.Mediakiwi
                 entity.RememberMe = shouldRememberVisitorForNextVisit.GetValueOrDefault();
 
             bool isSaved;
-            entity.Updated = Sushi.Mediakiwi.Data.Common.DatabaseDateTime;
+            entity.Updated = Data.Common.DatabaseDateTime;
 
             //  Ignore empty and undefined visitor!
             if (Context != null)

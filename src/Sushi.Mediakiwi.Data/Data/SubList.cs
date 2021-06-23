@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Xml.Serialization;
-using Wim.Data.Interfaces;
 
 namespace Sushi.Mediakiwi.Data
 {
@@ -259,7 +258,7 @@ namespace Sushi.Mediakiwi.Data
             [XmlIgnore()]
             public int ID
             {
-                get { return Sushi.Mediakiwi.Data.Utility.ConvertToInt(TextID); }
+                get { return Utility.ConvertToInt(TextID); }
                 set { TextID = value.ToString(); }
             }
 
@@ -315,7 +314,7 @@ namespace Sushi.Mediakiwi.Data
         {
             get
             {
-                return Sushi.Mediakiwi.Data.Utility.GetSerialized(typeof(SubList), this);
+                return Utility.GetSerialized(typeof(SubList), this);
             }
         }
 
@@ -328,12 +327,18 @@ namespace Sushi.Mediakiwi.Data
         public void Add(ISubListitem item)
         {
             InitializeList();
-            if (item is SubListitem)
-                m_List.Add((SubListitem)item);
+            if (item is SubListitem listitem)
+            {
+                m_List.Add(listitem);
+            }
             else if (string.IsNullOrEmpty(item.TextID))
+            {
                 m_List.Add(new SubListitem(item.ID, item.Description));
+            }
             else
+            {
                 m_List.Add(new SubListitem(item.TextID, item.Description));
+            }
         }
         public void Add(string id, string description)
         {
@@ -354,13 +359,13 @@ namespace Sushi.Mediakiwi.Data
         public int GetID(int index)
         {
             if (this.Items == null || (index + 1) > this.Items.Length) return 0;
-            return Sushi.Mediakiwi.Data.Utility.ConvertToInt(this.Items[index].ID);
+            return Utility.ConvertToInt(this.Items[index].ID);
         }
 
         public int? GetIDNullable(int index)
         {
             if (this.Items == null || (index + 1) > this.Items.Length) return null;
-            return Sushi.Mediakiwi.Data.Utility.ConvertToInt(this.Items[index].ID);
+            return Utility.ConvertToInt(this.Items[index].ID);
         }
 
         /// <summary>

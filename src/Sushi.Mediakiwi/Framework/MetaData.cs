@@ -1,11 +1,9 @@
-using System;
-using System.Xml;
-using System.Xml.Serialization;
-using System.Collections.Generic;
-using System.Text;
-using System.Text.RegularExpressions;
 using Sushi.Mediakiwi.Data;
 using Sushi.Mediakiwi.UI;
+using System;
+using System.Collections.Generic;
+using System.Xml;
+using System.Xml.Serialization;
 
 namespace Sushi.Mediakiwi.Framework
 {
@@ -74,7 +72,7 @@ namespace Sushi.Mediakiwi.Framework
         /// <returns></returns>
         public IContentInfo GetContentInfo()
         {
-            int ContentTypeSelection = Data.Utility.ConvertToInt(this.ContentTypeSelection);
+            int ContentTypeSelection = Utility.ConvertToInt(this.ContentTypeSelection);
 
             if (ContentTypeSelection == (int)ContentType.Binary_Document)
                 return new ContentInfoItem.Binary_DocumentAttribute(Title, Mandatory == "1", InteractiveHelp);
@@ -115,7 +113,16 @@ namespace Sushi.Mediakiwi.Framework
             }
 
             if (ContentTypeSelection == (int)ContentType.SubListSelect)
-                return new ContentInfoItem.SubListSelectAttribute(Title, Componentlist, Mandatory == "1", CanOnlySortOrder == "1",  CanContainOneItem == "1", CanClickOnItem=="1", InteractiveHelp);
+            {
+                // [MR: 11-06-2021] added these lines, for as a datatype definition saves its GUID
+                // in the Collection property, not the ComponentList property
+                string componentListGuid = Componentlist;
+                if (string.IsNullOrWhiteSpace(Componentlist) && string.IsNullOrWhiteSpace(Collection) == false)
+                {
+                    componentListGuid = Collection;
+                }
+                return new ContentInfoItem.SubListSelectAttribute(Title, componentListGuid, Mandatory == "1", CanOnlySortOrder == "1", CanContainOneItem == "1", CanClickOnItem == "1", InteractiveHelp);
+            }
 
             //if (ContentTypeSelection == (int)ContentType.MultiImageSelect)
             //    return new ContentInfoItem.MultiImageSelectAttribute(Title, InteractiveHelp);
@@ -173,7 +180,7 @@ namespace Sushi.Mediakiwi.Framework
                     return;
             }
             tags.Add(option);
-            this.Options = Data.Utility.ConvertToCsvString(tags.ToArray(), false);
+            this.Options = Utility.ConvertToCsvString(tags.ToArray(), false);
         }
 
         /// <summary>
@@ -190,7 +197,7 @@ namespace Sushi.Mediakiwi.Framework
             if (tags.Contains(option))
             {
                 tags.Remove(option);
-                this.Options = Data.Utility.ConvertToCsvString(tags.ToArray(), false);
+                this.Options = Utility.ConvertToCsvString(tags.ToArray(), false);
             }
         }
 
@@ -324,6 +331,7 @@ namespace Sushi.Mediakiwi.Framework
             get { return m_Mandatory; }
         }
 
+
         private string m_EmptyFirst;
         /// <summary>
         /// 
@@ -446,13 +454,24 @@ namespace Sushi.Mediakiwi.Framework
             get { return m_CollectionList; }
         }
 
+        private string m_IsSharedField;
+        /// <summary>
+        /// 
+        /// </summary>
+        [XmlElement("isshared")]
+        public string IsSharedField
+        {
+            set { m_IsSharedField = value; }
+            get { return m_IsSharedField; }
+        }
+
         /// <summary>
         /// 
         /// </summary>
         /// <returns></returns>
-        public Sushi.Mediakiwi.UI.ListItemCollection GetCollection()
+        public ListItemCollection GetCollection()
         {
-            Sushi.Mediakiwi.UI.ListItemCollection Collection = new Sushi.Mediakiwi.UI.ListItemCollection();
+            ListItemCollection Collection = new ListItemCollection();
             if (CollectionList != null && CollectionList.Length > 0)
             {
                 foreach (MetaDataList item in CollectionList)

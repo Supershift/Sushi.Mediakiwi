@@ -1,10 +1,8 @@
-﻿using System;
-using System.Linq;
-using System.Collections.Generic;
-using System.Text;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Sushi.Mediakiwi.Data;
-using Sushi.Mediakiwi.Framework;
+using System;
+using System.Linq;
+using System.Text;
 
 namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
 {
@@ -13,57 +11,57 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
     /// </summary>
     public class UrlBuilder
     {
-        Data.IComponentList m_List_Folders;
-        Data.IComponentList List_Folders 
+        IComponentList m_List_Folders;
+        IComponentList List_Folders 
         {
             get
             {
                 if (m_List_Folders == null)
-                    m_List_Folders = Data.ComponentList.SelectOne(Sushi.Mediakiwi.Data.ComponentListType.Folders);
+                    m_List_Folders = ComponentList.SelectOne(ComponentListType.Folders);
                 return m_List_Folders;
             }
         }
 
-        Data.IComponentList m_List_PageProperties;
-        Data.IComponentList List_PageProperties
+        IComponentList m_List_PageProperties;
+        IComponentList List_PageProperties
         {
             get
             {
                 if (m_List_PageProperties == null)
-                    m_List_PageProperties = Data.ComponentList.SelectOne(Sushi.Mediakiwi.Data.ComponentListType.PageProperties);
+                    m_List_PageProperties = ComponentList.SelectOne(ComponentListType.PageProperties);
                 return m_List_PageProperties;
             }
         }
 
-        Data.IComponentList m_List_ComponentListProperties;
-        Data.IComponentList List_ComponentListProperties
+        IComponentList m_List_ComponentListProperties;
+        IComponentList List_ComponentListProperties
         {
             get
             {
                 if (m_List_ComponentListProperties == null)
-                    m_List_ComponentListProperties = Data.ComponentList.SelectOne(Sushi.Mediakiwi.Data.ComponentListType.ComponentListProperties);
+                    m_List_ComponentListProperties = ComponentList.SelectOne(ComponentListType.ComponentListProperties);
                 return m_List_ComponentListProperties;
             }
         }
 
 
-        Data.IComponentList m_List_SubscribeProperties;
-        Data.IComponentList List_SubscribeProperties
+        IComponentList m_List_SubscribeProperties;
+        IComponentList List_SubscribeProperties
         {
             get
             {
                 if (m_List_SubscribeProperties == null)
-                    m_List_SubscribeProperties = Data.ComponentList.SelectOne(Sushi.Mediakiwi.Data.ComponentListType.Subscription);
+                    m_List_SubscribeProperties = ComponentList.SelectOne(ComponentListType.Subscription);
                 return m_List_SubscribeProperties;
             }
         }
 
-        Sushi.Mediakiwi.Beta.GeneratedCms.Console Console;
+        Console Console;
         /// <summary>
         /// Initializes a new instance of the <see cref="UrlBuilder"/> class.
         /// </summary>
         /// <param name="console">The console.</param>
-        public UrlBuilder(Sushi.Mediakiwi.Beta.GeneratedCms.Console console)
+        public UrlBuilder(Console console)
         {
             this.Console = console;
         }
@@ -73,7 +71,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
         /// </summary>
         /// <param name="folder">The folder.</param>
         /// <returns></returns>
-        public string GetFolderRequest(Data.Folder folder)
+        public string GetFolderRequest(Folder folder)
         {
             return string.Concat(Console.WimPagePath, "?folder=", folder.ID);
         }
@@ -98,25 +96,25 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
 
         public string GetFolderCopyRequest(int folder)
         {
-            var list = Sushi.Mediakiwi.Data.ComponentList.SelectOne(typeof(Sushi.Mediakiwi.AppCentre.Data.Implementation.Copy));
+            var list = ComponentList.SelectOne(typeof(AppCentre.Data.Implementation.Copy));
             return string.Concat(Console.WimPagePath, "?", "list=", list.ID, "&type=1&folder=", Console.CurrentListInstance.wim.CurrentFolder.ID, "&item=", folder);
         }
 
         public string GetPageCopyRequest(int page)
         {
-            var list = Sushi.Mediakiwi.Data.ComponentList.SelectOne(typeof(Sushi.Mediakiwi.AppCentre.Data.Implementation.Copy));
+            var list = ComponentList.SelectOne(typeof(AppCentre.Data.Implementation.Copy));
             return string.Concat(Console.WimPagePath, "?", "list=", list.ID, "&type=2&folder=", Console.CurrentListInstance.wim.CurrentFolder.ID, "&item=", page);
         }
 
         public string GetPageCopyContentRequest(int page)
         {
-            var list = Sushi.Mediakiwi.Data.ComponentList.SelectOne(typeof(Sushi.Mediakiwi.AppCentre.Data.Implementation.CopyContent));
+            var list = ComponentList.SelectOne(typeof(AppCentre.Data.Implementation.CopyContent));
             return string.Concat(Console.WimPagePath, "?", "list=", list.ID, "&type=2&item=", page);
         }
 
         public string GetPageHistoryRequest(int page)
         {
-            var list = Sushi.Mediakiwi.Data.ComponentList.SelectOne(typeof(Sushi.Mediakiwi.AppCentre.Data.Implementation.PageHistory));
+            var list = ComponentList.SelectOne(typeof(AppCentre.Data.Implementation.PageHistory));
             return string.Concat(Console.WimPagePath, "?", "list=", list.ID, "&type=2&pageItem=", page);
         }
 
@@ -218,7 +216,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
             return string.Concat(Console.UrlBuild.GetListRequest(Console.CurrentList), querystring);
         }
 
-        public string GetUrl(Data.IComponentList componentlist, params KeyValue[] keyvalues)
+        public string GetUrl(IComponentList componentlist, params KeyValue[] keyvalues)
         {
             string querystring = GetCustomQueryString(Console.Context, keyvalues);
             return string.Concat(Console.UrlBuild.GetListRequest(componentlist), querystring);
@@ -303,7 +301,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
             if (channelId == null)
                 channelId = Console.ChannelIndentifier;
 
-            var folder = Data.Folder.SelectOneChild(list.FolderID.GetValueOrDefault(), Console.ChannelIndentifier);
+            var folder = Folder.SelectOneChild(list.FolderID.GetValueOrDefault(), Console.ChannelIndentifier);
             var path = list.Name;
 
             if (folder != null && !folder.IsNewInstance)
@@ -344,7 +342,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
         /// </summary>
         /// <param name="page">The page.</param>
         /// <returns></returns>
-        public string GetPageRequest(Data.Page page)
+        public string GetPageRequest(Page page)
         {
             return string.Concat(Console.WimPagePath, "?page=", page.ID);
         }
@@ -354,14 +352,14 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
         /// </summary>
         /// <param name="type">The type.</param>
         /// <returns></returns>
-        public string GetSectionRequest(Data.FolderType type)
+        public string GetSectionRequest(FolderType type)
         {
             switch (type)
             {
-                case Sushi.Mediakiwi.Data.FolderType.Page: return string.Concat(Console.WimPagePath, "?top=", 1);
-                case Sushi.Mediakiwi.Data.FolderType.List: return string.Concat(Console.WimPagePath, "?top=", 2);
-                case Sushi.Mediakiwi.Data.FolderType.Gallery: return string.Concat(Console.WimPagePath, "?top=", 3);
-                case Sushi.Mediakiwi.Data.FolderType.Administration: return string.Concat(Console.WimPagePath, "?top=", 4);
+                case FolderType.Page: return string.Concat(Console.WimPagePath, "?top=", 1);
+                case FolderType.List: return string.Concat(Console.WimPagePath, "?top=", 2);
+                case FolderType.Gallery: return string.Concat(Console.WimPagePath, "?top=", 3);
+                case FolderType.Administration: return string.Concat(Console.WimPagePath, "?top=", 4);
             }
             return string.Concat(Console.WimPagePath);
         }
@@ -372,7 +370,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
         /// </summary>
         /// <param name="gallery">The gallery.</param>
         /// <returns></returns>
-        public string GetGalleryRequest(Data.Gallery gallery)
+        public string GetGalleryRequest(Gallery gallery)
         {
             return string.Concat(Console.WimPagePath, "?gallery=", gallery.ID);
         }

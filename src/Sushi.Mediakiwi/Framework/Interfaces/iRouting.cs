@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace Sushi.Mediakiwi.Framework
 {
@@ -14,7 +11,7 @@ namespace Sushi.Mediakiwi.Framework
         /// </summary>
         /// <param name="routing">The routing type, this should be an IComponentListRouting interface.</param>
         public ComponentListRouting(Type routing) {
-            this.Routing = System.Activator.CreateInstance(routing) as IComponentListRouting;
+            this.Routing = Activator.CreateInstance(routing) as IComponentListRouting;
         }
     }
 
@@ -24,7 +21,7 @@ namespace Sushi.Mediakiwi.Framework
         /// Performs the actual routing.
         /// </summary>
         /// <returns>Return the actual routing information. When NULL is returned than no routing is applied and the fallback class will be called upon.</returns>
-        IComponentListTemplate Validate(Sushi.Mediakiwi.Data.IComponentList list, ComponentListRoutingArgs args);
+        IComponentListTemplate Validate(Data.IComponentList list, ComponentListRoutingArgs args);
     }
 
     public class ComponentListRoutingArgs 

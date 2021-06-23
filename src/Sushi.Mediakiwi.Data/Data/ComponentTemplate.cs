@@ -1,10 +1,9 @@
-﻿using Sushi.MicroORM;
+﻿using Sushi.Mediakiwi.Data.MicroORM;
 using Sushi.MicroORM.Mapping;
 using System;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
-using Sushi.Mediakiwi.Data.MicroORM;
 
 namespace Sushi.Mediakiwi.Data
 {
@@ -41,7 +40,7 @@ namespace Sushi.Mediakiwi.Data
                 Map(x => x.IsListTemplate, "ComponentTemplate_IsListTemplate").SqlType(SqlDbType.Bit);
                 Map(x => x.MetaData, "ComponentTemplate_MetaData").SqlType(SqlDbType.NText);
                 Map(x => x.LastWriteTimeUtc, "ComponentTemplate_LastWriteTimeUtc").SqlType(SqlDbType.DateTime);
-                Map(x => x.NestedType, "ComponentTemplate_NestType").SqlType(SqlDbType.DateTime);
+                Map(x => x.NestedType, "ComponentTemplate_NestType").SqlType(SqlDbType.Int);
             }
         }
 
@@ -83,6 +82,8 @@ namespace Sushi.Mediakiwi.Data
         /// </summary>
         /// <value>The reference id.</value>
         public int? ReferenceID { get; set; }
+
+        public bool HasEditableSource { get; set; }
 
         /// <summary>
         /// The possibility to search the content of this template
@@ -223,7 +224,7 @@ namespace Sushi.Mediakiwi.Data
         /// Gets or sets the last write time UTC of the page template (ASPX).
         /// </summary>
         /// <value>The last write time UTC.</value>
-        public DateTime LastWriteTimeUtc { get; set; }
+        public DateTime? LastWriteTimeUtc { get; set; }
 
         public string Source2 { get; set; }
 
@@ -329,7 +330,7 @@ namespace Sushi.Mediakiwi.Data
         /// <summary>
         /// Select a Component Template instance based on its type
         /// </summary>
-        public static ComponentTemplate SelectOne_BasedOnType(System.Type type)
+        public static ComponentTemplate SelectOne_BasedOnType(Type type)
         {
             var connector = ConnectorFactory.CreateConnector<ComponentTemplate>();
             var filter = connector.CreateDataFilter();
@@ -337,7 +338,7 @@ namespace Sushi.Mediakiwi.Data
             return connector.FetchSingle(filter);
         }
 
-        public static async Task<ComponentTemplate> SelectOne_BasedOnTypeAsync(System.Type type)
+        public static async Task<ComponentTemplate> SelectOne_BasedOnTypeAsync(Type type)
         {
             var connector = ConnectorFactory.CreateConnector<ComponentTemplate>();
             var filter = connector.CreateDataFilter();

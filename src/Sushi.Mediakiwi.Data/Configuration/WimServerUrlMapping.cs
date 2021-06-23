@@ -1,9 +1,6 @@
-﻿using System;
-using System.Configuration;
-using System.Collections.Generic;
-using System.Text;
-using System.Text.RegularExpressions;
+﻿using System.Collections.Generic;
 using System.Runtime.Serialization;
+using System.Text.RegularExpressions;
 
 namespace Sushi.Mediakiwi.Data.Configuration
 {

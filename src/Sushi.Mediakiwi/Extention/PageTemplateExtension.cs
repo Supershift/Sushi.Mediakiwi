@@ -1,9 +1,6 @@
-﻿using System;
+﻿using Sushi.Mediakiwi.Data;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Sushi.Mediakiwi.Data;
 
 public static class PageTemplateExtension
 {
@@ -20,7 +17,7 @@ public static class PageTemplateExtension
         if (inPageTemplate.Data != null && inPageTemplate.Data.HasProperty("TAB.INFO"))
             sections.AddRange(inPageTemplate.Data["TAB.INFO"].Value.Split(','));
 
-        var availableTemplateList = Sushi.Mediakiwi.Data.AvailableTemplate.SelectAll(inPageTemplate.ID);
+        var availableTemplateList = AvailableTemplate.SelectAll(inPageTemplate.ID);
         var sectionViaTemplate = (from item in availableTemplateList select item.Target).Distinct().ToList();
 
         if (sectionViaTemplate.Count == 1)

@@ -1,8 +1,5 @@
-﻿using System;
+﻿using Sushi.Mediakiwi.Data;
 using System.Text.RegularExpressions;
-using System.Collections.Generic;
-using System.Text;
-using Sushi.Mediakiwi.Data;
 
 namespace Sushi.Mediakiwi.Framework.Templates
 {
@@ -52,13 +49,13 @@ namespace Sushi.Mediakiwi.Framework.Templates
         internal string CleanLinkData(Match m)
         {
             int linkKey;
-            Sushi.Mediakiwi.Data.Link link;
+            Link link;
             string attributes = m.Groups["ATTRIBUTES"].Value;
             string text = m.Groups["TEXT"].Value;
-            if (Data.Utility.IsNumeric(m.Groups["ID"].Value, out linkKey))
+            if (Utility.IsNumeric(m.Groups["ID"].Value, out linkKey))
             {
                 
-                link = Sushi.Mediakiwi.Data.Link.SelectOne(linkKey);
+                link = Link.SelectOne(linkKey);
                 //
                 if (link != null)
                 {
@@ -74,7 +71,7 @@ namespace Sushi.Mediakiwi.Framework.Templates
                     {
                         if (this.Site != null)
                         {
-                            Sushi.Mediakiwi.Data.Page page = Sushi.Mediakiwi.Data.Page.SelectOneChild(link.PageID.Value, Site.ID, true);
+                            Page page = Page.SelectOneChild(link.PageID.Value, Site.ID, true);
                             //Sushi.Mediakiwi.Data.Page.SelectOne(link.PageId, true);
                             if (page != null)
                                 return string.Format("<a{4}href=\"{0}\"{1}{3}>{2}</a>", page.HRefFull, target, text, className, attributes);
@@ -92,7 +89,7 @@ namespace Sushi.Mediakiwi.Framework.Templates
                     }
                     else if (link.Type == LinkType.InternalAsset)
                     {
-                        Sushi.Mediakiwi.Data.Asset asset = Sushi.Mediakiwi.Data.Asset.SelectOne(link.AssetID.Value);
+                        Asset asset = Asset.SelectOne(link.AssetID.Value);
                         return string.Format("<a{4}href=\"{0}\"{1}{3}>{2}</a>", asset.DownloadUrl, target, text, className, attributes);
                     }
                 }

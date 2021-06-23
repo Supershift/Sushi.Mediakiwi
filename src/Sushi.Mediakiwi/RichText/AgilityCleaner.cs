@@ -1,8 +1,6 @@
-﻿using System;
+﻿using HtmlAgilityPack;
+using System;
 using System.Linq;
-using System.Web;
-using System.Xml;
-using HtmlAgilityPack;
 
 namespace Sushi.Mediakiwi.RichRext
 {
@@ -14,7 +12,7 @@ namespace Sushi.Mediakiwi.RichRext
         /// <summary>
         /// 
         /// </summary>
-        string[] m_AllowedElements = new string[] { 
+        readonly string[] m_AllowedElements = new string[] { 
             "p", 
             //"div", 
             //"span", 
@@ -26,7 +24,7 @@ namespace Sushi.Mediakiwi.RichRext
         /// <summary>
         /// 
         /// </summary>
-        string[][] m_AllowedElementAttributes = new string[][] { 
+        readonly string[][] m_AllowedElementAttributes = new string[][] { 
             //new string[] { "div", "class" }, 
             new string[] { "a", "href" },
             new string[] { "ul", "style", "list-style-type: circle;" },
@@ -75,7 +73,7 @@ namespace Sushi.Mediakiwi.RichRext
         {
             if (string.IsNullOrEmpty(html))
                 return html;
-            HtmlAgilityPack.HtmlDocument doc = new HtmlAgilityPack.HtmlDocument();
+            HtmlDocument doc = new HtmlDocument();
             doc.LoadHtml(html);
 
             CleanAssetUrl(doc);
@@ -97,7 +95,7 @@ namespace Sushi.Mediakiwi.RichRext
         /// Cleans the asset URL.
         /// </summary>
         /// <param name="doc">The doc.</param>
-        void CleanAssetUrl(HtmlAgilityPack.HtmlDocument doc)
+        void CleanAssetUrl(HtmlDocument doc)
         {
             var nodes = doc.DocumentNode.SelectNodes("//img");
             if (nodes == null) 
@@ -128,7 +126,7 @@ namespace Sushi.Mediakiwi.RichRext
         /// <returns></returns>
         public string CleanHTML(string html)
         {
-            HtmlAgilityPack.HtmlDocument doc = new HtmlAgilityPack.HtmlDocument();
+            HtmlDocument doc = new HtmlDocument();
 
             if (!string.IsNullOrEmpty(html))
             {
@@ -189,7 +187,7 @@ namespace Sushi.Mediakiwi.RichRext
         /// <param name="doc">The doc.</param>
         /// <param name="html">The HTML.</param>
         /// <returns></returns>
-        bool StripParserErrors(HtmlAgilityPack.HtmlDocument doc, ref string html)
+        bool StripParserErrors(HtmlDocument doc, ref string html)
         {
             int minus = 0;
             foreach (var item in doc.ParseErrors)
@@ -220,7 +218,7 @@ namespace Sushi.Mediakiwi.RichRext
         /// Nodes the parser.
         /// </summary>
         /// <param name="nodes">The nodes.</param>
-        void NodeParser(HtmlAgilityPack.HtmlNodeCollection nodes)
+        void NodeParser(HtmlNodeCollection nodes)
         {
             for (int index = 0; index < nodes.Count; index++)
             {
@@ -229,7 +227,7 @@ namespace Sushi.Mediakiwi.RichRext
                 if (node.HasChildNodes)
                     NodeParser(node.ChildNodes);
 
-                if (node.NodeType == HtmlAgilityPack.HtmlNodeType.Element)
+                if (node.NodeType == HtmlNodeType.Element)
                 {
                     var found = (from item in m_AllowedElements where item == node.Name select item).FirstOrDefault();
 
@@ -279,7 +277,7 @@ namespace Sushi.Mediakiwi.RichRext
                         }
                     }
                 }
-                else if (node.NodeType == HtmlAgilityPack.HtmlNodeType.Comment)
+                else if (node.NodeType == HtmlNodeType.Comment)
                 {
                     node.Remove();
                     index--;

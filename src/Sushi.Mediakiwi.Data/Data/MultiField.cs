@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Sushi.Mediakiwi.Data.Data
+﻿namespace Sushi.Mediakiwi.Data.Data
 {
     public class MultiField : Field
     {
@@ -23,7 +19,7 @@ namespace Sushi.Mediakiwi.Data.Data
                 if (serialized.StartsWith("<?xml") || serialized.StartsWith("<ArrayOfMultiField")) //  If the text is of type XML, then try to Deserialize
                 {
                     // It is expected to be an array of MultiField classes
-                    candidate = Sushi.Mediakiwi.Data.Utility.GetDeserialized(typeof(MultiField[]), serialized) as MultiField[];
+                    candidate = Utility.GetDeserialized(typeof(MultiField[]), serialized) as MultiField[];
 
                     // Return an empty array of Multifield when this resolves to NULL
                     if (candidate == null)

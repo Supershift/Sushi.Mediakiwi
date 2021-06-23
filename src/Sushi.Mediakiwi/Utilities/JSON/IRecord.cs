@@ -1,5 +1,4 @@
-﻿using System;
-namespace Sushi.Mediakiwi.Utilities
+﻿namespace Sushi.Mediakiwi.Utilities
 {
     interface IRecord
     {

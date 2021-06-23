@@ -1,13 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
-
 namespace Sushi.Mediakiwi.Framework.ContentListItem
 {
     /// <summary>
     /// Possible return types: System.String
     /// </summary>
-    public class RichTextAttribute : Sushi.Mediakiwi.Framework.ContentInfoItem.RichTextAttribute, IListContentInfo
+    public class RichTextAttribute : ContentInfoItem.RichTextAttribute, IListContentInfo
     {
         /// <summary>
         /// Possible return types: System.String

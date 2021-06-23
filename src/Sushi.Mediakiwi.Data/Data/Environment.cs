@@ -1,9 +1,8 @@
-﻿using Sushi.MicroORM;
+﻿using Sushi.Mediakiwi.Data.MicroORM;
 using Sushi.MicroORM.Mapping;
 using System;
 using System.Collections;
 using System.Threading.Tasks;
-using Sushi.Mediakiwi.Data.MicroORM;
 
 namespace Sushi.Mediakiwi.Data
 {
@@ -288,7 +287,7 @@ namespace Sushi.Mediakiwi.Data
         #region registry
 
         /// <summary>
-        /// Gets the <see cref="System.String"/> with the specified registry. OnError returns String.Empty!
+        /// Gets the <see cref="string"/> with the specified registry. OnError returns String.Empty!
         /// </summary>
         /// <value></value>
         public virtual string this[string registry]
@@ -299,7 +298,7 @@ namespace Sushi.Mediakiwi.Data
             }
         }
 
-        private Object registerLock = new Object();
+        private object registerLock = new object();
 
         /// <summary>
         ///
@@ -371,7 +370,7 @@ namespace Sushi.Mediakiwi.Data
         /// <value>
         /// The registry.
         /// </value>
-        protected internal virtual Hashtable Registry
+        internal protected virtual Hashtable Registry
         {
             get
             {
@@ -381,7 +380,7 @@ namespace Sushi.Mediakiwi.Data
                         return null;
 
                     m_Registry = new Hashtable();
-                    foreach (Registry item in Sushi.Mediakiwi.Data.Registry.SelectAll())
+                    foreach (Registry item in Mediakiwi.Data.Registry.SelectAll())
                     {
                         if (!m_Registry.ContainsKey(item.Name))
                             m_Registry.Add(item.Name, item.Value);

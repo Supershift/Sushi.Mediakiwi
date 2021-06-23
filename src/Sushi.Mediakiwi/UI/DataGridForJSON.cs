@@ -1,9 +1,5 @@
-﻿using System;
+﻿using Sushi.Mediakiwi.Framework;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Sushi.Mediakiwi.Framework;
-using Wim.Utilities;
 
 namespace Sushi.Mediakiwi.UI
 {
