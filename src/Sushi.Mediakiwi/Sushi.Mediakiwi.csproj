@@ -142,7 +142,9 @@
     <Compile Include="Framework\TopListPosition.cs" />
     <Compile Include="Logic\ApplicationUserLogic.cs" />
     <Compile Include="Logic\FolderLogic.cs" />
+    <Compile Include="Logic\PageLogic.cs" />
     <Compile Include="Logic\PropertyLogic.cs" />
+    <Compile Include="Logic\SearchLogic.cs" />
     <Compile Include="Presentation\Logic\Navigation.cs" />
     <Compile Include="Presentation\Monitor.cs" />
     <Compile Include="UI\AddPageComponentControl.cs" />
@@ -330,7 +332,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Azure.Storage.Blobs" Version="12.8.0" />
+    <PackageReference Include="Azure.Storage.Blobs" Version="12.9.0" />
     <PackageReference Include="HtmlAgilityPack" Version="1.11.30" />
     <PackageReference Include="Microsoft.AspNet.Mvc" Version="5.2.7" />
     <PackageReference Include="Microsoft.AspNet.WebApi.Core" Version="5.2.7" />
@@ -345,6 +347,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="System.Drawing.Common" Version="5.0.0" />
+    <PackageReference Include="WindowsAzure.Storage" Version="9.3.3" />
   </ItemGroup>
 
   <ItemGroup>

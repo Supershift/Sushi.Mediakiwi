@@ -622,6 +622,21 @@ namespace Sushi.Mediakiwi.Data
         }
 
         /// <summary>
+        /// Selects all pages Async.
+        /// </summary>
+        /// <returns></returns>
+        public static async Task<Page[]> SelectAllAsync(DateTime lastModified)
+        {
+            var connector = ConnectorFactory.CreateConnector<Page>();
+            var filter = connector.CreateDataFilter();
+            filter.AddOrder(x => x.MasterID);
+            filter.Add(x => x.Updated, lastModified, ComparisonOperator.GreaterThanOrEquals);
+
+            var result = await connector.FetchAllAsync(filter);
+            return result.ToArray();
+        }
+
+        /// <summary>
         /// Selects all children By master ID.
         /// </summary>
         /// <param name="masterID">The master ID.</param>

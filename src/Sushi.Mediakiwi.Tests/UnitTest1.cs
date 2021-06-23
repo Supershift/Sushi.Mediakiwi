@@ -2,9 +2,13 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Sushi.Mediakiwi.Data;
+using Sushi.Mediakiwi.Logic;
 using Sushi.Mediakiwi.Utilities;
 using Sushi.MicroORM;
 using System;
+using System.Linq;
+using System.Collections;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Sushi.Mediakiwi.Tests
@@ -24,6 +28,35 @@ namespace Sushi.Mediakiwi.Tests
         {
             var cc = await Country.SelectAllAsync();
             Assert.IsTrue(cc.Length > 0);
+        }
+
+        [TestMethod]
+        public async Task Fetch_All_Pages()
+        {
+            var result = await SearchLogic.ExtractContentAsync(null, true).ConfigureAwait(false);
+
+            Assert.IsTrue(result.Count > 0);
+        }
+
+        void ExtractText(List<string> collection, ContentItem item)
+        {
+            if (item == null)
+            {
+                return;
+            }
+
+            if (!string.IsNullOrWhiteSpace(item.Text))
+            {
+                collection.Add(item.Text);
+            }
+
+            if (item.MultiFieldContent != null && item.MultiFieldContent.Any())
+            {
+                foreach (var nested in item.MultiFieldContent)
+                {
+                    ExtractText(collection, nested.Value);
+                }
+            }
         }
 
 
