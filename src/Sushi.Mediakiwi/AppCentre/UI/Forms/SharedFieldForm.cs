@@ -212,7 +212,7 @@ namespace Sushi.Mediakiwi.AppCentre.UI.Forms
                 case ContentType.MultiField:
                     {
                         EditValueMulti = ImplementTranslation.EditValue;
-                        var mfs = MultiField.GetDeserialized(ImplementTranslation.Value);
+                        var mfs = Sushi.Mediakiwi.Framework.MultiField.GetDeserialized(ImplementTranslation.Value);
                         if (mfs != null)
                         {
                             MultiFieldParser mfp = new MultiFieldParser();

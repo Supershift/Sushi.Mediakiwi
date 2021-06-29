@@ -72,35 +72,24 @@ namespace Sushi.Mediakiwi.UI
 
         internal static async Task<bool> StartControllerAsync(HttpContext context, IHostingEnvironment env, IConfiguration configuration, IServiceProvider serviceProvider)
         {
-            var actionDescriptorCollection = serviceProvider.GetService<IActionDescriptorCollectionProvider>();
-            var actionContext = serviceProvider.GetService<IActionContextAccessor>();
-
             var monitor = new Monitor(context, env, configuration);
 
+            var hasLoggedInUser = false;
             
-
-           // Old version
-            var controllerOutput = new ControllerRegister(context).Verify();
-            if (controllerOutput != null)
+            if (monitor._Console.CurrentApplicationUser != null 
+                && monitor._Console.CurrentApplicationUser.IsActive
+                && !monitor._Console.CurrentApplicationUser.IsNewInstance)
             {
-                if (!controllerOutput.IsAuthenticationRequired || await monitor.CheckRoamingApplicationUserAsync().ConfigureAwait(false))
-                {
-                    var output = await controllerOutput.CompleteAsync(context).ConfigureAwait(false);
-                    await context.Response.WriteAsync(output).ConfigureAwait(false);
-                    return true;
-                }
+                hasLoggedInUser = true;
             }
 
-            //New version
-            //var hasLoggedInUser = await monitor.CheckRoamingApplicationUserAsync();
-            //var controllerOutput = await new ControllerRegister2(context, serviceProvider).VerifyAsync(hasLoggedInUser);
+            var controllerOutput = await new ControllerRegister(context, serviceProvider).VerifyAsync(hasLoggedInUser)
+                .ConfigureAwait(false);
 
-            //if (controllerOutput != null)
-            //{
-            //    var output = await controllerOutput.CompleteAsync(context).ConfigureAwait(false);
-            //    await context.Response.WriteAsync(output).ConfigureAwait(false);
-            //    return true;
-            //}
+            if (controllerOutput != null)
+            {
+                return true;
+            }
             return false;
         }
         
