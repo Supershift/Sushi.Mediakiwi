@@ -48,9 +48,6 @@ namespace Sushi.Mediakiwi
                 // Assign json section to config
                 WimServerConfiguration.LoadJsonConfig(_configuration);
                 DatabaseConfiguration.SetDefaultConnectionString(Common.DatabaseConnectionString);
-
-                ControllerRegister.AddRoute("api/documentype/getfields", new DocumentTypeController(), true);
-                ControllerRegister.AddRoute("api/documentype/checksharedfield", new CheckSharedFieldController(), true);
             }
         }
 
@@ -63,12 +60,17 @@ namespace Sushi.Mediakiwi
 
         public async Task Invoke(HttpContext context)
         {
+            if (context == null)
+            {
+                throw new ArgumentNullException(nameof(context));
+            }
+
             var url = GetSafeUrl(context);
             var portal = _configuration.GetValue<string>("mediakiwi:portal_path");
 
             Configure(context);
 
-            if (!await Monitor.StartControllerAsync(context, _env, _configuration, _serviceProvider ))
+            if (!await Monitor.StartControllerAsync(context, _env, _configuration, _serviceProvider).ConfigureAwait(false))
             {
 
                 if (
@@ -79,14 +81,14 @@ namespace Sushi.Mediakiwi
                     if (_env.IsDevelopment())
                     {
                         Monitor monitor = new Monitor(context, _env, _configuration);
-                        await monitor.StartAsync();
+                        await monitor.StartAsync().ConfigureAwait(false);
                     }
                     else
                     {
                         try
                         {
                             Monitor monitor = new Monitor(context, _env, _configuration);
-                            await monitor.StartAsync();
+                            await monitor.StartAsync().ConfigureAwait(false);
                         }
                         catch (Exception ex)
                         {
@@ -95,7 +97,7 @@ namespace Sushi.Mediakiwi
                     }
                 }
             }
-            await _next.Invoke(context);
+            await _next.Invoke(context).ConfigureAwait(false);
         }
     }
 

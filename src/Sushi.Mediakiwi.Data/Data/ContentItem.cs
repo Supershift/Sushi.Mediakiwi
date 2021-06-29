@@ -62,6 +62,6 @@ namespace Sushi.Mediakiwi.Data
         /// If this is a multifield, this will contain its content
         /// </summary>
         [DataMember(Name = "multiFieldContent")]
-        public Dictionary<string, ContentItem> MultiFieldContent { get; set; } = new Dictionary<string, ContentItem>();
+        public Dictionary<string, ContentItem> MultiFieldContent { get; set; }
     }
 }

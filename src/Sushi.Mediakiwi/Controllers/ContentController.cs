@@ -1,29 +1,114 @@
-﻿using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Primitives;
-using Sushi.Mediakiwi.Connectors;
-using Sushi.Mediakiwi.Controllers.Data;
-using Sushi.Mediakiwi.Data;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using System.Reflection;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
+using Sushi.Mediakiwi.Data;
+using System.Net;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Primitives;
+using System.Threading;
+using System.Reflection;
+using Sushi.Mediakiwi.Controllers.Data;
+using Sushi.Mediakiwi.Connectors;
 
-namespace Sushi.Mediakiwi.Logic
+namespace Sushi.Mediakiwi.Controllers
 {
-    public class PageLogic
+    [ApiController]
+    [Route("api/content/v1.0")]
+    [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
+    public class ContentController : BaseController
     {
-        private IMemoryCache _cache;
+        private readonly IMemoryCache _cache;
 
-        public PageLogic(IMemoryCache memoryCache)
+        public ContentController(IMemoryCache memoryCache)
         {
-            _cache = memoryCache;
+            _cache = memoryCache; 
+            this.IsAuthenticationRequired = true;
         }
 
-        public async Task<PageContentResponse> GetPageContentAsync(string url, bool flushCache = false, bool isPreview = false, int? pageId = null)
+        const string ckey = "Node.TimeStamp";
+
+        [Produces("application/json")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [HttpGet]
+        [Route("ping")]
+        public async Task<ActionResult<string>> Ping()
+        {
+            return Ok("Hello");
+        }
+
+        static DateTime Last_Flush { get; set; } = DateTime.UtcNow;
+
+        [Produces("application/json")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [HttpGet]
+        [Route("flush")]
+        [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
+        public async Task<ActionResult<bool>> Flush([FromQuery] long now)
+        {
+            var cached = await EnvironmentVersion.SelectAsync().ConfigureAwait(false);
+
+            if (now == 0)
+            {
+                ClearCache();
+                Last_Flush = DateTime.UtcNow;
+                return true;
+            }
+
+            if (now < cached.Updated.GetValueOrDefault().Ticks)
+            {
+                if (Last_Flush < cached.Updated.GetValueOrDefault())
+                {
+                    ClearCache();
+                    Last_Flush = DateTime.UtcNow;
+                }
+                return true;
+            }
+            return false;
+        }
+
+        [Produces("application/json")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [HttpGet]
+        [Route("state")]
+        [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
+        public async Task<ActionResult<string>> Status()
+        {
+            var cached = await EnvironmentVersion.SelectAsync();
+            var information = string.Empty;
+
+            information += $"Data updated: {cached.Updated.Value} \n";
+            information += $"Cache updated: {Last_Flush} \n";
+            information += $"Timestamp: {DateTime.UtcNow.Ticks} \n";
+            return Ok(information);
+        }
+
+        [Produces("application/json")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [HttpPost]
+        [Route("getPageNotFoundContent")]
+        [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
+        public async Task<PageContentResponse> GetPageNotFoundContent([FromQuery] int? siteId = null)
+        {
+            return await GetPageNotFoundAsync(siteId).ConfigureAwait(false);
+        }
+
+        [Produces("application/json")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [HttpGet]
+        [Route("page/content")]
+        [Route("getPageContent")]
+        [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
+        public async Task<ActionResult<PageContentResponse>> GetPageContentAsync(string url, bool flushCache = false, bool isPreview = false, int? pageId = null)
         {
             var response = new PageContentResponse();
 
@@ -77,20 +162,20 @@ namespace Sushi.Mediakiwi.Logic
                                 var newurl = mapped.Expression.Equals(".") ? redirection : string.Concat(redirection, mapped.Expression);
 
                                 // to do, replace with actual content
-                                response = await GetPageNotFoundAsync(null).ConfigureAwait(false);
+                                response = await GetPageNotFoundAsync(null);
                                 response.PageInternalPath = newurl;
                                 response.StatusCode = GetStatusCode(map);
-                                return response;
+                                return Ok(response);
                             }
                         }
                         // map one to other
                         else if (mapped != null && map.Path.Equals(url, StringComparison.CurrentCultureIgnoreCase) && !string.IsNullOrWhiteSpace(mapped.Expression))
                         {
                             // to do, replace with actual content
-                            response = await GetPageNotFoundAsync(null).ConfigureAwait(false);
+                            response = await GetPageNotFoundAsync(null);
                             response.PageInternalPath = mapped.Expression;
                             response.StatusCode = GetStatusCode(map);
-                            return response;
+                            return Ok(response);
                         }
                         // found a match
                         else if (url.Equals(map.Path, StringComparison.InvariantCulture) && map.Page != null)
@@ -103,7 +188,7 @@ namespace Sushi.Mediakiwi.Logic
 
                     if (page == null || page?.ID.Equals(0) == true)
                     {
-                        page = await Page.SelectOneAsync(uri.ToString(), !ispreview).ConfigureAwait(false);
+                        page = await Page.SelectOneAsync(uri.ToString(), !ispreview);
                     }
                 }
 
@@ -116,7 +201,7 @@ namespace Sushi.Mediakiwi.Logic
                 // Look for cache key.
                 if (!ispreview && _cache.TryGetValue(cacheKey, out response))
                 {
-                    return response;
+                    return Ok(response);
                 }
                 else
                 {
@@ -127,13 +212,13 @@ namespace Sushi.Mediakiwi.Logic
                     {
                         // Check if this page is the Homepage 
                         if (url == "/" || string.IsNullOrWhiteSpace(url))
-                            response = await GetHomePageAsync(null).ConfigureAwait(false);
+                            response = await GetHomePageAsync(null);
                         else
-                            response = await GetPageNotFoundAsync(null).ConfigureAwait(false);
+                            response = await GetPageNotFoundAsync(null);
                     }
                     else
                     {
-                        response = await GetPageContentAsync(page, pageMap, ispreview).ConfigureAwait(false);
+                        response = await GetPageContentAsync(page, pageMap, ispreview);
                     }
 
                     // Save data in cache.
@@ -146,9 +231,8 @@ namespace Sushi.Mediakiwi.Logic
                 response.Exception = $"{ex.Message} {ex.StackTrace}";
             }
 
-            return response;
+            return Ok(response);
         }
-
 
         /// <summary>
         /// Gets the content for the 'Homepage' page and returns it as an HttpStatus 200 Code
@@ -158,23 +242,23 @@ namespace Sushi.Mediakiwi.Logic
         private async Task<PageContentResponse> GetHomePageAsync(int? siteId)
         {
             PageContentResponse response = new PageContentResponse();
+
             int _siteId = (siteId.GetValueOrDefault(0) > 0) ? siteId.Value : 0;
             if (_siteId == 0 && Sushi.Mediakiwi.Data.Environment.Current?.DefaultSiteID.GetValueOrDefault(0) > 0)
                 _siteId = Sushi.Mediakiwi.Data.Environment.Current.DefaultSiteID.Value;
 
             if (_siteId > 0)
             {
-                var site = await Site.SelectOneAsync(_siteId).ConfigureAwait(false);
+                var site = await Site.SelectOneAsync(_siteId);
                 if (site?.HomepageID.GetValueOrDefault(0) > 0)
                 {
-                    var page = await Page.SelectOneAsync(site.HomepageID.Value).ConfigureAwait(false);
+                    var page = await Page.SelectOneAsync(site.HomepageID.Value);
                     if (page?.ID > 0)
-                        response = await GetPageContentAsync(page, null, false).ConfigureAwait(false);
+                        response = await GetPageContentAsync(page, null, false);
                 }
             }
             return response;
         }
-
 
         /// <summary>
         /// Gets the content for the 'Page not found' page and returns it as an HttpStatus 404 Code
@@ -190,12 +274,12 @@ namespace Sushi.Mediakiwi.Logic
 
             if (_siteId > 0)
             {
-                var site = await Site.SelectOneAsync(_siteId).ConfigureAwait(false);
+                var site = await Site.SelectOneAsync(_siteId);
                 if (site?.PageNotFoundID.GetValueOrDefault(0) > 0)
                 {
-                    var page = await Page.SelectOneAsync(site.PageNotFoundID.Value).ConfigureAwait(false);
+                    var page = await Page.SelectOneAsync(site.PageNotFoundID.Value);
                     if (page?.ID > 0)
-                        response = await GetPageContentAsync(page, null, false).ConfigureAwait(false);
+                        response = await GetPageContentAsync(page, null, false);
                 }
             }
 
@@ -203,6 +287,14 @@ namespace Sushi.Mediakiwi.Logic
             return response;
         }
 
+        private void SetCacheVersion(DateTime dt)
+        {
+            var cacheEntryOptions = new MemoryCacheEntryOptions()
+                .SetSlidingExpiration(TimeSpan.FromDays(1));
+
+            // Save data in cache.
+            _cache.Set(ckey, dt, cacheEntryOptions);
+        }
 
         private bool ClearCache()
         {
@@ -226,6 +318,29 @@ namespace Sushi.Mediakiwi.Logic
             _cache.Set(key, item, options);
         }
 
+        private async Task<bool> VerifyLoadBalancedCache()
+        {
+            DateTime dt;
+
+            object candidate = null;
+            if (_cache.TryGetValue(ckey, out candidate))
+                dt = (DateTime)candidate;
+            else
+            {
+                dt = DateTime.UtcNow;
+                SetCacheVersion(dt);
+            }
+
+            var cleanup = await CacheItem.SelectAllAsync(dt);
+            if (cleanup == null)
+                return false;
+            else
+                ClearCache();
+
+            SetCacheVersion(dt);
+            return true;
+        }
+
         private async Task<Dictionary<string, ContentItem>> getMultiFieldContentAsync(HeadlessRequest request, Field inField)
         {
             if (string.IsNullOrWhiteSpace(inField.Value))
@@ -233,14 +348,14 @@ namespace Sushi.Mediakiwi.Logic
 
             Dictionary<string, ContentItem> lst = new Dictionary<string, ContentItem>();
 
-            var mfs = Sushi.Mediakiwi.Data.MultiField.GetDeserialized(inField.Value);
+            var mfs = Mediakiwi.Data.MultiField.GetDeserialized(inField.Value);
             if (mfs.Length > 0)
             {
                 int idx = 0;
                 foreach (var item in mfs)
                 {
                     idx++;
-                    (ContentItem contentItem, bool isFilled) result = await getContentItemFromFieldAsync(request, new Field(item.Property, item.Type, item.Value)).ConfigureAwait(false);
+                    (ContentItem contentItem, bool isFilled) result = await getContentItemFromFieldAsync(request, new Field(item.Property, item.Type, item.Value));
                     if (result.isFilled)
                         lst.Add($"Multifield_{idx}", result.contentItem);
                 }
@@ -271,15 +386,6 @@ namespace Sushi.Mediakiwi.Logic
                 return null;
             }
         }
-
-        // TODO: replace this on the fly with real data
-        private Dictionary<string, List<string>> NestedComponentCollection { get; set; } = new Dictionary<string, List<string>>()
-        {
-            {
-                // PARENT :                               CHILDS :
-                "C000_NavigationFR", new List<string>() { "C000_MegaMenuColumn", "C000_MegaMenuLink" }
-            }
-        };
 
         private async Task<(ContentItem contentItem, bool isFilled)> getContentItemFromFieldAsync(HeadlessRequest request, Field inField)
         {
@@ -343,7 +449,7 @@ namespace Sushi.Mediakiwi.Logic
                             {
                                 if (inField.Link.IsInternal)
                                 {
-                                    var pagelink = await Page.SelectOneAsync(inField.Link.PageID.GetValueOrDefault()).ConfigureAwait(false);
+                                    var pagelink = await Page.SelectOneAsync(inField.Link.PageID.GetValueOrDefault());
                                     content.Href = ConvertUrl(pagelink?.InternalPath);
                                 }
                                 else
@@ -373,7 +479,7 @@ namespace Sushi.Mediakiwi.Logic
                             var data = SubList.GetDeserialized(inField.Value);
                             if (data != null && data.Items != null && data.Items.Any() && data.List.HasValue)
                             {
-                                var list = await ComponentList.SelectOneAsync(data.List.Value).ConfigureAwait(false);
+                                var list = await ComponentList.SelectOneAsync(data.List.Value);
                                 if (list != null && !list.IsNewInstance)
                                 {
                                     var instance = CreateInstance(list.AssemblyName, list.ClassName);
@@ -453,7 +559,7 @@ namespace Sushi.Mediakiwi.Logic
             return status;
         }
 
-        public async Task<PageContentResponse> GetPageContentAsync(Page page, IPageMapping pageMap, bool ispreview)
+        private async Task<PageContentResponse> GetPageContentAsync(Page page, IPageMapping pageMap, bool ispreview)
         {
             var response = new PageContentResponse();
 
@@ -462,7 +568,7 @@ namespace Sushi.Mediakiwi.Logic
 
             if (pageMap != null && status == HttpStatusCode.NotFound)
             {
-                return await GetPageNotFoundAsync(page.SiteID).ConfigureAwait(false);
+                return await GetPageNotFoundAsync(page.SiteID);
             }
 
             // validation parse url?
@@ -525,7 +631,7 @@ namespace Sushi.Mediakiwi.Logic
             Component[] components;
             if (ispreview)
             {
-                var versions = await ComponentVersion.SelectAllAsync(page.ID).ConfigureAwait(false);
+                var versions = await ComponentVersion.SelectAllAsync(page.ID);
                 List<Component> converted = new List<Component>();
                 foreach (var version in versions)
                 {
@@ -537,10 +643,10 @@ namespace Sushi.Mediakiwi.Logic
                 components = converted.ToArray();
             }
             else
-                components = await Component.SelectAllAsync(page.ID).ConfigureAwait(false);
+                components = await Component.SelectAllAsync(page.ID);
 
             int sort = 0;
-            foreach (var component in components.OrderBy(x => x.SortOrder))
+            foreach (var component in components)
             {
                 if (component?.Template?.SourceTag?.Contains(" ") == true)
                     component.Template.SourceTag = component.Template.SourceTag.Replace(" ", "_");
@@ -578,32 +684,10 @@ namespace Sushi.Mediakiwi.Logic
                 {
                     foreach (var field in component.Content.Fields)
                     {
-                        (ContentItem content, bool isFilled) result = await getContentItemFromFieldAsync(request, field).ConfigureAwait(false);
+                        (ContentItem content, bool isFilled) result = await getContentItemFromFieldAsync(request, field);
 
                         if (!mapped.Content.ContainsKey(field.Property) && result.isFilled)
                             mapped.Content.Add(field.Property, result.content);
-                    }
-                }
-
-                // Check if we have a NestedComponent Collection match for this (child) item
-                if (NestedComponentCollection.Any(x => x.Value.Contains(request.Component.Template.SourceTag)))
-                {
-                    // Find out to which parent this (child) component belongs
-                    var nestedItem = NestedComponentCollection.FirstOrDefault(x => x.Value.Contains(request.Component.Template.SourceTag));
-
-                    // Get the parent component in which this child component will be nested
-                    var parent = response.Components.FirstOrDefault(x => x.ComponentName.Equals(nestedItem.Key));
-                    if (parent != null)
-                    {
-                        if (parent.Nested == null)
-                        {
-                            parent.Nested = new List<ContentComponent>();
-                        }
-
-                        // Add this component to the Nested Collection of the Parent
-                        parent.Nested.Add(mapped);
-
-                        continue;
                     }
                 }
 

@@ -11,26 +11,18 @@ using System.Threading.Tasks;
 
 namespace Sushi.Mediakiwi.Controllers
 {
-    /// <summary>
-    /// This Controller is initiated by adding a route in the following location:
-    /// Sushi.Mediakiwi => Configure
-    /// ControllerRegister.AddRoute("api/documentype/getfields", new DocumentTypeController());
-    /// </summary>
     [Route("api/documentype")]
     public class DocumentTypeController : BaseController
     {
-        [HttpGet("GetData")]
-        public async Task<string> GetData() 
+        public DocumentTypeController()
         {
-            string temp = "";
-
-            return temp;
+            this.IsAuthenticationRequired = true;
         }
 
-        [HttpPost("GetFields")]
-        [AllowAnonymous]
-        public async override Task<string> CompleteAsync(HttpContext context)
+        [HttpPost("getFields")]
+        public async Task<string> GetFieldsAsync()
         {
+            var context = this.HttpContext;
             var request = await GetPostAsync<GetFieldsRequest>(context).ConfigureAwait(false);
 
             Dictionary<string, int> req = new Dictionary<string, int>();
@@ -45,12 +37,12 @@ namespace Sushi.Mediakiwi.Controllers
             GetFieldsResponse response = new GetFieldsResponse();
             response.Fields = new List<DocumentTypeFieldListItem>();
 
-            var componentlist = await ComponentTemplate.SelectOneAsync(request.DocumentTypeID);
+            var componentlist = await ComponentTemplate.SelectOneAsync(request.DocumentTypeID).ConfigureAwait(false);
             var metadata = (MetaData[])Utility.GetDeserialized(typeof(MetaData[]), componentlist.MetaData);
 
             int index = 1;
 
-            var properties = await Property.SelectAllByTemplateAsync(request.DocumentTypeID);
+            var properties = await Property.SelectAllByTemplateAsync(request.DocumentTypeID).ConfigureAwait(false);
 
             bool reload = false;
             // go through all metadata properties and check if a related property is present
@@ -76,10 +68,10 @@ namespace Sushi.Mediakiwi.Controllers
                             TemplateID = request.DocumentTypeID,
                             IsSharedField = meta.IsSharedField.Equals("1")
                         };
-                        await property.SaveAsync();
+                        await property.SaveAsync().ConfigureAwait(false);
 
                         // Set shared FIeld
-                        await SaveSharedFieldAsync(property, meta.IsSharedField.Equals("1"));
+                        await SaveSharedFieldAsync(property, meta.IsSharedField.Equals("1")).ConfigureAwait(false);
 
                         reload = true;
                     }
@@ -88,7 +80,7 @@ namespace Sushi.Mediakiwi.Controllers
                     if (!property.SortOrder.Equals(index))
                     {
                         property.SortOrder = index;
-                        await property.SaveAsync();
+                        await property.SaveAsync().ConfigureAwait(false);
                         reload = true;
                     }
                     index++;
@@ -98,7 +90,7 @@ namespace Sushi.Mediakiwi.Controllers
             // reload properties if it changed.
             if (reload)
             {
-                properties = await Property.SelectAllByTemplateAsync(request.DocumentTypeID);
+                properties = await Property.SelectAllByTemplateAsync(request.DocumentTypeID).ConfigureAwait(false);
             }
 
             foreach (var property in properties)
@@ -115,7 +107,7 @@ namespace Sushi.Mediakiwi.Controllers
             }
 
             // [MR:29-04-2021] added for : https://supershift.atlassian.net/browse/FTD-147
-            await response.ApplySharedFieldInformationAsync(request.DocumentTypeID);
+            await response.ApplySharedFieldInformationAsync(request.DocumentTypeID).ConfigureAwait(false);
 
             return GetResponse(response);
         }
@@ -123,7 +115,7 @@ namespace Sushi.Mediakiwi.Controllers
         private async Task SaveSharedFieldAsync(Property property, bool isShared)
         {
             // Check if there is an existing SharedField for this FieldName
-            var existingSharedField = await SharedField.FetchSingleAsync(property.FieldName, property.ContentTypeID);
+            var existingSharedField = await SharedField.FetchSingleAsync(property.FieldName, property.ContentTypeID).ConfigureAwait(false);
 
             // Field is marked As Shared field, but doesn't exist yet.
             // This means we need to add this property as a shared Field
@@ -136,16 +128,16 @@ namespace Sushi.Mediakiwi.Controllers
                 };
 
                 // Save SharedField Entity
-                await existingSharedField.SaveAsync();
+                await existingSharedField.SaveAsync().ConfigureAwait(false);
 
                 // Loop through existing properties that have the same fieldname and 
                 // and add them to the SharedFIeldProperty collection
-                foreach (var existingProp in await Property.SelectAllByFieldNameAsync(property.FieldName))
+                foreach (var existingProp in await Property.SelectAllByFieldNameAsync(property.FieldName).ConfigureAwait(false))
                 {
                     // Create translations based off of the default value if we have any
                     if (string.IsNullOrWhiteSpace(property.DefaultValue) == false)
                     {
-                        foreach (var site in await Site.SelectAllAsync())
+                        foreach (var site in await Site.SelectAllAsync().ConfigureAwait(false))
                         {
                             SharedFieldTranslation translation = new SharedFieldTranslation()
                             {
@@ -157,7 +149,7 @@ namespace Sushi.Mediakiwi.Controllers
                                 Value = property.DefaultValue,
                             };
 
-                            await translation.SaveAsync();
+                            await translation.SaveAsync().ConfigureAwait(false);
                         }
                     }
                 }
@@ -168,16 +160,15 @@ namespace Sushi.Mediakiwi.Controllers
             if (isShared && existingSharedField?.ID > 0)
             {
                 // Delete all translations
-                var sharedFieldTranslations = await SharedFieldTranslation.FetchAllForFieldAsync(existingSharedField.ID);
+                var sharedFieldTranslations = await SharedFieldTranslation.FetchAllForFieldAsync(existingSharedField.ID).ConfigureAwait(false);
                 foreach (var sharedFieldTranslation in sharedFieldTranslations)
                 {
-                    await sharedFieldTranslation.DeleteAsync();
+                    await sharedFieldTranslation.DeleteAsync().ConfigureAwait(false);
                 }
 
                 // Delete sharedfield
-                await existingSharedField.DeleteAsync();
+                await existingSharedField.DeleteAsync().ConfigureAwait(false);
             }
         }
-
     }
 }
