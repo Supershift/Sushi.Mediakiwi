@@ -885,6 +885,8 @@ namespace Sushi.Mediakiwi.Data
             if (HasEmail(Email, this?.ID))
                 throw new Exception("The applied email already exists");
 
+            DataString = m_Data?.Serialized;
+
             var connector = ConnectorFactory.CreateConnector(new ApplicationUserMap(true));
             connector.Save(this);
 
@@ -905,6 +907,8 @@ namespace Sushi.Mediakiwi.Data
 
             if (await HasEmailAsync(Email, this?.ID))
                 throw new Exception("The applied email already exists");
+
+            DataString = m_Data?.Serialized;
 
             var connector = ConnectorFactory.CreateConnector(new ApplicationUserMap(true));
             await connector.SaveAsync(this);

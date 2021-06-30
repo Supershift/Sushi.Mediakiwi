@@ -4803,7 +4803,8 @@ namespace Sushi.Mediakiwi.Framework
                                     }
                                 }
                             }
-                            else if (this.Console.ItemType == RequestItemType.Undefined && this.CurrentList.FolderID.HasValue)
+                            else if (this.Console.ItemType == RequestItemType.Undefined 
+                                && (this.CurrentList.FolderID.HasValue && this.CurrentList.Type != ComponentListType.Browsing))
                             {
                                 if (this.CurrentList.Target == ComponentListTarget.List)
                                     folderEntity = Folder.SelectOneChild(this.CurrentList.FolderID.Value, this.CurrentSite.ID);

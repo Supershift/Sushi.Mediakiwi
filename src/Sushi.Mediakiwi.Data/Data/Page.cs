@@ -540,6 +540,7 @@ namespace Sushi.Mediakiwi.Data
                 filter.AddParameter("date", DateTime.UtcNow);
                 filter.AddSql("(Page_Publish is null or Page_Publish <= @date and (Page_Expire is null or Page_Expire >= @seadaterch)");
             }
+            filter.Add(x => x.FolderID, folderID);
 
             return connector.FetchAll(filter);
         }
@@ -603,6 +604,7 @@ namespace Sushi.Mediakiwi.Data
                 filter.AddParameter("date", DateTime.UtcNow);
                 filter.AddSql("(Page_Publish is null or Page_Publish <= @date and (Page_Expire is null or Page_Expire >= @seadaterch)");
             }
+            filter.Add(x => x.FolderID, folderID);
 
             return await connector.FetchAllAsync(filter);
         }
