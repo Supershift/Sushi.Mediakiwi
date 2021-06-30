@@ -335,10 +335,6 @@ namespace Sushi.Mediakiwi.Framework
 
                 if (Context.Request.HasFormContentType)
                 {
-                    //if (IsMultiFile) return false;
-
-                    //if (Context.Request.ContentType.Contains("json")) return false;
-
                     // Introduced as of $ which can not be used for the richtextbox
                     string cleanKey = ID.Replace("$", string.Empty);
                     foreach (string key in Context.Request.Form.Keys)
@@ -372,30 +368,6 @@ namespace Sushi.Mediakiwi.Framework
             {
                 Console.HasDoubleCols = true;
                 Expression = OutputExpression.Right;
-            }
-        }
-
-        protected bool IsInitialLoaded
-        {
-            get
-            {
-                if (m_ForceLoadEvent)
-                {
-                    return true;
-                }
-
-                if (!Context.Request.HasFormContentType)
-                {
-                    return true;
-                }
-
-                //  Return true when there is no postback or state == -1 detected 
-                if (Context.Request.ContentType.Contains("json", StringComparison.InvariantCultureIgnoreCase))
-                {
-                    return Context.Request.Method == "GET";
-                }
-
-                return (Console.Request.Form.Count == 0 || Console.Form("state") == "1" || Console.Form("autopostback").Equals("edit", StringComparison.InvariantCultureIgnoreCase));
             }
         }
 

@@ -520,7 +520,7 @@ namespace Sushi.Mediakiwi.Data
             filter.Add(x => x.PageID, pageID);
             filter.Add(x => x.IsSecundary, isSecundary);
 
-            var result = await connector.FetchAllAsync(filter);
+            var result = await connector.FetchAllAsync(filter).ConfigureAwait(false);
             return result.ToArray();
         }
 
@@ -530,6 +530,11 @@ namespace Sushi.Mediakiwi.Data
         /// <param name="component">The component.</param>
         public void Apply(Component component)
         {
+            if (component == null)
+            {
+                throw new ArgumentNullException(nameof(component));
+            }
+
             component.GUID = this.GUID;
             component.PageID = this.PageID;
             component.ComponentTemplateID = this.TemplateID;
@@ -542,6 +547,7 @@ namespace Sushi.Mediakiwi.Data
             component.Serialized_XML = this.Serialized_XML;
             component.SortDate = this.SortField_Date;
             component.SortOrder = this.SortOrder;
+            component.Created = this.Created;
             component.Updated = this.Updated;
             component.Target = this.Target;
             component.Source = this.Source;

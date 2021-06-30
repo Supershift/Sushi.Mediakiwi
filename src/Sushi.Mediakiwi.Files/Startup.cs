@@ -18,10 +18,10 @@ namespace Sushi.Mediakiwi.Files
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IConfiguration configuration)
         {
             //setx ASPNETCORE_ENVIRONMENT "Development"
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
+            //if (env.IsDevelopment())
+            //{
+            //    app.UseDeveloperExceptionPage();
+            //}
             app.UseStaticFiles();
         }
     }
