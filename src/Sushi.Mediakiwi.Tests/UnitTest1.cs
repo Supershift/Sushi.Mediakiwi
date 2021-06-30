@@ -30,14 +30,6 @@ namespace Sushi.Mediakiwi.Tests
             Assert.IsTrue(cc.Length > 0);
         }
 
-        [TestMethod]
-        public async Task Fetch_All_Pages()
-        {
-            var result = await SearchLogic.ExtractContentAsync(null, true).ConfigureAwait(false);
-
-            Assert.IsTrue(result.Count > 0);
-        }
-
         void ExtractText(List<string> collection, ContentItem item)
         {
             if (item == null)
