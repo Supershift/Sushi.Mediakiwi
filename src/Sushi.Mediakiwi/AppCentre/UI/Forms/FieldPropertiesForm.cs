@@ -83,9 +83,30 @@ namespace Sushi.Mediakiwi.AppCentre.UI.Forms
 
             Map(x => x.SortOrder).TextField("SortOrder").Expression(OutputExpression.FullWidth).Hide();
             Map(x => x.InteractiveHelp).TextArea("Help", 512, false).Expression(OutputExpression.FullWidth);
-            Map(x => x.FieldName).TextField("Field", 50, false).Expression(OutputExpression.FullWidth).ReadOnly();
-            Map(x => x.IsSharedField).Checkbox("Is shared field", true).Expression(OutputExpression.Left).Hide(isSublist);
-            Map(x => x.SharedValue, this).TextField("Shared value").Expression(OutputExpression.Right).Hide(isSublist).ReadOnly();
+
+            Map(x => x.FieldName).TextField("Field", 50, false).Expression(OutputExpression.FullWidth).ReadOnly(!wim.CurrentApplicationUser.IsDeveloper);
+            Map(x => x.IsSharedField).Checkbox("Is shared field", true).Expression(OutputExpression.FullWidth).Hide(isSublist);
+
+            //if (implement.IsSharedField)
+            //{
+            //    switch (implement.ContentTypeID)
+            //    {
+            //        case ContentType.RichText:
+            //            Map(x => x.SharedValue, this).RichText("Shared value").Expression(OutputExpression.FullWidth).Hide(isSublist);
+            //            break;
+            //        case ContentType.TextArea:
+            //            Map(x => x.SharedValue, this).TextArea("Shared value").Expression(OutputExpression.FullWidth).Hide(isSublist);
+            //            break;
+            //        case ContentType.TextField:
+            //            Map(x => x.SharedValue, this).TextField("Shared value").Expression(OutputExpression.FullWidth).Hide(isSublist);
+            //            break;
+            //        default:
+
+            //            SharedValue = "The value can be set on the component";
+            //            Map(x => x.SharedValue, this).TextLine("Shared value").Expression(OutputExpression.FullWidth).Hide(isSublist);
+            //            break;
+            //    }
+            //}
         }
 
         public string SharedValue { get; set; }

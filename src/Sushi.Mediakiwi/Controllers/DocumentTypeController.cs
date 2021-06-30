@@ -19,14 +19,43 @@ namespace Sushi.Mediakiwi.Controllers
             this.IsAuthenticationRequired = true;
         }
 
+        [HttpPost("checkSharedField")]
+        public async Task<string> CheckSharedFieldAsync()
+        {
+            var request = await GetPostAsync<CheckSharedFieldRequest>(HttpContext).ConfigureAwait(false);
+
+            CheckSharedFieldResponse response = new CheckSharedFieldResponse();
+            var matchingProps = await Property.SelectAllByFieldNameAsync(request.FieldName).ConfigureAwait(false);
+            if (matchingProps?.Count > 0)
+            {
+                foreach (var prop in matchingProps.Where(x => x.TemplateID > 0))
+                {
+                    var cVersions = await ComponentVersion.SelectAllForTemplateAsync(prop.TemplateID).ConfigureAwait(false);
+                    var pages = await Page.SelectAllAsync(cVersions.Select(x => x.PageID.GetValueOrDefault(0)).ToArray());
+
+                    foreach (var page in pages)
+                    {
+                        response.Pages.Add(new SharedFieldUsagePage()
+                        {
+                            PagePath = string.IsNullOrWhiteSpace(page.CompletePath) ? page.HRefFull : page.CompletePath,
+                            PageTitle = string.IsNullOrWhiteSpace(page.Title) ? page.Name : page.Title,
+                            PagePublished = page.IsPublished,
+                            Components = cVersions.Where(x => x.PageID == page.ID).Select(x => x.Template.Name).ToList()
+                        });
+                    }
+                }
+            }
+
+            return GetResponse(response);
+        }
+
         [HttpPost("getFields")]
         public async Task<string> GetFieldsAsync()
         {
-            var context = this.HttpContext;
-            var request = await GetPostAsync<GetFieldsRequest>(context).ConfigureAwait(false);
+            var request = await GetPostAsync<GetFieldsRequest>(HttpContext).ConfigureAwait(false);
 
             Dictionary<string, int> req = new Dictionary<string, int>();
-            foreach (var q in context.Request.Query)
+            foreach (var q in HttpContext.Request.Query)
             {
                 if (int.TryParse(q.Value, out int result))
                 {
