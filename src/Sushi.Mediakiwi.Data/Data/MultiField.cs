@@ -1,4 +1,4 @@
-﻿namespace Sushi.Mediakiwi.Data.Data
+﻿namespace Sushi.Mediakiwi.Data
 {
     public class MultiField : Field
     {

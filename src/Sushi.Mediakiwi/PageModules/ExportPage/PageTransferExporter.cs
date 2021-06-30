@@ -614,7 +614,7 @@ namespace Sushi.Mediakiwi.PageModules.ExportPage
         private async Task<List<ExportedField>> GetMultiFieldsAsync(string value, ExportedFieldInfo genericInfo, string label)
         {
             List<ExportedField> tempList = new List<ExportedField>();
-            MultiField[] fields = MultiField.GetDeserialized(value);
+            var fields = Framework.MultiField.GetDeserialized(value);
             if (fields?.Length > 0)
             {
                 genericInfo.Message = $"{fields.Length} fields have been found inside this multifield";

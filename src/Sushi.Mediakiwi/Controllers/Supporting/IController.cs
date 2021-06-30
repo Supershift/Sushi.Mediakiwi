@@ -6,6 +6,6 @@ namespace Sushi.Mediakiwi.Controllers
     public interface IController
     {
         bool IsAuthenticationRequired { get; set; }
-        Task<string> CompleteAsync(HttpContext context);
+        //Task<string> CompleteAsync(HttpContext context);
     }
 }
