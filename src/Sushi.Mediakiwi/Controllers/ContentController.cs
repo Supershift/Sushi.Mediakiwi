@@ -12,6 +12,7 @@ using System.Threading;
 using System.Reflection;
 using Sushi.Mediakiwi.Controllers.Data;
 using Sushi.Mediakiwi.Connectors;
+using Sushi.Mediakiwi.Extention;
 
 namespace Sushi.Mediakiwi.Controllers
 {
@@ -131,9 +132,9 @@ namespace Sushi.Mediakiwi.Controllers
         public async Task<ActionResult<PageContentResponse>> GetPageContentAsync([FromQuery] string url, [FromQuery] bool flushCache = false, [FromQuery] bool isPreview = false, [FromQuery] int? pageId = null)
         {
             var response = new PageContentResponse();
-            if (string.IsNullOrWhiteSpace(url))
+            if (string.IsNullOrWhiteSpace(url) && pageId.GetValueOrDefault(0) == 0)
             {
-                response.Exception = "There was no URL supplied";
+                response.Exception = "There was no URL or PageID supplied";
                 response.StatusCode = HttpStatusCode.BadRequest;
                 return BadRequest(response);
             }
@@ -285,8 +286,8 @@ namespace Sushi.Mediakiwi.Controllers
             PageContentResponse response = new PageContentResponse();
 
             int _siteId = (siteId.GetValueOrDefault(0) > 0) ? siteId.Value : 0;
-            if (_siteId == 0 && Sushi.Mediakiwi.Data.Environment.Current?.DefaultSiteID.GetValueOrDefault(0) > 0)
-                _siteId = Sushi.Mediakiwi.Data.Environment.Current.DefaultSiteID.Value;
+            if (_siteId == 0 && Mediakiwi.Data.Environment.Current?.DefaultSiteID.GetValueOrDefault(0) > 0)
+                _siteId = Mediakiwi.Data.Environment.Current.DefaultSiteID.Value;
 
             if (_siteId > 0)
             {
@@ -616,6 +617,13 @@ namespace Sushi.Mediakiwi.Controllers
             return status;
         }
 
+        /// <summary>
+        /// Returns the full page content for the requested Page 
+        /// </summary>
+        /// <param name="page">The Mediakiwi page to get the content for</param>
+        /// <param name="pageMap">The pagemap to use, if any</param>
+        /// <param name="ispreview">Is this preview mode ? then the non-published version will be returned</param>
+        /// <returns></returns>
         private async Task<PageContentResponse> GetPageContentAsync(Page page, IPageMapping pageMap, bool ispreview)
         {
             var response = new PageContentResponse();
@@ -634,11 +642,13 @@ namespace Sushi.Mediakiwi.Controllers
             response.PageLocation = page.Template.Location;
             response.StatusCode = status;
 
+            // If we have a pagemap and a redirect, return here
             if (pageMap != null && (response.StatusCode == HttpStatusCode.Redirect || response.StatusCode == HttpStatusCode.MovedPermanently))
             {
                 return response;
             }
 
+            // Extract the page title from the pagemap (if any) or the page
             var pageTitle = default(string);
             if (pageMap == null || pageMap.Title == null)
             {
@@ -649,6 +659,7 @@ namespace Sushi.Mediakiwi.Controllers
                 pageTitle = pageMap.Title;
             }
 
+            // Do we have a default page title in place
             if (page.Site.DefaultPageTitle != null)
             {
                 // validate the presence of a placeholder.
@@ -656,8 +667,10 @@ namespace Sushi.Mediakiwi.Controllers
                 {
                     pageTitle = page.Site.DefaultPageTitle.Replace("[title]"
                         , string.IsNullOrWhiteSpace(pageTitle)
-                            ? string.Empty : pageTitle);
+                        ? string.Empty : pageTitle
+                        , StringComparison.InvariantCultureIgnoreCase);
                 }
+                // Only set the page title when it's currently empty
                 else if (string.IsNullOrEmpty(pageTitle))
                 {
                     pageTitle = page.Site.DefaultPageTitle;
@@ -666,28 +679,35 @@ namespace Sushi.Mediakiwi.Controllers
 
             response.MetaData.PageTitle = pageTitle;
 
+            // Do we have a site language defined ?
             if (string.IsNullOrWhiteSpace(page.Site.Language) == false)
             {
+                // Set it so the metadata HTML language
                 response.MetaData.HtmlLang = page.Site.Language.Split('-')[0];
             }
 
+            // Do we have a page description defined ?
             if (string.IsNullOrWhiteSpace(page.Description) == false || string.IsNullOrWhiteSpace(page.Keywords) == false)
             {
+                // Add Page description to the metadata HTML Description
                 response.MetaData.MetaTags = new List<ContentMetaTag>();
                 if (string.IsNullOrWhiteSpace(page.Description) == false)
                 {
                     response.MetaData.MetaTags.Add(new ContentMetaTag("description", page.Description));
                 }
 
+                // Add Page keywords to the metadata HTML Keywords
                 if (string.IsNullOrWhiteSpace(page.Keywords) == false)
                 {
                     response.MetaData.MetaTags.Add(new ContentMetaTag("keywords", page.Keywords));
                 }
             }
 
+            // Store all page components
             Component[] components;
             if (ispreview)
             {
+                // Get the non-published versions of the components  for this page
                 var versions = await ComponentVersion.SelectAllAsync(page.ID);
                 List<Component> converted = new List<Component>();
                 foreach (var version in versions)
@@ -701,12 +721,17 @@ namespace Sushi.Mediakiwi.Controllers
             }
             else
             {
+                // Get the published versions of the components for this page
                 components = await Component.SelectAllAsync(page.ID);
             }
+
+            // Store all SharedFieldTranslations
+            var allSharedFieldTranslations = await SharedFieldTranslation.FetchAllForPageAsync(page.ID);
 
             int sort = 0;
             foreach (var component in components)
             {
+                // TODO: slot targets must be settable in the CMS
                 if (component?.Template?.SourceTag?.Contains(" ") == true)
                 {
                     component.Template.SourceTag = component.Template.SourceTag.Replace(" ", "_");
@@ -735,7 +760,6 @@ namespace Sushi.Mediakiwi.Controllers
                     IsShared = component.Template.IsShared,
                     Title = component.Template.Name,
                     ComponentID = component.ID,
-                    //Location = component.ID == 3 ? "app/components/C000_Navigation.vue" : "app/components/C000_ContentHeader.vue",
                     Slot = slotTarget,
                     SortOrder = component.SortOrder.GetValueOrDefault(0),
                 };
@@ -750,17 +774,42 @@ namespace Sushi.Mediakiwi.Controllers
 
                 if (component?.Content?.Fields?.Length > 0)
                 {
+                    // Store all wim_Properties 
+                    var allWimProperties = await Property.SelectAllByTemplateAsync(component.Template.ID);
+
                     foreach (var field in component.Content.Fields)
                     {
-                        (ContentItem content, bool isFilled) result = await getContentItemFromFieldAsync(request, field);
+                        // Seperate field from foreach loop
+                        Field fieldItem = field;
 
-                        if (!mapped.Content.ContainsKey(field.Property) && result.isFilled)
+                        // get the Matching WimProperty for this content field
+                        var wimProp = allWimProperties.FirstOrDefault(x => x.ContentTypeID == (ContentType)fieldItem.Type && x.FieldName.Equals(fieldItem.Property, StringComparison.InvariantCultureIgnoreCase));
+
+                        // Is this property marked as shared field and do we have any shared field translations at all
+                        if (wimProp?.IsSharedField == true && allSharedFieldTranslations?.Count > 0)
                         {
-                            mapped.Content.Add(field.Property, result.content);
+                            var sharedFieldValue = allSharedFieldTranslations.FirstOrDefault(x => x.ContentTypeID == wimProp.ContentTypeID && x.FieldName == wimProp.FieldName);
+
+                            // Do we have a sharedFieldValue ?
+                            // If so, apply its content to the fieldItem
+                            if (sharedFieldValue?.ID > 0)
+                            {
+                                fieldItem = fieldItem.ApplySharedValue(sharedFieldValue, ispreview);
+                            }
+                        }
+
+                        // Get the content based on the fieldItem, this will resolve based on the contenttype
+                        (ContentItem content, bool isFilled) result = await getContentItemFromFieldAsync(request, fieldItem);
+
+                        // Only add this property when it's not yet added and the content for it is filled.
+                        if (!mapped.Content.ContainsKey(fieldItem.Property) && result.isFilled)
+                        {
+                            mapped.Content.Add(fieldItem.Property, result.content);
                         }
                     }
                 }
 
+                // Check for nested components
                 if (request.Component.Template.NestedType.HasValue)
                 {
                     var parent = default(ContentComponent);

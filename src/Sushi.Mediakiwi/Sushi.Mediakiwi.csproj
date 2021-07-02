@@ -125,6 +125,7 @@
     <Compile Include="DataEntities\GridExtention.cs" />
     <Compile Include="Extention\ApplicationUserExtention.cs" />
     <Compile Include="Extention\ComponentVersionExtension.cs" />
+    <Compile Include="Extention\FieldExtension.cs" />
     <Compile Include="Extention\GalleryExtension.cs" />
     <Compile Include="Extention\LinkExtension.cs" />
     <Compile Include="Extention\PageExtension.cs" />
