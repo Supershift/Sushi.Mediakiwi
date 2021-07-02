@@ -15,6 +15,14 @@ using Sushi.Mediakiwi.Connectors;
 
 namespace Sushi.Mediakiwi.Controllers
 {
+    public class PageRequest
+    {
+        public string Path { get; set; }
+        public bool ClearCache { get; set; } = false;
+        public bool IsPreview { get; set; } = false;
+        public int? PageID { get; set; }
+    }
+
     [ApiController]
     [Route("api/content/v1.0")]
     [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
@@ -79,7 +87,7 @@ namespace Sushi.Mediakiwi.Controllers
         [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
         public async Task<ActionResult<string>> Status()
         {
-            var cached = await EnvironmentVersion.SelectAsync();
+            var cached = await EnvironmentVersion.SelectAsync().ConfigureAwait(false);
             var information = string.Empty;
 
             information += $"Data updated: {cached.Updated.Value} \n";
@@ -98,6 +106,18 @@ namespace Sushi.Mediakiwi.Controllers
         public async Task<PageContentResponse> GetPageNotFoundContent([FromQuery] int? siteId = null)
         {
             return await GetPageNotFoundAsync(siteId).ConfigureAwait(false);
+        }
+
+        [Produces("application/json")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [HttpPost]
+        [Route("getPageContent")]
+        [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
+        public async Task<ActionResult<PageContentResponse>> GetPageContent(PageRequest req)
+        {
+            return await GetPageContentAsync(req.Path, req.ClearCache, req.IsPreview, req.PageID).ConfigureAwait(false);
         }
 
         [Produces("application/json")]

@@ -74,19 +74,8 @@ namespace Sushi.Mediakiwi.UI
         {
             var monitor = new Monitor(context, env, configuration);
 
-            var hasLoggedInUser = false;
-            
-            if (monitor._Console.CurrentApplicationUser != null 
-                && monitor._Console.CurrentApplicationUser.IsActive
-                && !monitor._Console.CurrentApplicationUser.IsNewInstance)
-            {
-                hasLoggedInUser = true;
-            }
-
-            var controllerOutput = await new ControllerRegister(context, serviceProvider).VerifyAsync(hasLoggedInUser)
-                .ConfigureAwait(false);
-
-            if (controllerOutput != null)
+            if (await new ControllerRegister(context, serviceProvider).VerifyAsync()
+                .ConfigureAwait(false))
             {
                 return true;
             }
@@ -1342,7 +1331,13 @@ namespace Sushi.Mediakiwi.UI
                     {
                         if (shouldredirect)
                         {
-                            _Context.Response.Redirect($"{_Console.CurrentDomain}/.auth/login/aad?post_login_redirect_url={_Console.GetWimPagePath(null)}");
+                            string redirect = _configuration.GetValue<string>("mediakiwi:authentication.redirect");
+                            if (string.IsNullOrWhiteSpace(redirect))
+                            {
+                                redirect = _Console.GetWimPagePath(null);
+                            }
+
+                            _Context.Response.Redirect($"{_Console.CurrentDomain}/.auth/login/aad?navigateToLoginRequestUrl=false&post_login_redirect_url={redirect}");
                         }
                     }
                 }

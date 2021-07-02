@@ -380,7 +380,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             hasLegacy1 = false;
             hasLegacy2 = false;
 
-            wim.AddTab("Page list", Mediakiwi.Data.ComponentList.SelectOne(ComponentListType.PageList));
+            //wim.AddTab("Page list", Mediakiwi.Data.ComponentList.SelectOne(ComponentListType.PageList));
             return Task.CompletedTask;
         }
 
@@ -403,7 +403,8 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         
             wim.ForceLoad = true;
 
-            wim.ListData = Mediakiwi.Data.PageTemplate.SearchAll(FilterSite, FilterText);
+            var list = Mediakiwi.Data.PageTemplate.SearchAll(FilterSite, FilterText);
+            wim.ListDataAdd(list);
             return Task.CompletedTask;
         }
 

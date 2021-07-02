@@ -2,11 +2,11 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <Version>7.15.39</Version>
+    <Version>7.15.30</Version>
     <Product>Mediakiwi</Product>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <Company>Supershift</Company>
-    <Authors>Marc Molenwijk, Jean Paul Kommers</Authors>
+    <Authors>Marc Molenwijk, Jean Paul Kommers, Mark Rienstra</Authors>
     <Copyright>2005-2021 Supershift</Copyright>
     <Description>Rapid Portal Development Framework including a Headless Content Management System component build and optimized for Microsoft Azure (cloud)</Description>
     <PackageProjectUrl>https://github.com/Supershift/Sushi.Mediakiwi</PackageProjectUrl>
@@ -15,8 +15,8 @@
     <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
     <EnableNETAnalyzers>true</EnableNETAnalyzers>
     <RunAnalyzersDuringBuild>false</RunAnalyzersDuringBuild>
-    <AssemblyVersion>7.15.26.0</AssemblyVersion>
-    <FileVersion>7.15.26.0</FileVersion>
+    <AssemblyVersion>7.15.30.0</AssemblyVersion>
+    <FileVersion>7.15.30.0</FileVersion>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 

@@ -82,7 +82,8 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
 
         public string GetSafeUrl()
         {
-            return UrlBuild.GetUrl();
+            return WimPagePath;
+            //return UrlBuild.GetUrl();
         }
 
         /// <summary>
@@ -1116,11 +1117,11 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
         {
             get
             {
+
                 if (string.IsNullOrWhiteSpace(Request.Headers["X-Forwarded-Host"]))
                 {
                     return string.Concat(Request.Scheme, "://", Request.Host.ToString());
                 }
-
                 return string.Concat(Request.Scheme, "://", Request.Headers["X-Forwarded-Host"]);
             }
         }
@@ -1187,7 +1188,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
             get
             {
                 // set the correct wim page
-                return Channel.Any()
+                return (Channel != null && Channel.Any())
                     ? AddApplicationPath(string.Concat(CommonConfiguration.PORTAL_PATH, "/", Channel))
                     : AddApplicationPath(CommonConfiguration.PORTAL_PATH)
                     ;

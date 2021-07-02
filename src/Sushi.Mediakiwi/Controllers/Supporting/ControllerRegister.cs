@@ -34,30 +34,23 @@ namespace Sushi.Mediakiwi.Controllers
             }
         }
 
-        internal async Task<IController> VerifyAsync(bool hasLoggedInUser = false)
+        internal async Task<bool> VerifyAsync()
         {
             var routes = _actionDescriptorCollectionProvider.ActionDescriptors.Items.Where(ad => ad.AttributeRouteInfo != null).ToList();
             foreach (var route in routes.Cast<ControllerActionDescriptor>().Where(x => typeof(IController).IsAssignableFrom(x.ControllerTypeInfo)))
             {
                 if (Verify(route))
                 {
-
-                    //var iController = Activator.CreateInstance(route.ControllerTypeInfo.AsType()) as BaseController;
-                    //if (iController.IsAuthenticationRequired && hasLoggedInUser == false)
-                    //{
-                    //    return null;
-                    //}
-
                     //Use Invoker factory
                     if (_actionInvoker != null)
                     {
                         var invoker = _actionInvoker.CreateInvoker(new ActionContext(_Context, new Microsoft.AspNetCore.Routing.RouteData(), route));
                         await invoker.InvokeAsync().ConfigureAwait(false);
                     }
-                    return new BaseController();
+                    return true;
                 }
             }
-            return null;
+            return false;
         }
 
         bool Verify(ControllerActionDescriptor route)
