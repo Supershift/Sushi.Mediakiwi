@@ -150,7 +150,6 @@ namespace Sushi.Mediakiwi.Utilities
         {
             get
             {
-
                 if (string.IsNullOrWhiteSpace(m_Context.Request.Headers["X-Forwarded-Host"]))
                     return string.Concat(m_Context.Request.Host.ToString());
 

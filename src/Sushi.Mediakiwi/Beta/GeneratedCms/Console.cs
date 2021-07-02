@@ -62,12 +62,6 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
                 return null;
             }
 
-            var referer = new Uri(Context.Request.Headers["Referer"]);
-            if (!referer.Host.Equals(Context.Request.Host.Host, StringComparison.CurrentCultureIgnoreCase))
-            {
-                return null;
-            }
-
             if (allowHTML)
             {
                 return Context.Request.Form[name];

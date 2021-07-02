@@ -100,13 +100,24 @@ namespace Sushi.Mediakiwi.Controllers
             return await GetPageNotFoundAsync(siteId).ConfigureAwait(false);
         }
 
+        //[Produces("application/json")]
+        //[ProducesResponseType(StatusCodes.Status200OK)]
+        //[ProducesResponseType(StatusCodes.Status400BadRequest)]
+        //[ProducesResponseType(StatusCodes.Status404NotFound)]
+        //[HttpPost]
+        //[Route("getPageContent")]
+        //[ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
+        //public async Task<PageContentResponse> GetPageContent(PageRequest req)
+        //{
+        //    return await GetPageContentAsync(req.Path, req.ClearCache, req.IsPreview, req.PageID);
+        //}
+
         [Produces("application/json")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [HttpGet]
         [Route("page/content")]
-        [Route("getPageContent")]
         [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
         public async Task<ActionResult<PageContentResponse>> GetPageContentAsync(string url, bool flushCache = false, bool isPreview = false, int? pageId = null)
         {

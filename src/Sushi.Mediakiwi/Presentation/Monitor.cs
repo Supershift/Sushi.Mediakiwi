@@ -1124,22 +1124,9 @@ namespace Sushi.Mediakiwi.Framework.Presentation
             string username2 = username;
             bool hasError = !string.IsNullOrEmpty(username);
 
-            
-
             string password = container.GetSafePost("password");
             bool rememberMe = !string.IsNullOrEmpty(container.GetSafePost("frmRemember"));
             string emailaddress = container.GetSafePost("email");
-
-            //if (string.IsNullOrEmpty(username) && !string.IsNullOrEmpty(Utility.GetSafeGet("u")))
-            //{
-                
-            //    using (Utilities.Authentication auth = new Utilities.Authentication())
-            //    {
-            //        auth.EncryptionPassword = "urlinfo";
-            //        //  The replacement is a patch
-            //        username2 = auth.Decrypt(Utility.GetSafeGet("u"));
-            //    }
-            //}
 
             if (string.IsNullOrEmpty(username2) && !container.Request.HasFormContentType)
             {
