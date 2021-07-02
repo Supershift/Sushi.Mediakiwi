@@ -33,7 +33,7 @@ namespace Sushi.Mediakiwi.Headless.HttpClients
 
         private string getServiceUrl(string baseUrl, Dictionary<string, string> queryString)
         {
-            return QueryHelpers.AddQueryString(baseUrl, queryString).ToString();
+            return QueryHelpers.AddQueryString(baseUrl, queryString);
         }
 
         #region Get Page Not Found
@@ -49,7 +49,7 @@ namespace Sushi.Mediakiwi.Headless.HttpClients
 
             // Create querystring for adding SiteID to the Request
             Dictionary<string, string> queryString = new Dictionary<string, string>();
-            if (siteId.GetValueOrDefault(0) > 0) 
+            if (siteId.GetValueOrDefault(0) > 0)
             {
                 queryString.Add("siteId", siteId.GetValueOrDefault(0).ToString());
             }
@@ -69,7 +69,7 @@ namespace Sushi.Mediakiwi.Headless.HttpClients
             {
                 _logger.LogError(ex, ex.Message, null);
             }
-            
+
 
             if (response.IsSuccessStatusCode == true)
             {
@@ -120,7 +120,6 @@ namespace Sushi.Mediakiwi.Headless.HttpClients
             // Create Http Request object
             var request = new HttpRequestMessage(HttpMethod.Get, getServiceUrl($"{_settings.MediaKiwi.ContentService.ServiceUrl}/page/content", queryString));
             request.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
-            request.Version = new Version(1, 2);
 
             HttpResponseMessage response = new HttpResponseMessage(System.Net.HttpStatusCode.NotFound);
             // Retrieve content via service
@@ -132,7 +131,7 @@ namespace Sushi.Mediakiwi.Headless.HttpClients
             {
                 _logger.LogError(ex, ex.Message);
             }
-            
+
             if (response.IsSuccessStatusCode)
             {
                 return await response.Content.ReadAsStringAsync();
