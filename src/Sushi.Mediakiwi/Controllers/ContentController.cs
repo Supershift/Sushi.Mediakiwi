@@ -25,7 +25,7 @@ namespace Sushi.Mediakiwi.Controllers
         public ContentController(IMemoryCache memoryCache)
         {
             _cache = memoryCache; 
-            this.IsAuthenticationRequired = true;
+            IsAuthenticationRequired = true;
         }
 
         const string ckey = "Node.TimeStamp";
@@ -92,36 +92,31 @@ namespace Sushi.Mediakiwi.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [HttpPost]
-        [Route("getPageNotFoundContent")]
+        [HttpGet]
+        [Route("page/notfound")]
         [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
         public async Task<PageContentResponse> GetPageNotFoundContent([FromQuery] int? siteId = null)
         {
             return await GetPageNotFoundAsync(siteId).ConfigureAwait(false);
         }
 
-        //[Produces("application/json")]
-        //[ProducesResponseType(StatusCodes.Status200OK)]
-        //[ProducesResponseType(StatusCodes.Status400BadRequest)]
-        //[ProducesResponseType(StatusCodes.Status404NotFound)]
-        //[HttpPost]
-        //[Route("getPageContent")]
-        //[ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
-        //public async Task<PageContentResponse> GetPageContent(PageRequest req)
-        //{
-        //    return await GetPageContentAsync(req.Path, req.ClearCache, req.IsPreview, req.PageID);
-        //}
-
         [Produces("application/json")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [HttpGet]
+        [ProducesResponseType(StatusCodes.Status405MethodNotAllowed)]
         [Route("page/content")]
+        [HttpGet]
         [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
-        public async Task<ActionResult<PageContentResponse>> GetPageContentAsync(string url, bool flushCache = false, bool isPreview = false, int? pageId = null)
+        public async Task<ActionResult<PageContentResponse>> GetPageContentAsync([FromQuery] string url, [FromQuery] bool flushCache = false, [FromQuery] bool isPreview = false, [FromQuery] int? pageId = null)
         {
             var response = new PageContentResponse();
+            if (string.IsNullOrWhiteSpace(url))
+            {
+                response.Exception = "There was no URL supplied";
+                response.StatusCode = HttpStatusCode.BadRequest;
+                return BadRequest(response);
+            }
 
             try
             {
@@ -143,10 +138,14 @@ namespace Sushi.Mediakiwi.Controllers
                     cacheKey = $"{uri}";
 
                     if ((uri.IsAbsoluteUri && !string.IsNullOrWhiteSpace(uri.Query) && uri.Query.Equals("?flush=me")))
+                    {
                         flush = true;
+                    }
 
                     if ((uri.IsAbsoluteUri && !string.IsNullOrWhiteSpace(uri.Query) && uri.Query.Equals("?preview=1")))
+                    {
                         ispreview = true;
+                    }
 
                     var maps = await PageMapping.SelectAllNonListAsync(0, true).ConfigureAwait(false);
                     foreach (var map in maps)
@@ -223,9 +222,13 @@ namespace Sushi.Mediakiwi.Controllers
                     {
                         // Check if this page is the Homepage 
                         if (url == "/" || string.IsNullOrWhiteSpace(url))
+                        {
                             response = await GetHomePageAsync(null);
+                        }
                         else
+                        {
                             response = await GetPageNotFoundAsync(null);
+                        }
                     }
                     else
                     {
@@ -265,7 +268,9 @@ namespace Sushi.Mediakiwi.Controllers
                 {
                     var page = await Page.SelectOneAsync(site.HomepageID.Value);
                     if (page?.ID > 0)
+                    {
                         response = await GetPageContentAsync(page, null, false);
+                    }
                 }
             }
             return response;
@@ -280,8 +285,10 @@ namespace Sushi.Mediakiwi.Controllers
         {
             PageContentResponse response = new PageContentResponse();
             int _siteId = (siteId.GetValueOrDefault(0) > 0) ? siteId.Value : 0;
-            if (_siteId == 0 && Sushi.Mediakiwi.Data.Environment.Current?.DefaultSiteID.GetValueOrDefault(0) > 0)
-                _siteId = Sushi.Mediakiwi.Data.Environment.Current.DefaultSiteID.Value;
+            if (_siteId == 0 && Mediakiwi.Data.Environment.Current?.DefaultSiteID.GetValueOrDefault(0) > 0)
+            {
+                _siteId = Mediakiwi.Data.Environment.Current.DefaultSiteID.Value;
+            }
 
             if (_siteId > 0)
             {
@@ -290,7 +297,9 @@ namespace Sushi.Mediakiwi.Controllers
                 {
                     var page = await Page.SelectOneAsync(site.PageNotFoundID.Value);
                     if (page?.ID > 0)
+                    {
                         response = await GetPageContentAsync(page, null, false);
+                    }
                 }
             }
 
@@ -355,11 +364,13 @@ namespace Sushi.Mediakiwi.Controllers
         private async Task<Dictionary<string, ContentItem>> getMultiFieldContentAsync(HeadlessRequest request, Field inField)
         {
             if (string.IsNullOrWhiteSpace(inField.Value))
+            {
                 return null;
+            }
 
             Dictionary<string, ContentItem> lst = new Dictionary<string, ContentItem>();
 
-            var mfs = Mediakiwi.Data.MultiField.GetDeserialized(inField.Value);
+            var mfs = MultiField.GetDeserialized(inField.Value);
             if (mfs.Length > 0)
             {
                 int idx = 0;
@@ -368,7 +379,9 @@ namespace Sushi.Mediakiwi.Controllers
                     idx++;
                     (ContentItem contentItem, bool isFilled) result = await getContentItemFromFieldAsync(request, new Field(item.Property, item.Type, item.Value));
                     if (result.isFilled)
+                    {
                         lst.Add($"Multifield_{idx}", result.contentItem);
+                    }
                 }
             }
 
@@ -422,9 +435,13 @@ namespace Sushi.Mediakiwi.Controllers
                             isFilled = true;
                             content.Text = inField.Image?.Description;
                             if (inField?.Image.Width > 0)
+                            {
                                 content.Width = inField?.Image.Width;
+                            }
                             if (inField?.Image.Height > 0)
+                            {
                                 content.Height = inField?.Image.Height;
+                            }
 
                             content.Url = inField.Image?.RemoteLocation;
                             if (!string.IsNullOrWhiteSpace(AzureBlobConnector.AzurePrefix) && !string.IsNullOrWhiteSpace(content.Url))
@@ -464,7 +481,9 @@ namespace Sushi.Mediakiwi.Controllers
                                     content.Href = ConvertUrl(pagelink?.InternalPath);
                                 }
                                 else
+                                {
                                     content.Href = inField.Link?.ExternalUrl;
+                                }
                             }
                         }
                     }
@@ -479,7 +498,7 @@ namespace Sushi.Mediakiwi.Controllers
                         if (!string.IsNullOrWhiteSpace(inField.Value))
                         {
                             isFilled = true;
-                            content.Text = Sushi.Mediakiwi.Data.Utility.CleanConcurrentBreaks(inField.Value, true);
+                            content.Text = Utility.CleanConcurrentBreaks(inField.Value, true);
                         }
                     }
                     break;
@@ -654,22 +673,33 @@ namespace Sushi.Mediakiwi.Controllers
                 components = converted.ToArray();
             }
             else
+            {
                 components = await Component.SelectAllAsync(page.ID);
+            }
 
             int sort = 0;
             foreach (var component in components)
             {
                 if (component?.Template?.SourceTag?.Contains(" ") == true)
+                {
                     component.Template.SourceTag = component.Template.SourceTag.Replace(" ", "_");
+                }
 
                 string slotTarget = "content";
                 if (component?.Template?.SourceTag?.Equals("C000_Navigation", StringComparison.InvariantCultureIgnoreCase) == true)
+                {
                     slotTarget = "header";
+                }
 
                 if (component?.Template?.IsFooter == true)
+                {
                     slotTarget = "footer";
+                }
                 else if (component?.Template?.IsHeader == true)
+                {
                     slotTarget = "header";
+                }
+
 
                 sort++;
                 var mapped = new ContentComponent()
@@ -698,7 +728,9 @@ namespace Sushi.Mediakiwi.Controllers
                         (ContentItem content, bool isFilled) result = await getContentItemFromFieldAsync(request, field);
 
                         if (!mapped.Content.ContainsKey(field.Property) && result.isFilled)
+                        {
                             mapped.Content.Add(field.Property, result.content);
+                        }
                     }
                 }
 
