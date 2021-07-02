@@ -207,6 +207,51 @@ namespace Sushi.Mediakiwi.Data
             return default(SharedField);
         }
 
+        /// <summary>
+        /// Creates a shared Field based on the supplied property
+        /// </summary>
+        /// <param name="property">The property for which to create a shared Field</param>
+        /// <returns></returns>
+        public static async Task CreateBasedOnPropertyAsync(Property property)
+        {
+            // Check if there is an existing SharedField for this FieldName
+            var existingSharedField = await FetchSingleAsync(property.FieldName, property.ContentTypeID).ConfigureAwait(false);
+
+            // Field is marked As Shared field, but doesn't exist yet.
+            // This means we need to add this property as a shared Field
+            if (property.IsSharedField && existingSharedField == null || existingSharedField?.ID == 0)
+            {
+                existingSharedField = new SharedField()
+                {
+                    ContentTypeID = property.ContentTypeID,
+                    FieldName = property.FieldName
+                };
+
+                // Save SharedField Entity
+                await existingSharedField.SaveAsync().ConfigureAwait(false);
+
+                // Create translations based off of the default value if we have any
+                if (string.IsNullOrWhiteSpace(property.DefaultValue) == false)
+                {
+                    foreach (var site in await Site.SelectAllAsync().ConfigureAwait(false))
+                    {
+                        SharedFieldTranslation translation = new SharedFieldTranslation()
+                        {
+                            ContentTypeID = property.ContentTypeID,
+                            EditValue = property.DefaultValue,
+                            FieldID = existingSharedField.ID,
+                            FieldName = property.FieldName,
+                            SiteID = site.ID,
+                            Value = property.DefaultValue,
+                        };
+
+                        await translation.SaveAsync().ConfigureAwait(false);
+                    }
+                }
+
+            }
+        }
+
         public void Save()
         {
             var connector = new Connector<SharedField>();
