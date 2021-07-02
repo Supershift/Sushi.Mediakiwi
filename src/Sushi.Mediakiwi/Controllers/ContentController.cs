@@ -131,11 +131,32 @@ namespace Sushi.Mediakiwi.Controllers
                 {
                     page = await Page.SelectOneAsync(pageId.Value, !ispreview).ConfigureAwait(false);
                     cacheKey = $"page{pageId.Value}";
+
+                    if (flush)
+                    {
+                        ClearCache();
+                        _cache.Remove(cacheKey);
+                    }
                 }
                 else
                 {
                     Uri uri = new Uri(WebUtility.UrlDecode(url), UriKind.Relative);
                     cacheKey = $"{uri}";
+
+                    if (flush)
+                    {
+                        ClearCache();
+                        _cache.Remove(cacheKey);
+                    }
+                    else
+                    {
+                        // Look for cache key.
+                        if (!ispreview && _cache.TryGetValue(cacheKey, out response))
+                        {
+                            return Ok(response);
+                        }
+                    }
+
 
                     if ((uri.IsAbsoluteUri && !string.IsNullOrWhiteSpace(uri.Query) && uri.Query.Equals("?flush=me")))
                     {
@@ -202,43 +223,29 @@ namespace Sushi.Mediakiwi.Controllers
                     }
                 }
 
-                if (flush)
-                {
-                    ClearCache();
-                    _cache.Remove(cacheKey);
-                }
+              
+                // Key not in cache, so get data.
+                response = new PageContentResponse();
 
-                // Look for cache key.
-                if (!ispreview && _cache.TryGetValue(cacheKey, out response))
+                if (page == null || page?.ID == 0)
                 {
-                    return Ok(response);
-                }
-                else
-                {
-                    // Key not in cache, so get data.
-                    response = new PageContentResponse();
-
-                    if (page == null || page?.ID == 0)
+                    // Check if this page is the Homepage 
+                    if (url == "/" || string.IsNullOrWhiteSpace(url))
                     {
-                        // Check if this page is the Homepage 
-                        if (url == "/" || string.IsNullOrWhiteSpace(url))
-                        {
-                            response = await GetHomePageAsync(null);
-                        }
-                        else
-                        {
-                            response = await GetPageNotFoundAsync(null);
-                        }
+                        response = await GetHomePageAsync(null);
                     }
                     else
                     {
-                        response = await GetPageContentAsync(page, pageMap, ispreview);
+                        response = await GetPageNotFoundAsync(null);
                     }
-
-                    // Save data in cache.
-                    AddToCache(cacheKey, response);
+                }
+                else
+                {
+                    response = await GetPageContentAsync(page, pageMap, ispreview);
                 }
 
+                // Save data in cache.
+                AddToCache(cacheKey, response);
             }
             catch (Exception ex)
             {
