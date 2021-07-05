@@ -52,8 +52,6 @@ namespace Sushi.Mediakiwi.Demonstration
             }
             app.UseStaticFiles();
 
-            //app.UseAuthentication();
-            //app.UseAuthorization();
             app.UseMediakiwi();
         }
     }
