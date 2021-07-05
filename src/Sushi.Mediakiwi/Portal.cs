@@ -15,7 +15,7 @@ namespace Sushi.Mediakiwi
 {
     public class Portal
     {
-        private IHostingEnvironment _env;
+        private readonly IHostingEnvironment _env;
         private readonly RequestDelegate _next;
         private readonly IConfiguration _configuration;
         private readonly IServiceProvider _serviceProvider;
@@ -51,11 +51,9 @@ namespace Sushi.Mediakiwi
             }
         }
 
-        string GetSafeUrl(HttpContext context)
+        static string GetSafeUrl(HttpContext context)
         {
             return $"{context.Request.Path}";
-
-            return $"{context.Request.PathBase}{context.Request.Path}";
         }
 
         public async Task Invoke(HttpContext context)
@@ -70,97 +68,21 @@ namespace Sushi.Mediakiwi
 
             Configure(context);
 
-            if (!await Monitor.StartControllerAsync(context, _env, _configuration, _serviceProvider).ConfigureAwait(false))
+            if (await Monitor.StartControllerAsync(context, _env, _configuration, _serviceProvider).ConfigureAwait(false))
             {
-
-                if (
-                    url.Equals(portal, StringComparison.CurrentCultureIgnoreCase)
-                    || url.StartsWith($"{portal}/", StringComparison.CurrentCultureIgnoreCase)
-                    )
-                {
-                    if (_env.IsDevelopment())
-                    {
-                        Monitor monitor = new Monitor(context, _env, _configuration);
-                        await monitor.StartAsync().ConfigureAwait(false);
-                    }
-                    else
-                    {
-                        try
-                        {
-                            Monitor monitor = new Monitor(context, _env, _configuration);
-                            await monitor.StartAsync().ConfigureAwait(false);
-                        }
-                        catch (Exception ex)
-                        {
-                            throw ex;
-                        }
-                    }
-                }
+                // Do nothing: this is the controller entree point
             }
-            await _next.Invoke(context).ConfigureAwait(false);
-        }
-    }
-
-    public class Portal2
-    {
-        private IHostingEnvironment _env;
-        private readonly IConfiguration _configuration;
-
-        public Portal2(IHostingEnvironment env, IConfiguration configuration)
-        {
-            _env = env;
-            _configuration = configuration;
-        }
-
-        internal static ConcurrentDictionary<string, ICacheManager> Caches;
-
-        void Configure(HttpContext context)
-        {
-            if (Caches == null)
+            else if (url.Equals(portal, StringComparison.CurrentCultureIgnoreCase)  || url.StartsWith($"{portal}/", StringComparison.CurrentCultureIgnoreCase))
             {
-                Caches = new ConcurrentDictionary<string, ICacheManager>();
-
-                //set cache provider
-                Configuration.CacheManagerProvider = () => {
-                    //this serves a new instance of the cache for each unit test
-                    //this ensures different unit tests running in the same application context don't share a cache
-                    string key = "mediakiwi_cache";
-                    var result = Caches.GetOrAdd(key, (string s) => { return new CacheManager(); });
-                    return result;
-                };
-
-                // Assign json section to config
-                WimServerConfiguration.LoadJsonConfig(_configuration);
-
-                DatabaseConfiguration.SetDefaultConnectionString(Common.DatabaseConnectionString);
-            }
-        }
-
-        public async Task<string> Invoke(HttpContext context)
-        {
-            // Do something with context near the beginning of request processing.
-            if (_env.IsDevelopment())
-            {
-                Configure(context);
                 Monitor monitor = new Monitor(context, _env, _configuration);
-                await monitor.StartAsync();
-                return monitor.Body;
+                await monitor.StartAsync().ConfigureAwait(false);
             }
             else
             {
-                try
-                {
-                    Configure(context);
-
-                    Monitor monitor = new Monitor(context, _env, _configuration);
-                    await monitor.StartAsync();
-                    return monitor.Body;
-                }
-                catch (Exception ex)
-                {
-                    throw ex;
-                }
+                Monitor monitor = new Monitor(context, _env, _configuration);
+                await monitor.AuthenticateViaSingleSignOnAsyc(false).ConfigureAwait(false);
             }
+            await _next.Invoke(context).ConfigureAwait(false);
         }
     }
 }
