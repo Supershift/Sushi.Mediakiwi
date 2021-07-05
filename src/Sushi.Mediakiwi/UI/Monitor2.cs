@@ -8,8 +8,10 @@ using Newtonsoft.Json.Linq;
 using Sushi.Mediakiwi.Beta.GeneratedCms.Source;
 using Sushi.Mediakiwi.Controllers;
 using Sushi.Mediakiwi.Data;
+using Sushi.Mediakiwi.Data.Configuration;
 using Sushi.Mediakiwi.Framework;
 using Sushi.Mediakiwi.Interfaces;
+using Sushi.Mediakiwi.Logic;
 using Sushi.Mediakiwi.Utilities;
 using System;
 using System.Collections.Generic;
@@ -44,7 +46,6 @@ namespace Sushi.Mediakiwi.UI
             _configuration = configuration;
             _Console = new Beta.GeneratedCms.Console(context, _env);
             _Console.Configuration = configuration;
-            //Console.CurrentApplicationUser = user;
 
             _PresentationMonitor = new Framework.Presentation.Presentation();
             _PresentationNavigation = new Framework.Presentation.Logic.Navigation();
@@ -54,18 +55,18 @@ namespace Sushi.Mediakiwi.UI
         {
             if (_env.IsDevelopment())
             {
-                await StartAsync(false);
+                await StartAsync(false).ConfigureAwait(false);
             }
             else
             {
                 try
                 {
-                    await StartAsync(false);
+                    await StartAsync(false).ConfigureAwait(false);
                 }
                 catch (Exception ex)
                 {
-                    await Notification.InsertOneAsync("Uncaught exception", ex);
-                    throw ex;
+                    await Notification.InsertOneAsync("Uncaught exception", ex).ConfigureAwait(false);
+                    throw;
                 }
             }
         }
@@ -1238,30 +1239,27 @@ namespace Sushi.Mediakiwi.UI
                 //  Check if logout request is performed
                 if (_Console.IsPostBack("logout") || _Console.Request.Query.ContainsKey("logout"))
                 {
-           
-
-                    await LogoutViaSingleSignOnAsyc();
-
+                    await LogoutViaSingleSignOnAsyc().ConfigureAwait(false);
                 }
             }
 
-            await AuthenticateViaSingleSignOnAsyc(false);
+            await AuthenticateViaSingleSignOnAsyc().ConfigureAwait(false);
 
             //  Check roaming profile
             if (!showLogin && _Console.CurrentApplicationUser != null)
             {
-                await ValidateHijackResetAsync();
+                await ValidateHijackResetAsync().ConfigureAwait(false);
                 return true;
             }
             else
             {
                 //  Check SSO
-                await AuthenticateViaSingleSignOnAsyc(true);
+                //await AuthenticateViaSingleSignOnAsyc(true);
 
                 string reaction = _PresentationMonitor.GetLoginWrapper(_Console, _Placeholders, _Callbacks);
                 if (!string.IsNullOrEmpty(reaction))
                 {
-                    await AddToResponseAsync(reaction);
+                    await AddToResponseAsync(reaction).ConfigureAwait(false);
                     return false;
                 }
             }
@@ -1322,95 +1320,24 @@ namespace Sushi.Mediakiwi.UI
             }
         }
 
-        async Task AuthenticateViaSingleSignOnAsyc(bool shouldredirect = true)
+        async Task AuthenticateViaSingleSignOnAsyc()
         {
-            if (_configuration.GetValue<bool>("mediakiwi:authentication"))
+
+            if (WimServerConfiguration.Instance.Authentication != null && WimServerConfiguration.Instance.Authentication.Aad != null && WimServerConfiguration.Instance.Authentication.Aad.Enabled && _Console.CurrentApplicationUser == null)
             {
-                if (_Console.CurrentApplicationUser == null)
+                var redirect = OAuth2Logic.AuthenticationUrl(_Console.Url);
+
+                if (!string.IsNullOrEmpty(_Console.GetSafePost("id_token")))
                 {
-                    if (!await IsValidIdentityAsync(_Context, _Console.CurrentDomain))
+                    string email = OAuth2Logic.ExtractUpn(WimServerConfiguration.Instance.Authentication.Token, _Console.GetSafePost("id_token"));
+                
+                    if (!string.IsNullOrEmpty(email))
                     {
-                        if (shouldredirect)
+                        // do login
+                        var applicationUser = ApplicationUser.SelectOne(email, true);
+                        if (applicationUser != null && !applicationUser.IsNewInstance)
                         {
-                            string redirect = _configuration.GetValue<string>("mediakiwi:authentication.redirect");
-                            if (string.IsNullOrWhiteSpace(redirect))
-                            {
-                                redirect = _Console.GetWimPagePath(null);
-                            }
-
-                            _Context.Response.Redirect($"{_Console.CurrentDomain}/.auth/login/aad?navigateToLoginRequestUrl=false&post_login_redirect_url={redirect}");
-                        }
-                    }
-                }
-            }
-        }
-
-        async Task<bool> IsValidIdentityAsync(HttpContext context, string uriString)
-        {
-            var cookieContainer = new CookieContainer();
-            var handler = new HttpClientHandler()
-            {
-                CookieContainer = cookieContainer
-            };
-
-            if (context.Request.Cookies.ContainsKey("AppServiceAuthSession"))
-            {
-                var cookie = new Cookie("AppServiceAuthSession", context.Request.Cookies["AppServiceAuthSession"].ToString());
-                cookie.Domain = _Console.CurrentHost;
-                cookieContainer.Add(cookie);
-            }
-
-            var jsonResult = string.Empty;
-            using (var client = new HttpClient(handler))
-            {
-                client.DefaultRequestHeaders.Add("Accept", "application/json");
-                client.DefaultRequestHeaders.Add("Accept-Charset", "UTF-8");
-                client.DefaultRequestHeaders.Add("Cache-Control", "no-cache");
-
-                if (context.Request.Cookies.ContainsKey(".authtoken"))
-                {
-                    var authenticationToken = context.Request.Cookies[".authtoken"];
-                    client.DefaultRequestHeaders.Add("X-ZUMO-AUTH", authenticationToken);
-                }
-
-                // assure uncached import via the dt param.
-                var res = await client.GetAsync($"{uriString}/.auth/me?dt={DateTime.UtcNow.Ticks}");
-                jsonResult = await res.Content.ReadAsStringAsync();
-            }
-
-            if (!string.IsNullOrWhiteSpace(jsonResult) 
-                && jsonResult.Contains("id_token", StringComparison.CurrentCultureIgnoreCase))
-            {
-                var me = JsonConvert.DeserializeObject<List<AuthenticationToken>>(jsonResult).FirstOrDefault();
-                if (me != null && me.user_claims.Any())
-                {
-                    try
-                    {
-                        var obj = JArray.Parse(jsonResult);
-
-                        var claims = new List<Claim>();
-                        foreach (var claim in me.user_claims)
-                        {
-                           
-                            if (claim != null
-                                && claim.val != null
-                                && claim.val.Contains("@"))
-                            {
-                                var email = claim.val.ToString();
-                                var applicationUser = ApplicationUser.SelectOne(email, true);
-                                if (applicationUser != null && !applicationUser.IsNewInstance)
-                                {
-                                    _Console.CurrentApplicationUser = applicationUser;
-                                    break;
-                                }
-                            }
-                        }
-
-                        var visitor = new VisitorManager(context)
-                            .SelectVisitorByCookie();
-
-                        if (_Console.CurrentApplicationUser != null && !_Console.CurrentApplicationUser.IsNewInstance)
-                        {
+                            _Console.CurrentApplicationUser = applicationUser;
                             var now = DateTime.UtcNow;
 
                             await new AuditTrail()
@@ -1418,24 +1345,21 @@ namespace Sushi.Mediakiwi.UI
                                 Action = ActionType.Login,
                                 Type = ItemType.Undefined,
                                 ItemID = _Console.CurrentApplicationUser.ID,
-                                Message = "Claim based (easyAuth)",
+                                Message = "Claim based (id_token)",
                                 Created = now
-                            }.InsertAsync();
+                            }.InsertAsync().ConfigureAwait(false);
 
-                            visitor.ApplicationUserID = _Console.CurrentApplicationUser.ID;
+                            _Console.CurrentVisitor.ApplicationUserID = _Console.CurrentApplicationUser.ID;
                             _Console.CurrentApplicationUser.LastLoggedVisit = now;
-                            await _Console.CurrentApplicationUser.SaveAsync();
-                            return true;
+                            await _Console.CurrentApplicationUser.SaveAsync().ConfigureAwait(false);
+
+                            _Console.SetClientRedirect(new Uri(_Console.GetSafePost("state")), true);
+                            return;
                         }
-                        return false;
-                    }
-                    catch
-                    {
-                        return false;
                     }
                 }
+                _Context.Response.Redirect(redirect.ToString());
             }
-            return false;
         }
 
         /// <summary>

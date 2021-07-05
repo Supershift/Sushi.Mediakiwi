@@ -14,4 +14,14 @@
             }
         }
     }
+    var url = window.location.href;
+    if (url.includes('?state')) {
+        var uri = url.split('?');
+        var hash = uri[1].split('=');
+        if (hash.length === 2) {
+            if (hash[0] === 'state') {
+                window.location.replace(hash[1]);
+            }
+        }
+    }
 }());

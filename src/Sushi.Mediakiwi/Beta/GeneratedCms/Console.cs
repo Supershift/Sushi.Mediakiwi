@@ -587,6 +587,15 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
             }
         }
 
+        public Uri ClientRedirectionUrl { get; private set; }
+        public bool ClientRedirectionUrlOnEmpty { get; private set; }
+
+        public void SetClientRedirect(Uri url, bool emptyPage)
+        {
+            ClientRedirectionUrl = url;
+            ClientRedirectionUrlOnEmpty = emptyPage;
+        }
+
         public string RedirectionUrl { get; private set; }
 
         public void Redirect(string url, bool endresponse = false)

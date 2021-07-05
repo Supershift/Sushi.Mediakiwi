@@ -21,16 +21,16 @@ namespace Sushi.Mediakiwi
         {
             get
             {
-                return Data.Utility.ConvertToInt(WimServerConfiguration.Instance.Authentication_Timeout, 15);
+                return Data.Utility.ConvertToInt(WimServerConfiguration.Instance.Authentication.Timeout, 15);
             }
         }
         public static string AUTHENTICATION_COOKIE
         {
             get
             {
-                if (string.IsNullOrEmpty(WimServerConfiguration.Instance.Authentication_Cookie))
+                if (string.IsNullOrEmpty(WimServerConfiguration.Instance.Authentication.Cookie))
                     return "mediakiwi";
-                return WimServerConfiguration.Instance.Authentication_Cookie;
+                return WimServerConfiguration.Instance.Authentication.Cookie;
             }
         }
         public static bool RIGHTS_GALLERY_SUBS_ARE_ALLOWED { get { return true; } }
