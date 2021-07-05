@@ -301,18 +301,25 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
             if (channelId == null)
                 channelId = Console.ChannelIndentifier;
 
-            var folder = Folder.SelectOneChild(list.FolderID.GetValueOrDefault(), Console.ChannelIndentifier);
-            var path = list.Name;
-
-            if (folder != null && !folder.IsNewInstance)
+            var path = string.Empty;
+            if (list != null)
             {
-                path = $"{folder.CompletePath}{path}";
+                var folder = Folder.SelectOneChild(list.FolderID.GetValueOrDefault(), Console.ChannelIndentifier);
+                path = list.Name;
+
+                if (folder != null && !folder.IsNewInstance)
+                {
+                    path = $"{folder.CompletePath}{path}";
+                }
+                else
+                {
+                    path = $"/{path}";
+                }
             }
             else
             {
-                path = $"/{path}";
+                return Console.WimPagePath;
             }
-
 
             if (itemID.HasValue)
                 return string.Concat(Console.WimPagePath, Utils.ToUrl(path), "?item=", itemID);

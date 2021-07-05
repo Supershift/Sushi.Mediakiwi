@@ -35,12 +35,39 @@ namespace Sushi.Mediakiwi.Data
             }
         }
 
+        /// <summary>
+        /// The unique identifier
+        /// </summary>
         public int ID { get; set; }
+
+        /// <summary>
+        /// The Mediakiwi Site (Channel) identifier
+        /// </summary>
         public int SiteID { get; set; }
+
+        /// <summary>
+        /// The SharedField identifier
+        /// </summary>
         public int FieldID { get; set; }
+
+        /// <summary>
+        /// What kind of content does this SharedFieldTranslation represent 
+        /// </summary>
         public ContentType ContentTypeID { get; set; }
+
+        /// <summary>
+        /// The fieldname for this SharedFieldTranslation
+        /// </summary>
         public string FieldName { get; set; }
+
+        /// <summary>
+        /// The non-published version of the value
+        /// </summary>
         public string EditValue { get; set; }
+
+        /// <summary>
+        /// The published version of the value
+        /// </summary>
         public string Value { get; set; }
 
         /// <summary>
@@ -248,6 +275,10 @@ namespace Sushi.Mediakiwi.Data
             return returnValue;
         }
 
+        /// <summary>
+        /// Returns all existing SharedFieldTranslations 
+        /// </summary>
+        /// <returns></returns>
         public static ICollection<SharedFieldTranslation> FetchAll()
         {
             var connector = new Connector<SharedFieldTranslation>(new SharedFieldTranslationMap(false));
@@ -256,6 +287,10 @@ namespace Sushi.Mediakiwi.Data
             return result;
         }
 
+        /// <summary>
+        /// Returns all existing SharedFieldTranslations 
+        /// </summary>
+        /// <returns></returns>
         public static async Task<ICollection<SharedFieldTranslation>> FetchAllAsync()
         {
             var connector = new Connector<SharedFieldTranslation>(new SharedFieldTranslationMap(false));
@@ -264,6 +299,11 @@ namespace Sushi.Mediakiwi.Data
             return result;
         }
 
+        /// <summary>
+        /// Returns all existing SharedFieldTranslations for a specific SharedField
+        /// </summary>
+        /// <param name="sharedFieldID">The SharedField identifier</param>
+        /// <returns></returns>
         public static ICollection<SharedFieldTranslation> FetchAllForField(int sharedFieldID)
         {
             var connector = new Connector<SharedFieldTranslation>(new SharedFieldTranslationMap(false));
@@ -273,6 +313,11 @@ namespace Sushi.Mediakiwi.Data
             return result;
         }
 
+        /// <summary>
+        /// Returns all existing SharedFieldTranslations for a specific SharedField
+        /// </summary>
+        /// <param name="sharedFieldID">The SharedField identifier</param>
+        /// <returns></returns>
         public static async Task<ICollection<SharedFieldTranslation>> FetchAllForFieldAsync(int sharedFieldID)
         {
             var connector = new Connector<SharedFieldTranslation>(new SharedFieldTranslationMap(false));
@@ -282,6 +327,11 @@ namespace Sushi.Mediakiwi.Data
             return result;
         }
 
+        /// <summary>
+        /// Returns all existing SharedFieldTranslations for a specific Site
+        /// </summary>
+        /// <param name="siteId">The MediaKiwi Site (Channel) identifier</param>
+        /// <returns></returns>
         public static ICollection<SharedFieldTranslation> FetchAllForSite(int siteId)
         {
             var connector = new Connector<SharedFieldTranslation>(new SharedFieldTranslationMap(false));
@@ -291,6 +341,11 @@ namespace Sushi.Mediakiwi.Data
             return result;
         }
 
+        /// <summary>
+        /// Returns all existing SharedFieldTranslations for a specific Site
+        /// </summary>
+        /// <param name="siteId">The MediaKiwi Site (Channel) identifier</param>
+        /// <returns></returns>
         public static async Task<ICollection<SharedFieldTranslation>> FetchAllForSiteAsync(int siteId)
         {
             var connector = new Connector<SharedFieldTranslation>(new SharedFieldTranslationMap(false));
@@ -300,6 +355,49 @@ namespace Sushi.Mediakiwi.Data
             return result;
         }
 
+        /// <summary>
+        /// Returns all existing SharedFieldTranslations for a specific Page
+        /// </summary>
+        /// <param name="pageId">The MediaKiwi Page ID</param>
+        /// <returns></returns>
+        public static ICollection<SharedFieldTranslation> FetchAllForPage(int pageId)
+        {
+            var connector = new Connector<SharedFieldTranslation>(new SharedFieldTranslationMap(false));
+            var filter = connector.CreateDataFilter();
+            filter.AddParameter("@pageId", pageId);
+
+            var result = connector.FetchAll(@"SELECT fields.* FROM [dbo].[vw_SharedFields] AS fields
+LEFT JOIN [dbo].[wim_Properties] AS props ON props.[Property_FieldName] = fields.[SharedField_FieldName]
+AND props.[Property_Type] = fields.[SharedField_ContentTypeID]
+LEFT JOIN [dbo].[wim_Components] AS comps ON comps.[Component_ComponentTemplate_Key] = props.[Property_Template_Key]
+WHERE props.[Property_IsShared] = 1 AND comps.[Component_Page_Key] = @pageId", filter);
+            return result;
+        }
+
+        /// <summary>
+        /// Returns all existing SharedFieldTranslations for a specific Page
+        /// </summary>
+        /// <param name="pageId">The MediaKiwi Page ID</param>
+        /// <returns></returns>
+        public static async Task<ICollection<SharedFieldTranslation>> FetchAllForPageAsync(int pageId)
+        {
+            var connector = new Connector<SharedFieldTranslation>(new SharedFieldTranslationMap(false));
+            var filter = connector.CreateDataFilter();
+            filter.AddParameter("@pageId", pageId);
+
+            var result = await connector.FetchAllAsync(@"SELECT fields.* FROM [dbo].[vw_SharedFields] AS fields
+LEFT JOIN [dbo].[wim_Properties] AS props ON props.[Property_FieldName] = fields.[SharedField_FieldName]
+AND props.[Property_Type] = fields.[SharedField_ContentTypeID]
+LEFT JOIN [dbo].[wim_Components] AS comps ON comps.[Component_ComponentTemplate_Key] = props.[Property_Template_Key]
+WHERE props.[Property_IsShared] = 1 AND comps.[Component_Page_Key] = @pageId", filter).ConfigureAwait(false);
+            return result;
+        }
+
+        /// <summary>
+        /// Fetches a single SharedFieldTranslations by it's identifier
+        /// </summary>
+        /// <param name="id">The SharedField identifier</param>
+        /// <returns></returns>
         public static SharedFieldTranslation FetchSingle(int id)
         {
             var connector = new Connector<SharedFieldTranslation>(new SharedFieldTranslationMap(false));
@@ -307,6 +405,12 @@ namespace Sushi.Mediakiwi.Data
             return result;
         }
 
+        /// <summary>
+        /// Fetches a single SharedFieldTranslations by a specific SharedField identifier and Site identifier
+        /// </summary>
+        /// <param name="sharedFieldId">The SharedField identifier</param>
+        /// <param name="siteId">The MediaKiwi Site (Channel) identifier</param>
+        /// <returns></returns>
         public static SharedFieldTranslation FetchSingleForFieldAndSite(int sharedFieldId, int siteId)
         {
             var connector = new Connector<SharedFieldTranslation>(new SharedFieldTranslationMap(false));
@@ -317,6 +421,12 @@ namespace Sushi.Mediakiwi.Data
             return result;
         }
 
+        /// <summary>
+        /// Fetches a single SharedFieldTranslations by a specific SharedField identifier and Site identifier
+        /// </summary>
+        /// <param name="sharedFieldId">The SharedField identifier</param>
+        /// <param name="siteId">The MediaKiwi Site (Channel) identifier</param>
+        /// <returns></returns>
         public static async Task<SharedFieldTranslation> FetchSingleForFieldAndSiteAsync(int sharedFieldId, int siteId)
         {
             var connector = new Connector<SharedFieldTranslation>(new SharedFieldTranslationMap(false));
@@ -327,31 +437,46 @@ namespace Sushi.Mediakiwi.Data
             return result;
         }
 
+        /// <summary>
+        /// Saves this SharedFieldTranslation
+        /// </summary>
         public void Save()
         {
             var connector = new Connector<SharedFieldTranslation>(new SharedFieldTranslationMap(true));
             connector.Save(this);
         }
 
-
+        /// <summary>
+        /// Saves this SharedFieldTranslation
+        /// </summary>
         public async Task SaveAsync()
         {
             var connector = new Connector<SharedFieldTranslation>(new SharedFieldTranslationMap(true));
             await connector.SaveAsync(this).ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Deletes this SharedFieldTranslation
+        /// </summary>
         public void Delete()
         {
             var connector = new Connector<SharedFieldTranslation>(new SharedFieldTranslationMap(true));
             connector.Delete(this);
         }
 
+        /// <summary>
+        /// Deletes this SharedFieldTranslation
+        /// </summary>
         public async Task DeleteAsync()
         {
             var connector = new Connector<SharedFieldTranslation>(new SharedFieldTranslationMap(true));
             await connector.DeleteAsync(this).ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Reverts this SharedFieldTranslation to it's published version, so that changes made to the
+        /// Non-published version are disregarded
+        /// </summary>
         public async Task RevertAsync()
         {
             EditValue = Value;

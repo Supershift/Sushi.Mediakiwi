@@ -98,11 +98,16 @@ namespace Sushi.Mediakiwi.Headless
 
             // Throw warning when we dont have memorycache
             if (_memCache == null)
+            {
                 _logger.LogWarning($"Memorycache is not enabled, please add it to services in the startup");
+            }
 
             // Log that we requested a clear cache
             if (clearCache)
+            {
                 _logger.LogInformation($"A cache clear was requested for '{cacheKey}'");
+            }
+
 
             // Try to get from cache
             if (_memCache == null || _memCache.TryGetValue(cacheKey, out returnObj) == false || clearCache)
@@ -121,6 +126,7 @@ namespace Sushi.Mediakiwi.Headless
                 catch (Exception ex)
                 {
                     _logger.LogError(ex, ex.Message, null);
+                    returnObj.StatusCode = System.Net.HttpStatusCode.InternalServerError;
                 }
 
                 // Add content to cache if needed
@@ -180,11 +186,17 @@ namespace Sushi.Mediakiwi.Headless
             PageContentResponse returnObj = new PageContentResponse();
             if (string.IsNullOrWhiteSpace(_configuration.MediaKiwi.ContentService.ServiceUrl))
             {
+                returnObj.Exception = "No MediaKiwi ContentService URL has been set";
+                returnObj.StatusCode = System.Net.HttpStatusCode.InternalServerError;
+
                 return returnObj;
             }
 
             if (_configuration.MediaKiwi.ContentService.PingFirst && await PingSucceeded() == false)
             {
+                returnObj.Exception = "Ping did not succeed";
+                returnObj.StatusCode = System.Net.HttpStatusCode.NotFound;
+
                 return returnObj;
             }
 
@@ -249,6 +261,10 @@ namespace Sushi.Mediakiwi.Headless
                         {
                             returnObj = JsonConvert.DeserializeObject<PageContentResponse>(responseFromServer);
                         }
+                        else 
+                        {
+                            // EMPTY
+                        }
 
                         // Set MetaData 
                         if (returnObj != null)
@@ -259,6 +275,7 @@ namespace Sushi.Mediakiwi.Headless
                     catch (Exception ex)
                     {
                         _logger.LogError(ex, ex.Message, null);
+                        returnObj.StatusCode = System.Net.HttpStatusCode.InternalServerError;
                     }
 
                     // Add content to cache if needed

@@ -1243,7 +1243,7 @@ namespace Sushi.Mediakiwi.UI
                 }
             }
 
-            await AuthenticateViaSingleSignOnAsyc(true).ConfigureAwait(false);
+            await AuthenticateViaSingleSignOnAsyc().ConfigureAwait(false);
 
             //  Check roaming profile
             if (!showLogin && _Console.CurrentApplicationUser != null)
@@ -1253,6 +1253,9 @@ namespace Sushi.Mediakiwi.UI
             }
             else
             {
+                //  Check SSO
+                //await AuthenticateViaSingleSignOnAsyc(true);
+
                 string reaction = _PresentationMonitor.GetLoginWrapper(_Console, _Placeholders, _Callbacks);
                 if (!string.IsNullOrEmpty(reaction))
                 {
@@ -1317,15 +1320,17 @@ namespace Sushi.Mediakiwi.UI
             }
         }
 
-        internal async Task AuthenticateViaSingleSignOnAsyc(bool redirectOnAnonymous)
+        async Task AuthenticateViaSingleSignOnAsyc()
         {
 
             if (WimServerConfiguration.Instance.Authentication != null && WimServerConfiguration.Instance.Authentication.Aad != null && WimServerConfiguration.Instance.Authentication.Aad.Enabled && _Console.CurrentApplicationUser == null)
             {
+                var redirect = OAuth2Logic.AuthenticationUrl(_Console.Url);
+
                 if (!string.IsNullOrEmpty(_Console.GetSafePost("id_token")))
                 {
                     string email = OAuth2Logic.ExtractUpn(WimServerConfiguration.Instance.Authentication.Token, _Console.GetSafePost("id_token"));
-
+                
                     if (!string.IsNullOrEmpty(email))
                     {
                         // do login
@@ -1348,21 +1353,12 @@ namespace Sushi.Mediakiwi.UI
                             _Console.CurrentApplicationUser.LastLoggedVisit = now;
                             await _Console.CurrentApplicationUser.SaveAsync().ConfigureAwait(false);
 
-                            if (!string.IsNullOrEmpty(_Console.GetSafePost("state")))
-                            {
-                                _Console.SetClientRedirect(new Uri(_Console.GetSafePost("state")), true);
-                            }
-
+                            _Console.SetClientRedirect(new Uri(_Console.GetSafePost("state")), true);
                             return;
                         }
                     }
                 }
-
-                // should redirect to login screen
-                if (redirectOnAnonymous)
-                {
-                    _Context.Response.Redirect(OAuth2Logic.AuthenticationUrl(_Console.Url).ToString());
-                }
+                _Context.Response.Redirect(redirect.ToString());
             }
         }
 

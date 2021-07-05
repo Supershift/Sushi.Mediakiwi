@@ -62,12 +62,6 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
                 return null;
             }
 
-            var referer = new Uri(Context.Request.Headers["Referer"]);
-            if (!referer.Host.Equals(Context.Request.Host.Host, StringComparison.CurrentCultureIgnoreCase))
-            {
-                return null;
-            }
-
             if (allowHTML)
             {
                 return Context.Request.Form[name];
@@ -88,7 +82,8 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
 
         public string GetSafeUrl()
         {
-            return UrlBuild.GetUrl();
+            return WimPagePath;
+            //return UrlBuild.GetUrl();
         }
 
         /// <summary>
@@ -590,6 +585,15 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
                 }
                 return _IsPostBackSave.Value;
             }
+        }
+
+        public Uri ClientRedirectionUrl { get; private set; }
+        public bool ClientRedirectionUrlOnEmpty { get; private set; }
+
+        public void SetClientRedirect(Uri url, bool emptyPage)
+        {
+            ClientRedirectionUrl = url;
+            ClientRedirectionUrlOnEmpty = emptyPage;
         }
 
         public string RedirectionUrl { get; private set; }
@@ -1122,11 +1126,11 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
         {
             get
             {
+
                 if (string.IsNullOrWhiteSpace(Request.Headers["X-Forwarded-Host"]))
                 {
                     return string.Concat(Request.Scheme, "://", Request.Host.ToString());
                 }
-
                 return string.Concat(Request.Scheme, "://", Request.Headers["X-Forwarded-Host"]);
             }
         }
@@ -1193,7 +1197,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
             get
             {
                 // set the correct wim page
-                return Channel.Any()
+                return (Channel != null && Channel.Any())
                     ? AddApplicationPath(string.Concat(CommonConfiguration.PORTAL_PATH, "/", Channel))
                     : AddApplicationPath(CommonConfiguration.PORTAL_PATH)
                     ;

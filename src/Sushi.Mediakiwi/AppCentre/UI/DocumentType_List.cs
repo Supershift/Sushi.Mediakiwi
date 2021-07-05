@@ -169,7 +169,10 @@ namespace Sushi.Mediakiwi.AppCentre.UI
 
                 Property.Data = null;
                 Property.TemplateID = e.SelectedKey;
-                await Property.SaveAsync();
+                await Property.SaveAsync().ConfigureAwait(false);
+
+                // Create Shared Field if it doesn't exist yet.
+                await SharedField.CreateBasedOnPropertyAsync(Property).ConfigureAwait(false);
 
                 bool isChoiceType =
                         Property.ContentTypeID.Equals(ContentType.Choice_Dropdown) ||

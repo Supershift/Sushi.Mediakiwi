@@ -802,8 +802,8 @@ namespace Sushi.Mediakiwi.Framework.Presentation
 
             //"width=device-width, user-scalable=yes,initial-scale=0.1"
             string viewport = m_container.CurrentEnvironment["VIEWPORT", true, "width=device-width, user-scalable=yes, initial-scale=1", "Portal viewport"];
-                #region Open In Frame > 0
-                if (container.OpenInFrame > 0)
+            #region Open In Frame > 0
+            if (container.OpenInFrame > 0)
             {
                 #region layerHead
                 string layerHead = @"
@@ -817,7 +817,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation
 			<script type=""text/javascript"" src=""" + FolderVersion("scripts") + @"html5.js""></script>
 		<![endif]-->
 		<meta http-equiv=""Content-Type"" content=""text/html; charset=UTF-8"" />"
-		+ GetHeader(styleAddition, (container.View == (int)ContainerView.ItemSelect && container.CurrentList.Option_FormAsync)) + addedHead + m_container.CurrentListInstance.wim.HeaderScript + container.CurrentListInstance.wim.Page.Body.Form.Elements.GetHeaderStyle();
+        + GetHeader(styleAddition, (container.View == (int)ContainerView.ItemSelect && container.CurrentList.Option_FormAsync)) + addedHead + m_container.CurrentListInstance.wim.HeaderScript + container.CurrentListInstance.wim.Page.Body.Form.Elements.GetHeaderStyle();
 
                 if (container.CurrentListInstance.wim.Page.Head._ClearHeadBase)
                     layerHead = string.Empty;
@@ -854,7 +854,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation
                     if (container.CurrentListInstance.wim.Page.Body._BodyAddition != null)
                         layerBody = container.CurrentListInstance.wim.Page.Body._BodyAddition.ToString();
                 }
-                
+
 
 
                 #endregion layerBody
@@ -980,6 +980,36 @@ namespace Sushi.Mediakiwi.Framework.Presentation
 
                 //  [30.okt.14:MM] Added full width support
                 //<link rel=""stylesheet"" href=""" + FolderVersion("styles") + @"jquery-ui-1.8.16.custom.css"" type=""text/css"" media=""all"" />
+
+                if (m_container.ClientRedirectionUrl != null)
+                {
+                    m_container.CurrentListInstance.wim.OnSaveScript = @"<script type=""text/javascript"">window.location.replace('" + m_container.ClientRedirectionUrl + @"');</script>";
+                    if (m_container.ClientRedirectionUrlOnEmpty)
+                    {
+                        return @"<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset=""UTF-8"" />
+		<title>" + pageHeaderTitle + @"</title>
+        <meta http-equiv=""X-UA-Compatible"" content=""IE=Edge"" />
+        <meta name=""viewport"" content=""" + viewport + @""">
+		<!--[if IE]>
+			<meta http-equiv=""imagetoolbar"" content=""no""/>
+			<script type=""text/javascript"" src=""" + FolderVersion("scripts") + @"html5.js""></script>
+		<![endif]-->
+		<meta http-equiv=""Content-Type"" content=""text/html; charset=UTF-8"" />
+	</head>
+	<body class=""" + (builder.Canvas.LeftNavigation.Hide || builder.Canvas.Type == CanvasType.Dashboard ? "full" : null) + addedBodyClass
+                            + @""">
+    <form id=""uxForm"" method=""post"" action=""" + url + @""" enctype=""multipart/form-data"">
+        <input type=""hidden"" name=""autopostback"" id=""autopostback"" value="""" />
+		<footer class=""bodyFooter""></footer><script type=""text/javascript"">window.location.replace('" + m_container.ClientRedirectionUrl + @"');</script>
+    </form>
+	</body>
+</html>";
+
+                    }
+                }
 
                 candidate = @"<!DOCTYPE html>
 <html>
@@ -1124,22 +1154,9 @@ namespace Sushi.Mediakiwi.Framework.Presentation
             string username2 = username;
             bool hasError = !string.IsNullOrEmpty(username);
 
-            
-
             string password = container.GetSafePost("password");
             bool rememberMe = !string.IsNullOrEmpty(container.GetSafePost("frmRemember"));
             string emailaddress = container.GetSafePost("email");
-
-            //if (string.IsNullOrEmpty(username) && !string.IsNullOrEmpty(Utility.GetSafeGet("u")))
-            //{
-                
-            //    using (Utilities.Authentication auth = new Utilities.Authentication())
-            //    {
-            //        auth.EncryptionPassword = "urlinfo";
-            //        //  The replacement is a patch
-            //        username2 = auth.Decrypt(Utility.GetSafeGet("u"));
-            //    }
-            //}
 
             if (string.IsNullOrEmpty(username2) && !container.Request.HasFormContentType)
             {
@@ -1339,7 +1356,6 @@ namespace Sushi.Mediakiwi.Framework.Presentation
         <script type=""text/javascript"" src=""" + FolderVersion("scripts") + @"jquery-ambiance.js""></script>
 		<script type=""text/javascript"" src=""" + FolderVersion("scripts") + @"slip.js""></script>
 		<script type=""text/javascript"" src=""" + FolderVersion("scripts") + @"fixedBar.js""></script>
-        <script type=""text/javascript"" src=""" + FolderVersion("scripts") + @"easyauth.js""></script>
         <script type=""text/javascript"" src=""" + FolderVersion("scripts") + @"testdrivev2.js""></script>
 		<script type=""text/javascript"" src=""" + FolderVersion("scripts/tinymce") + @"tinymce.js""></script>
         <link rel=""stylesheet"" href=""" + FolderVersion("scripts/dist/css") + @"select2.css"" type=""text/css"" media=""all"" />

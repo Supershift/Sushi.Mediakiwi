@@ -19,14 +19,43 @@ namespace Sushi.Mediakiwi.Controllers
             this.IsAuthenticationRequired = true;
         }
 
+        [HttpPost("checkSharedField")]
+        public async Task<string> CheckSharedFieldAsync()
+        {
+            var request = await GetPostAsync<CheckSharedFieldRequest>(HttpContext).ConfigureAwait(false);
+
+            CheckSharedFieldResponse response = new CheckSharedFieldResponse();
+            var matchingProps = await Property.SelectAllByFieldNameAsync(request.FieldName).ConfigureAwait(false);
+            if (matchingProps?.Count > 0)
+            {
+                foreach (var prop in matchingProps.Where(x => x.TemplateID > 0))
+                {
+                    var cVersions = await ComponentVersion.SelectAllForTemplateAsync(prop.TemplateID).ConfigureAwait(false);
+                    var pages = await Page.SelectAllAsync(cVersions.Select(x => x.PageID.GetValueOrDefault(0)).ToArray());
+
+                    foreach (var page in pages)
+                    {
+                        response.Pages.Add(new SharedFieldUsagePage()
+                        {
+                            PagePath = string.IsNullOrWhiteSpace(page.CompletePath) ? page.HRefFull : page.CompletePath,
+                            PageTitle = string.IsNullOrWhiteSpace(page.Title) ? page.Name : page.Title,
+                            PagePublished = page.IsPublished,
+                            Components = cVersions.Where(x => x.PageID == page.ID).Select(x => x.Template.Name).ToList()
+                        });
+                    }
+                }
+            }
+
+            return GetResponse(response);
+        }
+
         [HttpPost("getFields")]
         public async Task<string> GetFieldsAsync()
         {
-            var context = this.HttpContext;
-            var request = await GetPostAsync<GetFieldsRequest>(context).ConfigureAwait(false);
+            var request = await GetPostAsync<GetFieldsRequest>(HttpContext).ConfigureAwait(false);
 
             Dictionary<string, int> req = new Dictionary<string, int>();
-            foreach (var q in context.Request.Query)
+            foreach (var q in HttpContext.Request.Query)
             {
                 if (int.TryParse(q.Value, out int result))
                 {
@@ -70,8 +99,8 @@ namespace Sushi.Mediakiwi.Controllers
                         };
                         await property.SaveAsync().ConfigureAwait(false);
 
-                        // Set shared FIeld
-                        await SaveSharedFieldAsync(property, meta.IsSharedField.Equals("1")).ConfigureAwait(false);
+                        // Create Shared Field if it doesn't exist yet.
+                        await SharedField.CreateBasedOnPropertyAsync(property).ConfigureAwait(false);
 
                         reload = true;
                     }
@@ -110,65 +139,6 @@ namespace Sushi.Mediakiwi.Controllers
             await response.ApplySharedFieldInformationAsync(request.DocumentTypeID).ConfigureAwait(false);
 
             return GetResponse(response);
-        }
-
-        private async Task SaveSharedFieldAsync(Property property, bool isShared)
-        {
-            // Check if there is an existing SharedField for this FieldName
-            var existingSharedField = await SharedField.FetchSingleAsync(property.FieldName, property.ContentTypeID).ConfigureAwait(false);
-
-            // Field is marked As Shared field, but doesn't exist yet.
-            // This means we need to add this property as a shared Field
-            if (isShared && existingSharedField == null || existingSharedField?.ID == 0)
-            {
-                existingSharedField = new SharedField()
-                {
-                    ContentTypeID = property.ContentTypeID,
-                    FieldName = property.FieldName
-                };
-
-                // Save SharedField Entity
-                await existingSharedField.SaveAsync().ConfigureAwait(false);
-
-                // Loop through existing properties that have the same fieldname and 
-                // and add them to the SharedFIeldProperty collection
-                foreach (var existingProp in await Property.SelectAllByFieldNameAsync(property.FieldName).ConfigureAwait(false))
-                {
-                    // Create translations based off of the default value if we have any
-                    if (string.IsNullOrWhiteSpace(property.DefaultValue) == false)
-                    {
-                        foreach (var site in await Site.SelectAllAsync().ConfigureAwait(false))
-                        {
-                            SharedFieldTranslation translation = new SharedFieldTranslation()
-                            {
-                                ContentTypeID = property.ContentTypeID,
-                                EditValue = property.DefaultValue,
-                                FieldID = existingSharedField.ID,
-                                FieldName = property.FieldName,
-                                SiteID = site.ID,
-                                Value = property.DefaultValue,
-                            };
-
-                            await translation.SaveAsync().ConfigureAwait(false);
-                        }
-                    }
-                }
-            }
-
-            // Field is NOT marked As Shared field, but is present as such
-            // This means we need to delete everything connected to this shared FIeld
-            if (isShared && existingSharedField?.ID > 0)
-            {
-                // Delete all translations
-                var sharedFieldTranslations = await SharedFieldTranslation.FetchAllForFieldAsync(existingSharedField.ID).ConfigureAwait(false);
-                foreach (var sharedFieldTranslation in sharedFieldTranslations)
-                {
-                    await sharedFieldTranslation.DeleteAsync().ConfigureAwait(false);
-                }
-
-                // Delete sharedfield
-                await existingSharedField.DeleteAsync().ConfigureAwait(false);
-            }
         }
     }
 }

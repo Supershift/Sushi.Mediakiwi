@@ -2,12 +2,9 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Sushi.Mediakiwi.Headless.Config;
-using Sushi.Mediakiwi.Headless.HttpClients.Data;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
-using System.Text;
-using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -17,7 +14,7 @@ namespace Sushi.Mediakiwi.Headless.HttpClients
     {
         private readonly HttpClient _httpClient;
         private readonly ISushiApplicationSettings _settings;
-        private ILogger _logger;
+        private readonly ILogger _logger;
 
         public MediakiwiContentServiceClient(HttpClient client, IServiceProvider serviceProvider = null)
         {
@@ -28,13 +25,15 @@ namespace Sushi.Mediakiwi.Headless.HttpClients
                 _settings = serviceProvider.GetService<ISushiApplicationSettings>();
                 var _loggerFactory = serviceProvider.GetService<ILoggerFactory>();
                 if (_loggerFactory != null)
+                {
                     _logger = _loggerFactory.CreateLogger<MediakiwiContentServiceClient>();
+                }
             }
         }
 
         private string getServiceUrl(string baseUrl, Dictionary<string, string> queryString)
         {
-            return QueryHelpers.AddQueryString(baseUrl, queryString).ToString();
+            return QueryHelpers.AddQueryString(baseUrl, queryString);
         }
 
         #region Get Page Not Found
@@ -51,17 +50,34 @@ namespace Sushi.Mediakiwi.Headless.HttpClients
             // Create querystring for adding SiteID to the Request
             Dictionary<string, string> queryString = new Dictionary<string, string>();
             if (siteId.GetValueOrDefault(0) > 0)
+            {
                 queryString.Add("siteId", siteId.GetValueOrDefault(0).ToString());
+            }
+
+            // Create Http Request object
+            var request = new HttpRequestMessage(HttpMethod.Get, getServiceUrl($"{_settings.MediaKiwi.ContentService.ServiceUrl}/page/notfound", queryString));
+            request.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
+
+            HttpResponseMessage response = new HttpResponseMessage(System.Net.HttpStatusCode.NotFound);
 
             // Retrieve content via service
-            var response = await _httpClient.PostAsync(getServiceUrl($"{_settings.MediaKiwi.ContentService.ServiceUrl}/getPageNotFoundContent", queryString), null, cts.Token).ConfigureAwait(false);
+            try
+            {
+                response = await _httpClient.SendAsync(request, cts.Token).ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ex.Message, null);
+            }
 
-            if (response.IsSuccessStatusCode)
+
+            if (response.IsSuccessStatusCode == true)
             {
                 return await response.Content.ReadAsStringAsync();
             }
             else
             {
+                _logger.LogInformation($"Method '{request.Method.Method}' to '{request.RequestUri}' failed with StatusCode {response.StatusCode}");
                 return string.Empty;
             }
         }
@@ -94,29 +110,46 @@ namespace Sushi.Mediakiwi.Headless.HttpClients
         {
             CancellationTokenSource cts = new CancellationTokenSource(_settings.MediaKiwi.ContentService.TimeOut); // 2 seconds timeout
 
-            // Create Request to Post
-            GetPageContentRequest requestObj = new GetPageContentRequest() {
-                ClearCache = clearCache,
-                IsPreview = isPreview,
-                PageID = pageId,
-                Path = forUrl,
-                Domain = basePath
-            };
+            // Create querystring for adding SiteID to the Request
+            Dictionary<string, string> queryString = new Dictionary<string, string>();
+            queryString.Add("url", Uri.EscapeUriString(forUrl));
+            if (clearCache)
+            {
+                queryString.Add("flush", "me");
+            }
+
+            if (isPreview)
+            {
+                queryString.Add("preview", "1");
+            }
+
+            if (pageId.GetValueOrDefault(0) > 0)
+            {
+                queryString.Add("pageId", pageId.GetValueOrDefault(0).ToString());
+            }
 
             // Create Http Request object
-            var request = new HttpRequestMessage(HttpMethod.Post, $"{_settings.MediaKiwi.ContentService.ServiceUrl}/getPageContent");
+            var request = new HttpRequestMessage(HttpMethod.Get, getServiceUrl($"{_settings.MediaKiwi.ContentService.ServiceUrl}/page/content", queryString));
             request.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
-            request.Content = new StringContent(JsonSerializer.Serialize(requestObj), Encoding.UTF8, "application/json");
 
+            HttpResponseMessage response = new HttpResponseMessage(System.Net.HttpStatusCode.NotFound);
             // Retrieve content via service
-            using var httpResponse = await _httpClient.SendAsync(request, HttpCompletionOption.ResponseContentRead, cts.Token).ConfigureAwait(false);
-
-            if (httpResponse.IsSuccessStatusCode)
+            try
             {
-                return await httpResponse.Content.ReadAsStringAsync();
+                response = await _httpClient.SendAsync(request, cts.Token);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ex.Message);
+            }
+
+            if (response.IsSuccessStatusCode)
+            {
+                return await response.Content.ReadAsStringAsync();
             }
             else
             {
+                _logger.LogInformation($"Method '{request.Method.Method}' to '{request.RequestUri}' failed with StatusCode {response.StatusCode}");
                 return string.Empty;
             }
 
@@ -135,7 +168,7 @@ namespace Sushi.Mediakiwi.Headless.HttpClients
             request.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 
             // Retrieve content via service
-            using var httpResponse = await _httpClient.SendAsync(request, HttpCompletionOption.ResponseContentRead, cts.Token).ConfigureAwait(false);
+            using var httpResponse = await _httpClient.SendAsync(request, cts.Token).ConfigureAwait(false);
 
             if (httpResponse.IsSuccessStatusCode)
             {
@@ -161,7 +194,7 @@ namespace Sushi.Mediakiwi.Headless.HttpClients
             request.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
 
             // Retrieve Content via service
-            using var httpResponse = await _httpClient.SendAsync(request, HttpCompletionOption.ResponseContentRead, cts.Token).ConfigureAwait(false);
+            using var httpResponse = await _httpClient.SendAsync(request, cts.Token).ConfigureAwait(false);
 
             if (httpResponse.IsSuccessStatusCode)
             {

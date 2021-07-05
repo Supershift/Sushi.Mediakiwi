@@ -95,8 +95,6 @@ namespace Sushi.Mediakiwi.Data.Configuration
         public string Local_File_Path { get; set; }
 
         public bool Disable_Caching { get; set; }
-        public int Authentication_Timeout { get; set; }
-        public string Authentication_Cookie { get; set; }
 
         /// <summary>
         /// Gets the portal collection.
@@ -143,5 +141,29 @@ namespace Sushi.Mediakiwi.Data.Configuration
         /// The default portal.
         /// </value>
         public string DefaultPortal { get; set; }
+
+        public AuthenticationConfiguration Authentication { get; set; }
+    }
+
+    public class AuthenticationConfiguration
+    {
+        public string Cookie { get; set; }
+        public int Timeout { get; set; }
+        public ActiveDirectory Aad { get; set; }
+        public TokenValidation Token { get; set; }
+    }
+
+    public class TokenValidation
+    {
+        public string Exponent { get; set; }
+        public string Modulus { get; set; }
+    }
+
+    public class ActiveDirectory
+    {
+        public bool Enabled { get; set; }
+        public System.Uri RedirectUrl { get; set; }
+        public string Client { get; set; }
+        public string Tenant { get; set; }
     }
 }
