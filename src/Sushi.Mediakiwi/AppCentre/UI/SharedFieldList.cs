@@ -147,7 +147,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                     }
                 }
                 
-                field.List_EditValue = fieldData.GetPublishedValue(true, 50);
+                field.List_EditValue = fieldData.GetEditValue(true, 50);
                 field.List_PublishedValue = fieldData.GetPublishedValue(true, 50);
             }
 
