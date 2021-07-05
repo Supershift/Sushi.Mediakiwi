@@ -763,8 +763,6 @@
 		PageMap_Query nvarchar(50) NULL,
 		PageMap_Created datetime NOT NULL,
 		PageMap_IsActive bit NULL,
-		PageMap_List_Key int NULL,
-		PageMap_Item_Key int NULL,
 		PageMap_TargetType int NULL,
 		PageMap_Asset_Key int NULL);
     --PK_PageMap_Key;

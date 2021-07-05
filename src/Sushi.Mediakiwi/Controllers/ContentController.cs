@@ -205,7 +205,7 @@ namespace Sushi.Mediakiwi.Controllers
                     //    ispreview = true;
                     //}
 
-                    var maps = await PageMapping.SelectAllNonListAsync(0, true).ConfigureAwait(false);
+                    var maps = await PageMapping.SelectAllAsync(0, true).ConfigureAwait(false);
                     foreach (var map in maps)
                     {
                         var mapped = map as PageMapping;
@@ -617,15 +617,15 @@ namespace Sushi.Mediakiwi.Controllers
 
             if (pageMap != null)
             {
-                if (pageMap.TypeID == 2)
+                if (pageMap.MappingType ==  PageMappingType.Redirect302)
                 {
                     status = HttpStatusCode.Redirect;
                 }
-                else if (pageMap.TypeID == 3)
+                else if (pageMap.MappingType == PageMappingType.Redirect301)
                 {
                     status = HttpStatusCode.MovedPermanently;
                 }
-                else if (pageMap.TypeID == 4)
+                else if (pageMap.MappingType == PageMappingType.NotFound404)
                 {
                     status = HttpStatusCode.NotFound;
                 }
