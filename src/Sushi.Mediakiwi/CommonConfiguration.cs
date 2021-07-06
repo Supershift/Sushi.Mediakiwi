@@ -21,15 +21,15 @@ namespace Sushi.Mediakiwi
         {
             get
             {
-                return Data.Utility.ConvertToInt(WimServerConfiguration.Instance.Authentication.Timeout, 15);
+                return Data.Utility.ConvertToInt(WimServerConfiguration.Instance?.Authentication?.Timeout, 15);
             }
         }
         public static string AUTHENTICATION_COOKIE
         {
             get
             {
-                if (string.IsNullOrEmpty(WimServerConfiguration.Instance.Authentication.Cookie))
-                    return "auth";
+                if (string.IsNullOrWhiteSpace(WimServerConfiguration.Instance?.Authentication?.Cookie))
+                    return "mediakiwi";
                 return WimServerConfiguration.Instance.Authentication.Cookie;
             }
         }

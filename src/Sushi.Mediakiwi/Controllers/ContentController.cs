@@ -13,8 +13,6 @@ using System.Reflection;
 using Sushi.Mediakiwi.Controllers.Data;
 using Sushi.Mediakiwi.Connectors;
 using Sushi.Mediakiwi.Extention;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace Sushi.Mediakiwi.Controllers
 {
@@ -36,6 +34,7 @@ namespace Sushi.Mediakiwi.Controllers
         public ContentController(IMemoryCache memoryCache)
         {
             _cache = memoryCache; 
+            IsAuthenticationRequired = true;
         }
 
         const string ckey = "Node.TimeStamp";
@@ -119,7 +118,12 @@ namespace Sushi.Mediakiwi.Controllers
         [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
         public async Task<ActionResult<PageContentResponse>> GetPageContent(PageRequest req)
         {
-            return await GetPageContentAsync(req.Path, req.ClearCache, req.IsPreview, req.PageID).ConfigureAwait(false);
+            return await GetPageContentInternalAsync(
+                req.Path, 
+                req.ClearCache, 
+                req.IsPreview, 
+                req.PageID)
+                .ConfigureAwait(false);
         }
 
         [Produces("application/json")]
@@ -130,7 +134,17 @@ namespace Sushi.Mediakiwi.Controllers
         [Route("page/content")]
         [HttpGet]
         [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
-        public async Task<ActionResult<PageContentResponse>> GetPageContentAsync([FromQuery] string url, [FromQuery] bool flushCache = false, [FromQuery] bool isPreview = false, [FromQuery] int? pageId = null)
+        public async Task<ActionResult<PageContentResponse>> GetPageContentAsync([FromQuery] string url, [FromQuery] string flush, [FromQuery] string preview, [FromQuery] int? pageId)
+        {
+            return await GetPageContentInternalAsync(
+                url,
+                flush?.Equals("me", StringComparison.InvariantCultureIgnoreCase) == true,
+                preview?.Equals("1", StringComparison.InvariantCultureIgnoreCase) == true,
+                pageId)
+                .ConfigureAwait(false);
+        }
+ 
+        private async Task<ActionResult<PageContentResponse>> GetPageContentInternalAsync(string url, bool flushCache = false,  bool isPreview = false, int? pageId = null)
         {
             var response = new PageContentResponse();
             if (string.IsNullOrWhiteSpace(url) && pageId.GetValueOrDefault(0) == 0)
@@ -180,17 +194,18 @@ namespace Sushi.Mediakiwi.Controllers
                     }
 
 
-                    if ((uri.IsAbsoluteUri && !string.IsNullOrWhiteSpace(uri.Query) && uri.Query.Equals("?flush=me")))
-                    {
-                        flush = true;
-                    }
+                    // [MR:05-07-2021] This shouldn't be needed, since these are passed in as a querystring
+                    //if ((uri.IsAbsoluteUri && !string.IsNullOrWhiteSpace(uri.Query) && uri.Query.Equals("?flush=me")))
+                    //{
+                    //    flush = true;
+                    //}
 
-                    if ((uri.IsAbsoluteUri && !string.IsNullOrWhiteSpace(uri.Query) && uri.Query.Equals("?preview=1")))
-                    {
-                        ispreview = true;
-                    }
+                    //if ((uri.IsAbsoluteUri && !string.IsNullOrWhiteSpace(uri.Query) && uri.Query.Equals("?preview=1")))
+                    //{
+                    //    ispreview = true;
+                    //}
 
-                    var maps = await PageMapping.SelectAllNonListAsync(0, true).ConfigureAwait(false);
+                    var maps = await PageMapping.SelectAllAsync(0, true).ConfigureAwait(false);
                     foreach (var map in maps)
                     {
                         var mapped = map as PageMapping;
@@ -602,15 +617,15 @@ namespace Sushi.Mediakiwi.Controllers
 
             if (pageMap != null)
             {
-                if (pageMap.TypeID == 2)
+                if (pageMap.MappingType ==  PageMappingType.Redirect302)
                 {
                     status = HttpStatusCode.Redirect;
                 }
-                else if (pageMap.TypeID == 3)
+                else if (pageMap.MappingType == PageMappingType.Redirect301)
                 {
                     status = HttpStatusCode.MovedPermanently;
                 }
-                else if (pageMap.TypeID == 4)
+                else if (pageMap.MappingType == PageMappingType.NotFound404)
                 {
                     status = HttpStatusCode.NotFound;
                 }

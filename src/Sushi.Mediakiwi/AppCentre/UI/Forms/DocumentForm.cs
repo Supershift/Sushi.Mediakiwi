@@ -22,21 +22,23 @@ namespace Sushi.Mediakiwi.AppCentre.UI.Forms
                 Map(x => x.Description).TextArea("Description");
                 Map(x => x.File, this).FileUpload("Upload");
             }
-
+            
             Map(x => x.GalleryID).FolderSelect("Folder", true, FolderType.Gallery);
         }
 
         public override void Evaluate()
         {
-            if (this.File != null && this.File.File != null)
+            if (File != null && File.File != null)
             {
-                this.Instance.Type = this.File.File.ContentType;
-                this.Instance.Extention = this.File.File.FileName.Substring(this.File.File.FileName.LastIndexOf("."));
-                this.Instance.FileName = this.File.File.FileName;
-                this.Instance.Size = this.File.File.Length;
-                
-                if (string.IsNullOrWhiteSpace(this.Instance.Title))
-                    this.Instance.Title = this.Instance.FileName;
+                Instance.Type = File.File.ContentType;
+                Instance.Extention = File.File.FileName.Substring(File.File.FileName.LastIndexOf("."));
+                Instance.FileName = File.File.FileName;
+                Instance.Size = File.File.Length;
+
+                if (string.IsNullOrWhiteSpace(Instance.Title))
+                {
+                    Instance.Title = Instance.FileName;
+                }
             }
         }
 

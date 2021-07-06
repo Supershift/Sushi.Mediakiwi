@@ -346,7 +346,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                 }
 
 
-                ApplyItemSelect(build, true, isEnabled, titleTag, ID, lst, url, false, isRequired, false, false, LayerSize.Small, false, 350,
+                ApplyItemSelect(build, true, isEnabled, titleTag, ID, lst, url, false, isRequired, false, false, LayerSize.Small, false, 450,
                     null,
                     new NameItemValue() { Name = ID, ID = key, Value = OutputText }
                     );

@@ -15,7 +15,7 @@
     "IIS Express": {
       "commandName": "IISExpress",
       "launchBrowser": true,
-      "launchUrl": "https://localhost:44367/mediakiwi",
+      "launchUrl": "https://localhost:44367/mediakiwi?page=1",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }

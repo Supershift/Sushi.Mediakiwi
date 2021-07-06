@@ -113,9 +113,20 @@ namespace Sushi.Mediakiwi.Headless.HttpClients
             // Create querystring for adding SiteID to the Request
             Dictionary<string, string> queryString = new Dictionary<string, string>();
             queryString.Add("url", Uri.EscapeUriString(forUrl));
-            queryString.Add("flushCache", clearCache.ToString());
-            queryString.Add("isPreview", isPreview.ToString());
-            queryString.Add("pageId", pageId.GetValueOrDefault(0).ToString());
+            if (clearCache)
+            {
+                queryString.Add("flush", "me");
+            }
+
+            if (isPreview)
+            {
+                queryString.Add("preview", "1");
+            }
+
+            if (pageId.GetValueOrDefault(0) > 0)
+            {
+                queryString.Add("pageId", pageId.GetValueOrDefault(0).ToString());
+            }
 
             // Create Http Request object
             var request = new HttpRequestMessage(HttpMethod.Get, getServiceUrl($"{_settings.MediaKiwi.ContentService.ServiceUrl}/page/content", queryString));

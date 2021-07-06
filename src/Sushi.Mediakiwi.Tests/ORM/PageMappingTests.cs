@@ -22,10 +22,10 @@ namespace Sushi.Mediakiwi.Tests.ORM
         {
             Path = "/test/path",
             Created = _date,
-            ListID = 69420,
-            ItemID = 69,
-            TargetType = 1,
-            TypeID = 2,
+            //ListID = 69420,
+            //ItemID = 69,
+            TargetType = PageMappingTargetType.FILE ,
+            MappingType = PageMappingType.Redirect302,
             AssetID = 666,
             PageID = 420,
             Query = "?test=1",
@@ -37,10 +37,10 @@ namespace Sushi.Mediakiwi.Tests.ORM
         {
             Path = "/test/async/path",
             Created = _date,
-            ListID = 69421,
-            ItemID = 71,
-            TargetType = 1,
-            TypeID = 2,
+            //ListID = 69421,
+            //ItemID = 71,
+            TargetType = PageMappingTargetType.FILE,
+            MappingType = PageMappingType.Redirect302,
             AssetID = 777,
             PageID = 420,
             Query = "?asynctest=1",
@@ -127,49 +127,51 @@ namespace Sushi.Mediakiwi.Tests.ORM
             }
         }
 
-        [TestMethod]
-        public void B_SelectOneByListItemAndPage()
-        {
-            try
-            {
-                A_Create_TestObj();
+        //[TestMethod]
+        //public void B_SelectOneByListItemAndPage()
+        //{
+        //    try
+        //    {
+        //        A_Create_TestObj();
 
-                // Function that we are testing BELOW...
-                var pageMapping = PageMapping.SelectOne(_TestObj.ListID, (int)_TestObj.ItemID, _TestObj.PageID);
+        //        // Function that we are testing BELOW...
+        //        //var pageMapping = PageMapping.SelectOne(_TestObj.ListID, (int)_TestObj.ItemID, _TestObj.PageID);
+        //        var pageMapping = PageMapping.SelectOne(_TestObj.ID);
 
-                if (pageMapping?.ID > 0)
-                    Trace.WriteLine($"FOUND PageMapping: {pageMapping.ID}");
-                else
-                    Assert.Fail("PageMapping NOT FOUND...");
-            }
-            finally
-            {
-                D_Delete_TestObj();
-                F_Reset_AutoIndent();
-            }
-        }
+        //        if (pageMapping?.ID > 0)
+        //            Trace.WriteLine($"FOUND PageMapping: {pageMapping.ID}");
+        //        else
+        //            Assert.Fail("PageMapping NOT FOUND...");
+        //    }
+        //    finally
+        //    {
+        //        D_Delete_TestObj();
+        //        F_Reset_AutoIndent();
+        //    }
+        //}
 
-        [TestMethod]
-        public async Task B_SelectOneByListItemAndPageAsync()
-        {
-            try
-            {
-                await A_Create_TestObjAsync();
+        //[TestMethod]
+        //public async Task B_SelectOneByListItemAndPageAsync()
+        //{
+        //    try
+        //    {
+        //        await A_Create_TestObjAsync();
 
-                // Function that we are testing BELOW...
-                var pageMapping = await PageMapping.SelectOneAsync(_TestObjAsync.ListID, (int)_TestObjAsync.ItemID, _TestObjAsync.PageID);
+        //        // Function that we are testing BELOW...
+        //        //var pageMapping = await PageMapping.SelectOneAsync(_TestObjAsync.ListID, (int)_TestObjAsync.ItemID, _TestObjAsync.PageID);
+        //        var pageMapping = await PageMapping.SelectOneAsync(_TestObjAsync.ID);
 
-                if (pageMapping?.ID > 0)
-                    Trace.WriteLine($"FOUND PageMapping: {pageMapping.ID}");
-                else
-                    Assert.Fail("PageMapping NOT FOUND...");
-            }
-            finally
-            {
-                await D_Delete_TestObjAsync();
-                await F_Reset_AutoIndentAsync();
-            }
-        }
+        //        if (pageMapping?.ID > 0)
+        //            Trace.WriteLine($"FOUND PageMapping: {pageMapping.ID}");
+        //        else
+        //            Assert.Fail("PageMapping NOT FOUND...");
+        //    }
+        //    finally
+        //    {
+        //        await D_Delete_TestObjAsync();
+        //        await F_Reset_AutoIndentAsync();
+        //    }
+        //}
 
         [TestMethod]
         public void B_SelectOneByPageAndQuery()
@@ -224,7 +226,7 @@ namespace Sushi.Mediakiwi.Tests.ORM
             // Function that we are testing BELOW...
             var pageMappings = PageMapping.SelectAll();
 
-            if (pageMappings?.Length > 0)
+            if (pageMappings?.Count > 0)
                 Trace.WriteLine($"FOUND PageMapping: {pageMappings.Select(x => x.ID.ToString()).Aggregate((a, b) => a + ", " + b)}");
             else
                 Assert.Fail("PageMapping NOT FOUND...");
@@ -237,7 +239,7 @@ namespace Sushi.Mediakiwi.Tests.ORM
             // Function that we are testing BELOW...
             var pageMappings = await PageMapping.SelectAllAsync();
 
-            if (pageMappings?.Length > 0)
+            if (pageMappings?.Count > 0)
                 Trace.WriteLine($"FOUND PageMapping: {pageMappings.Select(x => x.ID.ToString()).Aggregate((a, b) => a + ", " + b)}");
             else
                 Assert.Fail("PageMapping NOT FOUND...");

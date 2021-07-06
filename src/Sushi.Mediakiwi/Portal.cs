@@ -26,10 +26,6 @@ namespace Sushi.Mediakiwi
             _next = next;
             _configuration = configuration;
             _serviceProvider = serviceProvider;
-
-            // Assign json section to config
-            WimServerConfiguration.LoadJsonConfig(_configuration);
-            DatabaseConfiguration.SetDefaultConnectionString(Common.DatabaseConnectionString);
         }
 
         internal static ConcurrentDictionary<string, ICacheManager> Caches;
@@ -49,7 +45,9 @@ namespace Sushi.Mediakiwi
                     return result;
                 };
 
-      
+                // Assign json section to config
+                WimServerConfiguration.LoadJsonConfig(_configuration);
+                DatabaseConfiguration.SetDefaultConnectionString(Common.DatabaseConnectionString);
             }
         }
 
@@ -76,8 +74,13 @@ namespace Sushi.Mediakiwi
             }
             else if (url.Equals(portal, StringComparison.CurrentCultureIgnoreCase)  || url.StartsWith($"{portal}/", StringComparison.CurrentCultureIgnoreCase))
             {
-                Monitor monitor = new Monitor(context, _env, _configuration);
+                var monitor = new Monitor(context, _env, _configuration);
                 await monitor.StartAsync().ConfigureAwait(false);
+            }
+            else
+            {
+                var monitor = new Monitor(context, _env, _configuration);
+                await monitor.AuthenticateViaSingleSignOnAsyc(false).ConfigureAwait(false);
             }
             await _next.Invoke(context).ConfigureAwait(false);
         }
