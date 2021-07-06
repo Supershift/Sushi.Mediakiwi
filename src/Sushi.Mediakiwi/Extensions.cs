@@ -27,12 +27,10 @@ namespace Sushi.Mediakiwi
 
         public static void AddMediakiwi(this IServiceCollection services)
         {
-            // Assign json section to config
             services.AddAuthentication()
                 .AddScheme<MediaKiwiAuthenticationOptions, MediaKiwiAuthenticationHandler>(Common.AuthenticationScheme, null);
             
             services.AddSingleton<IPageModule, ExportPageModule>();
-
         }
 
         public class MediaKiwiAuthenticationOptions : AuthenticationSchemeOptions
