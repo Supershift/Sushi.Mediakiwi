@@ -29,7 +29,7 @@ namespace Sushi.Mediakiwi
             get
             {
                 if (string.IsNullOrEmpty(WimServerConfiguration.Instance.Authentication.Cookie))
-                    return "mediakiwi";
+                    return "auth";
                 return WimServerConfiguration.Instance.Authentication.Cookie;
             }
         }

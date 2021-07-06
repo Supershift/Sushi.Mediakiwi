@@ -61,6 +61,7 @@ namespace Sushi.Mediakiwi
             }
         }
 
+        public const string AuthenticationScheme = "Mediakiwi";
 
         static WimServerPortal m_CurrentPortal;
         /// <summary>

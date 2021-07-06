@@ -26,6 +26,10 @@ namespace Sushi.Mediakiwi
             _next = next;
             _configuration = configuration;
             _serviceProvider = serviceProvider;
+
+            // Assign json section to config
+            WimServerConfiguration.LoadJsonConfig(_configuration);
+            DatabaseConfiguration.SetDefaultConnectionString(Common.DatabaseConnectionString);
         }
 
         internal static ConcurrentDictionary<string, ICacheManager> Caches;
@@ -45,9 +49,7 @@ namespace Sushi.Mediakiwi
                     return result;
                 };
 
-                // Assign json section to config
-                WimServerConfiguration.LoadJsonConfig(_configuration);
-                DatabaseConfiguration.SetDefaultConnectionString(Common.DatabaseConnectionString);
+      
             }
         }
 

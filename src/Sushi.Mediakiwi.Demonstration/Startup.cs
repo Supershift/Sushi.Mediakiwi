@@ -1,3 +1,4 @@
+using Microsoft.AspNet.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 
@@ -7,7 +8,11 @@ using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Sushi.Mediakiwi.Data;
+using System.Collections.Generic;
+using System.Security.Claims;
 using System.Text.Json;
+using System.Threading.Tasks;
 
 namespace Sushi.Mediakiwi.Demonstration
 {
@@ -27,7 +32,7 @@ namespace Sushi.Mediakiwi.Demonstration
             services.AddHttpContextAccessor();
             services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
             services.AddMediakiwi();
-            
+
             services.AddControllersWithViews(options =>
             {
             }).AddJsonOptions(options =>
@@ -43,7 +48,6 @@ namespace Sushi.Mediakiwi.Demonstration
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            app.UseRouting();
 
             if (env.IsDevelopment())
             {
@@ -51,10 +55,18 @@ namespace Sushi.Mediakiwi.Demonstration
              
             }
             app.UseStaticFiles();
+            app.UseRouting();
+          
 
-            //app.UseAuthentication();
-            //app.UseAuthorization();
+            app.UseAuthentication();
+            app.UseAuthorization();
+
             app.UseMediakiwi();
+
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+            });
         }
     }
 }

@@ -75,8 +75,7 @@ namespace Sushi.Mediakiwi.UI
         {
             var monitor = new Monitor(context, env, configuration);
 
-            if (await new ControllerRegister(context, serviceProvider).VerifyAsync()
-                .ConfigureAwait(false))
+            if (await new ControllerRegister(context, serviceProvider).VerifyAsync().ConfigureAwait(false))
             {
                 return true;
             }
