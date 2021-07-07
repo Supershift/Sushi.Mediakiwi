@@ -5,8 +5,6 @@ VisualStudioVersion = 16.0.29609.76
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sushi.Mediakiwi.Data", "src\Sushi.Mediakiwi.Data\Sushi.Mediakiwi.Data.csproj", "{F0C72A9E-4799-48E7-85B3-C9CE5A3AE81B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sushi.Mediakiwi.Tests", "src\Sushi.Mediakiwi.Tests\Sushi.Mediakiwi.Tests.csproj", "{D0A0EAE4-EDA0-4836-B752-D603370DF0E8}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sushi.Mediakiwi", "src\Sushi.Mediakiwi\Sushi.Mediakiwi.csproj", "{D0B32D66-DDB4-4D44-95B0-DED7108E03CB}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sushi.Mediakiwi.Demonstration", "src\Sushi.Mediakiwi.Demonstration\Sushi.Mediakiwi.Demonstration.csproj", "{C252AF02-772F-4BDA-B226-AF0B7C1C2741}"
@@ -23,6 +21,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sushi.Mediakiwi.Files", "sr
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sushi.Mediakiwi.Headless", "src\Sushi.Mediakiwi.Headless\Sushi.Mediakiwi.Headless.csproj", "{6E1C9E66-EF21-433A-9190-D3F00E6A2CE9}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sushi.Mediakiwi.Test", "test\Sushi.Mediakiwi.Test\Sushi.Mediakiwi.Test.csproj", "{F7CDA9FF-31A0-4848-8030-D6A35A18DB40}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,10 +33,6 @@ Global
 		{F0C72A9E-4799-48E7-85B3-C9CE5A3AE81B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F0C72A9E-4799-48E7-85B3-C9CE5A3AE81B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F0C72A9E-4799-48E7-85B3-C9CE5A3AE81B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D0A0EAE4-EDA0-4836-B752-D603370DF0E8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D0A0EAE4-EDA0-4836-B752-D603370DF0E8}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D0A0EAE4-EDA0-4836-B752-D603370DF0E8}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D0A0EAE4-EDA0-4836-B752-D603370DF0E8}.Release|Any CPU.Build.0 = Release|Any CPU
 		{D0B32D66-DDB4-4D44-95B0-DED7108E03CB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{D0B32D66-DDB4-4D44-95B0-DED7108E03CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D0B32D66-DDB4-4D44-95B0-DED7108E03CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -53,6 +49,10 @@ Global
 		{6E1C9E66-EF21-433A-9190-D3F00E6A2CE9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6E1C9E66-EF21-433A-9190-D3F00E6A2CE9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6E1C9E66-EF21-433A-9190-D3F00E6A2CE9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F7CDA9FF-31A0-4848-8030-D6A35A18DB40}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F7CDA9FF-31A0-4848-8030-D6A35A18DB40}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F7CDA9FF-31A0-4848-8030-D6A35A18DB40}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F7CDA9FF-31A0-4848-8030-D6A35A18DB40}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
