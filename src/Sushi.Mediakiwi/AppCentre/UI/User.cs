@@ -1,3 +1,4 @@
+using Sushi.Mediakiwi.Authentication;
 using Sushi.Mediakiwi.Data;
 using Sushi.Mediakiwi.Framework;
 using Sushi.Mediakiwi.UI;
@@ -123,7 +124,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             {
                 if (m_Implement.Type == 0)
                 {
-                    using (Authentication auth = new Authentication())
+                    using (var auth = new AuthenticationLogic())
                     {
                         auth.Password = "wimserver";
                         string passwordDecrypt = auth.Decrypt(m_Implement.Password);

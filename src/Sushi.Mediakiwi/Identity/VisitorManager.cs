@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Sushi.Mediakiwi.Authentication;
 using Sushi.Mediakiwi.Data;
 using Sushi.Mediakiwi.Utilities;
 using System;
@@ -59,7 +60,7 @@ namespace Sushi.Mediakiwi
         public IVisitor SelectVisitorByCookie()
         {
             IVisitor visitor = null;
-            using (var auth = new Authentication(Context))
+            using (var auth = new AuthenticationLogic(Context))
             {
                 auth.TicketName = CommonConfiguration.AUTHENTICATION_COOKIE;
                 auth.Password = Context.Request.Headers["User-Agent"];
@@ -167,7 +168,7 @@ namespace Sushi.Mediakiwi
         {
             if (guid == Guid.Empty) return;
             if (Context == null) return;
-            using (var auth = new Authentication(Context))
+            using (var auth = new AuthenticationLogic(Context))
             {
                 auth.Password = Context.Request.Headers["User-Agent"];
                 auth.TicketName = CommonConfiguration.AUTHENTICATION_COOKIE;
@@ -187,17 +188,7 @@ namespace Sushi.Mediakiwi
         /// <returns></returns>
         public virtual bool Clear()
         {
-            RemoveCookie();
             return true;
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        internal void RemoveCookie()
-        {
-            using (var auth = new Authentication())
-                auth.RemoveTicket(CommonConfiguration.AUTHENTICATION_COOKIE);
         }
 
         IVisitor Reset()

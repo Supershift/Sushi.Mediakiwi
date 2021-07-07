@@ -9,7 +9,7 @@
     <Authors>Marc Molenwijk, Jean Paul Kommers, Mark Rienstra</Authors>
     <Copyright>2005-2021 Supershift</Copyright>
     <Description>Rapid Portal Development Framework including a Headless Content Management System component build and optimized for Microsoft Azure (cloud)</Description>
-    <PackageProjectUrl>https://github.com/Supershift/Sushi.Mediakiwi</PackageProjectUrl>
+    <PackageProjectUrl>https://mediakiwi.atlassian.net/wiki/spaces/CORE/overview</PackageProjectUrl>
     <RepositoryUrl>https://github.com/Supershift/Sushi.Mediakiwi</RepositoryUrl>
     <UserSecretsId>868170ed-102f-45aa-8ea6-3b1cc32a2b6b</UserSecretsId>
     <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
@@ -23,6 +23,7 @@
   <ItemGroup>
     <Compile Remove="AppCentre\**" />
     <Compile Remove="Beta\**" />
+    <Compile Remove="Common\**" />
     <Compile Remove="config\**" />
     <Compile Remove="Data2\**" />
     <Compile Remove="DataEntities\**" />
@@ -38,6 +39,7 @@
     <Compile Remove="Utilities\**" />
     <EmbeddedResource Remove="AppCentre\**" />
     <EmbeddedResource Remove="Beta\**" />
+    <EmbeddedResource Remove="Common\**" />
     <EmbeddedResource Remove="config\**" />
     <EmbeddedResource Remove="Data2\**" />
     <EmbeddedResource Remove="DataEntities\**" />
@@ -53,6 +55,7 @@
     <EmbeddedResource Remove="Utilities\**" />
     <None Remove="AppCentre\**" />
     <None Remove="Beta\**" />
+    <None Remove="Common\**" />
     <None Remove="config\**" />
     <None Remove="Data2\**" />
     <None Remove="DataEntities\**" />
@@ -73,15 +76,15 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="AppCentre\Data\BaseImplementation.cs" />
-    <Compile Include="AppCentre\Data\Implementation\ComponentTemplate.cs" />
-    <Compile Include="AppCentre\Data\Implementation\RoleAccessSite.cs" />
+    <Compile Include="AppCentre\UI\ComponentTemplate.cs" />
+    <Compile Include="AppCentre\UI\PageList.cs" />
+    <Compile Include="AppCentre\UI\RoleAccessSite.cs" />
     <Compile Include="AppCentre\UI\Forms\PageMappingForm.cs" />
-    <Compile Include="AppCentre\Implementation\PageMapping.cs" />
+    <Compile Include="AppCentre\UI\PageMapping.cs" />
     <Compile Include="AppCentre\UI\Forms\SharedFieldForm.cs" />
     <Compile Include="AppCentre\UI\SharedFieldList.cs" />
-    <Compile Include="AppCentre\Implementation\PageInstance.cs" />
-    <Compile Include="AppCentre\Implementation\PageTemplate.cs" />
+    <Compile Include="AppCentre\UI\PageInstance.cs" />
+    <Compile Include="AppCentre\UI\PageTemplate.cs" />
     <Compile Include="AppCentre\UI\BaseImplementation.cs" />
     <Compile Include="AppCentre\UI\BasicSeachList.cs" />
     <Compile Include="AppCentre\UI\BrowseItem.cs" />
@@ -107,11 +110,10 @@
     <Compile Include="AppCentre\UI\Link.cs" />
     <Compile Include="AppCentre\UI\MenuList.cs" />
     <Compile Include="AppCentre\UI\NoteList.cs" />
-    <Compile Include="AppCentre\Implementation\Copy.cs" />
-    <Compile Include="AppCentre\Implementation\CopyContent.cs" />
+    <Compile Include="AppCentre\UI\Copy.cs" />
+    <Compile Include="AppCentre\UI\CopyContent.cs" />
     <Compile Include="AppCentre\UI\Notification.cs" />
-    <Compile Include="AppCentre\Implementation\PageHistory.cs" />
-    <Compile Include="AppCentre\UI\PortalList.cs" />
+    <Compile Include="AppCentre\UI\PageHistory.cs" />
     <Compile Include="AppCentre\UI\Role.cs" />
     <Compile Include="AppCentre\UI\Site.cs" />
     <Compile Include="AppCentre\UI\User.cs" />
@@ -153,7 +155,6 @@
     <Compile Include="Presentation\Monitor.cs" />
     <Compile Include="UI\AddPageComponentControl.cs" />
     <Compile Include="UI\DataGridForJSON.cs" />
-    <Compile Include="Utilities\AuthenticationToken.cs" />
     <Compile Include="Utilities\JSON\Formatter.cs" />
     <Compile Include="Utilities\JSON\Getters.cs" />
     <Compile Include="Utilities\JSON\IRecord.cs" />
@@ -322,22 +323,15 @@
     <Compile Include="UI\ListItemCollection.cs" />
     <Compile Include="UI\LiteralControl.cs" />
     <Compile Include="UI\Monitor2.cs" />
-    <Compile Include="Utilities\Authentication.cs" />
     <Compile Include="Utilities\EncryptionByRijndael.cs" />
     <Compile Include="Utilities\PasswordGenerator.cs" />
     <Compile Include="Utilities\Splitlist.cs" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="AppCentre\Data\Implementation\Forms\" />
-    <Folder Include="Beta\GeneratedCms\Source\SpecialTypes\" />
-    <Folder Include="Common\" />
-    <Folder Include="Data2\Interfaces\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Azure.Storage.Blobs" Version="12.9.0" />
     <PackageReference Include="HtmlAgilityPack" Version="1.11.30" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Hosting.Abstractions" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.2.2" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />

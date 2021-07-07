@@ -9,7 +9,7 @@
     <Description>Contains all Logic needed to communicate between a RazorPages project and the MediaKiwi Headless CMS.</Description>
     <Copyright>2005-2021 Supershift</Copyright>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageProjectUrl>https://github.com/Supershift/Sushi.Mediakiwi</PackageProjectUrl>
+    <PackageProjectUrl>https://mediakiwi.atlassian.net/wiki/spaces/CORE/overview</PackageProjectUrl>
     <RepositoryUrl>https://github.com/Supershift/Sushi.Mediakiwi</RepositoryUrl>
   </PropertyGroup>
 

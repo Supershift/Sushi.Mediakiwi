@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Sushi.Mediakiwi;
+using Sushi.Mediakiwi.Authentication;
 using Sushi.Mediakiwi.Data;
 using Sushi.Mediakiwi.Utilities;
 using System;
@@ -183,7 +184,7 @@ public static class ApplicationUserExtention
         inUser.ResetKey = Guid.NewGuid();
         inUser.Save();
 
-        using (Authentication auth = new Authentication())
+        using (var auth = new AuthenticationLogic())
         {
             auth.Password = "urlinfo";
             string urlAddition = string.Concat("&u=", WebUtility.UrlEncode(auth.Encrypt(inUser.Name)));
@@ -225,7 +226,7 @@ public static class ApplicationUserExtention
     {
         if (user.Type == 0)
         {
-            using (Authentication auth = new Authentication())
+            using (var auth = new AuthenticationLogic())
             {
                 auth.Password = Sushi.Mediakiwi.Common.EncryptionKey;
                 if (auth.Encrypt(password) == user.Password)
@@ -247,7 +248,7 @@ public static class ApplicationUserExtention
         string username = inUser.Name;
         if (inUser.Type == 0)
         {
-            using (Authentication auth = new Authentication())
+            using (var auth = new AuthenticationLogic())
             {
                 auth.Password = Sushi.Mediakiwi.Common.EncryptionKey;
 

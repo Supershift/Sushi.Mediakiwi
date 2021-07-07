@@ -1,5 +1,7 @@
 namespace Sushi.Mediakiwi.Framework
 {
+    public delegate void ComponentListHeadlessEventHandler(Sushi.Mediakiwi.Data.HeadlessRequest e);
+
     public delegate void ComponentDataReportEventHandler(object sender, ComponentDataReportEventArgs e);
     /// <summary>
     /// 

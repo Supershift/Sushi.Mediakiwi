@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using Sushi.Mediakiwi.AppCentre.Data.Implementation;
 using Sushi.Mediakiwi.AppCentre.UI.Forms;
 using Sushi.Mediakiwi.Data;
 using Sushi.Mediakiwi.Data.Data;
@@ -9,7 +10,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Wim.AppCentre.Data.Implementation;
 
 namespace Sushi.Mediakiwi.AppCentre.UI
 {
@@ -126,7 +126,7 @@ namespace Sushi.Mediakiwi.AppCentre.UI
 
                 var serialized = Utility.GetSerialized(meta.ToArray());
 
-                var ct = await ComponentTemplate.SelectOneAsync(e.SelectedKey);
+                var ct = await Mediakiwi.Data.ComponentTemplate.SelectOneAsync(e.SelectedKey);
                 if (ct.MetaData != serialized)
                 {
                     ct.MetaData = serialized;
@@ -238,7 +238,7 @@ namespace Sushi.Mediakiwi.AppCentre.UI
             }
             else
             {
-                var ct = ComponentTemplate.SelectOne(e.SelectedKey);
+                var ct = Mediakiwi.Data.ComponentTemplate.SelectOne(e.SelectedKey);
                 wim.ListTitle = ct.Name;
 
                 //if (Implement == null)

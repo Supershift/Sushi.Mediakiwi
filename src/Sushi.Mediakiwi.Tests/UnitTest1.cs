@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using System.Security.Cryptography;
 using System.Text;
 using System.IdentityModel.Tokens.Jwt;
+using Sushi.Mediakiwi.Authentication;
 
 namespace Sushi.Mediakiwi.Tests
 {
@@ -93,7 +94,7 @@ namespace Sushi.Mediakiwi.Tests
             mockRequest.SetupGet(x => x.Method).Returns("GET");
 
             var value = "test";
-            using (Authentication auth = new Authentication(mockHttpContext.Object))
+            using (var auth = new AuthenticationLogic(mockHttpContext.Object))
             {
                 auth.Password = "pwd";
                 var encrypted = auth.Encrypt(value);

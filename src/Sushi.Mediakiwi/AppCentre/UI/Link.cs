@@ -11,6 +11,12 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
     /// </summary>
     public class Link : BaseImplementation
     {
+        public class PageHref
+        {
+            public string Text { get; set; }
+            public string Href { get; set; }
+        }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="Link"/> class.
         /// </summary>
@@ -28,6 +34,28 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             ListSave += Link_ListSave;
             ListDelete += Link_ListDelete;
             ListAction += Link_ListAction;
+            ListHeadless += Link_ListHeadless;
+        }
+
+        private async Task Link_ListHeadless(HeadlessRequest e)
+        {
+            var link = await Sushi.Mediakiwi.Data.Link.SelectOneAsync(e.Listitem.ID).ConfigureAwait(false);
+            if (link == null || link.ID == 0)
+                return;
+
+            var linkref = new PageHref();
+
+            linkref.Text = link.Text;
+
+            if (link.IsInternal)
+            {
+                var pagelink = await Sushi.Mediakiwi.Data.Page.SelectOneAsync(link.PageID.GetValueOrDefault()).ConfigureAwait(false);
+                linkref.Href = Sushi.Mediakiwi.Data.Utility.ConvertUrl(pagelink?.InternalPath);
+            }
+            else
+                linkref.Href = link?.ExternalUrl;
+
+            e.Result = linkref;
         }
 
         Task Link_ListAction(ComponentActionEventArgs e)

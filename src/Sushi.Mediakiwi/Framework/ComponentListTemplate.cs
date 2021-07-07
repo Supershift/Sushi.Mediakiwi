@@ -35,8 +35,18 @@ namespace Sushi.Mediakiwi.Framework
     /// <summary>
     /// 
     /// </summary>
-    public class ComponentListTemplate : FormMapList, IComponentListTemplate
+    public class ComponentListTemplate : FormMapList, IComponentListTemplate, iHeadlessListTemplate
     {
+        public virtual void DoHeadLessFetch(Sushi.Mediakiwi.Data.HeadlessRequest request)
+        {
+            if (ListHeadless == null)
+            {
+                return;
+            }
+
+            ListHeadless(request);
+        }
+
         public string FormState { get; set; }
 
         public FormList FormMaps { get; set; }
@@ -182,10 +192,8 @@ namespace Sushi.Mediakiwi.Framework
             set { m_wim = value; }
         }
 
-        //public event ComponentSearchEventHandler ListSearch;
-        //[Obsolete("MEDIAKIWI: Please use ListAction, this will be removed later on")]
-        //public event ComponentActionEventHandler ListSearchedAction;
-        //public event ComponentListEventHandler ListLoad;
+
+        public event Func<Sushi.Mediakiwi.Data.HeadlessRequest, Task> ListHeadless;
         public event Func<ComponentListEventArgs, Task> ListPreRender;
         public event Func<ComponentListEventArgs, Task> ListSave;
         public event Func<ComponentListEventArgs, Task> ListDelete;

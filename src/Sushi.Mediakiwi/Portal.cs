@@ -26,11 +26,15 @@ namespace Sushi.Mediakiwi
             _next = next;
             _configuration = configuration;
             _serviceProvider = serviceProvider;
+
+            // Assign json section to config
+            WimServerConfiguration.LoadJsonConfig(configuration);
+            DatabaseConfiguration.SetDefaultConnectionString(Common.DatabaseConnectionString);
         }
 
         internal static ConcurrentDictionary<string, ICacheManager> Caches;
 
-        void Configure(HttpContext context)
+        static void Configure()
         {
             if (Caches == null)
             {
@@ -44,10 +48,6 @@ namespace Sushi.Mediakiwi
                     var result = Caches.GetOrAdd(key, (string s) => { return new CacheManager(); });
                     return result;
                 };
-
-                // Assign json section to config
-                WimServerConfiguration.LoadJsonConfig(_configuration);
-                DatabaseConfiguration.SetDefaultConnectionString(Common.DatabaseConnectionString);
             }
         }
 
@@ -66,7 +66,7 @@ namespace Sushi.Mediakiwi
             var url = GetSafeUrl(context);
             var portal = _configuration.GetValue<string>("mediakiwi:portal_path");
 
-            Configure(context);
+            Configure();
 
             if (await Monitor.StartControllerAsync(context, _env, _configuration, _serviceProvider).ConfigureAwait(false))
             {

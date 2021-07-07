@@ -60,7 +60,7 @@ namespace Sushi.Mediakiwi
                 return CurrentPortal.Connection;
             }
         }
-
+        public static string AuthenticationScheme { get; set; } = "mediakiwi";
 
         static WimServerPortal m_CurrentPortal;
         /// <summary>
