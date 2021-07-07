@@ -1,0 +1,190 @@
+/*
+	Reference Template for Object-oriented Stylesheet Classes.
+	By: Maurice van Creij
+
+	To illustrate the similarities to object oriented code, the equivalent concepts were added as comments in all upper case.
+*/
+
+
+	@media all {
+		#mainMenu {
+			position : absolute;
+			top : 20px;
+			margin : 0px auto 0px auto;
+			z-index : 2000;
+			list-style: none;
+			font-size: 1.1em;	
+			left: 29%;
+		}
+						menu#mainMenu li {
+							float: left;
+							margin: 0; padding: 0;
+							position: relative;
+						}
+						menu#mainMenu li a {
+							float: left; 
+							color: #ffffff;
+							text-decoration: none;
+							height: 72px;
+							font-size: 130%;
+							line-height: 48px;
+							text-align: center;
+						}
+						menu#mainMenu li:hover a, menu#mainMenu li a:hover { 
+						}
+						menu#mainMenu a {
+							padding: 0px 10px 0px 20px;
+							font-size: 110%;
+							font-family: 'LatoBold';
+						}
+						menu#mainMenu a span {
+							font-weight: normal; 
+						}
+						menu#mainMenu a:hover {
+							padding: 0px 10px 0px 20px;
+						}
+						menu#mainMenu a.subs {
+							padding: 0px 20px 0px 20px;
+							position: relative;
+							z-index:1000;
+						}
+						menu#mainMenu a:hover.subs, menu#mainMenu a:hover .subs menu:hover   {
+							position: relative;
+							z-index:1000;
+						}
+						menu#mainMenu li .sub {
+							position: absolute;	
+							top: 57px;
+							left: 20px;
+							padding: 0px 0px 0px 10px !important;
+							float: left;
+							-moz-box-sizing: border-box !important; -webkit-box-sizing: border-box !important; box-sizing: border-box !important;
+							z-index: 19999999;
+							width:600px;
+							display: none;
+							background: #ffffff;
+							border: solid 2px #bababa;
+						}
+						menu#mainMenu li .sub .arrow-up {
+							width: 0; 
+							height: 0; 
+							position: absolute;
+							top: -10px;
+							border-left: 15px solid transparent;
+							border-right: 15px solid transparent;	
+							border-bottom: 15px solid #ffffff;
+						}
+
+								menu#mainMenu li .sub menu:hover div h2{
+									color:#ffffff;
+								}
+									menu#mainMenu li .sub menu:hover ul li{
+										border:none;
+									}
+										menu#mainMenu li .sub:hover ul li a {
+											border:none;
+											color: #1a1a1a;
+											text-shadow:none;  
+											font-family: 'LatoRegular';										
+										}
+										menu#mainMenu li .sub:hover ul li a:hover{
+										}
+							menu#mainMenu li .sub menu {
+								display:block;
+								width:220px;
+                                height: 100%;
+								float:left;
+								*width:190px;
+							}
+							menu#mainMenu li .sub menu.first {
+								display:block;
+								width:220px;
+								float:left;
+								*width:190px;
+							}
+                                menu#mainMenu li .sub menu li.first div {
+                                    padding-top: 0px;
+									color: #1a1a1a;
+									margin-top: 0px !important;
+								}
+							menu#mainMenu li .sub menu.last {
+								display:block;
+								width:204px;
+								float:left;
+								*width:190px;
+							}
+								menu#mainMenu li .sub menu div {
+                                    font-weight:bold;
+									display:block;
+                                    width: 200px;
+									color: #1a1a1a;
+									padding-left: 18px;	
+									font-size: 140%;	
+									margin-top: 120px !important;
+									padding-bottom: 10px !important;
+								}
+									menu#mainMenu li .sub menu div h2 {
+										font-size:20px;
+										line-height:22px;
+										font-weight:normal;
+										color:#1a1a1a !important;
+										margin-top:auto;
+										margin-bottom:115px;
+										display:block;	
+										font-size: 160%;									
+									}
+								menu#mainMenu li .sub menu ul {
+									list-style:none;
+									border:none;
+									padding:0px;
+									margin:0 0 0 0;
+									float: left;
+									padding:20px 0px 20px 0px;
+                                    border-top: none;
+								}
+
+									menu#mainMenu li .sub menu ul li {
+										display:inline;
+										border:none;
+										float:none;
+									}
+										menu#mainMenu li .sub menu ul li a {
+											color: #1a1a1a !important;
+											width:180px;
+											height:auto;
+											font-weight: normal;
+											line-height: 22px;
+											font-size:14px;
+											text-align: left;
+											text-decoration: none;
+											text-shadow:none;  
+											padding:5px 0px 5px 0px;
+											margin:0px 0px -1px 0px;
+											font-family: 'LatoRegular';
+											padding-left: 18px;		
+										}
+										menu#mainMenu li .sub menu ul li a:first-child {
+											border-bottom: dotted 1px #bbbbbb !important;
+										}
+										menu#mainMenu li .sub menu ul li a:hover {
+											border-left: solid 8px #3598db;
+											padding-left: 10px;	
+											font-weight: normal;										
+										}
+										menu#mainMenu li .sub menu ul li a.active {
+											border-left: solid 8px #3598db;
+											padding-left: 10px;	
+											font-weight: bold;										
+										}
+						menu#mainMenu li .row {clear: both; float: left; width: 100%; margin-bottom: 10px;}
+}
+@media screen and (max-width: 1280px) {
+		menu#mainMenu li a {
+			font-size: 120%;
+			font-family: 'LatoBold';
+		}
+		menu#mainMenu a.subs {
+			position: relative;
+			z-index:1000;
+		}
+}

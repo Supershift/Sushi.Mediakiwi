@@ -1,0 +1,58 @@
+﻿<!doctype html>
+<html>
+	<head>
+		<meta charset="UTF-8" />
+		<title>Example HTML 5 Template</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+		<!--[if IE]>
+			<meta http-equiv="imagetoolbar" content="no"/>
+            
+			<script type="text/javascript" src="../scripts/html5.js"></script>
+		<![endif]-->
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<link rel="stylesheet" href="../styles/stylesFlat.css" type="text/css" media="all" />
+		<link rel="stylesheet" href="../styles/stylesFlatv2.css" type="text/css" media="all" />
+		<!--<link rel="stylesheet" href="../styles/stylesSkinOrange.css" type="text/css" media="all" />-->
+		<link rel="stylesheet" href="../styles/mainMenuFlat.css" type="text/css"/>
+		<link rel="stylesheet" href="../styles/stylesBar.css" type="text/css"/>
+		<link rel="stylesheet" href="../styles/colorbox.css" type="text/css"/>
+		<link rel="stylesheet" href="../styles/solid.css" type="text/css"/>
+		<link rel="stylesheet" href="../styles/formalize.css" type="text/css" media="all" />
+		<link rel="stylesheet" href="../styles/planning.css" type="text/css" media="all" />
+		<link rel="stylesheet" href="../styles/jquery-ui-1.8.16.custom.css" type="text/css" media="all" />
+		<!-- 
+		favicon 
+		<link rel="icon" href="../images/favicon.png" type="image/png" />
+		<link rel="shortcut icon" href="../images/favicon.ico" type="image/x-icon" />
+		scripts
+		<script type="text/javascript" src="../scripts/search.js"></script>
+		-->
+		<script type="text/javascript" src="../scripts/preview.js"></script>
+		<script type="text/javascript" src="../scripts/jquery-1.7.1.js"></script>		
+	</head>
+	<body class="newLay">
+		<section id="bodySection">
+			<header id="bodyHeader">
+				<a href=""><img src="../images/MK_logo.png" alt="Sentimention" title="Website logo" id="bodyLogo" /></a>
+			</header>
+			<section id="homeContent">
+				<!--#include file="./component_sideNav.html" -->
+				<article id="homeArticle">
+					<!--#include file="./component_pageHeaderv2.html" -->
+					<!--#include file="./component_iconBar.html" -->	
+					<!--#include file="./component_formFilter.html" -->	
+					<!--#include file="./component_tableEdit.html" -->	
+					<!--#include file="./component_formStylesv2.html" -->	
+				</article>
+				<div class="clear"></div>
+			</section>
+			<div class="clear"></div>
+			<nav id="bodyNav">
+				<!--#include file="./component_mainMenu.html" -->
+			</nav>
+		</section>
+		<nav id="loginNav">
+			<!--#include file="./component_loginNav.html" -->
+		</nav>
+	</body>
+</html>

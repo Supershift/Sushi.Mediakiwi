@@ -1,0 +1,83 @@
+
+/* SEARCH FORM */
+#suggestions{ 
+	position: absolute; 
+	top:60px; 
+	left:40px; 
+	width:auto; 
+	display:none; 
+	z-index:9999999999
+}
+
+/* SEARCHRESULTS */
+#searchresults { 
+	width:220px; 
+	background-color:#ffffff; 
+	font-size:10px; 
+	line-height:14px; 
+	color:#333333;
+	padding:5px 0;
+	border: 2px solid #DCDCDC;
+	padding-bottom:0px!important;
+}
+#searchresults span{
+	padding:0px!important;
+	margin-top:10px;
+	color:#898989;
+	font-size:12px;
+	display:block;
+}
+#searchresults span.searchText {
+	display:block;
+	overflow:inherit;
+	padding-left:10px!important;
+}
+	#searchresults a { 
+		display:block; 
+		background-color:#ffffff; 
+		clear:left; 
+		height:auto; 
+		width:220px;
+		text-decoration:none; 
+		overflow:hidden;
+		margin-left:-20px;
+		padding:8px 20px;
+	}
+		#searchresults a:hover { 
+			background: #f98924; /* Old browsers */
+			/* IE9 SVG, needs conditional override of 'filter' to 'none' */
+			background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgdmlld0JveD0iMCAwIDEgMSIgcHJlc2VydmVBc3BlY3RSYXRpbz0ibm9uZSI+CiAgPGxpbmVhckdyYWRpZW50IGlkPSJncmFkLXVjZ2ctZ2VuZXJhdGVkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIwJSIgeTI9IjEwMCUiPgogICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iI2Y5ODkyNCIgc3RvcC1vcGFjaXR5PSIxIi8+CiAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiNmMzZjMDAiIHN0b3Atb3BhY2l0eT0iMSIvPgogIDwvbGluZWFyR3JhZGllbnQ+CiAgPHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjEiIGhlaWdodD0iMSIgZmlsbD0idXJsKCNncmFkLXVjZ2ctZ2VuZXJhdGVkKSIgLz4KPC9zdmc+);
+			background: -moz-linear-gradient(top,  #f98924 0%, #f36c00 100%); /* FF3.6+ */
+			background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#f98924), color-stop(100%,#f36c00)); /* Chrome,Safari4+ */
+			background: -webkit-linear-gradient(top,  #f98924 0%,#f36c00 100%); /* Chrome10+,Safari5.1+ */
+			background: -o-linear-gradient(top,  #f98924 0%,#f36c00 100%); /* Opera 11.10+ */
+			background: -ms-linear-gradient(top,  #f98924 0%,#f36c00 100%); /* IE10+ */
+			background: linear-gradient(top,  #f98924 0%,#f36c00 100%); /* W3C */
+			filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f98924', endColorstr='#f36c00',GradientType=0 ); /* IE6-8 */
+		}
+		#searchresults a:hover span { 
+			color:#ffffff;
+		}
+		#searchresults a:hover span.searchheading { 
+			inset 0px -1px 10px 0px #ffffff;
+
+		}
+		#searchresults a img { 
+			float:left; 
+			padding:3px 0px;		
+		}
+			#searchresults a span.searchheading { 
+				display:block; 
+				font-weight:bold; 
+				margin-left:56px;
+				color:#000000;
+				margin-top:-4px;
+			}
+			#searchresults a span { 
+				margin-top:0px;
+				margin-left:56px;
+			}
+	#searchform{
+		display:block;
+		width:auto;
+}

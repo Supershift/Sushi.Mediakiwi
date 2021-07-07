@@ -1,0 +1,329 @@
+﻿<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8" />
+		<title>Example HTML 5 Template</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<meta http-equiv="Content-Language" content="en-GB" />
+		<meta http-equiv="imagetoolbar" content="no"/>
+		<meta http-equiv="X-UA-Compatible" content="IE=8" />
+		<link rel="stylesheet" href="../styles/stylesFlatv2.css" type="text/css" media="all" />
+		<link rel="stylesheet" href="../styles/jquery-ui-1-8-16-custom.css" type="text/css" media="all" />
+		<link rel="stylesheet" href="../styles/formalizev2.css" type="text/css" media="all" />
+		<link rel="stylesheet" href="../styles/colorbox.css" type="text/css" media="all" />
+		<link rel="stylesheet" href="../styles/fontello.css" type="text/css" media="all" />
+        <link rel="stylesheet" href="../styles/planning.css">
+		<link rel="stylesheet" href="../compiled/styles.css">
+		<!-- 
+		favicon 
+		<link rel="icon" href="../images/favicon.png" type="image/png" />
+		<link rel="shortcut icon" href="../images/favicon.ico" type="image/x-icon" />
+		scripts
+		<script type="text/javascript" src="../scripts/search.js"></script>
+		-->
+		<script type="text/javascript" src="../scripts/head-load.min.js"></script>
+		<script type="text/javascript" src="../scripts/preview.js"></script>
+		<script type="text/javascript" src="../scripts/jquery-1-7-1.js"></script>	
+		<!--[if IE]>
+			<meta http-equiv="imagetoolbar" content="no"/>
+			<meta http-equiv="X-UA-Compatible" content="IE=8" />
+			<script type="text/javascript" src="../scripts/html5.js"></script>
+		<![endif]-->
+		<style>
+			html, body {
+				overflow: hidden;	
+			}
+		</style>
+	</head>
+	<body class="popupPage">
+        <section id="planningLong" class="component planningLongs">
+            <article>
+                <div class="filterBar">
+                    <label>Taak</label><select name="frmFilter" id="frmFilter"><option>Filter resultaten</option></select>
+                    <br class="clear" />
+                    <a href="" class="right">Show more <span class="flaticon icon-angle-down"></span></a>
+                    <br class="clear" />
+                    <label for="url">
+                        URL
+                    </label>
+                    <div class="long">
+                        <textarea class="rte long" id="rte1" name="rte1" cols="10" rows="8" required="required"></textarea>
+                    </div>
+                    <br class="clear" />
+                    <input type="submit" name="frmSubmit" id="frmSubmit" value="Opslaan" class="action" />
+                    <br class="clear" />
+                </div>
+                <hr />
+                <div class="outer">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>
+                                    <div class="name">
+                                        <a href="" class="arrow"><span class="icon-angle-left"></span></a>
+                                        <select class="half"><option>Week 15</option></select>
+                                        <a href="" class="arrow"><span class="icon-angle-right"></span></a>
+                                    </div>
+                                </th>
+                                <th>MA<br />28-04</th>
+                                <th>DI<br />29-04</th>
+                                <th class="active">WO<br />30-04</th>
+                                <th>DO<br />01-05</th>
+                                <th>VR<br />02-05</th>
+                                <th>ZA<br />03-05</th>
+                                <th>ZO<br />04-05</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <th class="col1" rowspan="10"><em>Diverse zaken uitzoeken</em></th>
+                                <th class="col2"><span><abbr title="Nog te plannen op deze taak">999.50</abbr></span><div>999</div><span><abbr title="Totaal geboekt op dit werkpakket door Casper Broeren">2</abbr></span></th>
+                                <td data-id="20140428" data-resource="33" data-planned="8" data-booked="2" data-available="0" data-work="21" class="cplan">
+                                    <div><span class="rs_6_2015-12-29">-6</span><input style="background-color: transparent; border: 1px solid transparent; color: rgb(255, 255, 255);" id="pl6.2015-12-29" class="noSubmit prs_6_2015-12-29" maxlength="5" min="0" step="1" pattern="d+" type="text"> <span>2</span></div>
+                                </td>
+                                <td data-id="20140429" data-resource="33" data-planned="4" data-booked="" data-available="4" data-work="21" class="cplan">
+                                    <div><span class="rs_6_2015-12-29">1</span><input style="background-color: transparent; border: 1px solid transparent; color: rgb(255, 255, 255);" id="pl6.2015-12-29" class="noSubmit prs_6_2015-12-29" maxlength="5" min="0" step="1" pattern="d+" type="text"> <span>-4</span></div>
+                                </td>
+                                <td data-id="20140430" data-resource="33" data-planned="" data-booked="" data-available="8" data-work="21" class="cplan">
+                                    <div><span class="rs_6_2015-12-29">-8</span><input style="background-color: transparent; border: 1px solid transparent; color: rgb(255, 255, 255);" id="pl6.2015-12-29" class="noSubmit prs_6_2015-12-29" maxlength="5" min="0" step="1" pattern="d+" type="text"> <span>3</span></div>
+                                </td>
+                                <td data-id="20140501" data-resource="33" data-planned="" data-booked="" data-available="8" data-work="21" class="cplan">
+                                    <div class="half"><span class="rs_6_2015-12-29">6</span><input style="background-color: transparent; border: 1px solid transparent; color: rgb(255, 255, 255);" id="pl6.2015-12-29" class="noSubmit prs_6_2015-12-29" maxlength="5" min="0" step="1" pattern="d+" type="text"> <span>6</span></div>
+                                </td>
+                                <td data-id="20140502" data-resource="33" data-planned="" data-booked="" data-available="8" data-work="21" class="cplan">
+                                    <div class="holiday"><span class="flaticon icon-suitcase"></span></div>
+                                </td>
+                                <td data-id="20140502" data-resource="33" data-planned="" data-booked="" data-available="8" data-work="21" class="cplan">
+                                    <div class="sick"><span class="flaticon icon-plus"></span></div>
+                                </td>
+                                <td data-id="20140504" data-resource="33" data-planned="" data-booked="" data-available="8" data-work="21" class="cplan">
+                                    <div class="half"><span class="rs_6_2015-12-29">-4</span><input style="background-color: transparent; border: 1px solid transparent; color: rgb(255, 255, 255);" id="pl6.2015-12-29" class="noSubmit prs_6_2015-12-29" maxlength="5" min="0" step="1" pattern="d+" type="text"> <span>2</span></div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="col2"><span><abbr title="Nog te plannen"></abbr></span><div>999</div><span><abbr title="Totaal geboekt op dit werkpakket door Marc Molenwijk">2</abbr></span></th>
+                                <td data-id="20140428" data-resource="33" data-planned="8" data-booked="2" data-available="0" data-work="21" class="cplan">
+                                    <div><span class="rs_6_2015-12-29">-6</span><input style="background-color: transparent; border: 1px solid transparent; color: rgb(255, 255, 255);" id="pl6.2015-12-29" class="noSubmit prs_6_2015-12-29" maxlength="5" min="0" step="1" pattern="d+" type="text"> <span>2</span></div>
+                                </td>
+                                <td data-id="20140429" data-resource="33" data-planned="4" data-booked="" data-available="4" data-work="21" class="cplan">
+                                    <div><span class="rs_6_2015-12-29">1</span><input style="background-color: transparent; border: 1px solid transparent; color: rgb(255, 255, 255);" id="pl6.2015-12-29" class="noSubmit prs_6_2015-12-29" maxlength="5" min="0" step="1" pattern="d+" type="text"> <span>-4</span></div>
+                                </td>
+                                <td data-id="20140430" data-resource="33" data-planned="" data-booked="" data-available="8" data-work="21" class="cplan">
+                                    <div><span class="rs_6_2015-12-29">-8</span><input style="background-color: transparent; border: 1px solid transparent; color: rgb(255, 255, 255);" id="pl6.2015-12-29" class="noSubmit prs_6_2015-12-29" maxlength="5" min="0" step="1" pattern="d+" type="text"> <span>3</span></div>
+                                </td>
+                                <td data-id="20140501" data-resource="33" data-planned="" data-booked="" data-available="8" data-work="21" class="cplan">
+                                    <div class="half"><span class="rs_6_2015-12-29">6</span><input style="background-color: transparent; border: 1px solid transparent; color: rgb(255, 255, 255);" id="pl6.2015-12-29" class="noSubmit prs_6_2015-12-29" maxlength="5" min="0" step="1" pattern="d+" type="text"> <span>6</span></div>
+                                </td>
+                                <td data-id="20140502" data-resource="33" data-planned="" data-booked="" data-available="8" data-work="21" class="cplan">
+                                    <div class="full"><span class="rs_6_2015-12-29">2</span><input style="background-color: transparent; border: 1px solid transparent; color: rgb(255, 255, 255);" id="pl6.2015-12-29" class="noSubmit prs_6_2015-12-29" maxlength="5" min="0" step="1" pattern="d+" type="text"> <span>-8</span></div>
+                                </td>
+                                <td data-id="20140503" data-resource="33" data-planned="" data-booked="" data-available="8" data-work="21" class="cplan">
+                                    <div class="half"><span class="rs_6_2015-12-29">33</span><input style="background-color: transparent; border: 1px solid transparent; color: rgb(255, 255, 255);" id="pl6.2015-12-29" class="noSubmit prs_6_2015-12-29" maxlength="5" min="0" step="1" pattern="d+" type="text"> <span>1</span></div>
+                                </td>
+                                <td data-id="20140504" data-resource="33" data-planned="" data-booked="" data-available="8" data-work="21" class="cplan">
+                                    <div class="half"><span class="rs_6_2015-12-29">-4</span><input style="background-color: transparent; border: 1px solid transparent; color: rgb(255, 255, 255);" id="pl6.2015-12-29" class="noSubmit prs_6_2015-12-29" maxlength="5" min="0" step="1" pattern="d+" type="text"> <span>2</span></div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="col2"><span><abbr title="Nog te plannen op deze taak">999.50</abbr></span><div>999</div><span><abbr title="Totaal geboekt op dit werkpakket door Casper Broeren">2</abbr></span></th>
+                                <td data-id="20140428" data-resource="33" data-planned="8" data-booked="2" data-available="0" data-work="21" class="cplan">
+                                    <div><span class="rs_6_2015-12-29">-6</span><input style="background-color: transparent; border: 1px solid transparent; color: rgb(255, 255, 255);" id="pl6.2015-12-29" class="noSubmit prs_6_2015-12-29" maxlength="5" min="0" step="1" pattern="d+" type="text"> <span>2</span></div>
+                                </td>
+                                <td data-id="20140429" data-resource="33" data-planned="4" data-booked="" data-available="4" data-work="21" class="cplan">
+                                    <div><span class="rs_6_2015-12-29">1</span><input style="background-color: transparent; border: 1px solid transparent; color: rgb(255, 255, 255);" id="pl6.2015-12-29" class="noSubmit prs_6_2015-12-29" maxlength="5" min="0" step="1" pattern="d+" type="text"> <span>-4</span></div>
+                                </td>
+                                <td data-id="20140430" data-resource="33" data-planned="" data-booked="" data-available="8" data-work="21" class="cplan">
+                                    <div><span class="rs_6_2015-12-29">-8</span><input style="background-color: transparent; border: 1px solid transparent; color: rgb(255, 255, 255);" id="pl6.2015-12-29" class="noSubmit prs_6_2015-12-29" maxlength="5" min="0" step="1" pattern="d+" type="text"> <span>3</span></div>
+                                </td>
+                                <td data-id="20140501" data-resource="33" data-planned="" data-booked="" data-available="8" data-work="21" class="cplan">
+                                    <div class="half"><span class="rs_6_2015-12-29">6</span><input style="background-color: transparent; border: 1px solid transparent; color: rgb(255, 255, 255);" id="pl6.2015-12-29" class="noSubmit prs_6_2015-12-29" maxlength="5" min="0" step="1" pattern="d+" type="text"> <span>6</span></div>
+                                </td>
+                                <td data-id="20140502" data-resource="33" data-planned="" data-booked="" data-available="8" data-work="21" class="cplan">
+                                    <div class="full"><span class="rs_6_2015-12-29">2</span><input style="background-color: transparent; border: 1px solid transparent; color: rgb(255, 255, 255);" id="pl6.2015-12-29" class="noSubmit prs_6_2015-12-29" maxlength="5" min="0" step="1" pattern="d+" type="text"> <span>-8</span></div>
+                                </td>
+                                <td data-id="20140503" data-resource="33" data-planned="" data-booked="" data-available="8" data-work="21" class="cplan">
+                                    <div class="half"><span class="rs_6_2015-12-29">33</span><input style="background-color: transparent; border: 1px solid transparent; color: rgb(255, 255, 255);" id="pl6.2015-12-29" class="noSubmit prs_6_2015-12-29" maxlength="5" min="0" step="1" pattern="d+" type="text"> <span>1</span></div>
+                                </td>
+                                <td data-id="20140504" data-resource="33" data-planned="" data-booked="" data-available="8" data-work="21" class="cplan">
+                                    <div class="half"><span class="rs_6_2015-12-29">-4</span><input style="background-color: transparent; border: 1px solid transparent; color: rgb(255, 255, 255);" id="pl6.2015-12-29" class="noSubmit prs_6_2015-12-29" maxlength="5" min="0" step="1" pattern="d+" type="text"> <span>2</span></div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="col2"><span><abbr title="Nog te plannen"></abbr></span><div>999</div><span><abbr title="Totaal geboekt op dit werkpakket door Marc Molenwijk">2</abbr></span></th>
+                                <td data-id="20140428" data-resource="33" data-planned="8" data-booked="2" data-available="0" data-work="21" class="cplan">
+                                    <div><span class="rs_6_2015-12-29">-6</span><input style="background-color: transparent; border: 1px solid transparent; color: rgb(255, 255, 255);" id="pl6.2015-12-29" class="noSubmit prs_6_2015-12-29" maxlength="5" min="0" step="1" pattern="d+" type="text"> <span>2</span></div>
+                                </td>
+                                <td data-id="20140429" data-resource="33" data-planned="4" data-booked="" data-available="4" data-work="21" class="cplan">
+                                    <div><span class="rs_6_2015-12-29">1</span><input style="background-color: transparent; border: 1px solid transparent; color: rgb(255, 255, 255);" id="pl6.2015-12-29" class="noSubmit prs_6_2015-12-29" maxlength="5" min="0" step="1" pattern="d+" type="text"> <span>-4</span></div>
+                                </td>
+                                <td data-id="20140430" data-resource="33" data-planned="" data-booked="" data-available="8" data-work="21" class="cplan">
+                                    <div><span class="rs_6_2015-12-29">-8</span><input style="background-color: transparent; border: 1px solid transparent; color: rgb(255, 255, 255);" id="pl6.2015-12-29" class="noSubmit prs_6_2015-12-29" maxlength="5" min="0" step="1" pattern="d+" type="text"> <span>3</span></div>
+                                </td>
+                                <td data-id="20140501" data-resource="33" data-planned="" data-booked="" data-available="8" data-work="21" class="cplan">
+                                    <div class="half"><span class="rs_6_2015-12-29">6</span><input style="background-color: transparent; border: 1px solid transparent; color: rgb(255, 255, 255);" id="pl6.2015-12-29" class="noSubmit prs_6_2015-12-29" maxlength="5" min="0" step="1" pattern="d+" type="text"> <span>6</span></div>
+                                </td>
+                                <td data-id="20140502" data-resource="33" data-planned="" data-booked="" data-available="8" data-work="21" class="cplan">
+                                    <div class="full"><span class="rs_6_2015-12-29">2</span><input style="background-color: transparent; border: 1px solid transparent; color: rgb(255, 255, 255);" id="pl6.2015-12-29" class="noSubmit prs_6_2015-12-29" maxlength="5" min="0" step="1" pattern="d+" type="text"> <span>-8</span></div>
+                                </td>
+                                <td data-id="20140503" data-resource="33" data-planned="" data-booked="" data-available="8" data-work="21" class="cplan">
+                                    <div class="half"><span class="rs_6_2015-12-29">33</span><input style="background-color: transparent; border: 1px solid transparent; color: rgb(255, 255, 255);" id="pl6.2015-12-29" class="noSubmit prs_6_2015-12-29" maxlength="5" min="0" step="1" pattern="d+" type="text"> <span>1</span></div>
+                                </td>
+                                <td data-id="20140504" data-resource="33" data-planned="" data-booked="" data-available="8" data-work="21" class="cplan">
+                                    <div class="half"><span class="rs_6_2015-12-29">-4</span><input style="background-color: transparent; border: 1px solid transparent; color: rgb(255, 255, 255);" id="pl6.2015-12-29" class="noSubmit prs_6_2015-12-29" maxlength="5" min="0" step="1" pattern="d+" type="text"> <span>2</span></div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="col2"><span><abbr title="Nog te plannen"></abbr></span><div>999</div><span><abbr title="Totaal geboekt op dit werkpakket door Marc Molenwijk">2</abbr></span></th>
+                                <td data-id="20140428" data-resource="33" data-planned="8" data-booked="2" data-available="0" data-work="21" class="cplan">
+                                    <div><span class="rs_6_2015-12-29">-6</span><input style="background-color: transparent; border: 1px solid transparent; color: rgb(255, 255, 255);" id="pl6.2015-12-29" class="noSubmit prs_6_2015-12-29" maxlength="5" min="0" step="1" pattern="d+" type="text"> <span>2</span></div>
+                                </td>
+                                <td data-id="20140429" data-resource="33" data-planned="4" data-booked="" data-available="4" data-work="21" class="cplan">
+                                    <div><span class="rs_6_2015-12-29">1</span><input style="background-color: transparent; border: 1px solid transparent; color: rgb(255, 255, 255);" id="pl6.2015-12-29" class="noSubmit prs_6_2015-12-29" maxlength="5" min="0" step="1" pattern="d+" type="text"> <span>-4</span></div>
+                                </td>
+                                <td data-id="20140430" data-resource="33" data-planned="" data-booked="" data-available="8" data-work="21" class="cplan">
+                                    <div><span class="rs_6_2015-12-29">-8</span><input style="background-color: transparent; border: 1px solid transparent; color: rgb(255, 255, 255);" id="pl6.2015-12-29" class="noSubmit prs_6_2015-12-29" maxlength="5" min="0" step="1" pattern="d+" type="text"> <span>3</span></div>
+                                </td>
+                                <td data-id="20140501" data-resource="33" data-planned="" data-booked="" data-available="8" data-work="21" class="cplan">
+                                    <div class="half"><span class="rs_6_2015-12-29">6</span><input style="background-color: transparent; border: 1px solid transparent; color: rgb(255, 255, 255);" id="pl6.2015-12-29" class="noSubmit prs_6_2015-12-29" maxlength="5" min="0" step="1" pattern="d+" type="text"> <span>6</span></div>
+                                </td>
+                                <td data-id="20140502" data-resource="33" data-planned="" data-booked="" data-available="8" data-work="21" class="cplan">
+                                    <div class="full"><span class="rs_6_2015-12-29">2</span><input style="background-color: transparent; border: 1px solid transparent; color: rgb(255, 255, 255);" id="pl6.2015-12-29" class="noSubmit prs_6_2015-12-29" maxlength="5" min="0" step="1" pattern="d+" type="text"> <span>-8</span></div>
+                                </td>
+                                <td data-id="20140503" data-resource="33" data-planned="" data-booked="" data-available="8" data-work="21" class="cplan">
+                                    <div class="half"><span class="rs_6_2015-12-29">33</span><input style="background-color: transparent; border: 1px solid transparent; color: rgb(255, 255, 255);" id="pl6.2015-12-29" class="noSubmit prs_6_2015-12-29" maxlength="5" min="0" step="1" pattern="d+" type="text"> <span>1</span></div>
+                                </td>
+                                <td data-id="20140504" data-resource="33" data-planned="" data-booked="" data-available="8" data-work="21" class="cplan">
+                                    <div class="half"><span class="rs_6_2015-12-29">-4</span><input style="background-color: transparent; border: 1px solid transparent; color: rgb(255, 255, 255);" id="pl6.2015-12-29" class="noSubmit prs_6_2015-12-29" maxlength="5" min="0" step="1" pattern="d+" type="text"> <span>2</span></div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="col2"><span><abbr title="Nog te plannen op deze taak">999.50</abbr></span><div>999</div><span><abbr title="Totaal geboekt op dit werkpakket door Casper Broeren">2</abbr></span></th>
+                                <td data-id="20140428" data-resource="33" data-planned="8" data-booked="2" data-available="0" data-work="21" class="cplan">
+                                    <div><span class="rs_6_2015-12-29">-6</span><input style="background-color: transparent; border: 1px solid transparent; color: rgb(255, 255, 255);" id="pl6.2015-12-29" class="noSubmit prs_6_2015-12-29" maxlength="5" min="0" step="1" pattern="d+" type="text"> <span>2</span></div>
+                                </td>
+                                <td data-id="20140429" data-resource="33" data-planned="4" data-booked="" data-available="4" data-work="21" class="cplan">
+                                    <div><span class="rs_6_2015-12-29">1</span><input style="background-color: transparent; border: 1px solid transparent; color: rgb(255, 255, 255);" id="pl6.2015-12-29" class="noSubmit prs_6_2015-12-29" maxlength="5" min="0" step="1" pattern="d+" type="text"> <span>-4</span></div>
+                                </td>
+                                <td data-id="20140430" data-resource="33" data-planned="" data-booked="" data-available="8" data-work="21" class="cplan">
+                                    <div><span class="rs_6_2015-12-29">-8</span><input style="background-color: transparent; border: 1px solid transparent; color: rgb(255, 255, 255);" id="pl6.2015-12-29" class="noSubmit prs_6_2015-12-29" maxlength="5" min="0" step="1" pattern="d+" type="text"> <span>3</span></div>
+                                </td>
+                                <td data-id="20140501" data-resource="33" data-planned="" data-booked="" data-available="8" data-work="21" class="cplan">
+                                    <div class="half"><span class="rs_6_2015-12-29">6</span><input style="background-color: transparent; border: 1px solid transparent; color: rgb(255, 255, 255);" id="pl6.2015-12-29" class="noSubmit prs_6_2015-12-29" maxlength="5" min="0" step="1" pattern="d+" type="text"> <span>6</span></div>
+                                </td>
+                                <td data-id="20140502" data-resource="33" data-planned="" data-booked="" data-available="8" data-work="21" class="cplan">
+                                    <div class="full"><span class="rs_6_2015-12-29">2</span><input style="background-color: transparent; border: 1px solid transparent; color: rgb(255, 255, 255);" id="pl6.2015-12-29" class="noSubmit prs_6_2015-12-29" maxlength="5" min="0" step="1" pattern="d+" type="text"> <span>-8</span></div>
+                                </td>
+                                <td data-id="20140503" data-resource="33" data-planned="" data-booked="" data-available="8" data-work="21" class="cplan">
+                                    <div class="half"><span class="rs_6_2015-12-29">33</span><input style="background-color: transparent; border: 1px solid transparent; color: rgb(255, 255, 255);" id="pl6.2015-12-29" class="noSubmit prs_6_2015-12-29" maxlength="5" min="0" step="1" pattern="d+" type="text"> <span>1</span></div>
+                                </td>
+                                <td data-id="20140504" data-resource="33" data-planned="" data-booked="" data-available="8" data-work="21" class="cplan">
+                                    <div class="half"><span class="rs_6_2015-12-29">-4</span><input style="background-color: transparent; border: 1px solid transparent; color: rgb(255, 255, 255);" id="pl6.2015-12-29" class="noSubmit prs_6_2015-12-29" maxlength="5" min="0" step="1" pattern="d+" type="text"> <span>2</span></div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="col2"><span><abbr title="Nog te plannen"></abbr></span><span><abbr title="Totaal geboekt op dit werkpakket door Marc Molenwijk">2</abbr></span></th>
+                                <td data-id="20140428" data-resource="33" data-planned="8" data-booked="2" data-available="0" data-work="21" class="cplan">
+                                    <div><span class="rs_6_2015-12-29">-6</span><input style="background-color: transparent; border: 1px solid transparent; color: rgb(255, 255, 255);" id="pl6.2015-12-29" class="noSubmit prs_6_2015-12-29" maxlength="5" min="0" step="1" pattern="d+" type="text"> <span>2</span></div>
+                                </td>
+                                <td data-id="20140429" data-resource="33" data-planned="4" data-booked="" data-available="4" data-work="21" class="cplan">
+                                    <div><span class="rs_6_2015-12-29">1</span><input style="background-color: transparent; border: 1px solid transparent; color: rgb(255, 255, 255);" id="pl6.2015-12-29" class="noSubmit prs_6_2015-12-29" maxlength="5" min="0" step="1" pattern="d+" type="text"> <span>-4</span></div>
+                                </td>
+                                <td data-id="20140430" data-resource="33" data-planned="" data-booked="" data-available="8" data-work="21" class="cplan">
+                                    <div><span class="rs_6_2015-12-29">-8</span><input style="background-color: transparent; border: 1px solid transparent; color: rgb(255, 255, 255);" id="pl6.2015-12-29" class="noSubmit prs_6_2015-12-29" maxlength="5" min="0" step="1" pattern="d+" type="text"> <span>3</span></div>
+                                </td>
+                                <td data-id="20140501" data-resource="33" data-planned="" data-booked="" data-available="8" data-work="21" class="cplan">
+                                    <div class="half"><span class="rs_6_2015-12-29">6</span><input style="background-color: transparent; border: 1px solid transparent; color: rgb(255, 255, 255);" id="pl6.2015-12-29" class="noSubmit prs_6_2015-12-29" maxlength="5" min="0" step="1" pattern="d+" type="text"> <span>6</span></div>
+                                </td>
+                                <td data-id="20140502" data-resource="33" data-planned="" data-booked="" data-available="8" data-work="21" class="cplan">
+                                    <div class="full"><span class="rs_6_2015-12-29">2</span><input style="background-color: transparent; border: 1px solid transparent; color: rgb(255, 255, 255);" id="pl6.2015-12-29" class="noSubmit prs_6_2015-12-29" maxlength="5" min="0" step="1" pattern="d+" type="text"> <span>-8</span></div>
+                                </td>
+                                <td data-id="20140503" data-resource="33" data-planned="" data-booked="" data-available="8" data-work="21" class="cplan">
+                                    <div class="half"><span class="rs_6_2015-12-29">33</span><input style="background-color: transparent; border: 1px solid transparent; color: rgb(255, 255, 255);" id="pl6.2015-12-29" class="noSubmit prs_6_2015-12-29" maxlength="5" min="0" step="1" pattern="d+" type="text"> <span>1</span></div>
+                                </td>
+                                <td data-id="20140504" data-resource="33" data-planned="" data-booked="" data-available="8" data-work="21" class="cplan">
+                                    <div class="half"><span class="rs_6_2015-12-29">-4</span><input style="background-color: transparent; border: 1px solid transparent; color: rgb(255, 255, 255);" id="pl6.2015-12-29" class="noSubmit prs_6_2015-12-29" maxlength="5" min="0" step="1" pattern="d+" type="text"> <span>2</span></div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="col2"><span><abbr title="Nog te plannen"></abbr></span><div>999</div><span><abbr title="Totaal geboekt op dit werkpakket door Marc Molenwijk">2</abbr></span></th>
+                                <td data-id="20140428" data-resource="33" data-planned="8" data-booked="2" data-available="0" data-work="21" class="cplan">
+                                    <div><span class="rs_6_2015-12-29">-6</span><input style="background-color: transparent; border: 1px solid transparent; color: rgb(255, 255, 255);" id="pl6.2015-12-29" class="noSubmit prs_6_2015-12-29" maxlength="5" min="0" step="1" pattern="d+" type="text"> <span>2</span></div>
+                                </td>
+                                <td data-id="20140429" data-resource="33" data-planned="4" data-booked="" data-available="4" data-work="21" class="cplan">
+                                    <div><span class="rs_6_2015-12-29">1</span><input style="background-color: transparent; border: 1px solid transparent; color: rgb(255, 255, 255);" id="pl6.2015-12-29" class="noSubmit prs_6_2015-12-29" maxlength="5" min="0" step="1" pattern="d+" type="text"> <span>-4</span></div>
+                                </td>
+                                <td data-id="20140430" data-resource="33" data-planned="" data-booked="" data-available="8" data-work="21" class="cplan">
+                                    <div><span class="rs_6_2015-12-29">-8</span><input style="background-color: transparent; border: 1px solid transparent; color: rgb(255, 255, 255);" id="pl6.2015-12-29" class="noSubmit prs_6_2015-12-29" maxlength="5" min="0" step="1" pattern="d+" type="text"> <span>3</span></div>
+                                </td>
+                                <td data-id="20140501" data-resource="33" data-planned="" data-booked="" data-available="8" data-work="21" class="cplan">
+                                    <div class="half"><span class="rs_6_2015-12-29">6</span><input style="background-color: transparent; border: 1px solid transparent; color: rgb(255, 255, 255);" id="pl6.2015-12-29" class="noSubmit prs_6_2015-12-29" maxlength="5" min="0" step="1" pattern="d+" type="text"> <span>6</span></div>
+                                </td>
+                                <td data-id="20140502" data-resource="33" data-planned="" data-booked="" data-available="8" data-work="21" class="cplan">
+                                    <div class="full"><span class="rs_6_2015-12-29">2</span><input style="background-color: transparent; border: 1px solid transparent; color: rgb(255, 255, 255);" id="pl6.2015-12-29" class="noSubmit prs_6_2015-12-29" maxlength="5" min="0" step="1" pattern="d+" type="text"> <span>-8</span></div>
+                                </td>
+                                <td data-id="20140503" data-resource="33" data-planned="" data-booked="" data-available="8" data-work="21" class="cplan">
+                                    <div class="half"><span class="rs_6_2015-12-29">33</span><input style="background-color: transparent; border: 1px solid transparent; color: rgb(255, 255, 255);" id="pl6.2015-12-29" class="noSubmit prs_6_2015-12-29" maxlength="5" min="0" step="1" pattern="d+" type="text"> <span>1</span></div>
+                                </td>
+                                <td data-id="20140504" data-resource="33" data-planned="" data-booked="" data-available="8" data-work="21" class="cplan">
+                                    <div class="half"><span class="rs_6_2015-12-29">-4</span><input style="background-color: transparent; border: 1px solid transparent; color: rgb(255, 255, 255);" id="pl6.2015-12-29" class="noSubmit prs_6_2015-12-29" maxlength="5" min="0" step="1" pattern="d+" type="text"> <span>2</span></div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="col2"><span><abbr title="Nog te plannen op deze taak">999.50</abbr></span><div>999</div><span><abbr title="Totaal geboekt op dit werkpakket door Casper Broeren">2</abbr></span></th>
+                                <td data-id="20140428" data-resource="33" data-planned="8" data-booked="2" data-available="0" data-work="21" class="cplan">
+                                    <div><span class="rs_6_2015-12-29">-6</span><input style="background-color: transparent; border: 1px solid transparent; color: rgb(255, 255, 255);" id="pl6.2015-12-29" class="noSubmit prs_6_2015-12-29" maxlength="5" min="0" step="1" pattern="d+" type="text"> <span>2</span></div>
+                                </td>
+                                <td data-id="20140429" data-resource="33" data-planned="4" data-booked="" data-available="4" data-work="21" class="cplan">
+                                    <div><span class="rs_6_2015-12-29">1</span><input style="background-color: transparent; border: 1px solid transparent; color: rgb(255, 255, 255);" id="pl6.2015-12-29" class="noSubmit prs_6_2015-12-29" maxlength="5" min="0" step="1" pattern="d+" type="text"> <span>-4</span></div>
+                                </td>
+                                <td data-id="20140430" data-resource="33" data-planned="" data-booked="" data-available="8" data-work="21" class="cplan">
+                                    <div><span class="rs_6_2015-12-29">-8</span><input style="background-color: transparent; border: 1px solid transparent; color: rgb(255, 255, 255);" id="pl6.2015-12-29" class="noSubmit prs_6_2015-12-29" maxlength="5" min="0" step="1" pattern="d+" type="text"> <span>3</span></div>
+                                </td>
+                                <td data-id="20140501" data-resource="33" data-planned="" data-booked="" data-available="8" data-work="21" class="cplan">
+                                    <div class="half"><span class="rs_6_2015-12-29">6</span><input style="background-color: transparent; border: 1px solid transparent; color: rgb(255, 255, 255);" id="pl6.2015-12-29" class="noSubmit prs_6_2015-12-29" maxlength="5" min="0" step="1" pattern="d+" type="text"> <span>6</span></div>
+                                </td>
+                                <td data-id="20140502" data-resource="33" data-planned="" data-booked="" data-available="8" data-work="21" class="cplan">
+                                    <div class="full"><span class="rs_6_2015-12-29">2</span><input style="background-color: transparent; border: 1px solid transparent; color: rgb(255, 255, 255);" id="pl6.2015-12-29" class="noSubmit prs_6_2015-12-29" maxlength="5" min="0" step="1" pattern="d+" type="text"> <span>-8</span></div>
+                                </td>
+                                <td data-id="20140503" data-resource="33" data-planned="" data-booked="" data-available="8" data-work="21" class="cplan">
+                                    <div class="half"><span class="rs_6_2015-12-29">33</span><input style="background-color: transparent; border: 1px solid transparent; color: rgb(255, 255, 255);" id="pl6.2015-12-29" class="noSubmit prs_6_2015-12-29" maxlength="5" min="0" step="1" pattern="d+" type="text"> <span>1</span></div>
+                                </td>
+                                <td data-id="20140504" data-resource="33" data-planned="" data-booked="" data-available="8" data-work="21" class="cplan">
+                                    <div class="half"><span class="rs_6_2015-12-29">-4</span><input style="background-color: transparent; border: 1px solid transparent; color: rgb(255, 255, 255);" id="pl6.2015-12-29" class="noSubmit prs_6_2015-12-29" maxlength="5" min="0" step="1" pattern="d+" type="text"> <span>2</span></div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="col2"><span><abbr title="Nog te plannen"></abbr></span><div>999</div><span><abbr title="Totaal geboekt op dit werkpakket door Marc Molenwijk">2</abbr></span></th>
+                                <td data-id="20140428" data-resource="33" data-planned="8" data-booked="2" data-available="0" data-work="21" class="cplan">
+                                    <div><span class="rs_6_2015-12-29">-6</span><input style="background-color: transparent; border: 1px solid transparent; color: rgb(255, 255, 255);" id="pl6.2015-12-29" class="noSubmit prs_6_2015-12-29" maxlength="5" min="0" step="1" pattern="d+" type="text"> <span>2</span></div>
+                                </td>
+                                <td data-id="20140429" data-resource="33" data-planned="4" data-booked="" data-available="4" data-work="21" class="cplan">
+                                    <div><span class="rs_6_2015-12-29">1</span><input style="background-color: transparent; border: 1px solid transparent; color: rgb(255, 255, 255);" id="pl6.2015-12-29" class="noSubmit prs_6_2015-12-29" maxlength="5" min="0" step="1" pattern="d+" type="text"> <span>-4</span></div>
+                                </td>
+                                <td data-id="20140430" data-resource="33" data-planned="" data-booked="" data-available="8" data-work="21" class="cplan">
+                                    <div><span class="rs_6_2015-12-29">-8</span><input style="background-color: transparent; border: 1px solid transparent; color: rgb(255, 255, 255);" id="pl6.2015-12-29" class="noSubmit prs_6_2015-12-29" maxlength="5" min="0" step="1" pattern="d+" type="text"> <span>3</span></div>
+                                </td>
+                                <td data-id="20140501" data-resource="33" data-planned="" data-booked="" data-available="8" data-work="21" class="cplan">
+                                    <div class="half"><span class="rs_6_2015-12-29">6</span><input style="background-color: transparent; border: 1px solid transparent; color: rgb(255, 255, 255);" id="pl6.2015-12-29" class="noSubmit prs_6_2015-12-29" maxlength="5" min="0" step="1" pattern="d+" type="text"> <span>6</span></div>
+                                </td>
+                                <td data-id="20140502" data-resource="33" data-planned="" data-booked="" data-available="8" data-work="21" class="cplan">
+                                    <div class="full"><span class="rs_6_2015-12-29">2</span><input style="background-color: transparent; border: 1px solid transparent; color: rgb(255, 255, 255);" id="pl6.2015-12-29" class="noSubmit prs_6_2015-12-29" maxlength="5" min="0" step="1" pattern="d+" type="text"> <span>-8</span></div>
+                                </td>
+                                <td data-id="20140503" data-resource="33" data-planned="" data-booked="" data-available="8" data-work="21" class="cplan">
+                                    <div class="half"><span class="rs_6_2015-12-29">33</span><input style="background-color: transparent; border: 1px solid transparent; color: rgb(255, 255, 255);" id="pl6.2015-12-29" class="noSubmit prs_6_2015-12-29" maxlength="5" min="0" step="1" pattern="d+" type="text"> <span>1</span></div>
+                                </td>
+                                <td data-id="20140504" data-resource="33" data-planned="" data-booked="" data-available="8" data-work="21" class="cplan">
+                                    <div class="half"><span class="rs_6_2015-12-29">-4</span><input style="background-color: transparent; border: 1px solid transparent; color: rgb(255, 255, 255);" id="pl6.2015-12-29" class="noSubmit prs_6_2015-12-29" maxlength="5" min="0" step="1" pattern="d+" type="text"> <span>2</span></div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <a href="" class="submit action">Opslaan</a>
+            </article>
+        </section>
+
+	</body>
+</html>
+
+				

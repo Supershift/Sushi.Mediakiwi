@@ -1,0 +1,66 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <UserSecretsId>f68e663d-31b5-4d3b-82e0-bed96bdc7b85</UserSecretsId>
+    <RunAnalyzersDuringBuild>false</RunAnalyzersDuringBuild>
+  </PropertyGroup>
+ <PropertyGroup Condition=" '$(Configuration)' == '' Or '$(Configuration)' == 'Debug'">
+    <EnvironmentName>Development</EnvironmentName>
+  </PropertyGroup>
+ <ItemGroup>
+   <Compile Remove="BasicAuthenticationHandler.cs" />
+ </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Sushi.Mediakiwi.Headless\Sushi.Mediakiwi.Headless.csproj" />
+    <ProjectReference Include="..\Sushi.Mediakiwi\Sushi.Mediakiwi.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="wwwroot\Styles\fontAwesome\scss\brands.scss" />
+    <None Include="wwwroot\Styles\fontAwesome\scss\fontawesome.scss" />
+    <None Include="wwwroot\Styles\fontAwesome\scss\light.scss" />
+    <None Include="wwwroot\Styles\fontAwesome\scss\regular.scss" />
+    <None Include="wwwroot\Styles\fontAwesome\scss\solid.scss" />
+    <None Include="wwwroot\Styles\fontAwesome\scss\v4-shims.scss" />
+    <None Include="wwwroot\Styles\fontAwesome\scss\_animated.scss" />
+    <None Include="wwwroot\Styles\fontAwesome\scss\_bordered-pulled.scss" />
+    <None Include="wwwroot\Styles\fontAwesome\scss\_core.scss" />
+    <None Include="wwwroot\Styles\fontAwesome\scss\_fixed-width.scss" />
+    <None Include="wwwroot\Styles\fontAwesome\scss\_icons.scss" />
+    <None Include="wwwroot\Styles\fontAwesome\scss\_larger.scss" />
+    <None Include="wwwroot\Styles\fontAwesome\scss\_list.scss" />
+    <None Include="wwwroot\Styles\fontAwesome\scss\_mixins.scss" />
+    <None Include="wwwroot\Styles\fontAwesome\scss\_rotated-flipped.scss" />
+    <None Include="wwwroot\Styles\fontAwesome\scss\_screen-reader.scss" />
+    <None Include="wwwroot\Styles\fontAwesome\scss\_shims.scss" />
+    <None Include="wwwroot\Styles\fontAwesome\scss\_stacked.scss" />
+    <None Include="wwwroot\Styles\fontAwesome\scss\_variables.scss" />
+    <None Include="wwwroot\Styles\fontAwesome\webfonts\fa-brands-400.eot" />
+    <None Include="wwwroot\Styles\fontAwesome\webfonts\fa-brands-400.svg" />
+    <None Include="wwwroot\Styles\fontAwesome\webfonts\fa-brands-400.ttf" />
+    <None Include="wwwroot\Styles\fontAwesome\webfonts\fa-brands-400.woff" />
+    <None Include="wwwroot\Styles\fontAwesome\webfonts\fa-brands-400.woff2" />
+    <None Include="wwwroot\Styles\fontAwesome\webfonts\fa-light-300.eot" />
+    <None Include="wwwroot\Styles\fontAwesome\webfonts\fa-light-300.svg" />
+    <None Include="wwwroot\Styles\fontAwesome\webfonts\fa-light-300.ttf" />
+    <None Include="wwwroot\Styles\fontAwesome\webfonts\fa-light-300.woff" />
+    <None Include="wwwroot\Styles\fontAwesome\webfonts\fa-light-300.woff2" />
+    <None Include="wwwroot\Styles\fontAwesome\webfonts\fa-regular-400.eot" />
+    <None Include="wwwroot\Styles\fontAwesome\webfonts\fa-regular-400.svg" />
+    <None Include="wwwroot\Styles\fontAwesome\webfonts\fa-regular-400.ttf" />
+    <None Include="wwwroot\Styles\fontAwesome\webfonts\fa-regular-400.woff" />
+    <None Include="wwwroot\Styles\fontAwesome\webfonts\fa-regular-400.woff2" />
+    <None Include="wwwroot\Styles\fontAwesome\webfonts\fa-solid-900.eot" />
+    <None Include="wwwroot\Styles\fontAwesome\webfonts\fa-solid-900.svg" />
+    <None Include="wwwroot\Styles\fontAwesome\webfonts\fa-solid-900.ttf" />
+    <None Include="wwwroot\Styles\fontAwesome\webfonts\fa-solid-900.woff" />
+    <None Include="wwwroot\Styles\fontAwesome\webfonts\fa-solid-900.woff2" />
+    <None Include="wwwroot\Styles\fonts\sourceSansPro.scss" />
+    <None Include="wwwroot\Styles\override.css" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="wwwroot\Images\" />
+  </ItemGroup>
+  <ProjectExtensions><VisualStudio><UserProperties appsettings_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>
+
+</Project>

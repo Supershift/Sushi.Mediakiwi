@@ -1,0 +1,238 @@
+/*
+	Reference Template for Object-oriented Stylesheet Classes.
+	By: Maurice van Creij
+
+	To illustrate the similarities to object oriented code, the equivalent concepts were added as comments in all upper case.
+*/
+
+
+	@media all {
+		#mainMenu {
+			left : 0px;
+			margin : 0px;
+			position : absolute;
+			top : 100px;
+			z-index : 2000;
+			background: #0055a6; /* Old browsers */
+			background: -moz-linear-gradient(top,  #0055a6 0%, #0071bb 50%); /* FF3.6+ */
+			background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#0055a6), color-stop(50%,#0071bb)); /* Chrome,Safari4+ */
+			background: -webkit-linear-gradient(top,  #0055a6 0%,#0071bb 50%); /* Chrome10+,Safari5.1+ */
+			background: -o-linear-gradient(top,  #0055a6 0%,#0071bb 50%); /* Opera 11.10+ */
+			background: -ms-linear-gradient(top,  #0055a6 0%,#0071bb 50%); /* IE10+ */
+			background: linear-gradient(top,  #0055a6 0%,#0071bb 50%); /* W3C */
+			filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#0055a6', endColorstr='#0071bb',GradientType=0 ); /* IE6-9 */
+		}
+						menu#mainMenu {
+							margin: 0; padding: 0;
+							float:left;
+							list-style: none;
+							font-size: 1.1em;						
+						}
+						menu#mainMenu li {
+							float: left;
+							margin: 0; padding: 0;
+							position: relative;
+						}
+						menu#mainMenu li a {
+							float: left; 
+							color: #ffffff;
+							font-weight: bold;
+							text-decoration: none;
+							height: 48px;
+							line-height: 48px;
+							text-align: center;
+						}
+						menu#mainMenu li:hover a, menu#mainMenu li a:hover { 
+						}
+						menu#mainMenu a {
+							border-right: solid 1px #004689;
+							border-left: solid 1px #388cc8;
+							padding: 0px 20px 0px 20px;
+							font-size: 110%;
+							text-shadow:0 -1px 1px rgba(0,0,0,0.5);
+							text-shadow:none\9;   
+						}
+						menu#mainMenu a span {
+							font-weight: normal; 
+						}
+						menu#mainMenu a.first {
+							-moz-box-shadow:-1px 0px 0px 0px #004689;
+							box-shadow-left:-1px 0px 0px 0px #004689;
+						}
+						menu#mainMenu a.last {
+							-moz-box-shadow:1px 0px 0px 0px #388cc8;
+							box-shadow:1px 0px 0px 0px #388cc8;
+						}
+						menu#mainMenu a:hover {
+							border-right: solid 1px #004689;
+							border-left: solid 1px #388cc8;
+							padding: 0px 20px 0px 20px;
+							background: #3377b8; /* Old browsers */
+							background: -moz-linear-gradient(top,  #3377b8 0%, #338dc9 50%); /* FF3.6+ */
+							background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#3377b8), color-stop(50%,#338dc9)); /* Chrome,Safari4+ */
+							background: -webkit-linear-gradient(top,  #3377b8 0%,#338dc9 50%); /* Chrome10+,Safari5.1+ */
+							background: -o-linear-gradient(top,  #3377b8 0%,#338dc9 50%); /* Opera 11.10+ */
+							background: -ms-linear-gradient(top,  #3377b8 0%,#338dc9 50%); /* IE10+ */
+							background: linear-gradient(top,  #3377b8 0%,#338dc9 50%); /* W3C */
+							filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#3377b8', endColorstr='#338dc9',GradientType=0 ); /* IE6-9 */
+						}
+						menu#mainMenu a.subs {
+							background: -moz-linear-gradient(top,  #0055a6 0%, #0071bb 50%); /* FF3.6+ */
+							background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#0055a6), color-stop(50%,#0071bb)); /* Chrome,Safari4+ */
+							background: -webkit-linear-gradient(top,  #0055a6 0%,#0071bb 50%); /* Chrome10+,Safari5.1+ */
+							background: -o-linear-gradient(top,  #0055a6 0%,#0071bb 50%); /* Opera 11.10+ */
+							background: -ms-linear-gradient(top,  #0055a6 0%,#0071bb 50%); /* IE10+ */
+							background: linear-gradient(top,  #0055a6 0%,#0071bb 50%); /* W3C */
+							filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#0055a6', endColorstr='#0071bb',GradientType=0 ); /* IE6-9 */
+							border-right: solid 1px #004689;
+							border-left: solid 1px #388cc8;
+							padding: 0px 30px 0px 20px;
+							position: relative;
+							z-index:1000;
+						}
+						menu#mainMenu a:hover.subs, menu#mainMenu a:hover .subs menu:hover   {
+							background: #faa04f; /* Old browsers */
+							background: -moz-linear-gradient(top,  #338dc9 0%, #3377b8 50%); /* FF3.6+ */
+							background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#338dc9), color-stop(50%,#3377b8)); /* Chrome,Safari4+ */
+							background: -webkit-linear-gradient(top,  #338dc9 0%,#3377b8 50%); /* Chrome10+,Safari5.1+ */
+							background: -o-linear-gradient(top,  #338dc9 0%,#3377b8 50%); /* Opera 11.10+ */
+							background: -ms-linear-gradient(top,  #338dc9 0%,#3377b8 50%); /* IE10+ */
+							background: linear-gradient(top,  #338dc9 0%,#3377b8 50%); /* W3C */
+							filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#338dc9', endColorstr='#3377b8',GradientType=0 ); /* IE6-9 */
+							border-right: solid 1px #004689;
+							border-left: solid 1px #388cc8;
+							position: relative;
+							z-index:1000;
+						}
+						menu#mainMenu li .sub {
+							position: absolute;	
+							top: 48px;
+							left: 0;
+							padding: 0px !important;
+							float: left;
+							z-index: 19999999;
+							width:600px;
+							display: none;
+							-moz-box-shadow: 0px 1px 4px 0px #888;
+							-webkit-box-shadow: 0px 1px 4px 0px#888;
+							box-shadow: 0px 1px 4px 0px #888;
+							background: #ebeaeb;
+							border-top: none !important;
+						}
+						menu#mainMenu li .sub:hover {
+							background: #328dc9; /* Old browsers */
+							background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgdmlld0JveD0iMCAwIDEgMSIgcHJlc2VydmVBc3BlY3RSYXRpbz0ibm9uZSI+CiAgPGxpbmVhckdyYWRpZW50IGlkPSJncmFkLXVjZ2ctZ2VuZXJhdGVkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIwJSIgeTI9IjEwMCUiPgogICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iI2Y1ODkzMiIgc3RvcC1vcGFjaXR5PSIxIi8+CiAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiNmMzZlMDMiIHN0b3Atb3BhY2l0eT0iMSIvPgogIDwvbGluZWFyR3JhZGllbnQ+CiAgPHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjEiIGhlaWdodD0iMSIgZmlsbD0idXJsKCNncmFkLXVjZ2ctZ2VuZXJhdGVkKSIgLz4KPC9zdmc+);
+							background: -moz-linear-gradient(top, #328dc9 0%, #0055a6 100%); /* FF3.6+ */
+							background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#328dc9), color-stop(100%,#0055a6)); /* Chrome,Safari4+ */
+							background: -webkit-linear-gradient(top, #328dc9 0%,#0055a6 100%); /* Chrome10+,Safari5.1+ */
+							background: -o-linear-gradient(top, #328dc9 0%,#0055a6 100%); /* Opera 11.10+ */
+							background: -ms-linear-gradient(top, #328dc9 0%,#0055a6 100%); /* IE10+ */
+							background: linear-gradient(top, #328dc9 0%,#0055a6 100%); /* W3C */
+							padding: 0px !important;
+							margin: 0px !important;
+							filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#328dc9', endColorstr='#0055a6',GradientType=0 ); /* IE6-8 */
+						}
+								menu#mainMenu li .sub menu:hover div h2{
+									color:#FFFFFF;
+									text-shadow:0 -1px 1px rgba(0,0,0,0.5);  
+									opacity:1;
+								}
+									menu#mainMenu li .sub menu:hover ul li{
+										border:none;
+										opacity:1;
+									}
+										menu#mainMenu li .sub:hover ul li a{
+											border:none;
+											color: #ffffff;
+											text-shadow:none;  
+											background: url(../images/menuArrowHover.png) no-repeat 0% 8px;
+											opacity:0.7;											
+										}
+										menu#mainMenu li .sub:hover ul li a:hover{
+											background: url(../images/menuArrowHover.png) no-repeat 0% 8px;
+											opacity:1;
+										}
+						menu#mainMenu li .sub menu hr {
+								width:100%;
+								height:1px;
+								background:#ffffff;
+								display:block;
+								margin:0 0 30px 0;
+							}
+							menu#mainMenu li .sub menu {
+								display:block;
+								width:200px;
+                                height: 100%;
+								float:left;
+								*width:190px;
+							}
+							menu#mainMenu li .sub menu.first {
+								display:block;
+								width:200px;
+								float:left;
+								*width:190px;
+							}
+                                menu#mainMenu li .sub menu.first li.first div {
+                                    padding-top: 0px;
+								}
+							menu#mainMenu li .sub menu.last{
+								display:block;
+								width:200px;
+								float:left;
+								*width:190px;
+							}
+                                menu#mainMenu li .sub:hover div {
+                                    color: #fff;
+                                }
+								menu#mainMenu li .sub menu div {
+                                    font-weight:bold;
+                                    padding-top: 15px;
+									display:table-cell;
+                                    width: 200px;
+								}
+									menu#mainMenu li .sub menu div h2{
+										font-size:20px;
+										line-height:22px;
+										font-weight:normal;
+										color:#555555;
+										margin-top:auto;
+										margin-bottom:auto;
+										opacity:0.7;	
+										display:block;										
+									}
+								menu#mainMenu li .sub menu ul{
+									list-style:none;
+									border:none;
+									padding:0px;
+									margin:0 0 0 0;
+									float:left;
+									padding:20px 0px 20px 20px;
+                                    border-top: none;
+									/*border-top:1px solid #ffffff;*/
+									-moz-box-shadow: 0px -1px 0 0px #dadada;
+									-webkit-box-shadow: 0px -1px 0 0px #dadada;
+									box-shadow: 0px -1px 0 0px #dadada; 
+								}
+									menu#mainMenu li .sub menu ul li{
+										display:inline;
+										border:none;
+										float:none;
+										opacity:0.5;
+									}
+										menu#mainMenu li .sub menu ul li a{
+											border:none;
+											color: #898989;
+											width:160px;
+											height:auto;
+											font-weight: normal;
+											line-height: 22px;
+											font-size:14px;
+											text-align: left;
+											text-decoration: none;
+											text-shadow:none;  
+											padding:0px 0px 0px 10px;
+											margin:0px;
+											background: url(../images/menuArrow.png) no-repeat 0% 8px;
+										}
+						menu#mainMenu li .row {clear: both; float: left; width: 100%; margin-bottom: 10px;}
+}

@@ -1,0 +1,107 @@
+.style a {
+  color: #7eb32d;
+}
+tr.highlight {
+  background-color: #f7faf2 !important;
+}
+a.submit,
+input[type="reset"],
+input[type="submit"],
+input[type="button"],
+div.submit {
+  background: #4e5862 !important;
+}
+a.submit:hover,
+input[type="reset"]:hover,
+input[type="submit"]:hover,
+input[type="button"]:hover {
+  background: #373e46 !important;
+}
+input[type="submit"].action,
+a.action,
+.ajax-file-upload {
+  background: #7eb32d !important;
+}
+input[type="submit"].action:hover,
+a.action:hover,
+.ajax-file-upload:hover {
+  background: #618a23 !important;
+}
+.fixed #bodySection,
+#homeArticle {
+  background: #ffffff;
+}
+.pageHeader .icon-question-circle:hover,
+.pageHeader .icon-gears:hover {
+  color: #618a23;
+}
+h4 {
+  color: #7eb32d;
+}
+#bodyHeader {
+  background: #262626;
+  box-shadow: -25rem 0 0 #262626, 25rem 0 0 #262626;
+}
+#bodyHeader a {
+  background: #000000;
+}
+#homeAside {
+  background: #4e5862;
+  color: white !important;
+}
+#homeAside a,
+#homeAside li a {
+  color: white !important;
+}
+#sideNav menu.sideNav ul li ul {
+  background: #4e5862 !important;
+}
+#sideNav menu.sideNav ul li.active ul li.active a {
+  background: #65717e !important;
+}
+.dataBlock table.selections tr:hover td,
+.ajax-file-upload-statusbar {
+  background: #f5f9ee !important;
+}
+.dataBlock table.selections tr.totals,
+.dataBlock table.selections tr.totals td {
+  background: #ededed !important;
+}
+div.footer ul li a.flaticon,
+menu.pager a {
+  background: #65717e;
+}
+div.footer ul li a.flaticon:hover,
+menu.pager a:Hover {
+  background: #4e5862;
+}
+menu.pager a.active {
+  background: #4e5862;
+}
+menu#mainMenu a.active {
+  border-bottom: solid 5px #7eb32d;
+}
+menu#mainMenu li .sub menu ul li a:hover {
+  background: #edf7de;
+}
+menu#mainMenu li .sub menu ul li a.active {
+  background: #edf7de;
+}
+.pageHeader #breadCrumbs,
+.pageHeader #breadCrumbs a {
+  color: #7eb32d;
+}
+#sideNav menu.sideNav ul li a span.items {
+  color: #4e5862 !important;
+}
+.planningLong div.full {
+  background: #008820;
+  color: #ffffff;
+}
+.planningLong div.half {
+  background: #00bb2c;
+  color: #ffffff;
+}
+a.back:hover {
+  border: solid 1px #8593a2;
+}

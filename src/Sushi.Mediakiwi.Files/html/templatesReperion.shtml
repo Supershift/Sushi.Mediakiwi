@@ -1,0 +1,456 @@
+﻿<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8" />
+		<title>Example HTML 5 Template</title>
+		<!--[if IE]>
+			<meta http-equiv="imagetoolbar" content="no"/>
+			<meta http-equiv="X-UA-Compatible" content="IE=8" />
+			<script type="text/javascript" src="../scripts/html5.js"></script>
+		<![endif]-->
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<link rel="stylesheet" href="../styles/stylesFlat.css" type="text/css" media="all" />
+		<link rel="stylesheet" href="../styles/stylesReperion.css" type="text/css" media="all" />
+		<link rel="stylesheet" href="../styles/stylesBar.css" type="text/css" media="all" />
+		<link rel="stylesheet" href="../styles/jquery-ui-1.8.16.custom.css" type="text/css" media="all" />
+		<link rel="stylesheet" href="../styles/formalize.css" type="text/css" media="all" />
+		<link rel="stylesheet" href="../styles/colorbox.css" type="text/css" media="all" />
+		<link rel="stylesheet" href="../styles/search.css" type="text/css"/>
+		<link rel="stylesheet" href="../styles/mainMenuFlat.css" type="text/css"/>
+		<link rel="stylesheet" href="../styles/planning.css" type="text/css" media="all" />
+		<link rel="stylesheet" href="../styles/solid.css" type="text/css" media="all" />
+		<!-- 
+		favicon 
+		<link rel="icon" href="../images/favicon.png" type="image/png" />
+		<link rel="shortcut icon" href="../images/favicon.ico" type="image/x-icon" />
+		scripts
+		<script type="text/javascript" src="../scripts/search.js"></script>
+		-->
+		<script type="text/javascript" src="../scripts/jquery-1.7.1.js"></script>
+		<script type="text/javascript" src="../scripts/jquery-ui.js"></script>
+	     <!-- only for dutch -->        
+        <script type="text/javascript" src="../scripts/jquery.ui.datepicker-nl.js"></script>
+        <script type="text/javascript" src="../scripts/jquery.tipTip.minified.js"></script>
+        <script type="text/javascript" src="../scripts/jquery.numeric.js"></script>
+		<script type="text/javascript" src="../scripts/jquery.formalize.js"></script>
+		<script type="text/javascript" src="../scripts/jquery.colorbox.js"></script>
+		<script type="text/javascript" src="../scripts/jquery-ui-timepicker-addon.js"></script>
+		<script type="text/javascript" src="../scripts/jquery.hoverIntent.min.js"></script>
+		<script type="text/javascript" src="../scripts/jquery.curtainMenu.js"></script>
+        <script type="text/javascript" src="../scripts/knockout-2.2.1.js"></script>
+		<script type="text/javascript" src="../scripts/testDrive.js"></script>
+		<script type="text/javascript" src="../scripts/fixedBar.js"></script>
+		<script type="text/javascript" src="../scripts/waypoints.min.js"></script>
+		<script type="text/javascript" src="../scripts/jquery.ambiance.js"></script>
+		<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.1.5/angular.min.js"></script>        
+        <script type="text/javascript" src="../scripts/dashboard.js"></script>
+		<style>
+		  html, body, #map-canvas {
+			height: 100% !important;
+			margin: 0px;
+			padding: 0px;
+		  }
+		</style>
+	    <script src="http://js.api.here.com/se/2.5.3/jsl.js?with=all" type="text/javascript" charset="utf-8"></script>  
+        <input type="hidden" id="hereMapsAppID" name="hereMapsAppID" value="X3LCOHeuVVhhv3xpDWCB" />
+        <input type="hidden" id="hereMapsAppCode" name="hereMapsAppCode" value="RfiDjmijn3GBZMRKJyS98g" />
+        <script type="text/javascript">
+        	function ReloadFromCampagneAdd(campaign) {
+        		$.colorbox.close();
+        		var body = document.getElementById("theBody");
+        		var scope = angular.element(body).scope();
+        		scope.$apply(function () { scope.ReloadFromCampagneAdd(campaign) });
+        	}
+        	function ReloadFromGeoFenceAdd() {
+        		$.colorbox.close();
+        	}
+        </script>
+	</head>
+	<body class="full"  ng-controller="Base" ng-cloak>
+		<section class="dashes" id="containerLargeMapper">
+			<div id="largeMapper">
+			</div>
+		</section>
+		<section id="bodySection">
+			<header id="bodyHeader">
+				<a href=""><img src="../images/logoReperion.png" alt="Sentimention" title="Website logo" id="bodyLogo" /></a>
+			</header>
+			<section id="homeContent">
+				<div id="hereMap"></div>
+				<article id="leftArticle">
+                     <form method="post" action="dashboard.aspx?wimuser=2" id="form1">
+<div class="aspNetHidden">
+<input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="/wEPDwULLTE0NDk3NTA4MzhkZA==" />
+</div>
+
+<div class="aspNetHidden">
+
+	<input type="hidden" name="__EVENTVALIDATION" id="__EVENTVALIDATION" value="/wEdAALCx/c4jboeUy2S6cLp85tezxbRfsjfQW1ycefQ1YtGHw==" />
+</div>                     
+                        <input name="uxWimUser" type="hidden" id="uxWimUser" class="wimUserId" value="2" />
+	                    <section class="component dashes threeWay" id="dash1rep">
+	                    <header>		
+		                    <h2>Campaign</h2>
+	                    </header>
+	                    <article>
+		                    <fieldset class="campaign" ng-show="step> 0">
+			                    <header>
+				                    <label>Select campaign</label>
+				                   
+					                  <!--  <a class="flaticon solid gear Normal" href="2/repository/wim/portal.ashx?list=68&openinframe=1"></a>&nbsp;&nbsp;-->
+					                    <a class="flaticon solid plus Normal" href="2/repository/wim/portal.ashx?list=68&item=0&addFast=1&openinframe=1"></a>
+				                 
+				                   
+			                    </header>
+			                    <article>
+				                     <select ng-change="campaignChanged()" ng-model="currentCampaign" ng-options="campaign.Value for campaign in campaigns">
+                                     </select>
+			                    </article>
+		                    </fieldset>
+                            <div ng-show="step> 1">
+		                        <nav>
+			                        <ul>
+				                        <li><a href="" ng-click="changeState(2)" ng-class="{active: step<4, done: step>3 || !campaign.CanSend}">Setup</a></li>
+				                        <li><a href="" ng-click="changeState(4)" ng-class="{active: step==4, inactive: step < 4 && campaign.CanSend, done: step > 4 || !campaign.CanSend}">Preview</a></li>
+				                        <li><a href="" ng-click="changeState(5)" ng-class="{inactive: step != 5 && campaign.CanSend, done:  !campaign.CanSend}">Results</a></li>
+			                        </ul>
+		                        </nav>
+                                <div ng-show="step < 4">
+		                            <div class="step"  ng-show="step > 1">
+                                    <a href="" ng-click="changeState(2)" class="done"><span class="flaticon solid" ng-class="step1Class" ></span>Compose message</a>
+		                        </div>
+		                            <div class="compose"  ng-show="step == 2">
+			                        <fieldset>
+				                        <header>
+					                        <label for="name">
+						                       Title*
+					                        </label>
+					                       
+				                        </header>
+				                        <article>
+                                            <div class="summary" ng-show="titleNotfilledError">
+						                        Title field is required
+					                        </div>
+					                        <input type="text" ng-disabled="!campaign.CanSend" maxlength="200" ng-model="campaignTitle" name="campaignTitle" id="campaignTitle" class="half">
+				                        </article>
+			                        </fieldset>
+			                       <fieldset>
+				                        <header>
+					                        <label for="name">
+						                       Push message*
+					                        </label>					                       
+				                        </header>
+				                        <article>
+                                            <div class="summary" ng-show="pushMessageNotfilledError">
+						                        Push message field is required
+					                        </div>
+					                        <input type="text" ng-disabled="!campaign.CanSend" maxlength="200"  ng-model="campaignPushMessage"  name="campaignPushMessage" id="campaignPushMessage" class="half">
+				                        </article>
+			                        </fieldset>
+			                         <fieldset>
+				                        <header>
+					                        <label for="name">
+						                       Content
+					                        </label>					                       
+				                        </header>
+				                        <article>
+					                        <textarea  ng-disabled="!campaign.CanSend"  ng-model="campaignContent"   name="campaignContent" id="campaignContent" ng-keydown="degradeChars($event)" > </textarea>
+                                            <span ng-bind="charsleft"></span> characters left
+				                        </article>
+			                        </fieldset>
+			                        <footer>
+				                        <input type="button" value="Next" ng-click="saveStep2()" class="reset right demo1">
+				                        <br class="clear" />
+			                        </footer>
+		                        </div>	
+                                    <br class="clear" />	 
+    		                        <div class="step">
+                                    <a href=""  class="open notyet"><span class="flaticon solid" ng-class="step2Class" ></span>Select recipients</a>
+		                        </div>
+	    	                        <div class="recipients open" ng-show="step == 3">
+			                        <fieldset>
+				                        <header>
+					                        <label for="name">
+						                        Geo Fences*
+					                        </label>
+					                        <figure>
+						                     <!--  <a class="flaticon solid gear Normal" ng-href="2/repository/wim/portal.ashx?list=67&item=0&openinframe=1&fromDashboard=1&appID={{campaign.AppID}}"></a> 						                   -->
+					                        </figure>
+				                        </header>
+				                        <article>
+                                            <div class="options" >
+						                        <ul>
+							                        <li ng-repeat="item in campaign.SelectedFences">{{ item.Value }} <a href="" ng-hide="!campaign.CanSend" ng-click="removeFromGeoFenceCollection(item.Key, campaign.SelectedFences)" class="flaticon solid x-2"></a></li>							                        
+                                                      <li ng-show="!campaign.SelectedFences.length && !geoFencesNotfilledError" class="summary2">
+                                                          No Geo Fence selected
+                                                    </li>
+						                        </ul>
+					                        </div>
+					                        <div class="summary" ng-show="geoFencesNotfilledError">
+						                        No Geo Fence selected
+					                        </div>
+                                            
+					                        <select class="half" id="Select4" name="budget" ng-model="geoFenceSelected" ng-options="geoFence.Value for geoFence in campaign.GeoFences" ></select>
+					                        <a href="" ng-hide="!campaign.CanSend"  ng-click="addToGeoFenceCollection(geoFenceSelected, campaign.SelectedFences)" class="flaticon solid plus-2"></a>
+				                        </article>
+			                        </fieldset>
+			                         <fieldset>
+				                        <header>
+					                        <label for="name">
+						                        Interesses
+					                        </label> 
+				                        </header>
+				                        <article>
+                                             <div class="options" >
+						                        <ul>
+							                        <li ng-repeat="item in campaign.SelectedInteresses">{{ item.Value }} <a ng-hide="!campaign.CanSend" href="" ng-click="removeFromCollection(item.Key, campaign.SelectedInteresses)" class="flaticon solid x-2"></a></li>							                        
+                                                      <li ng-show="!campaign.SelectedInteresses.length" class="summary2">
+                                                        No  Interesses selected
+                                                    </li>
+						                        </ul>
+					                        </div>
+                                          
+					                        <select class="half" id="Select1" name="budget" ng-model="interestSelected" ng-options="i.Value for i in campaign.Interest" ></select>
+					                        <a href="" ng-hide="!campaign.CanSend" ng-click="addToCollection(interestSelected, campaign.SelectedInteresses)" class="flaticon solid plus-2"></a>
+				                        </article>
+			                        </fieldset>                                  
+			                        <fieldset>
+				                        <header>
+					                        <label for="name">
+						                        Operating system
+					                        </label> 
+				                        </header>
+				                        <article>
+					                        <div class="options" >
+						                        <ul>
+							                        <li ng-repeat="item in campaign.SelectedDeviceTypes">{{ item.Value }} <a href="" ng-hide="!campaign.CanSend" ng-click="removeFromCollection(item.Key, campaign.SelectedDeviceTypes)" class="flaticon solid x-2"></a></li>							                        
+                                                     <li ng-show="!campaign.SelectedDeviceTypes.length" class="summary2">
+                                                        No  Operating system selected
+                                                    </li>
+						                        </ul>
+					                        </div>
+                                            
+					                        <select class="half" id="Select2" name="budget" ng-model="deviceTypeSelected" ng-options="os.Value for os in campaign.DeviceTypes" ></select>
+					                        <a href="" ng-hide="!campaign.CanSend" ng-click="addToCollection(deviceTypeSelected, campaign.SelectedDeviceTypes)" class="flaticon solid plus-2"></a>
+				                        </article>
+			                        </fieldset>
+                                    <fieldset>
+				                        <header>
+					                        <label for="name">
+						                        Identity provider
+					                        </label> 
+				                        </header>
+				                        <article>
+					                          <div class="options" >
+						                        <ul>
+							                        <li ng-repeat="item in campaign.SelectIdentityProviders">{{ item.Value }} <a ng-hide="!campaign.CanSend" href="" ng-click="removeFromCollection(item.Key, campaign.SelectIdentityProviders)" class="flaticon solid x-2"></a></li>							                        
+                                                    <li ng-show="!campaign.SelectIdentityProviders.length" class="summary2">
+                                                        No  Identity provider selected
+                                                    </li>
+						                        </ul>
+					                        </div>
+                                       
+					                        <select class="half" id="Select5" name="budget" ng-model="identitySelected" ng-options="identity.Value for identity in campaign.IdentityProviders" ></select>
+					                        <a href="" ng-hide="!campaign.CanSend" ng-click="addToCollection(identitySelected, campaign.SelectIdentityProviders)"  class="flaticon solid plus-2"></a>
+				                        </article>
+			                        </fieldset>
+                                    <fieldset>
+				                        <header>
+					                        <label for="name">
+						                       Maximum speed (km/h)*
+					                        </label>					                       
+				                        </header>
+				                        <article>
+                                            <div class="summary" ng-show="maxSpeedNotfilledError">
+						                        Max speed is required
+					                        </div>
+					                        <input type="text" ng-disabled="!campaign.CanSend" ng-model="campaign.MaximumSpeed" name="campaignTitle" id="Text1" class="half">
+				                        </article>
+			                        </fieldset>
+                                      <fieldset>
+				                        <header>
+					                        <label for="name">
+						                       Maximum position age (minutes)*
+					                        </label>					                       
+				                        </header>
+				                        <article>
+                                            <div class="summary" ng-show="maxAgeNotfilledError">
+						                       Maximum position age field is required
+					                        </div>
+					                        <input type="text" ng-disabled="!campaign.CanSend" ng-model="campaign.MaximumAgePosition" name="campaignTitle" id="Text2" class="half">
+				                        </article>
+			                        </fieldset>
+			                        <footer>
+				                        <input type="button" ng-click="saveStep3()" value="Preview" class="reset right demo1">
+			                        </footer>
+		                        </div>
+                                </div>
+                                <div ng-show="step == 4">         
+                                    <div class="step">
+                                        <a  class="done"><span class="flaticon solid" ></span>Preview</a>
+                                    </div>
+                                     
+                                    <div class="preview open">
+                                        <p>Note: numbers are based on current situation and are indicication only</p>
+                                        <h3>Reach indication</h3>
+                                       <table>
+				<thead>
+					<tr>
+						<th>Platform</th>
+						<th></th>
+						<th>Reach</th>
+					</tr>
+				</thead>
+				<tfoot>
+					<tr>
+						<td>Total</td>
+						<td></td>
+						<td>{{campaign.TotalReach}}</td>
+					</tr>
+				</tfoot>
+				<tbody>
+					<tr ng-repeat="reach in campaign.ReachReport">
+						<td>{{reach.PlatformName}}</td>
+						<td></td>
+						<td>{{reach.Reach}}</td>
+					</tr>
+				 
+				</tbody>
+			</table>
+                                        <div ng-show="campaign.OtherCampaigns > 0">
+		                                    <h3>Currently active campaigns</h3>                                           
+                                            <span ng-bind="campaign.OtherCampaigns" class="currentlyActiveCampaigns"></span> 
+                                            <a class="submit" target="_blank" href="2/repository/wim/portal.ashx?list=68&excute=1">SHOW</a>
+                                        </div>
+                                      
+                                   </div>                   
+                                         
+                                    <div class="step"><a target="_blank" href="/2/repository/wim/portal.ashx?list=68&excute=1">Campaign execution</a></div> 
+                                    <div class="execution open">
+                                                 <h3>Campaign execution</h3>
+			                        <fieldset>
+                                          <div class="summary" ng-show="excutionTypeNotfilledError">
+						                        Campaign execution is required
+					                        </div>
+				                        <input type="radio" ng-disabled="!campaign.CanSend" ng-model="campaign.ExcutionType" value="instant" name="choice" id="frmInstant"> <label for="frmInstant" class="radio">Instant</label>
+				                        <input type="radio" ng-disabled="!campaign.CanSend" ng-model="campaign.ExcutionType" value="scheduled" name="choice" id="frmScheduled"> <label for="frmScheduled" class="radio">Scheduled</label>
+				                        <input type="radio" ng-disabled="!campaign.CanSend" ng-model="campaign.ExcutionType" value="timerange" name="choice" id="frmTime"> <label for="frmTime" class="radio">Time Range</label>
+				                        <br class="clear">
+			                        </fieldset>
+                               
+			                        <fieldset class="calendar">
+				                        <article>
+					                        
+					                        <div ng-show="campaign.ExcutionType != 'instant'">
+                                                <label for="frmStart">Start</label>
+					                            <input ng-model="campaign.StartDate" type="text" name="frmStart" id="frmStart" placeholder="dd-mm-yyyy"  >
+					                            <input ng-model="campaign.StartTime" type="text" name="frmTime" id="Time1" placeholder="hh:mm"  >
+					                          <!--  <a class="flaticon solid calendar-3" href=""></a>-->
+					                          
+                                            </div>
+                                            <div ng-show="campaign.ExcutionType == 'timerange'" class="endDateBox">
+					                            <label for="frmEnd">End</label>
+					                            <input ng-model="campaign.EndDate" type="text" name="frmEnd" id="frmEnd"  placeholder="dd-mm-yyyy" >
+					                            <input ng-model="campaign.EndTime" type="text" name="frmTime2" id="frmTime2" placeholder="hh:mm"  >
+					                         <!--   <a class="flaticon solid calendar-3" href=""></a>					-->
+                                            </div>
+                                           
+				                        </article>
+			                        </fieldset>
+			                        <footer>
+				                        <input type="button" ng-show="campaign.CanSend" ng-click="saveStep4()" class="reset right demo1" value="Send">
+                                        <i ng-hide="campaign.CanSend">The campaign has allready processed to be send.</i>
+                                          <i ng-show="ErrorProcessing">Error processing save.</i>
+			                        </footer>
+		                        </div>                
+                                </div>
+                                <div ng-show="step == 5">         
+                                    <div class="step">
+                                        <a  class="done"><span class="flaticon solid" ></span>Status</a>
+                                    </div>
+                                    <br class="clear" />	 
+                                    <div class="preview open">
+                                        <p><b>Status: </b>{{campaign.Status}} </p>
+                                        <div ng-show="campaign.Status == 'Send'">                                        
+                                        <h3>Send report</h3>
+                                        <table >
+				                            <thead>
+					                            <tr>
+						                            <th>Platform</th>
+						                            <th>Reach</th>
+						                            <th>Read</th>
+					                            </tr>
+				                            </thead>
+				                            <tfoot>
+					                            <tr>
+						                            <td>Total</td>
+						                            <td>{{campaign.TotalSend}}</td>
+						                            <td>{{campaign.TotalRead}}</td>
+					                            </tr>
+				                            </tfoot>
+				                            <tbody>
+					                            <tr ng-repeat="i in campaign.SendReport">
+						                            <td>{{i.PlatformName}}</td>
+						                            <td>{{i.Reach}}</td>
+						                            <td>{{i.Read}}</td>
+					                            </tr>					                           
+				                            </tbody>
+			                            </table>
+                                        </div>                                      
+                                        <br class="clear" />
+                                   </div>                   
+                                    <br class="clear" />
+                                    <div class="step"><a class="open">Message</a></div> 
+                                    <div class="execution open">
+			                           
+                                        <fieldset>
+				                        <header>
+					                        <label for="name">
+						                      Title
+					                        </label>					                       
+				                        </header>
+				                        <article>
+                                           {{campaign.Title}}
+				                        </article>
+			                        </fieldset>
+                                        <fieldset>
+				                        <header>
+					                        <label for="name">
+						                       Push Message
+					                        </label>					                       
+				                        </header>
+				                        <article>
+                                           {{campaign.PushMessage}}
+				                        </article>
+			                        </fieldset>
+                                        <fieldset>
+				                        <header>
+					                        <label for="name">
+						                       Content
+					                        </label>					                       
+				                        </header>
+				                        <article>
+                                           {{campaign.Content}}
+				                        </article>
+			                        </fieldset>
+		                            </div>                
+                                </div>
+                            </div>
+                        </article>
+                    </section> 
+                    </form>				
+				</article>
+				<div class="clear"></div>
+			</section>
+			<div class="clear"></div>
+			<menu id="demoControls" type="toolbar">
+				<li><a class="pop" title="Tabs in Pop" href="../html/popupContentSlider.shtml">Open popup</a></li>
+				<li><a class="" title="Toggle Map" href="#" onclick="toggleMap()">Toggle map</a></li>
+				<li><a class="demo1" title="Test Notification" >Test Notification</a></li>
+			</menu>
+		</section>
+		<nav id="bodyNav">
+			<!--#include file="./component_mainMenu.html" -->
+		</nav>
+	</body>
+</html>

@@ -1,0 +1,945 @@
+﻿<!doctype html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>Veiling configurator 3</title>
+	<meta http-equiv="X-UA-Compatible" content="IE=Edge">
+	<meta name="viewport" content="width=device-width, user-scalable=yes, initial-scale=1">
+	<!--[if IE]>
+		<meta http-equiv="imagetoolbar" content="no"/>
+		<script type="text/javascript" src="//az609478.vo.msecnd.net/6-25/scripts/html5.js"></script>
+	<![endif]-->
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<link rel="stylesheet" href="//az609478.vo.msecnd.net/6-25/styles/stylesFlatv2.css" type="text/css" media="all">
+	<link rel="stylesheet" href="//az609478.vo.msecnd.net/6-25/styles/mainMenuFlatv2.css" type="text/css" media="all">
+	<link rel="stylesheet" href="//az609478.vo.msecnd.net/6-25/styles/fontello.css" type="text/css">
+	<link rel="stylesheet" href="//az609478.vo.msecnd.net/6-25/styles/colorbox.css" type="text/css">
+	<link rel="stylesheet" href="//az609478.vo.msecnd.net/6-25/styles/solid.css" type="text/css">
+	<link rel="stylesheet" href="//az609478.vo.msecnd.net/6-25/styles/formalizev2.css" type="text/css" media="all">
+	<link rel="stylesheet" href="//az609478.vo.msecnd.net/6-25/styles/jquery-ui-1-8-16-custom.css" type="text/css" media="all">
+	<link rel="stylesheet" href="//az609478.vo.msecnd.net/6-25/compiled/styles.min.css">
+	<script type="text/javascript" src="//az609478.vo.msecnd.net/6-25/scripts/jquery-1-7-1.js"></script>
+	<script type="text/javascript" src="//az609478.vo.msecnd.net/6-25/scripts/jquery-ui-1-10-3-custom.min.js"></script>
+	<script type="text/javascript" src="//az609478.vo.msecnd.net/6-25/scripts/jquery-ui-datepicker-nl.js"></script>
+	<script type="text/javascript" src="//az609478.vo.msecnd.net/6-25/scripts/jquery-shorten.js"></script>
+	<script type="text/javascript" src="//az609478.vo.msecnd.net/6-25/scripts/jquery-tipTip.js"></script>
+	<script type="text/javascript" src="//az609478.vo.msecnd.net/6-25/scripts/jquery-slimscroll.js"></script>
+	<script type="text/javascript" src="//az609478.vo.msecnd.net/6-25/scripts/jquery-numeric.js"></script>
+	<script type="text/javascript" src="//az609478.vo.msecnd.net/6-25/scripts/jquery-formalize.js"></script>
+	<script type="text/javascript" src="//az609478.vo.msecnd.net/6-25/scripts/jquery-colorbox.js"></script>
+	<script type="text/javascript" src="//az609478.vo.msecnd.net/6-25/scripts/jquery-ui-timepicker-addon.js"></script>
+	<script type="text/javascript" src="//az609478.vo.msecnd.net/6-25/scripts/jquery-hoverIntent.js"></script>
+	<script type="text/javascript" src="//az609478.vo.msecnd.net/6-25/scripts/jquery-curtainMenu.js"></script>
+	<script type="text/javascript" src="//az609478.vo.msecnd.net/6-25/scripts/jquery-ambiance.js"></script>
+	<script type="text/javascript" src="//az609478.vo.msecnd.net/6-25/scripts/slip.js"></script>
+	<script type="text/javascript" src="//az609478.vo.msecnd.net/6-25/scripts/fixedBar.js"></script>
+	<script type="text/javascript" src="//az609478.vo.msecnd.net/6-25/scripts/testdrivev2.js"></script>
+	<script type="text/javascript" src="//az609478.vo.msecnd.net/6-25/scripts/tinymce/tinymce.js"></script>
+	<link rel="stylesheet" href="//az609478.vo.msecnd.net/6-25/scripts/dist/css/select2.css" type="text/css" media="all">
+	<script type="text/javascript" src="//az609478.vo.msecnd.net/6-25/scripts/dist/js/select2.full.min.js"></script>
+	<script type="text/javascript" src="//az609478.vo.msecnd.net/6-25/scripts/jquery-nicescroll.js"></script>
+	<link rel="stylesheet" href="css/respons.css" type="text/css" media="all">
+</head>
+<body class="fixed">
+	<form id="uxForm" method="post" action="/2/repository/wim/portal.ashx?list=625&amp;item=1769" enctype="multipart/form-data">
+		<input type="hidden" name="autopostback" id="autopostback" value="">
+		<section id="bodySection">
+			<header id="bodyHeader">
+				<a id="bodyLogo" href="/repository/wim/portal.ashx"><img src="//privilege.blob.core.windows.net/p01/PR_logo.png"></a>
+			</header>
+
+			<section id="homeContent">
+
+				<aside id="homeAside">
+					<section id="sideNav">
+						<menu class="sideNav">
+							<ul>
+								<li class="back">
+									<span class="icon-arrow-left-04"></span><a href="http://tst.beheer.mijnprivilege.nl//2/repository/wim/portal.ashx?list=625" class="list first">Veiling configurator 3</a>
+								</li>
+								<li class="active">
+									<a href="http://tst.beheer.mijnprivilege.nl//2/repository/wim/portal.ashx?list=625&amp;item=1769">Veiling configurator 3</a>
+								</li>
+
+							</ul>
+						</menu>
+					</section>
+				</aside>
+				<article id="homeArticle">
+
+					<section id="pageHeaderV2" class="pageHeader">
+						<header>
+							<div class="trail">
+								<a href="http://tst.beheer.mijnprivilege.nl//2/repository/wim/portal.ashx?list=18&amp;folder=47&amp;base=625&amp;item=625" class="icon-gears"></a>
+								<script>
+                function openHelpWindow() {
+                    window.open("http://tst.beheer.mijnprivilege.nl//2/repository/wim/portal.ashx?list=08B77637-2B0D-4E13-95F9-40213CB4FFAF&openinframe=1&item=-1&forListID=625&listName=Veiling configurator 3", "_blank", "toolbar=yes,scrollbars=yes,resizable=yes,top=10,left=200,width=1006,height=600");
+                }
+								</script> <a href="#help" onclick="openHelpWindow()" class="icon-question-circle"></a>
+								<a href="?list=625" class="back">Back</a>
+								<menu id="breadCrumbs">
+									<li><a href="/repository/wim/portal.ashx">Home</a> /</li>
+									<li><a href="?folder=47">Veilingbeheer</a> /</li>
+									<li><a href="?list=625">Veiling configurator 3</a> /</li>
+									<li>Veiling configurator 3</li>
+								</menu>
+							</div>
+
+							<h1>Veiling configurator 3</h1>
+						</header>
+					</section>
+					<section id="formStylesv2" class="component forms">
+						<div class="container">
+							<div class="OrderingField">
+								<table class="formTable">
+									<tbody>
+										<tr>
+											<th><label for="ConfigurationMessage"><abbr style="visibility: visible; display: block; white-space: nowrap;"></abbr></label></th>
+											<td colspan="3">
+												<div class="long">
+													Deze veiling heeft de volgende instellingen: 12 lopende veilingen, 2 gemijnde veilingen,
+													1 koper banner(s), 1 educatie banner(s), 1 privilege banner(s)<br>Dit is een gesplitst grid. Er kan maximaal 1 banner in de bovenste 9 posities voorkomen en maximaal 1 banner in de overige rijen.
+												</div>
+											</td>
+										</tr>
+										<tr>
+											<th><label for="IsSplit"><abbr style="visibility: visible; display: block; white-space: nowrap;">Is gesplitst grid</abbr></label></th>
+											<td colspan="3">
+												<div class="long">
+													<input type="checkbox" class="radio" value="1" name="IsSplit" id="IsSplit" checked="checked">
+												</div>
+											</td>
+										</tr>
+										<tr>
+											<th><label for="data_uxTypeSelection1"><abbr style="visibility: visible; display: block; white-space: nowrap;">Positie 1</abbr></label></th>
+											<td>
+												<div class="half">
+													<select id="data_uxTypeSelection1" class="half postBack styled select2-hidden-accessible" name="data_uxTypeSelection1" tabindex="-1" aria-hidden="true">
+														<option value="100" selected="selected">Beschikbaar</option>
+														<option value="101">Verkocht</option>
+														<option value="2">Kopers banner</option>
+														<option value="3">Educatie banner (of onder positie bij bannerset)</option>
+														<option value="4">Privilege banner (of boven positie bij bannerset)</option>
+													</select><span class="select2 select2-container select2-container--default" dir="ltr" style="width: 325px;"><span class="selection"><span class="select2-selection select2-selection--single" role="combobox" aria-haspopup="true" aria-expanded="false" tabindex="0" aria-labelledby="select2-data_uxTypeSelection1-container"><span class="select2-selection__rendered" id="select2-data_uxTypeSelection1-container" title="Beschikbaar"><span class="select2-selection__clear">×</span>Beschikbaar</span><span class="select2-selection__arrow" role="presentation"><b role="presentation"></b></span></span></span><span class="dropdown-wrapper" aria-hidden="true"></span></span>
+												</div>
+											</td>
+											<th><label for="data_uxAuctionSelection1"><abbr style="visibility: visible; display: block; white-space: nowrap;">Selectie 1</abbr></label></th>
+											<td>
+												<div class="half">
+													<select id="data_uxAuctionSelection1" class="half styled select2-hidden-accessible" name="data_uxAuctionSelection1" tabindex="-1" aria-hidden="true">
+														<option value="8773">8773. Delonghi ECAM 44.660.B</option>
+														<option value="8508">8508. Sony KD-49X8505</option>
+														<option value="9135">9135. Samsung NX500 + 16-50mm F3.5-5.6 Power Zoom Wit</option>
+														<option value="9140">9140. Canon EOS100D</option>
+														<option value="9141">9141. Delonghi ECAM 22.360.S Magnificas</option>
+														<option value="9143">9143. Asus Zenbook UX305FA-FB041H</option>
+														<option value="9144">9144. Apple Watch	38mm	Silver Alumium Case	White Sport Band</option>
+														<option value="9145">9145. Apple iPad AIR 2 WI-FI 64GB</option>
+														<option value="9146">9146. Asus TP300LA-DW123H</option>
+														<option value="9147">9147. Apple iPad AIR 2 WI-FI 64GB GOLD</option>
+														<option value="9151">9151. Makita DDF 459 RF3J Combiset</option>
+														<option value="9152">9152. KitchenAid 5KSM150PSECB</option>
+														<option value="9153" selected="selected">9153. Kenwood Cooking CHEF Major KM0961</option>
+														<option value="9154">9154. Jura Impressa C60</option>
+														<option value="9155">9155. Irobot Scooba 390 Hardfloor</option>
+														<option value="9156">9156. Apple iPad AIR 2 WI-FI 64GB</option>
+														<option value="9157">9157. Nikon spiegelreflexcamera D3300 Rood</option>
+														<option value="9158">9158. Sony Playstation 4 White 2 controllers + Playstation TV + Battlefield Hardline + Fifa 15 + PS Plus 12</option>
+														<option value="9163">9163. Samsung Galaxy S6 32GB Goud</option>
+														<option value="9166">9166. Samsung UE48H6850</option>
+														<option value="9172">9172. Apple IMAC MF883</option>
+														<option value="29174">29174. Sony Xperia Z3 NFC LTE</option>
+														<option value="29175">29175. Samsung NX500 + 16-50mm F3.5-5.6 Power Zoom Zwart</option>
+														<option value="29177">29177. Sony Cyber-SHOT DSC-RX100 III</option>
+														<option value="29178">29178. Sony Playstation 4 White + GTA V + Fifa 15 + PS Plus 3 Maanden</option>
+													</select><span class="select2 select2-container select2-container--default" dir="ltr" style="width: 325px;"><span class="selection"><span class="select2-selection select2-selection--single" role="combobox" aria-haspopup="true" aria-expanded="false" tabindex="0" aria-labelledby="select2-data_uxAuctionSelection1-container"><span class="select2-selection__rendered" id="select2-data_uxAuctionSelection1-container" title="9153. Kenwood Cooking CHEF Major KM0961"><span class="select2-selection__clear">×</span>9153. Kenwood Cooking CHEF Major KM0961</span><span class="select2-selection__arrow" role="presentation"><b role="presentation"></b></span></span></span><span class="dropdown-wrapper" aria-hidden="true"></span></span>
+												</div>
+											</td>
+										</tr>
+										<tr>
+											<th><label for="data_uxTypeSelection2"><abbr style="visibility: visible; display: block; white-space: nowrap;">Positie 2</abbr></label></th>
+											<td>
+												<div class="half">
+													<select id="data_uxTypeSelection2" class="half postBack styled select2-hidden-accessible" name="data_uxTypeSelection2" tabindex="-1" aria-hidden="true">
+														<option value="100" selected="selected">Beschikbaar</option>
+														<option value="101">Verkocht</option>
+														<option value="2">Kopers banner</option>
+														<option value="3">Educatie banner (of onder positie bij bannerset)</option>
+														<option value="4">Privilege banner (of boven positie bij bannerset)</option>
+													</select><span class="select2 select2-container select2-container--default" dir="ltr" style="width: 325px;"><span class="selection"><span class="select2-selection select2-selection--single" role="combobox" aria-haspopup="true" aria-expanded="false" tabindex="0" aria-labelledby="select2-data_uxTypeSelection2-container"><span class="select2-selection__rendered" id="select2-data_uxTypeSelection2-container" title="Beschikbaar"><span class="select2-selection__clear">×</span>Beschikbaar</span><span class="select2-selection__arrow" role="presentation"><b role="presentation"></b></span></span></span><span class="dropdown-wrapper" aria-hidden="true"></span></span>
+												</div>
+											</td>
+											<th><label for="data_uxAuctionSelection2"><abbr style="visibility: visible; display: block; white-space: nowrap;">Selectie 2</abbr></label></th>
+											<td>
+												<div class="half">
+													<select id="data_uxAuctionSelection2" class="half styled select2-hidden-accessible" name="data_uxAuctionSelection2" tabindex="-1" aria-hidden="true">
+														<option value="8773">8773. Delonghi ECAM 44.660.B</option>
+														<option value="8508">8508. Sony KD-49X8505</option>
+														<option value="9135">9135. Samsung NX500 + 16-50mm F3.5-5.6 Power Zoom Wit</option>
+														<option value="9140" selected="selected">9140. Canon EOS100D</option>
+														<option value="9141">9141. Delonghi ECAM 22.360.S Magnificas</option>
+														<option value="9143">9143. Asus Zenbook UX305FA-FB041H</option>
+														<option value="9144">9144. Apple Watch	38mm	Silver Alumium Case	White Sport Band</option>
+														<option value="9145">9145. Apple iPad AIR 2 WI-FI 64GB</option>
+														<option value="9146">9146. Asus TP300LA-DW123H</option>
+														<option value="9147">9147. Apple iPad AIR 2 WI-FI 64GB GOLD</option>
+														<option value="9151">9151. Makita DDF 459 RF3J Combiset</option>
+														<option value="9152">9152. KitchenAid 5KSM150PSECB</option>
+														<option value="9153">9153. Kenwood Cooking CHEF Major KM0961</option>
+														<option value="9154">9154. Jura Impressa C60</option>
+														<option value="9155">9155. Irobot Scooba 390 Hardfloor</option>
+														<option value="9156">9156. Apple iPad AIR 2 WI-FI 64GB</option>
+														<option value="9157">9157. Nikon spiegelreflexcamera D3300 Rood</option>
+														<option value="9158">9158. Sony Playstation 4 White 2 controllers + Playstation TV + Battlefield Hardline + Fifa 15 + PS Plus 12</option>
+														<option value="9163">9163. Samsung Galaxy S6 32GB Goud</option>
+														<option value="9166">9166. Samsung UE48H6850</option>
+														<option value="9172">9172. Apple IMAC MF883</option>
+														<option value="29174">29174. Sony Xperia Z3 NFC LTE</option>
+														<option value="29175">29175. Samsung NX500 + 16-50mm F3.5-5.6 Power Zoom Zwart</option>
+														<option value="29177">29177. Sony Cyber-SHOT DSC-RX100 III</option>
+														<option value="29178">29178. Sony Playstation 4 White + GTA V + Fifa 15 + PS Plus 3 Maanden</option>
+													</select><span class="select2 select2-container select2-container--default" dir="ltr" style="width: 325px;"><span class="selection"><span class="select2-selection select2-selection--single" role="combobox" aria-haspopup="true" aria-expanded="false" tabindex="0" aria-labelledby="select2-data_uxAuctionSelection2-container"><span class="select2-selection__rendered" id="select2-data_uxAuctionSelection2-container" title="9140. Canon EOS100D"><span class="select2-selection__clear">×</span>9140. Canon EOS100D</span><span class="select2-selection__arrow" role="presentation"><b role="presentation"></b></span></span></span><span class="dropdown-wrapper" aria-hidden="true"></span></span>
+												</div>
+											</td>
+										</tr>
+										<tr>
+											<th><label for="data_uxTypeSelection3"><abbr style="visibility: visible; display: block; white-space: nowrap;">Positie 3</abbr></label></th>
+											<td>
+												<div class="half">
+													<select id="data_uxTypeSelection3" class="half postBack styled select2-hidden-accessible" name="data_uxTypeSelection3" tabindex="-1" aria-hidden="true">
+														<option value="100" selected="selected">Beschikbaar</option>
+														<option value="101">Verkocht</option>
+														<option value="2">Kopers banner</option>
+														<option value="3">Educatie banner (of onder positie bij bannerset)</option>
+														<option value="4">Privilege banner (of boven positie bij bannerset)</option>
+													</select><span class="select2 select2-container select2-container--default" dir="ltr" style="width: 325px;"><span class="selection"><span class="select2-selection select2-selection--single" role="combobox" aria-haspopup="true" aria-expanded="false" tabindex="0" aria-labelledby="select2-data_uxTypeSelection3-container"><span class="select2-selection__rendered" id="select2-data_uxTypeSelection3-container" title="Beschikbaar"><span class="select2-selection__clear">×</span>Beschikbaar</span><span class="select2-selection__arrow" role="presentation"><b role="presentation"></b></span></span></span><span class="dropdown-wrapper" aria-hidden="true"></span></span>
+												</div>
+											</td>
+											<th><label for="data_uxAuctionSelection3"><abbr style="visibility: visible; display: block; white-space: nowrap;">Selectie 3</abbr></label></th>
+											<td>
+												<div class="half">
+													<select id="data_uxAuctionSelection3" class="half styled select2-hidden-accessible" name="data_uxAuctionSelection3" tabindex="-1" aria-hidden="true">
+														<option value="8773">8773. Delonghi ECAM 44.660.B</option>
+														<option value="8508">8508. Sony KD-49X8505</option>
+														<option value="9135">9135. Samsung NX500 + 16-50mm F3.5-5.6 Power Zoom Wit</option>
+														<option value="9140">9140. Canon EOS100D</option>
+														<option value="9141">9141. Delonghi ECAM 22.360.S Magnificas</option>
+														<option value="9143">9143. Asus Zenbook UX305FA-FB041H</option>
+														<option value="9144">9144. Apple Watch	38mm	Silver Alumium Case	White Sport Band</option>
+														<option value="9145">9145. Apple iPad AIR 2 WI-FI 64GB</option>
+														<option value="9146">9146. Asus TP300LA-DW123H</option>
+														<option value="9147">9147. Apple iPad AIR 2 WI-FI 64GB GOLD</option>
+														<option value="9151" selected="selected">9151. Makita DDF 459 RF3J Combiset</option>
+														<option value="9152">9152. KitchenAid 5KSM150PSECB</option>
+														<option value="9153">9153. Kenwood Cooking CHEF Major KM0961</option>
+														<option value="9154">9154. Jura Impressa C60</option>
+														<option value="9155">9155. Irobot Scooba 390 Hardfloor</option>
+														<option value="9156">9156. Apple iPad AIR 2 WI-FI 64GB</option>
+														<option value="9157">9157. Nikon spiegelreflexcamera D3300 Rood</option>
+														<option value="9158">9158. Sony Playstation 4 White 2 controllers + Playstation TV + Battlefield Hardline + Fifa 15 + PS Plus 12</option>
+														<option value="9163">9163. Samsung Galaxy S6 32GB Goud</option>
+														<option value="9166">9166. Samsung UE48H6850</option>
+														<option value="9172">9172. Apple IMAC MF883</option>
+														<option value="29174">29174. Sony Xperia Z3 NFC LTE</option>
+														<option value="29175">29175. Samsung NX500 + 16-50mm F3.5-5.6 Power Zoom Zwart</option>
+														<option value="29177">29177. Sony Cyber-SHOT DSC-RX100 III</option>
+														<option value="29178">29178. Sony Playstation 4 White + GTA V + Fifa 15 + PS Plus 3 Maanden</option>
+													</select><span class="select2 select2-container select2-container--default" dir="ltr" style="width: 325px;"><span class="selection"><span class="select2-selection select2-selection--single" role="combobox" aria-haspopup="true" aria-expanded="false" tabindex="0" aria-labelledby="select2-data_uxAuctionSelection3-container"><span class="select2-selection__rendered" id="select2-data_uxAuctionSelection3-container" title="9151. Makita DDF 459 RF3J Combiset"><span class="select2-selection__clear">×</span>9151. Makita DDF 459 RF3J Combiset</span><span class="select2-selection__arrow" role="presentation"><b role="presentation"></b></span></span></span><span class="dropdown-wrapper" aria-hidden="true"></span></span>
+												</div>
+											</td>
+										</tr>
+										<tr>
+											<th><label for="data_uxTypeSelection4"><abbr style="visibility: visible; display: block; white-space: nowrap;">Positie 4</abbr></label></th>
+											<td>
+												<div class="half">
+													<select id="data_uxTypeSelection4" class="half postBack styled select2-hidden-accessible" name="data_uxTypeSelection4" tabindex="-1" aria-hidden="true">
+														<option value="100" selected="selected">Beschikbaar</option>
+														<option value="101">Verkocht</option>
+														<option value="2">Kopers banner</option>
+														<option value="3">Educatie banner (of onder positie bij bannerset)</option>
+														<option value="4">Privilege banner (of boven positie bij bannerset)</option>
+													</select><span class="select2 select2-container select2-container--default" dir="ltr" style="width: 325px;"><span class="selection"><span class="select2-selection select2-selection--single" role="combobox" aria-haspopup="true" aria-expanded="false" tabindex="0" aria-labelledby="select2-data_uxTypeSelection4-container"><span class="select2-selection__rendered" id="select2-data_uxTypeSelection4-container" title="Beschikbaar"><span class="select2-selection__clear">×</span>Beschikbaar</span><span class="select2-selection__arrow" role="presentation"><b role="presentation"></b></span></span></span><span class="dropdown-wrapper" aria-hidden="true"></span></span>
+												</div>
+											</td>
+											<th><label for="data_uxAuctionSelection4"><abbr style="visibility: visible; display: block; white-space: nowrap;">Selectie 4</abbr></label></th>
+											<td>
+												<div class="half">
+													<select id="data_uxAuctionSelection4" class="half styled select2-hidden-accessible" name="data_uxAuctionSelection4" tabindex="-1" aria-hidden="true">
+														<option value="8773">8773. Delonghi ECAM 44.660.B</option>
+														<option value="8508">8508. Sony KD-49X8505</option>
+														<option value="9135">9135. Samsung NX500 + 16-50mm F3.5-5.6 Power Zoom Wit</option>
+														<option value="9140">9140. Canon EOS100D</option>
+														<option value="9141">9141. Delonghi ECAM 22.360.S Magnificas</option>
+														<option value="9143">9143. Asus Zenbook UX305FA-FB041H</option>
+														<option value="9144">9144. Apple Watch	38mm	Silver Alumium Case	White Sport Band</option>
+														<option value="9145">9145. Apple iPad AIR 2 WI-FI 64GB</option>
+														<option value="9146">9146. Asus TP300LA-DW123H</option>
+														<option value="9147">9147. Apple iPad AIR 2 WI-FI 64GB GOLD</option>
+														<option value="9151">9151. Makita DDF 459 RF3J Combiset</option>
+														<option value="9152">9152. KitchenAid 5KSM150PSECB</option>
+														<option value="9153">9153. Kenwood Cooking CHEF Major KM0961</option>
+														<option value="9154">9154. Jura Impressa C60</option>
+														<option value="9155" selected="selected">9155. Irobot Scooba 390 Hardfloor</option>
+														<option value="9156">9156. Apple iPad AIR 2 WI-FI 64GB</option>
+														<option value="9157">9157. Nikon spiegelreflexcamera D3300 Rood</option>
+														<option value="9158">9158. Sony Playstation 4 White 2 controllers + Playstation TV + Battlefield Hardline + Fifa 15 + PS Plus 12</option>
+														<option value="9163">9163. Samsung Galaxy S6 32GB Goud</option>
+														<option value="9166">9166. Samsung UE48H6850</option>
+														<option value="9172">9172. Apple IMAC MF883</option>
+														<option value="29174">29174. Sony Xperia Z3 NFC LTE</option>
+														<option value="29175">29175. Samsung NX500 + 16-50mm F3.5-5.6 Power Zoom Zwart</option>
+														<option value="29177">29177. Sony Cyber-SHOT DSC-RX100 III</option>
+														<option value="29178">29178. Sony Playstation 4 White + GTA V + Fifa 15 + PS Plus 3 Maanden</option>
+													</select><span class="select2 select2-container select2-container--default" dir="ltr" style="width: 325px;"><span class="selection"><span class="select2-selection select2-selection--single" role="combobox" aria-haspopup="true" aria-expanded="false" tabindex="0" aria-labelledby="select2-data_uxAuctionSelection4-container"><span class="select2-selection__rendered" id="select2-data_uxAuctionSelection4-container" title="9155. Irobot Scooba 390 Hardfloor"><span class="select2-selection__clear">×</span>9155. Irobot Scooba 390 Hardfloor</span><span class="select2-selection__arrow" role="presentation"><b role="presentation"></b></span></span></span><span class="dropdown-wrapper" aria-hidden="true"></span></span>
+												</div>
+											</td>
+										</tr>
+										<tr>
+											<th><label for="data_uxTypeSelection5"><abbr style="visibility: visible; display: block; white-space: nowrap;">Positie 5</abbr></label></th>
+											<td>
+												<div class="half">
+													Klok
+												</div>
+											</td>
+											<th><label for="data_uxAuctionSelection5"><abbr style="visibility: visible; display: block; white-space: nowrap;">Selectie 5</abbr></label></th>
+											<td>
+												<div class="half">
+													Klok
+												</div>
+											</td>
+										</tr>
+										<tr>
+											<th><label for="data_uxTypeSelection6"><abbr style="visibility: visible; display: block; white-space: nowrap;">Positie 6</abbr></label></th>
+											<td>
+												<div class="half">
+													<select id="data_uxTypeSelection6" class="half postBack styled select2-hidden-accessible" name="data_uxTypeSelection6" tabindex="-1" aria-hidden="true">
+														<option value="100" selected="selected">Beschikbaar</option>
+														<option value="101">Verkocht</option>
+														<option value="2">Kopers banner</option>
+														<option value="3">Educatie banner (of onder positie bij bannerset)</option>
+														<option value="4">Privilege banner (of boven positie bij bannerset)</option>
+													</select><span class="select2 select2-container select2-container--default" dir="ltr" style="width: 325px;"><span class="selection"><span class="select2-selection select2-selection--single" role="combobox" aria-haspopup="true" aria-expanded="false" tabindex="0" aria-labelledby="select2-data_uxTypeSelection6-container"><span class="select2-selection__rendered" id="select2-data_uxTypeSelection6-container" title="Beschikbaar"><span class="select2-selection__clear">×</span>Beschikbaar</span><span class="select2-selection__arrow" role="presentation"><b role="presentation"></b></span></span></span><span class="dropdown-wrapper" aria-hidden="true"></span></span>
+												</div>
+											</td>
+											<th><label for="data_uxAuctionSelection6"><abbr style="visibility: visible; display: block; white-space: nowrap;">Selectie 6</abbr></label></th>
+											<td>
+												<div class="half">
+													<select id="data_uxAuctionSelection6" class="half styled select2-hidden-accessible" name="data_uxAuctionSelection6" tabindex="-1" aria-hidden="true">
+														<option value="8773">8773. Delonghi ECAM 44.660.B</option>
+														<option value="8508" selected="selected">8508. Sony KD-49X8505</option>
+														<option value="9135">9135. Samsung NX500 + 16-50mm F3.5-5.6 Power Zoom Wit</option>
+														<option value="9140">9140. Canon EOS100D</option>
+														<option value="9141">9141. Delonghi ECAM 22.360.S Magnificas</option>
+														<option value="9143">9143. Asus Zenbook UX305FA-FB041H</option>
+														<option value="9144">9144. Apple Watch	38mm	Silver Alumium Case	White Sport Band</option>
+														<option value="9145">9145. Apple iPad AIR 2 WI-FI 64GB</option>
+														<option value="9146">9146. Asus TP300LA-DW123H</option>
+														<option value="9147">9147. Apple iPad AIR 2 WI-FI 64GB GOLD</option>
+														<option value="9151">9151. Makita DDF 459 RF3J Combiset</option>
+														<option value="9152">9152. KitchenAid 5KSM150PSECB</option>
+														<option value="9153">9153. Kenwood Cooking CHEF Major KM0961</option>
+														<option value="9154">9154. Jura Impressa C60</option>
+														<option value="9155">9155. Irobot Scooba 390 Hardfloor</option>
+														<option value="9156">9156. Apple iPad AIR 2 WI-FI 64GB</option>
+														<option value="9157">9157. Nikon spiegelreflexcamera D3300 Rood</option>
+														<option value="9158">9158. Sony Playstation 4 White 2 controllers + Playstation TV + Battlefield Hardline + Fifa 15 + PS Plus 12</option>
+														<option value="9163">9163. Samsung Galaxy S6 32GB Goud</option>
+														<option value="9166">9166. Samsung UE48H6850</option>
+														<option value="9172">9172. Apple IMAC MF883</option>
+														<option value="29174">29174. Sony Xperia Z3 NFC LTE</option>
+														<option value="29175">29175. Samsung NX500 + 16-50mm F3.5-5.6 Power Zoom Zwart</option>
+														<option value="29177">29177. Sony Cyber-SHOT DSC-RX100 III</option>
+														<option value="29178">29178. Sony Playstation 4 White + GTA V + Fifa 15 + PS Plus 3 Maanden</option>
+													</select><span class="select2 select2-container select2-container--default" dir="ltr" style="width: 325px;"><span class="selection"><span class="select2-selection select2-selection--single" role="combobox" aria-haspopup="true" aria-expanded="false" tabindex="0" aria-labelledby="select2-data_uxAuctionSelection6-container"><span class="select2-selection__rendered" id="select2-data_uxAuctionSelection6-container" title="8508. Sony KD-49X8505"><span class="select2-selection__clear">×</span>8508. Sony KD-49X8505</span><span class="select2-selection__arrow" role="presentation"><b role="presentation"></b></span></span></span><span class="dropdown-wrapper" aria-hidden="true"></span></span>
+												</div>
+											</td>
+										</tr>
+										<tr>
+											<th><label for="data_uxTypeSelection7"><abbr style="visibility: visible; display: block; white-space: nowrap;">Positie 7</abbr></label></th>
+											<td>
+												<div class="half">
+													<select id="data_uxTypeSelection7" class="half postBack styled select2-hidden-accessible" name="data_uxTypeSelection7" tabindex="-1" aria-hidden="true">
+														<option value="100">Beschikbaar</option>
+														<option value="101">Verkocht</option>
+														<option value="2">Kopers banner</option>
+														<option value="3">Educatie banner (of onder positie bij bannerset)</option>
+														<option value="4" selected="selected">Privilege banner (of boven positie bij bannerset)</option>
+													</select><span class="select2 select2-container select2-container--default" dir="ltr" style="width: 325px;"><span class="selection"><span class="select2-selection select2-selection--single" role="combobox" aria-haspopup="true" aria-expanded="false" tabindex="0" aria-labelledby="select2-data_uxTypeSelection7-container"><span class="select2-selection__rendered" id="select2-data_uxTypeSelection7-container" title="Privilege banner (of boven positie bij bannerset)"><span class="select2-selection__clear">×</span>Privilege banner (of boven positie bij bannerset)</span><span class="select2-selection__arrow" role="presentation"><b role="presentation"></b></span></span></span><span class="dropdown-wrapper" aria-hidden="true"></span></span>
+												</div>
+											</td>
+											<th><label for="data_uxAuctionSelection7"><abbr style="visibility: visible; display: block; white-space: nowrap;">Selectie 7</abbr></label></th>
+											<td>
+												<div class="half">
+													Toegekend door website
+												</div>
+											</td>
+										</tr>
+										<tr>
+											<th><label for="data_uxTypeSelection8"><abbr style="visibility: visible; display: block; white-space: nowrap;">Positie 8</abbr></label></th>
+											<td>
+												<div class="half">
+													<select id="data_uxTypeSelection8" class="half postBack styled select2-hidden-accessible" name="data_uxTypeSelection8" tabindex="-1" aria-hidden="true">
+														<option value="100">Beschikbaar</option>
+														<option value="101">Verkocht</option>
+														<option value="2" selected="selected">Kopers banner</option>
+														<option value="3">Educatie banner (of onder positie bij bannerset)</option>
+														<option value="4">Privilege banner (of boven positie bij bannerset)</option>
+													</select><span class="select2 select2-container select2-container--default" dir="ltr" style="width: 325px;"><span class="selection"><span class="select2-selection select2-selection--single" role="combobox" aria-haspopup="true" aria-expanded="false" tabindex="0" aria-labelledby="select2-data_uxTypeSelection8-container"><span class="select2-selection__rendered" id="select2-data_uxTypeSelection8-container" title="Kopers banner"><span class="select2-selection__clear">×</span>Kopers banner</span><span class="select2-selection__arrow" role="presentation"><b role="presentation"></b></span></span></span><span class="dropdown-wrapper" aria-hidden="true"></span></span>
+												</div>
+											</td>
+											<th><label for="data_uxAuctionSelection8"><abbr style="visibility: visible; display: block; white-space: nowrap;">Selectie 8</abbr></label></th>
+											<td>
+												<div class="half">
+													Toegekend door website
+												</div>
+											</td>
+										</tr>
+										<tr>
+											<th><label for="data_uxTypeSelection9"><abbr style="visibility: visible; display: block; white-space: nowrap;">Positie 9</abbr></label></th>
+											<td>
+												<div class="half">
+													<select id="data_uxTypeSelection9" class="half postBack styled select2-hidden-accessible" name="data_uxTypeSelection9" tabindex="-1" aria-hidden="true">
+														<option value="100" selected="selected">Beschikbaar</option>
+														<option value="101">Verkocht</option>
+														<option value="2">Kopers banner</option>
+														<option value="3">Educatie banner (of onder positie bij bannerset)</option>
+														<option value="4">Privilege banner (of boven positie bij bannerset)</option>
+													</select><span class="select2 select2-container select2-container--default" dir="ltr" style="width: 325px;"><span class="selection"><span class="select2-selection select2-selection--single" role="combobox" aria-haspopup="true" aria-expanded="false" tabindex="0" aria-labelledby="select2-data_uxTypeSelection9-container"><span class="select2-selection__rendered" id="select2-data_uxTypeSelection9-container" title="Beschikbaar"><span class="select2-selection__clear">×</span>Beschikbaar</span><span class="select2-selection__arrow" role="presentation"><b role="presentation"></b></span></span></span><span class="dropdown-wrapper" aria-hidden="true"></span></span>
+												</div>
+											</td>
+											<th><label for="data_uxAuctionSelection9"><abbr style="visibility: visible; display: block; white-space: nowrap;">Selectie 9</abbr></label></th>
+											<td>
+												<div class="half">
+													<select id="data_uxAuctionSelection9" class="half styled select2-hidden-accessible" name="data_uxAuctionSelection9" tabindex="-1" aria-hidden="true">
+														<option value="8773">8773. Delonghi ECAM 44.660.B</option>
+														<option value="8508">8508. Sony KD-49X8505</option>
+														<option value="9135">9135. Samsung NX500 + 16-50mm F3.5-5.6 Power Zoom Wit</option>
+														<option value="9140">9140. Canon EOS100D</option>
+														<option value="9141">9141. Delonghi ECAM 22.360.S Magnificas</option>
+														<option value="9143" selected="selected">9143. Asus Zenbook UX305FA-FB041H</option>
+														<option value="9144">9144. Apple Watch	38mm	Silver Alumium Case	White Sport Band</option>
+														<option value="9145">9145. Apple iPad AIR 2 WI-FI 64GB</option>
+														<option value="9146">9146. Asus TP300LA-DW123H</option>
+														<option value="9147">9147. Apple iPad AIR 2 WI-FI 64GB GOLD</option>
+														<option value="9151">9151. Makita DDF 459 RF3J Combiset</option>
+														<option value="9152">9152. KitchenAid 5KSM150PSECB</option>
+														<option value="9153">9153. Kenwood Cooking CHEF Major KM0961</option>
+														<option value="9154">9154. Jura Impressa C60</option>
+														<option value="9155">9155. Irobot Scooba 390 Hardfloor</option>
+														<option value="9156">9156. Apple iPad AIR 2 WI-FI 64GB</option>
+														<option value="9157">9157. Nikon spiegelreflexcamera D3300 Rood</option>
+														<option value="9158">9158. Sony Playstation 4 White 2 controllers + Playstation TV + Battlefield Hardline + Fifa 15 + PS Plus 12</option>
+														<option value="9163">9163. Samsung Galaxy S6 32GB Goud</option>
+														<option value="9166">9166. Samsung UE48H6850</option>
+														<option value="9172">9172. Apple IMAC MF883</option>
+														<option value="29174">29174. Sony Xperia Z3 NFC LTE</option>
+														<option value="29175">29175. Samsung NX500 + 16-50mm F3.5-5.6 Power Zoom Zwart</option>
+														<option value="29177">29177. Sony Cyber-SHOT DSC-RX100 III</option>
+														<option value="29178">29178. Sony Playstation 4 White + GTA V + Fifa 15 + PS Plus 3 Maanden</option>
+													</select><span class="select2 select2-container select2-container--default" dir="ltr" style="width: 325px;"><span class="selection"><span class="select2-selection select2-selection--single" role="combobox" aria-haspopup="true" aria-expanded="false" tabindex="0" aria-labelledby="select2-data_uxAuctionSelection9-container"><span class="select2-selection__rendered" id="select2-data_uxAuctionSelection9-container" title="9143. Asus Zenbook UX305FA-FB041H"><span class="select2-selection__clear">×</span>9143. Asus Zenbook UX305FA-FB041H</span><span class="select2-selection__arrow" role="presentation"><b role="presentation"></b></span></span></span><span class="dropdown-wrapper" aria-hidden="true"></span></span>
+												</div>
+											</td>
+										</tr>
+										<tr>
+											<th><label for="data_uxTypeSelection10"><abbr style="visibility: visible; display: block; white-space: nowrap;">Positie 10</abbr></label></th>
+											<td>
+												<div class="half">
+													<select id="data_uxTypeSelection10" class="half postBack styled select2-hidden-accessible" name="data_uxTypeSelection10" tabindex="-1" aria-hidden="true">
+														<option value="100">Beschikbaar</option>
+														<option value="101" selected="selected">Verkocht</option>
+														<option value="2">Kopers banner</option>
+														<option value="3">Educatie banner (of onder positie bij bannerset)</option>
+														<option value="4">Privilege banner (of boven positie bij bannerset)</option>
+													</select><span class="select2 select2-container select2-container--default" dir="ltr" style="width: 325px;"><span class="selection"><span class="select2-selection select2-selection--single" role="combobox" aria-haspopup="true" aria-expanded="false" tabindex="0" aria-labelledby="select2-data_uxTypeSelection10-container"><span class="select2-selection__rendered" id="select2-data_uxTypeSelection10-container" title="Verkocht"><span class="select2-selection__clear">×</span>Verkocht</span><span class="select2-selection__arrow" role="presentation"><b role="presentation"></b></span></span></span><span class="dropdown-wrapper" aria-hidden="true"></span></span>
+												</div>
+											</td>
+											<th><label for="data_uxAuctionSelection10"><abbr style="visibility: visible; display: block; white-space: nowrap;">Selectie 10</abbr></label></th>
+											<td>
+												<div class="half">
+													<select id="data_uxAuctionSelection10" class="half styled select2-hidden-accessible" name="data_uxAuctionSelection10" tabindex="-1" aria-hidden="true">
+														<option value="9142" selected="selected">9142. Dyson DC52 Multi Floor</option>
+														<option value="9138">9138. Samsung Galaxy S6 32GB Goud</option>
+														<option value="9139">9139. Apple iPad AIR 2 WI-FI 64GB</option>
+														<option value="9160">9160. Nikon D5500 18-105 VR-kit Zwart</option>
+														<option value="9165">9165. Samsung VR20H9050UW (VR9000)</option>
+														<option value="29176">29176. Nikon D5500 18-55 VRII-kit Rood</option>
+														<option value="9167">9167. Sony HDR-PJ810</option>
+														<option value="9159">9159. Panasonic HC-VX870</option>
+														<option value="9161">9161. Panasonic Lumix DMC-G5 + 14-140mm f/3.5-5.6 Power OIS Zwart</option>
+														<option value="9164">9164. Sony Cyber-SHOT DSC-RX100 III</option>
+														<option value="9162">9162. Sony Playstation 4 White + GTA V + Fifa 15 + PS Plus 3 Maanden</option>
+														<option value="9173">9173. Makita DDF 459 RF3J Combiset</option>
+														<option value="9168">9168. Apple Watch	38mm	Silver Alumium Case	Blue Sport Band</option>
+														<option value="8859">8859. Sony KD-49X8505</option>
+														<option value="9137">9137. Apple iPhone 6 Plus Spacegrey 16GB</option>
+														<option value="8709">8709. Delonghi ECAM 44.660.B</option>
+														<option value="9136">9136. Apple NEW IPAD 4G</option>
+														<option value="8647">8647. Sony KD-49X8505</option>
+														<option value="8499">8499. Microsoft Surface PRO 3</option>
+														<option value="8858">8858. Sonos Playbar</option>
+														<option value="8509">8509. KitchenAid 5 KSM 150 Psecr</option>
+														<option value="8498">8498. Panasonic Lumix DMC-FZ1000</option>
+														<option value="8775">8775. Samsung VR20H9050UW (VR9000)</option>
+														<option value="8549">8549. Samsung Galaxy S6 Edge 64GB Wit</option>
+														<option value="8772">8772. Samsung Galaxy S6 Edge 64GB Wit</option>
+														<option value="8506">8506. Microsoft Xbox One Black 2 controllers + Fifa 15 + Halo Master Chief Collection + Xbox Live</option>
+														<option value="8511">8511. Samsung Galaxy S6 Edge 64GB Zwart</option>
+														<option value="8510">8510. Samsung Galaxy S6 Edge 64GB Goud</option>
+														<option value="8550">8550. Samsung Galaxy S6 Edge 32GB Wit</option>
+														<option value="8861">8861. Delonghi ECAM 44.660.B</option>
+														<option value="8860">8860. Samsung Galaxy S6 64GB Goud</option>
+														<option value="8507">8507. Samsung Galaxy S6 Edge 32GB Zwart</option>
+														<option value="8551">8551. Panasonic Lumix DMC-FZ1000</option>
+														<option value="8497">8497. Delonghi ECAM 44.660.B</option>
+														<option value="8653">8653. Sony Alpha 6000 / ILCE-6000</option>
+														<option value="8648">8648. Samsung Galaxy S6 64GB Goud</option>
+														<option value="8774">8774. Sony Alpha 6000 / ILCE-6000</option>
+														<option value="8552">8552. Samsung Galaxy S6 Edge 32GB Zwart</option>
+														<option value="8554">8554. Microsoft Xbox One Black 2 controllers + Fifa 15 + Halo Master Chief Collection + Xbox Live</option>
+														<option value="8553">8553. KitchenAid 5KSM150PSEEB</option>
+														<option value="8449">8449. Bosch UNEO MAXX + PDC 1</option>
+														<option value="8879">8879. Samsung Galaxy TAB S 10.5 WI-Fi+lte 16GB</option>
+														<option value="8548">8548. Samsung Galaxy TAB S 10.5 WI-Fi+lte 16GB</option>
+														<option value="8762">8762. Samsung Galaxy S6 64GB Goud</option>
+														<option value="8547">8547. Sonos Playbar</option>
+														<option value="8452">8452. Samsung VR20H9050UW (VR9000)</option>
+														<option value="8840">8840. Canon EOS 1200D / EOS KISS X70</option>
+														<option value="8771">8771. Canon EOS 1200D / EOS KISS X70</option>
+														<option value="8650">8650. Samsung Galaxy S6 64GB Wit</option>
+														<option value="8572">8572. Samsung Galaxy S6 Edge 64GB Goud</option>
+													</select><span class="select2 select2-container select2-container--default" dir="ltr" style="width: 325px;"><span class="selection"><span class="select2-selection select2-selection--single" role="combobox" aria-haspopup="true" aria-expanded="false" tabindex="0" aria-labelledby="select2-data_uxAuctionSelection10-container"><span class="select2-selection__rendered" id="select2-data_uxAuctionSelection10-container" title="9142. Dyson DC52 Multi Floor"><span class="select2-selection__clear">×</span>9142. Dyson DC52 Multi Floor</span><span class="select2-selection__arrow" role="presentation"><b role="presentation"></b></span></span></span><span class="dropdown-wrapper" aria-hidden="true"></span></span>
+												</div>
+											</td>
+										</tr>
+										<tr>
+											<th><label for="data_uxTypeSelection11"><abbr style="visibility: visible; display: block; white-space: nowrap;">Positie 11</abbr></label></th>
+											<td>
+												<div class="half">
+													<select id="data_uxTypeSelection11" class="half postBack styled select2-hidden-accessible" name="data_uxTypeSelection11" tabindex="-1" aria-hidden="true">
+														<option value="100" selected="selected">Beschikbaar</option>
+														<option value="101">Verkocht</option>
+														<option value="2">Kopers banner</option>
+														<option value="3">Educatie banner (of onder positie bij bannerset)</option>
+														<option value="4">Privilege banner (of boven positie bij bannerset)</option>
+													</select><span class="select2 select2-container select2-container--default" dir="ltr" style="width: 325px;"><span class="selection"><span class="select2-selection select2-selection--single" role="combobox" aria-haspopup="true" aria-expanded="false" tabindex="0" aria-labelledby="select2-data_uxTypeSelection11-container"><span class="select2-selection__rendered" id="select2-data_uxTypeSelection11-container" title="Beschikbaar"><span class="select2-selection__clear">×</span>Beschikbaar</span><span class="select2-selection__arrow" role="presentation"><b role="presentation"></b></span></span></span><span class="dropdown-wrapper" aria-hidden="true"></span></span>
+												</div>
+											</td>
+											<th><label for="data_uxAuctionSelection11"><abbr style="visibility: visible; display: block; white-space: nowrap;">Selectie 11</abbr></label></th>
+											<td>
+												<div class="half">
+													<select id="data_uxAuctionSelection11" class="half styled select2-hidden-accessible" name="data_uxAuctionSelection11" tabindex="-1" aria-hidden="true">
+														<option value="8773" selected="selected">8773. Delonghi ECAM 44.660.B</option>
+														<option value="8508">8508. Sony KD-49X8505</option>
+														<option value="9135">9135. Samsung NX500 + 16-50mm F3.5-5.6 Power Zoom Wit</option>
+														<option value="9140">9140. Canon EOS100D</option>
+														<option value="9141">9141. Delonghi ECAM 22.360.S Magnificas</option>
+														<option value="9143">9143. Asus Zenbook UX305FA-FB041H</option>
+														<option value="9144">9144. Apple Watch	38mm	Silver Alumium Case	White Sport Band</option>
+														<option value="9145">9145. Apple iPad AIR 2 WI-FI 64GB</option>
+														<option value="9146">9146. Asus TP300LA-DW123H</option>
+														<option value="9147">9147. Apple iPad AIR 2 WI-FI 64GB GOLD</option>
+														<option value="9151">9151. Makita DDF 459 RF3J Combiset</option>
+														<option value="9152">9152. KitchenAid 5KSM150PSECB</option>
+														<option value="9153">9153. Kenwood Cooking CHEF Major KM0961</option>
+														<option value="9154">9154. Jura Impressa C60</option>
+														<option value="9155">9155. Irobot Scooba 390 Hardfloor</option>
+														<option value="9156">9156. Apple iPad AIR 2 WI-FI 64GB</option>
+														<option value="9157">9157. Nikon spiegelreflexcamera D3300 Rood</option>
+														<option value="9158">9158. Sony Playstation 4 White 2 controllers + Playstation TV + Battlefield Hardline + Fifa 15 + PS Plus 12</option>
+														<option value="9163">9163. Samsung Galaxy S6 32GB Goud</option>
+														<option value="9166">9166. Samsung UE48H6850</option>
+														<option value="9172">9172. Apple IMAC MF883</option>
+														<option value="29174">29174. Sony Xperia Z3 NFC LTE</option>
+														<option value="29175">29175. Samsung NX500 + 16-50mm F3.5-5.6 Power Zoom Zwart</option>
+														<option value="29177">29177. Sony Cyber-SHOT DSC-RX100 III</option>
+														<option value="29178">29178. Sony Playstation 4 White + GTA V + Fifa 15 + PS Plus 3 Maanden</option>
+													</select><span class="select2 select2-container select2-container--default" dir="ltr" style="width: 325px;"><span class="selection"><span class="select2-selection select2-selection--single" role="combobox" aria-haspopup="true" aria-expanded="false" tabindex="0" aria-labelledby="select2-data_uxAuctionSelection11-container"><span class="select2-selection__rendered" id="select2-data_uxAuctionSelection11-container" title="8773. Delonghi ECAM 44.660.B"><span class="select2-selection__clear">×</span>8773. Delonghi ECAM 44.660.B</span><span class="select2-selection__arrow" role="presentation"><b role="presentation"></b></span></span></span><span class="dropdown-wrapper" aria-hidden="true"></span></span>
+												</div>
+											</td>
+										</tr>
+										<tr>
+											<th><label for="data_uxTypeSelection12"><abbr style="visibility: visible; display: block; white-space: nowrap;">Positie 12</abbr></label></th>
+											<td>
+												<div class="half">
+													<select id="data_uxTypeSelection12" class="half postBack styled select2-hidden-accessible" name="data_uxTypeSelection12" tabindex="-1" aria-hidden="true">
+														<option value="100" selected="selected">Beschikbaar</option>
+														<option value="101">Verkocht</option>
+														<option value="2">Kopers banner</option>
+														<option value="3">Educatie banner (of onder positie bij bannerset)</option>
+														<option value="4">Privilege banner (of boven positie bij bannerset)</option>
+													</select><span class="select2 select2-container select2-container--default" dir="ltr" style="width: 325px;"><span class="selection"><span class="select2-selection select2-selection--single" role="combobox" aria-haspopup="true" aria-expanded="false" tabindex="0" aria-labelledby="select2-data_uxTypeSelection12-container"><span class="select2-selection__rendered" id="select2-data_uxTypeSelection12-container" title="Beschikbaar"><span class="select2-selection__clear">×</span>Beschikbaar</span><span class="select2-selection__arrow" role="presentation"><b role="presentation"></b></span></span></span><span class="dropdown-wrapper" aria-hidden="true"></span></span>
+												</div>
+											</td>
+											<th><label for="data_uxAuctionSelection12"><abbr style="visibility: visible; display: block; white-space: nowrap;">Selectie 12</abbr></label></th>
+											<td>
+												<div class="half">
+													<select id="data_uxAuctionSelection12" class="half styled select2-hidden-accessible" name="data_uxAuctionSelection12" tabindex="-1" aria-hidden="true">
+														<option value="8773">8773. Delonghi ECAM 44.660.B</option>
+														<option value="8508">8508. Sony KD-49X8505</option>
+														<option value="9135">9135. Samsung NX500 + 16-50mm F3.5-5.6 Power Zoom Wit</option>
+														<option value="9140">9140. Canon EOS100D</option>
+														<option value="9141">9141. Delonghi ECAM 22.360.S Magnificas</option>
+														<option value="9143">9143. Asus Zenbook UX305FA-FB041H</option>
+														<option value="9144">9144. Apple Watch	38mm	Silver Alumium Case	White Sport Band</option>
+														<option value="9145">9145. Apple iPad AIR 2 WI-FI 64GB</option>
+														<option value="9146">9146. Asus TP300LA-DW123H</option>
+														<option value="9147">9147. Apple iPad AIR 2 WI-FI 64GB GOLD</option>
+														<option value="9151">9151. Makita DDF 459 RF3J Combiset</option>
+														<option value="9152" selected="selected">9152. KitchenAid 5KSM150PSECB</option>
+														<option value="9153">9153. Kenwood Cooking CHEF Major KM0961</option>
+														<option value="9154">9154. Jura Impressa C60</option>
+														<option value="9155">9155. Irobot Scooba 390 Hardfloor</option>
+														<option value="9156">9156. Apple iPad AIR 2 WI-FI 64GB</option>
+														<option value="9157">9157. Nikon spiegelreflexcamera D3300 Rood</option>
+														<option value="9158">9158. Sony Playstation 4 White 2 controllers + Playstation TV + Battlefield Hardline + Fifa 15 + PS Plus 12</option>
+														<option value="9163">9163. Samsung Galaxy S6 32GB Goud</option>
+														<option value="9166">9166. Samsung UE48H6850</option>
+														<option value="9172">9172. Apple IMAC MF883</option>
+														<option value="29174">29174. Sony Xperia Z3 NFC LTE</option>
+														<option value="29175">29175. Samsung NX500 + 16-50mm F3.5-5.6 Power Zoom Zwart</option>
+														<option value="29177">29177. Sony Cyber-SHOT DSC-RX100 III</option>
+														<option value="29178">29178. Sony Playstation 4 White + GTA V + Fifa 15 + PS Plus 3 Maanden</option>
+													</select><span class="select2 select2-container select2-container--default" dir="ltr" style="width: 325px;"><span class="selection"><span class="select2-selection select2-selection--single" role="combobox" aria-haspopup="true" aria-expanded="false" tabindex="0" aria-labelledby="select2-data_uxAuctionSelection12-container"><span class="select2-selection__rendered" id="select2-data_uxAuctionSelection12-container" title="9152. KitchenAid 5KSM150PSECB"><span class="select2-selection__clear">×</span>9152. KitchenAid 5KSM150PSECB</span><span class="select2-selection__arrow" role="presentation"><b role="presentation"></b></span></span></span><span class="dropdown-wrapper" aria-hidden="true"></span></span>
+												</div>
+											</td>
+										</tr>
+										<tr>
+											<th><label for="data_uxTypeSelection13"><abbr style="visibility: visible; display: block; white-space: nowrap;">Positie 13</abbr></label></th>
+											<td>
+												<div class="half">
+													<select id="data_uxTypeSelection13" class="half postBack styled select2-hidden-accessible" name="data_uxTypeSelection13" tabindex="-1" aria-hidden="true">
+														<option value="100" selected="selected">Beschikbaar</option>
+														<option value="101">Verkocht</option>
+														<option value="2">Kopers banner</option>
+														<option value="3">Educatie banner (of onder positie bij bannerset)</option>
+														<option value="4">Privilege banner (of boven positie bij bannerset)</option>
+													</select><span class="select2 select2-container select2-container--default" dir="ltr" style="width: 325px;"><span class="selection"><span class="select2-selection select2-selection--single" role="combobox" aria-haspopup="true" aria-expanded="false" tabindex="0" aria-labelledby="select2-data_uxTypeSelection13-container"><span class="select2-selection__rendered" id="select2-data_uxTypeSelection13-container" title="Beschikbaar"><span class="select2-selection__clear">×</span>Beschikbaar</span><span class="select2-selection__arrow" role="presentation"><b role="presentation"></b></span></span></span><span class="dropdown-wrapper" aria-hidden="true"></span></span>
+												</div>
+											</td>
+											<th><label for="data_uxAuctionSelection13"><abbr style="visibility: visible; display: block; white-space: nowrap;">Selectie 13</abbr></label></th>
+											<td>
+												<div class="half">
+													<select id="data_uxAuctionSelection13" class="half styled select2-hidden-accessible" name="data_uxAuctionSelection13" tabindex="-1" aria-hidden="true">
+														<option value="8773">8773. Delonghi ECAM 44.660.B</option>
+														<option value="8508">8508. Sony KD-49X8505</option>
+														<option value="9135">9135. Samsung NX500 + 16-50mm F3.5-5.6 Power Zoom Wit</option>
+														<option value="9140">9140. Canon EOS100D</option>
+														<option value="9141">9141. Delonghi ECAM 22.360.S Magnificas</option>
+														<option value="9143">9143. Asus Zenbook UX305FA-FB041H</option>
+														<option value="9144">9144. Apple Watch	38mm	Silver Alumium Case	White Sport Band</option>
+														<option value="9145">9145. Apple iPad AIR 2 WI-FI 64GB</option>
+														<option value="9146">9146. Asus TP300LA-DW123H</option>
+														<option value="9147">9147. Apple iPad AIR 2 WI-FI 64GB GOLD</option>
+														<option value="9151">9151. Makita DDF 459 RF3J Combiset</option>
+														<option value="9152">9152. KitchenAid 5KSM150PSECB</option>
+														<option value="9153">9153. Kenwood Cooking CHEF Major KM0961</option>
+														<option value="9154">9154. Jura Impressa C60</option>
+														<option value="9155">9155. Irobot Scooba 390 Hardfloor</option>
+														<option value="9156">9156. Apple iPad AIR 2 WI-FI 64GB</option>
+														<option value="9157" selected="selected">9157. Nikon spiegelreflexcamera D3300 Rood</option>
+														<option value="9158">9158. Sony Playstation 4 White 2 controllers + Playstation TV + Battlefield Hardline + Fifa 15 + PS Plus 12</option>
+														<option value="9163">9163. Samsung Galaxy S6 32GB Goud</option>
+														<option value="9166">9166. Samsung UE48H6850</option>
+														<option value="9172">9172. Apple IMAC MF883</option>
+														<option value="29174">29174. Sony Xperia Z3 NFC LTE</option>
+														<option value="29175">29175. Samsung NX500 + 16-50mm F3.5-5.6 Power Zoom Zwart</option>
+														<option value="29177">29177. Sony Cyber-SHOT DSC-RX100 III</option>
+														<option value="29178">29178. Sony Playstation 4 White + GTA V + Fifa 15 + PS Plus 3 Maanden</option>
+													</select><span class="select2 select2-container select2-container--default" dir="ltr" style="width: 325px;"><span class="selection"><span class="select2-selection select2-selection--single" role="combobox" aria-haspopup="true" aria-expanded="false" tabindex="0" aria-labelledby="select2-data_uxAuctionSelection13-container"><span class="select2-selection__rendered" id="select2-data_uxAuctionSelection13-container" title="9157. Nikon spiegelreflexcamera D3300 Rood"><span class="select2-selection__clear">×</span>9157. Nikon spiegelreflexcamera D3300 Rood</span><span class="select2-selection__arrow" role="presentation"><b role="presentation"></b></span></span></span><span class="dropdown-wrapper" aria-hidden="true"></span></span>
+												</div>
+											</td>
+										</tr>
+										<tr>
+											<th><label for="data_uxTypeSelection14"><abbr style="visibility: visible; display: block; white-space: nowrap;">Positie 14</abbr></label></th>
+											<td>
+												<div class="half">
+													<select id="data_uxTypeSelection14" class="half postBack styled select2-hidden-accessible" name="data_uxTypeSelection14" tabindex="-1" aria-hidden="true">
+														<option value="100">Beschikbaar</option>
+														<option value="101">Verkocht</option>
+														<option value="2">Kopers banner</option>
+														<option value="3" selected="selected">Educatie banner (of onder positie bij bannerset)</option>
+														<option value="4">Privilege banner (of boven positie bij bannerset)</option>
+													</select><span class="select2 select2-container select2-container--default" dir="ltr" style="width: 325px;"><span class="selection"><span class="select2-selection select2-selection--single" role="combobox" aria-haspopup="true" aria-expanded="false" tabindex="0" aria-labelledby="select2-data_uxTypeSelection14-container"><span class="select2-selection__rendered" id="select2-data_uxTypeSelection14-container" title="Educatie banner (of onder positie bij bannerset)"><span class="select2-selection__clear">×</span>Educatie banner (of onder positie bij bannerset)</span><span class="select2-selection__arrow" role="presentation"><b role="presentation"></b></span></span></span><span class="dropdown-wrapper" aria-hidden="true"></span></span>
+												</div>
+											</td>
+											<th><label for="data_uxAuctionSelection14"><abbr style="visibility: visible; display: block; white-space: nowrap;">Selectie 14</abbr></label></th>
+											<td>
+												<div class="half">
+													Toegekend door website
+												</div>
+											</td>
+										</tr>
+										<tr>
+											<th><label for="data_uxTypeSelection15"><abbr style="visibility: visible; display: block; white-space: nowrap;">Positie 15</abbr></label></th>
+											<td>
+												<div class="half">
+													<select id="data_uxTypeSelection15" class="half postBack styled select2-hidden-accessible" name="data_uxTypeSelection15" tabindex="-1" aria-hidden="true">
+														<option value="100" selected="selected">Beschikbaar</option>
+														<option value="101">Verkocht</option>
+														<option value="2">Kopers banner</option>
+														<option value="3">Educatie banner (of onder positie bij bannerset)</option>
+														<option value="4">Privilege banner (of boven positie bij bannerset)</option>
+													</select><span class="select2 select2-container select2-container--default" dir="ltr" style="width: 325px;"><span class="selection"><span class="select2-selection select2-selection--single" role="combobox" aria-haspopup="true" aria-expanded="false" tabindex="0" aria-labelledby="select2-data_uxTypeSelection15-container"><span class="select2-selection__rendered" id="select2-data_uxTypeSelection15-container" title="Beschikbaar"><span class="select2-selection__clear">×</span>Beschikbaar</span><span class="select2-selection__arrow" role="presentation"><b role="presentation"></b></span></span></span><span class="dropdown-wrapper" aria-hidden="true"></span></span>
+												</div>
+											</td>
+											<th><label for="data_uxAuctionSelection15"><abbr style="visibility: visible; display: block; white-space: nowrap;">Selectie 15</abbr></label></th>
+											<td>
+												<div class="half">
+													<select id="data_uxAuctionSelection15" class="half styled select2-hidden-accessible" name="data_uxAuctionSelection15" tabindex="-1" aria-hidden="true">
+														<option value="8773">8773. Delonghi ECAM 44.660.B</option>
+														<option value="8508">8508. Sony KD-49X8505</option>
+														<option value="9135" selected="selected">9135. Samsung NX500 + 16-50mm F3.5-5.6 Power Zoom Wit</option>
+														<option value="9140">9140. Canon EOS100D</option>
+														<option value="9141">9141. Delonghi ECAM 22.360.S Magnificas</option>
+														<option value="9143">9143. Asus Zenbook UX305FA-FB041H</option>
+														<option value="9144">9144. Apple Watch	38mm	Silver Alumium Case	White Sport Band</option>
+														<option value="9145">9145. Apple iPad AIR 2 WI-FI 64GB</option>
+														<option value="9146">9146. Asus TP300LA-DW123H</option>
+														<option value="9147">9147. Apple iPad AIR 2 WI-FI 64GB GOLD</option>
+														<option value="9151">9151. Makita DDF 459 RF3J Combiset</option>
+														<option value="9152">9152. KitchenAid 5KSM150PSECB</option>
+														<option value="9153">9153. Kenwood Cooking CHEF Major KM0961</option>
+														<option value="9154">9154. Jura Impressa C60</option>
+														<option value="9155">9155. Irobot Scooba 390 Hardfloor</option>
+														<option value="9156">9156. Apple iPad AIR 2 WI-FI 64GB</option>
+														<option value="9157">9157. Nikon spiegelreflexcamera D3300 Rood</option>
+														<option value="9158">9158. Sony Playstation 4 White 2 controllers + Playstation TV + Battlefield Hardline + Fifa 15 + PS Plus 12</option>
+														<option value="9163">9163. Samsung Galaxy S6 32GB Goud</option>
+														<option value="9166">9166. Samsung UE48H6850</option>
+														<option value="9172">9172. Apple IMAC MF883</option>
+														<option value="29174">29174. Sony Xperia Z3 NFC LTE</option>
+														<option value="29175">29175. Samsung NX500 + 16-50mm F3.5-5.6 Power Zoom Zwart</option>
+														<option value="29177">29177. Sony Cyber-SHOT DSC-RX100 III</option>
+														<option value="29178">29178. Sony Playstation 4 White + GTA V + Fifa 15 + PS Plus 3 Maanden</option>
+													</select><span class="select2 select2-container select2-container--default" dir="ltr" style="width: 325px;"><span class="selection"><span class="select2-selection select2-selection--single" role="combobox" aria-haspopup="true" aria-expanded="false" tabindex="0" aria-labelledby="select2-data_uxAuctionSelection15-container"><span class="select2-selection__rendered" id="select2-data_uxAuctionSelection15-container" title="9135. Samsung NX500 + 16-50mm F3.5-5.6 Power Zoom Wit"><span class="select2-selection__clear">×</span>9135. Samsung NX500 + 16-50mm F3.5-5.6 Power Zoom Wit</span><span class="select2-selection__arrow" role="presentation"><b role="presentation"></b></span></span></span><span class="dropdown-wrapper" aria-hidden="true"></span></span>
+												</div>
+											</td>
+										</tr>
+										<tr>
+											<th><label for="data_uxTypeSelection16"><abbr style="visibility: visible; display: block; white-space: nowrap;">Positie 16</abbr></label></th>
+											<td>
+												<div class="half">
+													<select id="data_uxTypeSelection16" class="half postBack styled select2-hidden-accessible" name="data_uxTypeSelection16" tabindex="-1" aria-hidden="true">
+														<option value="100" selected="selected">Beschikbaar</option>
+														<option value="101">Verkocht</option>
+														<option value="2">Kopers banner</option>
+														<option value="3">Educatie banner (of onder positie bij bannerset)</option>
+														<option value="4">Privilege banner (of boven positie bij bannerset)</option>
+													</select><span class="select2 select2-container select2-container--default" dir="ltr" style="width: 325px;"><span class="selection"><span class="select2-selection select2-selection--single" role="combobox" aria-haspopup="true" aria-expanded="false" tabindex="0" aria-labelledby="select2-data_uxTypeSelection16-container"><span class="select2-selection__rendered" id="select2-data_uxTypeSelection16-container" title="Beschikbaar"><span class="select2-selection__clear">×</span>Beschikbaar</span><span class="select2-selection__arrow" role="presentation"><b role="presentation"></b></span></span></span><span class="dropdown-wrapper" aria-hidden="true"></span></span>
+												</div>
+											</td>
+											<th><label for="data_uxAuctionSelection16"><abbr style="visibility: visible; display: block; white-space: nowrap;">Selectie 16</abbr></label></th>
+											<td>
+												<div class="half">
+													<select id="data_uxAuctionSelection16" class="half styled select2-hidden-accessible" name="data_uxAuctionSelection16" tabindex="-1" aria-hidden="true">
+														<option value="8773">8773. Delonghi ECAM 44.660.B</option>
+														<option value="8508">8508. Sony KD-49X8505</option>
+														<option value="9135">9135. Samsung NX500 + 16-50mm F3.5-5.6 Power Zoom Wit</option>
+														<option value="9140">9140. Canon EOS100D</option>
+														<option value="9141">9141. Delonghi ECAM 22.360.S Magnificas</option>
+														<option value="9143">9143. Asus Zenbook UX305FA-FB041H</option>
+														<option value="9144" selected="selected">9144. Apple Watch	38mm	Silver Alumium Case	White Sport Band</option>
+														<option value="9145">9145. Apple iPad AIR 2 WI-FI 64GB</option>
+														<option value="9146">9146. Asus TP300LA-DW123H</option>
+														<option value="9147">9147. Apple iPad AIR 2 WI-FI 64GB GOLD</option>
+														<option value="9151">9151. Makita DDF 459 RF3J Combiset</option>
+														<option value="9152">9152. KitchenAid 5KSM150PSECB</option>
+														<option value="9153">9153. Kenwood Cooking CHEF Major KM0961</option>
+														<option value="9154">9154. Jura Impressa C60</option>
+														<option value="9155">9155. Irobot Scooba 390 Hardfloor</option>
+														<option value="9156">9156. Apple iPad AIR 2 WI-FI 64GB</option>
+														<option value="9157">9157. Nikon spiegelreflexcamera D3300 Rood</option>
+														<option value="9158">9158. Sony Playstation 4 White 2 controllers + Playstation TV + Battlefield Hardline + Fifa 15 + PS Plus 12</option>
+														<option value="9163">9163. Samsung Galaxy S6 32GB Goud</option>
+														<option value="9166">9166. Samsung UE48H6850</option>
+														<option value="9172">9172. Apple IMAC MF883</option>
+														<option value="29174">29174. Sony Xperia Z3 NFC LTE</option>
+														<option value="29175">29175. Samsung NX500 + 16-50mm F3.5-5.6 Power Zoom Zwart</option>
+														<option value="29177">29177. Sony Cyber-SHOT DSC-RX100 III</option>
+														<option value="29178">29178. Sony Playstation 4 White + GTA V + Fifa 15 + PS Plus 3 Maanden</option>
+													</select><span class="select2 select2-container select2-container--default" dir="ltr" style="width: 325px;"><span class="selection"><span class="select2-selection select2-selection--single" role="combobox" aria-haspopup="true" aria-expanded="false" tabindex="0" aria-labelledby="select2-data_uxAuctionSelection16-container"><span class="select2-selection__rendered" id="select2-data_uxAuctionSelection16-container" title="9144. Apple Watch	38mm	Silver Alumium Case	White Sport Band"><span class="select2-selection__clear">×</span>9144. Apple Watch	38mm	Silver Alumium Case	White Sport Band</span><span class="select2-selection__arrow" role="presentation"><b role="presentation"></b></span></span></span><span class="dropdown-wrapper" aria-hidden="true"></span></span>
+												</div>
+											</td>
+										</tr>
+										<tr>
+											<th><label for="data_uxTypeSelection17"><abbr style="visibility: visible; display: block; white-space: nowrap;">Positie 17</abbr></label></th>
+											<td>
+												<div class="half">
+													<select id="data_uxTypeSelection17" class="half postBack styled select2-hidden-accessible" name="data_uxTypeSelection17" tabindex="-1" aria-hidden="true">
+														<option value="100">Beschikbaar</option>
+														<option value="101" selected="selected">Verkocht</option>
+														<option value="2">Kopers banner</option>
+														<option value="3">Educatie banner (of onder positie bij bannerset)</option>
+														<option value="4">Privilege banner (of boven positie bij bannerset)</option>
+													</select><span class="select2 select2-container select2-container--default" dir="ltr" style="width: 325px;"><span class="selection"><span class="select2-selection select2-selection--single" role="combobox" aria-haspopup="true" aria-expanded="false" tabindex="0" aria-labelledby="select2-data_uxTypeSelection17-container"><span class="select2-selection__rendered" id="select2-data_uxTypeSelection17-container" title="Verkocht"><span class="select2-selection__clear">×</span>Verkocht</span><span class="select2-selection__arrow" role="presentation"><b role="presentation"></b></span></span></span><span class="dropdown-wrapper" aria-hidden="true"></span></span>
+												</div>
+											</td>
+											<th><label for="data_uxAuctionSelection17"><abbr style="visibility: visible; display: block; white-space: nowrap;">Selectie 17</abbr></label></th>
+											<td>
+												<div class="half">
+													<select id="data_uxAuctionSelection17" class="half styled select2-hidden-accessible" name="data_uxAuctionSelection17" tabindex="-1" aria-hidden="true">
+														<option value="9142">9142. Dyson DC52 Multi Floor</option>
+														<option value="9138" selected="selected">9138. Samsung Galaxy S6 32GB Goud</option>
+														<option value="9139">9139. Apple iPad AIR 2 WI-FI 64GB</option>
+														<option value="9160">9160. Nikon D5500 18-105 VR-kit Zwart</option>
+														<option value="9165">9165. Samsung VR20H9050UW (VR9000)</option>
+														<option value="29176">29176. Nikon D5500 18-55 VRII-kit Rood</option>
+														<option value="9167">9167. Sony HDR-PJ810</option>
+														<option value="9159">9159. Panasonic HC-VX870</option>
+														<option value="9161">9161. Panasonic Lumix DMC-G5 + 14-140mm f/3.5-5.6 Power OIS Zwart</option>
+														<option value="9164">9164. Sony Cyber-SHOT DSC-RX100 III</option>
+														<option value="9162">9162. Sony Playstation 4 White + GTA V + Fifa 15 + PS Plus 3 Maanden</option>
+														<option value="9173">9173. Makita DDF 459 RF3J Combiset</option>
+														<option value="9168">9168. Apple Watch	38mm	Silver Alumium Case	Blue Sport Band</option>
+														<option value="8859">8859. Sony KD-49X8505</option>
+														<option value="9137">9137. Apple iPhone 6 Plus Spacegrey 16GB</option>
+														<option value="8709">8709. Delonghi ECAM 44.660.B</option>
+														<option value="9136">9136. Apple NEW IPAD 4G</option>
+														<option value="8647">8647. Sony KD-49X8505</option>
+														<option value="8499">8499. Microsoft Surface PRO 3</option>
+														<option value="8858">8858. Sonos Playbar</option>
+														<option value="8509">8509. KitchenAid 5 KSM 150 Psecr</option>
+														<option value="8498">8498. Panasonic Lumix DMC-FZ1000</option>
+														<option value="8775">8775. Samsung VR20H9050UW (VR9000)</option>
+														<option value="8549">8549. Samsung Galaxy S6 Edge 64GB Wit</option>
+														<option value="8772">8772. Samsung Galaxy S6 Edge 64GB Wit</option>
+														<option value="8506">8506. Microsoft Xbox One Black 2 controllers + Fifa 15 + Halo Master Chief Collection + Xbox Live</option>
+														<option value="8511">8511. Samsung Galaxy S6 Edge 64GB Zwart</option>
+														<option value="8510">8510. Samsung Galaxy S6 Edge 64GB Goud</option>
+														<option value="8550">8550. Samsung Galaxy S6 Edge 32GB Wit</option>
+														<option value="8861">8861. Delonghi ECAM 44.660.B</option>
+														<option value="8860">8860. Samsung Galaxy S6 64GB Goud</option>
+														<option value="8507">8507. Samsung Galaxy S6 Edge 32GB Zwart</option>
+														<option value="8551">8551. Panasonic Lumix DMC-FZ1000</option>
+														<option value="8497">8497. Delonghi ECAM 44.660.B</option>
+														<option value="8653">8653. Sony Alpha 6000 / ILCE-6000</option>
+														<option value="8648">8648. Samsung Galaxy S6 64GB Goud</option>
+														<option value="8774">8774. Sony Alpha 6000 / ILCE-6000</option>
+														<option value="8552">8552. Samsung Galaxy S6 Edge 32GB Zwart</option>
+														<option value="8554">8554. Microsoft Xbox One Black 2 controllers + Fifa 15 + Halo Master Chief Collection + Xbox Live</option>
+														<option value="8553">8553. KitchenAid 5KSM150PSEEB</option>
+														<option value="8449">8449. Bosch UNEO MAXX + PDC 1</option>
+														<option value="8879">8879. Samsung Galaxy TAB S 10.5 WI-Fi+lte 16GB</option>
+														<option value="8548">8548. Samsung Galaxy TAB S 10.5 WI-Fi+lte 16GB</option>
+														<option value="8762">8762. Samsung Galaxy S6 64GB Goud</option>
+														<option value="8547">8547. Sonos Playbar</option>
+														<option value="8452">8452. Samsung VR20H9050UW (VR9000)</option>
+														<option value="8840">8840. Canon EOS 1200D / EOS KISS X70</option>
+														<option value="8771">8771. Canon EOS 1200D / EOS KISS X70</option>
+														<option value="8650">8650. Samsung Galaxy S6 64GB Wit</option>
+														<option value="8572">8572. Samsung Galaxy S6 Edge 64GB Goud</option>
+													</select><span class="select2 select2-container select2-container--default" dir="ltr" style="width: 325px;"><span class="selection"><span class="select2-selection select2-selection--single" role="combobox" aria-haspopup="true" aria-expanded="false" tabindex="0" aria-labelledby="select2-data_uxAuctionSelection17-container"><span class="select2-selection__rendered" id="select2-data_uxAuctionSelection17-container" title="9138. Samsung Galaxy S6 32GB Goud"><span class="select2-selection__clear">×</span>9138. Samsung Galaxy S6 32GB Goud</span><span class="select2-selection__arrow" role="presentation"><b role="presentation"></b></span></span></span><span class="dropdown-wrapper" aria-hidden="true"></span></span>
+												</div>
+											</td>
+										</tr>
+										<tr>
+											<th><label for="data_uxTypeSelection18"><abbr style="visibility: visible; display: block; white-space: nowrap;">Positie 18</abbr></label></th>
+											<td>
+												<div class="half">
+													<select id="data_uxTypeSelection18" class="half postBack styled select2-hidden-accessible" name="data_uxTypeSelection18" tabindex="-1" aria-hidden="true">
+														<option value="100" selected="selected">Beschikbaar</option>
+														<option value="101">Verkocht</option>
+														<option value="2">Kopers banner</option>
+														<option value="3">Educatie banner (of onder positie bij bannerset)</option>
+														<option value="4">Privilege banner (of boven positie bij bannerset)</option>
+													</select><span class="select2 select2-container select2-container--default" dir="ltr" style="width: 325px;"><span class="selection"><span class="select2-selection select2-selection--single" role="combobox" aria-haspopup="true" aria-expanded="false" tabindex="0" aria-labelledby="select2-data_uxTypeSelection18-container"><span class="select2-selection__rendered" id="select2-data_uxTypeSelection18-container" title="Beschikbaar"><span class="select2-selection__clear">×</span>Beschikbaar</span><span class="select2-selection__arrow" role="presentation"><b role="presentation"></b></span></span></span><span class="dropdown-wrapper" aria-hidden="true"></span></span>
+												</div>
+											</td>
+											<th><label for="data_uxAuctionSelection18"><abbr style="visibility: visible; display: block; white-space: nowrap;">Selectie 18</abbr></label></th>
+											<td>
+												<div class="half">
+													<select id="data_uxAuctionSelection18" class="half styled select2-hidden-accessible" name="data_uxAuctionSelection18" tabindex="-1" aria-hidden="true">
+														<option value="8773">8773. Delonghi ECAM 44.660.B</option>
+														<option value="8508">8508. Sony KD-49X8505</option>
+														<option value="9135">9135. Samsung NX500 + 16-50mm F3.5-5.6 Power Zoom Wit</option>
+														<option value="9140">9140. Canon EOS100D</option>
+														<option value="9141">9141. Delonghi ECAM 22.360.S Magnificas</option>
+														<option value="9143">9143. Asus Zenbook UX305FA-FB041H</option>
+														<option value="9144">9144. Apple Watch	38mm	Silver Alumium Case	White Sport Band</option>
+														<option value="9145">9145. Apple iPad AIR 2 WI-FI 64GB</option>
+														<option value="9146">9146. Asus TP300LA-DW123H</option>
+														<option value="9147">9147. Apple iPad AIR 2 WI-FI 64GB GOLD</option>
+														<option value="9151">9151. Makita DDF 459 RF3J Combiset</option>
+														<option value="9152">9152. KitchenAid 5KSM150PSECB</option>
+														<option value="9153">9153. Kenwood Cooking CHEF Major KM0961</option>
+														<option value="9154">9154. Jura Impressa C60</option>
+														<option value="9155">9155. Irobot Scooba 390 Hardfloor</option>
+														<option value="9156">9156. Apple iPad AIR 2 WI-FI 64GB</option>
+														<option value="9157">9157. Nikon spiegelreflexcamera D3300 Rood</option>
+														<option value="9158">9158. Sony Playstation 4 White 2 controllers + Playstation TV + Battlefield Hardline + Fifa 15 + PS Plus 12</option>
+														<option value="9163">9163. Samsung Galaxy S6 32GB Goud</option>
+														<option value="9166">9166. Samsung UE48H6850</option>
+														<option value="9172" selected="selected">9172. Apple IMAC MF883</option>
+														<option value="29174">29174. Sony Xperia Z3 NFC LTE</option>
+														<option value="29175">29175. Samsung NX500 + 16-50mm F3.5-5.6 Power Zoom Zwart</option>
+														<option value="29177">29177. Sony Cyber-SHOT DSC-RX100 III</option>
+														<option value="29178">29178. Sony Playstation 4 White + GTA V + Fifa 15 + PS Plus 3 Maanden</option>
+													</select><span class="select2 select2-container select2-container--default" dir="ltr" style="width: 325px;"><span class="selection"><span class="select2-selection select2-selection--single" role="combobox" aria-haspopup="true" aria-expanded="false" tabindex="0" aria-labelledby="select2-data_uxAuctionSelection18-container"><span class="select2-selection__rendered" id="select2-data_uxAuctionSelection18-container" title="9172. Apple IMAC MF883"><span class="select2-selection__clear">×</span>9172. Apple IMAC MF883</span><span class="select2-selection__arrow" role="presentation"><b role="presentation"></b></span></span></span><span class="dropdown-wrapper" aria-hidden="true"></span></span>
+												</div>
+											</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+							<footer>
+								<span class=""> </span>
+								<div>
+									<input id="Save$save" title="" data-confirm="Weet u zeker dat u deze aktie wilt uitvoeren?" data-confirm-title="Bevestiging" data-confirm-y="Ja" data-confirm-n="Nee" data-title="Verwerk de veiling opstelling" type="submit" class="submit type_confirm right action action" value="Verwerk de veiling opstelling">
+								</div>
+							</footer>
+							<br class="clear">
+						</div>
+					</section>
+
+				</article>
+				<div class="clear"></div>
+			</section>
+
+			<nav id="bodyNav">
+				<menu id="mainMenu" class="component">
+					<li><a href="/2/repository/wim/portal.ashx?folder=24">Beheer</a></li>
+					<li><a href="/2/repository/wim/portal.ashx?folder=86">Beelden</a></li>
+					<li><a href="/2/repository/wim/portal.ashx?folder=22">Teksten</a></li>
+					<li><a href="/2/repository/wim/portal.ashx?folder=28">Bestellingen</a></li>
+					<li><a href="/2/repository/wim/portal.ashx?folder=47" class="active">Veilingbeheer</a></li>
+					<li><a href="/2/repository/wim/portal.ashx?folder=73">Rapportage</a></li>
+					<li><a href="/2/repository/wim/portal.ashx?top=4">Admin</a></li>
+				</menu>
+			</nav>
+			<section class="component loginNav" id="loginNav">
+				<ul>
+
+					<li>
+						<a class="side" href="#"><span class="icon-globe"></span></a>
+						<div class="channel" style="display: none;">
+							<a class="active" href="#"><span class="icon-globe"></span></a>
+							<h3>Channel selection</h3>
+							<label for="channel">Channel</label>
+							<select name="channel" id="channel" class="postBack">
+								<option value="2" selected="selected">default application</option>
+								<option value="4">Externe editors</option>
+								<option value="1">Administration</option>
+							</select>
+						</div>
+					</li>
+					<li>
+						<a class="side active" href="#"><span class="icon-person"></span></a>
+						<div class="channel" style="display: none;">
+							<a class="active" href="#"><span class="icon-person"></span></a>
+							<h3>My profile</h3>
+							<img alt="noName" src="//az609478.vo.msecnd.net/6-25/images/noName.png">
+							<strong>Erwin.van.Dijk</strong><br>
+							<span>Super admin</span>
+							<a class="submit postBack" id="logout" href="">Logout</a>
+						</div>
+					</li>
+				</ul>
+			</section>
+		</section>
+		<div class="loader" id="loader"></div>
+		<footer class="bodyFooter"></footer>
+	</form>
+
+	<div id="cboxOverlay" style="display: none;"></div><div id="colorbox" class="" role="dialog" tabindex="-1" style="display: none;"><div id="cboxWrapper"><div><div id="cboxTopLeft" style="float: left;"></div><div id="cboxTopCenter" style="float: left;"></div><div id="cboxTopRight" style="float: left;"></div></div><div style="clear: left;"><div id="cboxMiddleLeft" style="float: left;"></div><div id="cboxContent" style="float: left;"><div id="cboxTitle" style="float: left;"></div><div id="cboxCurrent" style="float: left;"></div><button type="button" id="cboxPrevious"></button><button type="button" id="cboxNext"></button><button id="cboxSlideshow"></button><div id="cboxLoadingOverlay" style="float: left;"></div><div id="cboxLoadingGraphic" style="float: left;"></div><button type="button" id="cboxClose"></button></div><div id="cboxMiddleRight" style="float: left;"></div></div><div style="clear: left;"><div id="cboxBottomLeft" style="float: left;"></div><div id="cboxBottomCenter" style="float: left;"></div><div id="cboxBottomRight" style="float: left;"></div></div></div><div style="position: absolute; width: 9999px; visibility: hidden; display: none;"></div></div><div id="ambiance-notification"></div><div id="tiptip_holder" style="display: none; margin: 298px 0px 0px 363px;" class="tip_bottom"><div id="tiptip_arrow" style="margin-left: 261.5px; margin-top: -12px;"><div id="tiptip_arrow_inner"></div></div><div id="tiptip_content"><b>Is gesplitst grid</b><br>Indien aangevinkt wordt het grid gesplitst in twee helften wat betreft doordraaien van de banner</div></div>
+</body>
+</html>

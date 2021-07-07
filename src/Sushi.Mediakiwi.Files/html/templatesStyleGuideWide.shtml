@@ -1,0 +1,86 @@
+﻿<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8" />
+		<title>Example HTML 5 Template</title>
+		<!--[if IE]>
+			<meta http-equiv="imagetoolbar" content="no"/>
+			<meta http-equiv="X-UA-Compatible" content="IE=8" />
+			<script type="text/javascript" src="../scripts/html5.js"></script>
+		<![endif]-->
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<link rel="stylesheet" href="../styles/stylesFlat.css" type="text/css" media="all" />
+		<link rel="stylesheet" href="../styles/stylesSkinOrange.css" type="text/css" media="all" />
+		<link rel="stylesheet" href="../styles/mainMenuFlat.css" type="text/css"/>
+		<link rel="stylesheet" href="../styles/stylesBar.css" type="text/css"/>
+		<link rel="stylesheet" href="../styles/colorbox.css" type="text/css"/>
+		<link rel="stylesheet" href="../styles/solid.css" type="text/css"/>
+		<link rel="stylesheet" href="../styles/jquery-ui-1.8.16.custom.css" type="text/css" media="all" />
+		<link rel="stylesheet" href="../styles/formalize.css" type="text/css" media="all" />
+		<link rel="stylesheet" href="../styles/planning.css" type="text/css" media="all" />
+		<!-- 
+		favicon 
+		<link rel="icon" href="../images/favicon.png" type="image/png" />
+		<link rel="shortcut icon" href="../images/favicon.ico" type="image/x-icon" />
+		scripts
+		<script type="text/javascript" src="../scripts/search.js"></script>
+		-->
+		<script type="text/javascript" src="../scripts/preview.js"></script>
+		<script type="text/javascript" src="../scripts/jquery-1.7.1.js"></script>
+		<script type="text/javascript" src="../scripts/jquery-ui.js"></script>
+	     <!-- only for dutch -->
+        <script type="text/javascript" src="../scripts/jquery.ui.datepicker-nl.js"></script>
+		<script type="text/javascript" src="../scripts/jquery.tipTip.minified.js"></script>
+		<script type="text/javascript" src="../scripts/jquery.slimscroll.min.js"></script>
+        <script type="text/javascript" src="../scripts/jquery.numeric.js"></script>
+		<script type="text/javascript" src="../scripts/jquery.formalize.js"></script>
+		<script type="text/javascript" src="../scripts/jquery.colorbox.js"></script>
+		<script type="text/javascript" src="../scripts/jquery-ui-timepicker-addon.js"></script>
+		<script type="text/javascript" src="../scripts/jquery.hoverIntent.min.js"></script>
+		<script type="text/javascript" src="../scripts/jquery.curtainMenu.js"></script>
+		<script type="text/javascript" src="../scripts/nicEdit.js"></script>
+        <script type="text/javascript" src="../scripts/knockout-2.2.1.js"></script>
+		<script type="text/javascript" src="../scripts/testdrive.demo.js"></script>
+		<script type="text/javascript" src="../scripts/testDrive.js"></script>
+		<script type="text/javascript" src="../scripts/fixedBar.js"></script>
+	</head>
+	<body>
+		<section id="bodySection">
+			<header id="bodyHeader">
+				<a href=""><img src="../images/MK_logo.png" alt="Sentimention" title="Website logo" id="bodyLogo" /></a>
+			</header>
+			<section id="homeContent">
+				<article id="homeArticle">
+					<!--#include file="./component_folders.html" -->
+					<!--#include file="./component_thumbs.html" -->
+				</article>
+				<div class="clear"></div>
+				<div class="clear"></div>
+			</section>
+			<menu id="demoControls" type="toolbar">
+				<li><a class="pop2" title="Search webservice calls" href="../html/popup1.shtml">Open popup</a></li>
+				<li><a class="pop2" title="Search webservice calls" href="http://localhost//superintra/6/?list=9870fa8f-d9b5-47ed-89ae-cf01b6d00591&openinframe=2&referid=_SingleSubListSelect">Open popup</a></li>
+				<li><a class="pop2" title="Delete this record" href="../html/popup3.shtml">Open popup</a></li>
+				<li><a class="pop2" title="Define filter" href="../html/popup4.shtml">Open popup</a></li>
+				<li><a class="pop2" title="Export file" href="../html/popup5.shtml">Open popup</a></li>
+				<li><a class="pop2" href="http://localhost/superintra/6/?list=161&openinframe=2&q=29">Export</a></li>
+                <li><a class="pop2 href="http://localhost/superintra/6/?list=161&openinframe=2&q=29&width=425&height=226">Export</a></li>
+			</menu>
+			<div class="clear"></div>
+		</section>
+		<nav id="bodyNav">
+			<!--#include file="./component_mainMenu.html" -->
+		</nav>
+		<nav id="metaNav">
+			<!--#include file="./component_metaMenu.html" -->
+		</nav>
+		<!--#include file="./component_fixedBar.html" -->		
+        <div id="loader"></div>
+		<footer class="bodyFooter"></footer>
+		
+        <script type="text/javascript" src="rte/tiny_mce.js"></script>
+        <script type="text/javascript">var prefix = '/superintra/repository/wim/portal.ashx'; var elements = 'description';</script>
+        <script type="text/javascript" src="rte//tiny_mce_options.js"></script>
+
+	</body>
+</html>

@@ -1,0 +1,41 @@
+{
+  "iisSettings": {
+    "windowsAuthentication": false,
+    "anonymousAuthentication": true,
+    "iis": {
+      "applicationUrl": "https://localhost/Sushi.Mediakiwi.Demonstration",
+      "sslPort": 0
+    },
+    "iisExpress": {
+      "applicationUrl": "http://localhost:20371",
+      "sslPort": 44367
+    }
+  },
+  "profiles": {
+    "IIS Express": {
+      "commandName": "IISExpress",
+      "launchBrowser": true,
+      "launchUrl": "https://localhost:44367/mediakiwi?page=1",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    },
+    "Sushi.Mediakiwi.Demonstration": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "launchUrl": "https://localhost/Sushi.Mediakiwi.Demonstration",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "https://localhost:5001;http://localhost:5000"
+    },
+    "IIS": {
+      "commandName": "IIS",
+      "launchBrowser": true,
+      "launchUrl": "https://localhost/Sushi.Mediakiwi.Demonstration/2/repository/wim/portal.ashx?list=1",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT ": "Development"
+      }
+    }
+  }
+}

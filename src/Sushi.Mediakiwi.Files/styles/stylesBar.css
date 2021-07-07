@@ -1,0 +1,125 @@
+	#fixedBar {
+		position: fixed;
+		bottom: 0px;
+		height:48px;
+		width: 100%;
+		color: #ffffff;
+		overflow: visible !important;	
+		clear: both;
+		background: #3598db;
+		line-height: 48px;
+		z-index: 225020;
+		*zoom: -1;
+		*position: static;
+
+	}				
+		#fixedBar h2 {
+			margin-bottom:10px;
+			padding: 0px 20px 20px 20px;
+			margin: 0px -20px 0px -20px;
+		}	
+		#fixedBar ul {
+			margin: 0px;/* 0px 0px -50px;*/
+			position: relative;
+		}
+		#fixedBar li:first-child {
+			padding-right: 20px;
+			background: none;
+			margin-left: 0px !important; 
+		}
+		#fixedBar li {
+			list-style-type: none;
+			float: left;
+			margin-right:3px;
+			text-transform: uppercase;
+			background: #52a7e0;
+			font-size: 90%;
+			padding: 0px 20px 0px 20px;
+			overflow: visible !important;
+		}
+			#fixedBar li a {
+				color: #ffffff;
+				font-weight: bold;
+				border-right: none;
+				text-decoration: none;
+			}	
+			#fixedBar li a:hover {
+				color: #ffffff;
+			}	
+		#fixedBar li.insiteLastChild,
+        #fixedBar li.insiteNavigationLastChild {
+			list-style-type: none;
+			float: right;
+			padding: 0px 10px 0px 10px;
+			border-right: none;
+			width: 184px;
+			margin-right: 20px;
+			background: none;
+			text-align: center;
+			overflow: visible !important;
+			cursor: pointer;
+		}
+			#fixedBar .supper {
+				width:204px !important;
+				position:absolute;
+				right:20px;
+				display: none;
+				bottom: 54px;
+				z-index: 9999999;
+				margin:0px 0px 0px -1px;
+				padding:0px 0px 10px 0px;
+				list-style:none;
+			}
+			#fixedBar .supper .arrow {
+				width: 0; 
+				height: 0; 
+				position: absolute;
+				left: 90px;
+				bottom: 0px;
+				border-left: 10px solid transparent;
+				border-right: 10px solid transparent;	
+				border-top: 10px solid #3598db;
+			}
+				#fixedBar .supper ul {
+					position: relative;
+					display: block;	
+				}
+						#fixedBar .supper ul {
+							margin:0px;
+							padding:0px;
+						}
+							#fixedBar .supper ul li:first-child{
+								margin:0px;
+								float:none !important;
+								background: #3598db;
+								text-align: left;
+							}
+							#fixedBar .supper ul li {
+								margin:0px;
+								padding:0px 0px 0px 0px !important;
+								float:none !important;
+								height:33px;
+								background: #3598db;
+								line-height:31px;
+								text-align: left;
+							}
+								#fixedBar .supper ul li a {
+									color:#ffffff !important;
+									width:200px;
+									height:33px;
+									text-transform: none;
+									display:block;
+									padding-left: 16px;
+									font-weight: normal;	
+									text-decoration: none;
+								}
+									#fixedBar .supper ul li a:hover{
+										border-left: solid 8px #1a1a1a;
+										font-weight: normal;
+										padding-left: 8px;	
+									}
+									#fixedBar .supper ul li a.active {
+										border-left: solid 8px #1a1a1a;
+										font-weight: normal;
+										padding-left: 8px;	
+									}									
