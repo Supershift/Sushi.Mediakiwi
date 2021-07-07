@@ -216,7 +216,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                 // Stiketrough
                 candidate = striketroughFix.Replace(candidate, "<s>$1</s>");
 
-                // To fill fails; if this part of the codes detects links with href="TOFILL" it means the editor fucked up
+                // To fill fails; if this part of the codes detects links with href="TOFILL" it means the editor missed this
                 // First Log, then remove
                 if (tofillFails.IsMatch(candidate)) Notification.InsertOne("RichTextBoxEditor.Save", "Failed to create html link");
                 candidate = tofillFails.Replace(candidate, "$1");
