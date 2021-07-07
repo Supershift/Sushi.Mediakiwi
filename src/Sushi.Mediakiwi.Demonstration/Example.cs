@@ -4,7 +4,7 @@ using Sushi.MicroORM.Mapping;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Sushi.Mediakiwi
+namespace Sushi.Mediakiwi.Demonstration
 {
     public class Item
     {
@@ -34,7 +34,7 @@ namespace Sushi.Mediakiwi
             var connector = ConnectorFactory.CreateConnector<ItemData>();
             return await connector.FetchSingleAsync(ID).ConfigureAwait(false);
         }
-        
+
         public static async Task<List<ItemData>> SelectAllAsync()
         {
             var connector = ConnectorFactory.CreateConnector<ItemData>();
@@ -107,3 +107,4 @@ namespace Sushi.Mediakiwi
         }
     }
 }
+

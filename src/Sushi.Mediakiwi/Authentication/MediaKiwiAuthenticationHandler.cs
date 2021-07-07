@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 
 namespace Sushi.Mediakiwi.Authentication
 {
+  
     public class MediaKiwiAuthenticationHandler : AuthenticationHandler<MediaKiwiAuthenticationOptions>
     {
         public MediaKiwiAuthenticationHandler(

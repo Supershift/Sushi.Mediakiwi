@@ -25,7 +25,6 @@
     <Compile Remove="Cms\**" />
     <Compile Remove="Common\**" />
     <Compile Remove="config\**" />
-    <Compile Remove="Data2\**" />
     <Compile Remove="DataEntities\**" />
     <Compile Remove="Data\**" />
     <Compile Remove="Exporting\**" />
@@ -41,7 +40,6 @@
     <EmbeddedResource Remove="Cms\**" />
     <EmbeddedResource Remove="Common\**" />
     <EmbeddedResource Remove="config\**" />
-    <EmbeddedResource Remove="Data2\**" />
     <EmbeddedResource Remove="DataEntities\**" />
     <EmbeddedResource Remove="Data\**" />
     <EmbeddedResource Remove="Exporting\**" />
@@ -57,7 +55,6 @@
     <None Remove="Cms\**" />
     <None Remove="Common\**" />
     <None Remove="config\**" />
-    <None Remove="Data2\**" />
     <None Remove="DataEntities\**" />
     <None Remove="Data\**" />
     <None Remove="Exporting\**" />
@@ -121,7 +118,7 @@
     <Compile Include="Cms\Console.cs" />
     <Compile Include="Cms\Data\Component.cs" />
     <Compile Include="Cms\Template.cs" />
-    <Compile Include="Data2\_reallocatie\ASyncQuery.cs" />
+    <Compile Include="Framework\ASyncQuery.cs" />
     <Compile Include="DataEntities\GridExtention.cs" />
     <Compile Include="Extention\ApplicationUserExtention.cs" />
     <Compile Include="Extention\ComponentVersionExtension.cs" />
@@ -155,8 +152,7 @@
     <Compile Include="Cms\Component.cs" />
     <Compile Include="Cms\ContainerView.cs" />
     <Compile Include="Cms\UrlBuilder.cs" />
-    <Compile Include="Data2\_reallocatie\Content.cs" />
-    <Compile Include="Data2\_reallocatie\Option.cs" />
+    <Compile Include="Framework\Option.cs" />
     <Compile Include="Extention\ComponentListExtension.cs" />
     <Compile Include="Framework\Api\Logic\ListItemCollectionConverter.cs" />
     <Compile Include="Framework\Api\MediakiwiApiFormResponse.cs" />
