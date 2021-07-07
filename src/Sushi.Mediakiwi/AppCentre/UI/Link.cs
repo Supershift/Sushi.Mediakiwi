@@ -159,8 +159,6 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                 }
             }
 
-
-
             if (Form.RichTextInnerlink)
             {
                 if (Request.Query["referid"] == "tmce")

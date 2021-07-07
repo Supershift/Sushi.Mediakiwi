@@ -20,6 +20,7 @@ using System.Net;
 using System.Net.Http;
 using System.Security.Claims;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace Sushi.Mediakiwi.UI
@@ -601,84 +602,72 @@ namespace Sushi.Mediakiwi.UI
             //}
 
             string searchListGrid;
-            if (true)//_Console.CurrentList.Type != ComponentListType.Browsing || _Console.CurrentApplicationUser.ShowNewDesign2)
+          
+            _Console.AddTrace("Monitor", "GetGridFromListInstance(..)");
+
+            if (IsFormatRequest_JSON)
             {
-                _Console.AddTrace("Monitor", "GetGridFromListInstance(..)");
+                _Console.Response.ContentType = "application/json";
+                searchListGrid = grid.GetGridFromListInstanceForJSON(_Console.CurrentListInstance.wim, _Console, 0, false, true);
 
-                if (IsFormatRequest_JSON)
+                await AddToResponseAsync(searchListGrid);
+                return;
+            }
+            if (IsFormatRequest_AJAX)
+            {
+                _Console.Response.ContentType = "text/plain";
+                searchListGrid = null;
+                while (_Console.CurrentListInstance.wim.NextGrid())
                 {
-                    _Console.Response.ContentType = "application/json";
-                    searchListGrid = grid.GetGridFromListInstanceForJSON(_Console.CurrentListInstance.wim, _Console, 0, false, true);
+                    bool hasNoTitle = string.IsNullOrEmpty(_Console.CurrentListInstance.wim.m_DataTitle);
+                    searchListGrid +=
+                        string.Concat(
+                            hasNoTitle
+                                ? null
+                                : string.Format("</section><section class=\"{1}\"><h2>{0}</h2>"
+                                , _Console.CurrentListInstance.wim.m_DataTitle
+                                , _Console.CurrentListInstance.wim.Page.Body.Grid.ClassName
+                        )
+                        , grid.GetGridFromListInstance(_Console.CurrentListInstance.wim, _Console, 0, false, true)
+                        , hasNoTitle
+                                ? null
+                                : ""
 
-                    await AddToResponseAsync(searchListGrid);
-                    return;
+                        );
                 }
-                if (IsFormatRequest_AJAX)
-                {
-                    _Console.Response.ContentType = "text/plain";
-                    searchListGrid = null;
-                    while (_Console.CurrentListInstance.wim.NextGrid())
-                    {
-                        bool hasNoTitle = string.IsNullOrEmpty(_Console.CurrentListInstance.wim.m_DataTitle);
-                        searchListGrid +=
-                            string.Concat(
-                                hasNoTitle
-                                    ? null
-                                    : string.Format("</section><section class=\"{1}\"><h2>{0}</h2>"
-                                    , _Console.CurrentListInstance.wim.m_DataTitle
-                                    , _Console.CurrentListInstance.wim.Page.Body.Grid.ClassName
-                            )
-                            , grid.GetGridFromListInstance(_Console.CurrentListInstance.wim, _Console, 0, false, true)
-                            , hasNoTitle
-                                    ? null
-                                    : ""
-
-                            );
-                    }
-                    await AddToResponseAsync(searchListGrid);
-                    return;
-                }
-                if (_Console.CurrentListInstance.wim.CurrentList.Option_SearchAsync && !_Console.CurrentListInstance.wim.IsDashboardMode)
-                {
-                    //  CLEANUP TWO LOCATIONS !!! (27.01.14:MM)
-                    if (_Console.OpenInFrame > 0)
-                        searchListGrid = string.Format("<section id=\"datagrid\" class=\"{0} async\"> </section>", _Console.CurrentListInstance.wim.Page.Body.Grid.ClassName);//"<section class=\"searchTable\"> </section>";//grid.GetGridFromListInstanceForKnockout(_Console.CurrentListInstance.wim, _Console, 0, false, IsNewDesignOutput, false);\
-                    else
-                        searchListGrid = " ";
-                }
+                await AddToResponseAsync(searchListGrid);
+                return;
+            }
+            if (_Console.CurrentListInstance.wim.CurrentList.Option_SearchAsync && !_Console.CurrentListInstance.wim.IsDashboardMode)
+            {
+                if (_Console.OpenInFrame > 0)
+                    searchListGrid = string.Format("<section id=\"datagrid\" class=\"{0} async\"> </section>", _Console.CurrentListInstance.wim.Page.Body.Grid.ClassName);//"<section class=\"searchTable\"> </section>";//grid.GetGridFromListInstanceForKnockout(_Console.CurrentListInstance.wim, _Console, 0, false, IsNewDesignOutput, false);\
                 else
-                {
-                    searchListGrid = null;// grid.GetGridFromListInstance(_Console.CurrentListInstance.wim, _Console, 0, false, IsNewDesignOutput);
-                    while (_Console.CurrentListInstance.wim.NextGrid())
-                    {
-                        bool hasNoTitle = string.IsNullOrEmpty(_Console.CurrentListInstance.wim.m_DataTitle);
-                        searchListGrid +=
-                            string.Concat(
-                                hasNoTitle
-                                    ? null
-                                    : string.Format("</section><section class=\"{1}\"><h2>{0}</h2>", _Console.CurrentListInstance.wim.m_DataTitle, _Console.CurrentListInstance.wim.Page.Body.Grid.ClassName
-                            )
-                            , grid.GetGridFromListInstance(_Console.CurrentListInstance.wim, _Console, 0, false, true)
-                            , hasNoTitle
-                                    ? null
-                                    : ""
-                            );
-                    }
-                }
-
-                //  Replacement event of ListSearchedAction
-                if (!string.IsNullOrEmpty(component.m_ClickedButton) && _Console.CurrentListInstance.wim.HasListAction)
-                    _Console.CurrentListInstance.wim.DoListAction(_Console.Item.GetValueOrDefault(0), 0, component.m_ClickedButton, null);
-
-                //_Console.CurrentListInstance.wim.SendReport(searchListGrid);
+                    searchListGrid = " ";
             }
             else
             {
-                GlobalWimControlBuilder.Canvas.Type = CanvasType.Explorer;
-
-                _Console.AddTrace("Monitor", "GetThumbnailGridFromListInstance(..)");
-                searchListGrid = grid.GetThumbnailGridFromListInstance(_Console.CurrentListInstance.wim, _Console, 0, false);
+                searchListGrid = null;
+                while (_Console.CurrentListInstance.wim.NextGrid())
+                {
+                    bool hasNoTitle = string.IsNullOrEmpty(_Console.CurrentListInstance.wim.m_DataTitle);
+                    searchListGrid +=
+                        string.Concat(
+                            hasNoTitle
+                                ? null
+                                : string.Format("</section><section class=\"{1}\"><h2>{0}</h2>", _Console.CurrentListInstance.wim.m_DataTitle, _Console.CurrentListInstance.wim.Page.Body.Grid.ClassName
+                        )
+                        , grid.GetGridFromListInstance(_Console.CurrentListInstance.wim, _Console, 0, false, true)
+                        , hasNoTitle
+                                ? null
+                                : ""
+                        );
+                }
             }
+
+            //  Replacement event of ListSearchedAction
+            if (!string.IsNullOrEmpty(component.m_ClickedButton) && _Console.CurrentListInstance.wim.HasListAction)
+                _Console.CurrentListInstance.wim.DoListAction(_Console.Item.GetValueOrDefault(0), 0, component.m_ClickedButton, null);
 
             _Console.AddTrace("Monitor", "AddToResponse(..)");
 
@@ -724,15 +713,16 @@ namespace Sushi.Mediakiwi.UI
 
                 var result = _Console.CurrentListInstance.wim.DoListAsync(eventArgs);
 
-                string val = JSON.Instance.ToJSON(result.Data,
-                    new JSONParameters() {
-                        EnableAnonymousTypes = true,
-                        UsingGlobalTypes = false,
-                        SerializeNullValues = false
-                    }
-                );
+                var options = new JsonSerializerOptions { 
+                    IgnoreNullValues = true,
+                    PropertyNameCaseInsensitive = true,
+                    IgnoreReadOnlyProperties = true,
+                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+                };
+
+                string val = System.Text.Json.JsonSerializer.Serialize(result.Data, options);
                 _Console.Response.ContentType = "application/json";
-                await AddToResponseAsync(val);
+                await AddToResponseAsync(val).ConfigureAwait(false);
 
                 return true;
             }

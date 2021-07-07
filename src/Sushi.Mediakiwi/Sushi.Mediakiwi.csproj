@@ -22,7 +22,7 @@
 
   <ItemGroup>
     <Compile Remove="AppCentre\**" />
-    <Compile Remove="Beta\**" />
+    <Compile Remove="Cms\**" />
     <Compile Remove="Common\**" />
     <Compile Remove="config\**" />
     <Compile Remove="Data2\**" />
@@ -38,7 +38,7 @@
     <Compile Remove="UI\**" />
     <Compile Remove="Utilities\**" />
     <EmbeddedResource Remove="AppCentre\**" />
-    <EmbeddedResource Remove="Beta\**" />
+    <EmbeddedResource Remove="Cms\**" />
     <EmbeddedResource Remove="Common\**" />
     <EmbeddedResource Remove="config\**" />
     <EmbeddedResource Remove="Data2\**" />
@@ -54,7 +54,7 @@
     <EmbeddedResource Remove="UI\**" />
     <EmbeddedResource Remove="Utilities\**" />
     <None Remove="AppCentre\**" />
-    <None Remove="Beta\**" />
+    <None Remove="Cms\**" />
     <None Remove="Common\**" />
     <None Remove="config\**" />
     <None Remove="Data2\**" />
@@ -118,13 +118,9 @@
     <Compile Include="AppCentre\UI\Site.cs" />
     <Compile Include="AppCentre\UI\User.cs" />
     <Compile Include="AppCentre\UI\ListVersioning.cs" />
-    <Compile Include="Beta\GeneratedCms\Console.cs" />
-    <Compile Include="Beta\GeneratedCms\Source\Template.cs" />
-    <Compile Include="Beta\GeneratedCms\Source\Xml\Component.cs" />
-    <Compile Include="Beta\GeneratedCms\Source\Xml\DateTimeSelector.cs" />
-    <Compile Include="Beta\GeneratedCms\Source\Xml\DocumentSelect.cs" />
-    <Compile Include="Beta\GeneratedCms\Source\Xml\PageSelect.cs" />
-    <Compile Include="Beta\GeneratedCms\Source\Xml\RichTextEditor.cs" />
+    <Compile Include="Cms\Console.cs" />
+    <Compile Include="Cms\Data\Component.cs" />
+    <Compile Include="Cms\Template.cs" />
     <Compile Include="Data2\_reallocatie\ASyncQuery.cs" />
     <Compile Include="DataEntities\GridExtention.cs" />
     <Compile Include="Extention\ApplicationUserExtention.cs" />
@@ -155,18 +151,10 @@
     <Compile Include="Presentation\Monitor.cs" />
     <Compile Include="UI\AddPageComponentControl.cs" />
     <Compile Include="UI\DataGridForJSON.cs" />
-    <Compile Include="Utilities\JSON\Formatter.cs" />
-    <Compile Include="Utilities\JSON\Getters.cs" />
-    <Compile Include="Utilities\JSON\IRecord.cs" />
-    <Compile Include="Utilities\JSON\JSON.cs" />
-    <Compile Include="Utilities\JSON\JsonParser.cs" />
-    <Compile Include="Utilities\JSON\JsonSerializer.cs" />
-    <Compile Include="Utilities\JSON\Reflection.cs" />
-    <Compile Include="Utilities\JSON\SafeDictionary.cs" />
     <Compile Include="Utilities\Notification.cs" />
-    <Compile Include="Beta\GeneratedCms\Source\Component.cs" />
-    <Compile Include="Beta\GeneratedCms\Source\ContainerView.cs" />
-    <Compile Include="Beta\GeneratedCms\Source\UrlBuilder.cs" />
+    <Compile Include="Cms\Component.cs" />
+    <Compile Include="Cms\ContainerView.cs" />
+    <Compile Include="Cms\UrlBuilder.cs" />
     <Compile Include="Data2\_reallocatie\Content.cs" />
     <Compile Include="Data2\_reallocatie\Option.cs" />
     <Compile Include="Extention\ComponentListExtension.cs" />

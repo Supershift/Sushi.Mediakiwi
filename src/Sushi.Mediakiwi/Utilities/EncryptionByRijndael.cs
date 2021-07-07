@@ -829,45 +829,4 @@ namespace Wim.Utilities
         }
         #endregion
     }
-
-    /// <summary>
-    /// Illustrates the use of RijndaelEnhanced class to encrypt and decrypt data
-    /// using a random salt value.
-    /// </summary>
-    //public class RijndaelEnhancedTest
-    //{
-    //    /// <summary>
-    //    /// The main entry point for the application.
-    //    /// </summary>
-    //    [STAThread]
-    //    static void Main(string[] args)
-    //    {
-    //        string plainText = "Hello, World!";    // original plaintext
-    //        string cipherText = "";                 // encrypted text
-    //        string passPhrase = "Pas5pr@se";        // can be any string
-    //        string initVector = "@1B2c3D4e5F6g7H8"; // must be 16 bytes
-
-    //        // Before encrypting data, we will append plain text to a random
-    //        // salt value, which will be between 4 and 8 bytes long (implicitly
-    //        // used defaults).
-    //        RijndaelEnhanced rijndaelKey =
-    //            new RijndaelEnhanced(passPhrase, initVector);
-
-    //        Console.WriteLine(String.Format("Plaintext   : {0}\n", plainText));
-
-    //        // Encrypt the same plain text data 10 time (using the same key,
-    //        // initialization vector, etc) and see the resulting cipher text;
-    //        // encrypted values will be different.
-    //        for (int i = 0; i < 10; i++)
-    //        {
-    //            cipherText = rijndaelKey.Encrypt(plainText);
-    //            Console.WriteLine(
-    //                String.Format("Encrypted #{0}: {1}", i, cipherText));
-    //            plainText = rijndaelKey.Decrypt(cipherText);
-    //        }
-
-    //        // Make sure we got decryption working correctly.
-    //        Console.WriteLine(String.Format("\nDecrypted   :{0}", plainText));
-    //    }
-    //}
 }
