@@ -1,0 +1,364 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <Version>7.15.36</Version>
+    <Product>Mediakiwi</Product>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <Company>Supershift</Company>
+    <Authors>Marc Molenwijk, Jean Paul Kommers, Mark Rienstra</Authors>
+    <Copyright>2005-2021 Supershift</Copyright>
+    <Description>Rapid Portal Development Framework including a Headless Content Management System component build and optimized for Microsoft Azure (cloud)</Description>
+    <PackageProjectUrl>https://mediakiwi.atlassian.net/wiki/spaces/CORE/overview</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/Supershift/Sushi.Mediakiwi</RepositoryUrl>
+    <UserSecretsId>868170ed-102f-45aa-8ea6-3b1cc32a2b6b</UserSecretsId>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
+    <RunAnalyzersDuringBuild>false</RunAnalyzersDuringBuild>
+    <AssemblyVersion>7.15.36.0</AssemblyVersion>
+    <FileVersion>7.15.36.0</FileVersion>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="AppCentre\**" />
+    <Compile Remove="Cms\**" />
+    <Compile Remove="Common\**" />
+    <Compile Remove="config\**" />
+    <Compile Remove="DataEntities\**" />
+    <Compile Remove="Data\**" />
+    <Compile Remove="Exporting\**" />
+    <Compile Remove="Extention\**" />
+    <Compile Remove="Framework\**" />
+    <Compile Remove="Logic\**" />
+    <Compile Remove="Presentation\**" />
+    <Compile Remove="Processing\**" />
+    <Compile Remove="Templates\**" />
+    <Compile Remove="UI\**" />
+    <Compile Remove="Utilities\**" />
+    <EmbeddedResource Remove="AppCentre\**" />
+    <EmbeddedResource Remove="Cms\**" />
+    <EmbeddedResource Remove="Common\**" />
+    <EmbeddedResource Remove="config\**" />
+    <EmbeddedResource Remove="DataEntities\**" />
+    <EmbeddedResource Remove="Data\**" />
+    <EmbeddedResource Remove="Exporting\**" />
+    <EmbeddedResource Remove="Extention\**" />
+    <EmbeddedResource Remove="Framework\**" />
+    <EmbeddedResource Remove="Logic\**" />
+    <EmbeddedResource Remove="Presentation\**" />
+    <EmbeddedResource Remove="Processing\**" />
+    <EmbeddedResource Remove="Templates\**" />
+    <EmbeddedResource Remove="UI\**" />
+    <EmbeddedResource Remove="Utilities\**" />
+    <None Remove="AppCentre\**" />
+    <None Remove="Cms\**" />
+    <None Remove="Common\**" />
+    <None Remove="config\**" />
+    <None Remove="DataEntities\**" />
+    <None Remove="Data\**" />
+    <None Remove="Exporting\**" />
+    <None Remove="Extention\**" />
+    <None Remove="Framework\**" />
+    <None Remove="Logic\**" />
+    <None Remove="Presentation\**" />
+    <None Remove="Processing\**" />
+    <None Remove="Templates\**" />
+    <None Remove="UI\**" />
+    <None Remove="Utilities\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="Identity\ProfileParser.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="AppCentre\UI\ComponentTemplate.cs" />
+    <Compile Include="AppCentre\UI\PageList.cs" />
+    <Compile Include="AppCentre\UI\RoleAccessSite.cs" />
+    <Compile Include="AppCentre\UI\Forms\PageMappingForm.cs" />
+    <Compile Include="AppCentre\UI\PageMapping.cs" />
+    <Compile Include="AppCentre\UI\Forms\SharedFieldForm.cs" />
+    <Compile Include="AppCentre\UI\SharedFieldList.cs" />
+    <Compile Include="AppCentre\UI\PageInstance.cs" />
+    <Compile Include="AppCentre\UI\PageTemplate.cs" />
+    <Compile Include="AppCentre\UI\BaseImplementation.cs" />
+    <Compile Include="AppCentre\UI\BasicSeachList.cs" />
+    <Compile Include="AppCentre\UI\BrowseItem.cs" />
+    <Compile Include="AppCentre\UI\Browsing.cs" />
+    <Compile Include="AppCentre\UI\ComponentList.cs" />
+    <Compile Include="AppCentre\UI\ComponentListData.cs" />
+    <Compile Include="AppCentre\UI\ComponentListProperties.cs" />
+    <Compile Include="AppCentre\UI\ComponentListSense.cs" />
+    <Compile Include="AppCentre\UI\ComponentListSettings.cs" />
+    <Compile Include="AppCentre\UI\Demonstration.cs" />
+    <Compile Include="AppCentre\UI\Document.cs" />
+    <Compile Include="AppCentre\UI\DocumentType_List.cs" />
+    <Compile Include="AppCentre\UI\Environment.cs" />
+    <Compile Include="AppCentre\UI\Folder.cs" />
+    <Compile Include="AppCentre\UI\Forms\DocumentForm.cs" />
+    <Compile Include="AppCentre\UI\Forms\DocumentTypeForm.cs" />
+    <Compile Include="AppCentre\UI\Forms\FieldPropertiesForm.cs" />
+    <Compile Include="AppCentre\UI\Forms\LinkForm.cs" />
+    <Compile Include="AppCentre\UI\Forms\DemonstrationForm.cs" />
+    <Compile Include="AppCentre\UI\Forms\SiteForm.cs" />
+    <Compile Include="AppCentre\UI\Forms\EnvironmentForm.cs" />
+    <Compile Include="AppCentre\UI\Forms\ComponentListForm.cs" />
+    <Compile Include="AppCentre\UI\Link.cs" />
+    <Compile Include="AppCentre\UI\MenuList.cs" />
+    <Compile Include="AppCentre\UI\NoteList.cs" />
+    <Compile Include="AppCentre\UI\Copy.cs" />
+    <Compile Include="AppCentre\UI\CopyContent.cs" />
+    <Compile Include="AppCentre\UI\Notification.cs" />
+    <Compile Include="AppCentre\UI\PageHistory.cs" />
+    <Compile Include="AppCentre\UI\Role.cs" />
+    <Compile Include="AppCentre\UI\Site.cs" />
+    <Compile Include="AppCentre\UI\User.cs" />
+    <Compile Include="AppCentre\UI\ListVersioning.cs" />
+    <Compile Include="Cms\Console.cs" />
+    <Compile Include="Cms\Data\Component.cs" />
+    <Compile Include="Cms\Template.cs" />
+    <Compile Include="Framework\ASyncQuery.cs" />
+    <Compile Include="DataEntities\GridExtention.cs" />
+    <Compile Include="Extention\ApplicationUserExtention.cs" />
+    <Compile Include="Extention\ComponentVersionExtension.cs" />
+    <Compile Include="Extention\FieldExtension.cs" />
+    <Compile Include="Extention\GalleryExtension.cs" />
+    <Compile Include="Extention\LinkExtension.cs" />
+    <Compile Include="Extention\PageExtension.cs" />
+    <Compile Include="Extention\PageTemplateExtension.cs" />
+    <Compile Include="Extention\PropertyExtension.cs" />
+    <Compile Include="Extention\SiteExtension.cs" />
+    <Compile Include="Framework\CacheManager.cs" />
+    <Compile Include="Framework\ErrorCode.cs" />
+    <Compile Include="Framework\FileUpload.cs" />
+    <Compile Include="Framework\Functions\FolderPath.cs" />
+    <Compile Include="Framework\Inheritance\Folder.cs" />
+    <Compile Include="Framework\Inheritance\Page.cs" />
+    <Compile Include="Framework\Interfaces\IPageModule.cs" />
+    <Compile Include="Framework\ModuleExecutionResult.cs" />
+    <Compile Include="Framework\PagePreview.cs" />
+    <Compile Include="Framework\TopListPosition.cs" />
+    <Compile Include="Logic\ApplicationUserLogic.cs" />
+    <Compile Include="Logic\FolderLogic.cs" />
+    <Compile Include="Logic\OAuth2Logic.cs" />
+    <Compile Include="Logic\PageLogic.cs" />
+    <Compile Include="Logic\PropertyLogic.cs" />
+    <Compile Include="Presentation\Logic\Navigation.cs" />
+    <Compile Include="Presentation\Monitor.cs" />
+    <Compile Include="UI\AddPageComponentControl.cs" />
+    <Compile Include="UI\DataGridForJSON.cs" />
+    <Compile Include="Utilities\Notification.cs" />
+    <Compile Include="Cms\Component.cs" />
+    <Compile Include="Cms\ContainerView.cs" />
+    <Compile Include="Cms\UrlBuilder.cs" />
+    <Compile Include="Framework\Option.cs" />
+    <Compile Include="Extention\ComponentListExtension.cs" />
+    <Compile Include="Framework\Api\Logic\ListItemCollectionConverter.cs" />
+    <Compile Include="Framework\Api\MediakiwiApiFormResponse.cs" />
+    <Compile Include="Framework\Api\MediakiwiApiGridResponse.cs" />
+    <Compile Include="Framework\Api\MediakiwiApiResponse.cs" />
+    <Compile Include="Framework\Api\MediakiwiField.cs" />
+    <Compile Include="Framework\Api\MediakiwiFormVueType.cs" />
+    <Compile Include="Framework\Api\MediakiwiGrid.cs" />
+    <Compile Include="Framework\Api\MediakiwiGridVueType.cs" />
+    <Compile Include="Framework\Api\MediakiwiJavascriptEvent.cs" />
+    <Compile Include="Framework\Api\MediakiwiNotification.cs" />
+    <Compile Include="Framework\Api\MediakiwiPostRequest.cs" />
+    <Compile Include="Framework\Attributes\ExposedListCollection.cs" />
+    <Compile Include="Framework\Attributes\OnlyEditableAttribute.cs" />
+    <Compile Include="Framework\Attributes\OnlyVisibleAttribute.cs" />
+    <Compile Include="Framework\Attributes\PolutionIgnore.cs" />
+    <Compile Include="Framework\Caching.cs" />
+    <Compile Include="Framework\ClassMaps\DummyPropertyInfo.cs" />
+    <Compile Include="Framework\ClassMaps\FormMap.cs" />
+    <Compile Include="Framework\ClassMaps\IFormMap.cs" />
+    <Compile Include="Framework\ClassMaps\ReflectionHelper.cs" />
+    <Compile Include="Framework\ComponentListTemplate.cs" />
+    <Compile Include="Framework\ContentInfo.cs" />
+    <Compile Include="Framework\ContentInfoItem\Binary_DocumentAttribute.cs" />
+    <Compile Include="Framework\ContentInfoItem\Binary_ImageAttribute.cs" />
+    <Compile Include="Framework\ContentInfoItem\Choice_CheckboxAttribute.cs" />
+    <Compile Include="Framework\ContentInfoItem\Choice_DropdownAttribute.cs" />
+    <Compile Include="Framework\ContentInfoItem\Choice_RadioAttribute.cs" />
+    <Compile Include="Framework\ContentInfoItem\ContentEditableSharedAttribute.cs" />
+    <Compile Include="Framework\ContentInfoItem\ContentSharedAttribute.cs" />
+    <Compile Include="Framework\ContentInfoItem\DateAttribute.cs" />
+    <Compile Include="Framework\ContentInfoItem\DateTimeAttribute.cs" />
+    <Compile Include="Framework\ContentInfoItem\FolderSelectAttribute.cs" />
+    <Compile Include="Framework\ContentInfoItem\HtmlContainerAttribute.cs" />
+    <Compile Include="Framework\ContentInfoItem\HyperlinkAttribute.cs" />
+    <Compile Include="Framework\ContentInfoItem\IMultiFieldParser.cs" />
+    <Compile Include="Framework\ContentInfoItem\ListItemSelectAttribute.cs" />
+    <Compile Include="Framework\ContentInfoItem\MultiField.cs" />
+    <Compile Include="Framework\ContentInfoItem\MultiFieldAttribute.cs" />
+    <Compile Include="Framework\ContentInfoItem\MultiFieldParser.cs" />
+    <Compile Include="Framework\ContentInfoItem\PageSelectAttribute.cs" />
+    <Compile Include="Framework\ContentInfoItem\RichTextAttribute.cs" />
+    <Compile Include="Framework\ContentInfoItem\RichTextCleanup.cs" />
+    <Compile Include="Framework\ContentInfoItem\RichTextLink.cs" />
+    <Compile Include="Framework\ContentInfoItem\RichTextPrepare.cs" />
+    <Compile Include="Framework\ContentInfoItem\SourcecodeAttribute.cs" />
+    <Compile Include="Framework\ContentInfoItem\SubListSelectAttribute.cs" />
+    <Compile Include="Framework\ContentInfoItem\TextAreaAttribute.cs" />
+    <Compile Include="Framework\ContentInfoItem\TextFieldAttribute.cs" />
+    <Compile Include="Framework\ContentInfoItem\TextLineAttribute.cs" />
+    <Compile Include="Framework\ContentListItem\Binary_DocumentAttribute.cs" />
+    <Compile Include="Framework\ContentListItem\Binary_ImageAttribute.cs" />
+    <Compile Include="Framework\ContentListItem\ButtonAttribute.cs" />
+    <Compile Include="Framework\ContentListItem\Choice_CheckboxAttribute.cs" />
+    <Compile Include="Framework\ContentListItem\Choice_DropdownAttribute.cs" />
+    <Compile Include="Framework\ContentListItem\Choice_RadioAttribute.cs" />
+    <Compile Include="Framework\ContentListItem\ContentContainerAttribute.cs" />
+    <Compile Include="Framework\ContentListItem\DataExtendAttribute.cs" />
+    <Compile Include="Framework\ContentListItem\DataListAttribute.cs" />
+    <Compile Include="Framework\ContentListItem\DateAttribute.cs" />
+    <Compile Include="Framework\ContentListItem\DateTimeAttribute.cs" />
+    <Compile Include="Framework\ContentListItem\FileUploadAttribute.cs" />
+    <Compile Include="Framework\ContentListItem\FolderSelectAttribute.cs" />
+    <Compile Include="Framework\ContentListItem\HtmlContainerAttribute.cs" />
+    <Compile Include="Framework\ContentListItem\HyperlinkAttribute.cs" />
+    <Compile Include="Framework\ContentListItem\ListItemSelectAttribute.cs" />
+    <Compile Include="Framework\ContentListItem\MultiAssetUploadAttribute.cs" />
+    <Compile Include="Framework\ContentListItem\MultiFieldAttribute.cs" />
+    <Compile Include="Framework\ContentListItem\PageContainerAttribute.cs" />
+    <Compile Include="Framework\ContentListItem\PageSelectAttribute.cs" />
+    <Compile Include="Framework\ContentListItem\RichTextAttribute.cs" />
+    <Compile Include="Framework\ContentListItem\SectionAttribute.cs" />
+    <Compile Include="Framework\ContentListItem\SubListSelectAttribute.cs" />
+    <Compile Include="Framework\ContentListItem\TextAreaAttribute.cs" />
+    <Compile Include="Framework\ContentListItem\TextFieldAttribute.cs" />
+    <Compile Include="Framework\ContentListItem\TextLineAttribute.cs" />
+    <Compile Include="Framework\ContentListSearchItem\ButtonAttribute.cs" />
+    <Compile Include="Framework\ContentListSearchItem\Choice_CheckboxAttribute.cs" />
+    <Compile Include="Framework\ContentListSearchItem\Choice_DropdownAttribute.cs" />
+    <Compile Include="Framework\ContentListSearchItem\Choice_RadioAttribute.cs" />
+    <Compile Include="Framework\ContentListSearchItem\DateAttribute.cs" />
+    <Compile Include="Framework\ContentListSearchItem\HtmlContainerAttribute.cs" />
+    <Compile Include="Framework\ContentListSearchItem\SectionAttribute.cs" />
+    <Compile Include="Framework\ContentListSearchItem\TextAreaAttribute.cs" />
+    <Compile Include="Framework\ContentListSearchItem\TextFieldAttribute.cs" />
+    <Compile Include="Framework\ContentListSearchItem\TextLineAttribute.cs" />
+    <Compile Include="Framework\ContentSettingItem\Binary_DocumentAttribute.cs" />
+    <Compile Include="Framework\ContentSettingItem\Binary_ImageAttribute.cs" />
+    <Compile Include="Framework\ContentSettingItem\Choice_CheckboxAttribute.cs" />
+    <Compile Include="Framework\ContentSettingItem\Choice_DropdownAttribute.cs" />
+    <Compile Include="Framework\ContentSettingItem\Choice_RadioAttribute.cs" />
+    <Compile Include="Framework\ContentSettingItem\DataExtendAttribute.cs" />
+    <Compile Include="Framework\ContentSettingItem\DateAttribute.cs" />
+    <Compile Include="Framework\ContentSettingItem\DateTimeAttribute.cs" />
+    <Compile Include="Framework\ContentSettingItem\FolderSelectAttribute.cs" />
+    <Compile Include="Framework\ContentSettingItem\HyperlinkAttribute.cs" />
+    <Compile Include="Framework\ContentSettingItem\ListItemSelectAttribute.cs" />
+    <Compile Include="Framework\ContentSettingItem\PageSelectAttribute.cs" />
+    <Compile Include="Framework\ContentSettingItem\RichTextAttribute.cs" />
+    <Compile Include="Framework\ContentSettingItem\SectionAttribute.cs" />
+    <Compile Include="Framework\ContentSettingItem\SubListSelectAttribute.cs" />
+    <Compile Include="Framework\ContentSettingItem\TextAreaAttribute.cs" />
+    <Compile Include="Framework\ContentSettingItem\TextFieldAttribute.cs" />
+    <Compile Include="Framework\ContentSettingItem\TextLineAttribute.cs" />
+    <Compile Include="Framework\ContentSettings.cs" />
+    <Compile Include="Framework\Delegates\ComponentEventHandlers.cs" />
+    <Compile Include="Framework\Delegates\ListCreation.cs" />
+    <Compile Include="Framework\Enumerators\CallbackTarget.cs" />
+    <Compile Include="Framework\Enumerators\ListDataTotalType.cs" />
+    <Compile Include="Framework\Enumerators\OutputExpression.cs" />
+    <Compile Include="Framework\Enumerators\SaveState.cs" />
+    <Compile Include="Framework\EventArguments\ComponentActionEventArgs.cs" />
+    <Compile Include="Framework\EventArguments\ComponentListEventArgs.cs" />
+    <Compile Include="Framework\EventArguments\ComponentTemplateEventArgs.cs" />
+    <Compile Include="Framework\IIdentity.cs" />
+    <Compile Include="Framework\IInstallable.cs" />
+    <Compile Include="Framework\iMappedUrlCreator.cs" />
+    <Compile Include="Framework\InstallableAttribute.cs" />
+    <Compile Include="Framework\InstallableVersion.cs" />
+    <Compile Include="Framework\Interfaces\ICallback.cs" />
+    <Compile Include="Framework\Interfaces\IComponentListTemplate2.cs" />
+    <Compile Include="Framework\Interfaces\IContentInfo.cs" />
+    <Compile Include="Framework\Interfaces\IContentSettingInfo.cs" />
+    <Compile Include="Framework\Interfaces\IListContentInfo.cs" />
+    <Compile Include="Framework\Interfaces\IListSearchContentInfo.cs" />
+    <Compile Include="Framework\Interfaces\iNameValue.cs" />
+    <Compile Include="Framework\Interfaces\iOption.cs" />
+    <Compile Include="Framework\Interfaces\IPagePreview.cs" />
+    <Compile Include="Framework\Interfaces\IPagePublication.cs" />
+    <Compile Include="Framework\Interfaces\iRouting.cs" />
+    <Compile Include="Framework\Interfaces\iS.cs" />
+    <Compile Include="Framework\Interfaces\IUrlReWriter.cs" />
+    <Compile Include="Framework\ListDataColumn.cs" />
+    <Compile Include="Framework\ListDataColumns.cs" />
+    <Compile Include="Framework\ListDataColumnType.cs" />
+    <Compile Include="Framework\ListDataContentType.cs" />
+    <Compile Include="Framework\ListDataEditConfiguration.cs" />
+    <Compile Include="Framework\ListDataTemporaryTotalInfoColumn.cs" />
+    <Compile Include="Framework\MetaData.cs" />
+    <Compile Include="Framework\MetaDataInstance.cs" />
+    <Compile Include="Framework\NoDataItem.cs" />
+    <Compile Include="Framework\Templates\PropertySet.cs" />
+    <Compile Include="Framework\Templates\RichTextLink.cs" />
+    <Compile Include="Framework\TextContentSettings.cs" />
+    <Compile Include="Framework\WimComponentListRoot.cs" />
+    <Compile Include="Framework\WimControlBuilder.cs" />
+    <Compile Include="Logic\CacheItemLogic.cs" />
+    <Compile Include="UI\Constants.cs" />
+    <Compile Include="UI\Control.cs" />
+    <Compile Include="UI\DataGrid.cs" />
+    <Compile Include="UI\ListItem.cs" />
+    <Compile Include="UI\ListItemCollection.cs" />
+    <Compile Include="UI\LiteralControl.cs" />
+    <Compile Include="UI\Monitor.cs" />
+    <Compile Include="Utilities\EncryptionByRijndael.cs" />
+    <Compile Include="Utilities\PasswordGenerator.cs" />
+    <Compile Include="Utilities\Splitlist.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Azure.Storage.Blobs" Version="12.9.0" />
+    <PackageReference Include="HtmlAgilityPack" Version="1.11.30" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication" Version="2.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Hosting.Abstractions" Version="2.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.2.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
+    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="3.1.9" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="SonarAnalyzer.CSharp" Version="8.17.0.26580">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="System.Drawing.Common" Version="5.0.0" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.11.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Sushi.Mediakiwi.Data\Sushi.Mediakiwi.Data.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Labels.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Labels.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Markup.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Markup.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Labels.nl-NL.resx">
+      <Generator></Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Labels.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Labels.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Markup.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Markup.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+
+</Project>

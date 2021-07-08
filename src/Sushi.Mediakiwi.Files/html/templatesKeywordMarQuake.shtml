@@ -1,0 +1,118 @@
+﻿<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8" />
+		<title>Example HTML 5 Template</title>
+		<!--[if IE]>
+			<meta http-equiv="imagetoolbar" content="no"/>
+			<meta http-equiv="X-UA-Compatible" content="IE=8" />
+			<script type="text/javascript" src="../scripts/html5.js"></script>
+		<![endif]-->
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<link rel="stylesheet" href="../styles/stylesFlatv2.css" type="text/css" media="all" />
+		<link rel="stylesheet" href="../styles/mainMenuFlatv2.css" type="text/css"/>
+		<link rel="stylesheet" href="../styles/fontello.css">
+		<link rel="stylesheet" href="../styles/stylesBar.css" type="text/css"/>
+		<link rel="stylesheet" href="../styles/colorbox.css" type="text/css"/>
+		<link rel="stylesheet" href="../styles/solid.css" type="text/css"/>
+		<link rel="stylesheet" href="../styles/formalize.css" type="text/css" media="all" />
+		<link rel="stylesheet" href="../styles/planning.css" type="text/css" media="all" />
+		<link rel="stylesheet" href="../styles/jquery-ui-1.8.16.custom.css" type="text/css" media="all" />
+		<!-- 
+		favicon 
+		<link rel="icon" href="../images/favicon.png" type="image/png" />
+		<link rel="shortcut icon" href="../images/favicon.ico" type="image/x-icon" />
+		scripts
+		<script type="text/javascript" src="../scripts/search.js"></script>
+		-->
+        <script type="text/javascript" src="../scripts/preview.js"></script>
+        <script type="text/javascript" src="../scripts/jquery-1.7.1.js"></script>
+        <script type="text/javascript" src="../scripts/jquery-ui-1.10.3.custom.min.js"></script>
+        <script type="text/javascript" src="../scripts/ui.multiselect.js"></script>
+        <link rel="stylesheet" href="../scripts/select2/select2.css" type="text/css" media="all" />
+        <script type="text/javascript" src="../scripts/select2/select2.js"></script>
+        <!-- only for dutch -->
+        <script type="text/javascript" src="../scripts/testdrive.demo.js"></script>
+        <script type="text/javascript" src="../scripts/jquery.hoverIntent.min.js"></script>
+        <script type="text/javascript" src="../scripts/jquery.curtainMenu.js"></script>
+        <script type="text/javascript" src="../scripts/jquery.colorbox.js"></script>
+        <script type="text/javascript" src="../scripts/jquery.barrating.js"></script>
+        <link rel="stylesheet" href="../scripts/progress/css/component.css" type="text/css" media="all" />
+        <link rel="stylesheet" href="../styles/css/stylesMarQuake.css">
+	</head>
+	<body class="fixed full key">
+		<section id="bodySection">
+			<header id="bodyHeader">
+				<a href=""><img src="../images/logoSenti.png" alt="Sentimention" title="Website logo" id="bodyLogo" /></a>
+			</header>
+			<section id="homeContent">
+				<article id="homeArticle">
+                    <!--#include file="./component_keyword.html" -->
+                    <!--#include file="./component_keywordLoader.html" -->
+                    <!--#include file="./component_keywordLoaderBig.html" -->
+					<div class="clear"></div>
+				</article>
+				<div class="clear"></div>
+			</section>
+
+			<menu id="demoControls" type="toolbar">
+                <li><a class="popConfirm" title="Delete subject" href="#popupConfirm">Confirmation</a></li>
+                <li><a class="popHelp" title="Information" href="#popupHelp">Help</a></li>
+                <li><a class="popSentiment" title="Jan Jansen on Twitter" href="../html/popupSentimentPos.shtml">Open popup</a></li>
+                <li><a class="popSentiment" title="Jan Jansen on Twitter" href="../html/popupSentimentNeg.shtml">Open popup</a></li>
+                <li><a class="popSentiment" title="Jan Jansen on Twitter" href="../html/popupSentimentNeu.shtml">Open popup</a></li>
+			</menu>
+			<div class="clear"></div>
+			<nav id="bodyNav">
+				<!--#include file="./component_mainMenuSentimention.html" -->
+                <!--#include file="./component_loginNavNew.html" -->
+			</nav>
+		</section>
+		<!--#include file="./component_fixedBar.html" -->
+        <div id="loader"></div>
+		<footer class="bodyFooter"></footer>
+        <div style='display:none'>
+            <section class="popupConfirm" id="popupConfirm">
+                <p>Are you sure?</p>
+                <a href="" class="submit actions">Yes</a>
+                <a href="" class="submit">No</a>
+                <br class="clear" />
+            </section>
+        </div>
+        <div style='display:none'>
+            <section class="popupHelp" id="popupHelp">
+                <p>
+                    Cras justo odio, dapibus ac facilisis in, egestas eget quam. Etiam porta sem malesuada magna mollis euismod. Sed posuere consectetur est at lobortis. Donec id elit non mi porta gravida at eget metus. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean eu leo quam. Pellentesque ornare sem lacinia quam venenatis vestibulum. Praesent commodo cursus magna, vel scelerisque nisl consectetur et.
+                </p>
+                <p>
+                    Aenean lacinia bibendum nulla sed consectetur. Vestibulum id ligula porta felis euismod semper. Donec ullamcorper nulla non metus auctor fringilla. Donec id elit non mi porta gravida at eget metus. Donec sed odio dui. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Cras mattis consectetur purus sit amet fermentum.
+                </p>
+                <h2>Cras mattis consectetur</h2>
+                <p>
+                    Aenean lacinia bibendum nulla sed consectetur. Sed posuere consectetur est at lobortis. Sed posuere consectetur est at lobortis. Cras mattis consectetur purus sit amet fermentum. Nullam id dolor id nibh ultricies vehicula ut id elit. Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor.
+                </p>
+            </section>
+        </div>
+        <script src="../scripts/progress/js/classie.js"></script>
+        <script src="../scripts/progress/js/modernizr.custom.js"></script>
+        <script src="../scripts/progress/js/progressButton.js"></script>
+        <script>
+			[].slice.call( document.querySelectorAll( 'a.progress-button' ) ).forEach( function( bttn ) {
+				new ProgressButton( bttn, {
+					callback : function( instance ) {
+						var progress = 0,
+							interval = setInterval( function() {
+								progress = Math.min( progress + Math.random() * 0.1, 1 );
+								instance._setProgress( progress );
+
+								if( progress === 1 ) {
+									instance._stop(1);
+									clearInterval( interval );
+								}
+							}, 200 );
+					}
+				} );
+			} );
+        </script>
+	</body>
+</html>

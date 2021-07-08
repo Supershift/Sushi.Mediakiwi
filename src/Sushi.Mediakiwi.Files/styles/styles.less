@@ -1,0 +1,407 @@
+// Variables
+@action-primary-color: #7eb32d; // action
+@action-hover-color: darken(@action-primary-color, 10%);
+@action-second-color: lighten(@action-primary-color, 40%);
+@action-third-color: lighten(@action-primary-color, 48%);
+
+@hover: #f5f9ee;
+@hover-light: lighten(@hover, 1%);
+
+@secundary-color: #4e5862; // action
+@secundary-hover-color: darken(@secundary-color, 10%);
+@secundary-active-color: lighten(@secundary-color, 10%);
+@secundary-active-hover-color: darken(@secundary-active-color, 10%);
+@secundary-bar-color: lighten(@secundary-color, 40%);
+@secundary-other-color: lighten(@secundary-color, 70%);
+
+@main-primary-color: #000000; // action
+@main-second-color: lighten(@main-primary-color, 15%);
+@main-third-color: lighten(@main-primary-color, 68%);
+@main-fourth-color: lighten(@main-primary-color, 88%);
+@main-fifth-color: lighten(@main-primary-color, 93%);
+@main-sixth-color: lighten(@main-primary-color, 100%);
+
+@plan-color: #008820; // action
+@plan-first-color: lighten(@plan-color, 10%);
+
+.style a {
+    color: @action-primary-color;
+}
+
+tr.highlight {
+    background-color: @hover-light !important;
+}
+
+a.submit, input[type="reset"], input[type="submit"], input[type="button"], div.submit {
+    background: @secundary-color !important;
+}
+
+a.submit:hover, input[type="reset"]:hover, input[type="submit"]:hover, input[type="button"]:hover {
+    background: @secundary-hover-color !important;
+}
+
+input[type="submit"].action, a.action, .ajax-file-upload {
+    background: @action-primary-color !important;
+}
+
+input[type="submit"].action:hover, a.action:hover, .ajax-file-upload:hover {
+    background: @action-hover-color !important;
+}
+
+.fixed #bodySection, #homeArticle {
+    background: @main-sixth-color;
+}
+
+.pageHeader .icon-question-circle:hover,
+.pageHeader .icon-gears:hover {
+    color: @action-hover-color;
+}
+
+body {
+}
+
+h4 {
+    color: @action-primary-color;
+}
+
+#bodyHeader {
+    background: @main-second-color;
+    box-shadow: -25rem 0 0 @main-second-color, 25rem 0 0 @main-second-color;
+}
+
+#bodyHeader a {
+    background: @main-primary-color;
+}
+
+.pageHeader, .fixed .pageHeader:before, .fixed .pageHeader:after {
+}
+
+#homeAside {
+    background: @secundary-color;
+    color: contrast(@secundary-color, black, white, 50%) !important;
+}
+
+#homeAside a, #homeAside li a {
+    color: contrast(@secundary-color, black, white, 50%) !important;
+}
+
+div.footer {
+}
+
+.formfilters {
+}
+
+#sideNav menu.sideNav ul li ul {
+    background: @secundary-color !important;
+}
+
+#sideNav menu.sideNav ul li.active ul li.active a {
+    background: @secundary-active-color !important;
+}
+
+.dataBlock table.selections tr:hover td, .ajax-file-upload-statusbar {
+    background: @hover !important;
+}
+
+.dataBlock table.selections tr.totals, .dataBlock table.selections tr.totals td {
+    background: @main-fifth-color !important;
+}
+
+div.footer ul li a.flaticon, menu.pager a {
+    background: @secundary-active-color;
+}
+
+div.footer ul li a.flaticon:hover, menu.pager a:Hover {
+    background: @secundary-active-hover-color;
+}
+
+menu.pager a.active {
+    background: @secundary-color;
+}
+
+menu#mainMenu a.active {
+    border-bottom: solid 5px @action-primary-color;
+}
+
+menu#mainMenu li .sub menu ul li a:hover {
+    background: @action-third-color;
+}
+
+menu#mainMenu li .sub menu ul li a.active {
+    background: @action-third-color;
+}
+
+.pageHeader #breadCrumbs, .pageHeader #breadCrumbs a {
+    color: @action-primary-color;
+}
+
+#sideNav menu.sideNav ul li a span.items {
+    color: @secundary-color !important;
+}
+
+.planningLong div.full {
+    background: @plan-color;
+    color: #ffffff;
+}
+
+.planningLong div.half {
+    background: @plan-first-color;
+    color: #ffffff;
+}
+
+a.back:hover {
+    border: solid 1px darken(#bfc6ce, 20%);
+}
+
+.formfilters.grey {
+    background: #eaeaeb;
+    border-bottom: solid 1px #e3e5e6;
+}
+
+.mutaties article {
+    width: 50%;
+    float: left;
+    height: calc(~"100vh - 40px");
+    padding: 20px 20px 0px 20px;
+    margin-bottom: -20px;
+}
+
+.mutaties .dataBlock div {
+    height: 350px !important;
+}
+
+.mutaties .dataBlock div.low {
+    height: 116px !important;
+}
+
+.mutaties .dataBlock table.selections {
+    display: flex !important;
+    flex-flow: column !important;
+    height: 100%;
+    width: 100% !important;
+}
+
+.mutaties .dataBlock table.selections thead {
+    flex: 0 0 auto !important;
+    width: calc(100% - 1em) !important;
+    display: block;
+}
+
+.mutaties .dataBlock table.selections tbody {
+    flex: 1 1 auto !important;
+    display: block;
+    overflow-y: scroll;
+}
+
+.mutaties .dataBlock table.selections tbody tr, .mutaties .dataBlock table.selections thead tr {
+    width: 100% !important;
+}
+
+.mutaties .dataBlock table.selections thead, .mutaties .dataBlock table.selections tbody tr {
+    display: table !important;
+    table-layout: fixed !important;
+}
+
+.mutaties .selections tr th:first-of-type {
+    width: 60%;
+}
+
+.mutaties .selections tr td:first-of-type {
+    width: 60%;
+}
+
+.mutaties div.low .selections tr th:first-of-type {
+    width: 40%;
+}
+
+.mutaties div.low .selections tr td:first-of-type {
+    width: 40%;
+}
+
+.mutaties article:first-of-type {
+    border-right: solid 1px #e3e5e6;
+}
+
+.mutaties article label {
+    float: left;
+    width: 50%;
+}
+
+.mutaties article span {
+    float: left;
+    width: 50%;
+}
+
+.mutaties div {
+    margin: 0px -20px;
+}
+
+.mutaties .formTable tr td {
+    vertical-align: middle;
+}
+
+.mutaties footer {
+    margin: 20px 20px !important;
+}
+
+.mutaties footer a.submit {
+    margin-right: 10px;
+    float: left;
+    padding: 7px 10px !important;
+}
+
+.mutaties footer a:nth-of-type(3) {
+    float: right;
+    margin-right: 0px;
+}
+
+.mutaties footer a:nth-of-type(4) {
+    float: right;
+}
+
+
+.multiAssetUpload_resultFiles {
+    list-style-type: none;
+    width: 100%;
+    padding: 0;
+    margin: 0;
+    padding-top: 40px;
+    
+
+    li {
+          background-color: #f2f2f2;
+    border: solid 1px #dddee0;
+        padding: 4px 15px;
+        color: #000;
+
+        .remove {
+            float: right;
+
+            a {
+                color: #000;
+                padding-right: 20px;
+            }
+        }
+
+        progress {
+            width: 100%;
+        }
+    }
+}
+
+.multiBox {
+    width: 100%;
+
+    align-content {
+        padding: 3px 20px !important;
+    }
+
+    footer {
+        margin-top: 10px;
+        border-bottom: solid 1px #e3e5e6;
+        a {
+            margin-left: 5px;
+            background: #d9d9d9 !important;
+            color: #1a1a1a;
+        }
+
+        a:hover {
+            color: #ffffff;
+        }
+    }
+
+    border: 1px solid transparent;
+    
+    margin-bottom: 10px;
+	 
+    input[type=file] {
+        display: none;
+    }
+
+    &.dropTarget {
+        border: 1px dotted gray;
+        background-color: darken(white, 10%);
+    }
+}
+#homeArticle div.first footer div {
+	padding-left: 20px !important;
+}
+.accordion {
+    display: none; 
+	padding: 0px !important;
+    div.first {
+        overflow-y: auto;
+		overflow-x: hidden;
+        display: block; 
+
+        margin: 0px;
+        padding: 0px;
+        h3 {
+            padding-left: 20px !important;
+        }
+        .long .multiSortable.select ul.add {
+            width: 783px;
+        }
+        header {          
+            padding: 10px 0px 10px 20px;
+            padding-bottom: 10px;
+            width: 100%;
+            border-bottom: 1px solid @main-fourth-color;
+            h4 {
+                display: inline-block;
+                width: 94%; 
+            }
+            a { 
+                display: inline-block;               
+            }
+            a:after{
+				font-family: 'icomoon';
+                content: "\f102";
+                font-weight: bold;
+                padding-left : 5px;
+				position: relative;
+				top: 1px;
+            }
+        }
+		.iconBar {
+			margin-top: 0px;
+		}
+		.container {
+			padding: 0px;
+			div.buttonContainer a {
+				display: inline-block;
+			}
+			table.formTable th:first-child, table.formTable td:first-child {
+				padding-left: 20px !important;
+			}
+			table.formTable {
+				width: 100%;
+				tbody {
+					display: table;
+					width: 100%;
+				}
+                 th label {
+                     width: 200px !important;
+                 }
+                 th:first-child
+                 {
+                     width: 200px !important;
+                 }
+                 .datepicker, .timepicker
+                 {
+                     width: 125px; 
+                 }
+                 br {
+                     clear: both;
+                 }
+			}
+			.formTable input.long, .formTable select.long, .formTable textarea.long, .formTable div.long {
+				width: 100%;
+			}
+		}
+        .footer {
+            border-top: none !important;
+           
+        }
+    }
+}

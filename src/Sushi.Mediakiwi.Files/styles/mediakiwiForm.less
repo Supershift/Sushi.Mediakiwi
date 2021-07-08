@@ -1,0 +1,137 @@
+﻿@action-primary-color: #7eb32d; // action
+@secundary-color: #4e5862; // action sec
+
+.dg-btn {
+    padding: 7px 20px !important;
+    border-radius: 2px !important;
+    -webkit-appearance: none !important;
+    height: auto !important;
+    border: none !important;
+    color: #fff !important;
+    cursor: pointer !important;
+    float: right !important;
+    display: inline-block !important;
+    min-width: 0 !important;
+    font-size: inherit !important;
+    font-weight: initial !important;
+}
+
+.dg-btn--cancel {
+    color: #FFF !important;
+    background-color: @secundary-color !important;
+    float: left !important;
+}
+
+.dg-btn--ok {
+    color: #FFF !important;
+    background-color: @action-primary-color !important;
+    border-color: @action-primary-color !important;
+}
+
+.dg-content-body {
+    border-bottom: none !important;
+}
+
+/* Form */
+tr > v-container {
+    display: block;
+
+    &.long {
+        width: 100%;
+        display: inline-flex;
+    }
+
+    &.half {
+        display: inline-flex;
+    }
+
+    &.half,
+    &.long {
+        th {
+            width: 145px !important;
+            height: 24px;
+
+            &.sectionHeader {
+                width: 100% !important;
+            }
+        }
+
+        td {
+            flex: 1;
+        }
+    }
+}
+
+v-container.half {
+    display: inline-block;
+    width: 48%;
+}
+
+/* Select2 overwrite */
+.select2-container--default .select2-results__option--highlighted[aria-selected] {
+    background-color: #F4F4F4 !important;
+    color: initial !important;
+}
+
+.select2-selection {
+    border-radius: 0 !important;
+}
+
+
+body .OrderingField .sectionHeader {
+    span {
+        display: flex;
+        -ms-flex-direction: row;
+        -webkit-flex-direction: row;
+        flex-direction: row;
+
+        h3 {
+            flex: 1;
+
+            &.toggle {
+                cursor: pointer;
+            }
+        }
+    }
+}
+
+body .OrderingField {
+    .list-icon {
+        height: 30px !important;
+        width: 28px !important;
+        padding: 7px 5px !important;
+        margin-left: 5px;
+        margin-right: 0 !important;
+        font-weight: bold;
+    }
+
+    .list-btn,
+    .list-btn-left,
+    .list-btn-right {
+        background: #8c98a4;
+        color: #fff;
+        font-size: 100%;
+        height: 30px !important;
+        width: 28px !important;
+        padding: 7px 5px !important;
+        text-decoration: none;
+        display: block;
+        line-height: 17px !important;
+        text-align: center;
+        border-radius: 2px !important;
+        margin-left: 5px;
+
+        &:hover {
+            background: #a3acb4;
+        }
+    }
+
+    .list-btn-left {
+        border-radius: 2px 0 0 2px !important;
+    }
+
+    .list-btn-right {
+        border-radius: 0px 2px 2px 0 !important;
+        margin-left: 1px !important;
+    }
+}

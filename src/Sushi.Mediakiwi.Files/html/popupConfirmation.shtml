@@ -1,0 +1,8 @@
+﻿		<section id="popupConfirm">
+			<p>Are you sure?</p>
+            <a href="" class="submit actions">Yes</a>
+            <a href="" class="submit">No</a>
+            <br class="clear" />
+		</section>
+
+				

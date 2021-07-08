@@ -1,0 +1,117 @@
+/*.cloaked { display:none; }*/
+// Variables
+
+@primary: #24244a;
+@dark: #000;
+@light: #fff;
+@secundary: #e1e2e7; 
+@header: #25213a;
+
+a.submit,
+input[type="reset"],
+input[type="submit"],
+input[type="button"],
+button.submit, #popupContent .submit, #popupContent div.submit, #popupContent input[type=reset], #popupContent input[type=submit], #popupContent input[type=button] { 
+  background: @secundary !important;
+  text-transform: none;
+  cursor: pointer;
+  color: #3d414d !important;
+  border: none; 
+  border-radius: 4px !important;
+}
+a.submit:hover,
+input[type="reset"]:hover,
+input[type="submit"]:hover,
+input[type="button"]:hover,
+button.submit:hover,
+#popupContent a.submit:hover,
+#popupContent input[type="reset"]:hover,
+#popupContent input[type="submit"]:hover,
+#popupContent input[type="button"]:hover,
+#popupContent button.submit:hover {
+  background: darken(@secundary, 10%) !important;
+}
+a.submit.inActive {
+  background: #465a74 !important;
+}
+input[type="submit"].action,
+a.action,
+button.action,#popupContent input[type="submit"].action,
+#popupContent a.action,
+#popupContent button.action {
+  background: @primary !important;
+  color: #ffffff!important;
+  display: inline-block;
+  padding: 5px 10px;
+  border-radius: 4px !important;
+  border: none;
+  cursor: pointer;
+}
+input[type="submit"].action:hover,
+a.action:hover,
+button.action:hover,
+#popupContent input[type="submit"].action:hover,
+#popupContent a.action:hover,
+#popupContent button.action:hover  {
+  background: darken(@primary,20%) !important;
+}
+input[type="submit"].third,
+a.third,
+button.third {
+  background: #f7f8f8 !important;
+  border: solid 1px #d4d5d8;
+  color: #666666;
+  margin-left: 10px;
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+input[type="submit"].third:hover,
+a.third:hover,
+button.third:hover {
+  background: darken(#f7f8f8,20%) !important;
+  color: #ffffff;
+}
+.scroll {
+	height: 500px;
+	overflow: auto;
+}
+#bodyHeader {
+	background: @header;
+}
+menu#mainMenu li a {
+	color: @secundary !important;
+}
+menu#mainMenu a.active {
+	border-bottom: solid 5px @secundary;
+}
+#homeAside, #sideNav menu.sideNav ul li ul {
+	background: #cecfd4 !important;
+	border: solid 1px #b3b7c3;
+}
+#sideNav menu.sideNav ul li a, #sideNav menu.sideNav ul li.back span {
+	color: #24244a !important;
+}
+#sideNav menu.sideNav ul li a.active {
+	color: #24244a !important;
+	font-weight: bold;
+}
+#sideNav menu.sideNav ul li.active a {
+	color: @light !important;
+}
+h1, .pageHeader #breadCrumbs, .pageHeader #breadCrumbs a, .pageHeader .icon-question-circle, .pageHeader .icon-gears, #loginContent article tfoot a, .widgets article h2 a {
+	color: @primary !important;
+}
+.dataBlock table.selections tr.totals, .dataBlock table.selections tr.totals td {
+	background: @secundary !important;
+	border-top: solid 1px #b3b7c3;
+	border-bottom: solid 1px #b3b7c3;
+}
+.formfilters.grey {
+	background: #e7e7ef !important;
+	border-top: solid 1px #c6c9d2;
+	border-bottom: solid 1px #c6c9d2;
+}
+
+

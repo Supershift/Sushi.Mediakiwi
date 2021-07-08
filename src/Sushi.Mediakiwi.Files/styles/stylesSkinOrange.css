@@ -1,0 +1,268 @@
+	/* CLASSES: The markup of layouts */
+@media all {
+	body {
+		color: #ffffff;
+		background: #e57e22 url(../images/hdgrass.jpg) fixed 0% 0%; /* Old browsers */
+	}
+
+		body h1, body h2, body h3 {
+			color: #ffffff;
+		}
+
+		body menu.sideNav a {
+			color: #ffffff !important;
+		}
+
+		body ul.tabs {
+			background: #d35500;
+		}
+
+			body ul.tabs li a {
+				background: #d35500;
+				color: #ffffff !important;
+				border-right: solid 2px #e57e22!important;
+			}
+
+		body .forms {
+			background: #d35500;
+		}
+
+		body label, body li.laster {
+			color: #ffffff !important;
+		}
+
+		body .detail ul.issues {
+			background: #e57e22 !important;
+		}
+
+			body .detail ul.issues li {
+				background: #d35500 !important;
+				color: #ffffff;
+			}
+
+				body .detail ul.issues li h2, body .detail ul.issues li h2 span.number, .dashes header h2 {
+					color: #ffffff !important;
+				}
+
+				body .detail ul.issues li span.time, body .detail ul.issues li span.time strong, body .detail ul.issues li span.time em, body .detail ul.issues li span.time span {
+					color: #ffffff;
+				}
+
+		body .detail {
+			background: #d35500;
+		}
+
+		body div.footer {
+			background: #d35500;
+			border-top: solid 2px #e57e22!important;
+		}
+
+		body #fixedBar {
+			background: #2988c8;
+		}
+
+			body #fixedBar div.supper li, body #fixedBar div.supper li a {
+				background: #2988c8;
+			}
+
+			body #fixedBar div.supper div.arrow {
+				border-top: solid 10px #d35500;
+			}
+
+	body .planning article, body .searchFilters, body .dashes, body article.dataBlock, .dataBlock table tbody tr.odd td {
+		background: #d35500;
+	}
+		body article.dataBlock, .dataBlock table tbody tr td, body article.dataBlock, .dataBlock table thead tr th {
+			color: #ffffff !important;
+		}
+		body article.dataBlock, .dataBlock table thead tr th {
+			color: #363636 !important;
+		}
+		body .dashes header {
+			border-bottom: solid 3px #e57e22;
+		}
+		.planning article table tbody tr {
+			border-top: solid 4px #e57e22;
+		}
+		.planning article table tbody td {
+			background: #e57e22 !important;
+		}
+			body .planning article table tbody td {
+				border-left: solid 15px #d35500 !important;
+			}
+			body .planning article table thead td div, .planning article table tbody th div {
+				color: #ffffff;
+			}
+				body .dashes header figure .flaticon.solid.gear {
+					color: #ffffff;
+				}
+	body .searchFilters.smaller {
+		background: #d35500;
+	}
+		body .dataBlock table.issue{
+			border-bottom: solid 2px #e57e22 !important;
+		}	
+			body .dataBlock table.issue h3 {
+				color: #ffffff;
+			}
+			body .dataBlock table.issue div.sign {
+				color: #1a1a1a;
+				background: #ffffff;
+			}
+			body .dataBlock table.issue div.sign h3 {
+				color: #1a1a1a;
+				background: #ffffff;
+			}
+			.dataBlock table thead tr th.number {
+				background: #ffffff;
+			}
+	body input.error {
+		border-left: 8px solid #3a3a3a;
+	}
+	body select.error {
+		border-left: 8px solid #3a3a3a;
+	}
+	body .formTable:hover {
+		border-left: solid 8px #3a3a3a;
+	}
+	body #homeArticle footer,body .buttonBar {
+		background: #d35500 !important;
+	}
+	body .style div.item, body .style div.results {
+		background: #d35500 !important;
+	}
+		body .style div.item p {
+			color: #ffffff;
+		}
+		body .style div.item span.blue {
+			color: #ffffff;
+		}
+		body .style ul.folders li {
+			background: #d35500 !important;
+			border: none;
+		}
+		body .style ul.folders li p {
+			color: #ffffff;
+		}
+		body .style ul.folders li a {
+			color: #1a1a1a !important;
+		}
+	body .style div.files {
+		background: #d35500 !important;
+	}
+	body .metaMenu {
+			color: #d35500;
+			background: #ffffff;
+		}
+		body .metaMenu span.flaticon {
+			color: #e57e22 !important;
+			font-size: 200%;
+		}
+			body .metaMenu li.last a {
+				color: #d35500;
+			}
+			body .metaMenu li img {
+				padding: 0px 0px 0px 4px;
+				margin-top: -8px;
+			}
+			body .inbox {
+				color: #ffffff;
+				background: #ffffff;
+			}
+				body .inbox span.flaticon {
+					color: #e57e22 !important;
+					font-size: 200%;
+				}
+				body .inbox a {
+					color: #e57e22;
+				}
+				body .inbox ul {
+					background: #ffffff;
+				}
+					body .inbox ul li {
+						border-bottom: solid 2px #e57e22;
+					}
+					body .inbox ul li h3 {
+						color: #e57e22;
+					}
+					body .inbox ul li p {
+						color: #e57e22;
+					}
+		body .searchGraphic {
+			background: #d35500;	
+		}
+		body .searchFields  {
+			color: #ffffff;
+			background: #ffffff;
+		}
+			body .searchFields span.flaticon {
+				color: #e57e22 !important;
+				font-size: 200%;
+			}
+			body .searchFields fieldset {
+				float:right;
+				background: #ffffff;
+			}
+			body .searchFields input.bigUn {
+				color: #ffffff !important;
+				background: #323232;
+			}
+			body .searchFields select.bigUn {
+				color: #ffffff;
+				background: #323232;
+			}
+	body #loginContent article {
+		background: #d35500 !important;
+		border: none;
+	}
+		body #loginContent article h1 {
+			color: #ffffff;
+		}
+	body input[type="submit"], a.submit{
+		background: #ffffff;
+		color: #e57e22 !important;
+	}
+	body input[type="submit"]:hover{
+		background: #e57e22; /* Old browsers */
+		color: #ffffff !important;
+	}
+	body input[type="submit"].else{
+		background: #e57e22; /* Old browsers */
+		color: #ffffff !important;
+	}
+	body input[type="submit"].else:hover {
+		background: #e57e22; /* Old browsers */
+		color: #ffffff;
+	}
+	.buttonBar a {
+		background: #ffffff;
+		color: #e57e22;	
+	}
+	.buttonBar a:hover {
+		background: #e57e22; /* Old browsers */
+		color: #ffffff;
+	}
+	div.footer ul li ul li.prev a, div.footer ul li ul li.next a {
+		background: #ffffff;
+		color: #e57e22 !important;	
+	}
+	.dashes header figure div.sub menu ul li a:hover, .style .settings div.sub menu ul li a:hover {
+		border-left: 8px solid #e57e22;
+		padding: 0px 0px 2px 6px;
+	}
+	menu#mainMenu li .sub menu ul li a.active, menu#mainMenu li .sub menu ul li a:hover {
+		border-left: 8px solid #e57e22 !important;
+	}
+	body #bodyNav {
+		background: #d35500;
+	}
+	body .style .settings a.menu {
+		color: #ffffff;
+	}
+	body .style div.files a {
+		color: #ffffff;
+	}
+	.searchFilters table td div {
+		border-bottom: solid 1px #ffffff;
+	}
+}

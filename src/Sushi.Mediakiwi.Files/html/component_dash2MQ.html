@@ -1,0 +1,179 @@
+<section class="component dashes dashHeader" id="dash2MQ">
+    <article>
+        <script type="text/javascript">
+            $(function () {
+                $('#container2').highcharts({
+                    chart: {
+                        renderTo: 'container', type: 'spline',
+                        backgroundColor: '#6d6e72',
+                        spacingBottom: 18,
+                        spacingTop: 18,
+                        height: 400,
+                        borderRadius: 0,
+                        style: {
+                            fontFamily: 'Source Sans Pro'
+                        }
+                    },
+                    title: {
+                        text: '<a href="sentimention.com">Sentiment</span></a><br/><a href="" class="smallz">Show all</a>',
+                        style: {
+                            color: '#ffffff',
+                            fontFamily: 'Source Sans Pro',
+                            fontWeight: 300,
+                            textTransform: 'uppercase',
+                            fontSize: '30px',
+                            letterSpacing: '3px',
+                        },
+                        y: 25,
+                        useHTML: true,
+
+                    },
+                    xAxis: {
+                        categories: ['22 jan', '23 jan', '24 jan', '25 jan', '26 jan', '27 jan',
+							'28 jan', '29 jan', '30 jan'],
+                        labels: {
+                            style: {
+                                color: '#ffffff',
+                                font: 'Source Sans Pro',
+                                textTransform: 'uppercase',
+                                fontSize: '15px'
+                            },
+                        },
+                        offset: 40,
+                        lineWidth: 0,
+                        tickLength: 0,
+                        gridLineWidth: 0,
+                        minorGridLineWidth: 0,
+                        plotLines: [{
+                            value: 0,
+                            width: 0,
+                        }],
+                    },
+                    yAxis: {
+                        title: {
+                            text: '',
+                            style: {
+                                color: '#7589a7'
+                            }
+                        },
+                        labels: {
+                            style: {
+                                color: '#b1bdd3',
+                                font: 'Source Sans Pro',
+                                fontSize: '15px'
+                            },
+                        },
+                        minPadding: .15,
+                        startOnTick: false,
+                        tickWidth: 0,
+                        tickLength: 10,
+                        tickPosition: 'inside',
+                        gridLineWidth: 1,
+                        gridLineColor: '#747579',
+                        minorGridLineWidth: 0,
+                        plotLines: [{
+                            value: 0,
+                            width: 0
+                        }],
+                        enabled: true
+                    },
+                    legend: {
+                        enabled: false
+                    },
+                    plotOptions: {
+                        series: {
+                            marker: {
+                                radius: 6,
+                                fillColor: '#4e658a',
+                                lineWidth: 3,
+                                symbol: 'circle',
+                                lineColor: null, // inherit from series
+                                enabled: false
+                            },
+                            fillOpacity: .1
+                        },
+                        area: {
+                            stacking: 'normal'
+                        }
+                    },
+                    tooltip: {
+                        useHTML: true,
+                        backgroundColor: null,
+                        borderWidth: 0,
+                        shadow: false,
+                        formatter: function () {
+                            return '<div style="background-color:' + this.series.color + '" class="tooltip">Sentiment: <strong>' +
+                                    this.series.name + '</strong><br>Source: <strong>' + this.key + '</strong><br>Messages: <strong>' + this.y +
+                                '</strong></div>';
+                        }
+                    },
+                    series: [{
+                        name: 'Positive',
+                        data: [7.0, 6.9, 9.5, 14.5, 18.2, 21.5, 25.2, 26.5, 23.3],
+                        color: 'rgba(20,160,133, 0.5)',
+                        lineWidth: 30,
+                        shadow: true
+                    }, {
+                        name: 'Positive',
+                        data: [4.0, 5.9, 7.5, 12.5, 17.2, 19.5, 24.2, 22.5, 21.3],
+                        color: 'rgba(20,160,133, 0.5)',
+                        lineWidth: 3,
+                        marker: {
+                            enabled: true
+                        }
+                    }, {
+                        name: 'Negative',
+                        data: [0, 0.8, 5.7, 11.3, 17.0, 22.0, 24.8, 24.1, 20.1],
+                        color: '#e74c3c',
+                        color: 'rgba(231,76,60, 0.5)',
+                        lineWidth: 30,
+                        shadow: true
+                    }, {
+                        name: 'Negative',
+                        data: [0, 0.8, 5.7, 11.3, 17.0, 22.0, 24.8, 24.1, 20.1],
+                        color: '#e74c3c',
+                        color: 'rgba(231,76,60, 0.5)',
+                        lineWidth: 3,
+                        marker: {
+                            enabled: true
+                        }
+                    }, {
+                        name: 'Neutral',
+                        data: [0.9, 0.6, 3.5, 8.4, 13.5, 17.0, 18.6, 17.9, 14.3],
+                        color: '#bdc0c6',
+                        color: 'rgba(189,192,198, 0.5)',
+                        lineWidth: 30,
+                        shadow: true
+                    }, {
+                        name: 'Neutral',
+                        data: [0.4, 0.3, 3.1, 8.2, 13.2, 14.0, 13.6, 15.9, 11.3],
+                        color: '#bdc0c6',
+                        color: 'rgba(189,192,198, 0.5)',
+                        lineWidth: 3,
+                        marker: {
+                            enabled: true
+                        }
+                    }]
+                }, function (chart) { // on complete
+                    chart.renderer.rect(0/*position on X-axis*/, 340/*position on Y-axis*/, 1280/*width*/, 60/*height*/, 00)
+						 .attr({
+						     'stroke-width': 0,
+						     stroke: '#888888',
+						     fill: '#404040',
+						     zIndex: 1
+						 })
+						 .add();
+                }
+					);
+            });
+        </script>
+        <figure id="container2" style=" margin: 0 auto">
+        </figure>
+        <figure class="sentimentGraph">
+            <div class="positive" style="width: 31%;">31%</div>
+            <div class="neutral" style="width: 18%;">18%</div>
+            <div class="negative" style="width: 51%;">51%</div>
+            <span>Huidig Sentiment</span>
+        </figure>
+    </article>
+</section>

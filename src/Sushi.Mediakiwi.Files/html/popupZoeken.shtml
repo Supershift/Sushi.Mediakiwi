@@ -1,0 +1,76 @@
+﻿<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8" />
+		<title>Example HTML 5 Template</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<meta http-equiv="Content-Language" content="en-GB" />
+		<meta http-equiv="imagetoolbar" content="no"/>
+		<meta http-equiv="X-UA-Compatible" content="IE=8" />
+		<link rel="stylesheet" href="../styles/stylesFlatv2.css" type="text/css" media="all" />
+		<link rel="stylesheet" href="../styles/jquery-ui-1.8.16.custom.css" type="text/css" media="all" />
+		<link rel="stylesheet" href="../styles/formalizev2.css" type="text/css" media="all" />
+		<link rel="stylesheet" href="../styles/colorbox.css" type="text/css" media="all" />
+		<link rel="stylesheet" href="../styles/fontello.css" type="text/css" media="all" />
+		<link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600,700' rel='stylesheet' type='text/css'>
+		<link rel="stylesheet" href="../styles/css/stylesSentimention.css">
+		<!-- 
+		favicon 
+		<link rel="icon" href="../images/favicon.png" type="image/png" />
+		<link rel="shortcut icon" href="../images/favicon.ico" type="image/x-icon" />
+		scripts
+		<script type="text/javascript" src="../scripts/search.js"></script>
+		-->
+		<script type="text/javascript" src="../scripts/head.load.min.js"></script>
+		<script type="text/javascript" src="../scripts/preview.js"></script>
+		<script type="text/javascript" src="../scripts/jquery-1.6.2.min.js"></script>
+		<script type="text/javascript" src="../scripts/jquery-ui-1.8.17.custom.min.js"></script>
+		<script type="text/javascript" src="../scripts/jquery.formalize.js"></script>
+		<script type="text/javascript" src="../scripts/jquery.colorbox.js"></script>
+		<script type="text/javascript" src="../scripts/jquery-ui-timepicker-addon.js"></script>
+		<script type="text/javascript" src="../scripts/jquery.hoverIntent.min.js"></script>
+		<script type="text/javascript" src="../scripts/jquery.curtainMenu.js"></script>
+		<script type="text/javascript" src="../scripts/testdrive.js"></script>
+		<script type="text/javascript" src="../scripts/nicEdit.js"></script>
+		<!--[if IE]>
+			<meta http-equiv="imagetoolbar" content="no"/>
+			<meta http-equiv="X-UA-Compatible" content="IE=8" />
+			<script type="text/javascript" src="../scripts/html5.js"></script>
+		<![endif]-->
+		<style>
+			html, body {
+				overflow: hidden;	
+			}
+		</style>
+	</head>
+	<body class="popupPage">
+		<section id="popupContent">
+			<input class="big" id="frmZoeken" placeholder="Vul uw zoekterm in..." name="frmZoeken" /><input type="submit" class="right action" value="Preview" />			
+			<br class="clear" />
+			<h3>Keyword is being searched in the following services</h3>
+			<figure>
+				<div>
+					<span title="Informatie over zaken!" class="icon icon-facebook"></span>
+					<span class="number">9</span>
+				</div>
+				<div>
+					<span title="Informatie over zaken!" class="icon icon-twitter"></span>
+					<span class="number">4</span>
+				</div>
+				<div>
+					<span title="Informatie over zaken!" class="icon icon-wordpress"></span>
+					<span class="number">3</span>
+				</div>
+				<div>
+					<span title="Informatie over zaken!" class="icon icon-tumblr inactive"></span>
+					<span class="number">7</span>
+				</div>
+			</figure>
+			<div class="results">
+				<h3>19 gevonden resultaten ..</h3> 			</div>
+			<a href="" class="submit right">Add</a>
+		</section>
+	</body>
+</html>
+
+				

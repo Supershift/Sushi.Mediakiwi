@@ -1,0 +1,10 @@
+﻿*.cache
+*.dll
+*.exe
+*.pdb
+*.testlog
+**/node_modules
+**/bin
+**/obj
+**/.vs
+*.suo

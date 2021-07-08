@@ -1,0 +1,20 @@
+[
+  {
+    "outputFileName": "Presentation/styles/styles.min.css",
+    "inputFiles": [
+      "Presentation/styles/styles.css"
+    ]
+  },
+  {
+    "outputFileName": "scripts/jquery-numeric.min.js",
+    "inputFiles": [
+      "scripts/jquery-numeric.js"
+    ]
+  },
+  {
+    "outputFileName": "scripts/jquery-1-7-1.min.js",
+    "inputFiles": [
+      "scripts/jquery-1-7-1.js"
+    ]
+  }
+]
