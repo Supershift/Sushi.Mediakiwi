@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Sushi.Mediakiwi;
 using Sushi.Mediakiwi.Controllers.Data;
 using Sushi.Mediakiwi.Data;
 using Sushi.Mediakiwi.Framework;
@@ -12,14 +11,20 @@ using System.Threading.Tasks;
 
 namespace Sushi.Mediakiwi.Controllers
 {
-    [Authorize(AuthenticationSchemes = AuthenticationDefaults.AuthenticationScheme)]
     [Route("api/documentype")]
-    public class DocumentTypeController : MediakiwiController
+    public class DocumentTypeController : BaseController
     {
-        [HttpPost("checkSharedField")]
-        public async Task<ActionResult<CheckSharedFieldResponse>> CheckSharedFieldAsync([FromBody] CheckSharedFieldRequest request)
+        public DocumentTypeController()
         {
-            var response = new CheckSharedFieldResponse();
+            this.IsAuthenticationRequired = true;
+        }
+
+        [HttpPost("checkSharedField")]
+        public async Task<string> CheckSharedFieldAsync()
+        {
+            var request = await GetPostAsync<CheckSharedFieldRequest>(HttpContext).ConfigureAwait(false);
+
+            CheckSharedFieldResponse response = new CheckSharedFieldResponse();
             var matchingProps = await Property.SelectAllByFieldNameAsync(request.FieldName).ConfigureAwait(false);
             if (matchingProps?.Count > 0)
             {
@@ -41,12 +46,14 @@ namespace Sushi.Mediakiwi.Controllers
                 }
             }
 
-            return response;
+            return GetResponse(response);
         }
 
         [HttpPost("getFields")]
-        public async Task<ActionResult<GetFieldsResponse>> GetFieldsAsync([FromBody] GetFieldsRequest request)
+        public async Task<string> GetFieldsAsync()
         {
+            var request = await GetPostAsync<GetFieldsRequest>(HttpContext).ConfigureAwait(false);
+
             Dictionary<string, int> req = new Dictionary<string, int>();
             foreach (var q in HttpContext.Request.Query)
             {
@@ -56,7 +63,7 @@ namespace Sushi.Mediakiwi.Controllers
                 }
             }
 
-            var response = new GetFieldsResponse();
+            GetFieldsResponse response = new GetFieldsResponse();
             response.Fields = new List<DocumentTypeFieldListItem>();
 
             var componentlist = await ComponentTemplate.SelectOneAsync(request.DocumentTypeID).ConfigureAwait(false);
@@ -80,15 +87,15 @@ namespace Sushi.Mediakiwi.Controllers
                         {
                             FieldName = meta.Name,
                             Title = meta.Title,
-                            AutoPostBack = meta.AutoPostBack.Equals("1", StringComparison.Ordinal),
+                            AutoPostBack = meta.AutoPostBack.Equals("1"),
                             InteractiveHelp = meta.InteractiveHelp,
                             DefaultValue = meta.Default,
                             ContentTypeID = (ContentType)Enum.Parse(typeof(ContentType), meta.ContentTypeSelection),
                             MaxValueLength = Utility.ConvertToIntNullable(meta.MaxValueLength),
-                            IsMandatory = meta.Mandatory.Equals("1", StringComparison.Ordinal),
+                            IsMandatory = meta.Mandatory.Equals("1"),
                             SortOrder = index,
                             TemplateID = request.DocumentTypeID,
-                            IsSharedField = meta.IsSharedField.Equals("1", StringComparison.Ordinal)
+                            IsSharedField = meta.IsSharedField.Equals("1")
                         };
                         await property.SaveAsync().ConfigureAwait(false);
 
@@ -131,7 +138,7 @@ namespace Sushi.Mediakiwi.Controllers
             // [MR:29-04-2021] added for : https://supershift.atlassian.net/browse/FTD-147
             await response.ApplySharedFieldInformationAsync(request.DocumentTypeID).ConfigureAwait(false);
 
-            return response;
+            return GetResponse(response);
         }
     }
 }

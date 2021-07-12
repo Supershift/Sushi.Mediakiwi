@@ -1,4 +1,4 @@
-﻿using Sushi.Mediakiwi.Data.Data;
+﻿using Sushi.Mediakiwi.Data;
 using Sushi.MicroORM;
 using Sushi.MicroORM.Mapping;
 using System;
@@ -22,7 +22,7 @@ namespace Sushi.Mediakiwi.Data
                 }
                 else
                 {
-                    Table("vw_SharedFields");
+                    Table("wim_SharedFieldView");
                     Map(x => x.FieldName, "SharedField_FieldName").ReadOnly();
                     Map(x => x.ContentTypeID, "SharedField_ContentTypeID").ReadOnly();
                 }
@@ -366,7 +366,7 @@ namespace Sushi.Mediakiwi.Data
             var filter = connector.CreateDataFilter();
             filter.AddParameter("@pageId", pageId);
 
-            var result = connector.FetchAll(@"SELECT fields.* FROM [dbo].[vw_SharedFields] AS fields
+            var result = connector.FetchAll(@"SELECT fields.* FROM [dbo].[wim_SharedFieldView] AS fields
 LEFT JOIN [dbo].[wim_Properties] AS props ON props.[Property_FieldName] = fields.[SharedField_FieldName]
 AND props.[Property_Type] = fields.[SharedField_ContentTypeID]
 LEFT JOIN [dbo].[wim_Components] AS comps ON comps.[Component_ComponentTemplate_Key] = props.[Property_Template_Key]
@@ -385,7 +385,7 @@ WHERE props.[Property_IsShared] = 1 AND comps.[Component_Page_Key] = @pageId", f
             var filter = connector.CreateDataFilter();
             filter.AddParameter("@pageId", pageId);
 
-            var result = await connector.FetchAllAsync(@"SELECT fields.* FROM [dbo].[vw_SharedFields] AS fields
+            var result = await connector.FetchAllAsync(@"SELECT fields.* FROM [dbo].[wim_SharedFieldView] AS fields
 LEFT JOIN [dbo].[wim_Properties] AS props ON props.[Property_FieldName] = fields.[SharedField_FieldName]
 AND props.[Property_Type] = fields.[SharedField_ContentTypeID]
 LEFT JOIN [dbo].[wim_Components] AS comps ON comps.[Component_ComponentTemplate_Key] = props.[Property_Template_Key]

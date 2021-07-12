@@ -6,9 +6,6 @@ namespace Sushi.Mediakiwi.Data
 {
     public interface IEnvironment
     {
-        string this[string registry] { get; }
-        string this[string registry, bool ifNotPresentAdd, string defaultValue, string description] { get; }
-
         DateTime Created { get; set; }
         string DefaultMailAddress { get; set; }
         int? DefaultSiteID { get; set; }
@@ -29,9 +26,6 @@ namespace Sushi.Mediakiwi.Data
 
         DateTime UpdateInfo { get; set; }
         decimal Version { get; set; }
-
-        string GetRegistryValue(string registry, string defaultValue);
-
         bool Save();
 
         Task<bool> SaveAsync();

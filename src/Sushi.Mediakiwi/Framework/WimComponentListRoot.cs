@@ -1885,22 +1885,6 @@ namespace Sushi.Mediakiwi.Framework
             }
         }
 
-        private Dashboard m_currentDashboard;
-        /// <summary>
-        /// Gets or sets the current dashboard.
-        /// </summary>
-        /// <value>The current list.</value>
-        public Dashboard CurrentDashboard
-        {
-            set { m_currentDashboard = value; }
-            get
-            {
-                if (m_currentDashboard == null && Context != null)
-                    m_currentDashboard = Dashboard.SelectOne(Utility.ConvertToInt(Context.Request.Query["dashboard"]));
-                return m_currentDashboard;
-            }
-        }
-
         /// <summary>
         /// Gets or sets the current data instance.
         /// </summary>
@@ -4044,6 +4028,7 @@ namespace Sushi.Mediakiwi.Framework
             set { m_GraphDataTable = value; }
             get { return m_GraphDataTable; }
         }
+
 
 
         [Obsolete("This is not valid any more in mediakiwi", false)]

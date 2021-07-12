@@ -1,4 +1,4 @@
-﻿namespace Sushi.Mediakiwi.Data.Interfaces
+﻿namespace Wim.Data.Interfaces
 {
     public interface IConfigurationSetting
     {

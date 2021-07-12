@@ -11,10 +11,7 @@ namespace Sushi.Mediakiwi.Data
     public class ApplicationRole : IApplicationRole
     {
         #region Mapping
-
-
-
-        public class ApplicationRoleMap : DataMap<ApplicationRole>
+        internal class ApplicationRoleMap : DataMap<ApplicationRole>
         {
             public ApplicationRoleMap()
             {
@@ -258,7 +255,7 @@ namespace Sushi.Mediakiwi.Data
         public static async Task<IApplicationRole> SelectOneAsync(int ID)
         {
             var connector = ConnectorFactory.CreateConnector<ApplicationRole>();
-            return await connector.FetchSingleAsync(ID);
+            return await connector.FetchSingleAsync(ID).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -284,7 +281,7 @@ namespace Sushi.Mediakiwi.Data
             var connector = ConnectorFactory.CreateConnector<ApplicationRole>();
             var filter = connector.CreateDataFilter();
 
-            var result = await connector.FetchAllAsync(filter);
+            var result = await connector.FetchAllAsync(filter).ConfigureAwait(false);
             return result.ToArray<IApplicationRole>();
         }
 
@@ -323,7 +320,7 @@ namespace Sushi.Mediakiwi.Data
                 @"SELECT * FROM [dbo].[wim_Roles]
                   LEFT JOIN [dbo].[wim_RoleRights] ON [RoleRight_Role_Key] = [Role_Key] AND [RoleRight_Child_Type] = 6
                   WHERE [RoleRight_Child_Key] = @folderID",
-                filter);
+                filter).ConfigureAwait(false);
 
             return result.ToArray<IApplicationRole>();
         }
@@ -343,7 +340,7 @@ namespace Sushi.Mediakiwi.Data
         public async Task SaveAsync()
         {
             var connector = ConnectorFactory.CreateConnector<ApplicationRole>();
-            await connector.SaveAsync(this);
+            await connector.SaveAsync(this).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -361,7 +358,7 @@ namespace Sushi.Mediakiwi.Data
         public async Task DeleteAsync()
         {
             var connector = ConnectorFactory.CreateConnector<ApplicationRole>();
-            await connector.DeleteAsync(this);
+            await connector.DeleteAsync(this).ConfigureAwait(false);
         }
 
         /// <summary>

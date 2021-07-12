@@ -11,7 +11,6 @@ namespace Sushi.Mediakiwi.Framework
     {
         List = 0,
         ListInLayer = 1,
-        Dashboard = 2,
         Explorer = 3,
         ListItem = 4,
         ListItemInLayer = 5

@@ -8,7 +8,7 @@ namespace Sushi.Mediakiwi
     /// <summary>
     /// Summary description for CommonConfiguration.
     /// </summary>
-    public class CommonConfiguration
+    public class CommonConfiguration : Sushi.Mediakiwi.Data.CommonConfiguration
     {
         public static string PORTAL_PATH
         {
@@ -17,6 +17,22 @@ namespace Sushi.Mediakiwi
                 return WimServerConfiguration.Instance.Portal_Path;
             }
         }
+
+        /// <summary>
+        /// Set the datepicker format, options 'nl' (EU) or 'en' (US)
+        /// </summary>
+        public static string FORM_DATEPICKER
+        {
+            get
+            {
+                if (string.IsNullOrWhiteSpace(WimServerConfiguration.Instance.Datepicker_Language))
+                {
+                    return "EN";
+                }
+                return WimServerConfiguration.Instance.Datepicker_Language;
+            }
+        }
+
         public static int AUTHENTICATION_TIMEOUT
         {
             get
@@ -64,6 +80,21 @@ namespace Sushi.Mediakiwi
                 return string.Concat(_FolderVersion, subfolder);
 
             return _FolderVersion;
+        }
+        public static string VIEWPORT
+        {
+            get
+            {
+                return "width=device-width, user-scalable=yes, initial-scale=1";
+            }
+        }
+
+        public static int? MY_PROFILE_LIST_ID
+        {
+            get
+            {
+                return WimServerConfiguration.Instance.My_Profile_List_Id;
+            }
         }
 
         public static string FILE_VERSION

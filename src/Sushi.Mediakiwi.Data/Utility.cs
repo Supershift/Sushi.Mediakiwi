@@ -713,7 +713,7 @@ namespace Sushi.Mediakiwi.Data
             if (m_CleanUrlSpaces == null)
                 m_CleanUrlSpaces = new Regex(@"\s", RegexOptions.IgnoreCase);
 
-            string replacement = Environment.Current["SPACE_REPLACEMENT"];
+            string replacement = CommonConfiguration.SPACE_REPLACEMENT;
 
             if (replacement == " ") return url;
 
@@ -2032,7 +2032,7 @@ namespace Sushi.Mediakiwi.Data
         }
         
         static bool m_HasCheckedSettings;
-        static Sushi.Mediakiwi.Data.Interfaces.IConfigurationSetting m_Settings;
+        static Wim.Data.Interfaces.IConfigurationSetting m_Settings;
 
         public static string GetConfigurationSetting(string initialValue, string settingProperty)
         {

@@ -207,31 +207,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation
                 builder.Leftnav = null;
             }
 
-            if (builder.Canvas.Type == CanvasType.Dashboard || container.CurrentListInstance.wim.IsDashboardMode)
-            {
-                builder.Canvas.LeftNavigation.Hide = true;
-                builder.Leftnav = null;
-
-                string dashboardintro = null;
-                if (!string.IsNullOrEmpty(container.CurrentListInstance.wim.CurrentDashboard.Body))
-                    dashboardintro = string.Format("<article>{0}</article>", Utility.CleanLineFeed(container.CurrentListInstance.wim.CurrentDashboard.Body, true, true, true));
-
-                if (!string.IsNullOrEmpty(pageTitle))
-                {
-                    title = string.Format("<section id=\"pageHeader\" class=\"pageHeader\"><header>{0}</header>{1}</section>", pageTitle, dashboardintro);
-                }
-
-                section = title;
-                section = string.Format(@"{0}
-<section id=""startWidgets"" class=""component widgets"">
-    <article class=""column-2"">{1}
-    </article>
-</section>
-"
-                    , title, builder.Canvas.Dashboard.ToString()
-                    );
-            }
-            else if (builder.Canvas.Type == CanvasType.Explorer)
+            if (builder.Canvas.Type == CanvasType.Explorer)
             {
 
                 builder.Canvas.LeftNavigation.Hide = true;
@@ -801,7 +777,8 @@ namespace Sushi.Mediakiwi.Framework.Presentation
             }
 
             //"width=device-width, user-scalable=yes,initial-scale=0.1"
-            string viewport = m_container.CurrentEnvironment["VIEWPORT", true, "width=device-width, user-scalable=yes, initial-scale=1", "Portal viewport"];
+            string viewport = CommonConfiguration.VIEWPORT;
+
             #region Open In Frame > 0
             if (container.OpenInFrame > 0)
             {
@@ -999,7 +976,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation
 		<![endif]-->
 		<meta http-equiv=""Content-Type"" content=""text/html; charset=UTF-8"" />
 	</head>
-	<body class=""" + (builder.Canvas.LeftNavigation.Hide || builder.Canvas.Type == CanvasType.Dashboard ? "full" : null) + addedBodyClass
+	<body class=""" + (builder.Canvas.LeftNavigation.Hide ? "full" : null) + addedBodyClass
                             + @""">
     <form id=""uxForm"" method=""post"" action=""" + url + @""" enctype=""multipart/form-data"">
         <input type=""hidden"" name=""autopostback"" id=""autopostback"" value="""" />
@@ -1025,7 +1002,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation
 		<meta http-equiv=""Content-Type"" content=""text/html; charset=UTF-8"" />" 
         + GetHeader(styleAddition, (container.View == (int)ContainerView.ItemSelect && container.CurrentList.Option_FormAsync)) + addedHead + m_container.CurrentListInstance.wim.HeaderScript + container.CurrentListInstance.wim.Page.Body.Form.Elements.GetHeaderStyle() + @"
 	</head>
-	<body class=""" + (builder.Canvas.LeftNavigation.Hide || builder.Canvas.Type == CanvasType.Dashboard ? "full" : null) + addedBodyClass
+	<body class=""" + (builder.Canvas.LeftNavigation.Hide ? "full" : null) + addedBodyClass
                     + @""">
     <form id=""uxForm"" method=""post"" action="""+url+ @""" enctype=""multipart/form-data"">
         <input type=""hidden"" name=""autopostback"" id=""autopostback"" value="""" />
@@ -1048,9 +1025,9 @@ namespace Sushi.Mediakiwi.Framework.Presentation
 				<img alt=""noName"" src=""" + FolderVersion("images") + @"noName.png"">
 				<strong>" + usernameLink + @"</strong><br/>
 				<span>" + container.CurrentApplicationUser.Role().Name + @"</span>"
-                        + (string.IsNullOrEmpty(Data.Environment.Current["MY_PROFILE_LIST_ID", true, null, "When set a My account button will be shown linking to this list."])
+                        + (!CommonConfiguration.MY_PROFILE_LIST_ID.HasValue
                             ? string.Empty
-                            : string.Format(@"<a href=""?list={0}"" class=""submit left"">My account</a>", Data.Environment.Current["MY_PROFILE_LIST_ID"])
+                            : string.Format(@"<a href=""?list={0}"" class=""submit left"">My account</a>", CommonConfiguration.MY_PROFILE_LIST_ID.GetValueOrDefault())
                             )
                         + @"
 				<a class=""submit"" id=""logout"" href=""?logout"">Logout</a>
@@ -1080,7 +1057,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation
             if (this.m_container.OpenInFrame > 0)
                 return string.Empty;
 
-            if (m_container.CurrentEnvironment["HIDE_CHANNEL", true, "0", "Hide the channel selection from the top navigation"] == "1")
+            if (CommonConfiguration.HIDE_CHANNEL)
                 return string.Empty;
 
             Site[] allAccessible = Site.SelectAllAccessible(m_container.CurrentApplicationUser, AccessFilter.RoleAndUser);
@@ -1317,11 +1294,9 @@ namespace Sushi.Mediakiwi.Framework.Presentation
 
         string GetHeader(string styleAddition, bool asyncEnabled = false)
         {
-            string lang = "en";
             string datepicker = string.Empty;
-            if (m_container.CurrentEnvironment["FORM_DATEPICKER", true, "nl", "Set the datepicker format, options 'nl' (EU) or 'en' (US)"] == "nl")
+            if (CommonConfiguration.FORM_DATEPICKER.Equals("nl", StringComparison.CurrentCultureIgnoreCase))
             {
-                lang = "nl";
                 datepicker = @"<script type=""text/javascript"" src=""" + FolderVersion("scripts") + @"jquery-ui-datepicker-nl.js""></script>";
             }
 

@@ -11,7 +11,7 @@ using Sushi.Mediakiwi.Data;
 using Sushi.Mediakiwi.Framework;
 using Sushi.Mediakiwi.UI;
 
-namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
+namespace Wim.AppCentre.Data.Implementation
 {
     public class PageList : BaseImplementation
     {
@@ -23,8 +23,8 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
 
         public PageList()
         {
-            //wim.CanAddNewItem = false;
-            //wim.OpenInEditMode = true;
+            wim.CanAddNewItem = false;
+            wim.OpenInEditMode = true;
 
             this.ListLoad += PageList_ListLoad;
             this.ListSearch += PageList_ListSearch;
@@ -55,17 +55,17 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             {
                 if (string.IsNullOrWhiteSpace(this.FilterText))
                 {
-                    wim.ListDataAdd(await Page.SelectAllAsync().ConfigureAwait(false));
+                    wim.ListDataApply(await Page.SelectAllAsync().ConfigureAwait(false));
                 }
                 else
                 {
-                    wim.ListDataAdd(await Page.SelectAllAsync(this.FilterText, true).ConfigureAwait(false));
+                    wim.ListDataApply(await Page.SelectAllAsync(this.FilterText, true).ConfigureAwait(false));
                 }
             }
             else
             {
                 int groupElementId = Utility.ConvertToInt(e.SelectedGroupItemKey);
-                wim.ListDataAdd(Page.SelectAllBasedOnPageTemplate(groupElementId));
+                wim.ListDataApply(Page.SelectAllBasedOnPageTemplate(groupElementId));
             }
         }
 

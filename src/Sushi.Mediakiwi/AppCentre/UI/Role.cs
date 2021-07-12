@@ -470,38 +470,6 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             }
         }
 
-        //private string m_SubText = "Role based tasks";
-        //[Sushi.Mediakiwi.Framework.ContentListItem.TextLine(null)]
-        //public string SubText
-        //{
-        //    get { return m_SubText; }
-        //    set { m_SubText = value; }
-        //}
-
-
-        ListItemCollection m_AvailableDashboards;
-        /// <summary>
-        /// Gets the available dashboards.
-        /// </summary>
-        /// <value>The available dashboards.</value>
-        public ListItemCollection AvailableDashboards
-        {
-            get
-            {
-                if (m_AvailableDashboards == null)
-                {
-                    m_AvailableDashboards = new ListItemCollection();
-                    foreach (Mediakiwi.Data.Dashboard item in Mediakiwi.Data.Dashboard.SelectAll())
-                    {
-                        m_AvailableDashboards.Add(new ListItem(item.Name, item.ID.ToString()));
-                    }
-                }
-                return m_AvailableDashboards;
-            }
-        }
-
-     
-
         //[Sushi.Mediakiwi.Framework.ContentListItem.Choice_Dropdown("Root gallery", "AvailableGalleries")]
         public int? GalleryRootID { get; set; }
         #endregion

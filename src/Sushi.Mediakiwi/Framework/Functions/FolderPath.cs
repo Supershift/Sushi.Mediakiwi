@@ -58,7 +58,7 @@ namespace Sushi.Mediakiwi.Framework.Functions
         /// </summary>
         public static void UpdateCompletePath()
         {
-            string replacement = Environment.Current["SPACE_REPLACEMENT"];
+            string replacement = CommonConfiguration.SPACE_REPLACEMENT;
 
             foreach (var item in SelectAll())
             {
@@ -71,7 +71,7 @@ namespace Sushi.Mediakiwi.Framework.Functions
         /// </summary>
         public static async Task UpdateCompletePathAsync()
         {
-            string replacement = Environment.Current["SPACE_REPLACEMENT"];
+            string replacement = CommonConfiguration.SPACE_REPLACEMENT;
 
             foreach (var item in await SelectAllAsync())
             {
@@ -91,7 +91,7 @@ namespace Sushi.Mediakiwi.Framework.Functions
                 return;
             }
 
-            string replacement = Environment.Current["SPACE_REPLACEMENT"];
+            string replacement = CommonConfiguration.SPACE_REPLACEMENT;
 
             UpdateCompletePagePath(item.ID, replacement);
         }
@@ -108,7 +108,7 @@ namespace Sushi.Mediakiwi.Framework.Functions
                 return;
             }
 
-            string replacement = Environment.Current["SPACE_REPLACEMENT"];
+            string replacement = CommonConfiguration.SPACE_REPLACEMENT;
 
             UpdateCompletePagePath(item.ID, replacement);
         }
