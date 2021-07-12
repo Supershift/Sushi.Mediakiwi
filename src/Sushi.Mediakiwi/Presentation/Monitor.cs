@@ -1295,8 +1295,10 @@ namespace Sushi.Mediakiwi.Framework.Presentation
         string GetHeader(string styleAddition, bool asyncEnabled = false)
         {
             string datepicker = string.Empty;
+            var lang = "en";
             if (CommonConfiguration.FORM_DATEPICKER.Equals("nl", StringComparison.CurrentCultureIgnoreCase))
             {
+                lang = CommonConfiguration.FORM_DATEPICKER.ToLowerInvariant();
                 datepicker = @"<script type=""text/javascript"" src=""" + FolderVersion("scripts") + @"jquery-ui-datepicker-nl.js""></script>";
             }
 
