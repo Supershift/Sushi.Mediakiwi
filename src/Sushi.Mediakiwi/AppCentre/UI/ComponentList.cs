@@ -371,42 +371,5 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             var result = await Mediakiwi.Data.ComponentList.SelectAllAsync(this.FilterText, this.FilterSite);
             wim.ListDataAdd(result);
         }
-
-        #region Lookup
-       
-
-
-
-
-
-        private ListItemCollection m_Catalogs;
-        /// <summary>
-        /// Gets the catalogs.
-        /// </summary>
-        /// <value>The catalogs.</value>
-        public ListItemCollection Catalogs
-        {
-            get
-            {
-                if (m_Catalogs != null)
-                    return m_Catalogs;
-
-                m_Catalogs = new ListItemCollection();
-                ListItem li;
-
-                m_Catalogs.Add(new ListItem("", ""));
-
-                foreach (Catalog item in Catalog.SelectAll())
-                {
-                    if (!item.IsActive)
-                        continue;
-
-                    li = new ListItem(string.Format("{0} - [{1}]", item.Title, item.Table), item.ID.ToString());
-                    m_Catalogs.Add(li);
-                }
-                return m_Catalogs;
-            }
-        }
-        #endregion
     }
 }

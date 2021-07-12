@@ -134,7 +134,7 @@ namespace Sushi.Mediakiwi.AppCentre.UI.Forms
                 canRevert = !(implementTranslation.EditValue.Equals(implementTranslation.Value));
             }
 
-            if (wim.CurrentEnvironment["FORM_DATEPICKER"].ToUpperInvariant() == "EN")
+            if (CommonConfiguration.FORM_DATEPICKER.ToUpperInvariant() == "EN")
             {
                 dateCulture = new System.Globalization.CultureInfo("en-US");
             }

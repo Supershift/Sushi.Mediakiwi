@@ -1,4 +1,4 @@
-﻿namespace Sushi.Mediakiwi.Data
+﻿namespace Wim.Data
 {
     /// <summary>
     ///

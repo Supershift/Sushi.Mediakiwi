@@ -310,7 +310,7 @@ namespace Sushi.Mediakiwi.Data
             var filter = connector.CreateDataFilter();
             filter.Add(x => x.ProfileID, profileId);
 
-            int minutes = Utility.ConvertToInt(Environment.Current["EXPIRATION_COOKIE_PROFILE"], 0);
+            int minutes = Utility.ConvertToInt(CommonConfiguration.EXPIRATION_COOKIE_PROFILE, 0);
 
             var result = connector.FetchAll(filter);
 
@@ -335,7 +335,7 @@ namespace Sushi.Mediakiwi.Data
             var filter = connector.CreateDataFilter();
             filter.Add(x => x.ProfileID, profileId);
 
-            int minutes = Utility.ConvertToInt(Environment.Current["EXPIRATION_COOKIE_PROFILE"], 0);
+            int minutes = Utility.ConvertToInt(CommonConfiguration.EXPIRATION_COOKIE_VISITOR, 0);
 
             var result = await connector.FetchAllAsync(filter);
 

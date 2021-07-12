@@ -392,7 +392,7 @@ namespace Sushi.Mediakiwi.Data
             var filter = connector.CreateDataFilter();
             filter.Add(x => x.ParentID, parentID);
 
-            return await connector.FetchAllAsync(filter);
+            return await connector.FetchAllAsync(filter).ConfigureAwait(false);
         }
 
 
@@ -443,9 +443,12 @@ where
             var filter = connector.CreateDataFilter();
             filter.Add(x => x.ParentID, null);
 
-            searchCandidate = string.Concat("%", searchCandidate.Trim().Replace(" ", "%"), "%");
-            filter.AddParameter("search", searchCandidate);
-            
+            if (!string.IsNullOrWhiteSpace(searchCandidate))
+            {
+                searchCandidate = string.Concat("%", searchCandidate.Trim().Replace(" ", "%"), "%");
+                filter.AddParameter("search", searchCandidate);
+            }
+
             filter.AddSql("(Asset_Title like @search or Asset_Description like @search)");
 
             if (onlyReturnActiveAssets)
@@ -464,7 +467,7 @@ where
             filter.Add(x => x.RemoteLocation, null);
             filter.Add(x => x.ParentID, null);
 
-            return await connector.FetchAllAsync(filter);
+            return await connector.FetchAllAsync(filter).ConfigureAwait(false);
         }
 
         public static Asset SelectOne(int ID)
@@ -476,7 +479,7 @@ where
         public static async Task<Asset> SelectOneAsync(int ID)
         {
             var connector = ConnectorFactory.CreateConnector<Asset>();
-            return await connector.FetchSingleAsync(ID);
+            return await connector.FetchSingleAsync(ID).ConfigureAwait(false);
         }
 
         public static Asset SelectOne(int galleryID, int assetTypeID)
@@ -496,7 +499,7 @@ where
             filter.Add(x => x.AssetTypeID, assetTypeID);
             filter.Add(x => x.GalleryID, galleryID);
 
-            return await connector.FetchSingleAsync(filter);
+            return await connector.FetchSingleAsync(filter).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -518,10 +521,9 @@ where
             var connector = ConnectorFactory.CreateConnector(new AssetMap(true));
 
             connector.Save(this);
-            bool shouldSetSortorder = (this.ID == 0);
-            if (!this.SortOrder.HasValue)
+            if (!SortOrder.HasValue)
             {
-                this.SortOrder = this.ID;
+                SortOrder = ID;
 
                 connector.Save(this);
             }
@@ -534,28 +536,15 @@ where
 
             var connector = ConnectorFactory.CreateConnector(new AssetMap(true));
 
-            await connector.SaveAsync(this);
-            bool shouldSetSortorder = (this.ID == 0);
-            if (!this.SortOrder.HasValue)
+            await connector.SaveAsync(this).ConfigureAwait(false);
+            if (!SortOrder.HasValue)
             {
-                this.SortOrder = this.ID;
+                SortOrder = ID;
 
-                await connector.SaveAsync(this);
+                await connector.SaveAsync(this).ConfigureAwait(false);
             }
 
             return true;
-        }
-
-        string ConvertUrl(string url)
-        {
-            if (string.IsNullOrEmpty(url))
-                return url;
-
-            if (!url.StartsWith("http://", StringComparison.OrdinalIgnoreCase))
-                return url;
-
-            //  Remove HTTP: and make it //
-            return url.Substring(5, url.Length - 5);
         }
     }
 }

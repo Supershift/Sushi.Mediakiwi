@@ -6,7 +6,7 @@ namespace Sushi.Mediakiwi.Data
     [DataMap(typeof(ArticleListMap))]
     public class ArticleList : Article
     {
-        public class ArticleListMap : DataMap<ArticleList>
+        internal class ArticleListMap : DataMap<ArticleList>
         {
             public ArticleListMap() : this(false) { }
             

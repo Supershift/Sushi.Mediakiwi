@@ -617,61 +617,6 @@ namespace Sushi.Mediakiwi.Tests.ORM
                 await F_Reset_AutoIndentAsync();
             }
         }
-
-        [TestMethod]
-        public void X_SelectAllDashboard()
-        {
-            int dashboardId = 1;
-            int columnId = 0;
-
-            // Function that we are testing BELOW...
-            var componentList = ComponentList.SelectAllDashboardLists(dashboardId, columnId);
-
-            if (componentList?.Length > 0)
-                Trace.WriteLine($"FOUND ComponentList: {componentList.Select(x => x.ID.ToString()).Aggregate((a, b) => a + ", " + b)}");
-            else
-                Assert.Fail("ComponentList NOT FOUND...");
-        }
-
-        [TestMethod]
-        public async Task X_SelectAllDashboardAsync()
-        {
-            int dashboardId = 1;
-            int columnId = 0;
-
-            // Function that we are testing BELOW...
-            var componentList = await ComponentList.SelectAllDashboardListsAsync(dashboardId, columnId);
-
-            if (componentList?.Length > 0)
-                Trace.WriteLine($"FOUND ComponentList: {componentList.Select(x => x.ID.ToString()).Aggregate((a, b) => a + ", " + b)}");
-            else
-                Assert.Fail("ComponentList NOT FOUND...");
-        }
-
-        [TestMethod]
-        public void X_SelectAllScheduled()
-        {
-            // Function that we are testing BELOW...
-            var componentList = ComponentList.SelectAllScheduled();
-
-            if (componentList?.Length > 0)
-                Trace.WriteLine($"FOUND ComponentList: {componentList.Select(x => x.ID.ToString()).Aggregate((a, b) => a + ", " + b)}");
-            else
-                Assert.Fail("ComponentList NOT FOUND...");
-        }
-
-        [TestMethod]
-        public async Task X_SelectAllScheduledAsync()
-        {
-            // Function that we are testing BELOW...
-            var componentList = await ComponentList.SelectAllScheduledAsync();
-
-            if (componentList?.Length > 0)
-                Trace.WriteLine($"FOUND ComponentList: {componentList.Select(x => x.ID.ToString()).Aggregate((a, b) => a + ", " + b)}");
-            else
-                Assert.Fail("ComponentList NOT FOUND...");
-        }
-
         #endregion Select ALL
 
         #region Update

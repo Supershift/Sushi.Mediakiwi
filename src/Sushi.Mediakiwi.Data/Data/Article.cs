@@ -15,7 +15,7 @@ namespace Sushi.Mediakiwi.Data
             Created = Common.DatabaseDateTime;
         }
 
-        public class ArticleMap : DataMap<Article>
+        internal class ArticleMap : DataMap<Article>
         {
             public ArticleMap()
             {
@@ -80,7 +80,7 @@ namespace Sushi.Mediakiwi.Data
         public static async Task<Article> SelectOneAsync(int ID)
         {
             var connector = ConnectorFactory.CreateConnector<Article>();
-            return await connector.FetchSingleAsync(ID);
+            return await connector.FetchSingleAsync(ID).ConfigureAwait(false);
         }
 
         public static int Save(Article entity)
@@ -93,7 +93,7 @@ namespace Sushi.Mediakiwi.Data
         public static async Task<int> SaveAsync(Article entity)
         {
             var connector = ConnectorFactory.CreateConnector<Article>();
-            await connector.SaveAsync(entity);
+            await connector.SaveAsync(entity).ConfigureAwait(false);
             return entity.ID;
         }
 
@@ -106,7 +106,7 @@ namespace Sushi.Mediakiwi.Data
         public static async Task DeleteAsync(Article entity)
         {
             var connector = ConnectorFactory.CreateConnector<Article>();
-            await connector.DeleteAsync(entity);
+            await connector.DeleteAsync(entity).ConfigureAwait(false);
         }
 
         public static List<ArticleList> SelectList(int listID)
@@ -146,7 +146,7 @@ SELECT [Wiki_Key]
   FROM [dbo].[wim_WikiArticles] 
   LEFT JOIN [wim_Users] ON [User_Key] = [Wiki_Author_Key]
   WHERE [Wiki_ComponentList_Key] = @listId
-  ORDER BY [Wiki_Created] DESC", filter);
+  ORDER BY [Wiki_Created] DESC", filter).ConfigureAwait(false);
         }
 
         public static Article CheckIfItemExists(int? wikiList, int? wikiPage)
@@ -185,7 +185,7 @@ SELECT [Wiki_Key]
                 if (wikiPage.HasValue)
                     filter.Add(x => x.BelongsToPageID, wikiPage.Value);
 
-                return await connector.FetchSingleAsync(filter);
+                return await connector.FetchSingleAsync(filter).ConfigureAwait(false);
             }
             catch (Exception exc)
             {
@@ -213,9 +213,9 @@ SELECT [Wiki_Key]
             var connector = ConnectorFactory.CreateConnector<Article>();
             var filter = connector.CreateDataFilter();
             filter.Add(x => x.BelongsToListID, forListID);
-            var item = await connector.FetchSingleAsync(filter);
+            var item = await connector.FetchSingleAsync(filter).ConfigureAwait(false);
             if (item == null || item.ID < 1)
-                item = await CreateNewAsync(forListID, null, defaultTitle);
+                item = await CreateNewAsync(forListID, null, defaultTitle).ConfigureAwait(false);
 
             return item;
         }
@@ -255,7 +255,7 @@ SELECT [Wiki_Key]
             item.IsActive = true;
             item.Title = defaultTitle;
 
-            await connector.SaveAsync(item);
+            await connector.SaveAsync(item).ConfigureAwait(false);
             return item;
         }
 
@@ -278,9 +278,9 @@ SELECT [Wiki_Key]
             var filter = connector.CreateDataFilter();
             filter.Add(x => x.BelongsToPageID, forPageID);
 
-            var item = await connector.FetchSingleAsync(filter);
+            var item = await connector.FetchSingleAsync(filter).ConfigureAwait(false);
             if (item == null || item.ID < 1)
-                item = await CreateNewAsync(null, forPageID, defaultTitle);
+                item = await CreateNewAsync(null, forPageID, defaultTitle).ConfigureAwait(false);
 
             return item;
         }

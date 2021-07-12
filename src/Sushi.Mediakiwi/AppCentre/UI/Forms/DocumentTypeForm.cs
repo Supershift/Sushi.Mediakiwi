@@ -1,4 +1,4 @@
-﻿using Sushi.Mediakiwi.Data.Data;
+﻿using Sushi.Mediakiwi.Data;
 using Sushi.Mediakiwi.Framework;
 using Sushi.Mediakiwi.UI;
 

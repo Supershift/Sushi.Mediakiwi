@@ -61,6 +61,8 @@ namespace Sushi.Mediakiwi.Data.Configuration
         }
         public string Portal_Path { get; set; }
 
+        public string Datepicker_Language { get; set; }
+
         public string Connection { get; set; }
         public string Azure_Image_Container { get; set; }
         public string Azure_Cdn_Uri { get; set; }
@@ -71,6 +73,10 @@ namespace Sushi.Mediakiwi.Data.Configuration
         /// Is the environment load balanced? if so caching across nodes needs to be controlled.
         /// </summary>
         public bool Is_Load_Balanced { get; set; }
+
+        public string Space_Replacement { get; set; }
+        public int? My_Profile_List_Id { get; set; }
+        public bool Hide_Channel { get; set; }
 
         /// <summary>
         /// Is the current environment the local development environment?

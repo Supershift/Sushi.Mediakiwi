@@ -252,8 +252,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
 
         internal void SetDateFormat()
         {
-
-            if (CurrentEnvironment["FORM_DATEPICKER", true, "nl", "Set the datepicker format, options 'nl' (EU) or 'en' (US)"] == "nl")
+            if (CommonConfiguration.FORM_DATEPICKER.Equals("nl", StringComparison.CurrentCultureIgnoreCase))
             {
                 GlobalisationCulture = "nl-nl";
                 DateFormat = NL_DATE;

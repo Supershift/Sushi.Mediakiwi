@@ -11,27 +11,58 @@ namespace Sushi.Mediakiwi.Data
 
         public static string ROOT_FOLDER { get { return "/"; } }
 
+
         /// <summary>
-        /// Registry: Is the environment load balanced? if so caching across nodes needs to be controlled
+        /// Is the environment load balanced? if so caching across nodes needs to be controlled
         /// </summary>
         public static bool IS_LOAD_BALANCED
-        {   //
+        {
             get
             {
                 return WimServerConfiguration.Instance.Is_Load_Balanced;
             }
         }
 
+        public static bool HIDE_CHANNEL
+        {
+            get
+            {
+                return WimServerConfiguration.Instance.Hide_Channel;
+            }
+        }
+
         /// <summary>
         /// Registry: Is the environment load balanced? if so caching across nodes needs to be controlled
         /// </summary>
-        public static bool HTML_ENCODE_HTMLINPUT
-        {   //
+        public static string SPACE_REPLACEMENT
+        {   
             get
             {
-                return WimServerConfiguration.Instance.Is_Load_Balanced;
+                if (string.IsNullOrEmpty(WimServerConfiguration.Instance.Space_Replacement))
+                {
+                    return "-";
+                }
+
+                return WimServerConfiguration.Instance.Space_Replacement;
             }
         }
+
+        public static int EXPIRATION_COOKIE_PROFILE
+        {   
+            get
+            {
+                return 60;
+            }
+        }
+
+        public static int EXPIRATION_COOKIE_VISITOR
+        {
+            get
+            {
+                return 40320;
+            }
+        }
+
 
         /// <summary>
         /// Is the current environment the local development environment?
@@ -41,31 +72,6 @@ namespace Sushi.Mediakiwi.Data
             get
             {
                 return WimServerConfiguration.Instance.Is_Local_Development;
-            }
-        }
-
-        /// <summary>
-        /// Gets the version.
-        /// </summary>
-        public static decimal Version
-        {
-            get
-            {
-                Version version = Assembly.GetExecutingAssembly().GetName().Version;
-                return Convert.ToDecimal(string.Format("{0}{2}{1}", version.Major, version.Minor, System.Threading.Thread.CurrentThread.CurrentCulture.NumberFormat.NumberDecimalSeparator));
-            }
-        }
-
-        /// <summary>
-        /// Gets the version full.
-        /// </summary>
-        /// <value>The version full.</value>
-        public static string VersionFull
-        {
-            get
-            {
-                Version version = Assembly.GetExecutingAssembly().GetName().Version;
-                return string.Format("{0}.{1:00}.{2:0000}.{3:0000}", version.Major, version.Minor, version.Build, version.Revision);
             }
         }
     }
