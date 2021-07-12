@@ -12,7 +12,7 @@ namespace Sushi.Mediakiwi.Data
     [DataMap(typeof(EnvironmentMap))]
     public class Environment : IEnvironment
     {
-        public class EnvironmentMap : DataMap<Environment>
+        internal class EnvironmentMap : DataMap<Environment>
         {
             public EnvironmentMap()
             {
@@ -56,7 +56,7 @@ namespace Sushi.Mediakiwi.Data
         {
             var connector = ConnectorFactory.CreateConnector<Environment>();
             var filter = connector.CreateDataFilter();
-            return await connector.FetchSingleAsync(filter);
+            return await connector.FetchSingleAsync(filter).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -259,141 +259,15 @@ namespace Sushi.Mediakiwi.Data
         public bool Save()
         {
             var connector = ConnectorFactory.CreateConnector<Environment>();
-            try
-            {
-                connector.Save(this);
-                return true;
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
+            connector.Save(this);
+            return true;
         }
 
         public async Task<bool> SaveAsync()
         {
             var connector = ConnectorFactory.CreateConnector<Environment>();
-            try
-            {
-                await connector.SaveAsync(this);
-                return true;
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
+            await connector.SaveAsync(this).ConfigureAwait(false);
+            return true;
         }
-
-        #region registry
-
-        /// <summary>
-        /// Gets the <see cref="string"/> with the specified registry. OnError returns String.Empty!
-        /// </summary>
-        /// <value></value>
-        public virtual string this[string registry]
-        {
-            get
-            {
-                return this[registry, false, null, null];
-            }
-        }
-
-        private object registerLock = new object();
-
-        /// <summary>
-        ///
-        /// </summary>
-        /// <param name="registry"></param>
-        /// <param name="ifNotPresentAdd"></param>
-        /// <param name="defaultValue"></param>
-        /// <param name="description"></param>
-        /// <returns></returns>
-        public virtual string this[string registry, bool ifNotPresentAdd, string defaultValue, string description]
-        {
-            get
-            {
-                if (Registry != null)
-                {
-                    lock (registerLock)
-                    {
-                        if (Registry.ContainsKey(registry))
-                        {
-                            object candidate = Registry[registry];
-                            if (candidate == null) return string.Empty;
-                            if (candidate.ToString().Trim().Length == 0) return string.Empty;
-                            return candidate.ToString();
-                        }
-                        else if (ifNotPresentAdd)
-                        {
-                            try
-                            {
-                                Registry item = new Registry();
-                                item.Name = registry;
-                                item.Value = defaultValue;
-                                item.Description = description;
-                                item.Type = 1;
-                                item.Save();
-                                if (!Registry.ContainsKey(item.Name))
-                                    Registry.Add(item.Name, item.Value);
-                            }
-                            catch (Exception)
-                            {
-                                // Could go wrong.
-                            }
-                        }
-                    }
-                }
-                return string.Empty;
-            }
-        }
-
-        /// <summary>
-        /// Gets the registry value.
-        /// </summary>
-        /// <param name="registry">The registry.</param>
-        /// <param name="defaultValue">The default value.</param>
-        /// <returns></returns>
-        public virtual string GetRegistryValue(string registry, string defaultValue)
-        {
-            string candidate = this[registry];
-            if (string.IsNullOrEmpty(candidate))
-                return defaultValue;
-
-            return candidate;
-        }
-
-        private Hashtable m_Registry;
-
-        /// <summary>
-        /// Gets or sets the registry.
-        /// </summary>
-        /// <value>
-        /// The registry.
-        /// </value>
-        internal protected virtual Hashtable Registry
-        {
-            get
-            {
-                if (m_Registry == null)
-                {
-                    if (this.ID == 0)
-                        return null;
-
-                    m_Registry = new Hashtable();
-                    foreach (Registry item in Mediakiwi.Data.Registry.SelectAll())
-                    {
-                        if (!m_Registry.ContainsKey(item.Name))
-                            m_Registry.Add(item.Name, item.Value);
-                    }
-                }
-                return m_Registry;
-            }
-            set
-            {
-                m_Registry = value;
-            }
-        }
-
-        #endregion registry
     }
 }

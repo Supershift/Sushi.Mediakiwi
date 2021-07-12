@@ -13,7 +13,6 @@ using System.Reflection;
 using Sushi.Mediakiwi.Controllers.Data;
 using Sushi.Mediakiwi.Connectors;
 using Sushi.Mediakiwi.Extention;
-using Microsoft.AspNetCore.Authorization;
 
 namespace Sushi.Mediakiwi.Controllers
 {
@@ -28,13 +27,14 @@ namespace Sushi.Mediakiwi.Controllers
     [ApiController]
     [Route("api/content/v1.0")]
     [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
-    public class ContentController : MediakiwiController
+    public class ContentController : BaseController
     {
         private readonly IMemoryCache _cache;
 
         public ContentController(IMemoryCache memoryCache)
         {
             _cache = memoryCache; 
+            IsAuthenticationRequired = true;
         }
 
         const string ckey = "Node.TimeStamp";

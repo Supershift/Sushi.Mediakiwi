@@ -1,33 +1,41 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Sushi.Mediakiwi.Controllers;
-using Sushi.Mediakiwi.Data;
 using System.IO;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace Sushi.Mediakiwi
+namespace Sushi.Mediakiwi.Controllers
 {
-    public class MediakiwiController : ControllerBase, IController
+    public class BaseController : ControllerBase, IController
     {
-        IApplicationUser _CurrentApplicationUser;
-        public IApplicationUser CurrentApplicationUser
+        public bool IsAuthenticationRequired { get; set; }
+
+        internal JsonSerializerOptions Settings { get; }
+         = new JsonSerializerOptions
+         {
+             IgnoreNullValues = true,
+             PropertyNameCaseInsensitive = true,
+             PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+         };
+
+        internal protected string GetResponse(object response)
         {
-            get
+            return JsonSerializer.Serialize(response, response.GetType(), Settings);
+        }
+
+        internal async protected Task<T> GetPostAsync<T>(HttpContext context)
+        {
+            var stream = context.Request.Body;
+            using (StreamReader sr = new StreamReader(stream))
             {
-                if (_CurrentApplicationUser == null)
-                {
-                    var currentVisitor = new VisitorManager(HttpContext).Select();
-                    if (currentVisitor != null
-                         && currentVisitor.ApplicationUserID.HasValue
-                         && currentVisitor.ApplicationUserID.Value > 0
-                         )
-                    {
-                        _CurrentApplicationUser = ApplicationUser.SelectOne(currentVisitor.ApplicationUserID.Value, true);
-                    }
-                }
-                return _CurrentApplicationUser;
+                var output = await sr.ReadToEndAsync();
+                return JsonSerializer.Deserialize<T>(output, Settings);
             }
+        }
+
+        public async virtual Task<string> CompleteAsync(HttpContext context)
+        {
+            return "";
         }
     }
 }

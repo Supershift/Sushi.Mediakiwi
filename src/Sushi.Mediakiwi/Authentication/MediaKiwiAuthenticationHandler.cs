@@ -11,7 +11,6 @@ using System.Threading.Tasks;
 
 namespace Sushi.Mediakiwi.Authentication
 {
-  
     public class MediaKiwiAuthenticationHandler : AuthenticationHandler<MediaKiwiAuthenticationOptions>
     {
         public MediaKiwiAuthenticationHandler(
@@ -23,6 +22,7 @@ namespace Sushi.Mediakiwi.Authentication
             : base(options, logger, encoder, clock)
         {
         }
+
         protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
         {
             var currentVisitor = new VisitorManager(Context).Select();
@@ -35,9 +35,9 @@ namespace Sushi.Mediakiwi.Authentication
 
                 var claims = new List<Claim>();
                 claims.Add(new Claim(ClaimTypes.Name, currentApplicationUser.Displayname));
-                claims.Add(new Claim(ClaimTypes.Upn, currentApplicationUser.Email));
+                claims.Add(new Claim(ClaimTypes.Email, currentApplicationUser.Email));
+                var identity = new ClaimsIdentity(claims);
 
-                var identity = new ClaimsIdentity(claims, AuthenticationDefaults.AuthenticationType);
                 var principal = new ClaimsPrincipal(identity);
                 var ticket = new AuthenticationTicket(principal, Scheme.Name);
                 return AuthenticateResult.Success(ticket);

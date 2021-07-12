@@ -132,7 +132,6 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             }
 
             wim.ListDataAdd(templates);
-
             return Task.CompletedTask;
         }
 

@@ -923,7 +923,7 @@ namespace Sushi.Mediakiwi
             if (m_CleanUrlSpaces == null)
                 m_CleanUrlSpaces = new Regex(@"\s", RegexOptions.IgnoreCase);
 
-            string replacement = Data.Environment.Current["SPACE_REPLACEMENT"];
+            string replacement = CommonConfiguration.SPACE_REPLACEMENT;
 
             if (replacement == " ") return url;
 

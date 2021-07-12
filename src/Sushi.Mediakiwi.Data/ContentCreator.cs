@@ -1,4 +1,4 @@
-﻿using Sushi.Mediakiwi.Data.Data;
+﻿using Sushi.Mediakiwi.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;

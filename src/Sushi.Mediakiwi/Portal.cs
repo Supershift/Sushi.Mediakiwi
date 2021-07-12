@@ -51,6 +51,20 @@ namespace Sushi.Mediakiwi
             }
         }
 
+        internal static decimal? Version;
+
+        async static Task VerifyDatabaseAsync()
+        {
+            if (!Version.HasValue)
+            {
+                var comparelogic = new Framework.Functions.DataBaseCompareLogic();
+                await comparelogic.Verify().ConfigureAwait(false);
+                await comparelogic.Start().ConfigureAwait(false);
+
+                Version = CommonConfiguration.Version;
+            }
+        }
+
         static string GetSafeUrl(HttpContext context)
         {
             return $"{context.Request.Path}";
@@ -74,6 +88,7 @@ namespace Sushi.Mediakiwi
             }
             else if (url.Equals(portal, StringComparison.CurrentCultureIgnoreCase)  || url.StartsWith($"{portal}/", StringComparison.CurrentCultureIgnoreCase))
             {
+                await VerifyDatabaseAsync().ConfigureAwait(false);
                 var monitor = new Monitor(context, _env, _configuration);
                 await monitor.StartAsync().ConfigureAwait(false);
             }

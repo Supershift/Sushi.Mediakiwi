@@ -3,7 +3,6 @@ using Newtonsoft.Json.Serialization;
 using Sushi.Mediakiwi.AppCentre.Data.Implementation;
 using Sushi.Mediakiwi.AppCentre.UI.Forms;
 using Sushi.Mediakiwi.Data;
-using Sushi.Mediakiwi.Data.Data;
 using Sushi.Mediakiwi.Framework;
 using System;
 using System.Collections.Generic;
@@ -25,37 +24,32 @@ namespace Sushi.Mediakiwi.AppCentre.UI
             wim.SetSortOrder("wim_Properties", "Property_Key", "Property_SortOrder");
         }
 
-        private Task DocumentType_List_ListDelete(ComponentListEventArgs e)
+        private async Task DocumentType_List_ListDelete(ComponentListEventArgs e)
         {
             if (FieldPropertiesFormMapImplement == null)
-                return Task.CompletedTask;
+            {
+                return;
+            }
 
             Property.TemplateID = e.SelectedKey;
-            Property.Delete();
-            return Task.CompletedTask;
+            await Property.DeleteAsync().ConfigureAwait(false);
         }
 
-        private Task DocumentType_List_ListSearch(ComponentListSearchEventArgs e)
+        private async Task DocumentType_List_ListSearch(ComponentListSearchEventArgs e)
         {
-            var documenttypes = DocumentType.FetchAll();
+            var documenttypes = await DocumentType.FetchAllAsync().ConfigureAwait(false);
 
             wim.ListDataColumns.Add(new ListDataColumn(null, nameof(DocumentType.ID), ListDataColumnType.UniqueIdentifier));
             wim.ListDataColumns.Add(new ListDataColumn("Document type", nameof(DocumentType.Name)));
 
             wim.ListDataApply(documenttypes);
-            return Task.CompletedTask;
         }
 
-        private Task DocumentType_List_ListPreRender(ComponentListEventArgs e)
+        private async Task DocumentType_List_ListPreRender(ComponentListEventArgs e)
         {
-            if (wim.IsSaveMode)
+            if (wim.IsSaveMode && FieldPropertiesFormMapImplement != null && string.IsNullOrEmpty(Property.Title))
             {
-                if (FieldPropertiesFormMapImplement != null)
-                {
-                    if (string.IsNullOrEmpty(Property.Title))
-                        wim.Notification.AddError(nameof(Property.Title), "Name required");
-
-                }
+                wim.Notification.AddError(nameof(Property.Title), "Name required");
             }
             if (FieldPropertiesFormMapImplement != null)
             {
@@ -65,16 +59,17 @@ namespace Sushi.Mediakiwi.AppCentre.UI
                     Property.ContentTypeID.Equals(ContentType.Choice_Radio);
 
                 if (isChoiceType)
+                {
                     FieldPropertiesFormMapImplement.Find(x => x.Data).Show();
+                }
             }
-            return Task.CompletedTask;
         }
 
         private async Task DocumentType_List_ListSave(ComponentListEventArgs e)
         {
             if (FieldPropertiesFormMapImplement == null)
             {
-                var properties = await Property.SelectAllByTemplateAsync(e.SelectedKey);
+                var properties = await Property.SelectAllByTemplateAsync(e.SelectedKey).ConfigureAwait(false);
 
                 List<MetaData> meta = new List<MetaData>();
                 foreach (var property in properties)
@@ -87,9 +82,13 @@ namespace Sushi.Mediakiwi.AppCentre.UI
                     item.IsSharedField = property.IsSharedField ? "1" : "0";
 
                     if (property.MaxValueLength.HasValue)
+                    {
                         item.MaxValueLength = property.MaxValueLength.Value.ToString();
+                    }
                     else
+                    {
                         item.MaxValueLength = null;
+                    }
 
                     item.Default = property.DefaultValue;
                     item.AutoPostBack = property.AutoPostBack ? "1" : "0";
@@ -113,10 +112,12 @@ namespace Sushi.Mediakiwi.AppCentre.UI
 
                     if (isChoiceType)
                     {
-                        var propertyoptions = await PropertyOption.SelectAllAsync(property.ID);
+                        var propertyoptions = await PropertyOption.SelectAllAsync(property.ID).ConfigureAwait(false);
                         List<MetaDataList> options = new List<MetaDataList>();
                         foreach (var dataitem in propertyoptions)
+                        {
                             options.Add(new MetaDataList(dataitem.Name, dataitem.Value));
+                        }
 
                         item.CollectionList = options.ToArray();
                     }
@@ -126,23 +127,23 @@ namespace Sushi.Mediakiwi.AppCentre.UI
 
                 var serialized = Utility.GetSerialized(meta.ToArray());
 
-                var ct = await Mediakiwi.Data.ComponentTemplate.SelectOneAsync(e.SelectedKey);
+                var ct = await Mediakiwi.Data.ComponentTemplate.SelectOneAsync(e.SelectedKey).ConfigureAwait(false);
                 if (ct.MetaData != serialized)
                 {
                     ct.MetaData = serialized;
                     ct.LastWriteTimeUtc = DateTime.UtcNow;
-                    await ct.SaveAsync();
+                    await ct.SaveAsync().ConfigureAwait(false);
                     wim.FlushCache();
                 }
 
-                var templates = await AvailableTemplate.SelectAllByComponentTemplateAsync(ct.ID);
+                var templates = await AvailableTemplate.SelectAllByComponentTemplateAsync(ct.ID).ConfigureAwait(false);
                 var slot = templates.Where(x => x.SlotID.Equals(1)).ToList();
                 if (slot.Any() == false)
                 {
                     var at = new AvailableTemplate();
                     at.ComponentTemplateID = ct.ID;
                     at.SlotID = 1;
-                    at.Save();
+                    await at.SaveAsync().ConfigureAwait(false);
                 }
 
             }
@@ -181,11 +182,13 @@ namespace Sushi.Mediakiwi.AppCentre.UI
 
                 if (options == null)
                 {
-                    var properties = PropertyOption.SelectAll(Property.ID);
+                    var properties = await PropertyOption.SelectAllAsync(Property.ID).ConfigureAwait(false);
                     if (properties.Length > 0)
                     {
                         foreach (var item in properties)
-                            item.Delete();
+                        {
+                            await item.DeleteAsync().ConfigureAwait(false);
+                        }
                     }
                 }
 
@@ -193,27 +196,35 @@ namespace Sushi.Mediakiwi.AppCentre.UI
                 {
                     List<PropertyOption> toCreate = new List<PropertyOption>();
                     List<PropertyOption> toRemove = new List<PropertyOption>();
-                    var properties = await PropertyOption.SelectAllAsync(Property.ID);
+                    var properties = await PropertyOption.SelectAllAsync(Property.ID).ConfigureAwait(false);
 
                     // Identify new
                     foreach (var item in options)
                     {
                         var searched = properties.FirstOrDefault(x => x.Value.Equals(item, StringComparison.InvariantCultureIgnoreCase));
                         if (searched == null)
+                        {
                             toCreate.Add(new PropertyOption() { Value = item, Name = item, PropertyID = Property.ID });
+                        }
                     }
                     foreach (var item in toCreate)
-                        item.Save();
+                    {
+                        await item.SaveAsync().ConfigureAwait(false);
+                    }
 
                     // Identify removable
                     foreach (var item in properties)
                     {
                         var searched = options.FirstOrDefault(x => x.Equals(item.Value, StringComparison.InvariantCultureIgnoreCase));
                         if (searched == null)
+                        {
                             toRemove.Add(item);
+                        }
                     }
                     foreach (var item in toRemove)
-                        item.Delete();
+                    {
+                        await item.DeleteAsync().ConfigureAwait(false);
+                    }
                 }
             }
         }
@@ -221,13 +232,13 @@ namespace Sushi.Mediakiwi.AppCentre.UI
         Property Property;
         DocumentType Implement;
 
-        private Task DocumentType_List_ListLoad(ComponentListEventArgs e)
+        private async Task DocumentType_List_ListLoad(ComponentListEventArgs e)
         {
             if (!string.IsNullOrEmpty(Request.Query["field"]))
             {
                 var id = Utility.ConvertToInt(Request.Query["field"]);
 
-                Property = Property.SelectOne(id);
+                Property = await Property.SelectOneAsync(id).ConfigureAwait(false);
                 if (Property == null)
                 {
                     Property = new Property();
@@ -238,7 +249,7 @@ namespace Sushi.Mediakiwi.AppCentre.UI
             }
             else
             {
-                var ct = Mediakiwi.Data.ComponentTemplate.SelectOne(e.SelectedKey);
+                var ct = await Mediakiwi.Data.ComponentTemplate.SelectOneAsync(e.SelectedKey).ConfigureAwait(false);
                 wim.ListTitle = ct.Name;
 
                 //if (Implement == null)
@@ -257,11 +268,13 @@ var documentTypeID = {e.SelectedKey};
 </script>");
 
             if (CommonConfiguration.IS_LOCAL_DEVELOPMENT)
+            {
                 wim.Page.Head.AddScript(CommonConfiguration.CDN_Folder(wim, "app/dist/document-type-app.js"));
+            }
             else
+            {
                 wim.Page.Head.AddScript(CommonConfiguration.CDN_Folder(wim, "app/dist/document-type-app.min.js"));
-
-            return Task.CompletedTask;
+            }
         }
 
         /// <summary>

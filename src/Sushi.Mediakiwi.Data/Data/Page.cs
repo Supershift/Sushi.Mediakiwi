@@ -707,14 +707,14 @@ namespace Sushi.Mediakiwi.Data
 
         internal void SetInternalPath()
         {
-            string replacement = Environment.Current["SPACE_REPLACEMENT"];
+            string replacement = CommonConfiguration.SPACE_REPLACEMENT;
             var path = Folder.CompletePath;
             if (path == null)
             {
                 path = "/";
             }
 
-            if (!path.EndsWith("/"))
+            if (!path.EndsWith("/", StringComparison.CurrentCulture))
             {
                 path += "/";
             }

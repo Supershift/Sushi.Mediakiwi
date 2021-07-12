@@ -141,13 +141,43 @@ namespace Sushi.Mediakiwi {
         ///    &lt;link rel=&quot;stylesheet&quot; href=&quot;[[MK_CDN_PATH]]compiled/bundel_login.min.css&quot; type=&quot;text/css&quot; media=&quot;all&quot; /&gt;
         ///    [[MK_STYLE]]
         ///    &lt;script type=&quot;text/javascript&quot; src=&quot;[[MK_CDN_PATH]]compiled/bundel_login.min.js&quot;&gt;&lt;/script&gt;
-        ///    &lt;!--[if IE]&gt;
-        ///        &lt;meta http-equiv=&quot;imagetoolbar&quot; content=&quot;no&quot;/&gt;
-        ///         [rest of string was truncated]&quot;;.
+        ///    &lt;script type=&quot;text/javascript&quot;&gt;if (window.top.location.href != location.href)  [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string login {
             get {
                 return ResourceManager.GetString("login", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 	-- Update query for specific version 4.46 (if 0 then execute)
+        ///	IF:select COUNT(*) from wim_Environments where Environment_Version &gt;= 4.46;
+        ///	THEN: update wim_Pages set Page_InheritContentEdited = Page_InheritContent where Page_InheritContentEdited is null; 
+        ///
+        ///
+        ///    -- Visitor log definition;
+        ///    IF&gt;: select count(*) from wim_VisitorLogs where (VisitorLog_Date is null or VisitorLog_Date2 is null);
+        ///    THEN: update wim_VisitorLogs 
+        ///    set VisitorLog_Pageview = (select count(*) from wim_VisitorClicks wh [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string sql_actions {
+            get {
+                return ResourceManager.GetString("sql_actions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to     --Environment;
+        ///    IF:select count(*) from wim_Environments;
+        ///	THEN: INSERT INTO wim_Environments(Environment_Name , Environment_RepositoryFolder,Environment_Smtp ,Environment_Version, Environment_Created) VALUES (&apos;Mediakiwi&apos;, &apos;/assets/&apos; , &apos;127.0.0.1&apos; , 0.0 , getdate ());
+        ///
+        ///    --Role;
+        ///    IF:select count(*) from wim_Roles;
+        ///    THEN: INSERT INTO wim_Roles(Role_Name, Role_GUID, Role_Description, Role_CanSeePage, Role_CanSeeList, Role_CanSeeAdmin, Role_Page_CanChange, Role_Page_CanCreate, Role_Page_Ca [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string sql_data {
+            get {
+                return ResourceManager.GetString("sql_data", resourceCulture);
             }
         }
         
@@ -167,9 +197,33 @@ namespace Sushi.Mediakiwi {
         ///	--PK_Installer_Key;
         ///	IF:select COUNT(*) from s [rest of string was truncated]&quot;;.
         /// </summary>
-        internal static string wim_base {
+        internal static string sql_tables {
             get {
-                return ResourceManager.GetString("wim_base", resourceCulture);
+                return ResourceManager.GetString("sql_tables", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to     CREATE VIEW wim_ListView AS
+        ///	-- IGNORE UPDATE: 0 (1 = YES)
+        ///	select 
+        ///		ComponentList_Key
+        ///	,	Folder_Key
+        ///	,	ComponentList_Folder_Key
+        ///	,	ComponentList_IsInherited
+        ///	from 
+        ///		wim_ComponentLists 
+        ///		join wim_Folders on (Folder_Master_Key =ComponentList_Folder_Key or Folder_Key =ComponentList_Folder_Key)
+        ///	where 
+        ///		Folder_Type = 2 or Folder_Type = 3;
+        ///
+        ///    CREATE VIEW wim_GalleryView AS
+        ///    -- IGNORE UPDATE: 0 (1 = YES)
+        ///    SELECT curr.Gallery_Key, curr.Gallery_GUID, curr.Gallery_Gallery_Key, curr.Ga [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string sql_views {
+            get {
+                return ResourceManager.GetString("sql_views", resourceCulture);
             }
         }
     }

@@ -26,7 +26,7 @@ namespace Sushi.Mediakiwi.Data
             }
         }
 
-        public class ApplicationUserMap : DataMap<ApplicationUser>
+        internal class ApplicationUserMap : DataMap<ApplicationUser>
         {
             public ApplicationUserMap() : this(false)
             {
@@ -64,12 +64,6 @@ namespace Sushi.Mediakiwi.Data
             }
         }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ApplicationUser"/> class.
-        /// </summary>
-        public ApplicationUser()
-        {
-        }
 
         #region properties        
 
@@ -367,7 +361,7 @@ namespace Sushi.Mediakiwi.Data
             if (onlyReturnActive)
                 filter.Add(x => x.IsActive, true);
 
-            return await connector.FetchSingleAsync(filter);
+            return await connector.FetchSingleAsync(filter).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -425,7 +419,7 @@ namespace Sushi.Mediakiwi.Data
             var filter = connector.CreateDataFilter();
             filter.Add(x => x.Name, username);
             
-            return await connector.FetchSingleAsync(filter);
+            return await connector.FetchSingleAsync(filter).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -457,7 +451,7 @@ namespace Sushi.Mediakiwi.Data
             if (ignoreApplicationUserID.HasValue)
                 filter.Add(x => x.ID, ignoreApplicationUserID.Value, ComparisonOperator.NotEqualTo);
             
-            return await connector.FetchSingleAsync(filter);
+            return await connector.FetchSingleAsync(filter).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -483,7 +477,7 @@ namespace Sushi.Mediakiwi.Data
             var filter = connector.CreateDataFilter();
             filter.Add(x => x.Email, email);
             
-            return await connector.FetchSingleAsync(filter);
+            return await connector.FetchSingleAsync(filter).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -513,7 +507,7 @@ namespace Sushi.Mediakiwi.Data
             if (ignoreApplicationUserID.HasValue)
                 filter.Add(x => x.ID, ignoreApplicationUserID.Value, ComparisonOperator.NotEqualTo);
             
-            return await connector.FetchSingleAsync(filter);
+            return await connector.FetchSingleAsync(filter).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -539,7 +533,7 @@ namespace Sushi.Mediakiwi.Data
             var filter = connector.CreateDataFilter();
             filter.Add(x => x.GUID, applicationUserGUID);
             
-            return await connector.FetchSingleAsync(filter);
+            return await connector.FetchSingleAsync(filter).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -577,7 +571,7 @@ namespace Sushi.Mediakiwi.Data
             filter.Add(x => x.Name, username);
             filter.Add(x => x.Password, password);
             
-            return await connector.FetchSingleAsync(filter);
+            return await connector.FetchSingleAsync(filter).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -598,7 +592,7 @@ namespace Sushi.Mediakiwi.Data
         {
             var connector = ConnectorFactory.CreateConnector<ApplicationUser>();
             var filter = connector.CreateDataFilter();
-            var result = await connector.FetchAllAsync(filter);
+            var result = await connector.FetchAllAsync(filter).ConfigureAwait(false);
             
             return result.ToArray();
         }
@@ -667,7 +661,7 @@ namespace Sushi.Mediakiwi.Data
             if (role.HasValue)
                 filter.Add(x => x.RoleID, (int)role);
             
-            var result = await connector.FetchAllAsync(filter);
+            var result = await connector.FetchAllAsync(filter).ConfigureAwait(false);
             return result.ToArray();
         }
 
@@ -704,7 +698,7 @@ namespace Sushi.Mediakiwi.Data
             if (onlyReturnActive)
                 filter.Add(x => x.IsActive, true);
             
-            var result = await connector.FetchAllAsync(filter);
+            var result = await connector.FetchAllAsync(filter).ConfigureAwait(false);
             return result.ToArray();
         }
 
@@ -735,7 +729,7 @@ namespace Sushi.Mediakiwi.Data
         /// </returns>
         public static async Task<bool> HasUserNameAsync(string username, int? ignoreApplicationUserID)
         {
-            IApplicationUser tmp = await SelectOneAsync(username, ignoreApplicationUserID);
+            IApplicationUser tmp = await SelectOneAsync(username, ignoreApplicationUserID).ConfigureAwait(false);
 
             if (tmp == null || tmp.IsNewInstance)
                 return false;
@@ -751,7 +745,7 @@ namespace Sushi.Mediakiwi.Data
         /// </returns>
         public bool HasUserName(string username)
         {
-            return HasUserName(username, this?.ID);
+            return HasUserName(username, ID);
         }
 
         /// <summary>
@@ -763,17 +757,17 @@ namespace Sushi.Mediakiwi.Data
         /// </returns>
         public async Task<bool> HasUserNameAsync(string username)
         {
-            return await HasUserNameAsync(username, this?.ID);
+            return await HasUserNameAsync(username, ID);
         }
 
         public bool HasEmail(string email)
         {
-            return HasEmail(email, this?.ID);
+            return HasEmail(email, ID);
         }
 
         public async Task<bool> HasEmailAsync(string email)
         {
-            return await HasEmailAsync(email, this?.ID);
+            return await HasEmailAsync(email, ID);
         }
 
         /// <summary>
@@ -803,7 +797,7 @@ namespace Sushi.Mediakiwi.Data
         /// </returns>
         public static async Task<bool> HasEmailAsync(string email, int? ignoreApplicationUserID)
         {
-            IApplicationUser tmp = await SelectOneByEmailAsync(email, ignoreApplicationUserID);
+            IApplicationUser tmp = await SelectOneByEmailAsync(email, ignoreApplicationUserID).ConfigureAwait(false);
 
             if (tmp == null || tmp.IsNewInstance)
                 return false;
@@ -832,7 +826,7 @@ namespace Sushi.Mediakiwi.Data
         /// <returns></returns>
         public static async Task<IApplicationUser> SelectAsync(string emailaddress)
         {
-            var tmp = await SelectOneByEmailAsync(emailaddress);
+            var tmp = await SelectOneByEmailAsync(emailaddress).ConfigureAwait(false);
 
             if (tmp == null || tmp.IsNewInstance || !tmp.IsActive)
                 return new ApplicationUser();
@@ -850,7 +844,7 @@ namespace Sushi.Mediakiwi.Data
         public async Task<bool> DeleteAsync()
         {
             var connector = ConnectorFactory.CreateConnector(new ApplicationUserMap(true));
-            await connector.DeleteAsync(this);
+            await connector.DeleteAsync(this).ConfigureAwait(false);
             return true;
         }
 
@@ -879,10 +873,10 @@ namespace Sushi.Mediakiwi.Data
             if (string.IsNullOrEmpty(Name))
                 return false;
 
-            if (HasUserName(Name, this?.ID))
+            if (HasUserName(Name, ID))
                 throw new Exception("The applied username already exists");
 
-            if (HasEmail(Email, this?.ID))
+            if (HasEmail(Email, ID))
                 throw new Exception("The applied email already exists");
 
             DataString = m_Data?.Serialized;
@@ -902,16 +896,16 @@ namespace Sushi.Mediakiwi.Data
             if (string.IsNullOrEmpty(Name))
                 return false;
 
-            if (await HasUserNameAsync(Name, this?.ID))
+            if (await HasUserNameAsync(Name, ID))
                 throw new Exception("The applied username already exists");
 
-            if (await HasEmailAsync(Email, this?.ID))
+            if (await HasEmailAsync(Email, ID))
                 throw new Exception("The applied email already exists");
 
             DataString = m_Data?.Serialized;
 
             var connector = ConnectorFactory.CreateConnector(new ApplicationUserMap(true));
-            await connector.SaveAsync(this);
+            await connector.SaveAsync(this).ConfigureAwait(false);
 
             return true;
         }
@@ -959,8 +953,6 @@ namespace Sushi.Mediakiwi.Data
         {
             get
             {
-                //if (m_VisitorReference == Guid.Empty)
-                //    SetInfoFromCookie();
                 return m_VisitorReference;
             }
         }
