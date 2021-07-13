@@ -1731,9 +1731,8 @@ namespace Sushi.Mediakiwi
             if (content == null) return null;
 
             var result = GetSerialized(content.GetType(), content);
-            return WebUtility.HtmlEncode(result);
-            
-            return result;
+
+            return returnHtmlEncodedResponse ? WebUtility.HtmlEncode(result) : result;
         }
 
         /// <summary>
