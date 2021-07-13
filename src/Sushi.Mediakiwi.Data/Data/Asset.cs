@@ -482,6 +482,22 @@ where
             return await connector.FetchSingleAsync(ID).ConfigureAwait(false);
         }
 
+        public static Asset SelectOne(Guid guid)
+        {
+            var connector = ConnectorFactory.CreateConnector<Asset>();
+            var filter = connector.CreateDataFilter();
+            filter.Add(x => x.GUID, guid);
+            return connector.FetchSingle(filter);
+        }
+
+        public static async Task<Asset> SelectOneAsync(Guid guid)
+        {
+            var connector = ConnectorFactory.CreateConnector<Asset>();
+            var filter = connector.CreateDataFilter();
+            filter.Add(x => x.GUID, guid);
+            return await connector.FetchSingleAsync(filter);
+        }
+
         public static Asset SelectOne(int galleryID, int assetTypeID)
         {
             var connector = ConnectorFactory.CreateConnector<Asset>();
