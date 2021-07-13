@@ -2,6 +2,7 @@
 using Sushi.Mediakiwi.Data;
 using Sushi.Mediakiwi.Framework;
 using System;
+using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -13,7 +14,7 @@ namespace Sushi.Mediakiwi.PageModules.ExportPage
         public ExportPageModule()
         {
             IconClass = "icon-export";
-            Tooltip = "Exporteer deze pagina";
+            Tooltip = "Export this page";
             //IconURL = "https://cdn0.iconfinder.com/data/icons/typicons-2/24/export-outline-32.png";
             //ConfirmationNeeded = true;
             //ConfirmationQuestion = "Hiermee wordt de opgeslagen pagina geëxporteerd, dit kan enige ogenblikken duren.";
@@ -32,7 +33,10 @@ namespace Sushi.Mediakiwi.PageModules.ExportPage
             PageTransferExporter exporter = new PageTransferExporter();
 
             var exportedPage = await exporter.ExportPageAsync(inPage);
-            string base64String = "";
+            string base64String;
+
+            exportedPage.ExportedOn = DateTime.UtcNow.Ticks;
+            exportedPage.ExportedBy = inUser.Displayname;
 
             try
             {
@@ -43,22 +47,27 @@ namespace Sushi.Mediakiwi.PageModules.ExportPage
                 return new ModuleExecutionResult()
                 {
                     IsSuccess = false,
-                    WimNotificationOutput = $"Er ging iets mis bij het exporteren.<br/>{ex.Message}"
+                    WimNotificationOutput = $"Something went wrong exporting the page.<br/>{ex.Message}"
                 };
             }
+
+            string fileName = $"{Utility.CleanUrl(inPage.Name)}#{inPage.ID}.json";
 
             ModuleExecutionResult temp = new ModuleExecutionResult()
             {
                 IsSuccess = true,
-                WimNotificationOutput = $"Download hier de geëxporteerde pagina : <strong><a href=\"data:application/json;base64,{base64String}\" download=\"{inPage.GUID}.json\">Download {inPage.GUID}.json</a></strong>"
+                WimNotificationOutput = $"Download the exported page : <strong><a href=\"data:application/json;base64,{base64String}\" download=\"{fileName}\">{fileName}</a></strong>"
             };
 
-            exportedPage.ExportedOn = DateTime.UtcNow.Ticks;
-            exportedPage.ExportedBy = inUser.Displayname;
-
-            context.Response.Headers.Add($"content-disposition", $"attachment; filename={Utility.CleanUrl(inPage.Name)}#{inPage.ID}.json");
-            context.Response.ContentType = "application/json";
-            await context.Response.WriteAsync(Newtonsoft.Json.JsonConvert.SerializeObject(exportedPage, Newtonsoft.Json.Formatting.Indented));
+            // This does not work in netcore, the page output will be added to the json output.
+            //context.Response.ContentType = "application/json";
+            //context.Response.Headers.Add($"content-disposition", $"attachment; filename={Utility.CleanUrl(inPage.Name)}#{inPage.ID}.json");
+            //using (var fs = await GenerateStreamFromStringAsync(Newtonsoft.Json.JsonConvert.SerializeObject(exportedPage, Newtonsoft.Json.Formatting.Indented)).ConfigureAwait(false))
+            //{
+            //    await fs.CopyToAsync(context.Response.Body).ConfigureAwait(false);
+            //}
+            
+            //await context.Response.Body.FlushAsync().ConfigureAwait(false);
 
             return temp;
         }
