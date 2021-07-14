@@ -78,14 +78,18 @@ namespace Sushi.Mediakiwi
         public static string ToUrl(string value)
         {
             if (string.IsNullOrWhiteSpace(value))
+            {
                 return null;
+            }
             return value.ToLower().Replace(" ", "-");
         }
 
         public static string FromUrl(string value)
         {
             if (string.IsNullOrWhiteSpace(value))
+            {
                 return null;
+            }
             return value.ToLower().Replace("-", " ");
         }
 
@@ -121,7 +125,7 @@ namespace Sushi.Mediakiwi
                 if (_Version == null)
                 {
                     var split = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileVersion.Split('.');
-                    _Version = string.Format("{0}.{1}", split[0], split[1]);
+                    _Version = $"{split[0]}.{split[1]}";
                 }
                 return _Version;
             }
@@ -134,11 +138,15 @@ namespace Sushi.Mediakiwi
         internal static ASyncQuery GetAsyncQuery(Beta.GeneratedCms.Console console)
         {
             if (console.Context == null)
+            {
                 return null;
+            }
 
             bool isAsyncCall = console.Form(Constants.JSON_PARAM) == "1";
             if (!isAsyncCall)
+            {
                 return null;
+            }
 
             var id = console.Form("async_id");
             var recall_id = console.Form("async_rid");
@@ -246,16 +254,22 @@ namespace Sushi.Mediakiwi
 
             foreach (string key in queryString.AllKeys)
             {
-                if (key == "channel" || key == null) continue;
+                if (key == "channel" || key == null)
+                {
+                    continue;
+                }
+
                 string keyvalue = queryString[key];
 
-                if (keyvalues != null)
+                if (keyvalues.Length > 0)
                 {
-                    var selection = (from item in keyvalues where item.Key.ToLower() == key.ToLower() select item).ToArray();
+                    var selection = (from item in keyvalues where item.Key.Equals(key, StringComparison.InvariantCultureIgnoreCase) select item).ToArray();
                     if (selection.Length == 1)
                     {
                         if (selection[0].RemoveKey)
+                        {
                             continue;
+                        }
 
                         build.AppendFormat("{0}{1}={2}"
                             , build.Length == 0 ? "?" : "&"
@@ -278,7 +292,7 @@ namespace Sushi.Mediakiwi
             }
 
 
-            if (keyvalues != null)
+            if (keyvalues.Length > 0)
             {
                 var remaining = (from item in keyvalues where !item.Done && !item.RemoveKey select item);
                 foreach (KeyValue kv in remaining)
@@ -300,7 +314,10 @@ namespace Sushi.Mediakiwi
         /// <returns></returns>
         public static string ConvertTextToHTML(string text)
         {
-            if (string.IsNullOrEmpty(text)) return text;
+            if (string.IsNullOrEmpty(text))
+            {
+                return text;
+            }
 
             if (
                 !text.StartsWith("http://", StringComparison.InvariantCultureIgnoreCase) &&
@@ -340,7 +357,11 @@ namespace Sushi.Mediakiwi
         /// <returns></returns>
         public static string ConvertEmailAddressInText(string p)
         {
-            if (p.Contains("mailto:")) return p;
+            if (p.Contains("mailto:"))
+            {
+                return p;
+            }
+
             Regex r = new Regex(@"\S*@\S*\.\S*", RegexOptions.Compiled);
             return r.Replace(p, @"<a href=""mailto:$0"">$0</a>");
         }
@@ -359,18 +380,28 @@ namespace Sushi.Mediakiwi
             if (text.Length > 50)
                 text = text.Substring(0, 47) + "...";
 
-            if (!url.Contains("http://") && !url.Contains("https://") && !url.Contains("ftp://"))
+            if (
+                !url.Contains("http://", StringComparison.InvariantCultureIgnoreCase) 
+            && !url.Contains("https://", StringComparison.InvariantCultureIgnoreCase) 
+            && !url.Contains("ftp://", StringComparison.InvariantCultureIgnoreCase)
+                )
                 url = string.Concat("http://", url);
 
-            return string.Format(@"{3}<a href=""{0}"" title=""{2}"">{1}</a> ", url.ToLower(), text, title, m.Value.StartsWith("\n") ? "\n" : " ");
+            return $"{(m.Value.StartsWith("\n") ? "\n" : " ")}<a href=\"{url.ToLower()}\" title=\"{title}\">{text}</a> ";
         }
 
         public static string ConvertFirstToUpper(string p)
         {
             if (string.IsNullOrEmpty(p))
+            {
                 return string.Empty;
+            }
+
             if (p.Length == 1)
+            {
                 return p.ToUpper();
+            }
+
             return p[0].ToString().ToUpper() + p.Substring(1);
         }
 
@@ -448,23 +479,34 @@ namespace Sushi.Mediakiwi
 
             foreach (PropertyInfo from in propertiesFrom)
             {
-                if (!from.CanRead) continue;
+                if (!from.CanRead)
+                {
+                    continue;
+                }
+
                 foreach (PropertyInfo to in propertiesTo)
                 {
                     if (from.Name == to.Name)
                     {
-                        if (!to.CanWrite) break;
+                        if (!to.CanWrite)
+                        {
+                            break;
+                        }
 
                         object fromPropertyValue = from.GetValue(propertyContainerFrom, null);
 
                         if (fromPropertyValue == null)
                         {
                             if (reflectNull)
+                            {
                                 to.SetValue(propertyContainerTo, null, null);
+                            }
+
                             continue;
                         }
 
                         #region ? --> String
+
                         else if (from.PropertyType != typeof(string) && to.PropertyType == typeof(string))
                         {
                             if (from.PropertyType == typeof(string[]))
@@ -481,12 +523,14 @@ namespace Sushi.Mediakiwi
                             if (from.PropertyType == typeof(SubList))
                             {
                                 if (fromPropertyValue == null)
+                                {
                                     to.SetValue(propertyContainerTo, null, null);
+                                }
                                 else
                                 {
                                     //  Sublist --> String
                                     SubList candidate = (SubList)fromPropertyValue;
-                                    if (candidate != null && candidate.Items != null && candidate.Items.Length > 0)
+                                    if (candidate?.Items?.Length > 0)
                                     {
                                         to.SetValue(propertyContainerTo, candidate.Serialized, null);
                                     }
@@ -512,15 +556,24 @@ namespace Sushi.Mediakiwi
                                 //  Boolean --> String
                                 bool tmp = Convert.ToBoolean(fromPropertyValue);
                                 if (tmp)
+                                {
                                     to.SetValue(propertyContainerTo, "1", null);
+                                }
                                 else
+                                {
                                     to.SetValue(propertyContainerTo, "0", null);
+                                }
                             }
                             else if (from.PropertyType == typeof(int) || from.PropertyType == typeof(Guid))
+                            {
                                 to.SetValue(propertyContainerTo, fromPropertyValue.ToString(), null);
+                            }
                         }
+
                         #endregion
+
                         #region String --> ?
+
                         else if (from.PropertyType == typeof(string) && to.PropertyType != typeof(string))
                         {
                             if (to.PropertyType == typeof(string[]))
@@ -528,25 +581,28 @@ namespace Sushi.Mediakiwi
                                 //  String[] --> String[]
 
                                 if (fromPropertyValue == null)
+                                {
                                     to.SetValue(propertyContainerTo, null, null);
+                                }
                                 else
+                                {
                                     to.SetValue(propertyContainerTo, fromPropertyValue.ToString().Split(','), null);
+                                }
                             }
+
                             if (to.PropertyType == typeof(int[]))
                             {
                                 //  String -- > int[]
                                 to.SetValue(propertyContainerTo, Utility.ConvertToIntArray(fromPropertyValue.ToString().Split(',')), null);
                             }
 
-                            if (to.PropertyType == typeof(SubList))
+                            if (to.PropertyType == typeof(SubList) && fromPropertyValue != null && !string.IsNullOrEmpty(fromPropertyValue.ToString()))
                             {
                                 //  String -- > Sublist
-                                if (fromPropertyValue != null && !string.IsNullOrEmpty(fromPropertyValue.ToString()))
-                                {
-                                    SubList candidate = SubList.GetDeserialized(fromPropertyValue.ToString());
-                                    to.SetValue(propertyContainerTo, candidate, null);
-                                }
+                                SubList candidate = SubList.GetDeserialized(fromPropertyValue.ToString());
+                                to.SetValue(propertyContainerTo, candidate, null);
                             }
+
                             if (to.PropertyType == typeof(DateTime))
                             {
                                 //  String --> Datetime
@@ -568,10 +624,18 @@ namespace Sushi.Mediakiwi
                                 if (!string.IsNullOrEmpty(tmp1))
                                 {
                                     bool tmp;
-                                    if (tmp1 == "1") tmp = true;
-                                    else if (tmp1 == "0") tmp = false;
+                                    if (tmp1 == "1")
+                                    {
+                                        tmp = true;
+                                    }
+                                    else if (tmp1 == "0")
+                                    {
+                                        tmp = false;
+                                    }
                                     else
+                                    {
                                         tmp = Convert.ToBoolean(fromPropertyValue);
+                                    }
 
                                     to.SetValue(propertyContainerTo, tmp, null);
                                 }
@@ -581,21 +645,20 @@ namespace Sushi.Mediakiwi
                                 //  String --> Int
                                 to.SetValue(propertyContainerTo, ConvertToInt(fromPropertyValue), null);
                             }
-                            else if (from.PropertyType == typeof(Guid))
+                            else if (from.PropertyType == typeof(Guid) && IsGuid(fromPropertyValue, out Guid guid))
                             {
                                 //  String --> Guid
-                                if (IsGuid(fromPropertyValue, out Guid guid))
-                                {
-                                    to.SetValue(propertyContainerTo, guid, null);
-                                }
+                                to.SetValue(propertyContainerTo, guid, null);
                             }
                         }
+
                         #endregion
+
                         #region nullable
+
                         else if (from.PropertyType == typeof(decimal?) && to.PropertyType == typeof(decimal))
                         {
-                            if (fromPropertyValue != null)
-                                to.SetValue(propertyContainerTo, ((decimal?)fromPropertyValue).Value, null);
+                            to.SetValue(propertyContainerTo, ((decimal?)fromPropertyValue).Value, null);
                         }
                         else if (from.PropertyType == typeof(decimal) && to.PropertyType == typeof(decimal?))
                         {
@@ -603,8 +666,7 @@ namespace Sushi.Mediakiwi
                         }
                         else if (from.PropertyType == typeof(int?) && to.PropertyType == typeof(int))
                         {
-                            if (fromPropertyValue != null)
-                                to.SetValue(propertyContainerTo, ((int?)fromPropertyValue).Value, null);
+                            to.SetValue(propertyContainerTo, ((int?)fromPropertyValue).Value, null);
                         }
                         else if (from.PropertyType == typeof(int) && to.PropertyType == typeof(int?))
                         {
@@ -612,8 +674,7 @@ namespace Sushi.Mediakiwi
                         }
                         else if (from.PropertyType == typeof(long?) && to.PropertyType == typeof(long))
                         {
-                            if (fromPropertyValue != null)
-                                to.SetValue(propertyContainerTo, ((long?)fromPropertyValue).Value, null);
+                            to.SetValue(propertyContainerTo, ((long?)fromPropertyValue).Value, null);
                         }
                         else if (from.PropertyType == typeof(long) && to.PropertyType == typeof(long?))
                         {
@@ -621,14 +682,15 @@ namespace Sushi.Mediakiwi
                         }
                         else if (from.PropertyType == typeof(DateTime?) && to.PropertyType == typeof(DateTime))
                         {
-                            if (fromPropertyValue != null)
-                                to.SetValue(propertyContainerTo, ((DateTime?)fromPropertyValue).Value, null);
+                            to.SetValue(propertyContainerTo, ((DateTime?)fromPropertyValue).Value, null);
                         }
                         else if (from.PropertyType == typeof(DateTime) && to.PropertyType == typeof(DateTime?))
                         {
                             to.SetValue(propertyContainerTo, fromPropertyValue, null);
                         }
+
                         #endregion
+
                         else if (from.PropertyType == to.PropertyType)
                         {
                             to.SetValue(propertyContainerTo, from.GetValue(propertyContainerFrom, null), null);
@@ -656,7 +718,10 @@ namespace Sushi.Mediakiwi
         /// <returns></returns>
         public static string CleanParagraphWrap(string input)
         {
-            if (string.IsNullOrEmpty(input)) return input;
+            if (string.IsNullOrEmpty(input))
+            {
+                return input;
+            }
 
             string candidate = input;
             
@@ -672,10 +737,8 @@ namespace Sushi.Mediakiwi
             
             //  Replace lost P             
             candidate = candidate
-                .Replace("<p>", string.Empty)
-                .Replace("</p>", string.Empty)
-                .Replace("<P>", string.Empty)
-                .Replace("</P>", string.Empty)
+                .Replace("<p>", string.Empty, StringComparison.InvariantCultureIgnoreCase)
+                .Replace("</p>", string.Empty, StringComparison.InvariantCultureIgnoreCase)
                 ;
 
             candidate = Utility.CleanLeadingAndTrailingLineFeed(candidate);
@@ -693,8 +756,8 @@ namespace Sushi.Mediakiwi
             internal string Links(Match m)
             {
                 Regex rex = new Regex(@"<p.*?>(?<TEXT>(.|\n)*)(</p>)", RegexOptions.IgnoreCase);
-                string candidate = rex.Replace(m.Groups["TEXT"].Value, this.Replace);
-                this.Count++;
+                string candidate = rex.Replace(m.Groups["TEXT"].Value, Replace);
+                Count++;
                 return string.Concat(candidate, "<br/><br/>");
             }
 
@@ -711,7 +774,11 @@ namespace Sushi.Mediakiwi
         /// <returns></returns>
         public static string CleanLeadingAndTrailingLineFeed(string input)
         {
-            if (string.IsNullOrEmpty(input)) return input;
+            if (string.IsNullOrEmpty(input))
+            {
+                return input;
+            }
+
             string candidate = input.Trim();
 
             bool hasLeadingPar = false;
@@ -720,7 +787,9 @@ namespace Sushi.Mediakiwi
                 hasLeadingPar = true;
                 candidate = candidate.Remove(0, 3);
                 if (candidate.EndsWith("</p>", true, Thread.CurrentThread.CurrentCulture))
+                {
                     candidate = candidate.Substring(0, candidate.Length - 4);
+                }
             }
 
             bool check = true;
@@ -745,25 +814,16 @@ namespace Sushi.Mediakiwi
                 }
             }
 
-            while(candidate.Contains("<br/><br/><br/>"))
+            while(candidate.Contains("<br/><br/><br/>", StringComparison.InvariantCultureIgnoreCase))
             {
-                candidate = candidate.Replace("<br/><br/><br/>", "<br/><br/>");
+                candidate = candidate.Replace("<br/><br/><br/>", "<br/><br/>", StringComparison.InvariantCultureIgnoreCase);
             }
 
             if (hasLeadingPar)
+            {
                 return string.Concat("<p>", candidate, "</p>");
+            }
             return candidate;
-        }
-
-        /// <summary>
-        /// Applies the richtext links.
-        /// </summary>
-        /// <param name="site">The site.</param>
-        /// <param name="text">The text.</param>
-        /// <returns></returns>
-        public static string ApplyRichtextLinks(Site site, string text)
-        {
-            return ApplyRichtextLinks(site, text, null);
         }
 
         /// <summary>
@@ -772,11 +832,14 @@ namespace Sushi.Mediakiwi
         /// <param name="site"></param>
         /// <param name="text"></param>
         /// <returns></returns>
-        public static string ApplyRichtextLinks(Site site, string text, string databaseMap)
+        public static string ApplyRichtextLinks(Site site, string text)
         {
-            if (text == null) return null;
+            if (text == null)
+            {
+                return null;
+            }
+
             Framework.Templates.RichLink rlink = new Framework.Templates.RichLink(site);
-            //rlink.DatabaseMap = databaseMap;
 
             string candidate = Framework.Templates.RichLink.GetCleaner.Replace(text.ToString(), rlink.CleanLinkData);
             
@@ -790,7 +853,11 @@ namespace Sushi.Mediakiwi
 
         public static string CleanLink(Site site, string text)
         {
-            if (text == null) return null;
+            if (text == null)
+            {
+                return null;
+            }
+
             Framework.Templates.RichLink rlink = new Framework.Templates.RichLink(site);
             string candidate = Framework.Templates.RichLink.GetCleaner.Replace(text, rlink.CleanEmptyLink);
 
@@ -801,26 +868,18 @@ namespace Sushi.Mediakiwi
         }
 
         /// <summary>
-        /// Applies the richtext.
+        /// Applies the richtext cleanup (tables) and also calls ApplyRichtextLinks. 
         /// </summary>
         /// <param name="site">The site.</param>
         /// <param name="text">The text.</param>
         /// <returns></returns>
         public static string ApplyRichtext(Site site, string text)
         {
-            return ApplyRichtext(site, text, null);
-        }
-
-        /// <summary>
-        /// Applies the richtext cleanup (tables) and also calls ApplyRichtextLinks. 
-        /// </summary>
-        /// <param name="site">The site.</param>
-        /// <param name="text">The text.</param>
-        /// <returns></returns>
-        public static string ApplyRichtext(Site site, string text, string databaseMap)
-        {
-            if (text == null) return null;
-            text = ApplyRichtextLinks(site, text, databaseMap);
+            if (text == null)
+            {
+                return null;
+            }
+            text = ApplyRichtextLinks(site, text);
 
             Framework.ContentInfoItem.RichTextCleanup prepare = new Framework.ContentInfoItem.RichTextCleanup();
             return prepare.Clean(text);
@@ -851,7 +910,10 @@ namespace Sushi.Mediakiwi
         /// <returns></returns>
         public static string CleanLineFeed(string text, bool fromLfToBr, bool cleanConcurrentBreakTags, bool cleanEndingBreakTags)
         {
-            if (text == null) return null;
+            if (text == null)
+            {
+                return null;
+            }
 
             if (fromLfToBr)
             {
@@ -859,18 +921,26 @@ namespace Sushi.Mediakiwi
                 text = new Regex("\r", RegexOptions.IgnoreCase).Replace(text, "<br/>");
                 text = new Regex("\n", RegexOptions.IgnoreCase).Replace(text, "<br/>");
                 if (cleanConcurrentBreakTags)
+                {
                     return CleanConcurrentBreaks(text, cleanEndingBreakTags);
+                }
                 else
+                {
                     return text;
+                }
             }
             else
             {
                 Regex rex = new Regex("<br.*?>", RegexOptions.IgnoreCase);
                 text = rex.Replace(text, "\n");
                 if (cleanConcurrentBreakTags)
+                {
                     return CleanConcurrentBreaks(text, cleanEndingBreakTags);
+                }
                 else
+                {
                     return text;
+                }
             }
         }
 
@@ -882,14 +952,21 @@ namespace Sushi.Mediakiwi
         /// <returns></returns>
         public static string CleanConcurrentBreaks(string text, bool cleanEndingBreakTags)
         {
-            if (text == null) return null;
+            if (text == null)
+            {
+                return null;
+            }
+
             //return text;
             text = new Regex("<br.*?>", RegexOptions.IgnoreCase | RegexOptions.Multiline).Replace(text, "<br/>");
             text = new Regex("<br>&nbsp;<br>", RegexOptions.IgnoreCase | RegexOptions.Multiline).Replace(text, "<br/><br/>");
             text = new Regex("(<br>){2,}", RegexOptions.IgnoreCase | RegexOptions.Multiline).Replace(text, "<br><br/>");
             text = new Regex("<p>&nbsp;</p>", RegexOptions.IgnoreCase | RegexOptions.Multiline).Replace(text, string.Empty);
             if (cleanEndingBreakTags)
+            {
                 return CleanEndingBreaks(text);
+            }
+
             return text;
         }
 
@@ -900,7 +977,11 @@ namespace Sushi.Mediakiwi
         /// <returns></returns>
         public static string CleanEndingBreaks(string text)
         {
-            if (text == null) return null;
+            if (text == null)
+            {
+                return null;
+            }
+
             //return text;
             text = new Regex("(( |<br/>)+$)+$", RegexOptions.IgnoreCase | RegexOptions.Multiline).Replace(text, string.Empty);
             //text = new Regex("(<br.*?>)+$", RegexOptions.IgnoreCase | RegexOptions.Multiline).Replace(text, string.Empty);
@@ -915,17 +996,25 @@ namespace Sushi.Mediakiwi
         /// <returns></returns>
         public static string CleanUrl(string url)
         {
-            if (string.IsNullOrEmpty(url)) return null;
+            if (string.IsNullOrEmpty(url))
+            {
+                return null;
+            }
 
             //if (!Data.Common.HasUrlSpaceCleanup)
             //    return url;
 
             if (m_CleanUrlSpaces == null)
+            {
                 m_CleanUrlSpaces = new Regex(@"\s", RegexOptions.IgnoreCase);
+            }
 
             string replacement = CommonConfiguration.SPACE_REPLACEMENT;
 
-            if (replacement == " ") return url;
+            if (replacement == " ")
+            {
+                return url;
+            }
 
             string candidate = m_CleanUrlSpaces.Replace(url, replacement);
             return candidate;
@@ -937,7 +1026,10 @@ namespace Sushi.Mediakiwi
         /// </summary>
         public static string CleanFormatting(string richtext)
         {
-            if (string.IsNullOrEmpty(richtext)) return null;
+            if (string.IsNullOrEmpty(richtext))
+            {
+                return null;
+            }
             var candidate = richtext;
 
             candidate = CleanLineFeed(candidate, false);
@@ -951,7 +1043,9 @@ namespace Sushi.Mediakiwi
             candidate = new Regex(@"<select.*?/select>", RegexOptions.Multiline).Replace(candidate, "");
 
             if (m_CleanFormatting == null)
+            {
                 m_CleanFormatting = new Regex(@"<.*?>");
+            }
 
             candidate = m_CleanFormatting.Replace(candidate, "");
             
@@ -969,20 +1063,19 @@ namespace Sushi.Mediakiwi
         public static string CleanXmlData(string candidate, bool fromHexToBackSlash)
         {
             if (fromHexToBackSlash)
-                return candidate.Replace("#x9;", "\t").Replace("#xD;", "\n").Replace("#xA;", "\r");
+            {
+                return candidate
+                    .Replace("#x9;", "\t", StringComparison.InvariantCulture)
+                    .Replace("#xD;", "\n", StringComparison.InvariantCulture)
+                    .Replace("#xA;", "\r", StringComparison.InvariantCulture);
+            }
             else
-                return candidate.Replace("\t", "#x9;").Replace("\n", "#xD;").Replace("\r", "#xA;");
-        }
-
-        /// <summary>
-        /// Gets the instance list collection.
-        /// </summary>
-        /// <param name="list">The list.</param>
-        /// <param name="listName">Name of the list.</param>
-        /// <returns></returns>
-        public static ListItemCollection GetInstanceListCollection(IComponentList list, string listName, HttpContext context)
-        {
-            return GetInstanceListCollection(list, listName, null, context);
+            {
+                return candidate
+                    .Replace("\t", "#x9;", StringComparison.InvariantCulture)
+                    .Replace("\n", "#xD;", StringComparison.InvariantCulture)
+                    .Replace("\r", "#xA;", StringComparison.InvariantCulture);
+            }
         }
 
         /// <summary>
@@ -1152,80 +1245,117 @@ namespace Sushi.Mediakiwi
         /// <returns></returns>
         public static string GetIconImageString(Beta.GeneratedCms.Console container, IconImage icon, IconSize size, string tooltip)
         {
-            int width = (int)size, height = (int)size;
-            
-            if (icon == IconImage.Yes) icon = IconImage.accept_16;
-            else if (icon == IconImage.No) icon = IconImage.delete_16;
-            //else if (icon == IconImage.Note) icon = IconImage.info_16;
-            //else if (icon == IconImage.New) icon = IconImage.add_16;
+            // [MR:14-07-2021] Width isn't used
+            //int width = (int)size;
 
-            if (icon.ToString().Contains("16")) width = 16;
-            if (icon.ToString().Contains("80")) width = 80;
-            if (icon.ToString().Contains("10")) width = 10;
-            height = width;
+            //if (icon == IconImage.Yes)
+            //{
+            //    icon = IconImage.accept_16;
+            //}
+            //else if (icon == IconImage.No)
+            //{
+            //    icon = IconImage.delete_16;
+            //}
+            ////else if (icon == IconImage.Note) icon = IconImage.info_16;
+            ////else if (icon == IconImage.New) icon = IconImage.add_16;
 
-            if (true)//CommonConfiguration.FORCE_NEWSTYLE)// || Data.ApplicationUser.Select().ShowNewDesign)
+            //if (icon.ToString().Contains("16"))
+            //{
+            //    width = 16;
+            //}
+            //if (icon.ToString().Contains("80"))
+            //{
+            //    width = 80;
+            //}
+            //if (icon.ToString().Contains("10"))
+            //{
+            //    width = 10;
+            //}
+
+
+            string className = string.Empty;
+            string iconUrl = string.Empty;
+
+            switch (icon)
             {
-                string className = null;
-                switch (icon)
-                {
-                    case IconImage.delete_16:
-                    case IconImage.No:
+                case IconImage.delete_16:
+                case IconImage.No:
+                    {
                         className = "icon icon-times-circle-o neg";
-                        break;
-
-                    case IconImage.accept_16:
-                    case IconImage.Yes:
+                    }
+                    break;
+                case IconImage.accept_16:
+                case IconImage.Yes:
+                    {
                         className = "icon icon-check-circle-o pos";
-                        break;
-
-                    case IconImage.info_16:
+                    }
+                    break;
+                case IconImage.info_16:
+                    {
                         className = "flaticon solid question-1 icon green";
-                        break;
-
-                    //case IconImage.New:
-                    //    className = "flaticon solid question-1 icon green";
-                    //    break;
-
-
-                    case IconImage.Note:
-                        return string.Format("<img src=\"{0}\" title=\"{1}\" height=\"10\" width=\"21\">",
-                            container.AddApplicationPath(string.Format("/repository/wim/images/icons/note_{0}.png", (int)size), true), tooltip);
-                    case IconImage.New:
-                        return string.Format("<img src=\"{0}\" title=\"{1}\" height=\"10\" width=\"21\">",
-                            container.AddApplicationPath("/repository/wim/images/icons/new_10.png", true), tooltip);
-                    case IconImage.Rfc_Green:
-                        return string.Format("<img src=\"{0}\" title=\"{1}\" height=\"10\" width=\"21\">",
-                            container.AddApplicationPath("/repository/wim/images/icons/rfc_green_10.png", true), tooltip);
-                    case IconImage.Rfc_Orange:
-                        return string.Format("<img src=\"{0}\" title=\"{1}\" height=\"10\" width=\"21\">",
-                            container.AddApplicationPath("/repository/wim/images/icons/rfc_orange_10.png", true), tooltip);
-                    case IconImage.Rfc_Red:
-                        return string.Format("<img src=\"{0}\" title=\"{1}\" height=\"10\" width=\"21\">",
-                            container.AddApplicationPath("/repository/wim/images/icons/rfc_red_10.png", true), tooltip);
-                    case IconImage.Rfc_Purple:
-                        return string.Format("<img src=\"{0}\" title=\"{1}\" height=\"10\" width=\"21\">",
-                            container.AddApplicationPath("/repository/wim/images/icons/rfc_purple_10.png", true), tooltip);
-                    case IconImage.File:
+                    }
+                    break;
+                case IconImage.Note:
+                    {
+                        iconUrl = container.AddApplicationPath($"/repository/wim/images/icons/note_{(int)size}.png", true);
+                    }
+                    break;
+                case IconImage.New:
+                    {
+                        iconUrl = container.AddApplicationPath("/repository/wim/images/icons/new_10.png", true);
+                    }
+                    break;
+                case IconImage.Rfc_Green:
+                    {
+                        iconUrl = container.AddApplicationPath("/repository/wim/images/icons/rfc_green_10.png", true);
+                    }
+                    break;
+                case IconImage.Rfc_Orange:
+                    {
+                        iconUrl = container.AddApplicationPath("/repository/wim/images/icons/rfc_orange_10.png", true);
+                    }
+                    break;
+                case IconImage.Rfc_Red:
+                    {
+                        iconUrl = container.AddApplicationPath("/repository/wim/images/icons/rfc_red_10.png", true);
+                    }
+                    break;
+                case IconImage.Rfc_Purple:
+                    {
+                        iconUrl = container.AddApplicationPath("/repository/wim/images/icons/rfc_purple_10.png", true);
+                    }
+                    break;
+                case IconImage.File:
+                    {
                         className = "flaticon solid paperclip-2 icon green";
-                        break;
-
-                    case IconImage.NoFile:
+                    }
+                    break;
+                case IconImage.NoFile:
+                    {
                         className = "flaticon solid paperclip-2 icon red";
-                        break;
-                    default:
-                        return string.Format("<img src=\"{0}\" title=\"{1}\" height=\"10\" width=\"21\">",
-                            container.AddApplicationPath(string.Format("/repository/wim/images/icons/{0}.png", icon.ToString()), true), tooltip);
-                }
-
-                if (!string.IsNullOrEmpty(className))
-                {
-                    if (string.IsNullOrEmpty(tooltip))
-                        return string.Format("<figure class=\"{0}\"></figure>", className);
-                    return string.Format("<abbr title=\"{1}\"><label for=\"\" class=\"{0}\"></label></abbr>", className, tooltip);
-                }
-                return null;
+                    }
+                    break;
+                default:
+                    {
+                        iconUrl = container.AddApplicationPath($"/repository/wim/images/icons/{icon}.png", true);
+                    }
+                    break;
             }
+
+            if (string.IsNullOrWhiteSpace(iconUrl) == false)
+            {
+                return $"<img src=\"{iconUrl}\" title=\"{tooltip}\" height=\"10\" width=\"21\">";
+            }
+            else if (string.IsNullOrWhiteSpace(className) == false)
+            {
+                if (string.IsNullOrWhiteSpace(tooltip))
+                {
+                    return $"<figure class=\"{className}\"></figure>";
+                }
+                return $"<abbr title=\"{tooltip}\"><label for=\"\" class=\"{className}\"></label></abbr>";
+            }
+
+            return null;
         }
 
         /// <summary>
@@ -1238,7 +1368,7 @@ namespace Sushi.Mediakiwi
         /// <returns></returns>
         public static string GetIconImageString(Beta.GeneratedCms.Console container, IconImage icon, IconSize size, string tooltip, string url)
         {
-            return string.Format("<a href=\"{0}\" target=\"_blank\">{1}</a>", url, GetIconImageString(container, icon, size, tooltip));
+            return $"<a href=\"{url}\" target=\"_blank\">{GetIconImageString(container, icon, size, tooltip)}</a>";
         }
 
         /// <summary>
@@ -1250,7 +1380,7 @@ namespace Sushi.Mediakiwi
         /// <returns></returns>
         public static string GetIconImageString(Beta.GeneratedCms.Console container, IconImage icon, string tooltip, string url)
         {
-            return string.Format("<a href=\"{0}\">{1}</a>", url, GetIconImageString(container, icon, tooltip));
+            return $"<a href=\"{url}\">{GetIconImageString(container, icon, tooltip)}</a>";
         }
 
         /// <summary>
@@ -1263,35 +1393,29 @@ namespace Sushi.Mediakiwi
         /// <returns></returns>
         public static string GetIconImageString(Beta.GeneratedCms.Console container, IconImage icon, string tooltip, string url, string text)
         {
-            return string.Format("<a href=\"{0}\">{1} {2}</a>", url, GetIconImageString(container, icon, tooltip), text);
+            return $"<a href=\"{url}\">{GetIconImageString(container, icon, tooltip)} {text}</a>";
         }
 
         /// <summary>
         /// Gets the instance list collection.
         /// </summary>
-        /// <param name="site">The site.</param>
         /// <param name="list">The list.</param>
         /// <param name="listName">Name of the list.</param>
         /// <returns></returns>
-        public static ListItemCollection GetInstanceListCollection(IComponentList list, string listName, Site site, HttpContext context)
+        public static ListItemCollection GetInstanceListCollection(IComponentList list, string listName, HttpContext context)
         {
             IComponentListTemplate instance = list.GetInstance(context);
-            return GetInstanceListCollection(list, listName, site, instance);
+            return GetInstanceListCollection(listName, instance);
         }
 
         /// <summary>
         /// Gets the instance list collection.
         /// </summary>
-        /// <param name="list">The list.</param>
         /// <param name="listName">Name of the list.</param>
-        /// <param name="site">The site.</param>
         /// <param name="instance">The instance.</param>
         /// <returns></returns>
-        public static ListItemCollection GetInstanceListCollection(IComponentList list, string listName, Site site, IComponentListTemplate instance)
+        public static ListItemCollection GetInstanceListCollection(string listName, IComponentListTemplate instance)
         {
-            //instance.CurrentList = list;
-            //instance.CurrentSite = site;
-
             Type type = instance.GetType();
             
             if (listName.Contains(":"))
@@ -1301,16 +1425,19 @@ namespace Sushi.Mediakiwi
                 object[] index = new object[1] { Convert.ToInt32(split[1]) };
 
                 if (method == null)
+                {
                     return new ListItemCollection();
+                }
 
                 return method.Invoke(instance, index) as ListItemCollection;
-
             }
 
             PropertyInfo info = type.GetProperty(listName);
             if (info == null)
+            {
                 return new ListItemCollection();
-            
+            }
+
             return info.GetValue(instance, null) as ListItemCollection;
         }
 
@@ -1475,11 +1602,11 @@ namespace Sushi.Mediakiwi
             /// <summary>
             /// 
             /// </summary>
-            public const string ReplaceRelativePathSlash = @"//*|\\\\*";
+            public static readonly string ReplaceRelativePathSlash = @"//*|\\\\*";
             /// <summary>
-            /// 
+            /// B
             /// </summary>
-            public const string NotAcceptableFilenameCharacter = @"^[^\|\?\\/:\*""<>]*$";
+            public static readonly string NotAcceptableFilenameCharacter = @"^[^\|\?\\/:\*""<>]*$";
             /// <summary>
             /// 
             /// </summary>
@@ -1487,32 +1614,32 @@ namespace Sushi.Mediakiwi
             /// <summary>
             /// 
             /// </summary>
-            public const string ReplaceNotAcceptableFilenameCharacter = @"[^A-Za-z0-9\s/\-_.]";
+            public static readonly string ReplaceNotAcceptableFilenameCharacter = @"[^A-Za-z0-9\s/\-_.]";
             /// <summary>
             /// 
             /// </summary>
-            public const string OnlyNumeric = @"^[-+]?\d*$";
+            public static readonly string OnlyNumeric = @"^[-+]?\d*$";
             /// <summary>
             /// Only can contain a '.' as decimal seperator
             /// </summary>
-            public const string OnlyDecimal = @"^[-+]?\d*[.]?\d*$";
+            public static readonly string OnlyDecimal = @"^[-+]?\d*[.]?\d*$";
             /// <summary>
             /// 
             /// </summary>
-            public const string OnlyPositiveDecimal = @"^\d*[.]?\d*$";
+            public static readonly string OnlyPositiveDecimal = @"^\d*[.]?\d*$";
             /// <summary>
             /// 
             /// </summary>
-            public const string OnlyGUID = @"^(\{){0,1}[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}(\}){0,1}$";
+            public static readonly string OnlyGUID = @"^(\{){0,1}[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}(\}){0,1}$";
             //public const string OnlyDecimal = @"^[-+]?\d*$";
             /// <summary>
             /// 
             /// </summary>
-            public const string OnlyAcceptableFilenameCharacter = @"^[a-z|A-Z|0-9| _-]*$";
+            public static readonly string OnlyAcceptableFilenameCharacter = @"^[a-z|A-Z|0-9| _-]*$";
             /// <summary>
             /// 
             /// </summary>
-            public const string EmailAddress = @"^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$";
+            public static readonly string EmailAddress = @"^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$";
 
             /// <summary>
             /// 
@@ -1533,7 +1660,9 @@ namespace Sushi.Mediakiwi
                     get
                     {
                         if (m_CleanUrlSpaces == null)
+                        {
                             m_CleanUrlSpaces = new Regex(@"\s", RegexOptions.IgnoreCase);
+                        }
                         return m_CleanUrlSpaces;
                     }
                 }
@@ -1552,7 +1681,9 @@ namespace Sushi.Mediakiwi
                     get
                     {
                         if (m_CleanRelativePathSlash == null)
+                        {
                             m_CleanRelativePathSlash = new Regex(ReplaceRelativePathSlash);
+                        }
                         return m_CleanRelativePathSlash;
                     }
                 }
@@ -1570,7 +1701,9 @@ namespace Sushi.Mediakiwi
                     get
                     {
                         if (m_onlyNumeric == null)
+                        {
                             m_onlyNumeric = new Regex(GlobalRegularExpression.OnlyNumeric);
+                        }
                         return m_onlyNumeric;
                     }
                 }
@@ -1588,7 +1721,9 @@ namespace Sushi.Mediakiwi
                     get
                     {
                         if (m_ReplaceNotAcceptableFilenameCharacter == null)
+                        {
                             m_ReplaceNotAcceptableFilenameCharacter = new Regex(GlobalRegularExpression.ReplaceNotAcceptableFilenameCharacter);
+                        }
                         return m_ReplaceNotAcceptableFilenameCharacter;
                     }
                 }
@@ -1607,28 +1742,29 @@ namespace Sushi.Mediakiwi
             {
                 string stackTrace = ex.StackTrace == null ? "" : ex.StackTrace;
                 Regex cleanUpStrackTrace = new Regex("( at)");
-                
+
                 stackTrace = cleanUpStrackTrace.Replace(stackTrace, "<br/>at");
 
-                if (error != "")
+                if (string.IsNullOrWhiteSpace(error) == false)
+                {
                     error += "<br/><br/>";
+                }
+
                 if (CommonConfiguration.IS_LOCAL_DEVELOPMENT)
                 {
-                    error += string.Format(@"<b>Error:</b><br/>{0}
-<br/><br/><b>Source:</b><br/>{1}
-<br/><br/><b>Method:</b><br/>{2}
-<br/><br/><b>Stacktrace:</b>{3}
-"
-                        , ex.Message, ex.Source, ex.TargetSite, stackTrace);
+                    error += $@"<b>Error:</b><br/>{ex.Message}
+<br/><br/><b>Source:</b><br/>{ex.Source}
+<br/><br/><b>Method:</b><br/>{ex.TargetSite}
+<br/><br/><b>Stacktrace:</b>{stackTrace}
+";
                 }
                 else
                 {
-                    error += string.Format(@"<b>Error:</b><br/>{0}"
-                        , ex.Message);
+                    error += $@"<b>Error:</b><br/>{ex.Message}";
                 }
                 ex = ex.InnerException;
             }
-            return error;          
+            return error;
         }
 
         /// <summary>
@@ -1664,7 +1800,10 @@ namespace Sushi.Mediakiwi
                 xmldoc.LoadXml(xml);
 
                 //  This went wrong with ArrayOf...
-                if (xmldoc.DocumentElement.ChildNodes.Count == 0) return null;
+                if (xmldoc.DocumentElement.ChildNodes.Count == 0)
+                {
+                    return null;
+                }
 
                 XmlNodeReader reader = new XmlNodeReader(xmldoc.DocumentElement);
 
@@ -1699,7 +1838,9 @@ namespace Sushi.Mediakiwi
                 catch (Exception ex)
                 {
                     if (onErrorThrowException)
+                    {
                         throw new Exception(string.Format("Impossible to Deserialize XML with DocumentElement '{0}' to '{1}'", xmldoc.DocumentElement.Name, type.Name), ex);
+                    }
 
                     return Activator.CreateInstance(type);
                 }
@@ -1728,12 +1869,13 @@ namespace Sushi.Mediakiwi
         /// <returns></returns>
         public static string GetSerialized(object content, bool returnHtmlEncodedResponse)
         {
-            if (content == null) return null;
+            if (content == null)
+            {
+                return null;
+            }
 
             var result = GetSerialized(content.GetType(), content);
-            return WebUtility.HtmlEncode(result);
-            
-            return result;
+            return (returnHtmlEncodedResponse) ? WebUtility.HtmlEncode(result) : result;
         }
 
         /// <summary>
@@ -1758,7 +1900,7 @@ namespace Sushi.Mediakiwi
         /// <returns></returns>
         public static string WrapJavaScript( string script )
         {
-            return string.Format("<script type=\"text/javascript\">{0}</script>", script);
+            return $"<script type=\"text/javascript\">{script}</script>";
         }
 
         /// <summary>
@@ -1887,7 +2029,9 @@ namespace Sushi.Mediakiwi
             SHA1.Clear();
 
             if (base64Response)
+            {
                 return Convert.ToBase64String(byteHash);
+            }
             else
             {
                 return BitConverter.ToString(byteHash).Replace("-", "").ToLower();
@@ -1919,9 +2063,13 @@ namespace Sushi.Mediakiwi
             MD5.Clear();
 
             if (base64Response)
+            {
                 return Convert.ToBase64String(byteHash);
+            }
             else
+            {
                 return BitConverter.ToString(byteHash).Replace("-", "").ToLower();
+            }
         }
 
         /// <summary>
@@ -1945,7 +2093,10 @@ namespace Sushi.Mediakiwi
         /// <returns></returns>
         public static DateTime ConvertWimDateTime(object candidate)
         {
-            if (candidate == null || candidate.ToString().Length == 0) return DateTime.MinValue;
+            if (candidate == null || candidate.ToString().Length == 0)
+            {
+                return DateTime.MinValue;
+            }
 
             if (DateTime.TryParse(candidate.ToString(), WimCultureInfo, DateTimeStyles.None, out DateTime dt))
             {
@@ -1970,8 +2121,10 @@ namespace Sushi.Mediakiwi
         /// <returns></returns>
         public static string ConvertToJavascriptString( string item )
         {
-            if ( item == null )
+            if (item == null)
+            {
                 return string.Empty;
+            }
             
             return item.Replace("'", "\\'");
         }
@@ -1995,15 +2148,17 @@ namespace Sushi.Mediakiwi
         /// <returns></returns>
         public static long ConvertToLong(object item)
         {
-            if (item == null)
+            if (item == null || item.ToString().Trim().Length == 0)
+            {
                 return 0;
-
-            if (item.ToString().Trim().Length == 0)
-                return 0;
+            }
 
             string candidate = item.ToString().Trim();
             if (GlobalRegularExpression.Implement.OnlyNumeric.IsMatch(candidate))
+            {
                 return long.Parse(candidate);
+            }
+
             return 0;
         }
 
@@ -2014,11 +2169,10 @@ namespace Sushi.Mediakiwi
         /// <returns></returns>
         public static long? ConvertToLongNullable(object item)
         {
-            if (item == null)
+            if (item == null || item.ToString().Trim().Length == 0)
+            {
                 return null;
-
-            if (item.ToString().Trim().Length == 0)
-                return null;
+            }
 
             if (GlobalRegularExpression.Implement.OnlyNumeric.IsMatch(item.ToString()))
             {
@@ -2040,16 +2194,19 @@ namespace Sushi.Mediakiwi
         /// </summary>
         public static int ConvertToInt(object item)
         {
-            if (item == null)
+            if (item == null || item.ToString().Trim().Length == 0)
+            {
                 return 0;
-
-            if (item.ToString().Trim().Length == 0)
-                return 0;
+            }
 
             string candidate = item.ToString().Trim();
             if (GlobalRegularExpression.Implement.OnlyNumeric.IsMatch(candidate))
             {
-                if (candidate == "-") return 0;
+                if (candidate == "-")
+                {
+                    return 0;
+                }
+
                 return int.Parse(candidate);
             }
             return 0;
@@ -2060,17 +2217,15 @@ namespace Sushi.Mediakiwi
         /// </summary>
         public static int ConvertToInt(object item, int onError)
         {
-            if ( item == null || item.ToString().Trim().Length == 0 )
+            if (item == null || item.ToString().Trim().Length == 0)
+            {
                 return onError;
-
-            if (item == null)
-                return onError;
-
-            if (item.ToString().Trim().Length == 0)
-                return onError;
+            }
 
             if (GlobalRegularExpression.Implement.OnlyNumeric.IsMatch(item.ToString()))
+            {
                 return int.Parse(item.ToString());
+            }
 
             return onError;
         }
@@ -2095,18 +2250,21 @@ namespace Sushi.Mediakiwi
         /// <returns></returns>
         public static int? ConvertToIntNullable(object item, bool whenZeroReturnNull)
         {
-            if (item == null)
+            if (item == null || item.ToString().Trim().Length == 0)
+            {
                 return null;
-
-            if (item.ToString().Trim().Length == 0)
-                return null;
+            }
 
             if (GlobalRegularExpression.Implement.OnlyNumeric.IsMatch(item.ToString()))
             {
                 try
                 {
                     int i = int.Parse(item.ToString());
-                    if (i == 0 && whenZeroReturnNull) return null;
+                    if (i == 0 && whenZeroReturnNull)
+                    {
+                        return null;
+                    }
+
                     return i;
                 }
                 catch (OverflowException ex)
@@ -2145,21 +2303,31 @@ namespace Sushi.Mediakiwi
                 foreach (byte b in encoded)
                 {
                     if (firstByte)
+                    {
                         tempChar = b.ToString("X");
+                    }
                     if (!firstByte)
                     {
                         secondChar = b.ToString("X");
                         if (tempChar.Length == 1)
+                        {
                             tempChar = string.Format("0{0}", tempChar);
+                        }
                         if (secondChar.Length == 1)
+                        {
                             secondChar = string.Format("0{0}", secondChar);
+                        }
 
                         returnItem += string.Format("&#x{1:00}{0:00};", tempChar, secondChar);
                     }
                     if (firstByte)
+                    {
                         firstByte = false;
+                    }
                     else
+                    {
                         firstByte = true;
+                    }
                 }
             }
             return returnItem;
@@ -2207,8 +2375,10 @@ namespace Sushi.Mediakiwi
         {
             if (candidate != null && candidate.Length > 0)
             {
-                if ( maxWordLength > 0 && additionWhenLonger != null ) 
+                if (maxWordLength > 0 && additionWhenLonger != null)
+                {
                     candidate = ConvertToFixedLengthWord(candidate, maxWordLength, additionWhenLonger);
+                }
 
                 if (candidate.Length > maxlength)
                 {
@@ -2269,7 +2439,9 @@ namespace Sushi.Mediakiwi
 
                 string text = rex.Replace(m.Groups["TEXT"].Value, word.Breakup);
                 if (text.Length < additionWhenLonger.Length)
+                {
                     return text;
+                }
 
                 return text.Substring(0, text.Length - additionWhenLonger.Length);
             }
@@ -2281,7 +2453,9 @@ namespace Sushi.Mediakiwi
                 {
                     string text = m.Groups["TEXT"].Value;
                     if (text.Length > 0)
+                    {
                         return text + additionWhenLonger;
+                    }
                     return null;
                 }
             }
@@ -2329,14 +2503,22 @@ namespace Sushi.Mediakiwi
         /// <returns></returns>
         public static string ConvertToCsvString(int[] array)
         {
-            if (array == null) return null;
+            if (array == null)
+            {
+                return null;
+            }
 
             StringBuilder build = new StringBuilder();
             foreach (int item in array)
             {
-                if (build.Length == 0) build.Append(item.ToString());
+                if (build.Length == 0)
+                {
+                    build.Append(item.ToString());
+                }
                 else
+                {
                     build.Append(string.Concat(",", item.ToString()));
+                }
             }
             return build.ToString();
         }
@@ -2360,12 +2542,18 @@ namespace Sushi.Mediakiwi
         /// <returns></returns>
         public static string ConvertToCsvString(object[] array, bool shouldUseQuoteForStringValues)
         {
-            if (array == null) return null;
+            if (array == null)
+            {
+                return null;
+            }
 
             StringBuilder build = new StringBuilder();
             foreach (object item in array)
             {
-                if (item == null) continue;
+                if (item == null)
+                {
+                    continue;
+                }
 
                 if (IsNumeric(item, out long itemInt))
                 {
@@ -2430,14 +2618,18 @@ namespace Sushi.Mediakiwi
         public static List<int> ConvertToIntList(string[] array)
         {
             if (array == null)
+            {
                 return null;
+            }
 
             List<int> list = new List<int>();
             foreach (string item in array)
             {
                 int intItem = ConvertToInt(item, -1);
                 if (intItem != -1)
+                {
                     list.Add(intItem);
+                }
             }
             return list;
         }
@@ -2581,17 +2773,16 @@ namespace Sushi.Mediakiwi
 
         public static bool IsStrongPassword(string candidate)
         {
-            if (candidate != null && candidate.ToString().Length > 0)
+            if (string.IsNullOrWhiteSpace(candidate) == false)
             {
-                string testCandidate = candidate.ToString();
-
-                if (_StrongPassword.IsMatch(testCandidate))
+                if (_StrongPassword.IsMatch(candidate))
                 {
                     return true;
                 }
             }
             return false;
         }
+
         static Regex _StrongPassword = new Regex("^(?=.*[A-Z])(?=.*\\W)(?=.*[0-9])(?=.*[a-z]).{8,}$", RegexOptions.Compiled);
 
         #endregion
@@ -2684,7 +2875,9 @@ namespace Sushi.Mediakiwi
         public static Guid ConvertToGuid(object item)
         {
             if (item == null || string.IsNullOrEmpty(item.ToString()))
+            {
                 return Guid.Empty;
+            }
 
             if (IsGuid(item, out Guid candidate))
             {
@@ -2717,7 +2910,9 @@ namespace Sushi.Mediakiwi
         public static string ConvertToDecimalString(decimal item)
         {
             if (Thread.CurrentThread.CurrentCulture.NumberFormat.CurrencyDecimalSeparator == ",")
+            {
                 return item.ToString().Replace(".", "").Replace(",", ".");
+            }
             return item.ToString().Replace(",", ".");
         }
         
@@ -2782,7 +2977,9 @@ namespace Sushi.Mediakiwi
         public static string ConvertToDoubleString(decimal item)
         {
             if (Thread.CurrentThread.CurrentCulture.NumberFormat.CurrencyDecimalSeparator == ",")
+            {
                 return item.ToString().Replace(".", "").Replace(",", ".");
+            }
             return item.ToString().Replace(",", ".");
         }
 
