@@ -289,9 +289,9 @@ namespace Sushi.Mediakiwi.UI
         /// <param name="container">The container.</param>
         /// <param name="type">The type.</param>
         /// <returns></returns>
-        public string GetGridFromListInstance(WimComponentListRoot root, Beta.GeneratedCms.Console container, int type, bool isNewDesignOutput)
+        public string GetGridFromListInstance(WimComponentListRoot root, Beta.GeneratedCms.Console container, int type)
         {
-            return GetGridFromListInstance(root, container, type, false, isNewDesignOutput);
+            return GetGridFromListInstance(root, container, type, false, container.CurrentListInstance);
         }
 
         string GetListPaging(Beta.GeneratedCms.Console container, Splitlist splitlist, int currentPage, bool isTop)
@@ -807,11 +807,9 @@ namespace Sushi.Mediakiwi.UI
         /// <param name="includeExportFields">if set to <c>true</c> [include export fields].</param>
         /// <param name="isNewDesignOutput">if set to <c>true</c> [is new design output].</param>
         /// <returns></returns>
-        internal string GetGridFromListInstance(WimComponentListRoot root, Beta.GeneratedCms.Console container, int type, bool includeExportFields, bool isNewDesignOutput, bool hidePaging = false)
+        internal string GetGridFromListInstance(WimComponentListRoot root, Beta.GeneratedCms.Console container, int type, bool includeExportFields, IComponentListTemplate caller, bool hidePaging = false)
         {
-
-            container.ListPagingValue = root.CurrentPage.ToString();// container.Request.Params["set"];
-            bool isEditMode = false;
+            container.ListPagingValue = root.CurrentPage.ToString();
 
             //  Trigger list search event
             container.CurrentListInstance.wim.DoListSearch();
@@ -822,12 +820,8 @@ namespace Sushi.Mediakiwi.UI
 
             StringBuilder build = new StringBuilder();
 
-            //  Create the header and the columns
-            //if (type != 4)
-                //build.Append("\n\t\t\t\t\t\t\t<thead>\n\t\t\t\t\t\t\t\t<tr class=\"first\">");
             int visibleColumnCount = 0;
 
-            bool hasEditProperties = false;
             bool isDataTable = root.ListData == null;
 
             int count = isDataTable ? root.ListDataTable.Rows.Count : root.ListData.Count;
@@ -843,55 +837,15 @@ namespace Sushi.Mediakiwi.UI
             string paging = hidePaging ? "<menu class=\"pager\"></menu>" : null;
             string pagingTop = null;
 
-            if (root.m_IsLinqUsed)
+            count = root.m_ListDataRecordCount - root.m_ListDataInterLineCount;
+            whilelist = root.ListData.GetEnumerator();
+
+            if (!hidePaging)
             {
-                count = root.m_ListDataRecordCount - root.m_ListDataInterLineCount;
-                whilelist = root.ListData.GetEnumerator();
-
-                if (!hidePaging)
-                {
-                    paging = GetListPaging(container, null, currentPage, false);
-                    pagingTop = GetListPaging(container, null, currentPage, true);
-                }
+                paging = GetListPaging(container, null, currentPage, false);
+                pagingTop = GetListPaging(container, null, currentPage, true);
             }
-            else
-            {
-                Splitlist splitlist = null;
-
-                int maxViewItemCount = root.CurrentList.Option_Search_MaxResultPerPage;
-                if (container.ListPagingValue == "-1")
-                    maxViewItemCount = 1000;
-
-                if (isDataTable)
-                {
-                    if (root.ListDataTable.Rows.Count > 0)
-                    {
-                        splitlist = new Splitlist(root.ListDataTable, maxViewItemCount, root.CurrentList.Option_Search_MaxViews);
-                        if (currentPage > splitlist.ListCount)
-                            currentPage = splitlist.ListCount;
-
-                        whilelist = ((System.Data.DataTable)splitlist[currentPage - 1]).Rows.GetEnumerator();
-                    }
-                }
-                else
-                {
-                    if (root.ListData.Count > 0)
-                    {
-                        splitlist = new Splitlist(root.ListData, maxViewItemCount, root.CurrentList.Option_Search_MaxViews);
-                        if (currentPage > splitlist.ListCount)
-                            currentPage = splitlist.ListCount;
-
-                        whilelist = ((IList)splitlist[currentPage - 1]).GetEnumerator();
-                    }
-                }
-                if (!hidePaging)
-                { 
-                    paging = GetListPaging(container, splitlist, currentPage, false);
-                    pagingTop = GetListPaging(container, splitlist, currentPage, true);
-                }
-            }
-
-
+ 
             StringBuilder build2 = new StringBuilder();
             StringBuilder RowHTML = null;
 
@@ -941,10 +895,6 @@ namespace Sushi.Mediakiwi.UI
                 ListDataSoure source = new ListDataSoure();
                 foreach (ListDataColumn c in root.ListDataColumns.List)
                 {
-                    if (c.EditConfiguration != null)
-                        hasEditProperties = true;
-
-
                     if (!IsVisibleColumn(c.Type, includeExportFields))
                         continue;
 
@@ -1023,11 +973,7 @@ namespace Sushi.Mediakiwi.UI
                             }
 
                             int? listTypeID = null;
-                            //19-10-20 depricated
-                            //Sushi.Mediakiwi.Data.DalReflection.BaseSqlEntity tmp = item as Sushi.Mediakiwi.Data.DalReflection.BaseSqlEntity;
-                            //if (tmp != null)
-                            //    listTypeID = ((Sushi.Mediakiwi.Data.DalReflection.BaseSqlEntity)item).m_PropertyListTypeID;
-
+                           
 
                             if (column.Type == ListDataColumnType.Checkbox || column.Type == ListDataColumnType.RadioBox)
                             {
@@ -1067,9 +1013,6 @@ namespace Sushi.Mediakiwi.UI
                                 }
                             }
                             #endregion Obtain uniqueIdentifier and highlightColumn
-
-                            //var parser = container.CurrentListInstance.DoListDataItemCreated(DataItemType.TableCell, column, item, uniqueIdentifier, propertyValue, index, cell_attribute);
-                            //propertyValue = parser.ItemValue;
 
                             #region Value specific cell markup
                             if (propertyValue != null)
@@ -1182,47 +1125,21 @@ namespace Sushi.Mediakiwi.UI
                                         //  Get URL from list item
                                         passthrough = GetValue(infoCollection, item, root.ListDataColumns.ColumnItemUrl).ToString();
                                     }
-                                    //if (root._SearchListTargetIsSet || root.CurrentList.Option_LayerResult)
-                                    //{
-                                    //    if (root.CurrentList.Option_LayerResult && root.SearchListTarget == LayerSize.Undefined)
-                                    //        root.SearchListTarget = LayerSize.Normal;
 
-
-                                    //    //row_attribute["data-target"] = root.SearchListTarget.ToString();
-                                    //}
-
-                                    //if (passthrough != null && passthrough.Contains("?"))
-                                    //    passthrough = passthrough.Split('?')[1];
+                                    if (caller != null && !caller.wim.CurrentList.ID.Equals(container.CurrentList.ID))
+                                    {
+                                        passthrough = $"{Utils.ToUrl(container.CurrentList.Name)}?item";
+                                    }
 
                                     row_attribute["data-link"] = passthrough;
 
                                     row_attribute.Class = "parent";
                                  
-                                    // CB: the accordion insertion
-                                    //if (root.SearchListIsAccordion != null)
-                                    //{
-                                    //    accordionPanelAddition += $@"<tr><td class=""accordion""  colspan=""{root.ListDataColumns.List.Count}"">
-                                    //                                        <div class=""first"" style=""height: {root.SearchListIsAccordion.PanelHeight}px"">
-                                    //                                           <header> 
-                                    //                                                <h4>{root.CurrentList.SingleItemName }</h4>
-                                    //                                                <a href=""#closePanel"" onclick=""handleAccordionSelfClose(this)"">{root.SearchListIsAccordion.CloseLabel}</a>
-                                    //                                            </header>
-                                    //                                            <article />
-                                    //                                        </div>
-                                    //                                </td></tr>";
-                                    //    row_attribute.Class += " hand";
-                                    //    row_attribute["data-accordion"] = uniqueIdentifier;
-                                    //    if (root.SearchListIsAccordion.CloseOtherPanelsOnClick)
-                                    //        row_attribute["data-accordionSinglePanelOpen"] = "true";
-                                    //}
-                                    //else
-                                    //{
-                                        if (root.SearchListCanClickThrough && !string.IsNullOrEmpty(uniqueIdentifier) && (uniqueIdentifier != "0" || !string.IsNullOrEmpty(passthrough)))
-                                        {
-                                            row_attribute.ID = string.Format("id_{0}${1}", root.CurrentList.ID, uniqueIdentifier);
-                                            row_attribute.Class += " hand";
+                                    if (root.SearchListCanClickThrough && !string.IsNullOrEmpty(uniqueIdentifier) && (uniqueIdentifier != "0" || !string.IsNullOrEmpty(passthrough)))
+                                    {
+                                        row_attribute.ID = string.Format("id_{0}${1}", root.CurrentList.ID, uniqueIdentifier);
+                                        row_attribute.Class += " hand";
                                         }
-                                    //}
 
                                     var row_parser = container.CurrentListInstance.wim.DoListDataItemCreated(DataItemType.TableRow, root.ListDataColumns.List.ToArray(), column, item, uniqueIdentifier, null, index, row_attribute, source);
                                     var row_html = row_parser.ToString();
@@ -1246,16 +1163,6 @@ namespace Sushi.Mediakiwi.UI
 
                                 column.CalculateLength(html, info);
                                 RowHTML.Append(string.Format("\n\t\t\t\t\t\t\t\t\t{0}", html));
-                                //RowHTML.Append(string.Format("</td>\n\t\t\t\t\t\t\t\t\t<td{3}{4}{5}{6}{7}>{0}{1}{2}"
-                                //    , column.ColumnValuePrefix
-                                //    , propertyValue
-                                //    , column.ColumnValueSuffix
-                                //    , ""
-                                //    , hasNoWrap ? " nowrap" : string.Empty
-                                //    , propertyValue == null ? null : align
-                                //    , hasInnerLink ? " class=\"nopt\"" : null
-                                //    , string.IsNullOrEmpty(cellClassName) ? null : string.Format(" class=\"{0}\"", cellClassName) 
-                                //    ));
                             }
 
                             isFirst = false;
@@ -1278,9 +1185,6 @@ namespace Sushi.Mediakiwi.UI
             build.Append("\n\t\t\t\t\t\t\t<thead>\n\t\t\t\t\t\t\t\t<tr class=\"first\">");
             foreach (ListDataColumn c in root.ListDataColumns.List)
             {
-                if (c.EditConfiguration != null)
-                    hasEditProperties = true;
-
                 if (!IsVisibleColumn(c.Type, includeExportFields))
                     continue;
 
