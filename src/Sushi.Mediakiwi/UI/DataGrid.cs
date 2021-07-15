@@ -851,7 +851,7 @@ namespace Sushi.Mediakiwi.UI
                 count = root.m_ListDataRecordCount - root.m_ListDataInterLineCount;
                 whilelist = root.ListData.GetEnumerator();
 
-                if (!root.IsDashboardMode && !hidePaging)
+                if (!hidePaging)
                 {
                     paging = GetListPaging(container, null, currentPage, false);
                     pagingTop = GetListPaging(container, null, currentPage, true);
@@ -861,7 +861,7 @@ namespace Sushi.Mediakiwi.UI
             {
                 Splitlist splitlist = null;
 
-                int maxViewItemCount = root.IsDashboardMode ? root.SearchViewDashboardMaxLength : root.CurrentList.Option_Search_MaxResultPerPage;
+                int maxViewItemCount = root.CurrentList.Option_Search_MaxResultPerPage;
                 if (container.ListPagingValue == "-1")
                     maxViewItemCount = 1000;
 
@@ -887,7 +887,7 @@ namespace Sushi.Mediakiwi.UI
                         whilelist = ((IList)splitlist[currentPage - 1]).GetEnumerator();
                     }
                 }
-                if (!root.IsDashboardMode && !hidePaging)
+                if (!hidePaging)
                 { 
                     paging = GetListPaging(container, splitlist, currentPage, false);
                     pagingTop = GetListPaging(container, splitlist, currentPage, true);
@@ -1550,7 +1550,7 @@ namespace Sushi.Mediakiwi.UI
             if (currentPage < 1) currentPage = 1;
             string paging = null;
 
-            json.Lst = root.IsDashboardMode ? root.SearchViewDashboardMaxLength : root.CurrentList.Option_Search_MaxResultPerPage;
+            json.Lst = root.CurrentList.Option_Search_MaxResultPerPage;
 
             if ((json.Set * json.Lst - json.Lst) > json.Tot)
                 json.Set = 1;
@@ -2100,9 +2100,9 @@ namespace Sushi.Mediakiwi.UI
 
         void SetPolution(Beta.GeneratedCms.Console container, object sender)
         {
-            if (container.CurrentListInstance.wim.m_ChangedSearchGridItem == null)
-                container.CurrentListInstance.wim.m_ChangedSearchGridItem = new List<object>();
-            container.CurrentListInstance.wim.m_ChangedSearchGridItem.Add(sender);
+            if (container.CurrentListInstance.wim.ChangedSearchGridItem == null)
+                container.CurrentListInstance.wim.ChangedSearchGridItem = new List<object>();
+            container.CurrentListInstance.wim.ChangedSearchGridItem.Add(sender);
         }
 
         bool HasPostItem(Beta.GeneratedCms.Console container, string name)

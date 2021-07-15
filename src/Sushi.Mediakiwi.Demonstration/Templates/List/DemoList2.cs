@@ -48,7 +48,7 @@ namespace Sushi.Mediakiwi.Demonstration.Templates.List
 
             var allItems = DemoObject2.FetchAll();
 
-            wim.ListDataApply(allItems);
+            wim.ListDataAdd(allItems);
             return Task.CompletedTask;
         }
     }

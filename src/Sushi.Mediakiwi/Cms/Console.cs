@@ -423,7 +423,6 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
             candidate.CurrentListInstance.wim.Console = this;
             //candidate.CurrentListInstance.wim = CurrentListInstance.wim;
             candidate.CurrentListInstance.wim.CurrentList = list;
-            candidate.CurrentListInstance.wim.IsDashboardMode = CurrentListInstance.wim.IsDashboardMode;
             candidate.CurrentListInstance.wim.IsEditMode = CurrentListInstance.wim.IsEditMode;
             candidate.CurrentListInstance.wim.CurrentEnvironment = CurrentEnvironment;
             candidate.CurrentListInstance.wim.CurrentApplicationUser = CurrentApplicationUser;

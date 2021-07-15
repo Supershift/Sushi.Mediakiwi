@@ -350,9 +350,6 @@ namespace Sushi.Mediakiwi.UI
             //  Create the form
             _Console.CurrentListInstance.wim.HideTopSectionTag = true;
 
-            if (_Console.Request.Query["DBM"] == "1")
-                _Console.CurrentListInstance.wim.IsDashboardMode = true;
-
             if (!_Console.IsComponent)
             {
                 if (_Console.CurrentList.Option_FormAsync && !IsFormatRequest_JSON)
@@ -583,9 +580,6 @@ namespace Sushi.Mediakiwi.UI
             _Console.View = 2;
             _Console.CurrentListInstance.wim.IsEditMode = true;
 
-            if (_Console.Request.Query["DBM"] == "1")
-                _Console.CurrentListInstance.wim.IsDashboardMode = true;
-
             //if (!IsFormatRequest)
             //{
             _Console.AddTrace("Monitor", "GetExportOptionUrl(..)");
@@ -638,7 +632,7 @@ namespace Sushi.Mediakiwi.UI
                 await AddToResponseAsync(searchListGrid);
                 return;
             }
-            if (_Console.CurrentListInstance.wim.CurrentList.Option_SearchAsync && !_Console.CurrentListInstance.wim.IsDashboardMode)
+            if (_Console.CurrentListInstance.wim.CurrentList.Option_SearchAsync)
             {
                 if (_Console.OpenInFrame > 0)
                     searchListGrid = string.Format("<section id=\"datagrid\" class=\"{0} async\"> </section>", _Console.CurrentListInstance.wim.Page.Body.Grid.ClassName);//"<section class=\"searchTable\"> </section>";//grid.GetGridFromListInstanceForKnockout(_Console.CurrentListInstance.wim, _Console, 0, false, IsNewDesignOutput, false);\

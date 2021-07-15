@@ -1158,7 +1158,7 @@ namespace Sushi.Mediakiwi.Framework
                 Page.HideTabs = true;
 
                 //  SearchAsync should only work on toplevel lists, not inner lists (8/11/25)
-                if ((CurrentList.Option_SearchAsync && !IsDashboardMode) && !_origin.IsFormatRequest_AJAX)
+                if ((CurrentList.Option_SearchAsync) && !_origin.IsFormatRequest_AJAX)
                     return;
             }
 
@@ -3002,7 +3002,6 @@ namespace Sushi.Mediakiwi.Framework
             [Obsolete("Can not be used in Mediakiwi", false)]
             public void AddXhtmlTitle(string data)
             {
-                if (m_Root.IsDashboardMode) return;
                 if (string.IsNullOrEmpty(data)) return;
                 AddXHtml(string.Format(@"<h1>{0}</h1>", Convert(data)));
             }
@@ -3639,6 +3638,7 @@ namespace Sushi.Mediakiwi.Framework
             internal IList m_AppliedSearchGridItem;
             internal IList m_ChangedSearchGridItem;
             internal bool m_IsLinqUsed;
+            internal bool m_IsListDataScrollable;
             internal int m_ListDataRecordCount;
             internal int m_ListDataRecordPageCount;
             internal ListDataColumns m_ListDataColumns;
@@ -3689,13 +3689,9 @@ namespace Sushi.Mediakiwi.Framework
 
             if (_Grids.Count > _index)
             {
-                this.ListData = _Grids[_index].m_ListData;
-                this.m_DataTitle = _Grids[_index].m_DataTitle;
-                this.m_IsLinqUsed = _Grids[_index].m_IsLinqUsed;
-                this.m_ListDataRecordCount = _Grids[_index].m_ListDataRecordCount;
-                this.m_ListDataRecordPageCount = _Grids[_index].m_ListDataRecordPageCount;
-                this.m_AppliedSearchGridItem = _Grids[_index].m_AppliedSearchGridItem;
-                this.m_ChangedSearchGridItem = _Grids[_index].m_ChangedSearchGridItem;
+                this._GridIndex = _index;
+                this.AppliedSearchGridItem = _Grids[_index].m_AppliedSearchGridItem;
+                this.ChangedSearchGridItem = _Grids[_index].m_ChangedSearchGridItem;
                 this.ListDataColumns = _Grids[_index].m_ListDataColumns;
                 _index++;
                 return true;
@@ -3734,27 +3730,91 @@ namespace Sushi.Mediakiwi.Framework
             }
         }
 
+        internal int _GridIndex = 0;
 
         /// <summary>
         /// The search result. Add columns by using ListDataColumns.Add
         /// </summary>
-        [Obsolete("[20120715:MM] Please use ListDataAdd", false)]
-        internal IList ListData { get; set; }
+        //[Obsolete("[20120715:MM] Please use ListDataAdd", false)]
+        //internal IList ListData { get; set; }
+        internal IList ListData
+        {
+            get
+            {
+                if (_Grids == null || !_Grids.Any())
+                {
+                    return null;
+                }
+                return _Grids[_GridIndex].m_ListData;
+            }
+        }
+        internal bool m_IsListDataScrollable
+        {
+            get
+            {
+                if (_Grids == null || !_Grids.Any())
+                {
+                    return false;
+                }
+                return _Grids[_GridIndex].m_IsListDataScrollable;
+            }
+        }
 
-        internal bool m_IsListDataScrollable;
-        internal string m_DataTitle;
-        internal bool m_IsLinqUsed;
-        internal int m_ListDataRecordCount;
-        internal int m_ListDataRecordPageCount;
+        internal string m_DataTitle
+        {
+            get
+            {
+                if (_Grids == null || !_Grids.Any())
+                {
+                    return null;
+                }
+                return _Grids[_GridIndex].m_DataTitle;
+            }
+        }
 
-        public IList m_AppliedSearchGridItem;
-        public IList AppliedSearchGridItem { get { return m_AppliedSearchGridItem; } }
+        internal bool m_IsLinqUsed
+        {
+            get
+            {
+                if (_Grids == null || !_Grids.Any())
+                {
+                    return false;
+                }
+                return _Grids[_GridIndex].m_IsLinqUsed;
+            }
+        }
 
-        public IList m_ChangedSearchGridItem;
-        public IList ChangedSearchGridItem { get { return m_ChangedSearchGridItem; } }
-        
+        internal int m_ListDataRecordCount
+        {
+            get
+            {
+                if (_Grids == null || !_Grids.Any())
+                {
+                    return 0;
+                }
+                return _Grids[_GridIndex].m_ListDataRecordCount;
+            }
+        }
+
+        internal int m_ListDataRecordPageCount
+        {
+            get
+            {
+                if (_Grids == null || !_Grids.Any())
+                {
+                    return 0;
+                }
+                return _Grids[_GridIndex].m_ListDataRecordPageCount;
+            }
+        }
+
+        public IList AppliedSearchGridItem { get; set; }
+        public IList ChangedSearchGridItem { get; set; }
+      
+
         internal int m_ListDataInterLineCount;
 
+        #region List Data Add
         /// <summary>
         /// Add another IEnumerable list of data entities to the grid
         /// </summary>
@@ -3770,8 +3830,19 @@ namespace Sushi.Mediakiwi.Framework
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="source">The source.</param>
-        /// <param name="title">The title.</param>
         public void ListDataAdd<T>(IEnumerable<T> source, string title)
+        {
+            ListDataAdd(source, title, false);
+        }
+
+        /// <summary>
+        /// Add another IEnumerable list of data entities to the grid
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="source">The source.</param>
+        /// <param name="title">The title.</param>
+        /// <param name="isScrollable"></param>
+        public void ListDataAdd<T>(IEnumerable<T> source, string title, bool isScrollable)
         {
             if (source == null) return;
 
@@ -3783,8 +3854,8 @@ namespace Sushi.Mediakiwi.Framework
 
             grid.m_DataTitle = title;
             grid.m_IsLinqUsed = true;
+            grid.m_IsListDataScrollable = isScrollable;
             grid.m_ListDataRecordCount = GridDataCommunication.ResultCount.HasValue ? GridDataCommunication.ResultCount.Value : source.Count();
-
             grid.m_ListDataRecordPageCount = grid.m_ListDataRecordCount == 0 ? 0 : Convert.ToInt32(decimal.Ceiling(((decimal)grid.m_ListDataRecordCount / (decimal)step)));
 
             if (!GridDataCommunication.ResultCount.HasValue)
@@ -3813,145 +3884,13 @@ namespace Sushi.Mediakiwi.Framework
                     grid.m_ListData = source.Take(step).ToArray();
             }
 
-            this.m_AppliedSearchGridItem = grid.m_ListData;
+            this.AppliedSearchGridItem = grid.m_ListData;
 
             grid.ApplyListDataColumns(this.ListDataColumns);
             //  Clone the current grid for when using multiple grids
             _Grids.Add(grid);
         }
 
-        /// <summary>
-        /// Add an IEnumerable list of data entities to the grid
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="source">The source.</param>
-        public void ListDataApply<T>(IEnumerable<T> source)
-        {
-            ListDataApply(source, null);
-        }
-
-        /// <summary>
-        /// Lists the data apply.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="source">The source.</param>
-        /// <param name="isScrollable">if set to <c>true</c> [is scrollable].</param>
-        public void ListDataApply<T>(IEnumerable<T> source, bool isScrollable)
-        {
-            ListDataApply(source, null, isScrollable);
-        }
-
-        /// <summary>
-        /// Lists the data apply.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="source">The source.</param>
-        /// <param name="title">The title.</param>
-        public void ListDataApply<T>(IEnumerable<T> source, string title)
-        {
-            ListDataApply(source, title, false);
-        }
-
-        /// <summary>
-        /// Add an IEnumerable list of data entities to the grid
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="source">The source.</param>
-        /// <param name="title">The title of the datagrid.</param>
-        public void ListDataApply<T>(IEnumerable<T> source, string title, bool isScrollable)
-        {
-            if (source == null) return;
-
-            if (this.ListData != null)
-                this.Notification.AddError(string.Format("The method [ListDataApply<T>(IEnumerable)] is called multiple times; this should only be called once, please correct this."));
-
-            int step = GridDataCommunication.PageSize;// this.CurrentList.Option_Search_MaxResultPerPage;
-
-            this.m_IsListDataScrollable = isScrollable;
-            this.m_DataTitle = title;
-            this.m_IsLinqUsed = true;
-
-            this.m_ListDataRecordCount = GridDataCommunication.ResultCount.HasValue ? GridDataCommunication.ResultCount.Value : source.Count();
-
-            this.m_ListDataRecordPageCount = this.m_ListDataRecordCount == 0 ? 0 : Convert.ToInt32(decimal.Ceiling(((decimal)this.m_ListDataRecordCount / (decimal)step)));
-
-            if (!GridDataCommunication.ResultCount.HasValue)
-            {
-                int page = CurrentPage - 1;
-                if (page < 0)
-                {
-                    this.ListData = source.ToArray();
-                }
-                else if (page > 0)
-                {
-                    int start = (page * step);
-                    if (start >= this.m_ListDataRecordCount)
-                        this.ListData = source.Take(step).ToArray();
-                    else
-                        this.ListData = source.Skip(start).Take(step).ToArray();
-                }
-                else
-                    this.ListData = source.Take(step).ToArray();
-            }
-            else
-            {
-                if (GridDataCommunication.ShowAll)
-                    this.ListData = source.ToArray();
-                else
-                    this.ListData = source.Take(step).ToArray();
-            }
-
-            this.m_AppliedSearchGridItem = this.ListData;
-            this.ApplyListDataColumnBackup();
-        }
-
-        /// <summary>
-        /// Add an IQueryable list of data entities to the grid
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="source">The source.</param>
-        public void ListDataApply<T>(IQueryable<T> source)
-        {
-            ListDataApply(source, null);
-        }
-
-        /// <summary>
-        /// Add an IQueryable list of data entities to the grid
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="source">The source.</param>
-        public void ListDataApply<T>(IQueryable<T> source, string title)
-        {
-            if (source == null) return;
-            if (this.ListData != null)
-                this.Notification.AddError(string.Format("The method [ListDataApply<T>(IQueryable)] is called multiple times; this should only be called once, please correct this."));
-
-            int step = this.CurrentList.Option_Search_MaxResultPerPage;
-
-            //context.Log = Context.Response.Output;
-            this.m_DataTitle = title;
-            this.m_IsLinqUsed = true;
-            this.m_ListDataRecordCount = source.Count();
-            this.m_ListDataRecordPageCount = this.m_ListDataRecordCount == 0 ? 0 : Convert.ToInt32(decimal.Ceiling(((decimal)this.m_ListDataRecordCount / (decimal)step)));
-
-            int page = CurrentPage - 1;
-            if (page < 0)
-            {
-                this.ListData = source.ToArray();
-            }
-            else if (page > 0)
-            {
-                int start = (page * step);
-                if (start >= this.m_ListDataRecordCount)
-                    this.ListData = source.Take(step).ToArray();
-                else
-                    this.ListData = source.Skip(start).Take(step).ToArray();
-            }
-            else
-                this.ListData = source.Take(step).ToArray();
-
-            this.m_AppliedSearchGridItem = this.ListData;
-        }
 
         /// <summary>
         /// Add another IQueryable list of data entities to the grid
@@ -3971,43 +3910,91 @@ namespace Sushi.Mediakiwi.Framework
         /// <param name="title">The title.</param>
         public void ListDataAdd<T>(IQueryable<T> source, string title)
         {
-            if (source == null) return;
-
-            if (_Grids == null)
-                _Grids = new List<GridInstance>();
-
-            GridInstance grid = new GridInstance();
-
-            int step = this.CurrentList.Option_Search_MaxResultPerPage;
-
-            //context.Log = Context.Response.Output;
-            grid.m_DataTitle = title;
-            grid.m_IsLinqUsed = true;
-            grid.m_ListDataRecordCount = source.Count();
-            grid.m_ListDataRecordPageCount = this.m_ListDataRecordCount == 0 ? 0 : Convert.ToInt32(decimal.Ceiling(((decimal)grid.m_ListDataRecordCount / (decimal)step)));
-
-            int page = CurrentPage - 1;
-            if (page < 0)
-            {
-                grid.m_ListData = source.ToArray();
-            }
-            else if (page > 0)
-            {
-                int start = (page * step);
-                if (start >= grid.m_ListDataRecordCount)
-                    grid.m_ListData = source.Take(step).ToArray();
-                else
-                    grid.m_ListData = source.Skip(start).Take(step).ToArray();
-            }
-            else
-                grid.m_ListData = source.Take(step).ToArray();
-
-            grid.m_AppliedSearchGridItem = grid.m_ListData;
-
-            grid.ApplyListDataColumns(this.ListDataColumns);
-            //  Clone the current grid for when using multiple grids
-            _Grids.Add(grid);
+            ListDataAdd(source, title, false);
         }
+
+        /// <summary>
+        /// Add another IQueryable list of data entities to the grid
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="source">The source.</param>
+        /// <param name="title">The title.</param>
+        public void ListDataAdd<T>(IQueryable<T> source, string title, bool isScrollable)
+        {
+            ListDataAdd(source.ToList(), title, isScrollable);
+        }
+        #endregion
+
+        #region List Data Apply (Obsolete, throw exception for migration purposes)
+        /// <summary>
+        /// Add an IEnumerable list of data entities to the grid
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="source">The source.</param>
+        [Obsolete("Use ListDataAdd<T>(IEnumerable<T> source)", true)]
+        public void ListDataApply<T>(IEnumerable<T> source)
+        {
+            ListDataApply(source, null);
+        }
+
+        /// <summary>
+        /// Lists the data apply.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="source">The source.</param>
+        /// <param name="isScrollable">if set to <c>true</c> [is scrollable].</param>
+        [Obsolete("Use ListDataAdd<T>(IEnumerable<T> source, bool isScrollable)", true)]
+        public void ListDataApply<T>(IEnumerable<T> source, bool isScrollable)
+        {
+            ListDataApply(source, null, isScrollable);
+        }
+
+        /// <summary>
+        /// Lists the data apply.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="source">The source.</param>
+        /// <param name="title">The title.</param>
+        [Obsolete("Use ListDataAdd<T>(IEnumerable<T> source, string title)", true)]
+        public void ListDataApply<T>(IEnumerable<T> source, string title)
+        {
+            ListDataApply(source, title, false);
+        }
+
+        /// <summary>
+        /// Add an IEnumerable list of data entities to the grid
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="source">The source.</param>
+        /// <param name="title">The title of the datagrid.</param>
+        [Obsolete("Use ListDataAdd<T>(IEnumerable<T> source, string title, bool isScrollable)", true)]
+        public void ListDataApply<T>(IEnumerable<T> source, string title, bool isScrollable)
+        {
+            this.ListDataAdd(source, title, isScrollable);
+        }
+
+        /// <summary>
+        /// Add an IQueryable list of data entities to the grid
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="source">The source.</param>
+        [Obsolete("Use ListDataAdd<T>(IQueryable<T> source)", true)]
+        public void ListDataApply<T>(IQueryable<T> source)
+        {
+            ListDataApply(source, null);
+        }
+
+        /// <summary>
+        /// Add an IQueryable list of data entities to the grid
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="source">The source.</param>
+        [Obsolete("Use ListDataAdd<T>(IQueryable<T> source, string title)", true)]
+        public void ListDataApply<T>(IQueryable<T> source, string title)
+        {
+            this.ListDataAdd(source, title);
+        }
+        #endregion
 
         private DataTable m_ListDataTable;
         /// <summary>
@@ -4875,12 +4862,8 @@ namespace Sushi.Mediakiwi.Framework
                 {
                     throw new Exception(ex.StackTrace);
                 }
-                return null;
-            
             }
         }
-
-        //public bool IsSortOrderMode { get; set; }
 
         public bool IsSortOrderMode
         {
@@ -4922,7 +4905,6 @@ namespace Sushi.Mediakiwi.Framework
         /// 	<c>true</c> if this instance is export mode_ XLS; otherwise, <c>false</c>.
         /// </value>
         public bool IsExportMode_XLS { get; set; }
-        //public bool IsExportMode_PDF { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether [item is component].
@@ -4950,19 +4932,6 @@ namespace Sushi.Mediakiwi.Framework
         ///   <c>true</c> if [is current list] [the specified me]; otherwise, <c>false</c>.
         /// </returns>
         public bool IsCurrentList { get; set; }
-
-        private bool m_IsDashboardMode;
-        /// <summary>
-        /// Gets or sets a value indicating whether this instance is dashboard mode.
-        /// </summary>
-        /// <value>
-        /// 	<c>true</c> if this instance is dashboard mode; otherwise, <c>false</c>.
-        /// </value>
-        public bool IsDashboardMode
-        {
-            set { m_IsDashboardMode = value; }
-            get { return m_IsDashboardMode; }
-        }
 
         private bool m_IsSaveMode;
         /// <summary>
