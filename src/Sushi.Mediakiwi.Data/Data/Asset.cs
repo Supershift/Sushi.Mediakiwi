@@ -376,7 +376,7 @@ namespace Sushi.Mediakiwi.Data
 
             return connector.FetchAll(filter);
         }
-
+        
         public static List<Asset> SelectAll_Variant(int parentID, string relativeGalleryPath = null)
         {
             var connector = ConnectorFactory.CreateConnector<Asset>();
@@ -421,6 +421,31 @@ where
 
         }
 
+        public static async Task<List<Asset>> SelectRangeAsync(int[] items)
+        {
+            var connector = ConnectorFactory.CreateConnector<Asset>();
+            var filter = connector.CreateDataFilter();
+
+            int i = 0;
+            var sql_in = new List<string>();
+            foreach (var item in items)
+            {
+                i++;
+                filter.AddParameter($"p{i}", SqlDbType.Int, item);
+                sql_in.Add($"@p{i}");
+            }
+
+            return await connector.FetchAllAsync(@"
+select 
+    *
+from 
+    wim_Assets
+where
+    Asset_Key in (" + string.Join(",", sql_in) + @")
+", filter);
+
+        }
+
         public static List<Asset> SelectAll(int galleryID, int? assetTypeID = null, bool onlyReturnActiveAssets = false)
         {
             var connector = ConnectorFactory.CreateConnector<Asset>();
@@ -435,6 +460,22 @@ where
                 filter.Add(x => x.AssetTypeID, assetTypeID.Value);
 
             return connector.FetchAll(filter);
+        }
+
+        public static async Task<List<Asset>> SelectAllAsync(int galleryID, int? assetTypeID = null, bool onlyReturnActiveAssets = false)
+        {
+            var connector = ConnectorFactory.CreateConnector<Asset>();
+            var filter = connector.CreateDataFilter();
+            filter.Add(x => x.GalleryID, galleryID);
+            filter.Add(x => x.ParentID, null);
+
+            if (onlyReturnActiveAssets)
+                filter.Add(x => x.IsActive, true);
+
+            if (assetTypeID.HasValue)
+                filter.Add(x => x.AssetTypeID, assetTypeID.Value);
+
+            return await connector.FetchAllAsync(filter);
         }
 
         public static List<Asset> SearchAll(string searchCandidate, int? galleryID = null, bool onlyReturnActiveAssets = false)
@@ -460,6 +501,29 @@ where
             return connector.FetchAll(filter);
         }
 
+        public static async Task<List<Asset>> SearchAllAsync(string searchCandidate, int? galleryID = null, bool onlyReturnActiveAssets = false)
+        {
+            var connector = ConnectorFactory.CreateConnector<Asset>();
+            var filter = connector.CreateDataFilter();
+            filter.Add(x => x.ParentID, null);
+
+            if (!string.IsNullOrWhiteSpace(searchCandidate))
+            {
+                searchCandidate = string.Concat("%", searchCandidate.Trim().Replace(" ", "%"), "%");
+                filter.AddParameter("search", searchCandidate);
+            }
+
+            filter.AddSql("(Asset_Title like @search or Asset_Description like @search)");
+
+            if (onlyReturnActiveAssets)
+                filter.Add(x => x.IsActive, true);
+
+            if (galleryID.HasValue)
+                filter.Add(x => x.GalleryID, galleryID.Value);
+
+            return await connector.FetchAllAsync(filter);
+        }
+
         public static async Task<List<Asset>> SelectAll_LocalAsync()
         {
             var connector = ConnectorFactory.CreateConnector<Asset>();
@@ -480,6 +544,22 @@ where
         {
             var connector = ConnectorFactory.CreateConnector<Asset>();
             return await connector.FetchSingleAsync(ID).ConfigureAwait(false);
+        }
+
+        public static Asset SelectOne(Guid guid)
+        {
+            var connector = ConnectorFactory.CreateConnector<Asset>();
+            var filter = connector.CreateDataFilter();
+            filter.Add(x => x.GUID, guid);
+            return connector.FetchSingle(filter);
+        }
+
+        public static async Task<Asset> SelectOneAsync(Guid guid)
+        {
+            var connector = ConnectorFactory.CreateConnector<Asset>();
+            var filter = connector.CreateDataFilter();
+            filter.Add(x => x.GUID, guid);
+            return await connector.FetchSingleAsync(filter);
         }
 
         public static Asset SelectOne(int galleryID, int assetTypeID)
