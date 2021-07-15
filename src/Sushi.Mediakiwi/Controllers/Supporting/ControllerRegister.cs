@@ -55,8 +55,9 @@ namespace Sushi.Mediakiwi.Controllers
 
         bool Verify(ControllerActionDescriptor route)
         {
-            var controllerRoute = $"/{route.AttributeRouteInfo.Template}";
-            controllerRoute = controllerRoute.Replace("//", "/", StringComparison.InvariantCultureIgnoreCase);
+            var controllerRoute = route.AttributeRouteInfo.Template.StartsWith("/", StringComparison.CurrentCulture) 
+                ? $"{route.AttributeRouteInfo.Template}"
+                : $"/{route.AttributeRouteInfo.Template}";
 
             if (_Path.StartsWith(controllerRoute, StringComparison.InvariantCultureIgnoreCase))
             {

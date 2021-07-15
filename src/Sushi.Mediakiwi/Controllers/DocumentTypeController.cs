@@ -12,20 +12,15 @@ using System.Threading.Tasks;
 namespace Sushi.Mediakiwi.Controllers
 {
     [Authorize(AuthenticationSchemes = AuthenticationDefaults.AuthenticationScheme)]
+    [ApiController]
     [Route("api/documentype")]
-    public class DocumentTypeController : BaseController
+    public class DocumentTypeController : MediaKiwiController
     {
-        public DocumentTypeController()
+        [HttpPost]
+        [Route("checkSharedField")]
+        public async Task<CheckSharedFieldResponse> CheckSharedFieldAsync(CheckSharedFieldRequest request)
         {
-            this.IsAuthenticationRequired = true;
-        }
-
-        [HttpPost("checkSharedField")]
-        public async Task<string> CheckSharedFieldAsync()
-        {
-            var request = await GetPostAsync<CheckSharedFieldRequest>(HttpContext).ConfigureAwait(false);
-
-            CheckSharedFieldResponse response = new CheckSharedFieldResponse();
+            var response = new CheckSharedFieldResponse();
             var matchingProps = await Property.SelectAllByFieldNameAsync(request.FieldName).ConfigureAwait(false);
             if (matchingProps?.Count > 0)
             {
@@ -47,14 +42,13 @@ namespace Sushi.Mediakiwi.Controllers
                 }
             }
 
-            return GetResponse(response);
+            return response;
         }
 
-        [HttpPost("getFields")]
-        public async Task<string> GetFieldsAsync()
+        [HttpPost]
+        [Route("getFields")]
+        public async Task<GetFieldsResponse> GetFieldsAsync(GetFieldsRequest request)
         {
-            var request = await GetPostAsync<GetFieldsRequest>(HttpContext).ConfigureAwait(false);
-
             Dictionary<string, int> req = new Dictionary<string, int>();
             foreach (var q in HttpContext.Request.Query)
             {
@@ -64,7 +58,7 @@ namespace Sushi.Mediakiwi.Controllers
                 }
             }
 
-            GetFieldsResponse response = new GetFieldsResponse();
+            var response = new GetFieldsResponse();
             response.Fields = new List<DocumentTypeFieldListItem>();
 
             var componentlist = await ComponentTemplate.SelectOneAsync(request.DocumentTypeID).ConfigureAwait(false);
@@ -139,7 +133,7 @@ namespace Sushi.Mediakiwi.Controllers
             // [MR:29-04-2021] added for : https://supershift.atlassian.net/browse/FTD-147
             await response.ApplySharedFieldInformationAsync(request.DocumentTypeID).ConfigureAwait(false);
 
-            return GetResponse(response);
+            return response;
         }
     }
 }

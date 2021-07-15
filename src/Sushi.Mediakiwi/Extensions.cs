@@ -17,7 +17,7 @@ namespace Sushi.Mediakiwi
         public static void AddMediakiwi(this IServiceCollection services)
         {
             services.AddAuthentication()
-                .AddScheme<MediaKiwiAuthenticationOptions, MediaKiwiAuthenticationHandler>(Common.AuthenticationScheme, null);
+                .AddScheme<MediaKiwiAuthenticationOptions, MediaKiwiAuthenticationHandler>(AuthenticationDefaults.AuthenticationScheme, null);
             
             services.AddSingleton<IPageModule, ExportPageModule>();
         }
