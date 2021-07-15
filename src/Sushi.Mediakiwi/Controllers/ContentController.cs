@@ -28,7 +28,7 @@ namespace Sushi.Mediakiwi.Controllers
     [ApiController]
     [Route("api/content/v1.0")]
     [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
-    public class ContentController : MediaKiwiController
+    public class ContentController : MediakiwiController
     {
         private readonly IMemoryCache _cache;
 

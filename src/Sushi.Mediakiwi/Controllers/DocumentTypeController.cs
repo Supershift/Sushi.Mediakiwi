@@ -14,7 +14,7 @@ namespace Sushi.Mediakiwi.Controllers
     [Authorize(AuthenticationSchemes = AuthenticationDefaults.AuthenticationScheme)]
     [ApiController]
     [Route("api/documentype")]
-    public class DocumentTypeController : MediaKiwiController
+    public class DocumentTypeController : MediakiwiController
     {
         [HttpPost]
         [Route("checkSharedField")]
