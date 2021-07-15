@@ -183,7 +183,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
 
         //    if (OnChangeReset != null && OnChangeReset.Length > 0)
         //        async.ApplyReset(false, OnChangeReset);
-            
+
         //    Regex rex = null;
 
         //    var search = async.SearchQuery;
@@ -193,7 +193,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
 
         //        rex = new Regex(search, RegexOptions.IgnoreCase);
         //    }
-            
+
         //    if (async.Property == Property.Name)
         //    {
         //        List<Option> options = new List<Option>();
@@ -216,7 +216,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
         //                if (rex == null || rex.IsMatch(option.Text))
         //                    options.Add(new Option() { Text = option.Text, Value = option.Value
         //                        , Disabled = option.Enabled ? (bool?)null : true
-                            
+
         //                    });
         //            }
         //        }
@@ -269,11 +269,11 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
 
                             if (Console.CurrentList.ID == list.ID)
                             {
-                                m_ListItemCollection = Utils.GetInstanceListCollection(list, field.PropertyInfo.ListCollection, Console.CurrentListInstance.wim.CurrentSite, Console.CurrentListInstance);
+                                m_ListItemCollection = Utils.GetInstanceListCollection(field.PropertyInfo.ListCollection, Console.CurrentListInstance);
                             }
                             else
                             {
-                                m_ListItemCollection = Utils.GetInstanceListCollection(list, field.PropertyInfo.ListCollection, Console.CurrentListInstance.wim.CurrentSite, Console.Context);
+                                m_ListItemCollection = Utils.GetInstanceListCollection(list, field.PropertyInfo.ListCollection, Console.Context);
                             }
                         }
                         else if (field.PropertyInfo != null && field.PropertyInfo.OptionListSelect.HasValue)
@@ -312,7 +312,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                     m_ListItemCollection = GetCollection(CollectionProperty, Property.Name, SenderSponsorInstance, SenderInstance);
                 }
             }
-            
+
             // CB; the first 2 are added for issues with other projects
             if (Property != null && Property.PropertyType != null && !IsMultiSelect.HasValue)
             {
@@ -508,7 +508,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                 }
             }
 
-            if (isSync && !IsMultiSelect.GetValueOrDefault() & !IsTagging)
+            if (isSync && !IsMultiSelect.GetValueOrDefault() && !IsTagging)
             {
                 if (!foundItem)
                 {
@@ -724,8 +724,26 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                 }
 
                 string options = "";
-          
+
                 int count = 0;
+
+                // Check if we selected a Datasource List for this dropdown
+                if (string.IsNullOrWhiteSpace(CollectionProperty) == false && Utils.IsGuid(CollectionProperty))
+                {
+                    IComponentList list = ComponentList.SelectOne(Utility.ConvertToGuid(CollectionProperty));
+                    if (list?.ID > 0)
+                    {
+                        try
+                        {
+                            m_ListItemCollection = Utils.GetListCollection(Console, list);
+                        }
+                        catch (Exception ex)
+                        {
+                            Notification.InsertOne("Sushi.Mediakiwi.Choice_DropdownAttribute", $"Does the list assigned to the dropdown field '{FieldName}' exist?.<br/>{ex.Message}" );
+                        }
+                    }
+                }
+
                 if (m_ListItemCollection != null)
                 {
                     foreach (var li in m_ListItemCollection)
@@ -744,7 +762,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                             Text = li.Text,
                             Value = li.Value,
                             Enabled = (m_ListItemCollection.Count == 1 && string.IsNullOrEmpty(li.Text)),
-                            Selected = selected,                            
+                            Selected = selected,
                         });
 
                         if (m_ListItemCollection.Count == 1 && string.IsNullOrEmpty(li.Text))
@@ -883,7 +901,8 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
 
                     build.Append("</div></td>");
 
-                    if (Expression == OutputExpression.FullWidth || Expression == OutputExpression.Right) {
+                    if (Expression == OutputExpression.FullWidth || Expression == OutputExpression.Right)
+                    {
                         build.Append("</tr>");
                     }
 
@@ -904,7 +923,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                 }
                 build.Append(GetSimpleTextElement(candidate));
             }
-            
+
             if (IsTagging || IsMultiSelect.GetValueOrDefault(false))
             {
                 bool hasoptions = optionsList != null && optionsList.Count > 0;
@@ -922,7 +941,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                 {
                     Event = AutoPostBack ? Api.MediakiwiJSEvent.change : Api.MediakiwiJSEvent.none,
                     Title = MandatoryWrap(Title),
-                    Value = _OutputValues != null ? _OutputValues : new List<string>(),                    
+                    Value = _OutputValues != null ? _OutputValues : new List<string>(),
                     Expression = Expression,
                     PropertyName = ID,
                     PropertyType = (Property == null) ? typeof(string).FullName : Property.PropertyType.FullName,

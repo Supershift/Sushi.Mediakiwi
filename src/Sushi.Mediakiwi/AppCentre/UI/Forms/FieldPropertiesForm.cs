@@ -17,16 +17,20 @@ namespace Sushi.Mediakiwi.AppCentre.UI.Forms
 
         public ListItemCollection TypeOptions { get; set; }
         public ListItemCollection ListOptions { get; set; }
+        public ListItemCollection ListOptionsWithEmpty { get; set; }
 
-        
         public FieldPropertiesForm(WimComponentListRoot wim, Property implement)
         {
             ListOptions = new ListItemCollection();
+            ListOptionsWithEmpty = new ListItemCollection();
 
             foreach (var list in ComponentList.SelectAll())
             {
                 ListOptions.Add(new ListItem(list.Name, list.GUID.ToString()));
             }
+
+            ListOptionsWithEmpty.Add(new ListItem());
+            ListOptionsWithEmpty.Items.AddRange(ListOptions.Items);
 
             TypeOptions = new ListItemCollection();
             foreach (var value in Enum.GetValues(typeof(ContentType)))
@@ -75,6 +79,8 @@ namespace Sushi.Mediakiwi.AppCentre.UI.Forms
             Map(x => x.IsMandatory).Checkbox("Required").Expression(OutputExpression.FullWidth);
 
             Map(x => x.ListCollection).Dropdown("Module", nameof(ListOptions), true).Expression(OutputExpression.FullWidth).Show(isSublist);
+            Map(x => x.ListCollection).Dropdown("Module", nameof(ListOptionsWithEmpty), interactiveHelp: "When filled, this will be used instead of the options below.").Expression(OutputExpression.FullWidth).Show(isChoiceType);
+
             Map(x => x.CanContainOneItem).Checkbox("Only one item").Expression(OutputExpression.FullWidth).Show(isSublist);
 
             Map(x => x.DefaultValue).TextField("Default value").Expression(OutputExpression.FullWidth).Hide(isSublist);
