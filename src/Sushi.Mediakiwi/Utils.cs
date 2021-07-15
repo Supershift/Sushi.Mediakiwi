@@ -81,7 +81,7 @@ namespace Sushi.Mediakiwi
             {
                 return null;
             }
-            return value.ToLower().Replace(" ", "-");
+            return value.ToLower().Replace(" ", "_");
         }
 
         public static string FromUrl(string value)
@@ -90,7 +90,7 @@ namespace Sushi.Mediakiwi
             {
                 return null;
             }
-            return value.ToLower().Replace("-", " ");
+            return value.ToLower().Replace("_", " ");
         }
 
 
@@ -1379,6 +1379,47 @@ namespace Sushi.Mediakiwi
 
             return info.GetValue(instance, null) as ListItemCollection;
         }
+
+        /// <summary>
+        /// Get a list item collection based on a list template
+        /// </summary>
+        /// <param name="wim"></param>
+        /// <param name="list"></param>
+        /// <returns></returns>
+        public static ListItemCollection GetListCollection(WimComponentListRoot wim, IComponentList list)
+        {
+            if (wim == null)
+            {
+                throw new ArgumentNullException(nameof(wim));
+            }
+
+            return GetListCollection(wim.Console, list);
+        }
+
+        /// <summary>
+        /// Get a list item collection based on a list template 
+        /// </summary>
+        /// <param name="console"></param>
+        /// <param name="list"></param>
+        /// <returns></returns>
+        public static ListItemCollection GetListCollection(Beta.GeneratedCms.Console console, IComponentList list)
+        {
+            if (console == null)
+            {
+                throw new ArgumentNullException(nameof(console));
+            }
+            if (list == null)
+            {
+                throw new ArgumentNullException(nameof(list));
+            }
+
+            var instance = (ComponentListTemplate)list.GetInstance(console.Context);
+            instance.wim.Console = console;
+
+            var grid = new DataGrid();
+            return grid.GetListItemCollectionFromListInstance(instance);
+        }
+
 
         /// <summary>
         /// Gets the instance options.
