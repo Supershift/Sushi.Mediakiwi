@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace Sushi.Mediakiwi.Beta.GeneratedCms
@@ -303,59 +304,46 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
 
         public string AddApplicationPath(string path, bool appendUrl = false)
         {
-            if (path.StartsWith("http", StringComparison.CurrentCultureIgnoreCase))
+            if (!string.IsNullOrWhiteSpace(path))
             {
-                return path;
+                if (path.StartsWith("http", StringComparison.CurrentCultureIgnoreCase))
+                {
+                    return path;
+                }
+
+                if (path.StartsWith('~'))
+                {
+                    path = path.Replace("~", Request.PathBase, StringComparison.CurrentCultureIgnoreCase);
+                    if (appendUrl)
+                    {
+                        return string.Concat(CurrentDomain, path);
+                    }
+                    return path;
+                }
+                else if (!path.StartsWith('/'))
+                {
+                    // expect a relative path
+                    path = $"/{path}";
+                }
             }
 
-            if (path.StartsWith("~"))
-            {
-                path = path.Replace("~", Request.PathBase);
-                if (appendUrl)
-                {
-                    return string.Concat(CurrentDomain, path);
-                }
-                return path;
-            }
             var prefix = Request.PathBase.HasValue ? Request.PathBase.Value : string.Empty;
-            if (path.StartsWith('/') && prefix.EndsWith('/'))
+
+            var url = string.Concat(prefix, path);
+
+            if (url.Contains("//", StringComparison.CurrentCulture))
             {
-                prefix = prefix.Remove(prefix.Length - 1, 1);
-            }
-            else if (!path.StartsWith('/') && !prefix.EndsWith('/'))
-            {
-                prefix += "/";
+                url = _CleanFormatting.Replace(url, "/");
             }
 
             if (appendUrl)
             {
-                if (string.IsNullOrWhiteSpace(prefix))
-                {
-                    if (!path.StartsWith('/') && !CurrentDomain.EndsWith('/'))
-                    {
-                        path = $"/{prefix}";
-                    }
-                    else if (path.StartsWith('/') && CurrentDomain.EndsWith('/'))
-                    {
-                        path = path.Remove(0, 1);
-                    }
-                }
-                else
-                {
-                    if (!prefix.StartsWith('/') && !CurrentDomain.EndsWith('/'))
-                    {
-                        prefix = $"/{prefix}";
-                    }
-                    else if (prefix.StartsWith('/') && CurrentDomain.EndsWith('/'))
-                    {
-                        prefix = prefix.Remove(0, 1);
-                    }
-                }
-
-                return string.Concat(CurrentDomain, prefix, path);
+                url = $"{CurrentDomain}{url}";
             }
-            return string.Concat(prefix, path);
+            return url;
         }
+
+        private static Regex _CleanFormatting = new Regex(@"\/.", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
         public string Url
         {
