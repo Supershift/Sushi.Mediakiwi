@@ -1454,9 +1454,8 @@ namespace Sushi.Mediakiwi.UI
         /// </summary>
         /// <param name="template"></param>
         /// <returns></returns>
-        internal ListItemCollection GetListItemCollectionFromListInstance(IComponentListTemplate template)
+        internal ListItemCollection GetListItemCollectionFromListInstance(Beta.GeneratedCms.Console container)
         {
-            var container = template.wim.Console;
 
             var collection = new ListItemCollection();
 
@@ -1513,7 +1512,7 @@ namespace Sushi.Mediakiwi.UI
 
                     if (!string.IsNullOrWhiteSpace(uniqueIdentifier) && !string.IsNullOrWhiteSpace(highlightColumn))
                     {
-                        collection.Add(new ListItem(uniqueIdentifier, highlightColumn));
+                        collection.Add(new ListItem(highlightColumn, uniqueIdentifier));
                     }
                 }
             }
