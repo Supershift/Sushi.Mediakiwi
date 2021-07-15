@@ -36,7 +36,7 @@ namespace Sushi.Mediakiwi.Authentication
                 var claims = new List<Claim>();
                 claims.Add(new Claim(ClaimTypes.Name, currentApplicationUser.Displayname));
                 claims.Add(new Claim(ClaimTypes.Email, currentApplicationUser.Email));
-                var identity = new ClaimsIdentity(claims);
+                var identity = new ClaimsIdentity(claims, AuthenticationDefaults.AuthenticationType);
 
                 var principal = new ClaimsPrincipal(identity);
                 var ticket = new AuthenticationTicket(principal, Scheme.Name);

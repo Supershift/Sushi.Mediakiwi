@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 
 namespace Sushi.Mediakiwi.Controllers
 {
+    [Authorize(AuthenticationSchemes = AuthenticationDefaults.AuthenticationScheme)]
     [Route("api/documentype")]
     public class DocumentTypeController : BaseController
     {
