@@ -381,6 +381,7 @@ namespace Sushi.Mediakiwi.Framework
 
             bool isHighlight = (
                 columnType == ListDataColumnType.Highlight ||
+                columnType == ListDataColumnType.HighlightPresent ||
                 columnType == ListDataColumnType.UniqueHighlightedIdentifier ||
                 columnType == ListDataColumnType.UniqueHighlightedIdentifierPresent
                 );
@@ -427,6 +428,7 @@ namespace Sushi.Mediakiwi.Framework
         {
             bool isHighlight = (
                 listColumn.Type == ListDataColumnType.Highlight ||
+                listColumn.Type == ListDataColumnType.HighlightPresent ||
                 listColumn.Type == ListDataColumnType.UniqueHighlightedIdentifier ||
                 listColumn.Type == ListDataColumnType.UniqueHighlightedIdentifierPresent
                 );
