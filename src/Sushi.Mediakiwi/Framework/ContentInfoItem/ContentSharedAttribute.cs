@@ -63,7 +63,7 @@ namespace Sushi.Mediakiwi.Framework
                         _outputValue = sharedValue.GetPublishedValue();
                     }
 
-                    InteractiveHelp += " [This a Shared Field, click to edit]";
+                    InteractiveHelp += " [This is a Shared Field, click to edit]";
                     var editSharedFieldUrl = Console.CurrentListInstance.wim.GetUrl(new KeyValue[]
                     {
                         new KeyValue()

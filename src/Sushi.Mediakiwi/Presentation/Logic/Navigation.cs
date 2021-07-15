@@ -833,7 +833,10 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
 
                     );
 
-                build.AppendFormat(tabs);
+                if (string.IsNullOrWhiteSpace(tabs) == false)
+                {
+                    build.AppendFormat(tabs);
+                }
             }
             else if (currentFolder.Type == FolderType.List || currentFolder.Type == FolderType.Administration)
             {
@@ -949,7 +952,10 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                         , container.UrlBuild.GetFolderRequest(currentFolder.ID), currentFolderName
                         );
 
-                    build.AppendFormat(tabs);
+                    if (string.IsNullOrWhiteSpace(tabs) == false)
+                    {
+                        build.AppendFormat(tabs);
+                    }
                 }
                 else
                 {

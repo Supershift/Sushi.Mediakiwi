@@ -28,7 +28,7 @@ namespace Sushi.Mediakiwi.Framework
         /// 
         /// </summary>
         public MetaDataList() { }
-        
+
         /// <summary>
         /// 
         /// </summary>
@@ -128,7 +128,7 @@ namespace Sushi.Mediakiwi.Framework
             //    return new ContentInfoItem.MultiImageSelectAttribute(Title, InteractiveHelp);
 
             if (ContentTypeSelection == (int)ContentType.ListItemSelect)
-                return new ContentInfoItem.ListItemSelectAttribute(Title, AvailableCollectionProperty, CanReuseItem == "1", InteractiveHelp);
+                return new ContentInfoItem.ListItemSelectAttribute(Title, Collection, CanReuseItem == "1", InteractiveHelp);
 
             if (ContentTypeSelection == (int)ContentType.Hyperlink)
                 return new ContentInfoItem.HyperlinkAttribute(Title, Mandatory == "1", InteractiveHelp);
@@ -216,16 +216,16 @@ namespace Sushi.Mediakiwi.Framework
         public string Options { get; set; }
 
 
-        private string m_AvailableCollectionProperty;
-        /// <summary>
-        /// 
-        /// </summary>
-        [XmlElement("collectionprop")]
-        public string AvailableCollectionProperty
-        {
-            set { m_AvailableCollectionProperty = value; }
-            get { return m_AvailableCollectionProperty; }
-        }
+        //private string m_AvailableCollectionProperty;
+        ///// <summary>
+        ///// 
+        ///// </summary>
+        //[XmlElement("collectionprop")]
+        //public string AvailableCollectionProperty
+        //{
+        //    set { m_AvailableCollectionProperty = value; }
+        //    get { return m_AvailableCollectionProperty; }
+        //}
 
         private string m_Title;
         /// <summary>
@@ -283,7 +283,7 @@ namespace Sushi.Mediakiwi.Framework
         }
 
         [XmlElement("inherit")]
-        public string IsInheritedField { get;set; }
+        public string IsInheritedField { get; set; }
 
         private string m_CanOnlySortOrder;
         /// <summary>
