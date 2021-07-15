@@ -42,7 +42,7 @@ namespace Sushi.Mediakiwi.AppCentre.UI
             wim.ListDataColumns.Add(new ListDataColumn(null, nameof(DocumentType.ID), ListDataColumnType.UniqueIdentifier));
             wim.ListDataColumns.Add(new ListDataColumn("Document type", nameof(DocumentType.Name)));
 
-            wim.ListDataApply(documenttypes);
+            wim.ListDataAdd(documenttypes);
         }
 
         private async Task DocumentType_List_ListPreRender(ComponentListEventArgs e)

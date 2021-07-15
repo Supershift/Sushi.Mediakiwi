@@ -55,17 +55,17 @@ namespace Wim.AppCentre.Data.Implementation
             {
                 if (string.IsNullOrWhiteSpace(this.FilterText))
                 {
-                    wim.ListDataApply(await Page.SelectAllAsync().ConfigureAwait(false));
+                    wim.ListDataAdd(await Page.SelectAllAsync().ConfigureAwait(false));
                 }
                 else
                 {
-                    wim.ListDataApply(await Page.SelectAllAsync(this.FilterText, true).ConfigureAwait(false));
+                    wim.ListDataAdd(await Page.SelectAllAsync(this.FilterText, true).ConfigureAwait(false));
                 }
             }
             else
             {
                 int groupElementId = Utility.ConvertToInt(e.SelectedGroupItemKey);
-                wim.ListDataApply(Page.SelectAllBasedOnPageTemplate(groupElementId));
+                wim.ListDataAdd(Page.SelectAllBasedOnPageTemplate(groupElementId));
             }
         }
 

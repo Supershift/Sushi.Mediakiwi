@@ -1289,6 +1289,52 @@ namespace Sushi.Mediakiwi
             return $"<a href=\"{url}\">{GetIconImageString(container, icon, tooltip)} {text}</a>";
         }
 
+
+        /// <summary>
+        /// Gets the instance list collection.
+        /// </summary>
+        /// <param name="site">The site.</param>
+        /// <param name="list">The list.</param>
+        /// <param name="listName">Name of the list.</param>
+        /// <returns></returns>
+        public static ListItemCollection GetInstanceListCollection(IComponentList list, string listName, Site site, HttpContext context)
+        {
+            IComponentListTemplate instance = list.GetInstance(context);
+            return GetInstanceListCollection(list, listName, site, instance);
+        }
+
+        /// <summary>
+        /// Gets the instance list collection.
+        /// </summary>
+        /// <param name="list">The list.</param>
+        /// <param name="listName">Name of the list.</param>
+        /// <param name="site">The site.</param>
+        /// <param name="instance">The instance.</param>
+        /// <returns></returns>
+        public static ListItemCollection GetInstanceListCollection(IComponentList list, string listName, Site site, IComponentListTemplate instance)
+        {
+            Type type = instance.GetType();
+
+            if (listName.Contains(":"))
+            {
+                string[] split = listName.Split(':');
+                MethodInfo method = type.GetMethod(split[0]);
+                object[] index = new object[1] { Convert.ToInt32(split[1]) };
+
+                if (method == null)
+                    return new ListItemCollection();
+
+                return method.Invoke(instance, index) as ListItemCollection;
+
+            }
+
+            PropertyInfo info = type.GetProperty(listName);
+            if (info == null)
+                return new ListItemCollection();
+
+            return info.GetValue(instance, null) as ListItemCollection;
+        }
+
         /// <summary>
         /// Gets the instance list collection.
         /// </summary>
