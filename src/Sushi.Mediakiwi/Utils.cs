@@ -81,7 +81,7 @@ namespace Sushi.Mediakiwi
             {
                 return null;
             }
-            return value.ToLower().Replace(" ", "-");
+            return value.ToLower().Replace(" ", "_");
         }
 
         public static string FromUrl(string value)
@@ -90,7 +90,7 @@ namespace Sushi.Mediakiwi
             {
                 return null;
             }
-            return value.ToLower().Replace("-", " ");
+            return value.ToLower().Replace("_", " ");
         }
 
 
