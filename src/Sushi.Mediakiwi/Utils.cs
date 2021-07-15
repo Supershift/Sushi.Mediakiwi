@@ -214,37 +214,6 @@ namespace Sushi.Mediakiwi
         /// <summary>
         /// Gets the custom query string.
         /// </summary>
-        /// <param name="keyvalues">The keyvalues.</param>
-        /// <returns></returns>
-        //public static string GetCustomQueryString(params KeyValue[] keyvalues)
-        //{
-        //    System.Web.HttpContext context = System.Web.HttpContext.Current;
-        //    System.Collections.Specialized.NameValueCollection nv = context.Request.QueryString;
-        //    return GetCustomQueryString(nv, keyvalues);
-        //}
-
-        /// <summary>
-        /// Gets the custom query string.
-        /// </summary>
-        /// <param name="queryString">The query string.</param>
-        /// <param name="keyvalues">The keyvalues.</param>
-        /// <returns></returns>
-        //public static string GetCustomQueryString(string queryString, params KeyValue[] keyvalues)
-        //{
-        //    System.Collections.Specialized.NameValueCollection nv = new System.Collections.Specialized.NameValueCollection();
-        //    string[] pairs = queryString.Split('&');
-        //    foreach (string pair in pairs)
-        //    {
-        //        string[] namevalue = pair.Split('=');
-        //        nv.Add(namevalue[0], namevalue[1]);
-        //    }
-        //    return GetCustomQueryString(nv, keyvalues);
-        //}
-
-     
-        /// <summary>
-        /// Gets the custom query string.
-        /// </summary>
         /// <param name="queryString">The query string.</param>
         /// <param name="keyvalues">The keyvalues.</param>
         /// <returns></returns>
@@ -404,54 +373,6 @@ namespace Sushi.Mediakiwi
 
             return p[0].ToString().ToUpper() + p.Substring(1);
         }
-
-        /// <summary>
-        /// Gets the current host (including port number if other then 80). f.e. http://www.wimserver.com
-        /// </summary>
-        /// <returns></returns>
-        /// <value>The current host.</value>
-        //public static string GetCurrentHost()
-        //{
-        //    return GetCurrentHost(false);
-        //}
-
-        //public static string GetSafeUrl(HttpRequest request)
-        //{
-        //    if (request.QueryString.Count == 0)
-        //        return $"{request.Path}";
-        //    return $"{request.Path}?{request.QueryString}";
-        //}
-
-        //public static string GetCurrentHost(bool applyApplicationPath, bool removeLastForslash = false)
-        //{
-        //    if (!string.IsNullOrEmpty(CommonConfiguration.LOCAL_REQUEST_URL))
-        //        return CommonConfiguration.LOCAL_REQUEST_URL;
-
-        //    string portInfo = null;
-
-        //    if (HttpContext.Current == null)
-        //        return null;
-        //    //throw new Exception("No host detected as of missing HttpContext.Current");
-
-        //    if (HttpContext.Current.Request.Url.Port != 80 && HttpContext.Current.Request.Url.Port != 443)
-        //        portInfo = string.Concat(":", HttpContext.Current.Request.Url.Port);
-
-        //    string extra = "/";
-        //    if (applyApplicationPath)
-        //        extra = HttpContext.Current.Request.ApplicationPath;
-
-        //    var host = HttpContext.Current.Request.Url.Host;
-        //    if (host.Equals("127.0.0.1"))
-        //        host = "localhost";
-
-        //    var uri = string.Concat(HttpContext.Current.Request.Url.Scheme, "://", host, portInfo, extra);
-        //    if (removeLastForslash)
-        //    {
-        //        if (uri.EndsWith("/"))
-        //            uri = uri.Substring(0, uri.Length - 1);
-        //    }
-        //    return uri;
-        //}
 
         /// <summary>
         /// Copy get; set; properties with reflected Name and PropertyType.
@@ -1245,34 +1166,6 @@ namespace Sushi.Mediakiwi
         /// <returns></returns>
         public static string GetIconImageString(Beta.GeneratedCms.Console container, IconImage icon, IconSize size, string tooltip)
         {
-            // [MR:14-07-2021] Width isn't used
-            //int width = (int)size;
-
-            //if (icon == IconImage.Yes)
-            //{
-            //    icon = IconImage.accept_16;
-            //}
-            //else if (icon == IconImage.No)
-            //{
-            //    icon = IconImage.delete_16;
-            //}
-            ////else if (icon == IconImage.Note) icon = IconImage.info_16;
-            ////else if (icon == IconImage.New) icon = IconImage.add_16;
-
-            //if (icon.ToString().Contains("16"))
-            //{
-            //    width = 16;
-            //}
-            //if (icon.ToString().Contains("80"))
-            //{
-            //    width = 80;
-            //}
-            //if (icon.ToString().Contains("10"))
-            //{
-            //    width = 10;
-            //}
-
-
             string className = string.Empty;
             string iconUrl = string.Empty;
 
@@ -1511,43 +1404,11 @@ namespace Sushi.Mediakiwi
             try
             {
                 FileInfo nfo = null;
-                
-                //if (HttpContext.Current == null)
-                //{
-                //    // [20130704:MR/DV] This check is added for when this instance is approached via a seperate (possible non-web) thread
-                //    // Such as a Fire-and-forget task.
-                //    if (System.Web.Hosting.HostingEnvironment.IsHosted)
-                //    {
-                //        nfo = new System.IO.FileInfo(
-                //            System.Web.Hosting.HostingEnvironment.MapPath(string.Concat("~/bin/", assemblyName)));
-                //    }
-                //    else
-                //    {
-                        nfo = new FileInfo(
-                        string.Concat(
-                            Assembly.GetCallingAssembly().Location.Replace(string.Concat(Assembly.GetCallingAssembly().GetName().Name, ".dll"), string.Empty)
-                            , assemblyName));
-                //    }
-                //}
-                //else
-                //{
-                //    if (System.Web.Hosting.HostingEnvironment.IsHosted)
-                //    {
-                //        nfo = new System.IO.FileInfo(
-                //            System.Web.Hosting.HostingEnvironment.MapPath(string.Concat("~/bin/", assemblyName)));
-                //    }
-                //    else
-                //    {
-                //        nfo = new System.IO.FileInfo(
-                //            HttpContext.Current.Server.MapPath(
-                //                string.Concat(HttpContext.Current.Request.ApplicationPath, "/bin/", assemblyName)));
-                //    }
-                //}
-                //if (nfo == null)
-                //{
-                //    Utilities.CacheItemManager.FlushIndexOfCacheObjects("Data.wim_ComponentLists");
-                //    throw new Exception(string.Format("Could not find the assemblyFile[{0}] or the provided classname[{1}]!", assemblyName, className));
-                //}
+
+                nfo = new FileInfo(
+                string.Concat(
+                    Assembly.GetCallingAssembly().Location.Replace(string.Concat(Assembly.GetCallingAssembly().GetName().Name, ".dll"), string.Empty)
+                    , assemblyName));
 
                 Assembly assem = Assembly.LoadFrom(nfo.FullName);
                 type = assem.GetType(className);
@@ -1902,98 +1763,6 @@ namespace Sushi.Mediakiwi
         {
             return $"<script type=\"text/javascript\">{script}</script>";
         }
-
-        /// <summary>
-        /// Adds the application path.
-        /// </summary>
-        /// <param name="path">The path.</param>
-        /// <returns></returns>
-        //public static string AddApplicationPath(string path)
-        //{
-        //    return AddApplicationPath(path, false);
-        //}
-
-        /// <summary>
-        /// Adds the application path.
-        /// </summary>
-        /// <param name="path">The path.</param>
-        /// <param name="appendUrl">if set to <c>true</c> [append URL].</param>
-        /// <returns></returns>
-        //public static string AddApplicationPath(string path, bool appendUrl)
-        //{
-        //    try
-        //    {
-        //        string appPath = CommonConfiguration.siteRoot;
-
-        //        HttpContext context = HttpContext.Current;
-        //        if (context != null && context.Request != null)
-        //        {
-        //            appPath = context.Request.ApplicationPath;
-        //        }
-        //        string completePath; 
-
-        //        completePath = string.Format("/{0}/{1}", appPath, path);
-        //        completePath = GlobalRegularExpression.Implement.CleanRelativePathSlash.Replace(completePath, "/");
-
-        //        if (appendUrl)
-        //            //  Without the first slash from completePath
-        //            return string.Format("{0}{1}", Utility.GetCurrentHost(), completePath.Substring(1));
-        //        else
-        //            return completePath;
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        throw new Exception(string.Format("Error at Page.AddApplicationPath '{0}': {1}", path, ex.Message));
-        //    }
-        //}
-
-        /// <summary>
-        /// Adds the application path.
-        /// </summary>
-        /// <param name="path">The path.</param>
-        /// <param name="hostUrl">The host URL.</param>
-        /// <returns></returns>
-        //public static string AddApplicationPath(string path, string hostUrl)
-        //{
-        //    try
-        //    {
-        //        string appPath = CommonConfiguration.siteRoot;
-
-        //        HttpContext context = HttpContext.Current;
-        //        if (context != null && context.Request != null)
-        //        {
-        //            appPath = context.Request.ApplicationPath;
-        //        }
-        //        string completePath;
-
-        //        completePath = string.Format("/{0}/{1}", appPath, path);
-        //        completePath = GlobalRegularExpression.Implement.CleanRelativePathSlash.Replace(completePath, "/");
-
-        //        return string.Format("{0}/{1}", hostUrl, completePath);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        throw new Exception(string.Format("Error at Page.AddApplicationPath '{0}': {1}", path, ex.Message));
-        //    }
-        //}
-
-        /// <summary>
-        /// Remove the application prefix path
-        /// </summary>
-        /// <param name="path">Complete relative path</param>
-        /// <returns>Relative url without application path</returns>
-        //public static string RemApplicationPath( string path )
-        //{
-        //    if (HttpContext.Current == null) return path;
-        //    string appPath = HttpContext.Current.Request.ApplicationPath.ToLower();
-
-        //    if (appPath == CommonConfiguration.siteRoot)
-        //        return path;
-
-        //    Regex replaceAppPath = new Regex(string.Format("^{0}", appPath));
-        //    string result = path.ToLower();
-        //    return replaceAppPath.Replace(result, "");
-        //}
 
         /// <summary>
         /// Hashes the string (SHA1).
