@@ -101,13 +101,13 @@ namespace Sushi.Mediakiwi.AppCentre.UI.Forms
 
         public ListItemCollection EditValueOptions
         {
-            get 
+            get
             {
                 if (m_EditValueOptions == null)
                 {
                     m_EditValueOptions = new ListItemCollection();
                 }
-                return m_EditValueOptions; 
+                return m_EditValueOptions;
             }
         }
 
@@ -237,7 +237,8 @@ namespace Sushi.Mediakiwi.AppCentre.UI.Forms
                         Map(x => x.EditValueString).RichText("Edit value");
                     }
                     break;
-                case ContentType.Sourcecode: {
+                case ContentType.Sourcecode:
+                    {
                         EditValueString = ImplementTranslation.EditValue;
                         PublishedValue = implementTranslation.GetPublishedValue();
                         Map(x => x.EditValueString).TextArea("Edit value", null, false, "", null, true);
@@ -257,7 +258,7 @@ namespace Sushi.Mediakiwi.AppCentre.UI.Forms
                         Map(x => x.EditValueString).TextField("Edit value");
                     }
                     break;
-                
+
                 case ContentType.SubListSelect:
                     {
                         // Create an Editable sublist, based off the Edit Value
@@ -272,10 +273,10 @@ namespace Sushi.Mediakiwi.AppCentre.UI.Forms
 
                         // Create published value for display purposes
                         PublishedValue = implementTranslation.GetPublishedValue();
-                
+
                         // Create Edit value for display purposes
                         EditValueString = implementTranslation.GetEditValue();
-        
+
                         // Assume we cannot edit (default list view)
                         canEdit = false;
 
@@ -305,21 +306,51 @@ namespace Sushi.Mediakiwi.AppCentre.UI.Forms
                         canEdit = false;
 
                         // If we received a template, we have a shot at filling the options
-                        if (Template?.ID > 0) 
+                        if (Template?.ID > 0)
                         {
                             var thisProperty = Property.SelectAllByTemplate(Template.ID).FirstOrDefault(x => x.FieldName == implement.FieldName);
                             if (thisProperty?.ID > 0)
                             {
-                                foreach (var opt in thisProperty.Options)
+                                if (Utils.IsGuid(thisProperty.ListCollection))
                                 {
-                                    EditValueOptions.Add(new ListItem()
+                                    IComponentList list = ComponentList.SelectOne(Utility.ConvertToGuid(thisProperty.ListCollection));
+                                    if (list?.ID > 0)
                                     {
-                                        Text = opt.Name,
-                                        Value = opt.Value,
-                                        Selected = (implementTranslation?.ID > 0 && opt.Value == implementTranslation.EditValue)
-                                    });
+                                        try
+                                        {
+                                            var options = Utils.GetListCollection(wim, list);
+                                            if (options?.Count > 0)
+                                            {
+                                                EditValueOptions.Clear();
+                                                foreach (var option in options)
+                                                {
+                                                    EditValueOptions.Add(new ListItem()
+                                                    {
+                                                        Text = option.Text,
+                                                        Value = option.Value,
+                                                        Selected = (implementTranslation?.ID > 0 && option.Value == implementTranslation.EditValue)
+                                                    });
+                                                }
+                                            }
+                                        }
+                                        catch (Exception ex)
+                                        {
+                                            Notification.InsertOne("Sushi.Mediakiwi.Choice_DropdownAttribute", $"Does the list assigned to the dropdown field '{implement.FieldName}' exist?.<br/>{ex.Message}");
+                                        }
+                                    }
                                 }
-
+                                else
+                                {
+                                    foreach (var opt in thisProperty.Options)
+                                    {
+                                        EditValueOptions.Add(new ListItem()
+                                        {
+                                            Text = opt.Name,
+                                            Value = opt.Value,
+                                            Selected = (implementTranslation?.ID > 0 && opt.Value == implementTranslation.EditValue)
+                                        });
+                                    }
+                                }
                                 Map(x => x.EditValueString).Dropdown("Edit value", nameof(EditValueOptions), thisProperty.IsMandatory, false);
                                 canEdit = true;
                             }
@@ -334,7 +365,7 @@ namespace Sushi.Mediakiwi.AppCentre.UI.Forms
                 case ContentType.Undefined:
                 case ContentType.TextLine:
                 case ContentType.TextDate:
-                
+
                 case ContentType.Section:
                 case ContentType.MultiImageSelect:
                 case ContentType.MultiAssetUpload:
@@ -343,7 +374,7 @@ namespace Sushi.Mediakiwi.AppCentre.UI.Forms
                     {
                         Map(x => x.EditValueString).TextLine("Edit value").ReadOnly();
                         PublishedValue = implementTranslation.GetPublishedValue();
-                        canEdit = false; 
+                        canEdit = false;
                     }
                     break;
             }
