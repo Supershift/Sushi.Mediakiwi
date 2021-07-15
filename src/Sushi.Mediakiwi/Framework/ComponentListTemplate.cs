@@ -200,7 +200,6 @@ namespace Sushi.Mediakiwi.Framework
         public event Func<ComponentActionEventArgs, Task> ListAction;
         public event ComponentAsyncEventHandler ListAsync;
         public event ComponentDataReportEventHandler ListDataReport;
-        public event EventHandler ListSense;
         public event Func<Task> ListInit;
         public event Func<ComponentListSearchEventArgs, Task> ListSearch;
         public event Func<ComponentListEventArgs, Task> ListLoad;
@@ -455,16 +454,6 @@ namespace Sushi.Mediakiwi.Framework
             get { return (ListDataItemCreated == null) ? false : true; }
         }
 
-
-        internal void OnListSense()
-        {
-            if (ListSense != null) ListSense(this, null);
-        }
-
-        internal bool HasListSense
-        {
-            get { return (ListSense == null) ? false : true; }
-        }
 
         public Translator RenameTitle
         {

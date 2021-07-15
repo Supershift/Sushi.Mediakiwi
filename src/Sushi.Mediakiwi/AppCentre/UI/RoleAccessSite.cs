@@ -173,7 +173,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                 {
                     wim.Grid.AddRadioboxValue("HasAccess", item.ID, item.AccessType.ToString());
                 }
-                wim.ListData = selection.ToArray();
+                wim.ListDataAdd(selection);
             }
             else
             {
@@ -208,7 +208,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                     else if (!item.HasAccess)
                         wim.Grid.AddCheckboxValue("HasAccess", item.ID, true);
                 }
-                wim.ListData = selection.ToArray();
+                wim.ListDataAdd(selection);
             }
             return Task.CompletedTask;
         }
