@@ -317,12 +317,44 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
                 }
                 return path;
             }
+            var prefix = Request.PathBase.HasValue ? Request.PathBase.Value : string.Empty;
+            if (path.StartsWith('/') && prefix.EndsWith('/'))
+            {
+                prefix = prefix.Remove(prefix.Length - 1, 1);
+            }
+            else if (!path.StartsWith('/') && !prefix.EndsWith('/'))
+            {
+                prefix += "/";
+            }
 
             if (appendUrl)
             {
-                return string.Concat(CurrentDomain, Request.PathBase, path);
+                if (string.IsNullOrWhiteSpace(prefix))
+                {
+                    if (!path.StartsWith('/') && !CurrentDomain.EndsWith('/'))
+                    {
+                        path = $"/{prefix}";
+                    }
+                    else if (path.StartsWith('/') && CurrentDomain.EndsWith('/'))
+                    {
+                        path = path.Remove(0, 1);
+                    }
+                }
+                else
+                {
+                    if (!prefix.StartsWith('/') && !CurrentDomain.EndsWith('/'))
+                    {
+                        prefix = $"/{prefix}";
+                    }
+                    else if (prefix.StartsWith('/') && CurrentDomain.EndsWith('/'))
+                    {
+                        prefix = prefix.Remove(0, 1);
+                    }
+                }
+
+                return string.Concat(CurrentDomain, prefix, path);
             }
-            return string.Concat(Request.PathBase, path);
+            return string.Concat(prefix, path);
         }
 
         public string Url
