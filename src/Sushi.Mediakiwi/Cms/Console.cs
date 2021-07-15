@@ -438,10 +438,8 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
 
             candidate.CurrentList = list;
             candidate.CurrentListInstance = list.GetInstance(m_Application);
-            //candidate.ApplyInstance(list.AssemblyName, list.ClassName);
 
             candidate.CurrentListInstance.wim.Console = this;
-            //candidate.CurrentListInstance.wim = CurrentListInstance.wim;
             candidate.CurrentListInstance.wim.CurrentList = list;
             candidate.CurrentListInstance.wim.IsEditMode = CurrentListInstance.wim.IsEditMode;
             candidate.CurrentListInstance.wim.CurrentEnvironment = CurrentEnvironment;
