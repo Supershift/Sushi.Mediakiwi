@@ -31,8 +31,6 @@ namespace Sushi.Mediakiwi.Framework
         event Func<ComponentListEventArgs, Task> ListSave;
         event Func<ComponentListSearchEventArgs, Task> ListSearch;
         event Func<ComponentListEventArgs, Task> ListLoad;
-        event EventHandler ListSense;
-        //event Func<Task> ListInit;
 
         bool ApplyContent(Guid componentlistGUID, Site site);
         bool ApplyContent(Guid componentlistGUID, Site site, bool exceptionAvoided);
