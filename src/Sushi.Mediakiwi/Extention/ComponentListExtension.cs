@@ -111,5 +111,71 @@ public static class ComponentListExtension
 
         return m_Instance;
     }
+
+    public static IComponentListTemplate GetInstance(this IComponentList inComponentList, Sushi.Mediakiwi.Beta.GeneratedCms.Console console)
+    {
+        IComponentListTemplate m_Instance = null;
+        Type candidate = null;
+        object instance = null;
+
+
+        if (m_Instance == null)
+        {
+            var assembly = inComponentList.AssemblyName;
+            if (assembly.Equals("Wim.Framework.dll", StringComparison.CurrentCultureIgnoreCase))
+            {
+                assembly = "Sushi.Mediakiwi.dll";
+                inComponentList.AssemblyName = assembly;
+                inComponentList.ClassName = inComponentList.ClassName.Replace("Wim", "Sushi.Mediakiwi");
+                inComponentList.Save();
+            }
+
+            instance = Utils.CreateInstance(inComponentList.AssemblyName, inComponentList.ClassName, out candidate, false);
+
+            //  [11 nov 14:MM] Added routing support
+            #region Routing support
+
+            // BD 2016-10-07: Added Nullcheck due to fatal errors
+            if (instance != null)
+            {
+                var routingAttributes = instance.GetType().GetCustomAttributes(typeof(ComponentListRouting), true);
+                if (routingAttributes != null && routingAttributes.Length > 0)
+                {
+                    //  Take first routing and process it
+                    var routingAttribute = routingAttributes[0] as ComponentListRouting;
+                    if (routingAttribute != null && routingAttribute.Routing != null)
+                    {
+                        //  When routing exists, validate this route, when NULL, ignore it.
+                        ComponentListRoutingArgs e = null;
+                        //  Dirty code, but SOLID priciples can not apply (yet).
+                        if (console.Context != null)
+                        {
+                            e = new ComponentListRoutingArgs()
+                            {
+                                SelectedKey = Utility.ConvertToIntNullable(console.Context.Request.Query["item"]),
+                                SelectedGroup = Utility.ConvertToIntNullable(console.Context.Request.Query["group"]),
+                                SelectedGroupItem = Utility.ConvertToIntNullable(console.Context.Request.Query["groupitem"])
+                            };
+                        }
+
+                        var instanceCandidate = routingAttribute.Routing.Validate(inComponentList, e);
+                        if (instanceCandidate != null)
+                            instance = instanceCandidate;
+                    }
+                }
+            }
+            #endregion Routing support
+        }
+
+        if (instance != null)
+        {
+            m_Instance = (IComponentListTemplate)instance;
+            m_Instance.Init(console.Context);
+            if (m_Instance.wim.PassOverClassInstance != null)
+                m_Instance = m_Instance.wim.PassOverClassInstance;
+        }
+
+        return m_Instance;
+    }
 }
 

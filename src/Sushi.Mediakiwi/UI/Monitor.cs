@@ -147,24 +147,24 @@ namespace Sushi.Mediakiwi.UI
         async Task HandleRequestAsync(DataGrid grid, Beta.GeneratedCms.Source.Component component, bool isDeleteTriggered)
         {
             HandleActionRequest();
-            if (await HandleAsyncRequestAsync(component))
+            if (await HandleAsyncRequestAsync(component).ConfigureAwait(false))
                 return;
 
             if ((_Console.ItemType == RequestItemType.Item) || _Console.CurrentListInstance.wim.CanContainSingleInstancePerDefinedList)
             {//  Handles the list item request.
-                await HandleListItemRequestAsync(grid, component, isDeleteTriggered);
+                await HandleListItemRequestAsync(grid, component, isDeleteTriggered).ConfigureAwait(false);
             }
             else if (_Console.ItemType == RequestItemType.Page)
             {
                 _Console.AddTrace("Monitor", "HandlePageItemRequest(...)");
                 //  Handles the page request.
-                await HandlePageItemRequestAsync(grid, component, isDeleteTriggered);
+                await HandlePageItemRequestAsync(grid, component, isDeleteTriggered).ConfigureAwait(false);
             }
             else
             {
                 //  Handles the browsing request.
                 _Console.CurrentListInstance.wim.IsSearchListMode = true;
-                await HandleBrowsingRequestAsync(grid, component);
+                await HandleBrowsingRequestAsync(grid, component).ConfigureAwait(false);
             }
         }
 
@@ -344,7 +344,7 @@ namespace Sushi.Mediakiwi.UI
                 _Console.View = (int)ContainerView.ListSettingRequest;
 
             _Console.AddTrace("Monitor", "GetExportOptionUrl(..)");
-            if (await GetExportOptionUrlAsync(grid, component))
+            if (await GetExportOptionUrlAsync(grid, component).ConfigureAwait(false))
                 return;
 
             //  Create the form
