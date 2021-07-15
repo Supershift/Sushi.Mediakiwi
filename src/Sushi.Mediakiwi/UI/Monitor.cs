@@ -604,7 +604,7 @@ namespace Sushi.Mediakiwi.UI
                 _Console.Response.ContentType = "application/json";
                 searchListGrid = grid.GetGridFromListInstanceForJSON(_Console.CurrentListInstance.wim, _Console, 0, false, true);
 
-                await AddToResponseAsync(searchListGrid);
+                await AddToResponseAsync(searchListGrid).ConfigureAwait(false);
                 return;
             }
             if (IsFormatRequest_AJAX)
@@ -629,7 +629,7 @@ namespace Sushi.Mediakiwi.UI
 
                         );
                 }
-                await AddToResponseAsync(searchListGrid);
+                await AddToResponseAsync(searchListGrid).ConfigureAwait(false);
                 return;
             }
             if (_Console.CurrentListInstance.wim.CurrentList.Option_SearchAsync)
@@ -679,7 +679,7 @@ namespace Sushi.Mediakiwi.UI
             GlobalWimControlBuilder.Rightnav = _PresentationNavigation.RightSideNavigation(_Console, component.m_ButtonList != null ? component.m_ButtonList.ToArray() : null);
             GlobalWimControlBuilder.Leftnav = _PresentationNavigation.NewLeftNavigation(_Console, component.m_ButtonList != null ? component.m_ButtonList.ToArray() : null);
 
-            await AddToResponseAsync(_PresentationMonitor.GetTemplateWrapper(_Console, _Placeholders, _Callbacks, GlobalWimControlBuilder));
+            await AddToResponseAsync(_PresentationMonitor.GetTemplateWrapper(_Console, _Placeholders, _Callbacks, GlobalWimControlBuilder)).ConfigureAwait(false);
         }
 
 
@@ -919,7 +919,7 @@ namespace Sushi.Mediakiwi.UI
         /// <param name="isDeleteMode">if set to <c>true</c> [is delete mode].</param>
         async Task<bool> SetFormModesAsync()
         {
-            await _Console.LoadJsonStreamAsync();
+            await _Console.LoadJsonStreamAsync().ConfigureAwait(false);
 
             //  Is the form state in editmode?
             _Console.CurrentListInstance.wim.IsEditMode = _Console.IsPostBack("edit")
@@ -1149,7 +1149,7 @@ namespace Sushi.Mediakiwi.UI
                         </table>
                     </div>");
 
-                    await AddToResponseAsync(build.ToString());
+                    await AddToResponseAsync(build.ToString()).ConfigureAwait(false);
                 }
 
 
@@ -1165,7 +1165,7 @@ namespace Sushi.Mediakiwi.UI
                             target = sections.FirstOrDefault();
                     }
 
-                    await AddToResponseAsync(Beta.GeneratedCms.Source.Xml.Component.Get(_Console, Utility.ConvertToInt(_Console.Request.Query["id"]), page, Utility.ConvertToInt(_Console.Request.Query["cmpt"]), target));
+                    await AddToResponseAsync(Beta.GeneratedCms.Source.Xml.Component.Get(_Console, Utility.ConvertToInt(_Console.Request.Query["id"]), page, Utility.ConvertToInt(_Console.Request.Query["cmpt"]), target)).ConfigureAwait(false);
                 }
 
                 return false;
@@ -1258,7 +1258,7 @@ namespace Sushi.Mediakiwi.UI
                     {
                         if (Guid.TryParse(_Console.CurrentVisitor.Data["Wim.Reset.Me"].Value, out var id))
                         {
-                            var user = await ApplicationUser.SelectOneAsync(id);
+                            var user = await ApplicationUser.SelectOneAsync(id).ConfigureAwait(false);
                             if (user?.ID > 0)
                             {
                                 _Console.CurrentVisitor.Data.Apply("Wim.Reset.Me", null);
@@ -1267,7 +1267,7 @@ namespace Sushi.Mediakiwi.UI
                                 _Console.SaveVisit();
 
                                 user.LastLoggedVisit = DateTime.UtcNow;
-                                await user.SaveAsync();
+                                await user.SaveAsync().ConfigureAwait(false);
 
                                 await new AuditTrail()
                                 {
@@ -1276,7 +1276,7 @@ namespace Sushi.Mediakiwi.UI
                                     ItemID = _Console.CurrentApplicationUser.ID,
                                     Message = "Reset impersonation",
                                     Created = user.LastLoggedVisit.Value
-                                }.InsertAsync();
+                                }.InsertAsync().ConfigureAwait(false);
                             }
 
                         }
