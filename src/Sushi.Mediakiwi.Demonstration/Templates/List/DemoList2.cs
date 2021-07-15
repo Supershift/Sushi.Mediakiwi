@@ -48,6 +48,12 @@ namespace Sushi.Mediakiwi.Demonstration.Templates.List
 
             var allItems = DemoObject2.FetchAll();
 
+            if (!wim.IsListItemCollectionMode)
+            {
+                var result = Utils.GetListCollection(wim, wim.CurrentList);
+                Console.WriteLine(result.Count);
+            }
+
             wim.ListDataAdd(allItems);
             return Task.CompletedTask;
         }
