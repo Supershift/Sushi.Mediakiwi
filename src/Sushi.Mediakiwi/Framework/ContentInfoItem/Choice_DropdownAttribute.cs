@@ -733,7 +733,14 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                     IComponentList list = ComponentList.SelectOne(Utility.ConvertToGuid(CollectionProperty));
                     if (list?.ID > 0)
                     {
-                        m_ListItemCollection = Utils.GetListCollection(Console, list);
+                        try
+                        {
+                            m_ListItemCollection = Utils.GetListCollection(Console, list);
+                        }
+                        catch (Exception ex)
+                        {
+                            Notification.InsertOne("Sushi.Mediakiwi.Choice_DropdownAttribute", $"Does the list assigned to the dropdown field '{FieldName}' exist?.<br/>{ex.Message}" );
+                        }
                     }
                 }
 

@@ -316,19 +316,26 @@ namespace Sushi.Mediakiwi.AppCentre.UI.Forms
                                     IComponentList list = ComponentList.SelectOne(Utility.ConvertToGuid(thisProperty.ListCollection));
                                     if (list?.ID > 0)
                                     {
-                                        var options = Utils.GetListCollection(wim, list);
-                                        if (options?.Count > 0)
+                                        try
                                         {
-                                            EditValueOptions.Clear();
-                                            foreach (var option in options)
+                                            var options = Utils.GetListCollection(wim, list);
+                                            if (options?.Count > 0)
                                             {
-                                                EditValueOptions.Add(new ListItem()
+                                                EditValueOptions.Clear();
+                                                foreach (var option in options)
                                                 {
-                                                    Text = option.Text,
-                                                    Value = option.Value,
-                                                    Selected = (implementTranslation?.ID > 0 && option.Value == implementTranslation.EditValue)
-                                                });
+                                                    EditValueOptions.Add(new ListItem()
+                                                    {
+                                                        Text = option.Text,
+                                                        Value = option.Value,
+                                                        Selected = (implementTranslation?.ID > 0 && option.Value == implementTranslation.EditValue)
+                                                    });
+                                                }
                                             }
+                                        }
+                                        catch (Exception ex)
+                                        {
+                                            Notification.InsertOne("Sushi.Mediakiwi.Choice_DropdownAttribute", $"Does the list assigned to the dropdown field '{implement.FieldName}' exist?.<br/>{ex.Message}");
                                         }
                                     }
                                 }
