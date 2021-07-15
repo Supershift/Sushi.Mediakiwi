@@ -1413,11 +1413,10 @@ namespace Sushi.Mediakiwi
                 throw new ArgumentNullException(nameof(list));
             }
 
-            var instance = (ComponentListTemplate)list.GetInstance(console.Context);
-            instance.wim.Console = console;
+            var newconsole = console.ReplicateInstance(list);
 
             var grid = new DataGrid();
-            return grid.GetListItemCollectionFromListInstance(instance);
+            return grid.GetListItemCollectionFromListInstance(newconsole);
         }
 
 

@@ -50,7 +50,9 @@ namespace Sushi.Mediakiwi.Demonstration.Templates.List
 
             if (!wim.IsListItemCollectionMode)
             {
-                var result = Utils.GetListCollection(wim, wim.CurrentList);
+                var list = Data.ComponentList.SelectOne(typeof(DemoList1));
+
+                var result = Utils.GetListCollection(wim, list);
                 Console.WriteLine(result.Count);
             }
 
