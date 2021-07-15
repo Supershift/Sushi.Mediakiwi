@@ -1550,11 +1550,11 @@ namespace Sushi.Mediakiwi
             /// <summary>
             /// 
             /// </summary>
-            public static readonly string ReplaceRelativePathSlash = @"//*|\\\\*";
+            public const string ReplaceRelativePathSlash = @"//*|\\\\*";
             /// <summary>
             /// B
             /// </summary>
-            public static readonly string NotAcceptableFilenameCharacter = @"^[^\|\?\\/:\*""<>]*$";
+            public const string NotAcceptableFilenameCharacter = @"^[^\|\?\\/:\*""<>]*$";
             /// <summary>
             /// 
             /// </summary>
@@ -1562,32 +1562,32 @@ namespace Sushi.Mediakiwi
             /// <summary>
             /// 
             /// </summary>
-            public static readonly string ReplaceNotAcceptableFilenameCharacter = @"[^A-Za-z0-9\s/\-_.]";
+            public const string ReplaceNotAcceptableFilenameCharacter = @"[^A-Za-z0-9\s/\-_.]";
             /// <summary>
             /// 
             /// </summary>
-            public static readonly string OnlyNumeric = @"^[-+]?\d*$";
+            public const string OnlyNumeric = @"^[-+]?\d*$";
             /// <summary>
             /// Only can contain a '.' as decimal seperator
             /// </summary>
-            public static readonly string OnlyDecimal = @"^[-+]?\d*[.]?\d*$";
+            public const string OnlyDecimal = @"^[-+]?\d*[.]?\d*$";
             /// <summary>
             /// 
             /// </summary>
-            public static readonly string OnlyPositiveDecimal = @"^\d*[.]?\d*$";
+            public const string OnlyPositiveDecimal = @"^\d*[.]?\d*$";
             /// <summary>
             /// 
             /// </summary>
-            public static readonly string OnlyGUID = @"^(\{){0,1}[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}(\}){0,1}$";
+            public const string OnlyGUID = @"^(\{){0,1}[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}(\}){0,1}$";
             //public const string OnlyDecimal = @"^[-+]?\d*$";
             /// <summary>
             /// 
             /// </summary>
-            public static readonly string OnlyAcceptableFilenameCharacter = @"^[a-z|A-Z|0-9| _-]*$";
+            public const string OnlyAcceptableFilenameCharacter = @"^[a-z|A-Z|0-9| _-]*$";
             /// <summary>
             /// 
             /// </summary>
-            public static readonly string EmailAddress = @"^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$";
+            public const string EmailAddress = @"^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$";
 
             /// <summary>
             /// 
