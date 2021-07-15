@@ -188,7 +188,7 @@ namespace Sushi.Mediakiwi.Framework.ContentListItem
                 build.Append(grid.GetThumbnailGridFromListInstance(tmp.CurrentListInstance.wim, tmp, 0, false));
             else
             {
-                var table = grid.GetGridFromListInstance(tmp.CurrentListInstance.wim, tmp, 0, false, true, HidePaging);
+                var table = grid.GetGridFromListInstance(tmp.CurrentListInstance.wim, tmp, 0, false, Console.CurrentListInstance, HidePaging);
 
                 if (!IsPartOfForm)
                 {
