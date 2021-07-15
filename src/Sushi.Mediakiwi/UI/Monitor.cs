@@ -622,7 +622,7 @@ namespace Sushi.Mediakiwi.UI
                                 , _Console.CurrentListInstance.wim.m_DataTitle
                                 , _Console.CurrentListInstance.wim.Page.Body.Grid.ClassName
                         )
-                        , grid.GetGridFromListInstance(_Console.CurrentListInstance.wim, _Console, 0, false, true)
+                        , grid.GetGridFromListInstance(_Console.CurrentListInstance.wim, _Console, 0, false, _Console.CurrentListInstance)
                         , hasNoTitle
                                 ? null
                                 : ""
@@ -651,7 +651,7 @@ namespace Sushi.Mediakiwi.UI
                                 ? null
                                 : string.Format("</section><section class=\"{1}\"><h2>{0}</h2>", _Console.CurrentListInstance.wim.m_DataTitle, _Console.CurrentListInstance.wim.Page.Body.Grid.ClassName
                         )
-                        , grid.GetGridFromListInstance(_Console.CurrentListInstance.wim, _Console, 0, false, true)
+                        , grid.GetGridFromListInstance(_Console.CurrentListInstance.wim, _Console, 0, false, _Console.CurrentListInstance)
                         , hasNoTitle
                                 ? null
                                 : ""
