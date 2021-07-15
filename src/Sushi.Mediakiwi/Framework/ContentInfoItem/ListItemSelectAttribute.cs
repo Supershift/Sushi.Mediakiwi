@@ -85,8 +85,9 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
             Utility.ReflectProperty(this, _ReplacementAttribute);
             _ReplacementAttribute.Console = Console;
             _ReplacementAttribute.m_ListItemCollection = m_ListItemCollection;
+            _ReplacementAttribute.CollectionProperty = CollectionProperty;
             _ReplacementAttribute.SetCandidate(field, isEditMode);
-            
+
 
             return;
             /*
@@ -350,22 +351,20 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
         /// 
         /// </summary>
         /// <returns></returns>
-             public override bool IsValid(bool isRequired)
+        public override bool IsValid(bool isRequired)
         {
             Mandatory = isRequired;
-                if (Console.CurrentListInstance.wim.IsSaveMode)
-                {
-                    //  Custom error validation
-                    if (!base.IsValid(isRequired))
-                        return false;
+            if (Console.CurrentListInstance.wim.IsSaveMode)
+            {
+                //  Custom error validation
+                if (!base.IsValid(isRequired))
+                    return false;
 
-                    if (Mandatory && (m_Candidate == null || m_Candidate.Length == 0))
-                        return false;
-                }
-                return true;
-            
+                if (Mandatory && (m_Candidate == null || m_Candidate.Length == 0))
+                    return false;
+            }
+            return true;
+
         }
-
-
     }
 }
