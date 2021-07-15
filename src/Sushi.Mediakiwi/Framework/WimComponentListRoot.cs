@@ -1217,24 +1217,6 @@ namespace Sushi.Mediakiwi.Framework
             Utils.RunSync(() => _origin.OnListInit());
         }
 
-        internal void DoListSense()
-        {
-            _origin.ApplyListSettings();
-
-            long start = DateTime.Now.Ticks;
-            _origin.OnListSense();
-        }
-
-        /// <summary>
-        /// Gets a value indicating whether this instance has list sense.
-        /// </summary>
-        /// <value>
-        /// 	<c>true</c> if this instance has list sense; otherwise, <c>false</c>.
-        /// </value>
-        internal bool HasListSense
-        {
-            get { return _origin.HasListSense; }
-        }
         internal ComponentDataReportEventArgs DoListDataReport()
         {
             ComponentDataReportEventArgs e = new ComponentDataReportEventArgs();
