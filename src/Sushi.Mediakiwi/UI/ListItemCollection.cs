@@ -16,11 +16,7 @@ namespace Sushi.Mediakiwi.UI
             set { Items[index] = value; }
         }
 
-        public List<ListItem> Items { get; set; }
-
-        public bool IsFixedSize => throw new NotImplementedException();
-
-        public bool IsReadOnly => throw new NotImplementedException();
+        public List<ListItem> Items { get; private set; }
 
         public int Count
         {
@@ -30,11 +26,6 @@ namespace Sushi.Mediakiwi.UI
             }
         
         }
-
-
-        public bool IsSynchronized => throw new NotImplementedException();
-
-        public object SyncRoot => throw new NotImplementedException();
 
         public void Add(ListItem value)
         {
@@ -46,22 +37,23 @@ namespace Sushi.Mediakiwi.UI
         }
         public void Clear()
         {
-            throw new NotImplementedException();
+            Items.Clear();
         }
 
         public bool Contains(object value)
         {
-            throw new NotImplementedException();
-        }
+            if (value == null)
+            {
+                throw new ArgumentNullException(nameof(value));
+            }
 
-        public void CopyTo(Array array, int index)
-        {
-            throw new NotImplementedException();
+            var find = FindByValue(value.ToString());
+            return find != null;
         }
 
         public ListItem FindByValue(string value)
         {
-            return Items.Where(x => x.Value.Equals(value, StringComparison.CurrentCultureIgnoreCase)).FirstOrDefault();
+            return Items.FirstOrDefault(x => x.Value.Equals(value, StringComparison.CurrentCultureIgnoreCase));
         }
 
         public IEnumerator<ListItem> GetEnumerator()

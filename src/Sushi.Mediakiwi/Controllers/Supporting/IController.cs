@@ -1,11 +1,12 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Sushi.Mediakiwi.Data;
 using System.Threading.Tasks;
 
 namespace Sushi.Mediakiwi.Controllers
 {
     public interface IController
     {
-        bool IsAuthenticationRequired { get; set; }
-        //Task<string> CompleteAsync(HttpContext context);
+        IApplicationUser CurrentApplicationUser { get; }
+        IVisitor CurrentVisitor { get; }
     }
 }

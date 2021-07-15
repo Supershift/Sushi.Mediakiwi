@@ -816,9 +816,6 @@ namespace Sushi.Mediakiwi.UI
             //  Trigger list search event
             container.CurrentListInstance.wim.DoListSearch();
             
-            //if (container.CurrentListInstance.wim.Grid.IsAsyncRequestTemplateRequired)
-            //    return GetGridFromListInstanceForKnockout(root, container, type, includeExportFields, isNewDesignOutput, true);
-
             //  if no data is assigned return null 
             if (root.ListDataTable == null && root.ListData == null)
                 return null;
@@ -951,31 +948,13 @@ namespace Sushi.Mediakiwi.UI
                     if (!IsVisibleColumn(c.Type, includeExportFields))
                         continue;
 
-                    //if (c.ColumnWidth == 0)
-                    //{
-                    //    if (info.PropertyType == typeof(DateTime) || info.PropertyType == typeof(DateTime?))
-                    //    {
-                    //        c.ColumnWidth = 90;
-                    //    }
-
-                    //    //if (info.GetType() == typeof(Decimal) || info.GetType() == typeof(int))
-                    //    //{
-                    //    //}
-                    //    //if (info.GetType() == typeof(Boolean))
-                    //    //{
-
-                    //    //}
-                    //}
-
                     visibleColumnCount++;
-                    //build.AppendFormat("\n\t\t\t\t\t\t\t\t\t<th{1}>{0}</th>", c.ColumnName, (c.ColumnWidth == 0 ? "" : string.Format(" width=\"{0}\"", c.ColumnWidth)));
 
                     source.DataEntities = whilelist;
                     source.VisibleColumns = visibleColumnCount;
                 }
                 
                 int index = -1;
-
 
 
                 while (whilelist.MoveNext())
@@ -1468,6 +1447,78 @@ namespace Sushi.Mediakiwi.UI
                 #endregion Table clell creation (sum)
             }
             return candidate;
+        }
+
+        /// <summary>
+        /// Get a list item collection from a search event
+        /// </summary>
+        /// <param name="template"></param>
+        /// <returns></returns>
+        internal ListItemCollection GetListItemCollectionFromListInstance(IComponentListTemplate template)
+        {
+            var container = template.wim.Console;
+
+            var collection = new ListItemCollection();
+
+            //  Trigger list search event
+            container.CurrentListInstance.wim.IsListItemCollectionMode = true;
+            container.CurrentListInstance.wim.DoListSearch();
+
+            var root = container.CurrentListInstance.wim;
+
+            //  if no data is assigned return null 
+            if (root.ListDataTable == null && root.ListData == null)
+                return null;
+
+            bool isDataTable = root.ListData == null;
+
+            var whilelist = root.ListData.GetEnumerator();
+
+            if (whilelist == null)
+            {
+                return collection;
+            }
+            else
+            {
+                while (whilelist.MoveNext())
+                {
+                    object item = whilelist.Current;
+
+                    if (item == null) continue;
+
+                    PropertyInfo[] infoCollection = null;
+
+                    if (!isDataTable)
+                        infoCollection = item.GetType().GetProperties();
+
+                    string uniqueIdentifier = null, highlightColumn = null;
+
+                    if (isDataTable)
+                    {
+                        uniqueIdentifier = GetIndentifierKey((System.Data.DataRow)item, root.ListDataColumns.List);
+                        highlightColumn = GetHighlightedValue((System.Data.DataRow)item, root.ListDataColumns.List);
+
+                        if (highlightColumn != null)
+                            highlightColumn = WebUtility.HtmlEncode(highlightColumn.ToString());
+
+                    }
+                    else
+                    {
+                        uniqueIdentifier = GetIndentifierKey(infoCollection, item, root.ListDataColumns.List);
+                        highlightColumn = GetHighlightedValue(infoCollection, item, root.ListDataColumns.List);
+
+                        if (highlightColumn != null)
+                            highlightColumn = WebUtility.HtmlEncode(highlightColumn.ToString());
+                    }
+
+                    if (!string.IsNullOrWhiteSpace(uniqueIdentifier) && !string.IsNullOrWhiteSpace(highlightColumn))
+                    {
+                        collection.Add(new ListItem(uniqueIdentifier, highlightColumn));
+                    }
+                }
+            }
+
+            return collection;
         }
 
 

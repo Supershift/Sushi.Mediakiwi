@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace Sushi.Mediakiwi.Beta.GeneratedCms
@@ -303,27 +304,46 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
 
         public string AddApplicationPath(string path, bool appendUrl = false)
         {
-            if (path.StartsWith("http", StringComparison.CurrentCultureIgnoreCase))
+            if (!string.IsNullOrWhiteSpace(path))
             {
-                return path;
+                if (path.StartsWith("http", StringComparison.CurrentCultureIgnoreCase))
+                {
+                    return path;
+                }
+
+                if (path.StartsWith('~'))
+                {
+                    path = path.Replace("~", Request.PathBase, StringComparison.CurrentCultureIgnoreCase);
+                    if (appendUrl)
+                    {
+                        return string.Concat(CurrentDomain, path);
+                    }
+                    return path;
+                }
+                else if (!path.StartsWith('/'))
+                {
+                    // expect a relative path
+                    path = $"/{path}";
+                }
             }
 
-            if (path.StartsWith("~"))
+            var prefix = Request.PathBase.HasValue ? Request.PathBase.Value : string.Empty;
+
+            var url = string.Concat(prefix, path);
+
+            if (url.Contains("//", StringComparison.CurrentCulture))
             {
-                path = path.Replace("~", Request.PathBase);
-                if (appendUrl)
-                {
-                    return string.Concat(CurrentDomain, path);
-                }
-                return path;
+                url = _CleanFormatting.Replace(url, "/");
             }
 
             if (appendUrl)
             {
-                return string.Concat(CurrentDomain, Request.PathBase, path);
+                url = $"{CurrentDomain}{url}";
             }
-            return string.Concat(Request.PathBase, path);
+            return url;
         }
+
+        private static Regex _CleanFormatting = new Regex(@"\/.", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
         public string Url
         {
