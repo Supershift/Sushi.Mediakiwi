@@ -1953,57 +1953,9 @@ namespace Sushi.Mediakiwi.Framework
         {
             _origin = origin;
 
-            //DashBoardElementHeight = 1;
             SearchListCanClickThrough = true;
             DashBoardElementIsVisible = true;
             DashBoardCanClickThrough = true;
-
-            //HttpContext context = Context;
-            //if (context == null)
-            //    throw new Exception("Wim: No HttpContent found; this class can only function if there is an active HttpContent.");
-
-            //m_currentUser = Sushi.Mediakiwi.Framework.Templates.CurrentUser.Get;
-
-            //System.Nullable<int> list = null;
-            //System.Nullable<int> site = null;
-            //System.Nullable<int> folder = null;
-            //System.Nullable<int> page = null;
-
-            //if (!string.IsNullOrEmpty(context.Request.Params["page"])) page = Convert.ToInt32(context.Request.Params["page"]);
-            //if (!string.IsNullOrEmpty(context.Request.Params["folder"])) folder = Convert.ToInt32(context.Request.Params["folder"]);
-            //if (!string.IsNullOrEmpty(context.Request.Params["site"])) site = Convert.ToInt32(context.Request.Params["site"]);
-
-            //int currentList;
-            //if (Utility.IsNumeric(context.Request.Params["list"], out currentList))
-            //{
-            //    m_currentList = Sushi.Mediakiwi.Data.ComponentList.SelectOne(currentList);
-            //    list = m_currentList.Id;
-            //}
-            //else
-            //{
-            //    Guid guid;
-            //    if (Utility.IsGuid(context.Request.Params["list"], out guid))
-            //    {
-            //        m_currentList = Sushi.Mediakiwi.Data.ComponentList.SelectOne(guid);
-            //        list = m_currentList.Id;
-            //    }
-            //}
-
-            //if (site.HasValue) m_CurrentSite = Sushi.Mediakiwi.Data.Site.SelectOne(site.Value);
-            //else
-            //{
-            //    if (page.HasValue) m_CurrentSite = Sushi.Mediakiwi.Data.Site.SelectOne_byPage(page.Value);
-            //    else if (folder.HasValue) m_CurrentSite = Sushi.Mediakiwi.Data.Site.SelectOne_byFolder(folder.Value);
-            //    else if (list.HasValue)
-            //    {
-            //        if (m_currentList.SiteId > 0)
-            //            m_CurrentSite = Sushi.Mediakiwi.Data.Site.SelectOne(m_currentList.SiteId, true);
-            //    }
-            //}
-            //if (context.Request.Query["EXCLUDE"] == "1") return;
-
-            ////if (m_CurrentSite == null)
-            ////    throw new Exception("Wim: Could not determine the site that this class belongs to.");
         }
 
         /// <summary>
@@ -4851,6 +4803,11 @@ namespace Sushi.Mediakiwi.Framework
         {
             get { return Console.Form("sortOrder") == "1"; }
         }
+
+        /// <summary>
+        /// Is ths list search requested for listitem collection created?
+        /// </summary>
+        public bool IsListItemCollectionMode { get; set; }
 
         private bool m_IsSubSelectMode;
         /// <summary>
