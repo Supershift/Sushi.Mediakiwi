@@ -2318,7 +2318,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                     {
                         foreach (var infoItem in m_AllListProperties)
                         {
-                            if (infoItem?.Info?.Equals(contentItem.Property) == true && infoItem?.Info?.PropertyType?.Equals(typeof(CustomData)) == true)
+                            if (infoItem?.Info?.Equals(contentItem.Property)  == true )//&& infoItem?.Info?.PropertyType?.Equals(typeof(CustomData)) == true)
                             {
                                 infoItem.IsVisible = map.IsHidden.HasValue ? !map.IsHidden.Value : !contentItem.IsHidden;
                                 infoItem.IsEditable = map.IsReadOnly.HasValue ? !map.IsReadOnly.Value : !contentItem.IsReadOnly;

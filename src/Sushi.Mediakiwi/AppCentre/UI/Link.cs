@@ -17,6 +17,11 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             public string Href { get; set; }
         }
 
+        LinkForm Form { get; set; }
+        Mediakiwi.Data.Link Implement { get; set; }
+
+        #region CTor
+
         /// <summary>
         /// Initializes a new instance of the <see cref="Link"/> class.
         /// </summary>
@@ -25,8 +30,8 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             wim.OpenInEditMode = true;
             wim.CanContainSingleInstancePerDefinedList = true;
 
-            wim.ListDataDependendProperties.Add("PageSelect");
-            wim.ListDataDependendProperties.Add("External");
+            wim.ListDataDependendProperties.Add(nameof(Mediakiwi.Data.Link.PageID));
+            wim.ListDataDependendProperties.Add(nameof(Mediakiwi.Data.Link.ExternalUrl));
             wim.HideOpenCloseToggle = true;
 
             ListLoad += Link_ListLoad;
@@ -36,6 +41,10 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             ListAction += Link_ListAction;
             ListHeadless += Link_ListHeadless;
         }
+
+        #endregion CTor
+
+        #region List HeadLess
 
         private async Task Link_ListHeadless(HeadlessRequest e)
         {
@@ -50,50 +59,65 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                 Text = link.Text
             };
 
-            if (link.IsInternal)
+            switch (link.Type)
             {
-                var pagelink = await Page.SelectOneAsync(link.PageID.GetValueOrDefault()).ConfigureAwait(false);
-                linkref.Href = Utility.ConvertUrl(pagelink?.InternalPath);
-            }
-            else
-            {
-                linkref.Href = link?.ExternalUrl;
+                default:
+                case LinkType.Undefined:
+                case LinkType.ExternalUrl:
+                    {
+                        linkref.Href = link.ExternalUrl;
+                    }
+                    break;
+                case LinkType.InternalPage:
+                    {
+                        var pagelink = await Page.SelectOneAsync(link.PageID.GetValueOrDefault()).ConfigureAwait(false);
+                        linkref.Href = Utility.ConvertUrl(pagelink?.InternalPath);
+                    }
+                    break;
+                case LinkType.InternalAsset:
+                    {
+                        if (string.IsNullOrWhiteSpace(link?.Asset?.RemoteLocation) == false)
+                        {
+                            linkref.Href = link.Asset.RemoteLocation;
+                        }
+                    }
+                    break;
             }
 
             e.Result = linkref;
         }
 
+        #endregion List HeadLess
+
+        #region List Action
+
         Task Link_ListAction(ComponentActionEventArgs e)
         {
             if (IsPostBack)
             {
-                bool hasError = false;
                 switch (Form.Type)
                 {
-                    case (int)LinkType.InternalPage:
+                    case LinkType.InternalPage:
                         {
-                            hasError = !Implement.PageID.HasValue;
-                            if (hasError)
+                            if (!Implement.PageID.HasValue)
                             {
-                                wim.Notification.AddError("PageSelect", "Please apply all mandatory fields");
+                                wim.Notification.AddError(nameof(Mediakiwi.Data.Link.PageID), "Please apply all mandatory fields");
                             }
                         }
                         break;
-                    case (int)LinkType.ExternalUrl:
+                    case LinkType.ExternalUrl:
                         {
-                            hasError = string.IsNullOrEmpty(Implement.ExternalUrl);
-                            if (hasError)
+                            if (string.IsNullOrWhiteSpace(Implement.ExternalUrl))
                             {
-                                wim.Notification.AddError("External", "Please apply all mandatory fields");
+                                wim.Notification.AddError(nameof(Mediakiwi.Data.Link.ExternalUrl), "Please apply all mandatory fields");
                             }
                         }
                         break;
-                    case (int)LinkType.InternalAsset:
+                    case LinkType.InternalAsset:
                         {
-                            hasError = !Implement.AssetID.HasValue;
-                            if (hasError)
+                            if (!Implement.AssetID.HasValue)
                             {
-                                wim.Notification.AddError("DocumentSelect", "Please apply all mandatory fields");
+                                wim.Notification.AddError(nameof(Mediakiwi.Data.Link.AssetID), "Please apply all mandatory fields");
                             }
                         }
                         break;
@@ -101,38 +125,38 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             }
             return Task.CompletedTask;
         }
+
+        #endregion List Action
+
+        #region List Prerender
 
         Task Link_ListPreRender(ComponentListEventArgs e)
         {
             if (IsPostBack)
             {
-                bool hasError = false;
                 switch (Form.Type)
                 {
-                    case (int)LinkType.InternalPage:
+                    case LinkType.InternalPage:
                         {
-                            hasError = !Implement.PageID.HasValue;
-                            if (hasError)
+                            if (!Implement.PageID.HasValue)
                             {
-                                wim.Notification.AddError("PageSelect", "Please apply all mandatory fields");
+                                wim.Notification.AddError(nameof(Mediakiwi.Data.Link.PageID), "Please apply all mandatory fields");
                             }
                         }
                         break;
-                    case (int)LinkType.ExternalUrl:
+                    case LinkType.ExternalUrl:
                         {
-                            hasError = string.IsNullOrEmpty(Implement.ExternalUrl);
-                            if (hasError)
+                            if (string.IsNullOrWhiteSpace(Implement.ExternalUrl))
                             {
-                                wim.Notification.AddError("External", "Please apply all mandatory fields");
+                                wim.Notification.AddError(nameof(Mediakiwi.Data.Link.ExternalUrl), "Please apply all mandatory fields");
                             }
                         }
                         break;
-                    case (int)LinkType.InternalAsset:
+                    case LinkType.InternalAsset:
                         {
-                            hasError = !Implement.AssetID.HasValue;
-                            if (hasError)
+                            if (!Implement.AssetID.HasValue)
                             {
-                                wim.Notification.AddError("DocumentSelect", "Please apply all mandatory fields");
+                                wim.Notification.AddError(nameof(Mediakiwi.Data.Link.AssetID), "Please apply all mandatory fields");
                             }
                         }
                         break;
@@ -140,16 +164,25 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             }
             return Task.CompletedTask;
         }
+        #endregion List Prerender
+
+        #region List Delete
 
         Task Link_ListDelete(ComponentListEventArgs e)
         {
+            // [MR:19-07-2021] Can be removed ?
             //  Do not remove
             //Sushi.Mediakiwi.Data.Link link = Sushi.Mediakiwi.Data.Implement.SelectOne(e.SelectedKey);
             //Implement.Delete();
 
-            wim.OnDeleteScript = string.Format("<script type=\"text/javascript\">{0}</script>", "parent.removeLink();");
+            wim.OnDeleteScript = "<script type=\"text/javascript\">parent.removeLink();</script>";
+
             return Task.CompletedTask;
         }
+
+        #endregion List Delete
+
+        #region List Save
 
         async Task Link_ListSave(ComponentListEventArgs e)
         {
@@ -163,24 +196,20 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                 Implement.Created = DateTime.UtcNow;
             }
 
-            Implement.IsInternal = (Form.Type == (int)LinkType.InternalPage);
-
+            Implement.IsInternal = (Form.Type == LinkType.InternalPage);
             Implement.Alt = Utility.CleanLineFeed(Implement.Alt, false);
 
             if (string.IsNullOrEmpty(Implement.Text))
             {
                 switch (Form.Type)
                 {
-                    case (int)LinkType.InternalPage:
+                    case LinkType.InternalPage:
                         {
                             Page page = await Page.SelectOneAsync(Implement.PageID.Value, false).ConfigureAwait(false);
                             Implement.Text = page.LinkText;
                         }
                         break;
-                    //case 2: 
-                    //    Implement.Text = Form.IsExternalLink; 
-                    //    break;
-                    case (int)LinkType.InternalAsset:
+                    case LinkType.InternalAsset:
                         {
                             Asset asset = await Asset.SelectOneAsync(Implement.AssetID.Value).ConfigureAwait(false);
                             Implement.Text = asset.Title;
@@ -189,7 +218,30 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                 }
             }
 
-            await Implement.SaveAsync();
+            // Clean obsolete properties, based off type
+            switch (Form.Type)
+            {
+                case LinkType.InternalPage:
+                    {
+                        Implement.ExternalUrl = string.Empty;
+                        Implement.AssetID = null;
+                    }
+                    break;
+                case LinkType.ExternalUrl:
+                    {
+                        Implement.PageID = null;
+                        Implement.AssetID = null;
+                    }
+                    break;
+                case LinkType.InternalAsset:
+                    {
+                        Implement.ExternalUrl = string.Empty;
+                        Implement.PageID = null;
+                    }
+                    break;
+            }
+
+            await Implement.SaveAsync().ConfigureAwait(false);
 
             // [MR:19-07-2021] Can be removed ?
             //string url = Implement.ExternalUrl;
@@ -206,22 +258,22 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             {
                 if (Request.Query["referid"] == "tmce")
                 {
-                    wim.OnSaveScript = string.Format("<script type=\"text/javascript\">{0}</script>", string.Format("parent.insertLink('wim:{0}');", Implement.ID));
+                    wim.OnSaveScript = $"<script type=\"text/javascript\">parent.insertLink('wim:{Implement.ID}');</script>";
 
                 }
                 else
                 {
-                    wim.OnSaveScript = string.Format(@"<div class=""customLink cmd_createlink now_yes""><input type=""hidden"" id=""{0}"" value=""wim:{0}"" /></div>", Implement.ID);
+                    wim.OnSaveScript = $@"<div class=""customLink cmd_createlink now_yes""><input type=""hidden"" id=""{Implement.ID}"" value=""wim:{Implement.ID}"" /></div>";
                 }
             }
             else
             {
-                 wim.OnSaveScript = string.Format(@"<input type=""hidden"" class=""postparent"" id=""{0}"" value=""<a title='url: {2}'>{1}</a> (open in {3})"" />", Implement.ID, Implement.Text, Implement.GetUrl(wim.CurrentSite, false), Implement.TargetInfo);
+                 wim.OnSaveScript = $@"<input type=""hidden"" class=""postparent"" id=""{Implement.ID}"" value=""<a title='url: {Implement.GetUrl(wim.CurrentSite, false)}'>{Implement.Text}</a> (open in {Implement.TargetInfo})"" />";
             }
         }
+        #endregion List Save
 
-        LinkForm Form { get; set; }
-        Mediakiwi.Data.Link Implement { get; set; }
+        #region List Load
 
         async Task Link_ListLoad(ComponentListEventArgs e)
         {
@@ -232,14 +284,15 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
 
             wim.SetPropertyVisibility(nameof(LinkForm.Apply), false);
 
-            if (Request.Query["referid"] == "tmce")
-            {
-                if (false)//!wim.CurrentApplicationUser.ShowNewDesign2)
-                {
-                    wim.OnLoadScript = string.Format("<script type=\"text/javascript\" src=\"{0}\"></script>", wim.AddApplicationPath("repository/wim/scripts/rte/tiny_mce_popup.js"));
-                    wim.OnLoadScript += string.Format("<script type=\"text/javascript\" src=\"{0}\"></script>", wim.AddApplicationPath("repository/wim/scripts/rte/plugins/advlink/js/advImplement.js"));
-                }
-            }
+            // [MR:19-07-2021] Can be removed ?
+            //if (Request.Query["referid"] == "tmce")
+            //{
+            //    if (false)//!wim.CurrentApplicationUser.ShowNewDesign2)
+            //    {
+            //        wim.OnLoadScript = $"<script type=\"text/javascript\" src=\"{wim.AddApplicationPath("repository/wim/scripts/rte/tiny_mce_popup.js")}\"></script>";
+            //        wim.OnLoadScript += $"<script type=\"text/javascript\" src=\"{wim.AddApplicationPath("repository/wim/scripts/rte/plugins/advlink/js/advImplement.js")}\"></script>";
+            //    }
+            //}
 
             if (Request.Query["notitle"] == "1")
             {
@@ -248,24 +301,36 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
 
             if (IsPostBack)
             {
-                if (Form.Type == (int)LinkType.InternalPage)
+                switch (Form.Type)
                 {
-                    Form.IsInternalLink = true;
-                }
-                else if (Form.Type == (int)LinkType.ExternalUrl)
-                {
-                    Form.IsExternalLink = true;
-                }
-                else if (Form.Type == (int)LinkType.InternalAsset)
-                {
-                    Form.IsInternalDoc = true;
+                    default:
+                    case LinkType.Undefined:
+                    case LinkType.ExternalUrl:
+                        {
+                            Form.IsExternalLink = true;
+                            if (string.IsNullOrEmpty(Implement.ExternalUrl))
+                            {
+                                Implement.ExternalUrl = "https://www.";
+                            }
+                        }
+                        break;
+                    case LinkType.InternalPage:
+                        {
+                            Form.IsInternalLink = true;
+                        }
+                        break;
+                    case LinkType.InternalAsset:
+                        {
+                            Form.IsInternalDoc = true;
+                        }
+                        break;
                 }
             }
             else
             {
                 if (e.SelectedKey == 0)
                 {
-                    Form.Type = (int)LinkType.ExternalUrl;
+                    Form.Type = LinkType.ExternalUrl;
                     Form.IsExternalLink = true;
                     Implement.ExternalUrl = "https://www.";
                     return;
@@ -283,33 +348,26 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                 {
                     case LinkType.ExternalUrl:
                         {
-                            Form.Type = (int)LinkType.ExternalUrl;
+                            Form.Type = LinkType.ExternalUrl;
                             Form.IsExternalLink = true;
                         }
                         break;
                     case LinkType.InternalAsset:
                         {
-                            Form.Type = (int)LinkType.InternalAsset;
+                            Form.Type = LinkType.InternalAsset;
                             Form.IsInternalDoc = true;
                         }
                         break;
                     default:
                         {
-                            Form.Type = (int)LinkType.InternalPage;
+                            Form.Type = LinkType.InternalPage;
                             Form.IsInternalLink = true;
                         }
                         break;
                 }
             }
-
-            //m_Title = Implement.Text;
-            //m_Target = Implement.Target.ToString();
-
-            //this.m_External = Implement.ExternalUrl;
-            //this.PageSelect = Implement.PageID;
-            //this.DocumentSelect = Implement.AssetID;
-
-            //m_Alt = Implement.Alt;
         }
+
+        #endregion List Load
     }
 }
