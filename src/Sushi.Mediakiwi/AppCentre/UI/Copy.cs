@@ -25,12 +25,12 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             {
                 case 1:
                     {
-                      await SaveFolderAsync(arg);
+                      await SaveFolderAsync(arg).ConfigureAwait(false);
                     }
                     break;
                 case 2:
                     {
-                      await SavePageAsync(arg);
+                      await SavePageAsync(arg).ConfigureAwait(false);
                     }
                     break;
             }
@@ -46,12 +46,12 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             {
                 case 1:
                     {
-                        await DefineFolderAsync(arg);
+                        await DefineFolderAsync(arg).ConfigureAwait(false);
                     }
                     break;
                 case 2:
                     {
-                        await DefinePageAsync(arg);
+                        await DefinePageAsync(arg).ConfigureAwait(false);
                     }
                     break;
             }
@@ -74,12 +74,12 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
 
         private async Task DefineFolderAsync(ComponentListEventArgs e)
         {
-            _Folder = await Mediakiwi.Data.Folder.SelectOneAsync(e.SelectedKey);
+            _Folder = await Mediakiwi.Data.Folder.SelectOneAsync(e.SelectedKey).ConfigureAwait(false);
             Name = $"{_Folder.Name}";
-            FolderID = (await Mediakiwi.Data.Folder.SelectOneAsync(e.SelectedKey)).Parent;
+            FolderID = (await Mediakiwi.Data.Folder.SelectOneAsync(e.SelectedKey).ConfigureAwait(false)).Parent;
 
-            _Pages = await Page.SelectAllAsync(_Folder.CompletePath, true);
-            _Folders = await Mediakiwi.Data.Folder.SelectAllAsync(_Folder.Type, _Folder.SiteID, _Folder.CompletePath, true);
+            _Pages = await Page.SelectAllAsync(_Folder.CompletePath, true).ConfigureAwait(false);
+            _Folders = await Mediakiwi.Data.Folder.SelectAllAsync(_Folder.Type, _Folder.SiteID, _Folder.CompletePath, true).ConfigureAwait(false);
 
             Information = $"{_Folders.Length} Folders to be copied. {_Pages.Length} Pages to be copied: ";
             foreach (var f in _Folders)
@@ -95,8 +95,8 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
 
         private async Task DefinePageAsync(ComponentListEventArgs e)
         {
-            _Page = await Page.SelectOneAsync(e.SelectedKey);
-            FolderID = await Mediakiwi.Data.Folder.SelectOneAsync(_Page.FolderID);
+            _Page = await Page.SelectOneAsync(e.SelectedKey).ConfigureAwait(false);
+            FolderID = await Mediakiwi.Data.Folder.SelectOneAsync(_Page.FolderID).ConfigureAwait(false);
             Name = _Page.Name;
 
             if (_Page.ID == 0)
@@ -140,7 +140,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                     target.ParentID = newFolders[f.ParentID.Value].ID;
                 }
 
-                await target.SaveAsync();
+                await target.SaveAsync().ConfigureAwait(false);
                 if (!newFolders.ContainsKey(f.ID))
                 {
                     newFolders.Add(f.ID, target);
@@ -150,7 +150,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             // do all pages
             foreach (var page in _Pages)
             {
-                var newPage = await CopyAndPublishPageAsync(page, newFolders[page.FolderID], false, null, newFolders, pageLinksToCheck);
+                var newPage = await CopyAndPublishPageAsync(page, newFolders[page.FolderID], false, null, newFolders, pageLinksToCheck).ConfigureAwait(false);
                 oldNewPageMapping.Add(page.ID, newPage);
             }
 
@@ -160,7 +160,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                 if (pageLink.PageID.HasValue && oldNewPageMapping.ContainsKey(pageLink.PageID.Value))
                 {
                     pageLink.PageID = oldNewPageMapping[pageLink.PageID.Value].ID;
-                    await pageLink.SaveAsync();
+                    await pageLink.SaveAsync().ConfigureAwait(false);
                 }
             }
 
@@ -170,7 +170,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             {
                 foreach (var page in oldNewPageMapping.Values)
                 {
-                    var components = await ComponentVersion.SelectAllAsync(page.ID);
+                    var components = await ComponentVersion.SelectAllAsync(page.ID).ConfigureAwait(false);
                     foreach (var component in components)
                     {
                         bool changed = false;
@@ -197,7 +197,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                             var content = new Content();
                             content.Fields = fieldList.ToArray();
                             component.Serialized_XML = Content.GetSerialized(content);
-                            await component.SaveAsync();
+                            await component.SaveAsync().ConfigureAwait(false);
                             //page.Publish(pagePublicationHandler, wim.CurrentApplicationUser);
                         }
                     }
@@ -243,19 +243,19 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                 p.Name = name;
             }
 
-            await p.SaveAsync();
+            await p.SaveAsync().ConfigureAwait(false);
 
-            var components = await ComponentVersion.SelectAllAsync(page.ID);
+            var components = await ComponentVersion.SelectAllAsync(page.ID).ConfigureAwait(false);
             foreach (var c in components)
             {
                 var component = new ComponentVersion();
 
                 Utility.ReflectProperty(c, component);
-                await p.RecreateLinksInComponentForCopyAsync(c, oldNewFolderMapping, pageLinks);
+                await p.RecreateLinksInComponentForCopyAsync(c, oldNewFolderMapping, pageLinks).ConfigureAwait(false);
                 c.ID = 0;
                 c.GUID = Guid.NewGuid();
                 c.PageID = p.ID;
-                await c.SaveAsync();
+                await c.SaveAsync().ConfigureAwait(false);
             }
 
             //if (p.IsPublished)
@@ -269,7 +269,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
 
         private async Task SavePageAsync(ComponentListEventArgs e)
         {
-            var p = await CopyAndPublishPageAsync(_Page, FolderID, true, Name);
+            var p = await CopyAndPublishPageAsync(_Page, FolderID, true, Name).ConfigureAwait(false);
             var u = wim.Console.UrlBuild.GetPageRequest(p);
             wim.Page.Body.Form.RefreshParent(u);
         }

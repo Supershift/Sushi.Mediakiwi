@@ -83,7 +83,7 @@ namespace Sushi.Mediakiwi.AppCentre.UI
 
                     if (property.MaxValueLength.HasValue)
                     {
-                        item.MaxValueLength = property.MaxValueLength.Value.ToString();
+                        item.MaxValueLength = $"{property.MaxValueLength.Value}";
                     }
                     else
                     {
@@ -92,7 +92,7 @@ namespace Sushi.Mediakiwi.AppCentre.UI
 
                     item.Default = property.DefaultValue;
                     item.AutoPostBack = property.AutoPostBack ? "1" : "0";
-                    item.ContentTypeSelection = ((int)property.ContentTypeID).ToString();
+                    item.ContentTypeSelection = $"{(int)property.ContentTypeID}";
 
                     if (property.CanContainOneItem)
                     {
@@ -239,7 +239,7 @@ namespace Sushi.Mediakiwi.AppCentre.UI
                 var id = Utility.ConvertToInt(Request.Query["field"]);
 
                 Property = await Property.SelectOneAsync(id).ConfigureAwait(false);
-                if (Property == null)
+                if (Property == null || Property?.ID == 0)
                 {
                     Property = new Property();
                     Property.ContentTypeID = ContentType.TextField;

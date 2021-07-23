@@ -27,9 +27,9 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
 
             if (PageID.HasValue)
             {
-                var sourcePage = await Mediakiwi.Data.Page.SelectOneAsync(PageID.Value);
-                var sourceComponents = await Mediakiwi.Data.ComponentVersion.SelectAllAsync(PageID.Value);
-                var targetComponents = await Mediakiwi.Data.ComponentVersion.SelectAllAsync(CurrentPageID);
+                var sourcePage = await Mediakiwi.Data.Page.SelectOneAsync(PageID.Value).ConfigureAwait(false);
+                var sourceComponents = await Mediakiwi.Data.ComponentVersion.SelectAllAsync(PageID.Value).ConfigureAwait(false);
+                var targetComponents = await Mediakiwi.Data.ComponentVersion.SelectAllAsync(CurrentPageID).ConfigureAwait(false);
 
                 Info = Labels.CopyContentInfo
                             .Replace("#sourcePageName#", sourcePage.Name, StringComparison.InvariantCultureIgnoreCase)
@@ -45,8 +45,8 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         {
             if (Save && PageID.HasValue)
             {
-                var sourcePage = await Mediakiwi.Data.Page.SelectOneAsync(PageID.Value, false);
-                await CurrentPage.OverridePageContentFromPageAsync(sourcePage, wim.CurrentApplicationUser);
+                var sourcePage = await Mediakiwi.Data.Page.SelectOneAsync(PageID.Value, false).ConfigureAwait(false);
+                await CurrentPage.OverridePageContentFromPageAsync(sourcePage, wim.CurrentApplicationUser).ConfigureAwait(false);
             }
         }
 
