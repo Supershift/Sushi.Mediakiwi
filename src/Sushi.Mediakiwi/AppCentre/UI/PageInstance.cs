@@ -24,9 +24,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             get
             {
                 ListItemCollection col = new ListItemCollection();
-                ListItem li;
-                li = new ListItem("Select template", string.Empty);
-                col.Add(li);
+                col.Add(new ListItem("Select template", string.Empty));
 
                 foreach (Mediakiwi.Data.PageTemplate template in Mediakiwi.Data.PageTemplate.SelectAllSortedByName())
                 {
@@ -45,10 +43,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                         continue;
                     }
 
-                    //if (!string.IsNullOrEmpty(template.ReferenceID))
-                    //    col.Add(new ListItem(string.Format("{0} ({1})", template.Name, template.ReferenceID), template.ID.ToString()));
-                    //else
-                    col.Add(new ListItem(template.Name, template.ID.ToString()));
+                    col.Add(new ListItem(template.Name, $"{template.ID}"));
                 }
                 return col;
             }
@@ -100,35 +95,13 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                     .Replace(")", "")
                     .Replace("  ", " ");
 
-                //if (IsOverview)
-                //{
-                //    Sushi.Mediakiwi.Data.Folder folder = new Sushi.Mediakiwi.Data.Folder();
-                //    folder.Name = name;
-                //    folder.ParentID = Sushi.Mediakiwi.CurrentFolder.ID;
-                //    folder.Type = Sushi.Mediakiwi.CurrentFolder.Type;
-                //    folder.SiteID = Sushi.Mediakiwi.CurrentFolder.SiteID;
-
-                //    if (string.IsNullOrEmpty(Sushi.Mediakiwi.CurrentFolder.CompletePath))
-                //        folder.CompletePath = string.Concat("/", name, "/");
-                //    else
-                //        folder.CompletePath = string.Concat(Sushi.Mediakiwi.CurrentFolder.CompletePath, name, "/");
-
-                //    folder.Save();
-
-                //    m_Implement.SubFolderID = folder.ID;
-
-                //    //folderID = folder.ID;
-                //    //  Replicate to children
-                //    Sushi.Mediakiwi.Framework.Inheritance.Folder.CreateFolder(folder, Sushi.Mediakiwi.CurrentSite);
-                //}
-
                 Implement.Name = name;
                 Implement.LinkText = LinkText?.Trim();
                 Implement.Title = Title?.Trim();
                 Implement.IsSearchable = true;
-                //m_Implement.IsFolderDefault = IsOverview;
                 Implement.FolderID = folderID;
-                await Implement.SaveAsync();
+
+                await Implement.SaveAsync().ConfigureAwait(false);
             }
             else
             {
@@ -146,26 +119,21 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                     Implement.LinkText = Name;
                 }
 
-                await Implement.SaveAsync();
+                await Implement.SaveAsync().ConfigureAwait(false);
             }
 
             if (e.SelectedKey == 0)
             {
-                await Framework.Inheritance.Page.CreatePageAsync(Implement, wim.CurrentSite);
+                await Framework.Inheritance.Page.CreatePageAsync(Implement, wim.CurrentSite).ConfigureAwait(false);
             }
             else
             {
-                await Framework.Inheritance.Page.MovePageAsync(Implement, wim.CurrentSite);
-                //if (previousFolder != m_Implement.FolderID)
-                //{
-                //    Sushi.Mediakiwi.Framework.Inheritance.Page.MovePage(m_Implement, Sushi.Mediakiwi.CurrentSite);
-                //}
+                await Framework.Inheritance.Page.MovePageAsync(Implement, wim.CurrentSite).ConfigureAwait(false);
             }
 
-            await Framework.Functions.FolderPathLogic.UpdateCompletePathAsync(Implement.FolderID);
+            await Framework.Functions.FolderPathLogic.UpdateCompletePathAsync(Implement.FolderID).ConfigureAwait(false);
 
             wim.FlushCache();
-          //  wim.Redirect(string.Concat(wim.Console.WimPagePath, "?page=", Implement.ID, "&tab=Content"));
         }
 
         #endregion List Save
@@ -174,7 +142,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
 
         async Task PageInstance_ListLoad(ComponentListEventArgs e)
         {
-            Implement = await Page.SelectOneAsync(e.SelectedKey, false);
+            Implement = await Page.SelectOneAsync(e.SelectedKey, false).ConfigureAwait(false);
             Utility.ReflectProperty(Implement, this);
 
             if (e.SelectedKey == 0)
@@ -185,8 +153,8 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             else
             {
                 IsAdmin = wim.CurrentApplicationUser.ID == 1;
-                IComponentList clist = await Mediakiwi.Data.ComponentList.SelectOneAsync(ComponentListType.PageTemplates);
-                TemplateLink = string.Format("<a href=\"{2}?list={3}&item={0}\">{1}</a>", Implement.Template.ID, Implement.Template.Name, wim.Console.WimPagePath, clist.ID);
+                IComponentList clist = await Mediakiwi.Data.ComponentList.SelectOneAsync(ComponentListType.PageTemplates).ConfigureAwait(false);
+                TemplateLink = $"<a href=\"{wim.Console.WimPagePath}?list={clist.ID}&item={Implement.Template.ID}\">{Implement.Template.Name}</a>";
             }
         }
 

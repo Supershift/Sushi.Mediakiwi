@@ -19,16 +19,16 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             if (!string.IsNullOrEmpty(Context.Request.Query["rollback"]))
             {
                 int rollbackVersion = Utility.ConvertToInt(Context.Request.Query["rollback"]);
-                var pageVersion = await PageVersion.SelectOneAsync(rollbackVersion);
-                var page = await Page.SelectOneAsync(CurrentPageID);
-                await page.CopyFromVersionAsync(pageVersion, wim.CurrentApplicationUser);
+                var pageVersion = await PageVersion.SelectOneAsync(rollbackVersion).ConfigureAwait(false);
+                var page = await Page.SelectOneAsync(CurrentPageID).ConfigureAwait(false);
+                await page.CopyFromVersionAsync(pageVersion, wim.CurrentApplicationUser).ConfigureAwait(false);
 
                 wim.Page.Body.Form.RefreshParent();
                 // Refresh after 
               // Context.Response.Body..Write(@"<script type=""text/javascript""> parent.location.href =parent.location.href; </script>");
             }
 
-            var list = await PageVersion.SelectAllOfPageAsync(CurrentPageID);
+            var list = await PageVersion.SelectAllOfPageAsync(CurrentPageID).ConfigureAwait(false);
             foreach (var item in list)
             {
                 item.RollBackTo = $@"<a href=""{wim.Console.GetSafeUrl()}&rollback={item.ID}"" class=""submit"">Restore</a>";

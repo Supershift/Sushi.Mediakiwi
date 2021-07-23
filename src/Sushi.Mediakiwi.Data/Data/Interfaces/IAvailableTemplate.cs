@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 
 namespace Sushi.Mediakiwi.Data
 {
@@ -18,9 +19,9 @@ namespace Sushi.Mediakiwi.Data
         DateTime? Updated { get; }
         bool IsNewInstance { get; }
         int? SlotID { get; set; }
-
         void Save();
-
+        Task SaveAsync();
         void Delete();
+        Task DeleteAsync();
     }
 }
