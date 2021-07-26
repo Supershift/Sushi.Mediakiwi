@@ -528,9 +528,6 @@ namespace Sushi.Mediakiwi.UI
             //  Export to XLS: XLS Creation URL
             if (_Console.IsPostBack("export_xls") || _Console.Request.Query["xls"] == "1")
             {
-                //_Console.Response.Cache.SetCacheability(HttpCacheability.NoCache);
-                //_Console.Response.Cache.SetAllowResponseInBrowserHistory(false);
-
                 exportUrl = _Console.WimPagePath;
 
                 _Console.CurrentListInstance.wim.IsExportMode_XLS = true;
@@ -547,8 +544,6 @@ namespace Sushi.Mediakiwi.UI
                     _Console.Response.Redirect(url);
                     return true;
                 }
-                //  Reset
-                _Console.CurrentListInstance.wim.IsExportMode_XLS = false;
             }
             return false;
         }
@@ -1280,11 +1275,10 @@ namespace Sushi.Mediakiwi.UI
         async Task LogoutViaSingleSignOnAsyc()
         {
             _Console.CurrentVisitor.ApplicationUserID = null;
-            _Console.CurrentVisitor.Save();
+            await _Console.CurrentVisitor.SaveAsync().ConfigureAwait(false);
 
             if (_configuration.GetValue<bool>("mediakiwi:authentication"))
             {
-                ///.auth/logout?post_logout_redirect_uri=/index.html
                 _Context.Response.Redirect($"{_Console.CurrentDomain}/.auth/logout?post_logout_redirect_uri={_Console.GetWimPagePath(null)}");
             }
             else

@@ -13,7 +13,6 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             wim.CanContainSingleInstancePerDefinedList = true;
             wim.OpenInEditMode = true;
 
-            ListLoad += CopyContent_ListLoad;
             ListAction += CopyContent_ListAction;
             ListPreRender += CopyContent_ListPreRender;
         }
@@ -48,10 +47,6 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                 var sourcePage = await Mediakiwi.Data.Page.SelectOneAsync(PageID.Value, false).ConfigureAwait(false);
                 await CurrentPage.OverridePageContentFromPageAsync(sourcePage, wim.CurrentApplicationUser).ConfigureAwait(false);
             }
-        }
-
-        private async Task CopyContent_ListLoad(ComponentListEventArgs arg)
-        {
         }
 
 

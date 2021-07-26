@@ -230,7 +230,6 @@ namespace Sushi.Mediakiwi.AppCentre.UI
         }
 
         Property Property;
-        DocumentType Implement;
 
         private async Task DocumentType_List_ListLoad(ComponentListEventArgs e)
         {

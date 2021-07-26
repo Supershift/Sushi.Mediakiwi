@@ -29,20 +29,6 @@ namespace Sushi.Mediakiwi.Data
         public string CookieParserLog { get; set; }
 
         /// <summary>
-        /// Gets the last visited page (if none present an empty Page object is returned).
-        /// </summary>
-        /// <value>The last visited page.</value>
-        //public Page LastVisitedPage
-        //{
-        //    get
-        //    {
-        //        int lastPageID = this.Data["wim_lastpageid"].ParseInt().GetValueOrDefault();
-        //        Page page = Page.SelectOne(lastPageID);
-        //        return page;
-        //    }
-        //}
-
-        /// <summary>
         /// Gets or sets the ID.
         /// </summary>
         /// <value>The ID.</value>
