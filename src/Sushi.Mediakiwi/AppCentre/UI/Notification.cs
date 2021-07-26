@@ -32,7 +32,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         async Task Notification_ListAction(ComponentActionEventArgs e)
         {
             await Mediakiwi.Data.Notification.DeleteAllAsync(FilterGroup);
-            Response.Redirect(wim.Console.GetSafeUrl());
+            Response.Redirect(wim.Console.WimPagePath);
         }
 
         /// <summary>

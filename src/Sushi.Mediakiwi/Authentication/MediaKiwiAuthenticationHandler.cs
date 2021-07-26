@@ -17,7 +17,7 @@ namespace Sushi.Mediakiwi.Authentication
             IOptionsMonitor<MediaKiwiAuthenticationOptions> options,
             ILoggerFactory logger,
             UrlEncoder encoder,
-            Microsoft.AspNetCore.Authentication.ISystemClock clock
+            ISystemClock clock
             )
             : base(options, logger, encoder, clock)
         {
@@ -25,7 +25,9 @@ namespace Sushi.Mediakiwi.Authentication
 
         protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
         {
-            var currentVisitor = new VisitorManager(Context).Select();
+            var visManager = new VisitorManager(Context);
+
+            var currentVisitor = await visManager.SelectAsync().ConfigureAwait(false);
             if (currentVisitor != null
                  && currentVisitor.ApplicationUserID.HasValue
                  && currentVisitor.ApplicationUserID.Value > 0

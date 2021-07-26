@@ -158,7 +158,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                     tabTag = string.Format(@"
 			            <li><a href=""{1}"" class=""active"">{0}</a></li>"
                         , title
-                        , container.GetSafeUrl()
+                        , container.WimPagePath
                         );
                 }
             }
@@ -169,7 +169,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                 tabTag = string.Format(@"
 			            <li><a href=""{1}"" class=""active"">{0}</a></li>"
                     , title
-                    , container.GetSafeUrl()
+                    , container.WimPagePath
                     );
             }
             #endregion
@@ -211,7 +211,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                     tabTag = string.Format(@"
 			            <li><a href=""{1}"" class=""active"">{0}</a></li>"
                         , title
-                        , container.GetSafeUrl()
+                        , container.WimPagePath
                         );
                     return tabTag;
                 }
@@ -260,28 +260,29 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                         tabularList = container.CurrentListInstance.wim.m_Collection;
 
 
-                    string tabulars = null;
+                    StringBuilder tabulars = new StringBuilder();
                     if (tabularList != null)
                     {
-                        tabulars = "";
                         foreach (Framework.WimComponentListRoot.Tabular t in tabularList)
                         {
                             if (t.List.IsNewInstance)
+                            {
                                 continue;
+                            }
 
                             ApplyTabularUrl(container, t, 1);
 
-                            tabulars += string.Format(@"<li><a href=""{1}""{2}>{0}</a></li>"
-                                , t.TitleValue
-                                , t.Url
-                                , t.Selected ? " class=\"active\"" : null
-                                );
+                            tabulars.Append($@"<li><a href=""{t.Url}""{(t.Selected ? " class=\"active\"" : null)}>{t.TitleValue}</a></li>");
 
                             if (t.Selected)
+                            {
                                 selectedTab = t.List.ID;
+                            }
 
                             if (!container.Group.HasValue)
+                            {
                                 continue;
+                            }
 
                             if (container.CurrentListInstance.wim.CurrentList.ID == t.List.ID)
                             {
@@ -291,14 +292,12 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                                     {
                                         ApplyTabularUrl(container, t2, 2);
 
-                                        tabulars += string.Format(@"<li><a href=""{1}""{2}>{0}</a></li>"
-                                            , t2.TitleValue
-                                            , t2.Url
-                                            , t2.Selected ? " class=\"active\"" : null
-                                            );
+                                        tabulars.Append($@"<li><a href=""{t2.Url}""{(t2.Selected ? " class=\"active\"" : null)}>{t2.TitleValue}</a></li>");
 
                                         if (t2.Selected)
+                                        {
                                             selectedTab = t2.List.ID;
+                                        }
                                     }
                                 }
                             }
@@ -321,14 +320,12 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                                     {
                                         foreach (Framework.WimComponentListRoot.Tabular t2 in cl.wim.m_Collection)
                                         {
-                                            tabulars += string.Format(@"<li><a href=""{1}""{2}>{0}</a></li>"
-                                                , t2.TitleValue
-                                                , t2.Url
-                                                , t2.Selected ? " class=\"active\"" : null
-                                                );
+                                            tabulars.Append($@"<li><a href=""{t2.Url}""{(t2.Selected ? " class=\"active\"" : null)}>{t2.TitleValue}</a></li>");
 
                                             if (t2.Selected)
+                                            {
                                                 selectedTab = t2.List.ID;
+                                            }
                                         }
                                     }
                                 }
@@ -383,7 +380,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                     tabTag = string.Format(@"
 			            <li><a href=""{1}"" class=""active"">{0}</a></li>"
                         , container.CurrentList.Name
-                        , container.GetSafeUrl()
+                        , container.WimPagePath
                         );
                 }
             }
@@ -466,7 +463,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
 			            <li><a href=""{1}"" class=""active""><span>{0}</span></a></li>
 		            </ul>"
                         , title
-                        , container.GetSafeUrl()
+                        , container.WimPagePath
                         );
                 }
             }
@@ -479,7 +476,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
 			            <li><a href=""{1}"" class=""active""><span>{0}</span></a></li>
 		            </ul>"
                     , title
-                    , container.GetSafeUrl()
+                    , container.WimPagePath
                     );
             }
             #endregion
@@ -565,28 +562,29 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                         tabularList = container.CurrentListInstance.wim.m_Collection;
 
 
-                    string tabulars = null;
+                    StringBuilder tabulars = new StringBuilder();
                     if (tabularList != null)
                     {
-                        tabulars = "";
                         foreach (Framework.WimComponentListRoot.Tabular t in tabularList)
                         {
                             if (t.List.IsNewInstance)
+                            {
                                 continue;
+                            }
 
                             ApplyTabularUrl(container, t, 1);
 
-                            tabulars += string.Format(@"<li><a href=""{1}""{2}><span>{0}</span></a></li>"
-                                , t.TitleValue
-                                , t.Url
-                                , t.Selected ? " class=\"active\"" : null
-                                );
+                            tabulars.Append($@"<li><a href=""{t.Url}""{(t.Selected ? " class=\"active\"" : null)}><span>{t.TitleValue}</span></a></li>");
 
                             if (t.Selected)
+                            {
                                 selectedTab = t.List.ID;
+                            }
 
                             if (!container.Group.HasValue)
+                            {
                                 continue;
+                            }
 
                             if (container.CurrentListInstance.wim.CurrentList.ID == t.List.ID)
                             {
@@ -596,14 +594,12 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                                     {
                                         ApplyTabularUrl(container, t2, 2);
 
-                                        tabulars += string.Format(@"<li><a href=""{1}""{2}><span>{0}</span></a></li>"
-                                            , t2.TitleValue
-                                            , t2.Url
-                                            , t2.Selected ? " class=\"active\"" : null
-                                            );
+                                        tabulars.Append($@"<li><a href=""{t2.Url}""{(t2.Selected ? " class=\"active\"" : null)}><span>{t2.TitleValue}</span></a></li>");
 
                                         if (t2.Selected)
+                                        {
                                             selectedTab = t2.List.ID;
+                                        }
                                     }
                                 }
                             }
@@ -626,14 +622,12 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                                     {
                                         foreach (Framework.WimComponentListRoot.Tabular t2 in cl.wim.m_Collection)
                                         {
-                                            tabulars += string.Format(@"<li><a href=""{1}""{2}><span>{0}</span></a></li>"
-                                                , t2.TitleValue
-                                                , t2.Url
-                                                , t2.Selected ? " class=\"active\"" : null
-                                                );
+                                            tabulars.Append($@"<li><a href=""{t2.Url}""{(t2.Selected ? " class=\"active\"" : null)}><span>{t2.TitleValue}</span></a></li>");
 
                                             if (t2.Selected)
+                                            {
                                                 selectedTab = t2.List.ID;
+                                            }
                                         }
                                     }
                                 }
@@ -654,7 +648,6 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                         title = list.Name;
                         currentListId = list.ID;
                     }
-
 
 
                     if (isSingleItemList || master.CurrentListInstance.wim.HideListSearchTabular)
@@ -695,7 +688,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
 			            <li><a href=""{1}"" class=""active""><span>{0}</span></a></li>
 		            </ul>"
                         , container.CurrentListInstance.wim.CurrentList.Name
-                        , container.GetSafeUrl()
+                        , container.WimPagePath
                         );
                 }
             }

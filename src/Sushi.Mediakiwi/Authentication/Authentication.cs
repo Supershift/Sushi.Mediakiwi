@@ -38,7 +38,7 @@ namespace Sushi.Mediakiwi.Authentication
         /// <param name="disposing"></param>
         protected virtual void Dispose(bool disposing)
         {
-            if(!this.disposed)
+            if(!disposed)
             {
                 if(disposing)
                 {
@@ -100,7 +100,9 @@ namespace Sushi.Mediakiwi.Authentication
             if(m_Context != null && m_Context.Request != null)
             {
                 if (m_Context.Request.Cookies[TicketName] == null)
+                {
                     return null;
+                }
 
                 if (CookieSettings == null)
                 {
@@ -110,7 +112,9 @@ namespace Sushi.Mediakiwi.Authentication
                         var decrypted = Decrypt(m_Context.Request.Cookies[TicketName]);
 
                         foreach (var nv in decrypted.Split('&'))
+                        {
                             CookieSettings.Add(nv.Split('=')[0], WebUtility.UrlDecode(nv.Split('=')[1]));
+                        }
                     }
                     catch(Exception)
                     {
@@ -138,7 +142,9 @@ namespace Sushi.Mediakiwi.Authentication
             get
             {
                 if (string.IsNullOrWhiteSpace(m_Context.Request.Headers["X-Forwarded-Host"]))
+                {
                     return m_Context.Request.Host.ToString();
+                }
 
                 return m_Context.Request.Headers["X-Forwarded-Host"];
             }
@@ -161,7 +167,9 @@ namespace Sushi.Mediakiwi.Authentication
 
             string cookie = string.Empty;
             foreach (var key in CookieSettings.AllKeys)
+            {
                 cookie += $"{(cookie.Length > 0 ? "&" : string.Empty)}{key}={WebUtility.UrlEncode(CookieSettings[key])}";
+            }
 
             string encryption = Encrypt(cookie);
             if (m_Context != null && m_Context.Response != null)
@@ -173,7 +181,7 @@ namespace Sushi.Mediakiwi.Authentication
                         var httpContext = (HttpContext)state;
                         httpContext.Response.Cookies.Append(TicketName, encryption, new CookieOptions() {
                             Expires = LifeTime,
-                            Domain = this.Domain.Split(':')[0],
+                            Domain = Domain.Split(':')[0],
                             HttpOnly = false,
                             Secure = true,
                             IsEssential = true
@@ -195,10 +203,12 @@ namespace Sushi.Mediakiwi.Authentication
         /// <param name="Value">Value belonging to the key</param>
         public void AddValue(string key, string Value)
         {
-            if (this.CookieSettings == null)
-                this.CookieSettings = new NameValueCollection();
+            if (CookieSettings == null)
+            {
+                CookieSettings = new NameValueCollection();
+            }
 
-            this.CookieSettings.Add(key, Value);
+            CookieSettings.Add(key, Value);
         }
      
         /// <summary>

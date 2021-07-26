@@ -1118,6 +1118,18 @@ namespace Sushi.Mediakiwi.Data
         }
 
         /// <summary>
+        /// Validates the access right.
+        /// </summary>
+        /// <param name="pages">The pages.</param>
+        /// <param name="user">The user.</param>
+        /// <returns></returns>
+        public static async Task<IEnumerable<Page>> ValidateAccessRightAsync(IEnumerable<Page> pages, IApplicationUser user)
+        {
+            var allFolders = await Folder.SelectAllAccessibleAsync(user).ConfigureAwait(false);
+            return (from item in pages join relation in allFolders on item.FolderID equals relation.ID select item).ToArray();
+        }
+
+        /// <summary>
         /// Updates the sort order.
         /// </summary>
         /// <param name="ID">The ID.</param>

@@ -71,17 +71,56 @@ namespace Sushi.Mediakiwi.Framework.Inheritance
         }
 
         /// <summary>
+        /// Creates the folder tree.
+        /// </summary>
+        /// <param name="masterSiteID">The master site ID.</param>
+        /// <param name="siteID">The site ID.</param>
+        /// <param name="type">The type.</param>
+        /// <param name="isCopy">if set to <c>true</c> [is copy].</param>
+        public static async Task CreateFolderTreeAsync(int masterSiteID, int siteID, FolderType type)
+        {
+            if (siteID == 0)
+            {
+                return;
+            }
+
+            Site siteInfo = await Site.SelectOneAsync(siteID).ConfigureAwait(false);
+
+            //  Connect the base page folder
+            Data.Folder webFolder = await Data.Folder.SelectOneBySiteAsync(siteID, type).ConfigureAwait(false);
+
+            if (webFolder == null || webFolder.IsNewInstance)
+            {
+                return;
+            }
+
+            if (!webFolder.MasterID.HasValue)
+            {
+                Data.Folder masterFolder = await Data.Folder.SelectOneBySiteAsync(masterSiteID, type).ConfigureAwait(false);
+                webFolder.MasterID = masterFolder.ID;
+                await webFolder.SaveAsync().ConfigureAwait(false);
+            }
+
+            Data.Folder[] masterFolders = await Data.Folder.SelectAllUninheritedAsync(masterSiteID, siteID, (int)type).ConfigureAwait(false);
+
+            foreach (Data.Folder folder in masterFolders)
+            {
+                await SetChildFolderAsync(folder, siteInfo, siteID).ConfigureAwait(false);
+            }
+        }
+
+        /// <summary>
         /// Disconnects the folder tree from mater.
         /// </summary>
         /// <param name="siteID">The site ID.</param>
         /// <param name="type">The type.</param>
-        internal static void RemoveInheritence(int siteID, FolderType type)
+        internal static async Task RemoveInheritenceAsync(int siteID, FolderType type)
         {
-            var items = Data.Folder.SelectAll(type, siteID);
+            var items = await Data.Folder.SelectAllAsync(type, siteID).ConfigureAwait(false);
             foreach (var item in items)
             {
                 item.MasterID = null;
-                item.Save();
+                await item.SaveAsync().ConfigureAwait(false);
             }
         }
 

@@ -280,6 +280,19 @@ namespace Sushi.Mediakiwi.Data
             connector.Save(entity);
         }
 
+
+        public static async Task SaveAsync(Visitor entity)
+        {
+            var connector = ConnectorFactory.CreateConnector<Visitor>();
+            await connector.SaveAsync(entity).ConfigureAwait(false);
+        }
+
+        public async Task<bool> SaveAsync()
+        {
+            await SaveAsync(this).ConfigureAwait(false);
+            return true;
+        }
+
         public bool Save()
         {
             Save(this);

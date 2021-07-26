@@ -23,7 +23,7 @@ namespace Sushi.Mediakiwi
     /// <summary>
     /// 
     /// </summary>
-	public class Utils
+	public static class Utils
 	{
         /// <summary>
         /// Convert a path to a natural lowercase url
@@ -1521,7 +1521,7 @@ namespace Sushi.Mediakiwi
         /// <summary>
         /// 
         /// </summary>
-        public class GlobalRegularExpression
+        public static class GlobalRegularExpression
         {
             /// <summary>
             /// Determines whether [is dutch social fiscal number] [the specified candidate].
@@ -1591,7 +1591,7 @@ namespace Sushi.Mediakiwi
             /// <summary>
             /// 
             /// </summary>
-            public class Implement
+            public static class Implement
             {
                 /// <summary>
                 /// Clean the url from double or more repeating // and or double and or more repeating \\. 
@@ -1684,7 +1684,7 @@ namespace Sushi.Mediakiwi
         /// <returns></returns>
         public static string GetHtmlFormattedLastServerError(Exception ex)
         {
-            string error = "";
+            StringBuilder error = new StringBuilder();
             while (ex != null)
             {
                 string stackTrace = ex.StackTrace == null ? "" : ex.StackTrace;
@@ -1692,26 +1692,26 @@ namespace Sushi.Mediakiwi
 
                 stackTrace = cleanUpStrackTrace.Replace(stackTrace, "<br/>at");
 
-                if (string.IsNullOrWhiteSpace(error) == false)
+                if (error.Length > 0)
                 {
-                    error += "<br/><br/>";
+                    error.Append("<br/><br/>");
                 }
 
                 if (CommonConfiguration.IS_LOCAL_DEVELOPMENT)
                 {
-                    error += $@"<b>Error:</b><br/>{ex.Message}
+                    error.Append($@"<b>Error:</b><br/>{ex.Message}
 <br/><br/><b>Source:</b><br/>{ex.Source}
 <br/><br/><b>Method:</b><br/>{ex.TargetSite}
 <br/><br/><b>Stacktrace:</b>{stackTrace}
-";
+");
                 }
                 else
                 {
-                    error += $@"<b>Error:</b><br/>{ex.Message}";
+                    error.Append($@"<b>Error:</b><br/>{ex.Message}");
                 }
                 ex = ex.InnerException;
             }
-            return error;
+            return error.ToString();
         }
 
         /// <summary>
@@ -2144,13 +2144,13 @@ namespace Sushi.Mediakiwi
             bool firstByte = true;
             string tempChar = string.Empty;
             string secondChar = string.Empty;
-            string returnItem = string.Empty;
+            StringBuilder returnItem = new StringBuilder();
 
             foreach (char c in item)
             {
                 if (rex.IsMatch(c.ToString()))
                 {
-                    returnItem += c;
+                    returnItem.Append(c);
                     continue;
                 }
                 byte[] encoded = encoding.GetBytes(c.ToString());
@@ -2166,14 +2166,14 @@ namespace Sushi.Mediakiwi
                         secondChar = b.ToString("X");
                         if (tempChar.Length == 1)
                         {
-                            tempChar = string.Format("0{0}", tempChar);
+                            tempChar = $"0{tempChar}";
                         }
                         if (secondChar.Length == 1)
                         {
-                            secondChar = string.Format("0{0}", secondChar);
+                            secondChar = $"0{secondChar}";
                         }
 
-                        returnItem += string.Format("&#x{1:00}{0:00};", tempChar, secondChar);
+                        returnItem.Append($"&#x{secondChar:00}{tempChar:00};");
                     }
                     if (firstByte)
                     {
@@ -2185,7 +2185,8 @@ namespace Sushi.Mediakiwi
                     }
                 }
             }
-            return returnItem;
+
+            return returnItem.ToString();
         }
 
         #region ConvertToFixedLengthText
@@ -2653,7 +2654,7 @@ namespace Sushi.Mediakiwi
         {
             if (candidate != null && candidate.ToString().Length > 0)
             {
-                if (candidate.GetType() == typeof(decimal))
+                if (candidate is decimal)
                 {
                     CultureInfo info = new CultureInfo("en-US");
                     output = Convert.ToDecimal(candidate, info);
@@ -2694,7 +2695,7 @@ namespace Sushi.Mediakiwi
         {
             if (candidate != null && candidate.ToString().Length > 0)
             {
-                if (candidate.GetType() == typeof(double))
+                if (candidate is double)
                 {
                     CultureInfo info = new CultureInfo("en-US");
                     output = Convert.ToDouble(candidate, info);
@@ -2824,12 +2825,13 @@ namespace Sushi.Mediakiwi
         #endregion
 
         #region Convert to double
+
         /// <summary>
-        /// Converts to (wim) decimal string (US-EN).
+        /// Converts to (wim) double string (US-EN).
         /// </summary>
         /// <param name="item">The item.</param>
         /// <returns></returns>
-        public static string ConvertToDoubleString(decimal item)
+        public static string ConvertToDoubleString(double item)
         {
             if (Thread.CurrentThread.CurrentCulture.NumberFormat.CurrencyDecimalSeparator == ",")
             {

@@ -56,10 +56,10 @@ namespace Sushi.Mediakiwi.UI
                 if (isDataTable)
                 {
                     uniqueIdentifier = GetIndentifierKey((System.Data.DataRow)item, root.ListDataColumns.List);
-                    highlightColumn = GetHighlightedValue((System.Data.DataRow)item, root.ListDataColumns.List).ToString();
+                    highlightColumn = GetHighlightedValue((System.Data.DataRow)item, root.ListDataColumns.List);
 
                     if (highlightColumn != null)
-                        highlightColumn = WebUtility.HtmlEncode(highlightColumn.ToString());
+                        highlightColumn = WebUtility.HtmlEncode(highlightColumn);
                 }
                 else
                 {
@@ -67,7 +67,7 @@ namespace Sushi.Mediakiwi.UI
                     highlightColumn = GetHighlightedValue(infoCollection, item, root.ListDataColumns.List);
 
                     if (highlightColumn != null)
-                        highlightColumn = WebUtility.HtmlEncode(highlightColumn.ToString());
+                        highlightColumn = WebUtility.HtmlEncode(highlightColumn);
                 }
                 build.AppendFormat("\n\t<li><a href=\"{1}?list={2}&item={3}\">{0}</a></li>", highlightColumn, container.WimPagePath, container.CurrentList.ID, uniqueIdentifier);
 
@@ -82,7 +82,7 @@ namespace Sushi.Mediakiwi.UI
 </div>
 "
                 , container.CurrentListInstance.wim.CurrentList.Name
-                , build.Length == 0 ? "" : string.Format("\n\t<ul class=\"links\">{0}\t</ul>", build.ToString())
+                , build.Length == 0 ? "" : string.Format("\n\t<ul class=\"links\">{0}\t</ul>", build)
                 , container.WimPagePath
                 , container.CurrentList.ID
                 );
@@ -686,7 +686,7 @@ namespace Sushi.Mediakiwi.UI
 
         string BuildUrl(Beta.GeneratedCms.Console container, string queryStringPropertyToApply, string value)
         {
-            string url = container.WimPagePath;
+            StringBuilder url = new StringBuilder(container.WimPagePath);
 
             bool first = true, foundKey = false;
             if (container.Request.Query.Count > 0)
@@ -709,27 +709,32 @@ namespace Sushi.Mediakiwi.UI
                     if (!string.IsNullOrEmpty(candidate))
                     {
                         if (first)
-                            url += string.Concat("?", key, "=", candidate);
+                        {
+                            url.Append($"?{key}={candidate}");
+                        }
                         else
-                            url += string.Concat("&", key, "=", candidate);
+                        {
+                            url.Append($"&{key}={candidate}");
+                        }
 
                         first = false;
                     }
                 }
             }
 
-            if (!foundKey)
+            if (!foundKey && !string.IsNullOrEmpty(value))
             {
-                if (!string.IsNullOrEmpty(value))
+                if (first)
                 {
-                    if (first)
-                        url += string.Concat("?", queryStringPropertyToApply, "=", value);
-                    else
-                        url += string.Concat("&", queryStringPropertyToApply, "=", value);
+                    url.Append($"?{queryStringPropertyToApply}={value}");
+                }
+                else
+                {
+                    url.Append($"&{queryStringPropertyToApply}={value}");
                 }
             }
 
-            return url;
+            return url.ToString();
         }
 
         /// <summary>
@@ -765,27 +770,34 @@ namespace Sushi.Mediakiwi.UI
                     object propertyValue;
 
                     if (isDataTable)
+                    {
                         propertyValue = ((System.Data.DataRow)item)[column.ColumnValuePropertyName];
+                    }
                     else
+                    {
                         propertyValue = GetValue(infoCollection, item, column);
+                    }
 
                     if (column.Total == ListDataTotalType.Sum || column.Total == ListDataTotalType.Average)
-                        hasTotal = true;
-
-                    if (propertyValue != null)
                     {
-                        if (propertyValue.GetType() == typeof(decimal) || propertyValue.GetType() == typeof(int))
-                        {
-                            
-                            if (column.Total == ListDataTotalType.Sum || column.Total == ListDataTotalType.Average)
-                            {
-                                column.TotalValueType = propertyValue.GetType();
-                                column.TotalValue += Utility.ConvertToDecimal(propertyValue);
-                            }
-                        }
+                        hasTotal = true;
+                    }
+
+                    if (
+                        (propertyValue is decimal || propertyValue is int)
+                        &&
+                        (column.Total == ListDataTotalType.Sum || column.Total == ListDataTotalType.Average)
+                        )
+                    {
+                        column.TotalValueType = propertyValue.GetType();
+                        column.TotalValue += Utility.ConvertToDecimal(propertyValue);
                     }
                 }
-                if (!hasTotal) break;
+
+                if (!hasTotal)
+                {
+                    break;
+                }
             }
             return hasTotal;
         }
@@ -937,7 +949,7 @@ namespace Sushi.Mediakiwi.UI
                             highlightColumn = GetHighlightedValue((System.Data.DataRow)item, root.ListDataColumns.List);
 
                             if (highlightColumn != null)
-                                highlightColumn = WebUtility.HtmlEncode(highlightColumn.ToString());
+                                highlightColumn = WebUtility.HtmlEncode(highlightColumn);
 
                         }
                         else
@@ -946,7 +958,7 @@ namespace Sushi.Mediakiwi.UI
                             highlightColumn = GetHighlightedValue(infoCollection, item, root.ListDataColumns.List);
 
                             if (highlightColumn != null)
-                                highlightColumn = WebUtility.HtmlEncode(highlightColumn.ToString());
+                                highlightColumn = WebUtility.HtmlEncode(highlightColumn);
 
                         }
 
@@ -999,7 +1011,7 @@ namespace Sushi.Mediakiwi.UI
                                     highlightColumn = GetHighlightedValue((System.Data.DataRow)item, root.ListDataColumns.List);
 
                                     if (highlightColumn != null)
-                                        highlightColumn = WebUtility.HtmlEncode(highlightColumn.ToString());
+                                        highlightColumn = WebUtility.HtmlEncode(highlightColumn);
 
                                 }
                                 else
@@ -1008,34 +1020,45 @@ namespace Sushi.Mediakiwi.UI
                                     highlightColumn = GetHighlightedValue(infoCollection, item, root.ListDataColumns.List);
 
                                     if (highlightColumn != null)
-                                        highlightColumn = WebUtility.HtmlEncode(highlightColumn.ToString());
+                                        highlightColumn = WebUtility.HtmlEncode(highlightColumn);
 
                                 }
                             }
                             #endregion Obtain uniqueIdentifier and highlightColumn
 
                             #region Value specific cell markup
+
                             if (propertyValue != null)
                             {
                                 if (column.Alignment == Align.Default)
                                 {
-                                    if (propertyValue.GetType() == typeof(DateTime) || propertyValue.GetType() == typeof(decimal) || propertyValue.GetType() == typeof(DateTime?) || propertyValue.GetType() == typeof(decimal?))
+                                    if (propertyValue is DateTime || propertyValue is decimal || propertyValue is DateTime? || propertyValue is decimal?)
+                                    {
                                         cell_attribute.Style.Add("white-space", "nowrap");
-
-                                    if (propertyValue.GetType() == typeof(decimal) || propertyValue.GetType() == typeof(int))
-                                    {
-                                        if (string.IsNullOrEmpty(cell_attribute.Class))
-                                            cell_attribute.Class = "txt-r";
-                                        else
-                                            cell_attribute.Class += " txt-r";
                                     }
-                                    if (propertyValue.GetType() == typeof(bool))
+
+                                    if (propertyValue is decimal || propertyValue is int)
                                     {
-                                        //cell_attribute.Align = "center";
                                         if (string.IsNullOrEmpty(cell_attribute.Class))
-                                            cell_attribute.Class = "txt-c";
+                                        {
+                                            cell_attribute.Class = "txt-r";
+                                        }
                                         else
+                                        {
+                                            cell_attribute.Class += " txt-r";
+                                        }
+                                    }
+
+                                    if (propertyValue is bool)
+                                    {
+                                        if (string.IsNullOrEmpty(cell_attribute.Class))
+                                        {
+                                            cell_attribute.Class = "txt-c";
+                                        }
+                                        else
+                                        {
                                             cell_attribute.Class += " txt-c";
+                                        }
                                     }
                                 }
                                 else
@@ -1044,16 +1067,24 @@ namespace Sushi.Mediakiwi.UI
                                     {
                                         case Align.Center:
                                             if (string.IsNullOrEmpty(cell_attribute.Class))
+                                            {
                                                 cell_attribute.Class = "txt-c";
+                                            }
                                             else
+                                            {
                                                 cell_attribute.Class += " txt-c";
+                                            }
 
                                             break;
                                         case Align.Right:
                                             if (string.IsNullOrEmpty(cell_attribute.Class))
+                                            {
                                                 cell_attribute.Class = "txt-r";
+                                            }
                                             else
+                                            {
                                                 cell_attribute.Class += " txt-r";
+                                            }
                                             break;
                                     }
                                 }
@@ -1067,9 +1098,13 @@ namespace Sushi.Mediakiwi.UI
                             if (hasInnerLink || column.Type == ListDataColumnType.RadioBox || column.Type == ListDataColumnType.Checkbox)
                             {
                                 if (string.IsNullOrEmpty(cell_attribute.Class))
+                                {
                                     cell_attribute.Class = "nopt";
+                                }
                                 else
+                                {
                                     cell_attribute.Class += " nopt";
+                                }
                             }
 
                             if (!string.IsNullOrEmpty(cellClassName))
@@ -1078,7 +1113,9 @@ namespace Sushi.Mediakiwi.UI
                             }
 
                             if (!IsVisibleColumn(column.Type, includeExportFields))
+                            {
                                 continue;
+                            }
 
                             #region Table row creation (and first TD)
                             object propertyHelp = null;
@@ -1402,7 +1439,7 @@ namespace Sushi.Mediakiwi.UI
                         highlightColumn = GetHighlightedValue((System.Data.DataRow)item, root.ListDataColumns.List);
 
                         if (highlightColumn != null)
-                            highlightColumn = WebUtility.HtmlEncode(highlightColumn.ToString());
+                            highlightColumn = WebUtility.HtmlEncode(highlightColumn);
 
                     }
                     else
@@ -1411,7 +1448,7 @@ namespace Sushi.Mediakiwi.UI
                         highlightColumn = GetHighlightedValue(infoCollection, item, root.ListDataColumns.List);
 
                         if (highlightColumn != null)
-                            highlightColumn = WebUtility.HtmlEncode(highlightColumn.ToString());
+                            highlightColumn = WebUtility.HtmlEncode(highlightColumn);
                     }
 
                     if (!string.IsNullOrWhiteSpace(uniqueIdentifier) && !string.IsNullOrWhiteSpace(highlightColumn))
@@ -1434,7 +1471,7 @@ namespace Sushi.Mediakiwi.UI
         /// <param name="includeExportFields">if set to <c>true</c> [include export fields].</param>
         /// <param name="isNewDesignOutput">if set to <c>true</c> [is new design output].</param>
         /// <returns></returns>
-        internal string GetGridFromListInstanceForJSON(WimComponentListRoot root, Beta.GeneratedCms.Console container, int type, bool includeExportFields, bool isNewDesignOutput)
+        internal StringBuilder GetGridFromListInstanceForJSON(WimComponentListRoot root, Beta.GeneratedCms.Console container, int type, bool includeExportFields, bool isNewDesignOutput)
         {
             container.ListPagingValue = root.CurrentPage.ToString();// container.Request.Params["set"];
 
@@ -1447,7 +1484,7 @@ namespace Sushi.Mediakiwi.UI
 
             ////  if no data is assigned return null 
             if (root.ListDataTable == null && root.ListData == null)
-                return Constants.JSON_NO_ACCESS;
+                return new StringBuilder(Constants.JSON_NO_ACCESS);
 
             //StringBuilder build = new StringBuilder();
             //StringBuilder build = new StringBuilder();
@@ -1958,7 +1995,7 @@ namespace Sushi.Mediakiwi.UI
 //            else
 //                candidate = string.Concat("\n\t\t\t\t\t<article class=\"dataBlock\">\n\t\t\t\t\t\t<table", scrollClass, ">", build.ToString(), build2.ToString(), "\n\t\t\t\t\t\t</table>", paging, "\n\t\t\t\t\t</article>");
 
-            return json.ToString();
+            return new StringBuilder(json.ToString());
         }
 
 
@@ -2146,7 +2183,7 @@ namespace Sushi.Mediakiwi.UI
                     }
                     htmlCandidate = string.Format("<span class=\"inputMode\"><select id=\"{0}\" name=\"{0}\"{2}{3}>{1}</select></span>"
                         , name
-                        , optionList.ToString()
+                        , optionList
                         , column.EditConfiguration.Width > 0 ? string.Format(" style=\"width:{0}px\"", column.EditConfiguration.Width) : null
                         , enabledTag
                         );
@@ -2423,7 +2460,7 @@ namespace Sushi.Mediakiwi.UI
                                 highlightColumn = GetHighlightedValue((System.Data.DataRow)item, root.ListDataColumns.List);
 
                                 if (highlightColumn != null)
-                                    highlightColumn = WebUtility.HtmlEncode(highlightColumn.ToString());
+                                    highlightColumn = WebUtility.HtmlEncode(highlightColumn);
 
                             }
                             else
@@ -2432,7 +2469,7 @@ namespace Sushi.Mediakiwi.UI
                                 highlightColumn = GetHighlightedValue(infoCollection, item, root.ListDataColumns.List);
 
                                 if (highlightColumn != null)
-                                    highlightColumn = WebUtility.HtmlEncode(highlightColumn.ToString());
+                                    highlightColumn = WebUtility.HtmlEncode(highlightColumn);
 
                             }
                             if (container.CurrentListInstance.wim.HasListLoad)
@@ -2979,11 +3016,18 @@ namespace Sushi.Mediakiwi.UI
         {
             cellClassName = null;
 
-            if (candidate == null) return null;
-
-            if (candidate.GetType() == typeof(DateTime))
+            if (candidate == null)
             {
-                if (((DateTime)candidate) == DateTime.MinValue) return null;
+                return null;
+            }
+
+            if (candidate is DateTime)
+            {
+                if (((DateTime)candidate) == DateTime.MinValue)
+                {
+                    return null;
+                }
+
                 DateTime tmp = ((DateTime)candidate);
                 // [MR:20-03-2019] Converts UTC (database) time to local timezone for display
                 // 19-10-20 turned off core.
@@ -2991,33 +3035,45 @@ namespace Sushi.Mediakiwi.UI
                 //    tmp = AppCentre.Data.Supporting.LocalDateTime.GetDate(tmp, container.CurrentListInstance.wim.CurrentSite, true);
 
                 if (tmp.Hour == 0 && tmp.Minute == 0 && tmp.Second == 0 && tmp.Millisecond == 0)
+                {
                     return tmp.ToString(container.DateFormatShort);
+                }
+
                 return tmp.ToString(container.DateTimeFormatShort);
             }
-            else if (candidate.GetType() == typeof(DateTime?))
+            else if (candidate is DateTime?)
             {
-                if (!((DateTime?)candidate).HasValue) return null;
+                if (!((DateTime?)candidate).HasValue)
+                {
+                    return null;
+                }
+
                 DateTime tmp = ((DateTime?)candidate).Value;
-                
+
                 // [MR:20-03-2019] Converts UTC (database) time to local timezone for display
                 // 19-10-20 turned off core.
                 //if (container.CurrentList.Option_ConvertUTCToLocalTime && tmp.Kind != DateTimeKind.Local)
                 //    tmp = AppCentre.Data.Supporting.LocalDateTime.GetDate(tmp, container.CurrentListInstance.wim.CurrentSite, true);
 
                 if (tmp.Hour == 0 && tmp.Minute == 0 && tmp.Second == 0 && tmp.Millisecond == 0)
+                {
                     return tmp.ToString(container.DateFormatShort);
+                }
+
                 return tmp.ToString(container.DateTimeFormatShort);
             }
-            else if (candidate.GetType() == typeof(bool))
+            else if (candidate is bool)
             {
                 if (column.ColumnWidth == 0)
+                {
                     column.ColumnWidth = 10;
+                }
 
                 return ((bool)candidate)
                     ? Utils.GetIconImageString(container, Utils.IconImage.Yes)
                     : Utils.GetIconImageString(container, Utils.IconImage.No);
             }
-            else if (candidate.GetType() == typeof(decimal))
+            else if (candidate is decimal)
             {
                 if (convertToWimDecimal)
                 {
@@ -3025,7 +3081,9 @@ namespace Sushi.Mediakiwi.UI
                     return ((decimal)candidate).ToString("N");
                 }
                 else
+                {
                     return ((decimal)candidate).ToString("N");
+                }
             }
             return candidate;
         }

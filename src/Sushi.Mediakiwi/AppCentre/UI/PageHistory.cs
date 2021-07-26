@@ -31,7 +31,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             var list = await PageVersion.SelectAllOfPageAsync(CurrentPageID).ConfigureAwait(false);
             foreach (var item in list)
             {
-                item.RollBackTo = $@"<a href=""{wim.Console.GetSafeUrl()}&rollback={item.ID}"" class=""submit"">Restore</a>";
+                item.RollBackTo = $@"<a href=""{wim.Console.WimPagePath}&rollback={item.ID}"" class=""submit"">Restore</a>";
             }
 
             wim.ListDataColumns.Add(new ListDataColumn("", nameof(IPageVersion.ID), ListDataColumnType.UniqueIdentifier));
