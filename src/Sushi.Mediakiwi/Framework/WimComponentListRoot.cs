@@ -2055,9 +2055,9 @@ namespace Sushi.Mediakiwi.Framework
         public class Notifications
         {
             WimComponentListRoot wim;
-            public Notifications(WimComponentListRoot wim)
+            public Notifications(WimComponentListRoot _instance)
             {
-                wim = wim;
+                wim = _instance;
             }
 
             /// <summary>
