@@ -71,11 +71,17 @@ namespace Sushi.Mediakiwi.Data
         internal static Gallery Identify(string identifier)    
         {
             if (Utility.IsGuid(identifier))
+            {
                 return SelectOne(new Guid(identifier));
+            }
             if (Utility.IsNumeric(identifier))
+            {
                 return SelectOne(Convert.ToInt32(identifier));
+            }
             else
+            {
                 return SelectOne(identifier);
+            }
         }
 
         /// <summary>
@@ -693,7 +699,9 @@ namespace Sushi.Mediakiwi.Data
             filter.Add(x => x.IsActive, true);
 
             if (!returnHidden)
+            {
                 filter.Add(x => x.IsHidden, false);
+            }
 
             var result = await connector.FetchAllAsync(filter);
             return result.ToArray();

@@ -88,11 +88,15 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
             }
 
             string tabTag = null;
+
             #region Browsing
+
             if (container.CurrentList.Type == ComponentListType.Browsing)
             {
                 title = Labels.ResourceManager.GetString("list_browsing", new CultureInfo(container.CurrentApplicationUser.LanguageCulture));
+              
                 #region PAGE
+
                 if (container.ItemType == RequestItemType.Page)
                 {
 
@@ -150,7 +154,9 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                             );
                     }
                 }
+
                 #endregion PAGE
+
                 else
                 {
                     //  Show NO tabs
@@ -162,8 +168,11 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                         );
                 }
             }
+
             #endregion
+
             #region Folder & page
+
             else if (container.CurrentList.Type == ComponentListType.Folders || container.CurrentList.Type == ComponentListType.PageProperties)
             {
                 tabTag = string.Format(@"
@@ -172,8 +181,11 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                     , container.WimPagePath
                     );
             }
+
             #endregion
+
             #region Assets
+
             else if (container.CurrentList.Type == ComponentListType.Documents || container.CurrentList.Type == ComponentListType.Images)
             {
                 title = "Browsing";
@@ -199,8 +211,11 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                     , container.CurrentList.SingleItemName
                     );
             }
+
             #endregion
+
             #region Custom lists
+
             else
             {
                 bool isSingleItemList = (container.CurrentList.IsSingleInstance || container.CurrentListInstance.wim.CanContainSingleInstancePerDefinedList);
@@ -384,7 +399,9 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                         );
                 }
             }
+
             #endregion
+
             return tabTag;
         }
 
@@ -399,7 +416,9 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
         internal static string GetTabularTags(Console container, string title, int selectedTab, bool showServiceUrl)
         {
             string tabTag = null;
+
             #region Browsing
+
             if (container.CurrentList.Type == ComponentListType.Browsing)
             {
                 title = Labels.ResourceManager.GetString("list_browsing", new CultureInfo(container.CurrentApplicationUser.LanguageCulture));
@@ -467,8 +486,11 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                         );
                 }
             }
+
             #endregion
+
             #region Folder & page
+
             else if (container.CurrentList.Type == ComponentListType.Folders || container.CurrentList.Type == ComponentListType.PageProperties)
             {
                 tabTag = string.Format(@"
@@ -479,8 +501,11 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                     , container.WimPagePath
                     );
             }
+
             #endregion
+
             #region Assets
+
             else if (container.CurrentList.Type == ComponentListType.Documents || container.CurrentList.Type == ComponentListType.Images)
             {
                 title = "Browsing";
@@ -508,8 +533,11 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                     , container.CurrentList.SingleItemName
                     );
             }
+
             #endregion
+
             #region Custom lists
+
             else
             {
                 bool isSingleItemList = (container.CurrentList.IsSingleInstance || container.CurrentListInstance.wim.CanContainSingleInstancePerDefinedList);
@@ -692,7 +720,9 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                         );
                 }
             }
+
             #endregion
+
             return tabTag;
         }
     }

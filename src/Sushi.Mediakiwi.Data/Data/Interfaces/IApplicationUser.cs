@@ -42,7 +42,7 @@ namespace Sushi.Mediakiwi.Data
         bool HasUserName(string username);
 
         IApplicationRole Role();
-
+        Task<IApplicationRole> RoleAsync();
         bool Save();
 
         Task<bool> SaveAsync();

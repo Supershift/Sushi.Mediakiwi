@@ -15,6 +15,20 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
     /// </summary>
     public partial class Browsing : BaseImplementation
     {
+        #region Properties
+
+        /// <summary>
+        /// Gets a value indicating whether [opened in popup].
+        /// </summary>
+        /// <value><c>true</c> if [opened in popup]; otherwise, <c>false</c>.</value>
+        public bool OpenedInPopup
+        {
+            get
+            {
+                return !string.IsNullOrEmpty(Request.Query["openinframe"]);
+            }
+        }
+
         /// <summary>
         /// Gets or sets the filter title.
         /// </summary>
@@ -23,14 +37,9 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         [Framework.ContentListSearchItem.TextField("_search_for", 50)]
         public string FilterTitle { get; set; }
 
-        /// <summary>
-        /// Gets or sets the filter path.
-        /// </summary>
-        /// <value>The filter path.</value>
-        //[Sushi.Mediakiwi.Framework.OnlyVisibleWhenTrue("IsGalleryOrHasRoot")]
-        //[Sushi.Mediakiwi.Framework.ContentListSearchItem.Choice_Checkbox("Onderdeel van pad", Expression = OutputExpression.Alternating)]
         public bool FilterPath { get; set; }
 
+        int _columns = 0;
         bool m_IsGallerySet;
         bool m_IsGallery;
         /// <summary>
@@ -89,6 +98,9 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                 return false;
             }
         }
+        #endregion Properties
+
+        #region CTor
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Browsing"/> class.
@@ -98,11 +110,13 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             FilterPath = false;
             wim.HideProperties = true;
 
-            ListLoad += Browsing_ListLoad;
             ListAction += Browsing_ListAction;
-            ListSave += Browsing_ListSave;
             ListSearch += Browsing_ListSearch;
         }
+
+        #endregion CTor
+
+        #region List Search
 
         async Task Browsing_ListSearch(ComponentListSearchEventArgs arg)
         {
@@ -113,20 +127,9 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             await ShowBrowsingAsync().ConfigureAwait(false);
         }
 
-        Task Browsing_ListSave(ComponentListEventArgs e)
-        {
-            return Task.CompletedTask;
-        }
+        #endregion List Search
 
-        /// <summary>
-        /// Handles the ListLoad event of the Browsing control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="ComponentListEventArgs"/> instance containing the event data.</param>
-        Task Browsing_ListLoad(ComponentListEventArgs e)
-        {
-            return Task.CompletedTask;
-        }
+        #region List Action
 
         /// <summary>
         /// Handles the ListAction event of the Browsing control.
@@ -147,22 +150,14 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             }
         }
 
-        /// <summary>
-        /// Gets a value indicating whether [opened in popup].
-        /// </summary>
-        /// <value><c>true</c> if [opened in popup]; otherwise, <c>false</c>.</value>
-        public bool OpenedInPopup
-        {
-            get
-            {
-                return !string.IsNullOrEmpty(Request.Query["openinframe"]);
-            }
-        }
+        #endregion List Action
+
+        #region Show Browsing Async
 
         async Task ShowBrowsingAsync()
         {
             wim.CurrentList.Option_Search_MaxResultPerPage = 512;
-            wim.SearchResultItemPassthroughParameterProperty = "PassThrough";
+            wim.SearchResultItemPassthroughParameterProperty = nameof(BrowseItem.PassThrough);
 
             wim.ListDataColumns.Add(new ListDataColumn("ID", nameof(BrowseItem.ID), ListDataColumnType.UniqueIdentifier));
             wim.ListDataColumns.Add(new ListDataColumn("", nameof(BrowseItem.Icon)) { ColumnWidth = 20 });
@@ -174,7 +169,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             bool isSearchInitiate = !string.IsNullOrEmpty(FilterTitle);
             if (wim.CurrentFolder.Type == FolderType.Gallery)
             {
-                list = await GetGalleryListAsync(isSearchInitiate).ConfigureAwait(false);
+                list = await GetGalleryListV2Async(isSearchInitiate).ConfigureAwait(false);
             }
             else if (wim.CurrentFolder.Type == FolderType.List || wim.CurrentFolder.Type == FolderType.Administration)
             {
@@ -187,6 +182,10 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
 
             wim.ListDataAdd(list);
         }
+
+        #endregion Show Browsing Async
+
+        #region Get Status
 
         string GetStatus(bool isEdited, bool isPublished, bool isSearchable, bool hasMaster, bool isLocalisedEditMode, bool isLocalisedPublicationMode)
         {
@@ -226,6 +225,10 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             return status;
         }
 
+        #endregion Get Status
+
+        #region Get Sort
+
         PageSortBy GetSort(int? sorderOrderMethod)
         {
             return sorderOrderMethod switch
@@ -237,6 +240,10 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                 _ => PageSortBy.SortOrder,
             };
         }
+
+        #endregion Get Sort
+        
+        #region Get Page List
 
         async Task GetPageListAsync(bool isSearchInitiate)
         {
@@ -318,7 +325,10 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             #endregion Close column view
         }
 
-        int _columns = 0;
+        #endregion Get Page List
+
+        #region Find Page Async
+
 
         async Task FindPageAsync(Mediakiwi.Data.Folder[] folders, StringBuilder build)
         {
@@ -364,6 +374,9 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                 await FindPageAsync(arr, build).ConfigureAwait(false);
             }
         }
+        #endregion Find Page Async
+
+        #region Get Gallery List Async
 
         async Task<List<BrowseItem>> GetGalleryListAsync(bool isSearchInitiate)
         {
@@ -373,8 +386,8 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             var folderSettings = await Mediakiwi.Data.ComponentList.SelectOneAsync(new Guid("97292dd5-ebda-4318-8aaf-4c49e887cdad")).ConfigureAwait(false);
 
             Gallery[] galleries;
+            
             Gallery rootGallery = await Gallery.SelectOneAsync(Utility.ConvertToGuid(Request.Query["root"])).ConfigureAwait(false);
-
             if (!IsPostBack || string.IsNullOrEmpty(FilterTitle))
             {
                 if (wim.CurrentFolder.ParentID.GetValueOrDefault(0) > 0 && wim.CurrentFolder.ID != rootGallery.ID && wim.CurrentFolder.ID != baseGalleryID)
@@ -396,7 +409,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             }
 
             bool isRootLevelView = false;
-            if (wim.CurrentFolder.Level == 0 && galleries.Length == 0 && !isRootLevelView && !isSearchInitiate)
+            if (wim.CurrentFolder.Level == 0 && galleries.Length == 0 && !isSearchInitiate)
             {
                 isRootLevelView = true;
             }
@@ -452,6 +465,101 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             return list;
         }
 
+        #endregion Get Gallery List Async
+
+        #region Get Gallery List Async V2
+
+        async Task<List<BrowseItem>> GetGalleryListV2Async(bool isSearchInitiate)
+        {
+            var list = new List<BrowseItem>();
+            int baseGalleryID = wim.CurrentApplicationUserRole.GalleryRoot.GetValueOrDefault();
+
+            var folderSettings = await Mediakiwi.Data.ComponentList.SelectOneAsync(new Guid("97292dd5-ebda-4318-8aaf-4c49e887cdad")).ConfigureAwait(false);
+
+            Gallery[] galleries;
+
+            Gallery rootGallery = await Gallery.SelectOneAsync(Utility.ConvertToGuid(Request.Query["root"])).ConfigureAwait(false);
+            if (!IsPostBack || string.IsNullOrEmpty(FilterTitle))
+            {
+                if (wim.CurrentFolder.ParentID.GetValueOrDefault(0) > 0 && wim.CurrentFolder.ID != rootGallery.ID && wim.CurrentFolder.ID != baseGalleryID)
+                {
+                    BrowseItem item = new BrowseItem();
+                    item.ID = wim.CurrentFolder.ParentID.Value;
+                    item.Title = "...";
+                    item.PassThrough = "?gallery";
+                    item.Icon = "<figure class=\"icon-folder icon\"></figure>";
+                    item.Info1 = $"<a href=\"{wim.Console.WimPagePath}?list={folderSettings.ID}&gallery={item.ID}&item={item.ID}\"><figure class=\"icon-settings-02 icon\"></figure></a>";
+                    list.Add(item);
+                }
+
+                galleries = await Gallery.SelectAllByParentAsync(wim.CurrentFolder.ID).ConfigureAwait(false);
+            }
+            else
+            {
+                galleries = await Gallery.SelectAllAsync(FilterTitle).ConfigureAwait(false);
+            }
+
+            bool isRootLevelView = false;
+            if (wim.CurrentFolder.Level == 0 && galleries.Length == 0 && !isSearchInitiate)
+            {
+                isRootLevelView = true;
+            }
+
+            foreach (Gallery entry in galleries)
+            {
+                BrowseItem item = new BrowseItem();
+                item.ID = entry.ID;
+                item.Title = isRootLevelView ? entry.CompleteCleanPath() : entry.Name;
+                item.PassThrough = "?gallery";
+                item.Icon = "<figure class=\"icon-folder icon\"></figure>";
+                item.Info1 = $"<a href=\"{wim.Console.WimPagePath}?list={folderSettings.ID}&gallery={entry.ID}&item={entry.ID}\"><figure class=\"icon-settings-02 icon\"></figure></a>";
+                item.Info3 = entry.Created;
+                list.Add(item);
+            }
+
+            List<Asset> assets;
+
+            if (!IsPostBack || string.IsNullOrEmpty(FilterTitle))
+            {
+                assets = await Asset.SelectAllAsync(wim.CurrentFolder.ID).ConfigureAwait(false);
+            }
+            else
+            {
+                assets = await Asset.SearchAllAsync(FilterTitle).ConfigureAwait(false);
+            }
+
+            foreach (Asset entry in assets)
+            {
+                BrowseItem item = new BrowseItem();
+                item.ID = entry.ID;
+                item.Title = entry.Title;
+                item.PassThrough = "?asset";
+
+                item.Icon = "<figure class=\"icon-document icon\"></figure>";
+                item.Info1 = $"<a href=\"{wim.Console.WimPagePath}?asset={entry.ID}\"><figure class=\"icon-settings-02 icon\"></figure></a>";
+                item.Info2 = entry.Type;
+                item.Info3 = entry.Created;
+
+                if (!string.IsNullOrEmpty(entry.RemoteLocation) || entry.Exists)
+                {
+                    item.Info4 = Utils.GetIconImageString(wim.Console, Utils.IconImage.File, Utils.IconSize.Normal, null, entry.DownloadFullUrl);
+                }
+                else
+                {
+                    item.Info4 = Utils.GetIconImageString(wim.Console, Utils.IconImage.NoFile, Utils.IconSize.Normal, null);
+                }
+
+                item.HiddenField = $"{item.Title} ({item.Info1})";
+                list.Add(item);
+            }
+
+            return list;
+        }
+
+        #endregion Get Gallery List Async V2
+
+        #region Get List List Async
+
         async Task GetListListAsync()
         {
             StringBuilder build = new StringBuilder();
@@ -468,7 +576,11 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             build.Insert(0, "<section id=\"startWidgets\" class=\"component widgets\">");
             wim.Page.Body.Grid.Add(build.ToString(), true);
         }
-
+        
+        #endregion Get List List Async
+        
+        #region Find List Async
+        
         async Task FindListAsync(Mediakiwi.Data.Folder[] folders, StringBuilder build, bool ignoreHeader)
         {
             foreach (Mediakiwi.Data.Folder entry in folders)
@@ -551,5 +663,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                 await FindListAsync(arr, build, false).ConfigureAwait(false);
             }
         }
+
+        #endregion Find List Async
     }
 }
