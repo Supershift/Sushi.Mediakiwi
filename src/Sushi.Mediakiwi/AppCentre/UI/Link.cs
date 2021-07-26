@@ -189,26 +189,25 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
 
             wim.SetPropertyVisibility("Apply", false);
 
-            if (Request.Query["referid"] == "tmce")
-            {
-                if (false)//!wim.CurrentApplicationUser.ShowNewDesign2)
-                {
-                    wim.OnLoadScript = string.Format("<script type=\"text/javascript\" src=\"{0}\"></script>", wim.AddApplicationPath("repository/wim/scripts/rte/tiny_mce_popup.js"));
-                    wim.OnLoadScript += string.Format("<script type=\"text/javascript\" src=\"{0}\"></script>", wim.AddApplicationPath("repository/wim/scripts/rte/plugins/advlink/js/advImplement.js"));
-                }
-            }
-
             if (Request.Query["notitle"] == "1")
+            {
                 Form.RichTextInnerlink = true;
+            }
 
             if (IsPostBack)
             {
                 if (Form.Type == 1)
+                {
                     Form.IsInternalLink = true;
+                }
                 else if (Form.Type == 2)
+                {
                     Form.IsExternalLink = true;
+                }
                 else if (Form.Type == 3)
+                {
                     Form.IsInternalDoc = true;
+                }
             }
             else
             {

@@ -1505,13 +1505,10 @@ namespace Sushi.Mediakiwi
             {
                 if (ex.InnerException != null && ex.InnerException.GetType() == typeof(UnauthorizedAccessException))
                 {
-                    //Utilities.CacheItemManager.FlushIndexOfCacheObjects("Data");
                     throw ex.InnerException;
-                    return null;
                 }
                 if (onExceptionThrow)
                 {
-                    //Utilities.CacheItemManager.FlushIndexOfCacheObjects("Data");
                     throw new Exception(string.Format("Could not initiate the requested type[{0}]!", className), ex);
                 }
                 return null;

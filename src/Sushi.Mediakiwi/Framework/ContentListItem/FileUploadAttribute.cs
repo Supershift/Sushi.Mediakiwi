@@ -61,7 +61,7 @@ namespace Sushi.Mediakiwi.Framework.ContentListItem
         {
             m_Candidate = null;
             if (Context.Request.HasFormContentType &&  Context.Request.Form.Files.Count > 0)
-                m_Candidate = new FileUpload(Context.Request.Form.Files[this.ID]);
+                m_Candidate = new FileUpload(Context.Request.Form.Files[ID]);
 
             //  Possible return types: System.Web.HttpPostedFile
 
@@ -78,17 +78,22 @@ namespace Sushi.Mediakiwi.Framework.ContentListItem
         /// <returns></returns>
         public Field WriteCandidate(WimControlBuilder build, bool isEditMode, bool isRequired, bool isCloaked)
         {
-            this.IsCloaked = isCloaked;
-            this.Mandatory = isRequired;
-            if (!isEditMode) return null;
-
-
-            if (true)//this.Console.CurrentApplicationUser.ShowNewDesign2)
+            IsCloaked = isCloaked;
+            Mandatory = isRequired;
+            if (!isEditMode)
             {
-                string accept = null;
-                if (!string.IsNullOrWhiteSpace(this.Accept))
-                    accept = $"accept=\"{Accept}\" ";
-                build.Append(string.Format(@"{8}{9}{5}
+                return null;
+            }
+
+            string accept = null;
+            string title = string.Concat(Title, Mandatory ? "<em>*</em>" : ""); // 0
+
+            if (!string.IsNullOrWhiteSpace(Accept))
+            {
+                accept = $"accept=\"{Accept}\" ";
+            }
+
+            build.Append(string.Format(@"{8}{9}{5}
 	<th><label for=""{1}"">{0}:</label></th>
 	<td{7}>{4}
 
@@ -101,46 +106,21 @@ namespace Sushi.Mediakiwi.Framework.ContentListItem
 			</fieldset>{2}
 	</td>{6}
 "
-                      , string.Concat(Title, Mandatory ? "<em>*</em>" : "") // 0
-                      , this.ID // 1
-                      , this.InteractiveHelp // 2
-                      , IsValid(isRequired) ? string.Empty : " error" // 3
-                      , CustomErrorText // 4
-                      , (Expression == OutputExpression.FullWidth || Expression == OutputExpression.Left) ? "<tr>" : null // 5
-                      , (Expression == OutputExpression.FullWidth || Expression == OutputExpression.Right) ? "</tr>" : null // 6
-                      , (Expression == OutputExpression.FullWidth && Console.HasDoubleCols) ? " colspan=\"3\" class=\"triple\"" : null // 7
-                      , ((Console.ExpressionPrevious == OutputExpression.Left && Expression == OutputExpression.FullWidth) || (Console.ExpressionPrevious == OutputExpression.Left && Expression == OutputExpression.Left)) ? "<th><label>&nbsp;</label></th><td>&nbsp;</td></tr>" : null // 8
-                      , ((Console.ExpressionPrevious == OutputExpression.FullWidth && Expression == OutputExpression.Right) || (Console.ExpressionPrevious == OutputExpression.Right && Expression == OutputExpression.Right)) ? "<tr><th><label>&nbsp;</label></th><td>&nbsp;</td>" : null // 9
-                      , AutoPostBack ? " autoupload" : null // 10
-                      , accept //11
-                      )
-                  );//<br class=""clear"">
-            }
-            else
-            {
+                  , title
+                  , ID // 1
+                  , InteractiveHelp // 2
+                  , IsValid(isRequired) ? string.Empty : " error" // 3
+                  , CustomErrorText // 4
+                  , (Expression == OutputExpression.FullWidth || Expression == OutputExpression.Left) ? "<tr>" : null // 5
+                  , (Expression == OutputExpression.FullWidth || Expression == OutputExpression.Right) ? "</tr>" : null // 6
+                  , (Expression == OutputExpression.FullWidth && Console.HasDoubleCols) ? " colspan=\"3\" class=\"triple\"" : null // 7
+                  , ((Console.ExpressionPrevious == OutputExpression.Left && Expression == OutputExpression.FullWidth) || (Console.ExpressionPrevious == OutputExpression.Left && Expression == OutputExpression.Left)) ? "<th><label>&nbsp;</label></th><td>&nbsp;</td></tr>" : null // 8
+                  , ((Console.ExpressionPrevious == OutputExpression.FullWidth && Expression == OutputExpression.Right) || (Console.ExpressionPrevious == OutputExpression.Right && Expression == OutputExpression.Right)) ? "<tr><th><label>&nbsp;</label></th><td>&nbsp;</td>" : null // 9
+                  , AutoPostBack ? " autoupload" : null // 10
+                  , accept //11
+                  )
+              );//<br class=""clear"">
 
-                build.Append(string.Format(@"{8}{9}{5}
-	<th><label for=""{1}"">{0}:</label></th>
-	<td{7}>{4}
-		<fieldset class=""uploadFile"">
-			<input type=""file"" class=""text{3}"" name=""{1}"" id=""{1}""/>
-		</fieldset>{2}
-	</td>{6}
-"
-                    , string.Concat(Title, Mandatory ? "<em>*</em>" : "") // 0
-                    , this.ID // 1
-                    , this.InteractiveHelp // 2
-                    , IsValid(isRequired) ? string.Empty : " error" // 3
-                    , CustomErrorText // 4
-                    , (Expression == OutputExpression.FullWidth || Expression == OutputExpression.Left) ? "<tr>" : null // 5
-                    , (Expression == OutputExpression.FullWidth || Expression == OutputExpression.Right) ? "</tr>" : null // 6
-                    , (Expression == OutputExpression.FullWidth && Console.HasDoubleCols) ? " colspan=\"3\" class=\"triple\"" : null // 7
-                    , ((Console.ExpressionPrevious == OutputExpression.Left && Expression == OutputExpression.FullWidth) || (Console.ExpressionPrevious == OutputExpression.Left && Expression == OutputExpression.Left)) ? "<th><label>&nbsp;</label></th><td>&nbsp;</td></tr>" : null // 8
-                    , ((Console.ExpressionPrevious == OutputExpression.FullWidth && Expression == OutputExpression.Right) || (Console.ExpressionPrevious == OutputExpression.Right && Expression == OutputExpression.Right)) ? "<tr><th><label>&nbsp;</label></th><td>&nbsp;</td>" : null // 9
-
-                    )
-                );
-            }
 
             return null;
         }

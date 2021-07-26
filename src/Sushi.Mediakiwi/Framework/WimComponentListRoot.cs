@@ -80,7 +80,6 @@ namespace Sushi.Mediakiwi.Framework
                 specs.Height = alternativeHeight;
             }
 
-            string height = "";
             string html = string.Concat("<span class=\"openlayerauto\" data-url=\"", url, "\" ", specs.Parse(true), " />");
             
             Add(html, false);
@@ -298,9 +297,11 @@ namespace Sushi.Mediakiwi.Framework
         public void CloseLayer()
         {
             if (_instance.OnSaveScript == null)
+            {
                 _instance.OnSaveScript = string.Empty;
+            }
 
-            _instance.OnSaveScript = string.Format(@"<input type=""hidden"" class=""closeLayer"" />");
+            _instance.OnSaveScript = @"<input type=""hidden"" class=""closeLayer"" />";
         }
 
         /// <summary>
@@ -325,15 +326,13 @@ namespace Sushi.Mediakiwi.Framework
         public void PostDataToSubSelect(string id, string value, bool canAddMultiple = false, string dataTarget = null)
         {
             if (_instance.OnSaveScript == null)
+            {
                 _instance.OnSaveScript = string.Empty;
+            }
 
-            _instance.OnSaveScript 
-                += string.Format(@"<input type=""hidden"" class=""postparent""{2}{3} id=""{0}"" value=""{1}"" />"
-                                    , id
-                                    , value
-                                    , canAddMultiple ? @" data-multiple=""1""" : null
-                                    , dataTarget != null ? string.Format(@" data-target=""{0}""", dataTarget) : null
-                                    );
+            var target = dataTarget != null ? $@" data-target=""{dataTarget}""" : null;
+
+            _instance.OnSaveScript += $@"<input type=""hidden"" class=""postparent""{(canAddMultiple ? @" data-multiple=""1""" : null)}{target} id=""{id}"" value=""{value}"" />";
         }
 
         /// <summary>
@@ -431,38 +430,47 @@ namespace Sushi.Mediakiwi.Framework
             /// <returns></returns>
             public string Parse(bool includeHtmlTag = false)
             {
-                string properties = string.Empty;
+                StringBuilder properties = new StringBuilder();
 
                 if (Width.HasValue)
-                    properties += string.Format("{2}width:{0}{1}", Width.Value
-                        , (IsWidthPercentage ? "%" : "px")
-                        , (properties.Length > 0 ? "," : string.Empty));
+                {
+                    properties.Append($"{(properties.Length > 0 ? "," : string.Empty)}width:{Width.Value}{(IsWidthPercentage ? "%" : "px")}");
+                }
 
                 if (Height.HasValue)
-                    properties += string.Format("{2}height:{0}{1}", Height.Value
-                        , (IsHeightPercentage ? "%" : "px")
-                        , (properties.Length > 0 ? "," : string.Empty));
+                {
+                    properties.Append($"{(properties.Length > 0 ? "," : string.Empty)}height:{Height.Value}{(IsHeightPercentage ? "%" : "px")}");
+                }
 
                 if (InFrame.HasValue)
-                    properties += string.Format("{1}iframe:{0}", InFrame.Value.ToString().ToLower(), (properties.Length > 0 ? "," : string.Empty));
+                {
+                    properties.Append($"{(properties.Length > 0 ? "," : string.Empty)}iframe:{InFrame.Value.ToString().ToLowerInvariant()}");
+                }
 
                 if (HasScrolling.HasValue)
-                    properties += string.Format("{1}scrolling:{0}", HasScrolling.Value.ToString().ToLower(), (properties.Length > 0 ? "," : string.Empty));
+                {
+                    properties.Append($"{(properties.Length > 0 ? "," : string.Empty)}scrolling:{HasScrolling.Value.ToString().ToLowerInvariant()}");
+                }
 
                 if (!string.IsNullOrEmpty(Class))
-                    properties += string.Format("{1}class:{0}", Class
-                        , (properties.Length > 0 ? "," : string.Empty));
+                {
+                    properties.Append($"{(properties.Length > 0 ? "," : string.Empty)}class:{Class}");
+                }
 
-                if (!string.IsNullOrEmpty(properties))
+                if (properties.Length > 0)
                 {
                     if (includeHtmlTag)
                     {
                         if (string.IsNullOrEmpty(Title))
-                            return string.Format(" data-layer=\"{0}\"", properties);
+                        {
+                            return $" data-layer=\"{properties}\"";
+                        }
                         else
-                            return string.Format(" data-layer=\"{0}\" data-title=\"{1}\"", properties, Title);
+                        {
+                            return $" data-layer=\"{properties}\" data-title=\"{Title}\"";
+                        }
                     }
-                    return properties;
+                    return properties.ToString();
                 }
                 return null;
             }
@@ -838,28 +846,44 @@ namespace Sushi.Mediakiwi.Framework
         {
             get
             {
-                if (name == "style") 
+                if (name == "style")
+                {
                     throw new Exception("Please use the Style object");
+                }
 
-                name = name.ToLower();
-                if (_arr == null) _arr = new Hashtable();
+                name = name.ToLowerInvariant();
+                if (_arr == null)
+                {
+                    _arr = new Hashtable();
+                }
 
                 if (_arr.ContainsKey(name))
+                {
                     return _arr[name].ToString();
+                }
                 return null;
             }
             set
             {
-                if (name == "style") 
+                if (name == "style")
+                {
                     throw new Exception("Please use the Style object");
+                }
 
-                name = name.ToLower();
-                if (_arr == null) _arr = new Hashtable();
+                name = name.ToLowerInvariant();
+                if (_arr == null)
+                {
+                    _arr = new Hashtable();
+                }
 
                 if (_arr.ContainsKey(name))
+                {
                     _arr[name] = value;
+                }
                 else
-                    _arr.Add(name, value);          
+                {
+                    _arr.Add(name, value);
+                }
             }
         }
 
@@ -1839,14 +1863,22 @@ namespace Sushi.Mediakiwi.Framework
         /// <returns></returns>
         internal string Links(Match m)
         {
-            string path = m.Value.ToLower().Replace("href=", string.Empty).Replace("\"", string.Empty);
+            string path = m.Value
+                .ToLowerInvariant()
+                .Replace("href=", string.Empty, StringComparison.InvariantCultureIgnoreCase)
+                .Replace("\"", string.Empty, StringComparison.InvariantCultureIgnoreCase);
+
             if (path.StartsWith("http://", StringComparison.OrdinalIgnoreCase))
-                return string.Format("href=\"{0}\"", path);
+            {
+                return $"href=\"{path}\"";
+            }
 
             if (path.StartsWith("?", StringComparison.OrdinalIgnoreCase))
-                path = string.Concat("wim.ashx", path);
+            {
+                path = $"wim.ashx{path}";
+            }
             
-            return string.Format("href=\"{0}\"", Console.AddApplicationPath(path, true));
+            return $"href=\"{Console.AddApplicationPath(path, true)}\"";
         }
 
 
@@ -2795,7 +2827,7 @@ namespace Sushi.Mediakiwi.Framework
                     {
                         if (key.StartsWith(validation, StringComparison.CurrentCultureIgnoreCase))
                         {
-                            dict.Add(Convert.ToInt32(key.Split('_')[1]), m_Root.Console.Form(key).ToString());
+                            dict.Add(Convert.ToInt32(key.Split('_')[1]), m_Root.Console.Form(key));
                         }
                     }
                 }
@@ -2886,8 +2918,11 @@ namespace Sushi.Mediakiwi.Framework
             [Obsolete("Can not be used in Mediakiwi", false)]
             public void AddXhtmlBody(string data, string url, string added)
             {
-                if (string.IsNullOrEmpty(data)) return;
-                AddXHtml(string.Format(@"<p><a class=""more"" href=""{1}"">{0}</a><br/>{2}</p>", Convert(data), url, added));
+                if (string.IsNullOrEmpty(data))
+                {
+                    return;
+                }
+                AddXHtml($@"<p><a class=""more"" href=""{url}"">{Convert(data)}</a><br/>{added}</p>");
             }
 
             /// <summary>
@@ -2898,8 +2933,11 @@ namespace Sushi.Mediakiwi.Framework
             [Obsolete("Can not be used in Mediakiwi", false)]
             public void AddXhtmlTitle(string data, string url)
             {
-                if (string.IsNullOrEmpty(data)) return;
-                AddXHtml(string.Format(@"<h1><a href=""{1}"">{0}</a></h1>", Convert(data), url));
+                if (string.IsNullOrEmpty(data))
+                {
+                    return;
+                }
+                AddXHtml($@"<h1><a href=""{url}"">{Convert(data)}</a></h1>");
             }
 
             public string TMP_ReportingSection { get; set; }
@@ -2912,8 +2950,12 @@ namespace Sushi.Mediakiwi.Framework
             [Obsolete("Can not be used in Mediakiwi", false)]
             public void AddXhtmlSubTitle(string data, string url)
             {
-                if (string.IsNullOrEmpty(data)) return;
-                AddXHtml(string.Format(@"<a href=""{1}""><h2 class=""sub""><span class=""label"">{0}</span></h2></a>", Convert(data), url));
+                if (string.IsNullOrEmpty(data))
+                {
+                    return;
+                }
+
+                AddXHtml($@"<a href=""{url}""><h2 class=""sub""><span class=""label"">{Convert(data)}</span></h2></a>");
             }
 
             /// <summary>
@@ -2923,8 +2965,11 @@ namespace Sushi.Mediakiwi.Framework
             [Obsolete("Can not be used in Mediakiwi", false)]
             public void AddXhtmlSubTitleItalic(string data)
             {
-                if (string.IsNullOrEmpty(data)) return;
-                AddXHtml(string.Format(@"<h2 class=""sub""><i class=""right"">{0}</i></h2>", Convert(data)));
+                if (string.IsNullOrEmpty(data))
+                {
+                    return;
+                }
+                AddXHtml($@"<h2 class=""sub""><i class=""right"">{Convert(data)}</i></h2>");
             }
 
             /// <summary>
@@ -2934,8 +2979,11 @@ namespace Sushi.Mediakiwi.Framework
             [Obsolete("Can not be used in Mediakiwi", false)]
             public void AddXhtmlTitle(string data)
             {
-                if (string.IsNullOrEmpty(data)) return;
-                AddXHtml(string.Format(@"<h1>{0}</h1>", Convert(data)));
+                if (string.IsNullOrEmpty(data))
+                {
+                    return;
+                }
+                AddXHtml($@"<h1>{Convert(data)}</h1>");
             }
 
             /// <summary>
@@ -2946,9 +2994,11 @@ namespace Sushi.Mediakiwi.Framework
             public void AddXhtmlSubTitle(string data)
             {
                 if (string.IsNullOrEmpty(data))
+                {
                     return;
+                }
 
-                AddXHtml(string.Format(@"<h2 class=""sub""><span class=""label"">{0}</span></h2>", Convert(data)));
+                AddXHtml($@"<h2 class=""sub""><span class=""label"">{Convert(data)}</span></h2>");
             }
 
             /// <summary>
@@ -2959,9 +3009,11 @@ namespace Sushi.Mediakiwi.Framework
             public void AddXhtmlReadMore(string url)
             {
                 if (string.IsNullOrEmpty(url))
+                {
                     return;
+                }
 
-                AddXHtml(string.Format(@"<p class=""toRight""><a class=""more"" href=""{0}"">Lees meer</a></p>", url));
+                AddXHtml($@"<p class=""toRight""><a class=""more"" href=""{url}"">Lees meer</a></p>");
             }
             #endregion Obsolete methods 
 
@@ -2976,7 +3028,14 @@ namespace Sushi.Mediakiwi.Framework
             /// </value>
             public Head Head
             {
-                get { if (_Head == null) _Head = new Head(this, m_Root); return _Head; }
+                get
+                {
+                    if (_Head == null)
+                    {
+                        _Head = new Head(this, m_Root);
+                    }
+                    return _Head;
+                }
                 set { _Head = value; }
             }
 
@@ -2989,7 +3048,14 @@ namespace Sushi.Mediakiwi.Framework
             /// </value>
             public Body Body
             {
-                get { if (_Body == null) _Body = new Body(m_Root); return _Body; }
+                get
+                {
+                    if (_Body == null)
+                    {
+                        _Body = new Body(m_Root);
+                    }
+                    return _Body;
+                }
                 set { _Body = value; }
             }
 
@@ -2999,10 +3065,15 @@ namespace Sushi.Mediakiwi.Framework
             /// <param name="data">The data.</param>
             public void AddXHtml(string data)
             {
-                if (string.IsNullOrEmpty(data)) return;
+                if (string.IsNullOrEmpty(data))
+                {
+                    return;
+                }
 
                 if (m_Root.XHtmlDataTop == null)
+                {
                     m_Root.XHtmlDataTop = new StringBuilder();
+                }
 
                 m_Root.XHtmlDataTop.Append(data);
             }
@@ -3013,10 +3084,15 @@ namespace Sushi.Mediakiwi.Framework
             /// <param name="data">The data.</param>
             public void AddXHtmlBottom(string data)
             {
-                if (string.IsNullOrEmpty(data)) return;
+                if (string.IsNullOrEmpty(data))
+                {
+                    return;
+                }
 
                 if (m_Root.XHtmlDataBottom == null)
+                {
                     m_Root.XHtmlDataBottom = new StringBuilder();
+                }
 
                 m_Root.XHtmlDataBottom.Append(data);
             }
@@ -3036,18 +3112,27 @@ namespace Sushi.Mediakiwi.Framework
             /// <param name="link">The link.</param>
             public void AddService(Link link)
             {
-                if (link == null || link.ID == 0) return;
+                if (link == null || link.ID == 0)
+                {
+                    return;
+                }
 
                 if (m_Root.XHtmlDataService == null)
+                {
                     m_Root.XHtmlDataService = new StringBuilder();
+                }
 
                 string url = link.GetUrl(m_Root.CurrentSite);
                 if (!string.IsNullOrEmpty(url))
                 {
                     if (link.AssetID.HasValue && !link.Asset.Exists)
-                        m_Root.XHtmlDataService.AppendFormat("<li><a href=\"#\" class=\"{2}\">{0}</a></li>", link.Text, url, "nof");
+                    {
+                        m_Root.XHtmlDataService.Append($"<li><a href=\"#\" class=\"nof\">{link.Text}</a></li>");
+                    }
                     else
-                        m_Root.XHtmlDataService.AppendFormat("<li><a href=\"{1}\" class=\"{2}\">{0}</a></li>", link.Text, url, link.AssetID.HasValue ? link.Asset.ExtentionClassName : "hyperlink");
+                    {
+                        m_Root.XHtmlDataService.Append($"<li><a href=\"{url}\" class=\"{(link.AssetID.HasValue ? link.Asset.ExtentionClassName : "hyperlink")}\">{link.Text}</a></li>");
+                    }
                 }
             }
 
@@ -3060,9 +3145,11 @@ namespace Sushi.Mediakiwi.Framework
             public void AddButton(string property, string title, string classType)
             {
                 if (m_Root.XHtmlDataButtons == null)
+                {
                     m_Root.XHtmlDataButtons = new StringBuilder();
+                }
 
-                m_Root.XHtmlDataButtons.AppendFormat("<li><a href=\"#\" id=\"{1}\" class=\"{2}\">{0}</a></li>", title, property, classType);
+                m_Root.XHtmlDataButtons.Append($"<li><a href=\"#\" id=\"{property}\" class=\"{classType}\">{title}</a></li>");
             }
 
             /// <summary>
@@ -3075,10 +3162,13 @@ namespace Sushi.Mediakiwi.Framework
             public void AddButton(string property, string title, string classType, string url)
             {
                 if (m_Root.XHtmlDataButtons == null)
+                {
                     m_Root.XHtmlDataButtons = new StringBuilder();
+                }
 
-                m_Root.XHtmlDataButtons.AppendFormat("<li><a href=\"{3}\" id=\"{1}\" class=\"{2}\">{0}</a></li>", title, property, classType, url);
+                m_Root.XHtmlDataButtons.Append($"<li><a href=\"{url}\" id=\"{property}\" class=\"{classType}\">{title}</a></li>");
             }
+
             /// <summary>
             /// Gets or sets a value indicating whether [top icon bar].
             /// </summary>
