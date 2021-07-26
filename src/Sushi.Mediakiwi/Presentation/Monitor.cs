@@ -567,7 +567,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation
 
                     // [CB:24-06-2015] Functionality regarding the bar to add 
                     // TODO check CanAddNewPageComponents property
-                    if (container.CurrentPage != null && container.CurrentListInstance.wim.CanAddNewPageComponents)
+                    if (container.CurrentPage != null)
                     {
                         var target = container.Request.Query["tab"].ToString();
                         if (string.IsNullOrEmpty(target))

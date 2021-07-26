@@ -92,7 +92,9 @@ namespace Sushi.Mediakiwi.UI
             var path = _Console.AddApplicationPath(CommonConfiguration.PORTAL_PATH);
             var requestPath = _Console.AddApplicationPath(_Console.Request.Path.Value);
             if (!requestPath.StartsWith(path, StringComparison.CurrentCultureIgnoreCase))
+            {
                 return;
+            }
 
             _Console.SetDateFormat();
 
@@ -107,20 +109,30 @@ namespace Sushi.Mediakiwi.UI
                 return;
             }
 
-            _Console.SaveVisit();
+            await _Console.SaveVisitAsync().ConfigureAwait(false);
 
             //  Obtain querystring requests
-            SetRequestType();
+            await SetRequestTypeAsync().ConfigureAwait(false);
+
             //  If an xml (ajax) request comes in output a correct response.
-            if (!await OutputAjaxRequestAsync()) return;
+            if (!await OutputAjaxRequestAsync().ConfigureAwait(false))
+            {
+                return;
+            }
+
             //  Define internal event-check value types
-            var  isDeleteTriggered = await SetFormModesAsync();
+            var  isDeleteTriggered = await SetFormModesAsync().ConfigureAwait(false);
+
             //  Checks and sets the current folder.
-            if (!CheckFolder()) return;
-            CheckSite();
+            if (!CheckFolder())
+            {
+                return;
+            }
+
+            await CheckSiteAsync().ConfigureAwait(false);
 
             //  Check the role base security
-            if (CheckSecurity(reStartWithNotificationList))
+            if (await CheckSecurityAsync(reStartWithNotificationList).ConfigureAwait(false))
             {
                 //  Is the request opened in a frame? 0 = no, 1 = yes, list mode, 2 = yes, form mode
                 int openInFrame = Utility.ConvertToInt(_Console.Request.Query["openinframe"]);
@@ -130,11 +142,11 @@ namespace Sushi.Mediakiwi.UI
                 var component = new Beta.GeneratedCms.Source.Component();
                 _Console.Component = component;
 
-                await HandleRequestAsync(grid, component, isDeleteTriggered);
+                await HandleRequestAsync(grid, component, isDeleteTriggered).ConfigureAwait(false);
             }
             else
             {
-                await _Console.Response.WriteAsync("no-access");
+                await _Console.Response.WriteAsync("no-access").ConfigureAwait(false);
             }
         }
 
@@ -746,21 +758,24 @@ namespace Sushi.Mediakiwi.UI
             //}
         }
 
-        bool CheckSecurity(bool reStartWithNotificationList)
+        async Task<bool> CheckSecurityAsync(bool reStartWithNotificationList)
         {
+            var sites = await _Console.CurrentListInstance.wim.CurrentApplicationUserRole.SitesAsync(_Console.CurrentApplicationUser).ConfigureAwait(false);
+
             //  ACL: Sites
             if (!_Console.CurrentListInstance.wim.CurrentApplicationUserRole.All_Sites
-                && _Console.CurrentListInstance.wim.CurrentApplicationUserRole.Sites(_Console.CurrentApplicationUser).Length == 0)
+                && (sites).Length == 0
+                && !reStartWithNotificationList)
             {
-                if (!reStartWithNotificationList)
-                    throw new Exception(ErrorCode.GetMessage(1002, _Console.CurrentApplicationUser.LanguageCulture));
+                throw new Exception(ErrorCode.GetMessage(1002, _Console.CurrentApplicationUser.LanguageCulture));
             }
+
             //  ACL: Sites
             if (!_Console.CurrentListInstance.wim.CurrentApplicationUserRole.All_Sites)
             {
-                if (!_Console.CurrentListInstance.wim.CurrentSite.HasRoleAccess(_Console.CurrentListInstance.wim.CurrentApplicationUser))
+                if (!await _Console.CurrentListInstance.wim.CurrentSite.HasRoleAccessAsync(_Console.CurrentListInstance.wim.CurrentApplicationUser).ConfigureAwait(false))
                 {
-                    var allowed = _Console.CurrentListInstance.wim.CurrentApplicationUserRole.Sites(_Console.CurrentApplicationUser);
+                    var allowed = await _Console.CurrentListInstance.wim.CurrentApplicationUserRole.SitesAsync(_Console.CurrentApplicationUser).ConfigureAwait(false);
                     if (allowed != null && allowed.Length > 0)
                     {
                         RedirectToChannelHomePage(allowed[0].ID);
@@ -768,13 +783,16 @@ namespace Sushi.Mediakiwi.UI
                     }
                     else
                     {
-                        if (_Console.CurrentListInstance.wim.CurrentApplicationUser.Sites(AccessFilter.RoleAndUser) != null && _Console.CurrentListInstance.wim.CurrentApplicationUser.Sites(AccessFilter.RoleAndUser).Length > 0)
+                        if ((await _Console.CurrentListInstance.wim.CurrentApplicationUser.SitesAsync(AccessFilter.RoleAndUser).ConfigureAwait(false))?.Length > 0)
                         {
-                            _Console.Response.Redirect(_Console.GetWimPagePath(_Console.CurrentListInstance.wim.CurrentApplicationUser.Sites(AccessFilter.RoleAndUser)[0].ID));
+                            var siteId = (await _Console.CurrentListInstance.wim.CurrentApplicationUser.SitesAsync(AccessFilter.RoleAndUser).ConfigureAwait(false))[0].ID;
+                            _Console.Response.Redirect(_Console.GetWimPagePath(siteId));
                             return false;
                         }
                         else
+                        {
                             throw new Exception("There are no active accessible channels available.");
+                        }
                     }
                 }
             }
@@ -789,14 +807,17 @@ namespace Sushi.Mediakiwi.UI
                 RedirectToChannelHomePage(_Console.ChannelIndentifier);
                 return false;
             }
+
             //  ACL: Folders
             if (_Console.CurrentListInstance.wim.CurrentFolder.Type != FolderType.Gallery
                 && !_Console.CurrentListInstance.wim.CurrentApplicationUserRole.All_Folders)
             {
-                if (!_Console.CurrentListInstance.wim.CurrentFolder.HasRoleAccess(_Console.CurrentListInstance.wim.CurrentApplicationUser))
+                if (!await _Console.CurrentListInstance.wim.CurrentFolder.HasRoleAccessAsync(_Console.CurrentListInstance.wim.CurrentApplicationUser).ConfigureAwait(false))
                 {
                     if (_Console.CurrentListInstance.wim.CurrentFolder.ParentID.HasValue)
+                    {
                         _Console.Response.Redirect(_Console.UrlBuild.GetFolderRequest(_Console.CurrentListInstance.wim.CurrentFolder.ParentID.Value));
+                    }
 
                     _Console.Response.Redirect(_Console.WimPagePath);
                     return false;
@@ -808,52 +829,60 @@ namespace Sushi.Mediakiwi.UI
             switch (_Console.CurrentListInstance.wim.CurrentFolder.Type)
             {
                 case FolderType.Undefined:
-                    approved = true; break;
-
+                    {
+                        approved = true; break;
+                    }
                 case FolderType.Page:
-                    approved = _Console.CurrentListInstance.wim.CurrentApplicationUserRole.CanSeePage;
-
+                    {
+                        approved = _Console.CurrentListInstance.wim.CurrentApplicationUserRole.CanSeePage;
+                    }
                     break;
                 case FolderType.List:
-                    if (_Console.CurrentListInstance.wim.CurrentList.Type == ComponentListType.Browsing)
                     {
-                        approved = _Console.CurrentListInstance.wim.CurrentApplicationUserRole.CanSeeFolder;
-                        if (!approved)
+                        if (_Console.CurrentListInstance.wim.CurrentList.Type == ComponentListType.Browsing)
                         {
-                            _Console.Response.Redirect(_Console.WimPagePath);
-                            return false;
+                            approved = _Console.CurrentListInstance.wim.CurrentApplicationUserRole.CanSeeFolder;
+                            if (!approved)
+                            {
+                                _Console.Response.Redirect(_Console.WimPagePath);
+                                return false;
+                            }
                         }
-                    }
-                    approved = _Console.CurrentListInstance.wim.CurrentApplicationUserRole.CanSeeList;
-                    if (_Console.CurrentList.Type == ComponentListType.Undefined && !_Console.CurrentListInstance.wim.CurrentApplicationUserRole.All_Lists)
-                    {
-                        if (!_Console.CurrentListInstance.wim.CurrentList.HasRoleAccess(_Console.CurrentListInstance.wim.CurrentApplicationUser))
+                        approved = _Console.CurrentListInstance.wim.CurrentApplicationUserRole.CanSeeList;
+                        if (_Console.CurrentList.Type == ComponentListType.Undefined && !_Console.CurrentListInstance.wim.CurrentApplicationUserRole.All_Lists)
                         {
-                            _Console.Response.Redirect(_Console.WimPagePath); 
-                            return false;
+                            if (!_Console.CurrentListInstance.wim.CurrentList.HasRoleAccess(_Console.CurrentListInstance.wim.CurrentApplicationUser))
+                            {
+                                _Console.Response.Redirect(_Console.WimPagePath);
+                                return false;
 
+                            }
                         }
                     }
                     break;
                 case FolderType.Gallery:
-                    approved = true;
-                    if (!_Console.CurrentListInstance.wim.CurrentApplicationUserRole.All_Galleries)
                     {
-                        Gallery currentGallery = Gallery.SelectOne(_Console.CurrentListInstance.wim.CurrentFolder.ID);
-                        if (!currentGallery.HasRoleAccess(_Console.CurrentListInstance.wim.CurrentApplicationUser))
+                        approved = true;
+                        if (!_Console.CurrentListInstance.wim.CurrentApplicationUserRole.All_Galleries)
                         {
-                            if (currentGallery.ParentID.HasValue)
+                            Gallery currentGallery = Gallery.SelectOne(_Console.CurrentListInstance.wim.CurrentFolder.ID);
+                            if (!currentGallery.HasRoleAccess(_Console.CurrentListInstance.wim.CurrentApplicationUser))
                             {
-                                _Console.Response.Redirect(_Console.UrlBuild.GetGalleryRequest(currentGallery.ParentID.Value));
-                            }
+                                if (currentGallery.ParentID.HasValue)
+                                {
+                                    _Console.Response.Redirect(_Console.UrlBuild.GetGalleryRequest(currentGallery.ParentID.Value));
+                                }
 
-                            _Console.Response.Redirect(_Console.WimPagePath);
-                            return false;
+                                _Console.Response.Redirect(_Console.WimPagePath);
+                                return false;
+                            }
                         }
                     }
                     break;
                 case FolderType.Administration:
-                    approved = _Console.CurrentListInstance.wim.CurrentApplicationUserRole.CanSeeAdmin;
+                    {
+                        approved = _Console.CurrentListInstance.wim.CurrentApplicationUserRole.CanSeeAdmin;
+                    }
                     break;
             }
 
@@ -889,13 +918,21 @@ namespace Sushi.Mediakiwi.UI
         /// <summary>
         /// Checks the site for channel requests.
         /// </summary>
-        void CheckSite()
+        async Task CheckSiteAsync()
         {
             if (_Console.CurrentList.SiteID.HasValue && _Console.ChannelIndentifier != _Console.CurrentList.SiteID.Value)
             {
-                if (_Console.CurrentList.IsInherited) return;
-                var site = Site.SelectOne(_Console.CurrentList.SiteID.Value);
-                if (site.Type.HasValue) return;
+                if (_Console.CurrentList.IsInherited)
+                {
+                    return;
+                }
+
+                var site = await Site.SelectOneAsync(_Console.CurrentList.SiteID.Value).ConfigureAwait(false);
+                if (site.Type.HasValue)
+                {
+                    return;
+                }
+
                 _Console.Response.Redirect(_Console.CurrentListInstance.wim.GetUrl());
             }
         }
@@ -952,7 +989,7 @@ namespace Sushi.Mediakiwi.UI
         /// <summary>
         /// Obtain request.path and querystring requests
         /// </summary>
-        void SetRequestType()
+        async Task SetRequestTypeAsync()
         {
             var folderId = default(int?);
             var targetname = default(string);
@@ -978,19 +1015,22 @@ namespace Sushi.Mediakiwi.UI
                 }
                 else
                 {
-                    var selection = Site.SelectAll().Where(x => x.Name.Equals(candidate, StringComparison.CurrentCultureIgnoreCase)).FirstOrDefault();
+                    var allSites = await Site.SelectAllAsync().ConfigureAwait(false);
+                    var selection = allSites.FirstOrDefault(x => x.Name.Equals(candidate, StringComparison.CurrentCultureIgnoreCase));
                     if (selection != null)
                     {
                         n++;
                         _Console.ChannelIndentifier = selection.ID;
                     }
                 }
+
                 if (_Console.ChannelIndentifier == 0)
                 {
                     _Console.ChannelIndentifier = Data.Environment.Current.DefaultSiteID.GetValueOrDefault();
                     if (_Console.ChannelIndentifier == 0)
                     {
-                        _Console.ChannelIndentifier = Site.SelectAll()[0].ID;
+                        var allSites = await Site.SelectAllAsync().ConfigureAwait(false);
+                        _Console.ChannelIndentifier = allSites[0].ID;
                     }
                 }
 
@@ -1019,7 +1059,7 @@ namespace Sushi.Mediakiwi.UI
                 if (split.Length - n - 1 > 0)
                 {
                     var completepath = string.Concat("/", string.Join("/", split.Skip(n).Take(split.Length - n - 1)), "/");
-                    _Console.CurrentFolder = Folder.SelectOne(completepath, _Console.ChannelIndentifier);
+                    _Console.CurrentFolder = await Folder.SelectOneAsync(completepath, _Console.ChannelIndentifier).ConfigureAwait(false);
 
                     if (_Console.CurrentFolder != null)
                     {
@@ -1039,7 +1079,8 @@ namespace Sushi.Mediakiwi.UI
                     _Console.ChannelIndentifier = Data.Environment.Current.DefaultSiteID.GetValueOrDefault();
                     if (_Console.ChannelIndentifier == 0)
                     {
-                        _Console.ChannelIndentifier = Site.SelectAll()[0].ID;
+                        var allSites = await Site.SelectAllAsync().ConfigureAwait(false);
+                        _Console.ChannelIndentifier = allSites[0].ID;
                     }
                 }
             }
@@ -1048,7 +1089,6 @@ namespace Sushi.Mediakiwi.UI
 
             //  Verify paging page
             _Console.ListPagingValue = _Console.Request.Query["set"];
-
             _Console.Group = Utility.ConvertToIntNullable(_Console.Request.Query["group"]);
             _Console.GroupItem = Utility.ConvertToIntNullable(_Console.Request.Query["groupitem"]);
 
@@ -1056,18 +1096,20 @@ namespace Sushi.Mediakiwi.UI
             _Console.Item = Utility.ConvertToIntNullable(_Console.Request.Query["page"], false);
             if (_Console.Item.HasValue)
             {
-                _Console.ApplyList(ComponentListType.Browsing);
+                await _Console.ApplyListAsync(ComponentListType.Browsing).ConfigureAwait(false);
                 _Console.ItemType = RequestItemType.Page;
                 return;
             }
+
             //  Verify asset request
             _Console.Item = Utility.ConvertToIntNullable(_Console.Request.Query["asset"], false);
             if (_Console.Item.HasValue)
             {
-                _Console.ApplyList(ComponentListType.Documents);
+                await _Console.ApplyListAsync(ComponentListType.Documents).ConfigureAwait(false);
                 _Console.ItemType = RequestItemType.Asset;
                 return;
             }
+
             //  Verify dashboard request
             _Console.Item = Utility.ConvertToIntNullable(_Console.Request.Query["dashboard"], false);
             if (_Console.Item.HasValue)
@@ -1075,12 +1117,16 @@ namespace Sushi.Mediakiwi.UI
                 _Console.ItemType = RequestItemType.Dashboard;
                 return;
             }
+
             //  Verify list-item request
             _Console.Item = Utility.ConvertToIntNullable(_Console.Request.Query["item"], false);
-            if (_Console.Item.HasValue) _Console.ItemType = RequestItemType.Item;
+            if (_Console.Item.HasValue)
+            {
+                _Console.ItemType = RequestItemType.Item;
+            }
 
             //  Apply the current component list based on the roaming environment settings
-            ApplyComponentList(folderId, targetname);
+            await ApplyComponentListAsync(folderId, targetname).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -1146,13 +1192,16 @@ namespace Sushi.Mediakiwi.UI
                     var target = _Console.Request.Query["tab"];
                     if (string.IsNullOrEmpty(target) && page > 0)
                     {
-                        var pageInstance = Page.SelectOne(page);
+                        var pageInstance = await Page.SelectOneAsync(page).ConfigureAwait(false);
                         var sections = pageInstance.Template.GetPageSections();
                         if (sections != null)
+                        {
                             target = sections.FirstOrDefault();
+                        }
                     }
 
-                    await AddToResponseAsync(Beta.GeneratedCms.Source.Xml.Component.Get(_Console, Utility.ConvertToInt(_Console.Request.Query["id"]), page, Utility.ConvertToInt(_Console.Request.Query["cmpt"]), target)).ConfigureAwait(false);
+                    var content = await Beta.GeneratedCms.Source.Xml.Component.GetAsync(_Console, Utility.ConvertToInt(_Console.Request.Query["id"]), page, Utility.ConvertToInt(_Console.Request.Query["cmpt"]), target).ConfigureAwait(false);
+                    await AddToResponseAsync(content).ConfigureAwait(false);
                 }
 
                 return false;
@@ -1163,24 +1212,15 @@ namespace Sushi.Mediakiwi.UI
         /// <summary>
         /// Apply the current component list based on the roaming environment settings
         /// </summary>
-        private bool ApplyComponentList(int? folderId, string name)
+        private async Task<bool> ApplyComponentListAsync(int? folderId, string name)
         {
-            //if (_Console.ItemType == RequestItemType.Undefined && !string.IsNullOrWhiteSpace(name))
-            //{
-            //    var urldecrypt = Utils.FromUrl(name);
-            //    var list = ComponentList.SelectOne(urldecrypt, null);
-            //    if (list != null && !list.IsNewInstance)
-            //    {
-            //        return _Console.ApplyList(list);
-            //    }
-            //}
             if (!string.IsNullOrWhiteSpace(name))
             {
                 var urldecrypt = Utils.FromUrl(name);
-                var list = ComponentList.SelectOne(urldecrypt, null);
+                var list = await ComponentList.SelectOneAsync(urldecrypt, null).ConfigureAwait(false);
                 if (list != null && !list.IsNewInstance)
                 {
-                    return _Console.ApplyList(list);
+                    return await _Console.ApplyListAsync(list).ConfigureAwait(false);
                 }
             }
 
@@ -1188,14 +1228,17 @@ namespace Sushi.Mediakiwi.UI
             if (!string.IsNullOrEmpty(_Console.Request.Query["list"]))
             {
                 //  The list reference can be a INT or a GUID
-                return _Console.ApplyList(_Console.Request.Query["list"]);
+                return await _Console.ApplyListAsync(_Console.Request.Query["list"]).ConfigureAwait(false);
             }
             else if (_Console.ItemType == RequestItemType.Asset)
             {
-                _Console.ApplyList(ComponentListType.Documents);
+                await _Console.ApplyListAsync(ComponentListType.Documents).ConfigureAwait(false);
             }
             else
-                _Console.ApplyList(typeof(AppCentre.Data.Implementation.Browsing));
+            {
+                await _Console.ApplyListAsync(typeof(AppCentre.Data.Implementation.Browsing)).ConfigureAwait(false);
+            }
+
             return true;
         }
 
