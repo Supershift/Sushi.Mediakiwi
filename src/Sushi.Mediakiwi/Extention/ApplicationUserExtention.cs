@@ -5,12 +5,18 @@ using Sushi.Mediakiwi.Data;
 using Sushi.Mediakiwi.Utilities;
 using System;
 using System.Net;
+using System.Threading.Tasks;
 
 public static class ApplicationUserExtention
 {
     public static Site[] Sites(this IApplicationUser inUser, AccessFilter accessFilter)
     {
         return Site.SelectAllAccessible(inUser, accessFilter);
+    }
+
+    public static async Task<Site[]> SitesAsync(this IApplicationUser inUser, AccessFilter accessFilter)
+    {
+        return await Site.SelectAllAccessibleAsync(inUser, accessFilter).ConfigureAwait(false);
     }
 
     /// <summary>

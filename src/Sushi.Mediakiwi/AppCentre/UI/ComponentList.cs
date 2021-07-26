@@ -23,7 +23,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// Gets or sets the search template site.
         /// </summary>
         /// <value>The search template site.</value>
-        [Framework.ContentListSearchItem.Choice_Dropdown("Channel", "SearchSites", false, false, Expression = OutputExpression.Alternating)]
+        [Framework.ContentListSearchItem.Choice_Dropdown("Channel", nameof(SearchSites), false, false, Expression = OutputExpression.Alternating)]
         public int FilterSite { get; set; }
 
         private ListItemCollection m_SearchSites;

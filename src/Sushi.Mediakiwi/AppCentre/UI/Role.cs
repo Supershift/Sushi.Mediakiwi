@@ -27,21 +27,21 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
 
         private Task Role_ListPreRender(ComponentListEventArgs arg)
         {
-            wim.SetPropertyVisibility("AllowedSites", !this.AllSites);
+            wim.SetPropertyVisibility("AllowedSites", !AllSites);
             return Task.CompletedTask;
         }
 
         async Task Role_ListDelete(ComponentListEventArgs e)
         {
-            await m_Implement.DeleteAsync();
+            await m_Implement.DeleteAsync().ConfigureAwait(false);
         }
 
         Mediakiwi.Data.IApplicationRole m_Implement;
 
         async Task Role_ListSave(ComponentListEventArgs e)
         {
-            m_Implement.Name = m_RoleName;
-            m_Implement.Description = m_Description;
+            m_Implement.Name = RoleName;
+            m_Implement.Description = Description;
 
             m_Implement.CanSeePage = CanSeePage;
             m_Implement.CanSeeList = CanSeeList;
@@ -57,40 +57,37 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             m_Implement.CanCreateList = CanCreateList;
             m_Implement.CanChangeList = CanChangeList;
 
-            m_Implement.GalleryRoot = this.GalleryRootID;
+            m_Implement.GalleryRoot = GalleryRootID;
 
             if (AllSites || m_Implement.All_Sites)
             {
                 m_Implement.IsAccessSite = false;
-                await Mediakiwi.Data.RoleRight.UpdateAsync(new int[0], Mediakiwi.Data.RoleRightType.Site, m_Implement.ID);
-            }
-            else
-            {
-
+                await Mediakiwi.Data.RoleRight.UpdateAsync(new int[0], Mediakiwi.Data.RoleRightType.Site, m_Implement.ID).ConfigureAwait(false);
             }
 
             if (AllLists || m_Implement.All_Lists)
             {
                 m_Implement.IsAccessList = false;
-                await Mediakiwi.Data.RoleRight.UpdateAsync(new int[0], Mediakiwi.Data.RoleRightType.List, m_Implement.ID);
+                await Mediakiwi.Data.RoleRight.UpdateAsync(new int[0], Mediakiwi.Data.RoleRightType.List, m_Implement.ID).ConfigureAwait(false);
             }
+
             if (AllFolders || m_Implement.All_Folders)
             {
                 m_Implement.IsAccessFolder = false;
-                await Mediakiwi.Data.RoleRight.UpdateAsync(new int[0], Mediakiwi.Data.RoleRightType.Folder, m_Implement.ID);
+                await Mediakiwi.Data.RoleRight.UpdateAsync(new int[0], Mediakiwi.Data.RoleRightType.Folder, m_Implement.ID).ConfigureAwait(false);
             }
+
             if (AllGalleries || m_Implement.All_Galleries)
             {
                 m_Implement.IsAccessGallery = false;
-                await Mediakiwi.Data.RoleRight.UpdateAsync(new int[0], Mediakiwi.Data.RoleRightType.Gallery, m_Implement.ID);
+                await Mediakiwi.Data.RoleRight.UpdateAsync(new int[0], Mediakiwi.Data.RoleRightType.Gallery, m_Implement.ID).ConfigureAwait(false);
             }
 
             m_Implement.All_Sites = AllSites;
             m_Implement.All_Lists = AllLists;
             m_Implement.All_Folders = AllFolders;
             m_Implement.All_Galleries = AllGalleries;
-            m_Implement.Dashboard = this.Dashboard;
-
+            //m_Implement.Dashboard = 0;
 
             if (e.SelectedKey == 0)
             {
@@ -101,44 +98,47 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                 m_Implement.IsAccessSite = false;
             }
 
-            await m_Implement.SaveAsync();
+            await m_Implement.SaveAsync().ConfigureAwait(false);
         }
 
         async Task Role_ListLoad(ComponentListEventArgs e)
         {
-            m_Implement = await Mediakiwi.Data.ApplicationRole.SelectOneAsync(e.SelectedKey);
+            m_Implement = await Mediakiwi.Data.ApplicationRole.SelectOneAsync(e.SelectedKey).ConfigureAwait(false);
             if (e.SelectedKey == 0)
+            {
                 return;
+            }
 
-            m_RoleName = m_Implement.Name;
-            m_Description = m_Implement.Description;
+            RoleName = m_Implement.Name;
+            Description = m_Implement.Description;
 
-            m_CanSeePage = m_Implement.CanSeePage;
-            m_CanSeeList = m_Implement.CanSeeList;
-            m_CanSeeGallery = m_Implement.CanSeeGallery;
+            CanSeePage = m_Implement.CanSeePage;
+            CanSeeList = m_Implement.CanSeeList;
+            CanSeeGallery = m_Implement.CanSeeGallery;
             CanSeeFolder = m_Implement.CanSeeFolder;
-            m_CanSeeAdmin = m_Implement.CanSeeAdmin;
+            CanSeeAdmin = m_Implement.CanSeeAdmin;
 
-            m_CanChange = m_Implement.CanChangePage;
-            m_CanCreate = m_Implement.CanCreatePage;
-            m_CanPublish = m_Implement.CanPublishPage;
-            m_CanDelete = m_Implement.CanDeletePage;
+            CanChange = m_Implement.CanChangePage;
+            CanCreate = m_Implement.CanCreatePage;
+            CanPublish = m_Implement.CanPublishPage;
+            CanDelete = m_Implement.CanDeletePage;
 
             CanCreateList = m_Implement.CanCreateList;
             CanChangeList = m_Implement.CanChangeList;
 
-            this.AllSites = m_Implement.All_Sites;
-            this.AllLists = m_Implement.All_Lists;
-            this.AllFolders = m_Implement.All_Folders;
-            this.AllGalleries = m_Implement.All_Galleries;
+            AllSites = m_Implement.All_Sites;
+            AllLists = m_Implement.All_Lists;
+            AllFolders = m_Implement.All_Folders;
+            AllGalleries = m_Implement.All_Galleries;
 
-            this.GalleryRootID = m_Implement.GalleryRoot;
-            this.Dashboard = m_Implement.Dashboard;
+            GalleryRootID = m_Implement.GalleryRoot;
+            //Dashboard = m_Implement.Dashboard;
 
-
-            if (e.SelectedKey == 0) return;
             if (!m_Implement.All_Sites)
+            {
                 wim.AddTab(new Guid("93D10F58-6A1A-493F-8ADB-E53FC7CEDE19"));
+            }
+
             //if (!m_Implement.All_Folders)
             //    wim.AddTab(new Guid("AB58D901-7305-4584-9133-53FB92684A2C"));
             //if (!m_Implement.All_Galleries)
@@ -150,18 +150,14 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             //FormMaps.Add(this);
         }
 
-
-
-
-
         async Task Role_ListSearch(ComponentListSearchEventArgs e)
         {
             wim.CanAddNewItem = true;
             wim.Page.HideTabs = true;
 
-            wim.ListDataColumns.Add("ID", "ID", ListDataColumnType.UniqueIdentifier);
-            wim.ListDataColumns.Add("Role", "Name", ListDataColumnType.HighlightPresent);
-            wim.ListDataColumns.Add("Description", "Description");
+            wim.ListDataColumns.Add(new ListDataColumn("ID", nameof(Mediakiwi.Data.ApplicationRole.ID), ListDataColumnType.UniqueIdentifier));
+            wim.ListDataColumns.Add(new ListDataColumn("Role", nameof(Mediakiwi.Data.ApplicationRole.Name), ListDataColumnType.HighlightPresent));
+            wim.ListDataColumns.Add(new ListDataColumn("Description", nameof(Mediakiwi.Data.ApplicationRole.Description)));
             //wim.ListDataColumns.Add("Settings", "CanSeeList");
             //wim.ListDataColumns.Add("Gallery", "CanSeeGallery");
             //wim.ListDataColumns.Add("Admin", "CanSeeAdmin");
@@ -171,60 +167,40 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             //wim.ListDataColumns.Add("Folder (all)", "All_Folders");
             //wim.ListDataColumns.Add("Gallery (all)", "All_Galleries");
 
-            wim.ListDataAdd(await Mediakiwi.Data.ApplicationRole.SelectAllAsync());
+            var results = await Mediakiwi.Data.ApplicationRole.SelectAllAsync().ConfigureAwait(false);
+            wim.ListDataAdd(results);
         }
 
-
         #region List attributes
-        private string m_RoleName;
+
         /// <summary>
         /// Gets or sets the name of the role.
         /// </summary>
         /// <value>The name of the role.</value>
         [Framework.ContentListItem.TextField("Title", 50, true)]
-        public string RoleName
-        {
-            get { return m_RoleName; }
-            set { m_RoleName = value; }
-        }
+        public string RoleName { get; set; }
 
-        private string m_Description;
         /// <summary>
         /// Gets or sets the description.
         /// </summary>
         /// <value>The description.</value>
         [Framework.ContentListItem.TextField("Description", 255, true)]
-        public string Description
-        {
-            get { return m_Description; }
-            set { m_Description = value; }
-        }
+        public string Description { get; set; }
 
-        private int m_Dashboard;
-        /// <summary>
-        /// Gets or sets the dashboard.
-        /// </summary>
-        /// <value>The dashboard.</value>
-        [Framework.ContentListItem.Choice_Dropdown("Dashboard", "AvailableDashboards", false, false)]
-        public int Dashboard
-        {
-            get { return m_Dashboard; }
-            set { m_Dashboard = value; }
-        }
+        ///// <summary>
+        ///// Gets or sets the dashboard.
+        ///// </summary>
+        ///// <value>The dashboard.</value>
+        //[Framework.ContentListItem.Choice_Dropdown("Dashboard", nameof(AvailableDashboards), false, false)]
+        //public int Dashboard { get; set; }
 
-        private string m_SubText1 = "Environment access";
         /// <summary>
         /// Gets or sets the sub text1.
         /// </summary>
         /// <value>The sub text1.</value>
         [Framework.ContentListItem.Section()]
-        public string SubText1
-        {
-            get { return m_SubText1; }
-            set { m_SubText1 = value; }
-        }
+        public string SubText1 { get; set; } = "Environment access";
 
-        private bool m_CanSeePage;
         /// <summary>
         /// Gets or sets a value indicating whether this instance can see page.
         /// </summary>
@@ -232,13 +208,8 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// 	<c>true</c> if this instance can see page; otherwise, <c>false</c>.
         /// </value>
         [Framework.ContentListItem.Choice_Checkbox("Pages", true, "Does this role have the right to control pages?", Expression = OutputExpression.Alternating)]
-        public bool CanSeePage
-        {
-            get { return m_CanSeePage; }
-            set { m_CanSeePage = value; }
-        }
+        public bool CanSeePage { get; set; }
 
-        private bool m_CanSeeList;
         /// <summary>
         /// Gets or sets a value indicating whether this instance can see list.
         /// </summary>
@@ -246,13 +217,8 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// 	<c>true</c> if this instance can see list; otherwise, <c>false</c>.
         /// </value>
         [Framework.ContentListItem.Choice_Checkbox("Lists", true, "Does this role have the right to control lists?", Expression = OutputExpression.Alternating)]
-        public bool CanSeeList
-        {
-            get { return m_CanSeeList; }
-            set { m_CanSeeList = value; }
-        }
+        public bool CanSeeList { get; set; }
 
-        private bool m_CanSeeGallery;
         /// <summary>
         /// Gets or sets a value indicating whether this instance can see gallery.
         /// </summary>
@@ -260,13 +226,8 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// 	<c>true</c> if this instance can see gallery; otherwise, <c>false</c>.
         /// </value>
         [Framework.ContentListItem.Choice_Checkbox("Galleries", "Does this role have the right to control galleries?", Expression = OutputExpression.Alternating)]
-        public bool CanSeeGallery
-        {
-            get { return m_CanSeeGallery; }
-            set { m_CanSeeGallery = value; }
-        }
+        public bool CanSeeGallery { get; set; }
 
-        private bool m_CanSeeAdmin;
         /// <summary>
         /// Gets or sets a value indicating whether this instance can see admin.
         /// </summary>
@@ -274,143 +235,93 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// 	<c>true</c> if this instance can see admin; otherwise, <c>false</c>.
         /// </value>
         [Framework.ContentListItem.Choice_Checkbox("Administration", true, "Does this role have the right to access the administration section?", Expression = OutputExpression.Alternating)]
-        public bool CanSeeAdmin
-        {
-            get { return m_CanSeeAdmin; }
-            set { m_CanSeeAdmin = value; }
-        }
+        public bool CanSeeAdmin { get; set; }
 
         [Framework.ContentListItem.Choice_Checkbox("Folder", false, "Does this role have the right to access any folder view?", Expression = OutputExpression.Alternating)]
         public bool CanSeeFolder { get; set; }
 
-        private string m_SubText2 = "Page rights";
         /// <summary>
         /// Gets or sets the sub text2.
         /// </summary>
         /// <value>The sub text2.</value>
-        [OnlyVisibleWhenTrue("CanSeePage")]
+        [OnlyVisibleWhenTrue(nameof(CanSeePage))]
         [Framework.ContentListItem.Section()]
-        public string SubText2
-        {
-            get { return m_SubText2; }
-            set { m_SubText2 = value; }
-        }
+        public string SubText2 { get; set; } = "Page rights";
 
-        private bool m_CanChange;
         /// <summary>
         /// Gets or sets a value indicating whether this instance can change.
         /// </summary>
         /// <value>
         /// 	<c>true</c> if this instance can change; otherwise, <c>false</c>.
         /// </value>
-        [OnlyVisibleWhenTrue("CanSeePage")]
+        [OnlyVisibleWhenTrue(nameof(CanSeePage))]
         [Framework.ContentListItem.Choice_Checkbox("Change", "The right to change content (pages)", Expression = OutputExpression.Alternating)]
-        public bool CanChange
-        {
-            get { return m_CanChange; }
-            set { m_CanChange = value; }
-        }
+        public bool CanChange { get; set; }
 
-        private bool m_CanCreate;
         /// <summary>
         /// Gets or sets a value indicating whether this instance can create.
         /// </summary>
         /// <value>
         /// 	<c>true</c> if this instance can create; otherwise, <c>false</c>.
         /// </value>
-        [OnlyVisibleWhenTrue("CanSeePage")]
+        [OnlyVisibleWhenTrue(nameof(CanSeePage))]
         [Framework.ContentListItem.Choice_Checkbox("Create", "The right to create content (pages and folders)", Expression = OutputExpression.Alternating)]
-        public bool CanCreate
-        {
-            get { return m_CanCreate; }
-            set { m_CanCreate = value; }
-        }
+        public bool CanCreate { get; set; }
 
-        private bool m_CanPublish;
         /// <summary>
         /// Gets or sets a value indicating whether this instance can publish.
         /// </summary>
         /// <value>
         /// 	<c>true</c> if this instance can publish; otherwise, <c>false</c>.
         /// </value>
-        [OnlyVisibleWhenTrue("CanSeePage")]
+        [OnlyVisibleWhenTrue(nameof(CanSeePage))]
         [Framework.ContentListItem.Choice_Checkbox("Publish", "The right to publish content (pages)", Expression = OutputExpression.Alternating)]
-        public bool CanPublish
-        {
-            get { return m_CanPublish; }
-            set { m_CanPublish = value; }
-        }
+        public bool CanPublish { get; set; }
 
-        private bool m_CanDelete;
         /// <summary>
         /// Gets or sets a value indicating whether this instance can delete.
         /// </summary>
         /// <value>
         /// 	<c>true</c> if this instance can delete; otherwise, <c>false</c>.
         /// </value>
-        [OnlyVisibleWhenTrue("CanSeePage")]
+        [OnlyVisibleWhenTrue(nameof(CanSeePage))]
         [Framework.ContentListItem.Choice_Checkbox("Remove", "The right to remove content (pages and folders)", Expression = OutputExpression.Alternating)]
-        public bool CanDelete
-        {
-            get { return m_CanDelete; }
-            set { m_CanDelete = value; }
-        }
+        public bool CanDelete { get; set; }
 
-        private string m_SubText4 = "List rights";
         /// <summary>
         /// Gets or sets the sub text3.
         /// </summary>
         /// <value>The sub text3.</value>
-        [OnlyVisibleWhenTrue("CanSeeList")]
+        [OnlyVisibleWhenTrue(nameof(CanSeeList))]
         [Framework.ContentListItem.Section()]
-        public string SubText4
-        {
-            get { return m_SubText4; }
-            set { m_SubText4 = value; }
-        }
+        public string SubText4 { get; set; } = "List rights";
 
-        private bool m_CanCreateList;
         /// <summary>
         /// Gets or sets a value indicating whether this instance can create list.
         /// </summary>
         /// <value>
         /// 	<c>true</c> if this instance can create list; otherwise, <c>false</c>.
         /// </value>
-        [OnlyVisibleWhenTrue("CanSeeList")]
+        [OnlyVisibleWhenTrue(nameof(CanSeeList))]
         [Framework.ContentListItem.Choice_Checkbox("Create", "The right to create list instances / folder", Expression = OutputExpression.Alternating)]
-        public bool CanCreateList
-        {
-            get { return m_CanCreateList; }
-            set { m_CanCreateList = value; }
-        }
+        public bool CanCreateList { get; set; }
 
-        private bool m_CanChangeList;
         /// <summary>
         /// Gets or sets a value indicating whether this instance can change list.
         /// </summary>
         /// <value>
         /// 	<c>true</c> if this instance can change list; otherwise, <c>false</c>.
         /// </value>
-        [OnlyVisibleWhenTrue("CanSeeList")]
+        [OnlyVisibleWhenTrue(nameof(CanSeeList))]
         [Framework.ContentListItem.Choice_Checkbox("Change", "The right to change list instances / folder", Expression = OutputExpression.Alternating)]
-        public bool CanChangeList
-        {
-            get { return m_CanChangeList; }
-            set { m_CanChangeList = value; }
-        }
+        public bool CanChangeList { get; set; }
 
-
-        private string m_SubText3 = "Channel and list access";
         /// <summary>
         /// Gets or sets the sub text3.
         /// </summary>
         /// <value>The sub text3.</value>
         [Framework.ContentListItem.Section()]
-        public string SubText3
-        {
-            get { return m_SubText3; }
-            set { m_SubText3 = value; }
-        }
+        public string SubText3 { get; set; } = "Channel and list access";
 
         /// <summary>
         /// Gets or sets a value indicating whether [all sites].
@@ -440,14 +351,6 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         [Framework.ContentListItem.Choice_Checkbox("All galleries", false, "Access to all galleries", Expression = OutputExpression.Alternating)]
         public bool AllGalleries { get; set; }
 
-        //[Sushi.Mediakiwi.Framework.ContentListItem.SubListSelect("Channels", "18b297dc-7e01-404d-bc45-bb3ea3eb344e", false)]
-        //public Mediakiwi.Data.SubList AllowedSites
-        //{
-        //    get; set;
-        //}
-
-
-
         ListItemCollection m_AvailableGalleries;
         /// <summary>
         /// Gets the available dashboards.
@@ -463,7 +366,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                     m_AvailableGalleries.Add(new ListItem("", ""));
                     foreach (Mediakiwi.Data.Gallery item in Mediakiwi.Data.Gallery.SelectAllAccessible(wim.CurrentApplicationUser))
                     {
-                        m_AvailableGalleries.Add(new ListItem(item.CompletePath, item.ID.ToString()));
+                        m_AvailableGalleries.Add(new ListItem(item.CompletePath, $"{item.ID}"));
                     }
                 }
                 return m_AvailableGalleries;
@@ -472,6 +375,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
 
         //[Sushi.Mediakiwi.Framework.ContentListItem.Choice_Dropdown("Root gallery", "AvailableGalleries")]
         public int? GalleryRootID { get; set; }
+
         #endregion
     }
 }
