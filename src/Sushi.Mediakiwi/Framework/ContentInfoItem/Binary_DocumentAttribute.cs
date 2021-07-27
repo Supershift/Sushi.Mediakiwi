@@ -212,7 +212,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
 
             if (m_Candidate?.ID > 0)
             {
-                OutputText = $"{m_Candidate.Title} ({(m_Candidate.Size > 0 ? (m_Candidate.Size / 1024) : 0)} KB)";
+                OutputText = $"{m_Candidate.Title} <span>({(m_Candidate.Size > 0 ? (m_Candidate.Size / 1024) : 0)} KB)</span>";
             }
 
 
@@ -273,24 +273,6 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
     
             }
 
-            if (m_Candidate != null && m_Candidate.ID != 0)
-            {
-                float fileSizeKb = (m_Candidate.Size > 0 ? (m_Candidate.Size / 1024) : 0);
-
-                if (System.IO.File.Exists(m_Candidate.LocalFilePath) || !string.IsNullOrEmpty(m_Candidate.RemoteLocation))
-                {
-                    OutputText = $"<a href=\"{m_Candidate.DownloadUrl}\">{m_Candidate.Title} ({fileSizeKb:N2} KB)</a>";
-                }
-                else
-                {
-                    OutputText = $"<a>{m_Candidate.Title} ({fileSizeKb:N2} KB) : (not present on server)</a>";
-                }
-            }
-            else
-            {
-                OutputText = "";
-            }
-
             if (isEditMode && isEnabled)
             {
                 Gallery gallery = null;
@@ -331,20 +313,27 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
 
                 string titleTag = string.Concat(Title, Mandatory ? "<em>*</em>" : "");
 
-                string url = string.Concat("&gallery=", galleryUrlParam, "&item=0");
+                string url = null;
                 string lst = null;
-                if (CanOnlyCreate)
+
+                IComponentList documentList = ComponentList.SelectOne(ComponentListType.Documents);
+                lst = documentList.ID.ToString();
+
+                if (m_Candidate.ID == 0)
                 {
-                    IComponentList documentList = ComponentList.SelectOne(ComponentListType.Documents);
-                    lst = documentList.ID.ToString();
+                    url = string.Concat("&gallery=", galleryUrlParam, "&item=0", "&isimage=0");
+                }
+                else
+                {
+                    url = string.Concat("&gallery=", galleryUrlParam, "&isimage=0");
                 }
 
                 int? key = null;
-                if (m_Candidate != null)
+
+                if (m_Candidate?.ID > 0)
                 {
                     key = m_Candidate.ID;
                 }
-
 
                 ApplyItemSelect(build, true, isEnabled, titleTag, ID, lst, url, false, isRequired, false, false, LayerSize.Small, false, 450,
                     null,

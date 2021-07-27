@@ -610,6 +610,20 @@ where
 
             return true;
         }
+
+        public void Delete()
+        {
+            var connector = ConnectorFactory.CreateConnector(new AssetMap(true));
+            connector.Delete(this);
+        }
+
+
+        public async Task DeleteAsync()
+        {
+            var connector = ConnectorFactory.CreateConnector(new AssetMap(true));
+            await connector.DeleteAsync(this).ConfigureAwait(false);
+        }
+
         public async Task<bool> SaveAsync()
         {
             Updated = Common.DatabaseDateTime;

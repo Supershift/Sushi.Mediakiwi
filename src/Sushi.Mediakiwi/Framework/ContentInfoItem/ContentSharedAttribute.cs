@@ -518,7 +518,7 @@ namespace Sushi.Mediakiwi.Framework
                             );
                         }
 
-                        list.AppendFormat("\n\t\t\t\t\t\t\t\t\t\t\t<li class=\"instant\"><a{7} data-layer=\"{5}\" title=\"{6}\"{4}>{1}</a><input type=\"hidden\" id=\"{0}${2}${8}\" name=\"{0}${2}${8}\" value=\"{2}|{3}\"/> </li>"
+                        list.AppendFormat("<li class=\"instant\"><a{7} data-layer=\"{5}\" title=\"{6}\"{4}>{1}</a><input type=\"hidden\" id=\"{0}${2}${8}\" name=\"{0}${2}${8}\" value=\"{2}|{3}\"/> </li>"
                             , item.Name
                             , item.Value
                             , item.TextID
@@ -547,7 +547,7 @@ namespace Sushi.Mediakiwi.Framework
                             );
                         }
 
-                        list.AppendFormat("\n\t\t\t\t\t\t\t\t\t\t\t<li class=\"instant\"><a{7} data-layer=\"{5}\" title=\"{6}\"{4}>{1}</a><figure class=\"icon-x del\"></figure><input type=\"hidden\" id=\"{0}${2}${8}\" name=\"{0}${2}${8}\" value=\"{2}|{3}\"/></li>"
+                        list.AppendFormat("<li class=\"instant\"><a{7} data-layer=\"{5}\" title=\"{6}\"{4}>{1}</a><figure class=\"icon-x del\"></figure><input type=\"hidden\" id=\"{0}${2}${8}\" name=\"{0}${2}${8}\" value=\"{2}|{3}\"/></li>"
                             , item.Name
                             , item.Value
                             , item.TextID

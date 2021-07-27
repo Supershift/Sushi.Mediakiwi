@@ -190,6 +190,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                 ImplementGallery.TypeID = 0; 
                 ImplementGallery.CompletePath = string.Concat(parent.CompletePath == Mediakiwi.Data.Common.FolderRoot ? "" : parent.CompletePath, "/", ImplementGallery.Name);
                 ImplementGallery.IsHidden = !IsVisible;
+                ImplementGallery.IsActive = true;
 
                 await ImplementGallery.SaveAsync().ConfigureAwait(false);
             }

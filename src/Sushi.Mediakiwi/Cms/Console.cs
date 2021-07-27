@@ -709,6 +709,11 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
             _VisitorManager.Save(CurrentVisitor, shouldRememberVisitorForNextVisit);
         }
 
+        public async Task SaveVisitAsync(bool shouldRememberVisitorForNextVisit = true)
+        {
+            await _VisitorManager.SaveAsync(CurrentVisitor, shouldRememberVisitorForNextVisit).ConfigureAwait(false);
+        }
+
         VisitorManager _VisitorManager;
         IVisitor m_CurrentVisitor;
         /// <summary>
@@ -779,39 +784,37 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
             }
         }
 
-        internal bool ApplyList(Type classname)
+        internal async Task<bool> ApplyListAsync(Type classname)
         {
-            CurrentList =ComponentList.SelectOne(classname.ToString());
+            CurrentList = await ComponentList.SelectOneAsync(classname.ToString()).ConfigureAwait(false);
             if (CurrentList == null || CurrentList.ID == 0)
             {
                 //TMP REMOVE!
                 var find = classname.ToString().Replace("Sushi.Mediakiwi", "Wim");
-                CurrentList =ComponentList.SelectOne(find);
+                CurrentList = await ComponentList.SelectOneAsync(find).ConfigureAwait(false);
             }
             if (CurrentList == null || CurrentList.ID == 0)
             {
                 throw new Exception($"Mediakiwi - Could not initialize {classname}");
             }
-            return ApplyList();
+            return await ApplyListAsync().ConfigureAwait(false);
         }
 
-        internal bool ApplyList(ComponentListType type)
+        internal async Task<bool> ApplyListAsync(ComponentListType type)
         {
-            CurrentList =ComponentList.SelectOne(type);
-            return ApplyList();
+            CurrentList = await ComponentList.SelectOneAsync(type).ConfigureAwait(false);
+            return await ApplyListAsync().ConfigureAwait(false);
         }
 
         /// <summary>
         /// Applies the list.
         /// </summary>
         /// <param name="typeId">The type id.</param>
-        bool ApplyList()
+        async Task<bool> ApplyListAsync()
         {
             if (CurrentList.IsNewInstance)
             {
-                //throw new Exception("This list does not exists.");
                 return false;
-                //m_CurrentList =ComponentList.SelectOne(ComponentListType.VersionUpdater);
             }
 
             IComponentListTemplate tmp = CurrentList.GetInstance(m_Application);
@@ -819,36 +822,32 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
             {
                 throw new Exception(string.Format("Could not find '{0}' or there could be a problem with initializing the class, this could be the case if there is coding present in the CTor!", CurrentList.ClassName));
             }
-
             CurrentListInstance = tmp;
             CurrentListInstance.wim.Console = this;
             CurrentListInstance.wim.CurrentList = CurrentList;
             CurrentListInstance.wim.CurrentEnvironment = CurrentEnvironment;
             CurrentListInstance.wim.CurrentApplicationUser = CurrentApplicationUser;
-            CurrentListInstance.wim.CurrentApplicationUserRole = ApplicationRole.SelectOne(CurrentApplicationUser.RoleID);
+            CurrentListInstance.wim.CurrentApplicationUserRole = await ApplicationRole.SelectOneAsync(CurrentApplicationUser.RoleID).ConfigureAwait(false);
 
             AddTrace("Monitor", "Start.ApplyComponentList.ApplyList.GetInstance");
 
-            //Response.Write(Request.Path.ToString());
-
-            //int channel =Utility.ConvertToInt(Request.Form["channel"], CurrentApplicationUser.Channel);
             int channel = Utility.ConvertToInt(ChannelIndentifier, CurrentEnvironment.DefaultSiteID.GetValueOrDefault());
             if (channel == 0)
             {
                 AddTrace("Monitor", "Start.ApplyComponentList.ApplyList.GetAllSites");
 
-                var list = Site.SelectAll();
+                var list = await Site.SelectAllAsync().ConfigureAwait(false);
                 if (list.Count > 0)
                 {
                     channel = list[0].ID;
                 }
             }
 
-            CurrentListInstance.wim.CurrentSite = Site.SelectOne(channel);
+            CurrentListInstance.wim.CurrentSite = await Site.SelectOneAsync(channel).ConfigureAwait(false);
 
             if (CurrentListInstance.wim.CurrentSite == null)
             {
-                CurrentListInstance.wim.CurrentSite = Site.SelectOne(Data.Environment.Current.DefaultSiteID.Value);
+                CurrentListInstance.wim.CurrentSite = await Site.SelectOneAsync(Data.Environment.Current.DefaultSiteID.Value).ConfigureAwait(false);
             }
 
             System.Threading.Thread.CurrentThread.CurrentCulture = CurrentListInstance.wim.CurrentCulture;
@@ -857,13 +856,13 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
             if (Form("thumbview") == "1")
             {
                 CurrentApplicationUser.ShowDetailView = false;
-                CurrentApplicationUser.Save();
+                await CurrentApplicationUser.SaveAsync();
             }
 
             if (Form("detailview") == "1")
             {
                 CurrentApplicationUser.ShowDetailView = true;
-                CurrentApplicationUser.Save();
+                await CurrentApplicationUser.SaveAsync();
             }
 
             //  Set the currentSite
@@ -878,35 +877,6 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
 
             return true;
         }
-
-        /// <summary>
-        /// Switches the channel.
-        /// </summary>
-        //void SwitchChannel()
-        //{
-        //    string url = WimPagePath;
-        //    //  Channel switch
-        //    if (CurrentListInstance.wim.CurrentFolder.SiteID != CurrentApplicationUser.Channel)
-        //    {
-        //       Folder folder =Folder.SelectOneChild(CurrentListInstance.wim.CurrentFolder.MasterID.GetValueOrDefault(CurrentListInstance.wim.CurrentFolder.ID), CurrentApplicationUser.Channel);
-        //        if (folder == null)
-        //        {
-        //            switch (CurrentListInstance.wim.CurrentFolder.Type)
-        //            {
-        //                case FolderType.Page: url = string.Concat(WimPagePath, "?top=1"); break;
-        //                case FolderType.List: url = string.Concat(WimPagePath, "?top=2"); break;
-        //                case FolderType.Gallery: url = string.Concat(WimPagePath, "?top=3"); break;
-        //                case FolderType.Administration: url = string.Concat(WimPagePath, "?top=4"); break;
-        //            }
-                   
-        //        }
-        //        else
-        //        {
-        //            url = string.Concat(WimPagePath, "?folder=", folder.ID);
-        //        }
-        //    }
-        //    Response.Redirect(url, true);
-        //}
 
         void ValidateChannelSwitch(int currentChannelID, int requestedChannelID)
         {
@@ -974,35 +944,35 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
         /// Applies the list.
         /// </summary>
         /// <param name="list">The list.</param>
-        internal bool ApplyList(IComponentList list)
+        internal async Task<bool> ApplyListAsync(IComponentList list)
         {
             CurrentList = list;
             Logic = CurrentList.ID;
             Title = CurrentList.Name;
-            return ApplyList();
+            return await ApplyListAsync().ConfigureAwait(false);
         }
 
         /// <summary>
         /// Applies the list.
         /// </summary>
         /// <param name="listInformation">The list information (can be GUID or ID).</param>
-        internal bool ApplyList(string listInformation)
+        internal async Task<bool> ApplyListAsync(string listInformation)
         {
             IComponentList list;
 
             if (Utility.IsNumeric(listInformation, out int candidate1))
             {
-                list = ComponentList.SelectOne(candidate1);
+                list = await ComponentList.SelectOneAsync(candidate1).ConfigureAwait(false);
             }
             else
             {
                 if (Utility.IsGuid(listInformation, out Guid candidate2))
                 {
-                    list = ComponentList.SelectOne(candidate2);
+                    list = await ComponentList.SelectOneAsync(candidate2).ConfigureAwait(false);
                 }
                 else
                 {
-                    list = ComponentList.SelectOne(listInformation);
+                    list = await ComponentList.SelectOneAsync(listInformation).ConfigureAwait(false);
                 }
             }
 
@@ -1011,13 +981,14 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
                 throw new Exception($"Could not find the requested list with information [{listInformation}]");
             }
 
-            return ApplyList(list);
+            return await ApplyListAsync(list).ConfigureAwait(false);
         }
+
 
         /// <summary>
         /// Applies the list.
         /// </summary>
-        internal bool ApplyList(ComponentList list)
+        internal async Task<bool> ApplyListAsync(ComponentList list)
         {
             CurrentList = list;
 
@@ -1025,7 +996,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
             Title = CurrentList.Name;
             AddTrace("Monitor", "Start.ApplyComponentList.ApplyList.end");
 
-            return ApplyList();
+            return await ApplyListAsync().ConfigureAwait(false);
         }
 
         /// <summary>
