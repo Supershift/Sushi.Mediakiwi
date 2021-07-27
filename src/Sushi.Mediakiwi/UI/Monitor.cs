@@ -162,7 +162,7 @@ namespace Sushi.Mediakiwi.UI
             if (await HandleAsyncRequestAsync(component).ConfigureAwait(false))
                 return;
 
-            if ((_Console.ItemType == RequestItemType.Item) || _Console.CurrentListInstance.wim.CanContainSingleInstancePerDefinedList)
+            if (_Console.ItemType == RequestItemType.Item || _Console.ItemType == RequestItemType.Asset || _Console.CurrentListInstance.wim.CanContainSingleInstancePerDefinedList)
             {//  Handles the list item request.
                 await HandleListItemRequestAsync(grid, component, isDeleteTriggered).ConfigureAwait(false);
             }
