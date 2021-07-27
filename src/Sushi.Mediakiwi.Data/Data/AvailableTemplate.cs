@@ -318,21 +318,24 @@ namespace Sushi.Mediakiwi.Data
             filter.AddParameter("@pageID", pageID);
 
             string sqlText = @" SELECT *
-                                FROM wim_AvailableTemplates
-                                JOIN wim_ComponentTemplates on ComponentTemplate_Key = AvailableTemplates_ComponentTemplate_Key
-                                LEFT JOIN wim_ComponentVersions on ComponentVersion_ComponentTemplate_Key = AvailableTemplates_ComponentTemplate_Key
-                                WHERE ComponentVersion_Page_Key = @pageID
-                                  AND AvailableTemplates_PageTemplate_Key = @pageTemplateID";
+                                FROM [wim_AvailableTemplates]
+                                JOIN [wim_ComponentTemplates] on [ComponentTemplate_Key] = [AvailableTemplates_ComponentTemplate_Key]
+                                LEFT JOIN [wim_ComponentVersions] on [ComponentVersion_ComponentTemplate_Key] = [AvailableTemplates_ComponentTemplate_Key]
+                                WHERE [ComponentVersion_Page_Key] = @pageID
+                                AND [ComponentVersion_key] is null
+                                AND [AvailableTemplates_PageTemplate_Key] = @pageTemplateID";
+                        
 
             if (onlyReturnFixedInCode)
             {
-                sqlText += "  AND (not AvailableTemplates_Fixed_Id is null or ComponentTemplate_IsFixed = 1)";
+                sqlText += "  AND (not [AvailableTemplates_Fixed_Id] is null or [ComponentTemplate_IsFixed] = 1)";
             }
 
-            sqlText += " ORDER BY AvailableTemplates_SortOrder ASC";
+            sqlText += " ORDER BY [AvailableTemplates_SortOrder] ASC";
 
             return connector.FetchAll(sqlText, filter).ToArray();
         }
+
 
         /// <summary>
         /// Selects the all template that are currently not on the page.
@@ -350,18 +353,19 @@ namespace Sushi.Mediakiwi.Data
             filter.AddParameter("@pageID", pageID);
 
             string sqlText = @" SELECT *
-                                FROM wim_AvailableTemplates
-                                JOIN wim_ComponentTemplates on ComponentTemplate_Key = AvailableTemplates_ComponentTemplate_Key
-                                LEFT JOIN wim_ComponentVersions on ComponentVersion_AvailableTemplate_Key = AvailableTemplates_Key
-                                WHERE ComponentVersion_Page_Key = @pageID
-                                  AND AvailableTemplates_PageTemplate_Key = @pageTemplateID";
+                                FROM [wim_AvailableTemplates]
+                                JOIN [wim_ComponentTemplates] on [ComponentTemplate_Key] = [AvailableTemplates_ComponentTemplate_Key]
+                                LEFT JOIN [wim_ComponentVersions] on [ComponentVersion_ComponentTemplate_Key] = [AvailableTemplates_ComponentTemplate_Key]
+                                WHERE [ComponentVersion_Page_Key] = @pageID
+                                AND [ComponentVersion_key] is null
+                                AND [AvailableTemplates_PageTemplate_Key] = @pageTemplateID";
 
             if (onlyReturnFixedInCode)
             {
-                sqlText += "  AND NOT AvailableTemplates_Fixed_Id IS NULL";
+                sqlText += "  AND (not [AvailableTemplates_Fixed_Id] is null or [ComponentTemplate_IsFixed] = 1)";
             }
 
-            sqlText += " ORDER BY AvailableTemplates_SortOrder ASC";
+            sqlText += " ORDER BY [AvailableTemplates_SortOrder] ASC";
 
             var result = await connector.FetchAllAsync(sqlText, filter);
             return result.ToArray();
