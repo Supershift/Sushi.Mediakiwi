@@ -82,11 +82,11 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
 
         void SetSourceVisibility(bool isHTMLSource)
         {
-            wim.SetPropertyVisibility("Location", !isHTMLSource);
-            wim.SetPropertyVisibility("TypeDefinition", !isHTMLSource);
-            wim.SetPropertyVisibility("Source", isHTMLSource);
-            wim.SetPropertyVisibility("SourceTag", isHTMLSource);
-            wim.SetPropertyVisibility("ReferenceID", !isHTMLSource);
+            wim.SetPropertyVisibility(nameof(Mediakiwi.Data.ComponentTemplate.Location), !isHTMLSource);
+            wim.SetPropertyVisibility(nameof(Mediakiwi.Data.ComponentTemplate.TypeDefinition), !isHTMLSource);
+            wim.SetPropertyVisibility(nameof(Mediakiwi.Data.ComponentTemplate.Source), isHTMLSource);
+            wim.SetPropertyVisibility(nameof(Mediakiwi.Data.ComponentTemplate.SourceTag), isHTMLSource);
+            wim.SetPropertyVisibility(nameof(Mediakiwi.Data.ComponentTemplate.ReferenceID), !isHTMLSource);
 
             if (isHTMLSource)
             {
@@ -183,6 +183,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             NestTypes.Add(new ListItem("Not nested", ""));
             NestTypes.Add(new ListItem("Equal source tags", "1"));
             NestTypes.Add(new ListItem("Adjacent source tags", "2"));
+
             wim.CanAddNewItem = true;
             Implement = await Mediakiwi.Data.ComponentTemplate.SelectOneAsync(e.SelectedKey).ConfigureAwait(false);
 

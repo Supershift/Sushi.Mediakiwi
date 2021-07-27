@@ -359,9 +359,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                                 , string.Concat(container.WimPagePath, "?list=", pageSettings.ID, "&item=", container.Item)//, "&tab=", sections[0])
                                 , Labels.ResourceManager.GetString("page_properties", new CultureInfo(container.CurrentApplicationUser.LanguageCulture))
                             ));
-                        }
-                        if (sections.Count() > 0)
-                        {
+
                             build.Append("<ul>");
                             foreach (var section in sections)
                             {
@@ -418,7 +416,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                     tabTag = string.Format(@"
 			            <li class=""active""><a href=""{1}"">{0}</a></li>"
                         , title
-                        , container.GetSafeUrl()
+                        , container.WimPagePath
                         );
                 }
             }
@@ -429,7 +427,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                 tabTag = string.Format(@"
 			            <li class=""active""><a href=""{1}"">{0}</a></li>"
                     , title
-                    , container.GetSafeUrl()
+                    , container.WimPagePath
                     );
             }
             #endregion
@@ -514,28 +512,29 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                         tabularList = container.CurrentListInstance.wim.m_Collection;
 
 
-                    string tabulars = null;
+                    StringBuilder tabulars = new StringBuilder();
                     if (tabularList != null)
                     {
-                        tabulars = "";
                         foreach (WimComponentListRoot.Tabular t in tabularList)
                         {
                             if (t.List.IsNewInstance)
+                            {
                                 continue;
+                            }
 
                             ApplyTabularUrl(container, t, 1);
 
-                            tabulars += string.Format(@"<li{2}><a href=""{1}"">{0}</a></li>"
-                                , t.TitleValue
-                                , t.Url
-                                , t.Selected ? " class=\"active\"" : null
-                                );
+                            tabulars.Append($@"<li{(t.Selected ? " class=\"active\"" : null)}><a href=""{t.Url}"">{t.TitleValue}</a></li>");
 
                             if (t.Selected)
+                            {
                                 selectedTab = t.List.ID;
+                            }
 
                             if (!container.Group.HasValue)
+                            {
                                 continue;
+                            }
 
                             if (container.CurrentListInstance.wim.CurrentList.ID == t.List.ID)
                             {
@@ -545,14 +544,12 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                                     {
                                         ApplyTabularUrl(container, t2, 2);
 
-                                        tabulars += string.Format(@"<li{2}><a href=""{1}"">{0}</a></li>"
-                                            , t2.TitleValue
-                                            , t2.Url
-                                            , t2.Selected ? " class=\"active\"" : null
-                                            );
+                                        tabulars.Append($@"<li{(t2.Selected ? " class=\"active\"" : null)}><a href=""{t2.Url}"">{t2.TitleValue}</a></li>");
 
                                         if (t2.Selected)
+                                        {
                                             selectedTab = t2.List.ID;
+                                        }
                                     }
                                 }
                             }
@@ -567,22 +564,24 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                                     int group2ElementId = Utility.ConvertToInt(container.Request.Query["group2item"]);
 
                                     if (t.List.ID == group2Id)
+                                    {
                                         cl.wim.DoListLoad(group2ElementId, 0);
+                                    }
                                     else
+                                    {
                                         cl.wim.DoListLoad(container.Item.Value, 0);
+                                    }
 
                                     if (cl.wim.m_Collection != null)
                                     {
                                         foreach (WimComponentListRoot.Tabular t2 in cl.wim.m_Collection)
                                         {
-                                            tabulars += string.Format(@"<li><a href=""{1}""{2}>{0}</a></li>"
-                                                , t2.TitleValue
-                                                , t2.Url
-                                                , t2.Selected ? " class=\"active\"" : null
-                                                );
+                                            tabulars.Append($@"<li><a href=""{t2.Url}""{(t2.Selected ? " class=\"active\"" : null)}>{t2.TitleValue}</a></li>");
 
                                             if (t2.Selected)
+                                            {
                                                 selectedTab = t2.List.ID;
+                                            }
                                         }
                                     }
                                 }
@@ -623,7 +622,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                         "
                             , itemTitle
                             , tmp.Url
-                            , string.IsNullOrEmpty(tabulars) ? string.Empty : string.Concat("<ul>", tabulars, "</ul>")
+                            , tabulars.Length>0 ? $"<ul>{tabulars}</ul>" : string.Empty 
                             );
                     }
                 }
@@ -633,7 +632,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                     tabTag = string.Format(@"
 			            <li class=""active""><a href=""{1}"">{0}</a></li>"
                         , container.CurrentList.Name
-                        , container.GetSafeUrl()
+                        , container.WimPagePath
                         );
                 }
             }
@@ -1006,7 +1005,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
 			</aside>"
                 , container.WimRepository
                 , currentName
-                , build.ToString()
+                , build
                 );
         }
 
@@ -2167,7 +2166,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                     {
                         build2.Append("</ul><ul class=\"subNavigation\" class=\"pseudoHover\">");
                         if (container.IsSortorderOn)
-                            build2.AppendFormat("<li><a href=\"{0}\" id=\"sortOrder\" class=\"sortOrder\">Turn sort order off</a></li>", container.GetSafeUrl());
+                            build2.AppendFormat("<li><a href=\"{0}\" id=\"sortOrder\" class=\"sortOrder\">Turn sort order off</a></li>", container.WimPagePath);
                         else
                             build2.AppendFormat("<li><a href=\"{0}\" id=\"sortOrder\" class=\"sortOrder postBack\">Turn sort order on</a></li>", "#");
                     }
@@ -2239,7 +2238,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                     {
                         build2.Append("</ul><ul class=\"subNavigation\" class=\"pseudoHover\">");
                         if (container.IsSortorderOn)
-                            build2.AppendFormat("<li><a href=\"{0}\" id=\"sortOrder\" class=\"sortOrder\">Turn sort order off</a></li>", container.GetSafeUrl());
+                            build2.AppendFormat("<li><a href=\"{0}\" id=\"sortOrder\" class=\"sortOrder\">Turn sort order off</a></li>", container.WimPagePath);
                         else
                             build2.AppendFormat("<li><a href=\"{0}\" id=\"sortOrder\" class=\"sortOrder postBack\">Turn sort order on</a></li>", "#");
                     }
@@ -2310,7 +2309,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
 
                         build2.Append("</ul><ul class=\"subNavigation\" class=\"pseudoHover\">");
                         if (container.IsSortorderOn)
-                            build2.AppendFormat("<li><a href=\"{0}\" id=\"sortOrder\" class=\"sortOrder\">Turn sort order off</a></li>", container.GetSafeUrl());
+                            build2.AppendFormat("<li><a href=\"{0}\" id=\"sortOrder\" class=\"sortOrder\">Turn sort order off</a></li>", container.WimPagePath);
                         else
                             build2.AppendFormat("<li><a href=\"{0}\" id=\"sortOrder\" class=\"sortOrder postBack\">Turn sort order on</a></li>", "#");
                     }

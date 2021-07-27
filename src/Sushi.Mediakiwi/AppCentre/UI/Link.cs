@@ -17,6 +17,11 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             public string Href { get; set; }
         }
 
+        LinkForm Form { get; set; }
+        Mediakiwi.Data.Link Implement { get; set; }
+
+        #region CTor
+
         /// <summary>
         /// Initializes a new instance of the <see cref="Link"/> class.
         /// </summary>
@@ -25,8 +30,8 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             wim.OpenInEditMode = true;
             wim.CanContainSingleInstancePerDefinedList = true;
 
-            wim.ListDataDependendProperties.Add("PageSelect");
-            wim.ListDataDependendProperties.Add("External");
+            wim.ListDataDependendProperties.Add(nameof(Mediakiwi.Data.Link.PageID));
+            wim.ListDataDependendProperties.Add(nameof(Mediakiwi.Data.Link.ExternalUrl));
             wim.HideOpenCloseToggle = true;
 
             ListLoad += Link_ListLoad;
@@ -37,157 +42,247 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             ListHeadless += Link_ListHeadless;
         }
 
+        #endregion CTor
+
+        #region List HeadLess
+
         private async Task Link_ListHeadless(HeadlessRequest e)
         {
-            var link = await Sushi.Mediakiwi.Data.Link.SelectOneAsync(e.Listitem.ID).ConfigureAwait(false);
+            var link = await Mediakiwi.Data.Link.SelectOneAsync(e.Listitem.ID).ConfigureAwait(false);
             if (link == null || link.ID == 0)
-                return;
-
-            var linkref = new PageHref();
-
-            linkref.Text = link.Text;
-
-            if (link.IsInternal)
             {
-                var pagelink = await Sushi.Mediakiwi.Data.Page.SelectOneAsync(link.PageID.GetValueOrDefault()).ConfigureAwait(false);
-                linkref.Href = Sushi.Mediakiwi.Data.Utility.ConvertUrl(pagelink?.InternalPath);
+                return;
             }
-            else
-                linkref.Href = link?.ExternalUrl;
+
+            var linkref = new PageHref()
+            {
+                Text = link.Text
+            };
+
+            switch (link.Type)
+            {
+                default:
+                case LinkType.Undefined:
+                case LinkType.ExternalUrl:
+                    {
+                        linkref.Href = link.ExternalUrl;
+                    }
+                    break;
+                case LinkType.InternalPage:
+                    {
+                        var pagelink = await Page.SelectOneAsync(link.PageID.GetValueOrDefault()).ConfigureAwait(false);
+                        linkref.Href = Utility.ConvertUrl(pagelink?.InternalPath);
+                    }
+                    break;
+                case LinkType.InternalAsset:
+                    {
+                        if (string.IsNullOrWhiteSpace(link?.Asset?.RemoteLocation) == false)
+                        {
+                            linkref.Href = link.Asset.RemoteLocation;
+                        }
+                    }
+                    break;
+            }
 
             e.Result = linkref;
         }
+
+        #endregion List HeadLess
+
+        #region List Action
 
         Task Link_ListAction(ComponentActionEventArgs e)
         {
             if (IsPostBack)
             {
-                bool hasError = false;
                 switch (Form.Type)
                 {
-                    case 1: hasError = !Implement.PageID.HasValue;
-                        if (hasError)
-                            wim.Notification.AddError("PageSelect", "Please apply all mandatory fields");
+                    case LinkType.InternalPage:
+                        {
+                            if (!Implement.PageID.HasValue)
+                            {
+                                wim.Notification.AddError(nameof(Mediakiwi.Data.Link.PageID), "Please apply all mandatory fields");
+                            }
+                        }
                         break;
-                    case 2: hasError = string.IsNullOrEmpty(Implement.ExternalUrl);
-                        if (hasError)
-                            wim.Notification.AddError("External", "Please apply all mandatory fields");
+                    case LinkType.ExternalUrl:
+                        {
+                            if (string.IsNullOrWhiteSpace(Implement.ExternalUrl))
+                            {
+                                wim.Notification.AddError(nameof(Mediakiwi.Data.Link.ExternalUrl), "Please apply all mandatory fields");
+                            }
+                        }
                         break;
-                    case 3: hasError = !Implement.AssetID.HasValue;
-                        if (hasError)
-                            wim.Notification.AddError("DocumentSelect", "Please apply all mandatory fields");
+                    case LinkType.InternalAsset:
+                        {
+                            if (!Implement.AssetID.HasValue)
+                            {
+                                wim.Notification.AddError(nameof(Mediakiwi.Data.Link.AssetID), "Please apply all mandatory fields");
+                            }
+                        }
                         break;
                 }
             }
             return Task.CompletedTask;
         }
+
+        #endregion List Action
+
+        #region List Prerender
 
         Task Link_ListPreRender(ComponentListEventArgs e)
         {
             if (IsPostBack)
             {
-                bool hasError = false;
                 switch (Form.Type)
                 {
-                    case 1: hasError = !Implement.PageID.HasValue; 
-                        if (hasError)
-                            wim.Notification.AddError("PageSelect", "Please apply all mandatory fields");
+                    case LinkType.InternalPage:
+                        {
+                            if (!Implement.PageID.HasValue)
+                            {
+                                wim.Notification.AddError(nameof(Mediakiwi.Data.Link.PageID), "Please apply all mandatory fields");
+                            }
+                        }
                         break;
-                    case 2: hasError = string.IsNullOrEmpty(Implement.ExternalUrl);
-                        if (hasError)
-                            wim.Notification.AddError("External", "Please apply all mandatory fields");
+                    case LinkType.ExternalUrl:
+                        {
+                            if (string.IsNullOrWhiteSpace(Implement.ExternalUrl))
+                            {
+                                wim.Notification.AddError(nameof(Mediakiwi.Data.Link.ExternalUrl), "Please apply all mandatory fields");
+                            }
+                        }
                         break;
-                    case 3: hasError = !Implement.AssetID.HasValue;
-                        if (hasError)
-                            wim.Notification.AddError("DocumentSelect", "Please apply all mandatory fields");
+                    case LinkType.InternalAsset:
+                        {
+                            if (!Implement.AssetID.HasValue)
+                            {
+                                wim.Notification.AddError(nameof(Mediakiwi.Data.Link.AssetID), "Please apply all mandatory fields");
+                            }
+                        }
                         break;
                 }
             }
             return Task.CompletedTask;
         }
+        #endregion List Prerender
+
+        #region List Delete
 
         Task Link_ListDelete(ComponentListEventArgs e)
         {
+            // [MR:19-07-2021] Can be removed ?
             //  Do not remove
             //Sushi.Mediakiwi.Data.Link link = Sushi.Mediakiwi.Data.Implement.SelectOne(e.SelectedKey);
             //Implement.Delete();
 
-            wim.OnDeleteScript = string.Format("<script type=\"text/javascript\">{0}</script>", "parent.removeLink();");
+            wim.OnDeleteScript = "<script type=\"text/javascript\">parent.removeLink();</script>";
+
             return Task.CompletedTask;
         }
 
+        #endregion List Delete
+
+        #region List Save
+
         async Task Link_ListSave(ComponentListEventArgs e)
         {
-            if (Form.RichTextInnerlink) 
+            if (Form.RichTextInnerlink)
+            {
                 Implement.Text = "#";
+            }
 
             if (Implement.ID == 0)
+            {
                 Implement.Created = DateTime.UtcNow;
+            }
 
-            Implement.IsInternal = (Form.Type == 1);
-
+            Implement.IsInternal = (Form.Type == LinkType.InternalPage);
             Implement.Alt = Utility.CleanLineFeed(Implement.Alt, false);
 
             if (string.IsNullOrEmpty(Implement.Text))
             {
                 switch (Form.Type)
                 {
-                    case 1:
-                        Page page = await Page.SelectOneAsync(Implement.PageID.Value, false);
-                        Implement.Text = page.LinkText; 
+                    case LinkType.InternalPage:
+                        {
+                            Page page = await Page.SelectOneAsync(Implement.PageID.Value, false).ConfigureAwait(false);
+                            Implement.Text = page.LinkText;
+                        }
                         break;
-                    //case 2: 
-                    //    Implement.Text = Form.IsExternalLink; 
-                    //    break;
-                    case 3:
-                        Asset asset = await Asset.SelectOneAsync(Implement.AssetID.Value);
-                        Implement.Text = asset.Title; 
+                    case LinkType.InternalAsset:
+                        {
+                            Asset asset = await Asset.SelectOneAsync(Implement.AssetID.Value).ConfigureAwait(false);
+                            Implement.Text = asset.Title;
+                        }
                         break;
                 }
             }
 
-            await Implement.SaveAsync();
-
-            string url = Implement.ExternalUrl;
-            if (Implement.IsInternal)
+            // Clean obsolete properties, based off type
+            switch (Form.Type)
             {
-                if (Implement.PageID.HasValue)
-                {
-                    Page page = await Page.SelectOneAsync(Implement.PageID.Value, false);
-                    if (page != null)
-                        url = string.Format("{0}{1}.aspx", page.CompletePath, page.Name);
-                }
+                case LinkType.InternalPage:
+                    {
+                        Implement.ExternalUrl = string.Empty;
+                        Implement.AssetID = null;
+                    }
+                    break;
+                case LinkType.ExternalUrl:
+                    {
+                        Implement.PageID = null;
+                        Implement.AssetID = null;
+                    }
+                    break;
+                case LinkType.InternalAsset:
+                    {
+                        Implement.ExternalUrl = string.Empty;
+                        Implement.PageID = null;
+                    }
+                    break;
             }
+
+            await Implement.SaveAsync().ConfigureAwait(false);
+
+            // [MR:19-07-2021] Can be removed ?
+            //string url = Implement.ExternalUrl;
+            //if (Implement.IsInternal && Implement.PageID.HasValue)
+            //{
+            //    Page page = await Page.SelectOneAsync(Implement.PageID.Value, false).ConfigureAwait(false);
+            //    if (page != null)
+            //    {
+            //        url = string.Format("{0}{1}.aspx", page.CompletePath, page.Name);
+            //    }
+            //}
 
             if (Form.RichTextInnerlink)
             {
                 if (Request.Query["referid"] == "tmce")
                 {
-                    wim.OnSaveScript = string.Format("<script type=\"text/javascript\">{0}</script>", string.Format("parent.insertLink('wim:{0}');", Implement.ID));
+                    wim.OnSaveScript = $"<script type=\"text/javascript\">parent.insertLink('wim:{Implement.ID}');</script>";
 
                 }
                 else
                 {
-                    wim.OnSaveScript = string.Format(@"<div class=""customLink cmd_createlink now_yes""><input type=""hidden"" id=""{0}"" value=""wim:{0}"" /></div>", Implement.ID);
+                    wim.OnSaveScript = $@"<div class=""customLink cmd_createlink now_yes""><input type=""hidden"" id=""{Implement.ID}"" value=""wim:{Implement.ID}"" /></div>";
                 }
             }
             else
             {
-                 wim.OnSaveScript = string.Format(@"<input type=""hidden"" class=""postparent"" id=""{0}"" value=""<a title='url: {2}'>{1}</a> (open in {3})"" />", Implement.ID, Implement.Text, Implement.GetUrl(wim.CurrentSite, false), Implement.TargetInfo);
+                 wim.OnSaveScript = $@"<input type=""hidden"" class=""postparent"" id=""{Implement.ID}"" value=""<a title='url: {Implement.GetUrl(wim.CurrentSite, false)}'>{Implement.Text}</a> (open in {Implement.TargetInfo})"" />";
             }
         }
+        #endregion List Save
 
-        LinkForm Form { get; set; }
-        Mediakiwi.Data.Link Implement { get; set; }
+        #region List Load
 
         async Task Link_ListLoad(ComponentListEventArgs e)
         {
-            Implement = await Mediakiwi.Data.Link.SelectOneAsync(e.SelectedKey);
+            Implement = await Mediakiwi.Data.Link.SelectOneAsync(e.SelectedKey).ConfigureAwait(false);
 
             Form = new LinkForm(Implement);
             FormMaps.Add(Form);
 
-            wim.SetPropertyVisibility("Apply", false);
+            wim.SetPropertyVisibility(nameof(LinkForm.Apply), false);
 
             if (Request.Query["referid"] == "tmce")
             {
@@ -199,31 +294,49 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             }
 
             if (Request.Query["notitle"] == "1")
+            {
                 Form.RichTextInnerlink = true;
+            }
 
             if (IsPostBack)
             {
-                if (Form.Type == 1)
-                    Form.IsInternalLink = true;
-                else if (Form.Type == 2)
-                    Form.IsExternalLink = true;
-                else if (Form.Type == 3)
-                    Form.IsInternalDoc = true;
+                switch (Form.Type)
+                {
+                    default:
+                    case LinkType.Undefined:
+                    case LinkType.ExternalUrl:
+                        {
+                            Form.IsExternalLink = true;
+                            if (string.IsNullOrEmpty(Implement.ExternalUrl))
+                            {
+                                Implement.ExternalUrl = "https://www.";
+                            }
+                        }
+                        break;
+                    case LinkType.InternalPage:
+                        {
+                            Form.IsInternalLink = true;
+                        }
+                        break;
+                    case LinkType.InternalAsset:
+                        {
+                            Form.IsInternalDoc = true;
+                        }
+                        break;
+                }
             }
             else
             {
                 if (e.SelectedKey == 0)
                 {
-                    Form.Type = 2;
+                    Form.Type = LinkType.ExternalUrl;
                     Form.IsExternalLink = true;
                     Implement.ExternalUrl = "https://www.";
                     return;
                 }
             }
-            if (e.SelectedKey == 0)
-                return;
 
-            if (Implement == null || Implement.ID == 0)
+            if (e.SelectedKey == 0 || Implement == null || Implement.ID == 0)
             {
                 return;
             }
@@ -233,28 +346,27 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                 switch (Implement.Type)
                 {
                     case LinkType.ExternalUrl:
-                        Form.Type = 2;
-                        Form.IsExternalLink = true;
+                        {
+                            Form.Type = LinkType.ExternalUrl;
+                            Form.IsExternalLink = true;
+                        }
                         break;
                     case LinkType.InternalAsset:
-                        Form.Type = 3;
-                        Form.IsInternalDoc = true;
+                        {
+                            Form.Type = LinkType.InternalAsset;
+                            Form.IsInternalDoc = true;
+                        }
                         break;
                     default:
-                        Form.Type = 1;
-                        Form.IsInternalLink = true;
+                        {
+                            Form.Type = LinkType.InternalPage;
+                            Form.IsInternalLink = true;
+                        }
                         break;
                 }
             }
-
-            //m_Title = Implement.Text;
-            //m_Target = Implement.Target.ToString();
-
-            //this.m_External = Implement.ExternalUrl;
-            //this.PageSelect = Implement.PageID;
-            //this.DocumentSelect = Implement.AssetID;
-
-            //m_Alt = Implement.Alt;
         }
+
+        #endregion List Load
     }
 }

@@ -43,6 +43,8 @@ namespace Sushi.Mediakiwi.Data
 
         Site[] Sites(IApplicationUser user);
 
+        Task<Site[]> SitesAsync(IApplicationUser user);
+
         IComponentList[] Lists(IApplicationUser user);
 
         Gallery[] Galleries(IApplicationUser user);

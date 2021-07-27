@@ -89,7 +89,6 @@
     <Compile Include="AppCentre\UI\ComponentList.cs" />
     <Compile Include="AppCentre\UI\ComponentListData.cs" />
     <Compile Include="AppCentre\UI\ComponentListProperties.cs" />
-    <Compile Include="AppCentre\UI\ComponentListSense.cs" />
     <Compile Include="AppCentre\UI\ComponentListSettings.cs" />
     <Compile Include="AppCentre\UI\Demonstration.cs" />
     <Compile Include="AppCentre\UI\Document.cs" />

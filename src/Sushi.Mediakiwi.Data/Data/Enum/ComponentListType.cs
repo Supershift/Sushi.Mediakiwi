@@ -167,7 +167,7 @@ namespace Sushi.Mediakiwi.Data
         /// <summary>
         ///
         /// </summary>
-        ComponentListScheduling = 32,
+        //ComponentListScheduling = 32,
 
         /// <summary>
         ///
