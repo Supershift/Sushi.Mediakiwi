@@ -39,12 +39,20 @@ namespace Sushi.Mediakiwi.Framework.Functions
 
         }
 
-        public async Task Verify()
+        public async Task Verify(bool execute, bool executeAction)
         {
-            await Verify(Markup.sql_tables).ConfigureAwait(false);
-            await Verify(Markup.sql_views).ConfigureAwait(false);
-            await Verify(Markup.sql_data).ConfigureAwait(false);
-            await Verify(Markup.sql_actions).ConfigureAwait(false);
+            if (execute)
+            {
+                await Verify(Markup.sql_tables).ConfigureAwait(false);
+                await Verify(Markup.sql_views).ConfigureAwait(false);
+                await Verify(Markup.sql_data).ConfigureAwait(false);
+
+                // this contains cleanup jobs, so excluded
+                if (executeAction)
+                {
+                    await Verify(Markup.sql_actions).ConfigureAwait(false);
+                }
+            }
         }
 
         /// <summary>
