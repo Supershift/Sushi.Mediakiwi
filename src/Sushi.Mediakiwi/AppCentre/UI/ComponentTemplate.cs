@@ -1,9 +1,6 @@
-using Sushi.Mediakiwi.Data;
 using Sushi.Mediakiwi.Framework;
 using Sushi.Mediakiwi.UI;
 using System;
-using System.Data;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
@@ -30,14 +27,16 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                 if (m_SearchSites != null) return m_SearchSites;
 
                 m_SearchSites = new ListItemCollection();
-                ListItem li;
                 m_SearchSites.Add(new ListItem("", ""));
 
                 foreach (var site in Mediakiwi.Data.Site.SelectAll())
                 {
-                    if (site.MasterID.GetValueOrDefault() > 0) continue;
-                    li = new ListItem(site.Name, site.ID.ToString());
-                    m_SearchSites.Add(li);
+                    if (site.MasterID.GetValueOrDefault() > 0)
+                    {
+                        continue;
+                    }
+
+                    m_SearchSites.Add(new ListItem(site.Name, $"{site.ID}"));
                 }
                 return m_SearchSites;
             }
@@ -54,7 +53,6 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         public ComponentTemplate()
         {
             wim.OpenInEditMode = true;
-            //IS_HEADLESS = true;
 
             ListSave += ComponentTemplate_ListSave;
             ListPreRender += ComponentTemplate_ListPreRender;
@@ -102,16 +100,6 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
 
         #endregion Set Source Visibility
 
-        ///// <summary>
-        ///// Gets or sets a value indicating whether [set all page cache].
-        ///// </summary>
-        ///// <value><c>true</c> if [set all page cache]; otherwise, <c>false</c>.</value>
-        //[OnlyVisibleWhenFalse("IS_HEADLESS")]
-        //[Framework.ContentListSearchItem.Button("Set pagelevel cache", AskConfirmation = true, IconTarget = ButtonTarget.TopRight)]
-        //public bool SetAllPageCache { get; set; }
-
-        //public bool IS_HEADLESS { get; set; }
-
         #region List Search
 
         /// <summary>
@@ -127,45 +115,10 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             wim.ListDataColumns.Add(new ListDataColumn("Sourcetag", nameof(Mediakiwi.Data.ComponentTemplate.SourceTag)) { ColumnWidth = 250 });
             wim.ListDataColumns.Add(new ListDataColumn("Description", nameof(Mediakiwi.Data.ComponentTemplate.Description)));
             
-
             var templates = await Mediakiwi.Data.ComponentTemplate.SearchAllAsync(FilterText, FilterSite).ConfigureAwait(false);
             wim.ForceLoad = true;
 
-            //if (FilterTarget > 0 || FilterTemplate > 0)
-            //{
-            //    if (FilterTemplate > 0)
-            //    {
-            //        bool checkForService = FilterTarget == 2;
-            //        IAvailableTemplate[] available = AvailableTemplate.SelectAll(FilterTemplate);
-
-            //        templates = (from item in templates
-            //                     join relation in available on item.ID equals relation.ComponentTemplateID
-            //                     select item).ToArray();
-            //    }
-            //    if (FilterTarget > 0)
-            //    {
-            //        if (FilterTarget == 1)
-            //            templates = (from item in templates where item.IsSecundaryContainerItem == false select item).ToArray();
-            //        else if (FilterTarget == 2)
-            //            templates = (from item in templates where item.IsSecundaryContainerItem select item).ToArray();
-            //    }
-
-            //}
-
-            //if (SetAllPageCache)
-            //{
-            //    foreach (var item in templates)
-            //    {
-            //        if (item.CacheLevel == 0)
-            //        {
-            //            item.CacheLevel = 2;
-            //            item.Save();
-            //        }
-            //    }
-            //}
-
             wim.ListDataAdd(templates);
-          //  return Task.CompletedTask;
         }
 
         #endregion List Search
@@ -262,127 +215,5 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         public int FilterSite { get; set; }
         
         #endregion Search UI Elements
-
-        //private ListItemCollection m_Sites;
-        ///// <summary>
-        ///// Gets the sites.
-        ///// </summary>
-        ///// <value>The sites.</value>
-        //public ListItemCollection Sites
-        //{
-        //    get
-        //    {
-        //        if (m_Sites != null) return m_Sites;
-
-        //        m_Sites = new ListItemCollection();
-        //        ListItem li;
-        //        m_Sites.Add(new ListItem("-- select a site --", ""));
-
-        //        foreach (var site in Mediakiwi.Data.Site.SelectAll())
-        //        {
-        //            if (site.MasterID.GetValueOrDefault() > 0) continue;
-        //            li = new ListItem(site.Name, site.ID.ToString());
-        //            m_Sites.Add(li);
-        //        }
-
-        //        return m_Sites;
-        //    }
-        //}
-
-        //[OnlyVisibleWhenFalse("IS_HEADLESS")]
-        //[Framework.ContentListSearchItem.Choice_Dropdown("Page template", "PageTemplates", true, true, Expression = OutputExpression.Alternating)]
-        //public int FilterTemplate { get; set; }
-
-
-
-        //private ListItemCollection m_PageTemplates;
-        ///// <summary>
-        ///// Gets the page templates.
-        ///// </summary>
-        ///// <value>The page templates.</value>
-        //public ListItemCollection PageTemplates
-        //{
-        //    get
-        //    {
-        //        if (m_PageTemplates != null) return m_PageTemplates;
-
-        //        m_PageTemplates = new ListItemCollection();
-        //        ListItem li;
-        //        m_PageTemplates.Add(new ListItem("", ""));
-
-        //        foreach (var template in Mediakiwi.Data.PageTemplate.SelectAll())
-        //        {
-        //            li = new ListItem(string.Format("{1:00}. {0}", template.Name, template.ReferenceID), template.ID.ToString());
-        //            m_PageTemplates.Add(li);
-        //        }
-
-        //        return m_PageTemplates;
-        //    }
-        //}
-
-        //[OnlyVisibleWhenFalse("IS_HEADLESS")]
-        //[Framework.ContentListSearchItem.Choice_Dropdown("Target", "Targets", true, true, Expression = OutputExpression.Alternating)]
-        //public int FilterTarget { get; set; }
-
-        //private ListItemCollection m_Targets;
-        ///// <summary>
-        ///// Gets the page templates.
-        ///// </summary>
-        ///// <value>The page templates.</value>
-        //public ListItemCollection Targets
-        //{
-        //    get
-        //    {
-        //        if (m_Targets != null) return m_Targets;
-
-        //        m_Targets = new ListItemCollection();
-        //        m_Targets.Add(new ListItem("", ""));
-        //        m_Targets.Add(new ListItem("Main content", "1"));
-        //        m_Targets.Add(new ListItem("Service column", "2"));
-
-        //        return m_Targets;
-        //    }
-        //}
-
-        //private ListItemCollection m_CacheTypes;
-        ///// <summary>
-        ///// Gets the cache types.
-        ///// </summary>
-        ///// <value>The cache types.</value>
-        //public ListItemCollection CacheTypes
-        //{
-        //    get
-        //    {
-        //        if (m_CacheTypes != null) return m_CacheTypes;
-
-        //        m_CacheTypes = new ListItemCollection();
-        //        ListItem li;
-        //        m_CacheTypes.Add(new ListItem("No cache", "0"));
-        //        m_CacheTypes.Add(new ListItem("Component based", "1"));
-        //        m_CacheTypes.Add(new ListItem("Page based", "2"));
-        //        return m_CacheTypes;
-        //    }
-        //}
-
-
-        //private ListItemCollection m_AjaxTypes;
-        ///// <summary>
-        ///// Gets the cache types.
-        ///// </summary>
-        ///// <value>The cache types.</value>
-        //public ListItemCollection AjaxTypes
-        //{
-        //    get
-        //    {
-        //        if (m_AjaxTypes != null) return m_AjaxTypes;
-
-        //        m_AjaxTypes = new ListItemCollection();
-        //        m_AjaxTypes.Add(new ListItem("Fully cacheable", "0"));
-        //        m_AjaxTypes.Add(new ListItem("Visitor based", "1"));
-        //        m_AjaxTypes.Add(new ListItem("Update via ajax", "2"));
-        //        m_AjaxTypes.Add(new ListItem("Visitor based & update via ajax", "3"));
-        //        return m_AjaxTypes;
-        //    }
-        //}
     }
 }
