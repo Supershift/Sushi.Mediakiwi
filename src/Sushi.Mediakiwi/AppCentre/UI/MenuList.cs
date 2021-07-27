@@ -28,36 +28,39 @@ namespace Sushi.Mediakiwi.AppCentre.Data
 
         async Task MenuList_ListSave(ComponentListEventArgs e)
         {
-            Implement.Name = this.Name;
+            Implement.Name = Name;
             Implement.RoleID = RoleID;
-            Implement.SiteID = this.SiteID;
-            Implement.IsActive = this.Active;
-            await Implement.SaveAsync();
+            Implement.SiteID = SiteID;
+            Implement.IsActive = Active;
 
-            //var items = (from item in this.Items where item.Position == 1 select item).ToArray();
-            SaveItem(0, this.MenuItem0);
-            SaveItem(1, this.MenuItem1);
-            SaveItem(2, this.MenuItem2);
-            SaveItem(3, this.MenuItem3);
-            SaveItem(4, this.MenuItem4);
-            SaveItem(5, this.MenuItem5);
-            SaveItem(6, this.MenuItem6);
-            SaveItem(7, this.MenuItem7);
-            SaveItem(8, this.MenuItem8);
+            await Implement.SaveAsync().ConfigureAwait(false);
+
+            await SaveItem(0, MenuItem0).ConfigureAwait(false);
+            await SaveItem(1, MenuItem1).ConfigureAwait(false);
+            await SaveItem(2, MenuItem2).ConfigureAwait(false);
+            await SaveItem(3, MenuItem3).ConfigureAwait(false);
+            await SaveItem(4, MenuItem4).ConfigureAwait(false);
+            await SaveItem(5, MenuItem5).ConfigureAwait(false);
+            await SaveItem(6, MenuItem6).ConfigureAwait(false);
+            await SaveItem(7, MenuItem7).ConfigureAwait(false);
+            await SaveItem(8, MenuItem8).ConfigureAwait(false);
             wim.FlushCache();
         }
 
-        void SaveItem(int position, SubList container)
+        async Task SaveItem(int position, SubList container)
         {
             int index = 0;
             //  Remove obsolete
-            var existingMenuItems = (from item in this.Items where item.Position == position select item).ToArray();
+            var existingMenuItems = (from item in Items where item.Position == position select item).ToArray();
             foreach (var item in existingMenuItems)
             {
                 var seek = (from mi in container.Items where mi.TextID == item.Tag select mi).Count();
                 if (seek == 0)
-                    item.Delete();
+                {
+                    await item.DeleteAsync().ConfigureAwait(false);
+                }
             }
+
             //  Add Or Update
             index = 0;
             foreach (var item in container.Items)
@@ -71,14 +74,16 @@ namespace Sushi.Mediakiwi.AppCentre.Data
                 menuItem.TypeID = Convert.ToInt32(split[0].Replace("T", string.Empty));
                 menuItem.Position = position;
                 menuItem.Sort = index;
-                menuItem.Save();
+                await menuItem.SaveAsync().ConfigureAwait(false);
             }
         }
 
         async Task MenuList_ListDelete(ComponentListEventArgs e)
         {
-            foreach (var item in this.Items)
-                await item.DeleteAsync();
+            foreach (var item in Items)
+            {
+                await item.DeleteAsync().ConfigureAwait(false);
+            }
         }
 
         IMenu Implement { get; set; }
@@ -86,63 +91,65 @@ namespace Sushi.Mediakiwi.AppCentre.Data
 
         async Task MenuList_ListLoad(ComponentListEventArgs e)
         {
-            Implement = await Menu.SelectOneAsync(e.SelectedKey);
+            Implement = await Menu.SelectOneAsync(e.SelectedKey).ConfigureAwait(false);
             if (Implement == null) Implement = new Menu();
 
-            this.Name = Implement.Name;
+            Name = Implement.Name;
             RoleID = Implement.RoleID;
-            this.SiteID = Implement.SiteID;
-            this.Active = Implement.IsActive;
+            SiteID = Implement.SiteID;
+            Active = Implement.IsActive;
 
-            Items = await MenuItem.SelectAllAsync(Implement.ID);
-            this.MenuItem0 = new SubList();
-            this.MenuItem1 = new SubList();
-            this.MenuItem2 = new SubList();
-            this.MenuItem3 = new SubList();
-            this.MenuItem4 = new SubList();
-            this.MenuItem5 = new SubList();
-            this.MenuItem6 = new SubList();
-            this.MenuItem7 = new SubList();
-            this.MenuItem8 = new SubList();
+            Items = await MenuItem.SelectAllAsync(Implement.ID).ConfigureAwait(false);
+            MenuItem0 = new SubList();
+            MenuItem1 = new SubList();
+            MenuItem2 = new SubList();
+            MenuItem3 = new SubList();
+            MenuItem4 = new SubList();
+            MenuItem5 = new SubList();
+            MenuItem6 = new SubList();
+            MenuItem7 = new SubList();
+            MenuItem8 = new SubList();
 
-            LoadItem(0, this.MenuItem0);
-            LoadItem(1, this.MenuItem1);
-            LoadItem(2, this.MenuItem2);
-            LoadItem(3, this.MenuItem3);
-            LoadItem(4, this.MenuItem4);
-            LoadItem(5, this.MenuItem5);
-            LoadItem(6, this.MenuItem6);
-            LoadItem(7, this.MenuItem7);
-            LoadItem(8, this.MenuItem8);
+            await LoadItem(0, MenuItem0).ConfigureAwait(false);
+            await LoadItem(1, MenuItem1).ConfigureAwait(false);
+            await LoadItem(2, MenuItem2).ConfigureAwait(false);
+            await LoadItem(3, MenuItem3).ConfigureAwait(false);
+            await LoadItem(4, MenuItem4).ConfigureAwait(false);
+            await LoadItem(5, MenuItem5).ConfigureAwait(false);
+            await LoadItem(6, MenuItem6).ConfigureAwait(false);
+            await LoadItem(7, MenuItem7).ConfigureAwait(false);
+            await LoadItem(8, MenuItem8).ConfigureAwait(false);
         }
 
-        void LoadItem(int position, SubList container)
+        async Task LoadItem(int position, SubList container)
         {
-            var items = (from item in this.Items where item.Position == position select item).ToArray();
+            var items = (from item in Items where item.Position == position select item).ToArray();
 
             List<string> tags = new List<string>();
             foreach (var item in items)
             {
                 tags.Add(item.Tag);
             }
-            var selection = SearchView.SelectAll(tags.ToArray());
+            var selection = await SearchView.SelectAllAsync(tags.ToArray()).ConfigureAwait(false);
             foreach (var item in items)
             {
                 var find = (from x in selection where x.ID == item.Tag select x).FirstOrDefault();
                 if (find != null)
+                {
                     container.Add(new SubList.SubListitem(find.ID, find.TitleHighlighted));
+                }
             }
         }
 
         async Task MenuList_ListSearch(ComponentListSearchEventArgs e)
         {
             wim.CanAddNewItem = true;
-            wim.ListDataColumns.Add("ID", "ID", ListDataColumnType.UniqueIdentifier);
-            wim.ListDataColumns.Add("Name", "Name", ListDataColumnType.HighlightPresent);
-            wim.ListDataColumns.Add(new ListDataColumn("", "IsActive") { ColumnWidth = 30  });
+            wim.ListDataColumns.Add(new ListDataColumn("ID", nameof(Menu.ID), ListDataColumnType.UniqueIdentifier));
+            wim.ListDataColumns.Add(new ListDataColumn("Name", nameof(Menu.Name), ListDataColumnType.HighlightPresent));
+            wim.ListDataColumns.Add(new ListDataColumn("", nameof(Menu.IsActive)) { ColumnWidth = 30 });
 
-            //if (wim.Grid.IsDataBinding)
-            wim.ListDataAdd(await Menu.SelectAllAsync());
+            var results = await Menu.SelectAllAsync().ConfigureAwait(false);
+            wim.ListDataAdd(results);
         }
 
         [Framework.ContentListItem.TextField("Menu", 50, true, Expression = OutputExpression.Alternating)]
@@ -151,10 +158,10 @@ namespace Sushi.Mediakiwi.AppCentre.Data
         [Framework.ContentListItem.Choice_Checkbox("Active", Expression = OutputExpression.Alternating)]
         public bool Active { get; set; }
 
-        [Framework.ContentListItem.Choice_Dropdown("Role", "AvailableRoles", false, false, Expression = OutputExpression.Alternating)]
+        [Framework.ContentListItem.Choice_Dropdown("Role", nameof(AvailableRoles), false, false, Expression = OutputExpression.Alternating)]
         public int? RoleID { get; set; }
 
-        [Framework.ContentListItem.Choice_Dropdown("Site", "AvailableSites", false, false, Expression = OutputExpression.Alternating)]
+        [Framework.ContentListItem.Choice_Dropdown("Site", nameof(AvailableSites), false, false, Expression = OutputExpression.Alternating)]
         public int? SiteID { get; set; }
 
         [Framework.ContentListItem.SubListSelect("Home", "1a1fe050-219c-4f63-a697-7e2e8e790521", true, "", CanContainOneItem = true)]
@@ -196,12 +203,11 @@ namespace Sushi.Mediakiwi.AppCentre.Data
             {
                 if (_AvailableRoles == null)
                 {
-                    //Page.Trace.Write("AvailableRoles get{}", string.Format("{0}-{1}", SearchRole, SearchRole2));
                     _AvailableRoles = new ListItemCollection();
                     _AvailableRoles.Add(new ListItem("Select a role", ""));
-                    foreach (ApplicationRole role in ApplicationRole.SelectAll())
+                    foreach (var role in ApplicationRole.SelectAll())
                     {
-                        _AvailableRoles.Add(new ListItem(role.Name, role.ID.ToString()));
+                        _AvailableRoles.Add(new ListItem(role.Name, $"{role.ID}"));
                     }
                 }
                 return _AvailableRoles;
@@ -219,12 +225,11 @@ namespace Sushi.Mediakiwi.AppCentre.Data
             {
                 if (_AvailableSites == null)
                 {
-                    //Page.Trace.Write("AvailableRoles get{}", string.Format("{0}-{1}", SearchRole, SearchRole2));
                     _AvailableSites = new ListItemCollection();
                     _AvailableSites.Add(new ListItem("Select a site", ""));
                     foreach (Site site in Site.SelectAll())
                     {
-                        _AvailableSites.Add(new ListItem(site.Name, site.ID.ToString()));
+                        _AvailableSites.Add(new ListItem(site.Name, $"{site.ID}"));
                     }
                 }
                 return _AvailableSites;

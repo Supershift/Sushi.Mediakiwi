@@ -678,6 +678,18 @@ FROM [Wim_ComponentLists] WHERE [ComponentList_Folder_Key] in (SELECT [Folder_Ke
         }
 
         /// <summary>
+        /// Validates the access right.
+        /// </summary>
+        /// <param name="folders">The folders.</param>
+        /// <param name="user">The user.</param>
+        /// <returns></returns>
+        public static async Task<Folder[]> ValidateAccessRightAsync(Folder[] folders, IApplicationUser user)
+        {
+            var relations = await SelectAllAccessibleAsync(user).ConfigureAwait(false);
+            return (from item in folders join relation in relations on item.ID equals relation.ID select item).ToArray();
+        }
+
+        /// <summary>
         /// Determines whether [has role access] [the specified role id].
         /// </summary>
         /// <param name="user">The user.</param>
@@ -960,15 +972,23 @@ FROM [Wim_ComponentLists] WHERE [ComponentList_Folder_Key] in (SELECT [Folder_Ke
         private static Folder FindSiteFolder(int folderID, int siteID)
         {
             var selected = (from item in SelectAll() where item.MasterID.HasValue && item.Type == FolderType.List && item.MasterID.Value == folderID select item);
-            if (selected.Count() == 0) return null;
+            if (selected.Any() == false)
+            {
+                return null;
+            }
+
             foreach (var item in selected)
             {
                 if (item.SiteID == siteID)
+                {
                     return item;
+                }
 
                 var tmp = FindSiteFolder(item.ID, siteID);
                 if (tmp != null)
+                {
                     return tmp;
+                }
             }
             return null;
         }
@@ -976,7 +996,11 @@ FROM [Wim_ComponentLists] WHERE [ComponentList_Folder_Key] in (SELECT [Folder_Ke
         private static async Task<Folder> FindSiteFolderAsync(int folderID, int siteID)
         {
             var selected = (from item in await SelectAllAsync() where item.MasterID.HasValue && item.Type == FolderType.List && item.MasterID.Value == folderID select item);
-            if (selected.Count() == 0) return null;
+            if (selected.Any() == false)
+            {
+                return null;
+            }
+
             foreach (var item in selected)
             {
                 if (item.SiteID == siteID)
@@ -1467,7 +1491,7 @@ ORDER BY [Site_Master_Key] ASC, [Site_Displayname] ASC, [Folder_CompletePath] AS
             searchPath = searchPath.Replace("//", "/");
 
             var list = (from item in SelectAll() where item.IsVisible && item.CompletePath == searchPath && item.Type == folder.Type && item.SiteID == folder.SiteID select item);
-            return list.Count() == 0 ? new Folder() : list.ToArray()[0];
+            return list.Any() == false ? new Folder() : list.ToArray()[0];
         }
 
 
@@ -1512,7 +1536,7 @@ ORDER BY [Site_Master_Key] ASC, [Site_Displayname] ASC, [Folder_CompletePath] AS
             searchPath = searchPath.Replace("//", "/");
 
             var list = (from item in await SelectAllAsync() where item.IsVisible && item.CompletePath == searchPath && item.Type == folder.Type && item.SiteID == folder.SiteID select item);
-            return list.Count() == 0 ? new Folder() : list.ToArray()[0];
+            return list.Any() == false ? new Folder() : list.ToArray()[0];
         }
 
 

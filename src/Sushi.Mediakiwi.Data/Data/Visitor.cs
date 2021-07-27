@@ -29,20 +29,6 @@ namespace Sushi.Mediakiwi.Data
         public string CookieParserLog { get; set; }
 
         /// <summary>
-        /// Gets the last visited page (if none present an empty Page object is returned).
-        /// </summary>
-        /// <value>The last visited page.</value>
-        //public Page LastVisitedPage
-        //{
-        //    get
-        //    {
-        //        int lastPageID = this.Data["wim_lastpageid"].ParseInt().GetValueOrDefault();
-        //        Page page = Page.SelectOne(lastPageID);
-        //        return page;
-        //    }
-        //}
-
-        /// <summary>
         /// Gets or sets the ID.
         /// </summary>
         /// <value>The ID.</value>
@@ -278,6 +264,19 @@ namespace Sushi.Mediakiwi.Data
         {
             var connector = ConnectorFactory.CreateConnector<Visitor>();
             connector.Save(entity);
+        }
+
+
+        public static async Task SaveAsync(Visitor entity)
+        {
+            var connector = ConnectorFactory.CreateConnector<Visitor>();
+            await connector.SaveAsync(entity).ConfigureAwait(false);
+        }
+
+        public async Task<bool> SaveAsync()
+        {
+            await SaveAsync(this).ConfigureAwait(false);
+            return true;
         }
 
         public bool Save()

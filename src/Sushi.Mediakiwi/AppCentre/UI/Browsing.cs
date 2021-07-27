@@ -39,17 +39,21 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// <value>
         /// 	<c>true</c> if  instance is gallery; otherwise, <c>false</c>.
         /// </value>
-        public bool IsGallery {
-            get {
+        public bool IsGallery
+        {
+            get
+            {
                 if (!m_IsGallerySet)
                 {
                     m_IsGallerySet = true;
                     m_IsGallery = (wim.CurrentFolder.Type == FolderType.Gallery);
                 }
-                return m_IsGallery; 
+                return m_IsGallery;
             }
             set { m_IsGallery = value; }
         }
+
+
         /// <summary>
         /// Gets a value indicating whether  instance is page.
         /// </summary>
@@ -61,6 +65,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                 return (wim.CurrentFolder.Type == FolderType.Page);
             }
         }
+
         /// <summary>
         /// Gets a value indicating whether  instance is gallery or has root.
         /// </summary>
@@ -72,9 +77,14 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             get
             {
                 if (IsGallery && string.IsNullOrEmpty(Request.Query["root"]))
+                {
                     return true;
+                }
+
                 if (wim.CurrentFolder.Type == FolderType.Page)
+                {
                     return true;
+                }
 
                 return false;
             }
@@ -87,22 +97,20 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         {
             FilterPath = false;
             wim.HideProperties = true;
-         
+
             ListLoad += Browsing_ListLoad;
             ListAction += Browsing_ListAction;
             ListSave += Browsing_ListSave;
             ListSearch += Browsing_ListSearch;
         }
 
-        private Task Browsing_ListSearch(ComponentListSearchEventArgs arg)
+        async Task Browsing_ListSearch(ComponentListSearchEventArgs arg)
         {
             wim.HideSearchButton = true;
 
             wim.SetPropertyVisibility("Parent", false);
 
-            ShowBrowsing();
-            
-            return Task.CompletedTask;
+            await ShowBrowsingAsync().ConfigureAwait(false);
         }
 
         Task Browsing_ListSave(ComponentListEventArgs e)
@@ -130,11 +138,11 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             int galleryId = Utility.ConvertToInt(Request.Query["gallery"]);
             if (galleryId > 0)
             {
-                Gallery gallery = await Gallery.SelectOneAsync(galleryId);
+                Gallery gallery = await Gallery.SelectOneAsync(galleryId).ConfigureAwait(false);
                 if (!(gallery != null && gallery.ID == 0))
                 {
-                    IComponentList list = await Mediakiwi.Data.ComponentList.SelectOneAsync(ComponentListType.Documents);
-                    Response.Redirect(wim.Console.GetSafeUrl() + "&item=0&list=" + list.ID);
+                    IComponentList list = await Mediakiwi.Data.ComponentList.SelectOneAsync(ComponentListType.Documents).ConfigureAwait(false);
+                    Response.Redirect(wim.Console.WimPagePath + "&item=0&list=" + list.ID);
                 }
             }
         }
@@ -151,31 +159,32 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             }
         }
 
-        void ShowBrowsing()
+        async Task ShowBrowsingAsync()
         {
             wim.CurrentList.Option_Search_MaxResultPerPage = 512;
             wim.SearchResultItemPassthroughParameterProperty = "PassThrough";
 
-            wim.ListDataColumns.Add(new ListDataColumn("ID", "ID", ListDataColumnType.UniqueIdentifier));
-            wim.ListDataColumns.Add(new ListDataColumn("", "Icon") { ColumnWidth = 20 });
-            wim.ListDataColumns.Add(new ListDataColumn(Labels.ResourceManager.GetString("list_name", new CultureInfo(wim.CurrentApplicationUser.LanguageCulture)), "Title", ListDataColumnType.HighlightPresent));
-            wim.ListDataColumns.Add(new ListDataColumn("", "Info1") { ColumnWidth = 20 });
+            wim.ListDataColumns.Add(new ListDataColumn("ID", nameof(BrowseItem.ID), ListDataColumnType.UniqueIdentifier));
+            wim.ListDataColumns.Add(new ListDataColumn("", nameof(BrowseItem.Icon)) { ColumnWidth = 20 });
+            wim.ListDataColumns.Add(new ListDataColumn(Labels.ResourceManager.GetString("list_name", new CultureInfo(wim.CurrentApplicationUser.LanguageCulture)), nameof(BrowseItem.Title), ListDataColumnType.HighlightPresent));
+            wim.ListDataColumns.Add(new ListDataColumn("", nameof(BrowseItem.Info1)) { ColumnWidth = 20 });
 
             List<BrowseItem> list = new List<BrowseItem>();
 
             bool isSearchInitiate = !string.IsNullOrEmpty(FilterTitle);
             if (wim.CurrentFolder.Type == FolderType.Gallery)
             {
-                GetGalleryList(isSearchInitiate, list);
+                list = await GetGalleryListAsync(isSearchInitiate).ConfigureAwait(false);
             }
             else if (wim.CurrentFolder.Type == FolderType.List || wim.CurrentFolder.Type == FolderType.Administration)
             {
-                GetListList(isSearchInitiate, list);
+                await GetListListAsync().ConfigureAwait(false);
             }
             else if (wim.CurrentFolder.Type == FolderType.Page)
             {
-                GetPageList(isSearchInitiate, list);
+               await GetPageListAsync(isSearchInitiate).ConfigureAwait(false);
             }
+
             wim.ListDataAdd(list);
         }
 
@@ -184,173 +193,188 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             string status = string.Empty;
 
             if (isPublished)
+            {
                 status += "<span class=\"icon-globe abbr right\" title=\"Published\"></span>";
+            }
+
             if (hasMaster)
             {
                 if (!isLocalisedEditMode && !isLocalisedPublicationMode)
+                {
                     status += "<span class=\"icon-download-01 abbr right\" title=\"Inherited page\"></span>";
+                }
                 else if (!isLocalisedEditMode && isLocalisedPublicationMode)
+                {
                     status += "<span class=\"icon-download-01 abbr right inactive\" title=\"Inherited page (only edit)\"></span>";
+                }
                 else if (isLocalisedEditMode && !isLocalisedPublicationMode)
+                {
                     status += "<span class=\"icon-download-01 abbr right inactive\" title=\"Inherited page (only publication)\"></span>";
+                }
             }
+
             if (isEdited)
+            {
                 status += "<span class=\"icon-pen abbr right\" title=\"Edited\"></span>";
+            }
 
             if (!isSearchable)
+            {
                 status += "<span class=\"icon-search-minus abbr right\" title=\"Searchable\"></span>";
+            }
 
             return status;
         }
 
         PageSortBy GetSort(int? sorderOrderMethod)
         {
-            var sortBy = PageSortBy.SortOrder;
-
-            switch (sorderOrderMethod)
+            return sorderOrderMethod switch
             {
-                case 1:
-                    sortBy = PageSortBy.CustomDate;
-                    break;
-                case 2:
-                    sortBy = PageSortBy.CustomDateDown;
-                    break;
-                case 3:
-                    sortBy = PageSortBy.LinkText;
-                    break;
-                case 4:
-                    sortBy = PageSortBy.Name;
-                    break;
-                case 5:
-                default:
-                    sortBy = PageSortBy.SortOrder;
-                    break;
-            }
-            return sortBy;
+                1 => PageSortBy.CustomDate,
+                2 => PageSortBy.CustomDateDown,
+                3 => PageSortBy.LinkText,
+                4 => PageSortBy.Name,
+                _ => PageSortBy.SortOrder,
+            };
         }
 
-        void GetPageList(bool isSearchInitiate, List<BrowseItem> list)
+        async Task GetPageListAsync(bool isSearchInitiate)
         {
             wim.Page.Body.ShowInFullWidthMode = false;
 
             _columns = 1;
 
             #region Folder navigation
+
             Mediakiwi.Data.Folder[] folders = null;
 
             bool isRootLevelView = false;
             if (isSearchInitiate || isRootLevelView)
             {
                 isRootLevelView = true;
-                folders = Mediakiwi.Data.Folder.SelectAll(wim.CurrentFolder.Type, wim.CurrentSite.ID, FilterTitle, FilterPath);
+                folders = await Mediakiwi.Data.Folder.SelectAllAsync(wim.CurrentFolder.Type, wim.CurrentSite.ID, FilterTitle, FilterPath).ConfigureAwait(false);
             }
             else
-                folders = Mediakiwi.Data.Folder.SelectAllByParent(wim.CurrentFolder.ID, wim.CurrentFolder.Type, false);
+            {
+                folders = await Mediakiwi.Data.Folder.SelectAllByParentAsync(wim.CurrentFolder.ID, wim.CurrentFolder.Type, false).ConfigureAwait(false);
+            }
 
             //  ACL determination
-            folders = Mediakiwi.Data.Folder.ValidateAccessRight(folders, wim.CurrentApplicationUser);
+            folders = await Mediakiwi.Data.Folder.ValidateAccessRightAsync(folders, wim.CurrentApplicationUser).ConfigureAwait(false);
 
             if (wim.CurrentFolder.Level == 0 && folders.Length == 0 && !isRootLevelView && !isSearchInitiate)
             {
                 isRootLevelView = true;
-                folders = Mediakiwi.Data.Folder.SelectAll(wim.CurrentFolder.Type, wim.CurrentSite.ID, FilterTitle, FilterPath);
+                folders = await Mediakiwi.Data.Folder.SelectAllAsync(wim.CurrentFolder.Type, wim.CurrentSite.ID, FilterTitle, FilterPath).ConfigureAwait(false);
                 //  ACL determination
-                folders = Mediakiwi.Data.Folder.ValidateAccessRight(folders, wim.CurrentApplicationUser);
+                folders = await Mediakiwi.Data.Folder.ValidateAccessRightAsync(folders, wim.CurrentApplicationUser).ConfigureAwait(false);
             }
+
             #endregion Folder navigation
 
             IEnumerable<Page> pages;
             if (!isSearchInitiate)
-                pages = Page.SelectAll(wim.CurrentFolder.ID, PageFolderSortType.Folder, PageReturnProperySet.All, GetSort(wim.CurrentFolder.ID), false);
+            {
+                pages = await Page.SelectAllAsync(wim.CurrentFolder.ID, PageFolderSortType.Folder, PageReturnProperySet.All, GetSort(wim.CurrentFolder.ID), false).ConfigureAwait(false);
+            }
             else
             {
-                pages = Page.SelectAll(FilterTitle, FilterPath);
+                pages = await Page.SelectAllAsync(FilterTitle, FilterPath).ConfigureAwait(false);
             }
 
-            pages = Page.ValidateAccessRight(pages, wim.CurrentApplicationUser);
-            StringBuilder build = null;
-            build = new StringBuilder();
+            pages = await Page.ValidateAccessRightAsync(pages, wim.CurrentApplicationUser).ConfigureAwait(false);
+            StringBuilder build = new StringBuilder();
 
-            if (pages.Count() == 0 && (folders.Length == 0 || (folders.Length == 1 && folders[0].Name == "/")))
-                return;
-
-            build.AppendFormat("<div class=\"widget\">");
-
-            if (pages.Count() > 0)
+            if (pages.Any() == false && (folders.Length == 0 || (folders.Length == 1 && folders[0].Name == "/")))
             {
-              
+                return;
+            }
+
+            build.Append("<div class=\"widget\">");
+
+            if (pages.Any())
+            {
                 foreach (var entry in pages)
                 {
-                    build.AppendFormat("<a href=\"{0}?page={1}\"{4}>{2}{3}</a>", wim.Console.WimPagePath, entry.ID, entry.Name
-                        , GetStatus(entry.IsEdited, entry.IsPublished, entry.IsSearchable, entry.MasterID.HasValue, entry.InheritContentEdited, entry.InheritContent)
-                        , entry.IsPublished ? string.Empty : " class=\"inactive\""
-                        );
+                    var url = wim.Console.WimPagePath;
+                    var status = GetStatus(entry.IsEdited, entry.IsPublished, entry.IsSearchable, entry.MasterID.HasValue, entry.InheritContentEdited, entry.InheritContent);
+                    var published = (entry.IsPublished ? string.Empty : " class=\"inactive\"");
 
+                    build.Append($"<a href=\"{url}?page={entry.ID}\"{published}>{entry.Name}{status}</a>");
                 }
-                build.AppendFormat("</div>");
+                build.Append("</div>");
             }
-            else
-            {
 
-            }
-            FindPage(folders, build);
-             
+            await FindPageAsync(folders, build).ConfigureAwait(false);
+
             #region Close column view
-            build.AppendFormat("</article>");
-            build.AppendFormat("</section>");
-            build.Insert(0, string.Format("<article class=\"column-{0}\">", _columns > 3 ? 3 : _columns));
+
+            build.Append("</article>");
+            build.Append("</section>");
+            build.Insert(0, $"<article class=\"column-{(_columns > 3 ? 3 : _columns)}\">");
             build.Insert(0, "<section id=\"startWidgets\" class=\"component widgets\">");
             wim.Page.Body.Grid.Add(build.ToString(), true);
+
             #endregion Close column view
         }
 
         int _columns = 0;
-        void FindPage(Mediakiwi.Data.Folder[] folders, StringBuilder build)
+
+        async Task FindPageAsync(Mediakiwi.Data.Folder[] folders, StringBuilder build)
         {
             foreach (Mediakiwi.Data.Folder entry in folders)
             {
                 if (!entry.IsVisible && !wim.CurrentApplicationUser.ShowHidden)
+                {
                     continue;
+                }
 
                 //  No root elements
                 if (entry.Name == "/")
+                {
                     continue;
+                }
 
-                IEnumerable<Page> pages = Page.SelectAll(entry.ID, PageFolderSortType.Folder, PageReturnProperySet.All, GetSort(entry.SortOrderMethod), false);
-                pages = Page.ValidateAccessRight(pages, wim.CurrentApplicationUser);
+                IEnumerable<Page> pages = await Page.SelectAllAsync(entry.ID, PageFolderSortType.Folder, PageReturnProperySet.All, GetSort(entry.SortOrderMethod), false).ConfigureAwait(false);
+                pages = await Page.ValidateAccessRightAsync(pages, wim.CurrentApplicationUser).ConfigureAwait(false);
 
                 _columns++;
-                //class=\"abbr\" 
-                build.AppendFormat("<div class=\"widget\">");
-                build.AppendFormat("<h2><a href=\"{0}?folder={1}\" title=\"{3}\">{2}</a></h2>", wim.Console.WimPagePath, entry.ID, entry.Name, entry.CompletePath);
-                if (!string.IsNullOrEmpty(entry.Description))
-                    build.AppendFormat("<p>{0}</p>", entry.Description);
 
-                if (pages.Count() > 0)
+                build.Append("<div class=\"widget\">");
+                build.Append($"<h2><a href=\"{wim.Console.WimPagePath}?folder={entry.ID}\" title=\"{entry.CompletePath}\">{entry.Name}</a></h2>");
+                if (!string.IsNullOrEmpty(entry.Description))
+                {
+                    build.Append($"<p>{entry.Description}</p>");
+                }
+
+                if (pages.Any())
                 {
                     foreach (var i in pages)
-                        build.AppendFormat("<a href=\"{0}?page={1}\"{4}>{2}{3}</a>", wim.Console.WimPagePath, i.ID, i.Name
-                            , GetStatus(i.IsEdited, i.IsPublished, i.IsSearchable, i.MasterID.HasValue, i.InheritContentEdited, i.InheritContent)
-                            , i.IsPublished ? string.Empty : " class=\"inactive\""
-                            );
+                    {
+                        var url = wim.Console.WimPagePath;
+                        var status = GetStatus(i.IsEdited, i.IsPublished, i.IsSearchable, i.MasterID.HasValue, i.InheritContentEdited, i.InheritContent);
+                        var published = (i.IsPublished ? string.Empty : " class=\"inactive\"");
+
+                        build.Append($"<a href=\"{url}?page={i.ID}\"{published}>{i.Name}{status}</a>");
+                    }
                 }
-                
-                build.AppendFormat("</div>");
-                var arr = Mediakiwi.Data.Folder.SelectAllByParent(entry.ID);
-                FindPage(arr, build);
+
+                build.Append("</div>");
+                var arr = await Mediakiwi.Data.Folder.SelectAllByParentAsync(entry.ID).ConfigureAwait(false);
+                await FindPageAsync(arr, build).ConfigureAwait(false);
             }
         }
 
-        void GetGalleryList(bool isSearchInitiate, List<BrowseItem> list)
+        async Task<List<BrowseItem>> GetGalleryListAsync(bool isSearchInitiate)
         {
+            var list = new List<BrowseItem>();
             int baseGalleryID = wim.CurrentApplicationUserRole.GalleryRoot.GetValueOrDefault();
 
-            IComponentList list0 = Mediakiwi.Data.ComponentList.SelectOne(ComponentListType.Folders);
-
-            var folderSettings = Mediakiwi.Data.ComponentList.SelectOne(new Guid("97292dd5-ebda-4318-8aaf-4c49e887cdad"));
+            var folderSettings = await Mediakiwi.Data.ComponentList.SelectOneAsync(new Guid("97292dd5-ebda-4318-8aaf-4c49e887cdad")).ConfigureAwait(false);
 
             Gallery[] galleries;
-            Gallery rootGallery = Gallery.SelectOne(Utility.ConvertToGuid(Request.Query["root"]));
+            Gallery rootGallery = await Gallery.SelectOneAsync(Utility.ConvertToGuid(Request.Query["root"])).ConfigureAwait(false);
+
             if (!IsPostBack || string.IsNullOrEmpty(FilterTitle))
             {
                 if (wim.CurrentFolder.ParentID.GetValueOrDefault(0) > 0 && wim.CurrentFolder.ID != rootGallery.ID && wim.CurrentFolder.ID != baseGalleryID)
@@ -360,21 +384,16 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                     item.Title = "...";
                     item.PassThrough = "gallery";
                     item.Icon = "<figure class=\"icon-folder icon\"></figure>";
-                    item.Info1 = string.Format("<a href=\"{0}?list={1}&gallery={2}&item={2}\"><figure class=\"icon-settings-02 icon\"></figure></a>"
-                        , wim.Console.WimPagePath
-                        , folderSettings.ID
-                        , item.ID
-                        );
-   
+                    item.Info1 = $"<a href=\"{wim.Console.WimPagePath}?list={folderSettings.ID}&gallery={item.ID}&item={item.ID}\"><figure class=\"icon-settings-02 icon\"></figure></a>";
                     list.Add(item);
                 }
 
-                Gallery current = Gallery.SelectOne(wim.CurrentFolder.ID);
-
-                galleries = Gallery.SelectAllByParent(wim.CurrentFolder.ID);
+                galleries = await Gallery.SelectAllByParentAsync(wim.CurrentFolder.ID).ConfigureAwait(false);
             }
             else
-                galleries = Gallery.SelectAll(FilterTitle);
+            {
+                galleries = await Gallery.SelectAllAsync(FilterTitle).ConfigureAwait(false);
+            }
 
             bool isRootLevelView = false;
             if (wim.CurrentFolder.Level == 0 && galleries.Length == 0 && !isRootLevelView && !isSearchInitiate)
@@ -389,12 +408,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                 item.Title = isRootLevelView ? entry.CompleteCleanPath() : entry.Name;
                 item.PassThrough = "gallery";
                 item.Icon = "<figure class=\"icon-folder icon\"></figure>";
-                item.Info1 = string.Format("<a href=\"{0}?list={1}&gallery={2}&item={2}\"><figure class=\"icon-settings-02 icon\"></figure></a>"
-                    , wim.Console.WimPagePath
-                    , folderSettings.ID
-                    , entry.ID
-                    );
-               
+                item.Info1 = $"<a href=\"{wim.Console.WimPagePath}?list={folderSettings.ID}&gallery={entry.ID}&item={entry.ID}\"><figure class=\"icon-settings-02 icon\"></figure></a>";
                 item.Info3 = entry.Created;
                 list.Add(item);
             }
@@ -402,9 +416,13 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             List<Asset> assets;
 
             if (!IsPostBack || string.IsNullOrEmpty(FilterTitle))
-                assets = Asset.SelectAll(wim.CurrentFolder.ID);
+            {
+                assets = await Asset.SelectAllAsync(wim.CurrentFolder.ID).ConfigureAwait(false);
+            }
             else
-                assets = Asset.SearchAll(FilterTitle);
+            {
+                assets = await Asset.SearchAllAsync(FilterTitle).ConfigureAwait(false);
+            }
 
             foreach (Asset entry in assets)
             {
@@ -414,70 +432,81 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                 item.PassThrough = "asset";
 
                 item.Icon = "<figure class=\"icon-document icon\"></figure>";
-                item.Info1 = string.Format("<a href=\"{0}?asset={1}\"><figure class=\"icon-settings-02 icon\"></figure></a>"
-                    , wim.Console.WimPagePath
-                    , entry.ID
-                    , entry.Title
-                    );
-
+                item.Info1 = $"<a href=\"{wim.Console.WimPagePath}?asset={entry.ID}\"><figure class=\"icon-settings-02 icon\"></figure></a>";
                 item.Info2 = entry.Type;
                 item.Info3 = entry.Created;
 
                 if (!string.IsNullOrEmpty(entry.RemoteLocation) || entry.Exists)
+                {
                     item.Info4 = Utils.GetIconImageString(wim.Console, Utils.IconImage.File, Utils.IconSize.Normal, null, entry.DownloadFullUrl);
+                }
                 else
+                {
                     item.Info4 = Utils.GetIconImageString(wim.Console, Utils.IconImage.NoFile, Utils.IconSize.Normal, null);
+                }
 
-                item.HiddenField = string.Format("{0} ({1})", item.Title, item.Info1);
-
+                item.HiddenField = $"{item.Title} ({item.Info1})";
                 list.Add(item);
             }
+
+            return list;
         }
 
-        void GetListList(bool isSearchInitiate, List<BrowseItem> list)
+        async Task GetListListAsync()
         {
             StringBuilder build = new StringBuilder();
-            Mediakiwi.Data.Folder[] f = new Mediakiwi.Data.Folder[] { wim.CurrentFolder };
+            Mediakiwi.Data.Folder[] f = new Mediakiwi.Data.Folder[]
+            {
+                wim.CurrentFolder
+            };
 
-            FindList(f, build, false);
+            await FindListAsync(f, build, false).ConfigureAwait(false);
 
-            build.AppendFormat("</article>");
-            build.AppendFormat("</section>");
-            build.Insert(0, string.Format("<article class=\"column-{0}\">", _columns > 3 ? 3 : _columns));
+            build.Append("</article>");
+            build.Append("</section>");
+            build.Insert(0, $"<article class=\"column-{(_columns > 3 ? 3 : _columns)}\">");
             build.Insert(0, "<section id=\"startWidgets\" class=\"component widgets\">");
             wim.Page.Body.Grid.Add(build.ToString(), true);
         }
 
-        void FindList(Mediakiwi.Data.Folder[] folders, StringBuilder build, bool ignoreHeader)
+        async Task FindListAsync(Mediakiwi.Data.Folder[] folders, StringBuilder build, bool ignoreHeader)
         {
             foreach (Mediakiwi.Data.Folder entry in folders)
             {
                 if (!entry.IsVisible && !wim.CurrentApplicationUser.ShowHidden)
+                {
                     continue;
+                }
 
-                IComponentList[] all_lists = Mediakiwi.Data.ComponentList.SelectAll(entry.ID, wim.CurrentApplicationUser, true);
-                var allowed_lists = Mediakiwi.Data.ComponentList.ValidateAccessRight(all_lists, wim.CurrentApplicationUser);
+                IComponentList[] all_lists = await Mediakiwi.Data.ComponentList.SelectAllAsync(entry.ID, wim.CurrentApplicationUser, true).ConfigureAwait(false);
+                var allowed_lists = await Mediakiwi.Data.ComponentList.ValidateAccessRightAsync(all_lists, wim.CurrentApplicationUser).ConfigureAwait(false);
                 IComponentList[] selected_lists = null;
 
                 if (wim.CurrentApplicationUser.ShowHidden)
+                {
                     selected_lists = allowed_lists;
+                }
                 else
+                {
                     selected_lists = (from x in allowed_lists where x.IsVisible select x).ToArray();
+                }
 
                 if (entry.ParentID.HasValue || selected_lists.Length > 0)
                 {
                     _columns++;
-                    build.AppendFormat("<div class=\"widget\">");
+                    build.Append("<div class=\"widget\">");
+
                     if (!ignoreHeader && entry.Name != "/")
                     {
-                        build.AppendFormat("<h2><a href=\"{0}?folder={1}\" {3}>{2}</a></h2>"
-                            , wim.Console.WimPagePath
-                            , entry.ID
-                            , entry.Name
-                            , (entry.IsVisible ? "" : " style=\"color: #d3d3d3\"")
-                            );
+                        var path = wim.Console.WimPagePath;
+                        var visibility = (entry.IsVisible ? "" : " style=\"color: #d3d3d3\"");
+
+                        build.Append($"<h2><a href=\"{path}?folder={entry.ID}\" {visibility}>{entry.Name}</a></h2>");
+
                         if (!string.IsNullOrEmpty(entry.Description))
-                            build.AppendFormat("<p>{0}</p>", entry.Description);
+                        {
+                            build.Append($"<p>{entry.Description}</p>");
+                        }
                     }
 
                     foreach (var i in selected_lists)
@@ -487,36 +516,39 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                         {
                             var instance = i.GetInstance(Context);
                             if (instance != null)
+                            {
                                 e = instance.wim.DoListDataReport();
+                            }
                         }
+
                         if (e == null || !e.ReportCount.HasValue)
                         {
-                            build.AppendFormat("<a href=\"{0}\"{2}>{1}</a>"
-                                , wim.Console.UrlBuild.GetListRequest(i)
-                                , i.Name
-                                , i.IsVisible ? string.Empty : " class=\"inactive\""
-                                );
+                            var url = wim.Console.UrlBuild.GetListRequest(i);
+                            var visibility = (i.IsVisible ? string.Empty : " class=\"inactive\"");
+
+                            build.Append($"<a href=\"{url}\"{visibility}>{i.Name}</a>");
                         }
                         else
                         {
-                            string count = e.ReportCount.Value.ToString();
+                            var count = $"{e.ReportCount.Value}";
                             if (e.ReportCount.Value > 99)
+                            {
                                 count = "99+";
+                            }
 
-                            build.AppendFormat("<a href=\"{0}{1}\"{3}>{2} <span class=\"items{5}\">{4}</span></a>"
-                                , wim.Console.UrlBuild.GetListRequest(i)
-                                , i.Name
-                                , i.IsVisible ? string.Empty : " class=\"inactive\""
-                                , count, e.IsAlert ? " attention" : null
-                                 );
+                            var url = wim.Console.UrlBuild.GetListRequest(i);
+                            var visibility = i.IsVisible ? string.Empty : " class=\"inactive\"";
+                            var alert = e.IsAlert ? " attention" : string.Empty;
+
+                            build.Append($"<a href=\"{url}{i.Name}\"{count}>{visibility} <span class=\"items\">{alert}</span></a>");
                         }
                     }
 
-                    build.AppendFormat("</div>");
+                    build.Append("</div>");
                 }
-                var arr = Mediakiwi.Data.Folder.SelectAllByParent(entry.ID, FolderType.Undefined, !wim.CurrentApplicationUser.ShowHidden);
 
-                FindList(arr, build, false);
+                var arr = await Mediakiwi.Data.Folder.SelectAllByParentAsync(entry.ID, FolderType.Undefined, !wim.CurrentApplicationUser.ShowHidden).ConfigureAwait(false);
+                await FindListAsync(arr, build, false).ConfigureAwait(false);
             }
         }
     }

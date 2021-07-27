@@ -57,51 +57,51 @@ namespace Sushi.Mediakiwi.Data
         /// <summary>
         /// The primary key
         /// </summary>
-        public virtual int ID { get; set; }
+        public int ID { get; set; }
 
         /// <summary>
         /// The name of this list
         /// </summary>
-        public virtual string Name { get; set; }
+        public string Name { get; set; }
 
         /// <summary>
         /// The reference of this list
         /// </summary>
-        public virtual int ReferenceID { get; set; }
+        public int ReferenceID { get; set; }
 
         /// <summary>
         /// The name of this list when a single instance is shown
         /// </summary>
-        public virtual string SingleItemName { get; set; }
+        public string SingleItemName { get; set; }
 
         /// <summary>
         /// The visibility of this list
         /// </summary>
-        public virtual bool IsVisible { get; set; }
+        public bool IsVisible { get; set; }
 
         /// <summary>
         /// The assembly that this list belongs to.
         /// </summary>
-        public virtual string AssemblyName { get; set; }
+        public string AssemblyName { get; set; }
 
         /// <summary>
         /// The corresponding class of this list
         /// </summary>
-        public virtual string ClassName { get; set; }
+        public string ClassName { get; set; }
 
-        public virtual string Icon { get; set; }
+        public string Icon { get; set; }
 
         /// <summary>
         /// The description of this list
         /// </summary>
-        public virtual string Description { get; set; }
+        public string Description { get; set; }
 
         private Guid m_GUID;
 
         /// <summary>
         /// Unique identifier used for import/export
         /// </summary>
-        public virtual Guid GUID
+        public Guid GUID
         {
             get
             {
@@ -115,38 +115,38 @@ namespace Sushi.Mediakiwi.Data
         /// <summary>
         /// The site(channel) ID
         /// </summary>
-        public virtual int? SiteID { get; set; }
+        public int? SiteID { get; set; }
 
         /// <summary>
         /// Is this list automatically inherited across child channels
         /// </summary>
-        public virtual bool IsInherited { get; set; }
+        public bool IsInherited { get; set; }
 
         /// <summary>
         /// The folder in which this list resides
         /// </summary>
-        public virtual int? FolderID { get; set; }
+        public int? FolderID { get; set; }
 
         /// <summary>
         /// OBSOLETE: The section of the portal to which this list belongs to
         /// </summary>
-        public virtual ComponentListTarget Target { get; set; }
+        public ComponentListTarget Target { get; set; }
 
         /// <summary>
         /// OBSOLETE: The specific portal type to which this list belongs to.
         /// </summary>
-        public virtual ComponentListType Type { get; set; }
+        public ComponentListType Type { get; set; }
 
         /// <summary>
         /// OBSOLETE: Unique ID of the component template that is the basis of this list template.
         /// </summary>
-        public virtual int? ComponentTemplateID { get; set; }
+        public int? ComponentTemplateID { get; set; }
 
         /// <summary>
         /// OBSOLETE: Is this list of type class reference?
         /// </summary>
         [System.Xml.Serialization.XmlIgnore()]
-        public virtual bool IsClassReference
+        public bool IsClassReference
         {
             get
             {
@@ -157,52 +157,68 @@ namespace Sushi.Mediakiwi.Data
         /// <summary>
         /// The scheduled interval
         /// </summary>
-        public virtual int? SenseInterval { get; set; }
+        public int? SenseInterval { get; set; }
 
         /// <summary>
         /// The next sceduled service call
         /// </summary>
-        public virtual DateTime? SenseScheduled { get; set; }
+        public DateTime? SenseScheduled { get; set; }
 
         /// <summary>
         /// OBSOLETE: Does this list have one child
         /// </summary>
-        public virtual bool HasOneChild { get; set; }
+        public bool HasOneChild { get; set; }
 
         /// <summary>
         /// OBSOLETE: Is this list a template
         /// </summary>
-        public virtual bool IsTemplate { get; set; }
+        public bool IsTemplate { get; set; }
 
         /// <summary>
         /// The corresponding catalog identifier
         /// </summary>
-        public virtual int CatalogID { get; set; }
+        public int CatalogID { get; set; }
 
         /// <summary>
         /// Is this template a single instance list
         /// </summary>
-        public virtual bool IsSingleInstance { get; set; }
+        public bool IsSingleInstance { get; set; }
 
         /// <summary>
         /// OBSOLETE: The group this list belongs to.
         /// </summary>
-        public virtual string Group { get; set; }
+        public string Group { get; set; }
 
         /// <summary>
         /// DOes this list have a sort order options
         /// </summary>
-        public virtual bool CanSortOrder { get; set; }
+        public bool CanSortOrder { get; set; }
 
         /// <summary>
         /// The class of the underlying object
         /// </summary>
-        public virtual string Class { get; set; }
+        public string Class { get; set; }
 
         /// <summary>
         /// The SortOrder for this ComponentList
         /// </summary>
-        public virtual int SortOrder { get; set; }
+        public int SortOrder { get; set; }
+
+        public string SiteName 
+        {
+            get 
+            {
+                if (SiteID.GetValueOrDefault(0) > 0)
+                {
+                    var site = Site.SelectOne(SiteID.Value);
+                    if (site?.ID > 0)
+                    {
+                        return site.Name;
+                    }
+                }
+                return "";
+            }
+        }
 
         /// <summary>
         /// XML representation of the DATA property
@@ -259,7 +275,7 @@ namespace Sushi.Mediakiwi.Data
         /// <summary>
         /// Can create a new item
         /// </summary>
-        public virtual bool Option_CanCreate
+        public bool Option_CanCreate
         {
             get { return this.Data["wim_CanCreate"].ParseBoolean(true); }
             set { this.Data.ApplyObject("wim_CanCreate", value); }
@@ -268,7 +284,7 @@ namespace Sushi.Mediakiwi.Data
         /// <summary>
         /// Can save an item
         /// </summary>
-        public virtual bool Option_CanSave
+        public bool Option_CanSave
         {
             get { return this.Data["wim_CanSave"].ParseBoolean(true); }
             set { this.Data.ApplyObject("wim_CanSave", value); }
@@ -277,7 +293,7 @@ namespace Sushi.Mediakiwi.Data
         /// <summary>
         /// Can delete an item
         /// </summary>
-        public virtual bool Option_CanDelete
+        public bool Option_CanDelete
         {
             get { return this.Data["wim_CanDelete"].ParseBoolean(true); }
             set { this.Data.ApplyObject("wim_CanDelete", value); }
@@ -286,7 +302,7 @@ namespace Sushi.Mediakiwi.Data
         /// <summary>
         /// Can save and add a new item
         /// </summary>
-        public virtual bool Option_CanSaveAndAddNew
+        public bool Option_CanSaveAndAddNew
         {
             get { return this.Data["wim_01"].ParseBoolean(); }
             set { this.Data.ApplyObject("wim_01", value); }
@@ -295,7 +311,7 @@ namespace Sushi.Mediakiwi.Data
         /// <summary>
         /// Has the export to XLS option
         /// </summary>
-        public virtual bool Option_HasExportXLS
+        public bool Option_HasExportXLS
         {
             get { return this.Data["wim_hasExport_XLS"].ParseBoolean(false); }
             set { this.Data.ApplyObject("wim_hasExport_XLS", value); }
@@ -304,7 +320,7 @@ namespace Sushi.Mediakiwi.Data
         /// <summary>
         /// Export the column titles to the XLS export
         /// </summary>
-        public virtual bool Option_HasExportColumnTitlesXLS
+        public bool Option_HasExportColumnTitlesXLS
         {
             get { return this.Data["wim_ExportCol_XLS"].ParseBoolean(false); }
             set { this.Data.ApplyObject("wim_ExportCol_XLS", value); }
@@ -313,7 +329,7 @@ namespace Sushi.Mediakiwi.Data
         /// <summary>
         /// Always open the list in edit mode
         /// </summary>
-        public virtual bool Option_OpenInEditMode
+        public bool Option_OpenInEditMode
         {
             get { return this.Data["wim_OpenInEdit"].ParseBoolean(true); }
             set { this.Data.ApplyObject("wim_OpenInEdit", value); }
@@ -322,7 +338,7 @@ namespace Sushi.Mediakiwi.Data
         /// <summary>
         /// Can you subscribe to this list
         /// </summary>
-        public virtual bool Option_HasSubscribeOption
+        public bool Option_HasSubscribeOption
         {
             get { return this.Data["wim_hasSubscribeOption"].ParseBoolean(false); }
             set { this.Data.ApplyObject("wim_hasSubscribeOption", value); }
@@ -331,7 +347,7 @@ namespace Sushi.Mediakiwi.Data
         /// <summary>
         /// Can you show all items in the list
         /// </summary>
-        public virtual bool Option_HasShowAll
+        public bool Option_HasShowAll
         {
             get { return this.Data["wim_hasShowAll"].ParseBoolean(false); }
             set { this.Data.ApplyObject("wim_hasShowAll", value); }
@@ -340,7 +356,7 @@ namespace Sushi.Mediakiwi.Data
         /// <summary>
         /// Only trigger search when a button is clicked
         /// </summary>
-        public virtual bool Option_PostBackSearch
+        public bool Option_PostBackSearch
         {
             get { return this.Data["wim_PostbackSearch"].ParseBoolean(); }
             set { this.Data.ApplyObject("wim_PostbackSearch", value); }
@@ -349,7 +365,7 @@ namespace Sushi.Mediakiwi.Data
         /// <summary>
         /// After save return to the list overview
         /// </summary>
-        public virtual bool Option_AfterSaveListView
+        public bool Option_AfterSaveListView
         {
             get { return this.Data["wim_AfterSaveListView"].ParseBoolean(true); }
             set { this.Data.ApplyObject("wim_AfterSaveListView", value); }
@@ -358,7 +374,7 @@ namespace Sushi.Mediakiwi.Data
         /// <summary>
         /// Show the search result asynchronous
         /// </summary>
-        public virtual bool Option_SearchAsync
+        public bool Option_SearchAsync
         {
             get { return this.Data["wim_SearchAsync"].ParseBoolean(); }
             set { this.Data.ApplyObject("wim_SearchAsync", value); }
@@ -367,7 +383,7 @@ namespace Sushi.Mediakiwi.Data
         /// <summary>
         /// Does the Form support ASYNC calls ?
         /// </summary>
-        public virtual bool Option_FormAsync
+        public bool Option_FormAsync
         {
             get { return this.Data["wim_FormAsync"].ParseBoolean(); }
             set { this.Data.ApplyObject("wim_FormAsync", value); }
@@ -376,7 +392,7 @@ namespace Sushi.Mediakiwi.Data
         /// <summary>
         /// Open this listitem in a layer
         /// </summary>
-        public virtual bool Option_LayerResult
+        public bool Option_LayerResult
         {
             get { return this.Data["wim_LayerResult"].ParseBoolean(); }
             set { this.Data.ApplyObject("wim_LayerResult", value); }
@@ -385,7 +401,7 @@ namespace Sushi.Mediakiwi.Data
         /// <summary>
         /// Does this list have breadcrumbs
         /// </summary>
-        public virtual bool Option_HideBreadCrumbs
+        public bool Option_HideBreadCrumbs
         {
             get { return this.Data["wim_HideCrumbs"].ParseBoolean(); }
             set { this.Data.ApplyObject("wim_HideCrumbs", value); }
@@ -394,7 +410,7 @@ namespace Sushi.Mediakiwi.Data
         /// <summary>
         /// Does this list have a datareport (count in overview and naviation)
         /// </summary>
-        public virtual bool Option_HasDataReport
+        public bool Option_HasDataReport
         {
             get { return this.Data["wim_DataReport"].ParseBoolean(); }
             set { this.Data.ApplyObject("wim_DataReport", value); }
@@ -403,7 +419,7 @@ namespace Sushi.Mediakiwi.Data
         /// <summary>
         /// Hide the lefthand navigation
         /// </summary>
-        public virtual bool Option_HideNavigation
+        public bool Option_HideNavigation
         {
             get { return this.Data["wim_HideNavigation"].ParseBoolean(); }
             set { this.Data.ApplyObject("wim_HideNavigation", value); }
@@ -412,7 +428,7 @@ namespace Sushi.Mediakiwi.Data
         /// <summary>
         /// Converts the displayed datetime from UTC to timezone from channel
         /// </summary>
-        public virtual bool Option_ConvertUTCToLocalTime
+        public bool Option_ConvertUTCToLocalTime
         {
             get { return this.Data["wim_ConvertUTCToLocalTime"].ParseBoolean(); }
             set { this.Data.ApplyObject("wim_ConvertUTCToLocalTime", value); }
@@ -421,7 +437,7 @@ namespace Sushi.Mediakiwi.Data
         /// <summary>
         /// The label shown on the new item button
         /// </summary>
-        public virtual string Label_NewRecord
+        public string Label_NewRecord
         {
             get { return this.Data["wim_LblNew"].Value; }
             set { this.Data.ApplyObject("wim_LblNew", value); }
@@ -430,7 +446,7 @@ namespace Sushi.Mediakiwi.Data
         /// <summary>
         /// The label on the search button
         /// </summary>
-        public virtual string Label_Search
+        public string Label_Search
         {
             get { return this.Data["wim_LblSearch"].Value; }
             set { this.Data.ApplyObject("wim_LblSearch", value); }
@@ -439,7 +455,7 @@ namespace Sushi.Mediakiwi.Data
         /// <summary>
         /// The label on the save button
         /// </summary>
-        public virtual string Label_Save
+        public string Label_Save
         {
             get { return this.Data["wim_LblSave"].Value; }
             set { this.Data.ApplyObject("wim_LblSave", value); }
@@ -448,7 +464,7 @@ namespace Sushi.Mediakiwi.Data
         /// <summary>
         /// The notification text shown when the list is saved
         /// </summary>
-        public virtual string Label_Saved
+        public string Label_Saved
         {
             get { return this.Data["wim_LblSaved"].Value; }
             set { this.Data.ApplyObject("wim_LblSaved", value); }
@@ -457,7 +473,7 @@ namespace Sushi.Mediakiwi.Data
         /// <summary>
         /// The maximum amount of pages shown in the search grid
         /// </summary>
-        public virtual int Option_Search_MaxViews
+        public int Option_Search_MaxViews
         {
             get { return this.Data["wim_MaxViews"].ParseInt().GetValueOrDefault(10); }
             set { this.Data.ApplyObject("wim_MaxViews", value); }
@@ -466,7 +482,7 @@ namespace Sushi.Mediakiwi.Data
         /// <summary>
         /// The maximum amount of items shown in a paged result
         /// </summary>
-        public virtual int Option_Search_MaxResultPerPage
+        public int Option_Search_MaxResultPerPage
         {
             get { return this.Data["wim_MaxResult"].ParseInt().GetValueOrDefault(25); }
             set { this.Data.ApplyObject("wim_MaxResult", value); }
@@ -475,7 +491,7 @@ namespace Sushi.Mediakiwi.Data
         /// <summary>
         /// The maximum amount of search results
         /// </summary>
-        public virtual int Option_Search_MaxResult
+        public int Option_Search_MaxResult
         {
             get
             {
@@ -486,7 +502,7 @@ namespace Sushi.Mediakiwi.Data
         /// <summary>
         /// Generic list: Filter result by individual list
         /// </summary>
-        public virtual bool HasGenericListFilter
+        public bool HasGenericListFilter
         {
             get { return this.Data["wim_GenericByList"].ParseBoolean(true); }
             set { this.Data.ApplyObject("wim_GenericByList", value); }
@@ -495,13 +511,13 @@ namespace Sushi.Mediakiwi.Data
         /// <summary>
         /// Generic list: Filter result by site
         /// </summary>
-        public virtual bool HasGenericSiteFilter
+        public bool HasGenericSiteFilter
         {
             get { return this.Data["wim_GenericBySite"].ParseBoolean(false); }
             set { this.Data.ApplyObject("wim_GenericBySite", value); }
         }
 
-        public virtual DateTime? Updated
+        public DateTime? Updated
         {
             get { return null; }
         }
@@ -509,7 +525,7 @@ namespace Sushi.Mediakiwi.Data
         /// <summary>
         /// This this list a new instance (ID equals 0)
         /// </summary>
-        public virtual bool IsNewInstance
+        public bool IsNewInstance
         {
             get
             {
@@ -1244,7 +1260,7 @@ namespace Sushi.Mediakiwi.Data
         /// <param name="componentListGUID"></param>
         /// <param name="ifNotPresentCreate">The creation handler</param>
         /// <returns></returns>
-        public virtual IComponentList SelectOne(Guid componentListGUID, Func<Guid, IComponentList> ifNotPresentCreate)
+        public IComponentList SelectOne(Guid componentListGUID, Func<Guid, IComponentList> ifNotPresentCreate)
         {
             var candidate = (from item in SelectAll() where item.GUID == componentListGUID select item);
             IComponentList tmp;
@@ -1342,7 +1358,7 @@ namespace Sushi.Mediakiwi.Data
         /// Delete an implementation record.
         /// </summary>
         /// <returns></returns>
-        public virtual bool Delete()
+        public bool Delete()
         {
             var connector = ConnectorFactory.CreateConnector<ComponentList>();
             connector.Delete(this);
@@ -1364,7 +1380,7 @@ namespace Sushi.Mediakiwi.Data
         /// The complete path of this list in the portal
         /// </summary>
         /// <returns></returns>
-        public virtual string CompletePath()
+        public string CompletePath()
         {
             if (!FolderID.HasValue)
                 return this.Name;

@@ -86,7 +86,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         private async Task SharedFieldList_ListLoad(ComponentListEventArgs arg)
         {
             Implement = await SharedFieldTranslation.FetchSingleForFieldAndSiteAsync(arg.SelectedKey, wim.CurrentSite.ID).ConfigureAwait(false);
-            SharedField field = await SharedField.FetchSingleAsync(arg.SelectedKey);
+            SharedField field = await SharedField.FetchSingleAsync(arg.SelectedKey).ConfigureAwait(false);
             var componentTemplateID = Utility.ConvertToInt(Request.Query["ctemplateid"], 0);
 
             if (Implement == null || Implement.ID == 0)

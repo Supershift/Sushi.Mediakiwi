@@ -16,6 +16,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
         bool m_IsNewDesign = true;
 
         #region Header
+
         void CreateBlock(Console container, string title, WimControlBuilder build, WimControlBuilder build2, ComponentVersion component, bool isContainerClosed, bool skipHeader)
         {
             CreateBlock(container, title, build, build2, component, isContainerClosed, skipHeader, true, false);
@@ -139,21 +140,21 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
             }
             WimControlBuilder build2 = new WimControlBuilder();
 
-            string txtdata = string.Empty;
+            StringBuilder txtdata = new StringBuilder();
             foreach (string txt in container.CurrentListInstance.wim.Notification.GenericErrors)
             {
-                if (!string.IsNullOrEmpty(txtdata))
+                if (txtdata.Length > 0)
                 {
-                    txtdata += "<br/>";
+                    txtdata.Append("<br/>");
                 }
 
-                txtdata += string.Format(@"{0}", txt);
+                txtdata.Append(txt);
             }
 
             build.ApiResponse.Notifications.Add(new Framework.Api.MediakiwiNotification()
             {
                 IsError = true,
-                Message = txtdata
+                Message = txtdata.ToString()
             });
 
 
@@ -184,31 +185,31 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
             container.CurrentListInstance.wim.Notification.ClearNotificationAlert();
             if (m_IsNewDesign)
             {
-                string txtdata = string.Empty;
+                StringBuilder txtdata = new StringBuilder();
                 foreach (string txt in container.CurrentListInstance.wim.Notification.GenericInformationAlert)
                 {
                     if (!string.IsNullOrEmpty(txt))
                     {
-                        if (!string.IsNullOrEmpty(txtdata))
+                        if (txtdata.Length > 0)
                         {
-                            txtdata += "<br/>";
+                            txtdata.Append("<br/>");
                         }
-                        txtdata += string.Format(@"{0}", txt);
+                        txtdata.Append(txt);
                     }
                 }
 
-                if (!string.IsNullOrEmpty(txtdata))
+                if (txtdata.Length > 0)
                 {
                     build.ApiResponse.Notifications.Add(new Framework.Api.MediakiwiNotification()
                     {
                         IsError = false,
-                        Message = txtdata
+                        Message = txtdata.ToString()
                     });
 
-                    build.Notifications.AppendFormat(@"
+                    build.Notifications.Append(@$"
                     <article class=""note ambiance"">
-	                    {0}
-                    </article>", txtdata);
+	                    {txtdata}
+                    </article>");
                 }
             }
         }
@@ -229,33 +230,33 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
 
             container.CurrentListInstance.wim.Notification.ClearNotification();
 
-            string txtdata = string.Empty;
+            StringBuilder txtdata = new StringBuilder();
             foreach (string txt in container.CurrentListInstance.wim.Notification.GenericInformation)
             {
                 if (!string.IsNullOrEmpty(txt))
                 {
-                    if (!string.IsNullOrEmpty(txtdata))
+                    if (txtdata.Length > 0)
                     {
-                        txtdata += "<br/>";
+                        txtdata.Append("<br/>");
                     }
 
-                    txtdata += string.Format(@"{0}", txt);
+                    txtdata.Append(txt);
                 }
             }
-            if (!string.IsNullOrEmpty(txtdata))
+            if (txtdata.Length > 0)
             {
                 build.ApiResponse.Notifications.Add(new Framework.Api.MediakiwiNotification()
                 {
                     IsError = false,
-                    Message = txtdata
+                    Message = txtdata.ToString()
                 });
 
-                build.Notifications.AppendFormat(@"
+                build.Notifications.Append($@"
                 <article class=""note"">
                     <div class=""content"">
-	                    {0}
+	                    {txtdata}
                     </div>
-                </article>", txtdata);
+                </article>");
             }
 
         }
@@ -1337,6 +1338,8 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                 if (container.IsComponent)
                 {
                     component.IsActive = true;
+                    component.PageID = null;
+
                 }
                 else
                 {
@@ -1352,10 +1355,6 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                     component.IsActive = isActive;
                 }
 
-                if (container.IsComponent)
-                {
-                    component.PageID = null;
-                }
                 component.SortOrder = sorted.ContainsKey(component.ID) ? (int)sorted[component.ID] : sortOrder;
                 component.IsSecundary = showServiceColumn;
                 component.Serialized_XML = Content.GetSerialized(content);
@@ -1623,7 +1622,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
             }
 
             // 19 nov 2017: Fix
-            isValidInput = m_AllListProperties.Count(x => x.IsValid.HasValue && !x.IsValid.Value && x.IsVisible) == 0;
+            isValidInput = m_AllListProperties.Any(x => x.IsValid.HasValue && !x.IsValid.Value && x.IsVisible) == false;
 
             //  When there is an PreRender event the output HTML could be different, so first set the properties without HTML output
             if (container.CurrentListInstance.wim.HasListPreRender)
@@ -1641,7 +1640,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
 
             // 19 nov 2017: Fix
             // 2018-02-22 MV: Also take into consideration the result of the pre-render event (which can generate generic errors)
-            isValidInput = isValidInput && m_AllListProperties.Count(x => x.IsValid.HasValue && !x.IsValid.Value && x.IsVisible) == 0;
+            isValidInput = isValidInput && m_AllListProperties.Any(x => x.IsValid.HasValue && !x.IsValid.Value && x.IsVisible) == false;
 
             if (!string.IsNullOrEmpty(m_ClickedButton) && container.CurrentListInstance.wim.HasListAction)
             {
@@ -2652,7 +2651,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                             {
                                 //  Legacy
                                 object value = infoItem.Info.GetValue(infoItem.SenderInstance, null);
-                                if (value != null && value.GetType() == typeof(string))
+                                if (value is string)
                                 {
                                     containerTitle = value.ToString();
                                 }
@@ -2676,7 +2675,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                         container.CurrentListInstance.wim.Form.TranslationLastRequest = infoItem.Property == null ? infoItem.Name : infoItem.Property.FieldName;
 
                         object value = infoItem.Info.GetValue(infoItem.SenderInstance, null);
-                        if (value != null && value.GetType() == typeof(string))
+                        if (value is string)
                         {
                             containerTitle = value.ToString();
                         }
