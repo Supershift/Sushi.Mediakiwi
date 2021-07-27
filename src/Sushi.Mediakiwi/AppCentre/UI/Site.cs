@@ -29,9 +29,9 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         {
             //if (Disconnect)
             //{
-            //    if (this.m_Implement.MasterID.HasValue)
+            //    if (m_Implement.MasterID.HasValue)
             //    {
-            //        var items = Sushi.Mediakiwi.Data.ComponentList.SelectAllBySite(this.m_Implement.MasterID.Value);
+            //        var items = Sushi.Mediakiwi.Data.ComponentList.SelectAllBySite(m_Implement.MasterID.Value);
 
             //        foreach (var item in items)
             //        {
@@ -58,7 +58,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// <param name="e">The <see cref="ComponentListEventArgs"/> instance containing the event data.</param>
         async Task Site_ListDelete(ComponentListEventArgs e)
         {
-            await Implement.DeleteAsync();
+            await Implement.DeleteAsync().ConfigureAwait(false);
         }
 
         /// <summary>
@@ -89,11 +89,11 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// <param name="e">The <see cref="ComponentListEventArgs"/> instance containing the event data.</param>
         async Task Site_ListSave(ComponentListEventArgs e)
         {
-            await Implement.SaveAsync();
+            await Implement.SaveAsync().ConfigureAwait(false);
 
             if (Implement.HasLists)
             {
-                var listsite = Mediakiwi.Data.Folder.SelectOneBySite(Implement.ID, FolderType.List);
+                var listsite = await Mediakiwi.Data.Folder.SelectOneBySiteAsync(Implement.ID, FolderType.List).ConfigureAwait(false);
                 if (listsite == null || listsite.ID == 0)
                 {
                     var folder = new Mediakiwi.Data.Folder();
@@ -102,12 +102,12 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                     folder.Name = Common.FolderRoot;
                     folder.CompletePath = Common.FolderRoot;
                     folder.SiteID = Implement.ID;
-                    folder.Save();
+                    await folder.SaveAsync().ConfigureAwait(false);
                 }
             }
             if (Implement.HasPages)
             {
-                var listsite = Mediakiwi.Data.Folder.SelectOneBySite(Implement.ID, FolderType.Page);
+                var listsite = await Mediakiwi.Data.Folder.SelectOneBySiteAsync(Implement.ID, FolderType.Page).ConfigureAwait(false);
                 if (listsite == null || listsite.ID == 0)
                 {
                     var folder = new Mediakiwi.Data.Folder();
@@ -116,19 +116,23 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                     folder.Name = Common.FolderRoot;
                     folder.CompletePath = Common.FolderRoot;
                     folder.SiteID = Implement.ID;
-                    folder.Save();
+                    await folder.SaveAsync().ConfigureAwait(false);
                 }
             }
 
-            ResetDefaultFolder();
+            await ResetDefaultFolderAsync().ConfigureAwait(false);
 
-            Response.Redirect(wim.GetUrl(new KeyValue() { Key = "item", Value = Implement.ID }));
+            Response.Redirect(wim.GetUrl(new KeyValue()
+            {
+                Key = "item",
+                Value = Implement.ID
+            }));
         }
 
         /// <summary>
         /// Resets the default folder.
         /// </summary>
-        private void ResetDefaultFolder()
+        private async Task ResetDefaultFolderAsync()
         {
             if (!string.IsNullOrEmpty(Implement.DefaultFolder))
             {
@@ -140,36 +144,33 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                         break;
                     }
                     else
+                    {
                         Implement.DefaultFolder = Implement.DefaultFolder.Substring(0, Implement.DefaultFolder.Length - 1);
+                    }
                 }
 
-                if (Implement.DefaultFolder.Length > 0)
+                if (Implement.DefaultFolder.Length > 0 && Implement.DefaultFolder.ToCharArray()[0] != '/')
                 {
-                    if (Implement.DefaultFolder.ToCharArray()[0] != '/')
-                        Implement.DefaultFolder = string.Format("/{0}", Implement.DefaultFolder);
+                    Implement.DefaultFolder = string.Format("/{0}", Implement.DefaultFolder);
                 }
             }
+
             wim.FlushCache();
-            Framework.Functions.FolderPathLogic.UpdateCompletePath();
+            await Framework.Functions.FolderPathLogic.UpdateCompletePathAsync().ConfigureAwait(false);
 
             // if a master is connected, created the inheritance tree
             if (Implement.MasterID.HasValue && Implement.HasLists)
             {
-                Framework.Inheritance.Folder.CreateFolderTree(Implement.MasterID.Value, Implement.ID, FolderType.List);
+                await Framework.Inheritance.Folder.CreateFolderTreeAsync(Implement.MasterID.Value, Implement.ID, FolderType.List).ConfigureAwait(false);
             }
         }
 
-        Mediakiwi.Data.Site m_Implement;
         /// <summary>
         /// Gets or sets the implement.
         /// </summary>
         /// <value>The implement.</value>
         [Framework.ContentListItem.DataExtend()]
-        public Mediakiwi.Data.Site Implement
-        {
-            get { return m_Implement; }
-            set { m_Implement = value; }
-        }
+        public Mediakiwi.Data.Site Implement { get; set; }
 
         /// <summary>
         /// Handles the ListLoad event of the Site control.
@@ -178,12 +179,13 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// <param name="e">The <see cref="ComponentListEventArgs"/> instance containing the event data.</param>
         async Task Site_ListLoad(ComponentListEventArgs e)
         {
-            Implement = await Mediakiwi.Data.Site.SelectOneAsync(e.SelectedKey);
-            this.m_InheritenceIsSet = Implement.MasterID.HasValue;
+            Implement = await Mediakiwi.Data.Site.SelectOneAsync(e.SelectedKey).ConfigureAwait(false);
+            InheritenceIsSet = Implement.MasterID.HasValue;
 
             if (!Implement.HasPages && !Implement.HasLists)
+            {
                 ListDelete += Site_ListDelete;
-
+            }
             //ResetDefaultFolder();
 
             wim.CurrentSite = Implement;
@@ -197,42 +199,42 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         async Task Site_ListSearch(ComponentListSearchEventArgs e)
         {
             wim.CanAddNewItem = true;
-            wim.ListDataColumns.Add("ID", "ID", ListDataColumnType.UniqueIdentifier);
-            wim.ListDataColumns.Add("Site", "Name", ListDataColumnType.HighlightPresent);
-            wim.ListDataColumns.Add("Inherits from", "Master");
-            wim.ListDataColumns.Add("Active", "IsActive", 60);
-            wim.ListDataColumns.Add("Pages", "PageCount", 60);
-            wim.ListDataColumns.Add("Lists", "ListCount", 60);
-            wim.ListDataColumns.Add("Created", "Created", 100);
-            if (wim.IsCachedSearchResult)
-                return;
+            wim.ListDataColumns.Add(new ListDataColumn("ID", nameof(Mediakiwi.Data.Site.ID), ListDataColumnType.UniqueIdentifier));
+            wim.ListDataColumns.Add(new ListDataColumn("Site", nameof(Mediakiwi.Data.Site.Name), ListDataColumnType.HighlightPresent));
+            wim.ListDataColumns.Add(new ListDataColumn("Inherits from", nameof(Mediakiwi.Data.Site.Master)));
+            wim.ListDataColumns.Add(new ListDataColumn("Active", nameof(Mediakiwi.Data.Site.IsActive)) { ColumnWidth = 60 });
+            wim.ListDataColumns.Add(new ListDataColumn("Pages", nameof(Mediakiwi.Data.Site.PageCount)) { ColumnWidth = 60 });
+            wim.ListDataColumns.Add(new ListDataColumn("Lists", nameof(Mediakiwi.Data.Site.ListCount)) { ColumnWidth = 60 });
+            wim.ListDataColumns.Add(new ListDataColumn("Created", nameof(Mediakiwi.Data.Site.Created)) { ColumnWidth = 100 });
 
-            if (m_SearchSiteName == null)
-                wim.ListDataAdd(await Mediakiwi.Data.Site.SelectAllAsync());
+            if (wim.IsCachedSearchResult)
+            {
+                return;
+            }
+
+            if (SearchSiteName == null)
+            {
+                var results = await Mediakiwi.Data.Site.SelectAllAsync().ConfigureAwait(false);
+                wim.ListDataAdd(results);
+            }
             else
-                wim.ListDataAdd(await Mediakiwi.Data.Site.SelectAllAsync(m_SearchSiteName));
+            {
+                var results = await Mediakiwi.Data.Site.SelectAllAsync(SearchSiteName).ConfigureAwait(false);
+                wim.ListDataAdd(results);
+            }
         }
 
-        private string m_SearchSiteName;
         /// <summary>
         /// Gets or sets the name of the search site.
         /// </summary>
         /// <value>The name of the search site.</value>
         [Framework.ContentListSearchItem.TextField("Site title", 100, false)]
-        public string SearchSiteName
-        {
-            get { return m_SearchSiteName; }
-            set { m_SearchSiteName = value; }
-        }
+        public string SearchSiteName { get; set; }
 
-        bool m_InheritenceIsSet;
         /// <summary>
         /// Gets a value indicating whether [inheritence is set].
         /// </summary>
         /// <value><c>true</c> if [inheritence is set]; otherwise, <c>false</c>.</value>
-        public bool InheritenceIsSet
-        {
-            get { return m_InheritenceIsSet; }
-        }
+        public bool InheritenceIsSet { get; private set; }
     }
 }

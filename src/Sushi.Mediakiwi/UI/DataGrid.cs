@@ -56,10 +56,10 @@ namespace Sushi.Mediakiwi.UI
                 if (isDataTable)
                 {
                     uniqueIdentifier = GetIndentifierKey((System.Data.DataRow)item, root.ListDataColumns.List);
-                    highlightColumn = GetHighlightedValue((System.Data.DataRow)item, root.ListDataColumns.List).ToString();
+                    highlightColumn = GetHighlightedValue((System.Data.DataRow)item, root.ListDataColumns.List);
 
                     if (highlightColumn != null)
-                        highlightColumn = WebUtility.HtmlEncode(highlightColumn.ToString());
+                        highlightColumn = WebUtility.HtmlEncode(highlightColumn);
                 }
                 else
                 {
@@ -67,7 +67,7 @@ namespace Sushi.Mediakiwi.UI
                     highlightColumn = GetHighlightedValue(infoCollection, item, root.ListDataColumns.List);
 
                     if (highlightColumn != null)
-                        highlightColumn = WebUtility.HtmlEncode(highlightColumn.ToString());
+                        highlightColumn = WebUtility.HtmlEncode(highlightColumn);
                 }
                 build.AppendFormat("\n\t<li><a href=\"{1}?list={2}&item={3}\">{0}</a></li>", highlightColumn, container.WimPagePath, container.CurrentList.ID, uniqueIdentifier);
 
@@ -82,7 +82,7 @@ namespace Sushi.Mediakiwi.UI
 </div>
 "
                 , container.CurrentListInstance.wim.CurrentList.Name
-                , build.Length == 0 ? "" : string.Format("\n\t<ul class=\"links\">{0}\t</ul>", build.ToString())
+                , build.Length == 0 ? "" : string.Format("\n\t<ul class=\"links\">{0}\t</ul>", build)
                 , container.WimPagePath
                 , container.CurrentList.ID
                 );
@@ -459,187 +459,108 @@ namespace Sushi.Mediakiwi.UI
 
         string GetListPaging(Beta.GeneratedCms.Console container, Splitlist splitlist, int currentPage, bool knockout, bool isTop)
         {
-            if (container.CurrentListInstance.wim.Page.Body.Grid.HidePager) 
+            if (container.CurrentListInstance.wim.Page.Body.Grid.HidePager)
                 return null;
 
             bool isFormatRequest_AJAX = container.Form(Constants.AJAX_PARAM) == "1";
 
             StringBuilder paging = new StringBuilder();
-            
+
             int maxList = splitlist == null ? container.CurrentListInstance.wim.m_ListDataRecordPageCount : splitlist.ListCount;
             int maxItem = splitlist == null ? container.CurrentListInstance.wim.m_ListDataRecordCount : splitlist.ItemCount;
 
-            if (false)//!container.CurrentApplicationUser.ShowNewDesign2)
+
+            if (!isTop)
             {
-                paging.Append("\n\t\t\t\t\t\t<div class=\"footer\">");
-                paging.Append("\n\t\t\t\t\t\t\t<ul>");
-                if (isTop)
-                {
-                    #region Sortorder
-                    if (!string.IsNullOrEmpty(container.CurrentListInstance.wim.m_sortOrderSqlTable))
-                    {
-                        //bool ignoreSort = false;
-                        //if (!isListMode && !container.CurrentListInstance.wim.HasSingleItemSortOrder)
-                        //    ignoreSort = true;
-
-                        if (container.CurrentListInstance.wim.HasSortOrder)// && !ignoreSort)
-                        {
-                            paging.Append("\n\t\t\t\t\t\t\t\t<li class=\"first\"><a class=\"flaticon solid repeat-4 icon tiny sortOrder\" href=\"#\"></a></li>");
-                        }
-                    }
-                    #endregion
-                }
-
-                paging.Append("\n\t\t\t\t\t\t\t\t\t<li class=\"last\">&nbsp;");
-                //  Paging at the bottom
-                if (isTop)
-                {
-                    if (container.CurrentListInstance.wim.HasExportOptionXLS)
-                    {
-                        paging.Append("\n\t\t\t\t\t\t\t\t\t<li class=\"last\">");
-                        paging.Append("\n\t\t\t\t\t\t\t\t\t\t<div class=\"flaticon solid download\">");
-                        paging.Append("\n\t\t\t\t\t\t\t\t\t\t\t<div class=\"hoverMenu\">");
-                        paging.Append("\n\t\t\t\t\t\t\t\t\t\t\t\t<span class=\"flaticon solid download\"></span>");
-                        paging.Append("\n\t\t\t\t\t\t\t\t\t\t\t\t<h3>Export</h3>");
-                        paging.Append("\n\t\t\t\t\t\t\t\t\t\t\t\t<a href=\"#\" id=\"export_xls\" class=\"postBack nosync\">Excel</a>");
-                        //paging.Append("\n\t\t\t\t\t\t\t\t\t\t\t\t<a href=\"#\" id=\"export_pdf\" class=\"postBack nosync\">PDF</a>");
-                        paging.Append("\n\t\t\t\t\t\t\t\t\t\t\t</div>");
-                        paging.Append("\n\t\t\t\t\t\t\t\t\t\t</div>");
-                    }
-                }
-                paging.Append("\n\t\t\t\t\t\t\t\t\t</li>");
-
+                bool isShowAll = container.Request.Query["set"] == "all";
+                paging.Append("<menu class=\"pager\">");
                 if (maxList > 1)
                 {
-                    paging.Append("\n\t\t\t\t\t\t\t\t<li class=\"laster\">");
-
-                    paging.Append("\n\t\t\t\t\t\t\t\t\t<ul>");
-                    paging.AppendFormat("\n\t\t\t\t\t\t\t\t\t\t<li><a href=\"{0}\"{1}>1</a></li>", GetUri(container, 1), isFormatRequest_AJAX ? " class=\"async\"" : string.Empty);
-                    paging.AppendFormat("\n\t\t\t\t\t\t\t\t\t\t<li><input id=\"set\" name=\"set\" type=\"text\" class=\"numeric postBack\" value=\"{0}\"></li>", currentPage);
-                    paging.AppendFormat("\n\t\t\t\t\t\t\t\t\t\t<li><a href=\"{1}\"{2}>{0}</a></li>", maxList, GetUri(container, maxList), isFormatRequest_AJAX ? " class=\"async\"" : string.Empty);
-
-                    int pageP = currentPage <= 1 ? 1 : currentPage - 1;
-                    paging.AppendFormat("\n\t\t\t\t\t\t\t\t\t\t<li class=\"prev\"><a href=\"{0}\"{1}><</a></li>", GetUri(container, pageP), isFormatRequest_AJAX ? " class=\"async\"" : string.Empty);
-                    int pageN = currentPage >= maxList ? maxList : currentPage + 1;
-                    paging.AppendFormat("\n\t\t\t\t\t\t\t\t\t\t<li class=\"next\"><a href=\"{0}\"{1}>></a></li>", GetUri(container, pageN), isFormatRequest_AJAX ? " class=\"async\"" : string.Empty);
-                    paging.Append("\n\t\t\t\t\t\t\t\t\t</ul>");
-
-                    paging.Append("\n\t\t\t\t\t\t\t\t</li>");
-
-                    paging.Append("\n\t\t\t\t\t\t\t\t</li>");
+                    paging.Append("<li class=\"first\">");
+                    if (container.CurrentListInstance.wim.CurrentList.Option_HasShowAll)
+                    {
+                        if (isShowAll)
+                        {
+                            paging.Append($"<a href=\"{BuildUrl(container, "set", "1")}\" class=\"back{(isFormatRequest_AJAX ? " async" : string.Empty)}\"><span class=\"fa icon-list-ul\"></span>Reset</a>");
+                        }
+                        else
+                        {
+                            paging.Append($"<a href=\"{BuildUrl(container, "set", "all")}\" class=\"back{(isFormatRequest_AJAX ? " async" : string.Empty)}\"><span class=\"fa icon-list-ul\"></span>Show All</a>");
+                        }
+                    }
+                    paging.Append("</li>");
                 }
 
-                paging.Append("\n\t\t\t\t\t\t\t</ul>");
-                paging.Append("\n\t\t\t\t\t\t</div>");
-            }
-            else
-            {
-                if (!isTop)
+                int results = container.CurrentListInstance.wim.m_ListDataRecordCount;
+                if (results == 0)
                 {
-                    bool isShowAll = container.Request.Query["set"] == "all";
-                    paging.Append("\n\t\t\t\t\t\t<menu class=\"pager\">");
+                    results = container.CurrentListInstance.wim.ListData.Count;
+                }
+
+                int pagesize = container.CurrentListInstance.wim.CurrentList.Option_Search_MaxResultPerPage;
+                int currsize = (pagesize * currentPage);
+                int actlsize = currsize - pagesize;
+                if (currsize > results)
+                {
+                    currsize = results;
+                }
+
+                if (isShowAll || maxList == 1)
+                {
+                    paging.Append($"<li>{results} results</li>");
+                }
+                else
+                {
+                    paging.Append($"<li><strong>{actlsize + 1} to {currsize}</strong> of {results} results</li>");
+
                     if (maxList > 1)
                     {
-                        paging.Append("\n\t\t\t\t\t\t\t<li class=\"first\">");
-                        if (container.CurrentListInstance.wim.CurrentList.Option_HasShowAll)
+                        paging.Append("<li><ul><li>");
+
+                        if (currentPage == 1)
                         {
-                            if (isShowAll)
-                                paging.AppendFormat("\n\t\t\t\t\t\t\t\t<a href=\"{0}\" class=\"back{1}\"><span class=\"fa icon-list-ul\"></span>Reset</a>", BuildUrl(container, "set", "1"), isFormatRequest_AJAX ? " async" : string.Empty);
-                            else
-                                paging.AppendFormat("\n\t\t\t\t\t\t\t\t<a href=\"{0}\" class=\"back{1}\"><span class=\"fa icon-list-ul\"></span>Show All</a>", BuildUrl(container, "set", "all"), isFormatRequest_AJAX ? " async" : string.Empty);
+                            paging.Append($"<li><a class=\"active{(isFormatRequest_AJAX ? " async" : string.Empty)}\" href=\"{GetUri(container, currentPage)}\">{currentPage}</a></li>");
+                            paging.Append($"<li><a href=\"{GetUri(container, currentPage + 1)}\"{(isFormatRequest_AJAX ? " class=\"async\"" : string.Empty)}>{currentPage + 1}</a></li>");
+
+                            if (maxList > 2)
+                            {
+                                paging.Append($"<li><a href=\"{GetUri(container, currentPage + 2)}\"{(isFormatRequest_AJAX ? " class=\"async\"" : string.Empty)}>{currentPage + 2}</a></li>");
+                            }
                         }
-                        paging.Append("\n\t\t\t\t\t\t\t</li>");
-                    }
-
-                    int results = container.CurrentListInstance.wim.m_ListDataRecordCount;
-                    if (results == 0)
-                        results = container.CurrentListInstance.wim.ListData.Count;
-
-                    int pagesize = container.CurrentListInstance.wim.CurrentList.Option_Search_MaxResultPerPage;
-                    int currsize = (pagesize * currentPage);
-                    int actlsize = currsize - pagesize;
-                    if (currsize > results)
-                        currsize = results;
-
-                    if (isShowAll || maxList == 1)
-                    {
-                        paging.Append("\n\t\t\t\t\t\t\t<li>");
-                        paging.AppendFormat("\n\t\t\t\t\t\t\t\t{0} results", results);
-                        paging.Append("\n\t\t\t\t\t\t\t</li>");
-                    }
-                    else
-                    {
-                        paging.Append("\n\t\t\t\t\t\t\t<li>");
-                        paging.AppendFormat("\n\t\t\t\t\t\t\t\t<strong>{0} to {1}</strong> of {2} results", actlsize + 1, currsize, results);
-                        paging.Append("\n\t\t\t\t\t\t\t</li>");
-
-                        if (maxList > 1)
+                        else
                         {
-                            paging.Append("\n\t\t\t\t\t\t\t<li>");
-                            paging.Append("\n\t\t\t\t\t\t\t\t<ul>");
-                            paging.Append("\n\t\t\t\t\t\t\t\t\t<li>");
-
-                            //paging.AppendFormat("\n\t\t\t\t\t\t<li class=\"prev\"><a class=\"flaticon icon-arrow-left-04{1}\" href=\"{0}\"></a></li>", GetUri(container, 1), isFormatRequest_AJAX ? " async" : string.Empty);
-                            if (currentPage == 1)
+                            int prev = currentPage - 1;
+                            if (prev > 1)
                             {
-                                paging.AppendFormat("\n\t\t\t\t\t\t<li><a class=\"active{2}\" href=\"{1}\">{0}</a></li>", currentPage, GetUri(container, currentPage), isFormatRequest_AJAX ? " async" : string.Empty);
-                                paging.AppendFormat("\n\t\t\t\t\t\t<li><a href=\"{1}\"{2}>{0}</a></li>", currentPage + 1, GetUri(container, currentPage + 1), isFormatRequest_AJAX ? " class=\"async\"" : string.Empty);
-
-                                if (maxList > 2)
-                                    paging.AppendFormat("\n\t\t\t\t\t\t<li><a href=\"{1}\"{2}>{0}</a></li>", currentPage + 2, GetUri(container, currentPage + 2), isFormatRequest_AJAX ? " class=\"async\"" : string.Empty);
-                            }
-                            else
-                            {
-                                int prev = currentPage - 1;
-                                if (prev > 1)
-                                {
-                                    paging.AppendFormat("\n\t\t\t\t\t\t<li class=\"prevAll\"><a class=\"fa icon-angle-double-left{1}\" href=\"{0}\"></a></li>", GetUri(container, 1), isFormatRequest_AJAX ? " async" : string.Empty);
-                                    paging.AppendFormat("\n\t\t\t\t\t\t<li class=\"prev\"><a class=\"fa icon-angle-left{1}\" href=\"{0}\"></a></li>", GetUri(container, prev), isFormatRequest_AJAX ? " async" : string.Empty);
-                                }
-
-                                if (maxList == (currentPage) && currentPage != 2)
-                                    paging.AppendFormat("\n\t\t\t\t\t\t<li><a href=\"{1}\"{2}>{0}</a></li>", currentPage - 2, GetUri(container, currentPage - 2), isFormatRequest_AJAX ? " class=\"async\"" : string.Empty);
-
-                                paging.AppendFormat("\n\t\t\t\t\t\t<li><a href=\"{1}\"{2}>{0}</a></li>", currentPage - 1, GetUri(container, currentPage - 1), isFormatRequest_AJAX ? " class=\"async\"" : string.Empty);
-                                paging.AppendFormat("\n\t\t\t\t\t\t<li><a class=\"active{2}\" href=\"{1}\">{0}</a></li>", currentPage, GetUri(container, currentPage), isFormatRequest_AJAX ? " async" : string.Empty);
-                                if (maxList > (currentPage))
-                                    paging.AppendFormat("\n\t\t\t\t\t\t<li><a href=\"{1}\"{2}>{0}</a></li>", currentPage + 1, GetUri(container, currentPage + 1), isFormatRequest_AJAX ? " class=\"async\"" : string.Empty);
+                                paging.Append($"<li class=\"prevAll\"><a class=\"fa icon-angle-double-left{(isFormatRequest_AJAX ? " async" : string.Empty)}\" href=\"{GetUri(container, 1)}\"></a></li>");
+                                paging.Append($"<li class=\"prev\"><a class=\"fa icon-angle-left{(isFormatRequest_AJAX ? " async" : string.Empty)}\" href=\"{GetUri(container, prev)}\"></a></li>");
                             }
 
-                            if (currentPage < (maxList - 1))
+                            if (maxList == (currentPage) && currentPage != 2)
                             {
-                                paging.AppendFormat("\n\t\t\t\t\t\t<li class=\"next\"><a class=\"fa icon-angle-right{1}\" href=\"{0}\"></a></li>", GetUri(container, (currentPage + 1)), isFormatRequest_AJAX ? " async" : string.Empty);
-                                paging.AppendFormat("\n\t\t\t\t\t\t<li class=\"nextAll\"><a class=\"fa icon-angle-double-right{1}\" href=\"{0}\"></a></li>", GetUri(container, maxList), isFormatRequest_AJAX ? " async" : string.Empty);
+                                paging.Append($"<li><a href=\"{GetUri(container, currentPage - 2)}\"{(isFormatRequest_AJAX ? " class=\"async\"" : string.Empty)}>{currentPage - 2}</a></li>");
                             }
-                            paging.Append("\n\t\t\t\t\t\t\t\t\t</li>");
-                            paging.Append("\n\t\t\t\t\t\t\t\t<ul>");
-                            paging.Append("\n\t\t\t\t\t\t\t</li>");
 
-                            //paging.Append("\n\t\t\t\t\t\t\t\t<li class=\"laster\">");
+                            paging.Append($"<li><a href=\"{GetUri(container, currentPage - 1)}\"{(isFormatRequest_AJAX ? " class=\"async\"" : string.Empty)}>{currentPage - 1}</a></li>");
+                            paging.Append($"<li><a class=\"active{(isFormatRequest_AJAX ? " async" : string.Empty)}\" href=\"{GetUri(container, currentPage)}\">{currentPage}</a></li>");
 
-                            //paging.Append("\n\t\t\t\t\t\t\t\t\t<ul>");
-                            //paging.AppendFormat("\n\t\t\t\t\t\t\t\t\t\t<li><a href=\"{0}\"{1}>1</a></li>", GetUri(container, 1), isFormatRequest_AJAX ? " class=\"async\"" : string.Empty);
-                            //paging.AppendFormat("\n\t\t\t\t\t\t\t\t\t\t<li><input id=\"set\" name=\"set\" type=\"text\"class=\"numeric postBack\" value=\"{0}\"></li>", currentPage);
-                            //paging.AppendFormat("\n\t\t\t\t\t\t\t\t\t\t<li><a href=\"{1}\"{2}>{0}</a></li>", maxList, GetUri(container, maxList), isFormatRequest_AJAX ? " class=\"async\"" : string.Empty);
-
-                            //int pageP = currentPage <= 1 ? 1 : currentPage - 1;
-                            //paging.AppendFormat("\n\t\t\t\t\t\t\t\t\t\t<li class=\"prev\"><a href=\"{0}\"{1}><</a></li>", GetUri(container, pageP), isFormatRequest_AJAX ? " class=\"async\"" : string.Empty);
-                            //int pageN = currentPage >= maxList ? maxList : currentPage + 1;
-                            //paging.AppendFormat("\n\t\t\t\t\t\t\t\t\t\t<li class=\"next\"><a href=\"{0}\"{1}>></a></li>", GetUri(container, pageN), isFormatRequest_AJAX ? " class=\"async\"" : string.Empty);
-                            //paging.Append("\n\t\t\t\t\t\t\t\t\t</ul>");
-
-                            //paging.Append("\n\t\t\t\t\t\t\t\t</li>");
-
-                            //paging.Append("\n\t\t\t\t\t\t\t\t</li>");
+                            if (maxList > (currentPage))
+                            {
+                                paging.Append($"<li><a href=\"{GetUri(container, currentPage + 1)}\"{(isFormatRequest_AJAX ? " class=\"async\"" : string.Empty)}>{currentPage + 1}</a></li>");
+                            }
                         }
+
+                        if (currentPage < (maxList - 1))
+                        {
+                            paging.Append($"<li class=\"next\"><a class=\"fa icon-angle-right{(isFormatRequest_AJAX ? " async" : string.Empty)}\" href=\"{GetUri(container, (currentPage + 1))}\"></a></li>");
+                            paging.Append($"<li class=\"nextAll\"><a class=\"fa icon-angle-double-right{(isFormatRequest_AJAX ? " async" : string.Empty)}\" href=\"{GetUri(container, maxList)}\"></a></li>");
+                        }
+                        paging.Append("</li><ul></li>");
                     }
-                    paging.Append("\n\t\t\t\t\t\t</menu>");
-                    paging.Append("\n\t\t\t\t\t\t<br class=\"clear\">");
                 }
+                paging.Append("</menu><br class=\"clear\">");
             }
-           
-            //paging.Append("\n\t\t\t\t\t\t<br class=\"clear\">");
-    
+
             return paging.ToString();
         }
 
@@ -686,7 +607,7 @@ namespace Sushi.Mediakiwi.UI
 
         string BuildUrl(Beta.GeneratedCms.Console container, string queryStringPropertyToApply, string value)
         {
-            string url = container.WimPagePath;
+            StringBuilder url = new StringBuilder(container.WimPagePath);
 
             bool first = true, foundKey = false;
             if (container.Request.Query.Count > 0)
@@ -709,27 +630,32 @@ namespace Sushi.Mediakiwi.UI
                     if (!string.IsNullOrEmpty(candidate))
                     {
                         if (first)
-                            url += string.Concat("?", key, "=", candidate);
+                        {
+                            url.Append($"?{key}={candidate}");
+                        }
                         else
-                            url += string.Concat("&", key, "=", candidate);
+                        {
+                            url.Append($"&{key}={candidate}");
+                        }
 
                         first = false;
                     }
                 }
             }
 
-            if (!foundKey)
+            if (!foundKey && !string.IsNullOrEmpty(value))
             {
-                if (!string.IsNullOrEmpty(value))
+                if (first)
                 {
-                    if (first)
-                        url += string.Concat("?", queryStringPropertyToApply, "=", value);
-                    else
-                        url += string.Concat("&", queryStringPropertyToApply, "=", value);
+                    url.Append($"?{queryStringPropertyToApply}={value}");
+                }
+                else
+                {
+                    url.Append($"&{queryStringPropertyToApply}={value}");
                 }
             }
 
-            return url;
+            return url.ToString();
         }
 
         /// <summary>
@@ -765,27 +691,34 @@ namespace Sushi.Mediakiwi.UI
                     object propertyValue;
 
                     if (isDataTable)
+                    {
                         propertyValue = ((System.Data.DataRow)item)[column.ColumnValuePropertyName];
+                    }
                     else
+                    {
                         propertyValue = GetValue(infoCollection, item, column);
+                    }
 
                     if (column.Total == ListDataTotalType.Sum || column.Total == ListDataTotalType.Average)
-                        hasTotal = true;
-
-                    if (propertyValue != null)
                     {
-                        if (propertyValue.GetType() == typeof(decimal) || propertyValue.GetType() == typeof(int))
-                        {
-                            
-                            if (column.Total == ListDataTotalType.Sum || column.Total == ListDataTotalType.Average)
-                            {
-                                column.TotalValueType = propertyValue.GetType();
-                                column.TotalValue += Utility.ConvertToDecimal(propertyValue);
-                            }
-                        }
+                        hasTotal = true;
+                    }
+
+                    if (
+                        (propertyValue is decimal || propertyValue is int)
+                        &&
+                        (column.Total == ListDataTotalType.Sum || column.Total == ListDataTotalType.Average)
+                        )
+                    {
+                        column.TotalValueType = propertyValue.GetType();
+                        column.TotalValue += Utility.ConvertToDecimal(propertyValue);
                     }
                 }
-                if (!hasTotal) break;
+
+                if (!hasTotal)
+                {
+                    break;
+                }
             }
             return hasTotal;
         }
@@ -937,7 +870,7 @@ namespace Sushi.Mediakiwi.UI
                             highlightColumn = GetHighlightedValue((System.Data.DataRow)item, root.ListDataColumns.List);
 
                             if (highlightColumn != null)
-                                highlightColumn = WebUtility.HtmlEncode(highlightColumn.ToString());
+                                highlightColumn = WebUtility.HtmlEncode(highlightColumn);
 
                         }
                         else
@@ -946,7 +879,7 @@ namespace Sushi.Mediakiwi.UI
                             highlightColumn = GetHighlightedValue(infoCollection, item, root.ListDataColumns.List);
 
                             if (highlightColumn != null)
-                                highlightColumn = WebUtility.HtmlEncode(highlightColumn.ToString());
+                                highlightColumn = WebUtility.HtmlEncode(highlightColumn);
 
                         }
 
@@ -999,7 +932,7 @@ namespace Sushi.Mediakiwi.UI
                                     highlightColumn = GetHighlightedValue((System.Data.DataRow)item, root.ListDataColumns.List);
 
                                     if (highlightColumn != null)
-                                        highlightColumn = WebUtility.HtmlEncode(highlightColumn.ToString());
+                                        highlightColumn = WebUtility.HtmlEncode(highlightColumn);
 
                                 }
                                 else
@@ -1008,34 +941,45 @@ namespace Sushi.Mediakiwi.UI
                                     highlightColumn = GetHighlightedValue(infoCollection, item, root.ListDataColumns.List);
 
                                     if (highlightColumn != null)
-                                        highlightColumn = WebUtility.HtmlEncode(highlightColumn.ToString());
+                                        highlightColumn = WebUtility.HtmlEncode(highlightColumn);
 
                                 }
                             }
                             #endregion Obtain uniqueIdentifier and highlightColumn
 
                             #region Value specific cell markup
+
                             if (propertyValue != null)
                             {
                                 if (column.Alignment == Align.Default)
                                 {
-                                    if (propertyValue.GetType() == typeof(DateTime) || propertyValue.GetType() == typeof(decimal) || propertyValue.GetType() == typeof(DateTime?) || propertyValue.GetType() == typeof(decimal?))
+                                    if (propertyValue is DateTime || propertyValue is decimal || propertyValue is DateTime? || propertyValue is decimal?)
+                                    {
                                         cell_attribute.Style.Add("white-space", "nowrap");
-
-                                    if (propertyValue.GetType() == typeof(decimal) || propertyValue.GetType() == typeof(int))
-                                    {
-                                        if (string.IsNullOrEmpty(cell_attribute.Class))
-                                            cell_attribute.Class = "txt-r";
-                                        else
-                                            cell_attribute.Class += " txt-r";
                                     }
-                                    if (propertyValue.GetType() == typeof(bool))
+
+                                    if (propertyValue is decimal || propertyValue is int)
                                     {
-                                        //cell_attribute.Align = "center";
                                         if (string.IsNullOrEmpty(cell_attribute.Class))
-                                            cell_attribute.Class = "txt-c";
+                                        {
+                                            cell_attribute.Class = "txt-r";
+                                        }
                                         else
+                                        {
+                                            cell_attribute.Class += " txt-r";
+                                        }
+                                    }
+
+                                    if (propertyValue is bool)
+                                    {
+                                        if (string.IsNullOrEmpty(cell_attribute.Class))
+                                        {
+                                            cell_attribute.Class = "txt-c";
+                                        }
+                                        else
+                                        {
                                             cell_attribute.Class += " txt-c";
+                                        }
                                     }
                                 }
                                 else
@@ -1044,16 +988,24 @@ namespace Sushi.Mediakiwi.UI
                                     {
                                         case Align.Center:
                                             if (string.IsNullOrEmpty(cell_attribute.Class))
+                                            {
                                                 cell_attribute.Class = "txt-c";
+                                            }
                                             else
+                                            {
                                                 cell_attribute.Class += " txt-c";
+                                            }
 
                                             break;
                                         case Align.Right:
                                             if (string.IsNullOrEmpty(cell_attribute.Class))
+                                            {
                                                 cell_attribute.Class = "txt-r";
+                                            }
                                             else
+                                            {
                                                 cell_attribute.Class += " txt-r";
+                                            }
                                             break;
                                     }
                                 }
@@ -1067,9 +1019,13 @@ namespace Sushi.Mediakiwi.UI
                             if (hasInnerLink || column.Type == ListDataColumnType.RadioBox || column.Type == ListDataColumnType.Checkbox)
                             {
                                 if (string.IsNullOrEmpty(cell_attribute.Class))
+                                {
                                     cell_attribute.Class = "nopt";
+                                }
                                 else
+                                {
                                     cell_attribute.Class += " nopt";
+                                }
                             }
 
                             if (!string.IsNullOrEmpty(cellClassName))
@@ -1078,7 +1034,9 @@ namespace Sushi.Mediakiwi.UI
                             }
 
                             if (!IsVisibleColumn(column.Type, includeExportFields))
+                            {
                                 continue;
+                            }
 
                             #region Table row creation (and first TD)
                             object propertyHelp = null;
@@ -1225,18 +1183,18 @@ namespace Sushi.Mediakiwi.UI
             else
             {
                 #region Table clell creation (sum)
+
                 if (hasTotal)
                 {
-                    StringBuilder build3 = new StringBuilder();
-
-                    if (true)//container.CurrentApplicationUser.ShowNewDesign2)
-                        build.Append("\n\t\t\t\t\t\t\t\t<tr class=\"totals nosort\">");
-                    else
-                        build.Append("\n\t\t\t\t\t\t\t\t<tr class=\"sum nosort\">");
+                    build.Append("<tr class=\"totals nosort\">");
 
                     foreach (ListDataColumn column in root.ListDataColumns.List)
                     {
-                        if (!IsVisibleColumn(column.Type, includeExportFields)) continue;
+                        if (!IsVisibleColumn(column.Type, includeExportFields))
+                        {
+                            continue;
+                        }
+
                         if (column.Total == ListDataTotalType.Sum)
                         {
                             decimal total = column.TotalValue;
@@ -1402,7 +1360,7 @@ namespace Sushi.Mediakiwi.UI
                         highlightColumn = GetHighlightedValue((System.Data.DataRow)item, root.ListDataColumns.List);
 
                         if (highlightColumn != null)
-                            highlightColumn = WebUtility.HtmlEncode(highlightColumn.ToString());
+                            highlightColumn = WebUtility.HtmlEncode(highlightColumn);
 
                     }
                     else
@@ -1411,7 +1369,7 @@ namespace Sushi.Mediakiwi.UI
                         highlightColumn = GetHighlightedValue(infoCollection, item, root.ListDataColumns.List);
 
                         if (highlightColumn != null)
-                            highlightColumn = WebUtility.HtmlEncode(highlightColumn.ToString());
+                            highlightColumn = WebUtility.HtmlEncode(highlightColumn);
                     }
 
                     if (!string.IsNullOrWhiteSpace(uniqueIdentifier) && !string.IsNullOrWhiteSpace(highlightColumn))
@@ -1434,7 +1392,7 @@ namespace Sushi.Mediakiwi.UI
         /// <param name="includeExportFields">if set to <c>true</c> [include export fields].</param>
         /// <param name="isNewDesignOutput">if set to <c>true</c> [is new design output].</param>
         /// <returns></returns>
-        internal string GetGridFromListInstanceForJSON(WimComponentListRoot root, Beta.GeneratedCms.Console container, int type, bool includeExportFields, bool isNewDesignOutput)
+        internal StringBuilder GetGridFromListInstanceForJSON(WimComponentListRoot root, Beta.GeneratedCms.Console container, int type, bool includeExportFields, bool isNewDesignOutput)
         {
             container.ListPagingValue = root.CurrentPage.ToString();// container.Request.Params["set"];
 
@@ -1447,7 +1405,7 @@ namespace Sushi.Mediakiwi.UI
 
             ////  if no data is assigned return null 
             if (root.ListDataTable == null && root.ListData == null)
-                return Constants.JSON_NO_ACCESS;
+                return new StringBuilder(Constants.JSON_NO_ACCESS);
 
             //StringBuilder build = new StringBuilder();
             //StringBuilder build = new StringBuilder();
@@ -1958,7 +1916,7 @@ namespace Sushi.Mediakiwi.UI
 //            else
 //                candidate = string.Concat("\n\t\t\t\t\t<article class=\"dataBlock\">\n\t\t\t\t\t\t<table", scrollClass, ">", build.ToString(), build2.ToString(), "\n\t\t\t\t\t\t</table>", paging, "\n\t\t\t\t\t</article>");
 
-            return json.ToString();
+            return new StringBuilder(json.ToString());
         }
 
 
@@ -2146,7 +2104,7 @@ namespace Sushi.Mediakiwi.UI
                     }
                     htmlCandidate = string.Format("<span class=\"inputMode\"><select id=\"{0}\" name=\"{0}\"{2}{3}>{1}</select></span>"
                         , name
-                        , optionList.ToString()
+                        , optionList
                         , column.EditConfiguration.Width > 0 ? string.Format(" style=\"width:{0}px\"", column.EditConfiguration.Width) : null
                         , enabledTag
                         );
@@ -2423,7 +2381,7 @@ namespace Sushi.Mediakiwi.UI
                                 highlightColumn = GetHighlightedValue((System.Data.DataRow)item, root.ListDataColumns.List);
 
                                 if (highlightColumn != null)
-                                    highlightColumn = WebUtility.HtmlEncode(highlightColumn.ToString());
+                                    highlightColumn = WebUtility.HtmlEncode(highlightColumn);
 
                             }
                             else
@@ -2432,7 +2390,7 @@ namespace Sushi.Mediakiwi.UI
                                 highlightColumn = GetHighlightedValue(infoCollection, item, root.ListDataColumns.List);
 
                                 if (highlightColumn != null)
-                                    highlightColumn = WebUtility.HtmlEncode(highlightColumn.ToString());
+                                    highlightColumn = WebUtility.HtmlEncode(highlightColumn);
 
                             }
                             if (container.CurrentListInstance.wim.HasListLoad)
@@ -2979,11 +2937,18 @@ namespace Sushi.Mediakiwi.UI
         {
             cellClassName = null;
 
-            if (candidate == null) return null;
-
-            if (candidate.GetType() == typeof(DateTime))
+            if (candidate == null)
             {
-                if (((DateTime)candidate) == DateTime.MinValue) return null;
+                return null;
+            }
+
+            if (candidate is DateTime)
+            {
+                if (((DateTime)candidate) == DateTime.MinValue)
+                {
+                    return null;
+                }
+
                 DateTime tmp = ((DateTime)candidate);
                 // [MR:20-03-2019] Converts UTC (database) time to local timezone for display
                 // 19-10-20 turned off core.
@@ -2991,33 +2956,45 @@ namespace Sushi.Mediakiwi.UI
                 //    tmp = AppCentre.Data.Supporting.LocalDateTime.GetDate(tmp, container.CurrentListInstance.wim.CurrentSite, true);
 
                 if (tmp.Hour == 0 && tmp.Minute == 0 && tmp.Second == 0 && tmp.Millisecond == 0)
+                {
                     return tmp.ToString(container.DateFormatShort);
+                }
+
                 return tmp.ToString(container.DateTimeFormatShort);
             }
-            else if (candidate.GetType() == typeof(DateTime?))
+            else if (candidate is DateTime?)
             {
-                if (!((DateTime?)candidate).HasValue) return null;
+                if (!((DateTime?)candidate).HasValue)
+                {
+                    return null;
+                }
+
                 DateTime tmp = ((DateTime?)candidate).Value;
-                
+
                 // [MR:20-03-2019] Converts UTC (database) time to local timezone for display
                 // 19-10-20 turned off core.
                 //if (container.CurrentList.Option_ConvertUTCToLocalTime && tmp.Kind != DateTimeKind.Local)
                 //    tmp = AppCentre.Data.Supporting.LocalDateTime.GetDate(tmp, container.CurrentListInstance.wim.CurrentSite, true);
 
                 if (tmp.Hour == 0 && tmp.Minute == 0 && tmp.Second == 0 && tmp.Millisecond == 0)
+                {
                     return tmp.ToString(container.DateFormatShort);
+                }
+
                 return tmp.ToString(container.DateTimeFormatShort);
             }
-            else if (candidate.GetType() == typeof(bool))
+            else if (candidate is bool)
             {
                 if (column.ColumnWidth == 0)
+                {
                     column.ColumnWidth = 10;
+                }
 
                 return ((bool)candidate)
                     ? Utils.GetIconImageString(container, Utils.IconImage.Yes)
                     : Utils.GetIconImageString(container, Utils.IconImage.No);
             }
-            else if (candidate.GetType() == typeof(decimal))
+            else if (candidate is decimal)
             {
                 if (convertToWimDecimal)
                 {
@@ -3025,7 +3002,9 @@ namespace Sushi.Mediakiwi.UI
                     return ((decimal)candidate).ToString("N");
                 }
                 else
+                {
                     return ((decimal)candidate).ToString("N");
+                }
             }
             return candidate;
         }

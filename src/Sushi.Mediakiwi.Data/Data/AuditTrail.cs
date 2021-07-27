@@ -91,9 +91,9 @@ namespace Sushi.Mediakiwi.Data
             item.ItemID = page.ID;
             item.Action = action;
             item.VersionID = versionID;
-            item.Message = (string.Format("{0} :: {1} :: {2}", user.Displayname, page.CompletePath, action.ToString()));
+            item.Message = $"{user.Displayname} :: {page.CompletePath} :: {action}";
 
-            await item.InsertAsync();
+            await item.InsertAsync().ConfigureAwait(false);
         }
 
         public void Insert()

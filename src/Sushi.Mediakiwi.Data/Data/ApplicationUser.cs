@@ -36,9 +36,14 @@ namespace Sushi.Mediakiwi.Data
             public ApplicationUserMap(bool isSave)
             {
                 if (isSave)
+                {
                     Table("wim_Users");
+                }
                 else
+                {
                     Table("wim_Users left join wim_Roles on Role_Key = User_Role_Key");
+                }
+
                 Id(x => x.ID, "User_Key").Identity().SqlType(SqlDbType.Int);
                 Map(x => x.GUID, "User_Guid").SqlType(SqlDbType.UniqueIdentifier);
                 Map(x => x.Name, "User_Name").SqlType(SqlDbType.NVarChar).Length(50);
@@ -84,7 +89,9 @@ namespace Sushi.Mediakiwi.Data
             get
             {
                 if (m_GUID == Guid.Empty)
+                {
                     m_GUID = Guid.NewGuid();
+                }
                 return m_GUID;
             }
             set { m_GUID = value; }
@@ -124,6 +131,15 @@ namespace Sushi.Mediakiwi.Data
         }
 
         /// <summary>
+        /// Roles this instance.
+        /// </summary>
+        /// <returns></returns>
+        public async Task<IApplicationRole> RoleAsync()
+        {
+            return await ApplicationRole.SelectOneAsync(RoleID).ConfigureAwait(false);
+        }
+
+        /// <summary>
         /// Gets or sets the language.
         /// </summary>
         /// <value>The language.</value>
@@ -138,7 +154,9 @@ namespace Sushi.Mediakiwi.Data
             get
             {
                 if (Language == 2)
+                {
                     return "nl-NL";
+                }
                 return "en-GB";
             }
         }
@@ -199,7 +217,9 @@ namespace Sushi.Mediakiwi.Data
             get
             {
                 if (m_Created == DateTime.MinValue)
+                {
                     m_Created = Common.DatabaseDateTime;
+                }
                 return m_Created;
             }
             set { m_Created = value; }
@@ -233,8 +253,9 @@ namespace Sushi.Mediakiwi.Data
             get
             {
                 if (m_Data == null)
+                {
                     m_Data = new CustomData(DataString);
-
+                }
                 return m_Data;
             }
             set
@@ -266,15 +287,18 @@ namespace Sushi.Mediakiwi.Data
         {
             get
             {
-                if (this.Data == null)
+                if (Data == null)
+                {
                     return false;
-
-                return this.Data["IsDeveloper"].ParseBoolean(false);
+                }
+                return Data["IsDeveloper"].ParseBoolean(false);
             }
             set
             {
-                if (this.Data != null)
-                    this.Data.Apply("IsDeveloper", value);
+                if (Data != null)
+                {
+                    Data.Apply("IsDeveloper", value);
+                }
             }
         }
 
@@ -285,15 +309,18 @@ namespace Sushi.Mediakiwi.Data
         {
             get
             {
-                if (this.Data == null)
+                if (Data == null)
+                {
                     return false;
-
-                return this.Data["FW"].ParseBoolean(false);
+                }
+                return Data["FW"].ParseBoolean(false);
             }
             set
             {
-                if (this.Data != null)
-                    this.Data.Apply("FW", value);
+                if (Data != null)
+                {
+                    Data.Apply("FW", value);
+                }
             }
         }
 
@@ -304,22 +331,25 @@ namespace Sushi.Mediakiwi.Data
         {
             get
             {
-                if (!this.IsDeveloper)
+                if (!IsDeveloper || Data == null)
+                {
                     return false;
+                }
 
-                if (this.Data == null)
-                    return false;
-
-                return this.Data["ShowHidden"].ParseBoolean(false);
+                return Data["ShowHidden"].ParseBoolean(false);
             }
             set
             {
-                if (this.Data != null)
+                if (Data != null)
                 {
                     if (value == false)
-                        this.Data.Apply("ShowHidden", null);
+                    {
+                        Data.Apply("ShowHidden", null);
+                    }
                     else
-                        this.Data.Apply("ShowHidden", value);
+                    {
+                        Data.Apply("ShowHidden", value);
+                    }
                 }
             }
         }
@@ -334,15 +364,18 @@ namespace Sushi.Mediakiwi.Data
         {
             get
             {
-                if (this.Data == null)
+                if (Data == null)
+                {
                     return false;
-
-                return this.Data["SiteNav"].ParseBoolean(false);
+                }
+                return Data["SiteNav"].ParseBoolean(false);
             }
             set
             {
-                if (this.Data != null)
-                    this.Data.Apply("SiteNav", value);
+                if (Data != null)
+                {
+                    Data.Apply("SiteNav", value);
+                }
             }
         }
 
@@ -359,7 +392,9 @@ namespace Sushi.Mediakiwi.Data
 
             filter.Add(x => x.ID, ID);
             if (onlyReturnActive)
+            {
                 filter.Add(x => x.IsActive, true);
+            }
 
             return await connector.FetchSingleAsync(filter).ConfigureAwait(false);
         }
@@ -375,8 +410,9 @@ namespace Sushi.Mediakiwi.Data
 
             filter.Add(x => x.Email, email);
             if (onlyReturnActive)
+            {
                 filter.Add(x => x.IsActive, true);
-
+            }
             return connector.FetchSingle(filter);
         }
 
@@ -391,8 +427,9 @@ namespace Sushi.Mediakiwi.Data
 
             filter.Add(x => x.ID, ID);
             if (onlyReturnActive)
+            {
                 filter.Add(x => x.IsActive, true);
-
+            }
             return connector.FetchSingle(filter);
         }
 
@@ -433,8 +470,9 @@ namespace Sushi.Mediakiwi.Data
             var filter = connector.CreateDataFilter();
             filter.Add(x => x.Name, username);
             if (ignoreApplicationUserID.HasValue)
+            {
                 filter.Add(x => x.ID, ignoreApplicationUserID.Value, ComparisonOperator.NotEqualTo);
-            
+            }
             return connector.FetchSingle(filter);
         }
 
@@ -449,8 +487,9 @@ namespace Sushi.Mediakiwi.Data
             var filter = connector.CreateDataFilter();
             filter.Add(x => x.Name, username);
             if (ignoreApplicationUserID.HasValue)
+            {
                 filter.Add(x => x.ID, ignoreApplicationUserID.Value, ComparisonOperator.NotEqualTo);
-            
+            }
             return await connector.FetchSingleAsync(filter).ConfigureAwait(false);
         }
 
@@ -490,8 +529,9 @@ namespace Sushi.Mediakiwi.Data
             var filter = connector.CreateDataFilter();
             filter.Add(x => x.Email, email);
             if (ignoreApplicationUserID.HasValue)
+            {
                 filter.Add(x => x.ID, ignoreApplicationUserID.Value, ComparisonOperator.NotEqualTo);
-            
+            }
             return connector.FetchSingle(filter);
         }
 
@@ -505,8 +545,9 @@ namespace Sushi.Mediakiwi.Data
             var filter = connector.CreateDataFilter();
             filter.Add(x => x.Email, email);
             if (ignoreApplicationUserID.HasValue)
+            {
                 filter.Add(x => x.ID, ignoreApplicationUserID.Value, ComparisonOperator.NotEqualTo);
-            
+            }
             return await connector.FetchSingleAsync(filter).ConfigureAwait(false);
         }
 
@@ -564,8 +605,9 @@ namespace Sushi.Mediakiwi.Data
         public static async Task<IApplicationUser> SelectOneAsync(string username, string password)
         {
             if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
+            {
                 return new ApplicationUser();
-
+            }
             var connector = ConnectorFactory.CreateConnector<ApplicationUser>();
             var filter = connector.CreateDataFilter();
             filter.Add(x => x.Name, username);
@@ -608,11 +650,13 @@ namespace Sushi.Mediakiwi.Data
             var filter = connector.CreateDataFilter();
 
             if (!string.IsNullOrWhiteSpace(username))
+            {
                 filter.Add(x => x.Displayname, username);
-            
+            }
             if (role > 0)
+            {
                 filter.Add(x => x.RoleID, role);
-            
+            }
             return connector.FetchAll(filter).ToArray();
         }
 
@@ -627,11 +671,13 @@ namespace Sushi.Mediakiwi.Data
             var filter = connector.CreateDataFilter();
 
             if (!string.IsNullOrWhiteSpace(username))
+            {
                 filter.Add(x => x.Displayname, $"%{username}%", ComparisonOperator.Like);
-            
+            }
             if (role > 0)
+            {
                 filter.Add(x => x.RoleID, role);
-            
+            }
             var result = await connector.FetchAllAsync(filter).ConfigureAwait(false);
             return result.ToArray();
         }
@@ -645,8 +691,9 @@ namespace Sushi.Mediakiwi.Data
             var connector = ConnectorFactory.CreateConnector<ApplicationUser>();
             var filter = connector.CreateDataFilter();
             if (role.HasValue)
-                filter.Add(x => x.RoleID, (int)role);
-            
+            {
+                filter.Add(x => x.RoleID, role.Value);
+            }
             return connector.FetchAll(filter).ToArray();
         }
 
@@ -659,8 +706,9 @@ namespace Sushi.Mediakiwi.Data
             var connector = ConnectorFactory.CreateConnector<ApplicationUser>();
             var filter = connector.CreateDataFilter();
             if (role.HasValue)
-                filter.Add(x => x.RoleID, (int)role);
-            
+            {
+                filter.Add(x => x.RoleID, role.Value);
+            }
             var result = await connector.FetchAllAsync(filter).ConfigureAwait(false);
             return result.ToArray();
         }
@@ -676,10 +724,13 @@ namespace Sushi.Mediakiwi.Data
             var connector = ConnectorFactory.CreateConnector<ApplicationUser>();
             var filter = connector.CreateDataFilter();
             if (role.HasValue)
-                filter.Add(x => x.RoleID, (int)role);
+            {
+                filter.Add(x => x.RoleID, role.Value);
+            }
             if (onlyReturnActive)
+            {
                 filter.Add(x => x.IsActive, true);
-            
+            }
             return connector.FetchAll(filter).ToArray();
         }
 
@@ -694,9 +745,13 @@ namespace Sushi.Mediakiwi.Data
             var connector = ConnectorFactory.CreateConnector<ApplicationUser>();
             var filter = connector.CreateDataFilter();
             if (role.HasValue)
-                filter.Add(x => x.RoleID, (int)role);
+            {
+                filter.Add(x => x.RoleID, role.Value);
+            }
             if (onlyReturnActive)
+            {
                 filter.Add(x => x.IsActive, true);
+            }
             
             var result = await connector.FetchAllAsync(filter).ConfigureAwait(false);
             return result.ToArray();
@@ -715,7 +770,9 @@ namespace Sushi.Mediakiwi.Data
             IApplicationUser tmp = SelectOne(username, ignoreApplicationUserID);
 
             if (tmp == null || tmp.IsNewInstance)
+            {
                 return false;
+            }
             return true;
         }
 
@@ -732,7 +789,9 @@ namespace Sushi.Mediakiwi.Data
             IApplicationUser tmp = await SelectOneAsync(username, ignoreApplicationUserID).ConfigureAwait(false);
 
             if (tmp == null || tmp.IsNewInstance)
+            {
                 return false;
+            }
             return true;
         }
 
@@ -757,7 +816,7 @@ namespace Sushi.Mediakiwi.Data
         /// </returns>
         public async Task<bool> HasUserNameAsync(string username)
         {
-            return await HasUserNameAsync(username, ID);
+            return await HasUserNameAsync(username, ID).ConfigureAwait(false);
         }
 
         public bool HasEmail(string email)
@@ -767,7 +826,7 @@ namespace Sushi.Mediakiwi.Data
 
         public async Task<bool> HasEmailAsync(string email)
         {
-            return await HasEmailAsync(email, ID);
+            return await HasEmailAsync(email, ID).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -783,7 +842,9 @@ namespace Sushi.Mediakiwi.Data
             IApplicationUser tmp = SelectOneByEmail(email, ignoreApplicationUserID);
 
             if (tmp == null || tmp.IsNewInstance)
+            {
                 return false;
+            }
             return true;
         }
 
@@ -800,7 +861,9 @@ namespace Sushi.Mediakiwi.Data
             IApplicationUser tmp = await SelectOneByEmailAsync(email, ignoreApplicationUserID).ConfigureAwait(false);
 
             if (tmp == null || tmp.IsNewInstance)
+            {
                 return false;
+            }
             return true;
         }
 
@@ -814,8 +877,9 @@ namespace Sushi.Mediakiwi.Data
             var tmp = SelectOneByEmail(emailaddress);
 
             if (tmp == null || tmp.IsNewInstance || !tmp.IsActive)
+            {
                 return new ApplicationUser();
-
+            }
             return tmp;
         }
 
@@ -829,8 +893,9 @@ namespace Sushi.Mediakiwi.Data
             var tmp = await SelectOneByEmailAsync(emailaddress).ConfigureAwait(false);
 
             if (tmp == null || tmp.IsNewInstance || !tmp.IsActive)
+            {
                 return new ApplicationUser();
-
+            }
             return tmp;
         }
 
@@ -858,8 +923,10 @@ namespace Sushi.Mediakiwi.Data
         {
             get
             {
-                if (this.VisitorReference == Guid.Empty)
+                if (VisitorReference == Guid.Empty)
+                {
                     return false;
+                }
                 return true;
             }
         }
@@ -871,13 +938,19 @@ namespace Sushi.Mediakiwi.Data
         public bool Save()
         {
             if (string.IsNullOrEmpty(Name))
+            {
                 return false;
+            }
 
             if (HasUserName(Name, ID))
+            {
                 throw new Exception("The applied username already exists");
+            }
 
             if (HasEmail(Email, ID))
+            {
                 throw new Exception("The applied email already exists");
+            }
 
             DataString = m_Data?.Serialized;
 
@@ -894,13 +967,19 @@ namespace Sushi.Mediakiwi.Data
         public async Task<bool> SaveAsync()
         {
             if (string.IsNullOrEmpty(Name))
+            {
                 return false;
+            }
 
             if (await HasUserNameAsync(Name, ID))
+            {
                 throw new Exception("The applied username already exists");
+            }
 
             if (await HasEmailAsync(Email, ID))
+            {
                 throw new Exception("The applied email already exists");
+            }
 
             DataString = m_Data?.Serialized;
 
@@ -934,8 +1013,8 @@ namespace Sushi.Mediakiwi.Data
         /// <param name="password">The password.</param>
         public void ApplyPassword(string password)
         {
-            this.Password = Utility.HashStringByMD5(string.Concat(this.Name, password));
-            this.Type = 1;
+            Password = Utility.HashStringByMD5(string.Concat(Name, password));
+            Type = 1;
         }
 
         public bool IsNewInstance
@@ -944,7 +1023,6 @@ namespace Sushi.Mediakiwi.Data
         }
 
         private Guid m_VisitorReference;
-
         /// <summary>
         /// Gets the externally (cookie) stored profile reference.
         /// </summary>

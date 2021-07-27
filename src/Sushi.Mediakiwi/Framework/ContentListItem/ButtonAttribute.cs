@@ -202,10 +202,10 @@ namespace Sushi.Mediakiwi.Framework.ContentListItem
             ContentTypeSelection = ContentType.Button;
             TriggerSaveEvent = triggerSave;
             m_IsFormElement = isFormElement;
-            this.Width = width;
-            this.InteractiveHelp = interactiveHelp;
+            Width = width;
+            InteractiveHelp = interactiveHelp;
             Title = title;
-            this.IconType = icon;
+            IconType = icon;
         }
 
         internal bool m_IsFormElement;
@@ -231,7 +231,7 @@ namespace Sushi.Mediakiwi.Framework.ContentListItem
         internal bool OpenUrl
         {
             get {
-                if (OpenInPopupLayer || !string.IsNullOrEmpty(this.CustomUrlProperty))
+                if (OpenInPopupLayer || !string.IsNullOrEmpty(CustomUrlProperty))
                     return true;
                 return false;
             }
@@ -243,7 +243,7 @@ namespace Sushi.Mediakiwi.Framework.ContentListItem
         {
             get {
                 if (m_OpenInPopupLayerIsSet) return m_OpenInPopupLayer;
-                return !string.IsNullOrEmpty(this.ListInPopupLayer); }
+                return !string.IsNullOrEmpty(ListInPopupLayer); }
             set { m_OpenInPopupLayer = value; m_OpenInPopupLayerIsSet = true; }
         }
         public string CustomUrl { get; set; }
@@ -299,8 +299,8 @@ namespace Sushi.Mediakiwi.Framework.ContentListItem
         /// </value>
         public bool PopupLayerScrollBar
         {
-            get { return this.PopupLayerHasScrollBar.GetValueOrDefault(); }
-            set { this.PopupLayerHasScrollBar = value; }
+            get { return PopupLayerHasScrollBar.GetValueOrDefault(); }
+            set { PopupLayerHasScrollBar = value; }
         }
 
         string _PopupTitle;
@@ -310,7 +310,7 @@ namespace Sushi.Mediakiwi.Framework.ContentListItem
         /// <value>
         /// The popup title.
         /// </value>
-        public string PopupTitle { get { return _PopupTitle == null ? this.Title : this._PopupTitle; } set { this._PopupTitle = value; } }
+        public string PopupTitle { get { return _PopupTitle == null ? Title : _PopupTitle; } set { _PopupTitle = value; } }
 
 
         int m_Width;
@@ -358,15 +358,15 @@ namespace Sushi.Mediakiwi.Framework.ContentListItem
             if (!string.IsNullOrEmpty(value))
                 value = value.Split('$')[0];
 
-            m_IsClicked = value == this.ID;
+            m_IsClicked = value == ID;
 
             if (m_TriggerState && !m_IsClicked && string.IsNullOrWhiteSpace(value) && !string.IsNullOrWhiteSpace(Console.CurrentListInstance.FormState))
-                m_IsClicked = (Console.CurrentListInstance.FormState == this.ID);
+                m_IsClicked = (Console.CurrentListInstance.FormState == ID);
 
             Property.SetValue(SenderInstance, m_IsClicked, null);
 
             if (m_TriggerState && m_IsClicked)
-                Console.CurrentListInstance.FormState = this.ID;
+                Console.CurrentListInstance.FormState = ID;
 
             if (m_TriggerValidation && m_IsClicked)
                 Console.CurrentListInstance.wim.ShouldValidate = true;
@@ -380,35 +380,11 @@ namespace Sushi.Mediakiwi.Framework.ContentListItem
         /// <returns></returns>
         public virtual Field WriteCandidate(WimControlBuilder build, bool isEditMode, bool isRequired, bool isCloaked)
         {
-            this.Mandatory = isRequired;
-            this.IsCloaked = isCloaked;
+            Mandatory = isRequired;
+            IsCloaked = isCloaked;
             //if (!m_IsFormElement)
                 return null;
 
-            build.Append(string.Format(@"{8}{9}{5}
-	<th></th>
-	<td{7}>
-        <input type=""hidden"" id=""{1}"" name=""{1}"" value=""""/>
-		<button class=""{12}{10}""{4}><span>{0}</span></button><div class=""clear""></div>{2}
-	</td>{6}
-"
-                , Title // 0
-                , this.ID // 1
-                , this.InteractiveHelp // 2
-                , Console.WimRepository // 3
-                , this.Width > 0 ? string.Format(" style=\"width:{0}px;\"", this.Width) : string.Empty // 4
-                , (Expression == OutputExpression.FullWidth || Expression == OutputExpression.Left) ? "<tr>" : null // 5
-                , (Expression == OutputExpression.FullWidth || Expression == OutputExpression.Right) ? "</tr>" : null // 6
-                , (Expression == OutputExpression.FullWidth && Console.HasDoubleCols) ? " colspan=\"3\" class=\"triple\"" : null // 7
-                , ((Console.ExpressionPrevious == OutputExpression.Left && Expression == OutputExpression.FullWidth) || (Console.ExpressionPrevious == OutputExpression.Left && Expression == OutputExpression.Left)) ? "<th><label>&nbsp;</label></th><td>&nbsp;</td></tr>" : null // 8
-                , ((Console.ExpressionPrevious == OutputExpression.FullWidth && Expression == OutputExpression.Right) || (Console.ExpressionPrevious == OutputExpression.Right && Expression == OutputExpression.Right)) ? "<tr><th><label>&nbsp;</label></th><td>&nbsp;</td>" : null // 9
-                , this.AskConfirmation ? " type_confirm" : null //10
-                , Width > 0 ? string.Format(" style=\"width:{0}px\"", this.Width) : null //11 
-                , string.IsNullOrWhiteSpace(CustomUrl) ? "postBack" : null //12
-
-                )
-            );
-            return null;
         }
 
         /// <summary>

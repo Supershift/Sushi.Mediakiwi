@@ -27,13 +27,18 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             {
                 wim.Notification.AddNotification("This list has no custom settings.");    
             }
-            if (wim.Form.ListItemElementList == null || IsPostBack) 
+
+            if (wim.Form.ListItemElementList == null || IsPostBack)
+            {
                 return Task.CompletedTask;
+            }
 
             foreach (var item in wim.Form.ListItemElementList)
             {
                 if (item.ContentAttribute.ContentTypeSelection == ContentType.DataExtend || item.ContentAttribute.ContentTypeSelection == ContentType.ContentContainer)
+                {
                     continue;
+                }
 
                 ComponentListInstance.Settings[item.Name].Apply(item.SenderInstance);
             }
@@ -42,17 +47,22 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
 
         async Task ComponentListSettings_ListSave(ComponentListEventArgs e)
         {
-            if (wim.Form.ListItemElementList.Count < 2) return;
-            if (wim.Form.ListItemElementList == null) return;
+            if (wim.Form.ListItemElementList == null || wim.Form.ListItemElementList.Count < 2)
+            {
+                return;
+            }
             
             foreach (var item in wim.Form.ListItemElementList)
             {
-                if (item.ContentAttribute.ContentTypeSelection == ContentType.DataExtend || item.ContentAttribute.ContentTypeSelection == ContentType.ContentContainer) 
+                if (item.ContentAttribute.ContentTypeSelection == ContentType.DataExtend || item.ContentAttribute.ContentTypeSelection == ContentType.ContentContainer)
+                {
                     continue;
+                }
 
                 object value = item.GetValue();
                 ComponentListInstance.Settings.ApplyObject(item.Name, value);
             }
+
             await ComponentListInstance.SaveAsync().ConfigureAwait(false);
         }
 
