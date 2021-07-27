@@ -155,6 +155,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         {
             wim.HideOpenCloseToggle = true;
             wim.OpenInEditMode = true;
+            wim.Page.HideBreadCrumbs = true;
 
             ListLoad += Document_ListLoad;
             ListSave += Document_ListSave;
@@ -169,17 +170,12 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// <param name="e">The <see cref="ComponentListEventArgs"/> instance containing the event data.</param>
         async Task Document_ListDelete(ComponentListEventArgs e)
         {
-            if (m_Implement == null)
-            {
-                m_Implement = await Mediakiwi.Data.Document.SelectOneAsync(e.SelectedKey).ConfigureAwait(false);
-            }
-
-            //m_Implement.CloudDelete();
+            ///m_Implement.CloudDelete();
 
             //if (m_Implement.IsImage)
             //    m_Implement.ImageInstance.Delete();
             //else
-            //    m_Implement.Delete();
+            //m_Implement.Delete();
 
             if (wim.IsLayerMode)
             {
@@ -239,11 +235,6 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// <param name="e">The <see cref="ComponentListEventArgs"/> instance containing the event data.</param>
         async Task Document_ListSave(ComponentListEventArgs e)
         {
-            if (m_Implement == null)
-            {
-                m_Implement = await Mediakiwi.Data.Document.SelectOneAsync(e.SelectedKey).ConfigureAwait(false);
-            }
-
             int? parent = Utility.ConvertToIntNullable(Request.Query["base"]);
             if (parent.HasValue)
             {
@@ -553,19 +544,12 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                 wim.CurrentList.Save();
             }
 
-            Implement = await Asset.SelectOneAsync(e.SelectedKey).ConfigureAwait(false);
-            _Form = new DocumentForm(Implement);
+            m_Implement = await Asset.SelectOneAsync(e.SelectedKey).ConfigureAwait(false);
+            _Form = new DocumentForm(m_Implement);
             FormMaps.Add(_Form);
         }
 
         #region List attributes
-
-        /// <summary>
-        /// Gets or sets the implement.
-        /// </summary>
-        /// <value>The implement.</value>
-        public Asset Implement { get; set; }
-
         private ListItemCollection m_GalleryCollection;
         /// <summary>
         /// Gets the gallery collection.
