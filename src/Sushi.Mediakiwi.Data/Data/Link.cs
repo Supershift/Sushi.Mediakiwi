@@ -30,6 +30,7 @@ namespace Sushi.Mediakiwi.Data
         }
 
         #region Properties
+
         /// <summary>
         /// Gets or sets the ID.
         /// </summary>
@@ -46,8 +47,10 @@ namespace Sushi.Mediakiwi.Data
         {
             get
             {
-                if (this.m_GUID == Guid.Empty)
-                    this.m_GUID = Guid.NewGuid();
+                if (m_GUID == Guid.Empty)
+                {
+                    m_GUID = Guid.NewGuid();
+                }
                 return m_GUID;
             }
             set { m_GUID = value; }
@@ -77,17 +80,25 @@ namespace Sushi.Mediakiwi.Data
         {
             get
             {
-                if (ID == 0) 
+                if (ID == 0)
+                {
                     return LinkType.Undefined;
+                }
 
-                if (PageID.HasValue && PageID.Value > 0) 
+                if (PageID.HasValue && PageID.Value > 0)
+                {
                     return LinkType.InternalPage;
+                }
 
-                if (!string.IsNullOrEmpty(ExternalUrl))
+                if (!string.IsNullOrWhiteSpace(ExternalUrl))
+                {
                     return LinkType.ExternalUrl;
+                }
 
-                if (AssetID.HasValue && AssetID.Value > 0) 
+                if (AssetID.HasValue && AssetID.Value > 0)
+                {
                     return LinkType.InternalAsset;
+                }
 
                 return LinkType.Undefined;
             }
@@ -103,7 +114,9 @@ namespace Sushi.Mediakiwi.Data
             get
             {
                 if (m_Asset == null && AssetID.GetValueOrDefault() > 0)
+                {
                     m_Asset = Asset.SelectOne(AssetID.GetValueOrDefault());
+                }
                 return m_Asset;
             }
         }
@@ -140,15 +153,14 @@ namespace Sushi.Mediakiwi.Data
         {
             get
             {
-                if (this.Target == 1)
-                    return "same frame";
-                if (this.Target == 2)
-                    return "new screen";
-                if (this.Target == 3)
-                    return "popup layer";
-                if (this.Target == 4)
-                    return "parent frame";
-                return "unkown";
+                switch (Target)
+                {
+                    default: return "unkown";
+                    case 1: return "same frame";
+                    case 2: return "new screen";
+                    case 3: return "popup layer";
+                    case 4: return "parent frame";
+                }
             }
         }
 
@@ -183,7 +195,7 @@ namespace Sushi.Mediakiwi.Data
         public static async Task<Link> SelectOneAsync(int ID)
         {
             var connector = ConnectorFactory.CreateConnector<Link>();
-            return await connector.FetchSingleAsync(ID);
+            return await connector.FetchSingleAsync(ID).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -201,7 +213,8 @@ namespace Sushi.Mediakiwi.Data
         public async Task SaveAsync()
         {
             var connector = ConnectorFactory.CreateConnector<Link>();
-            await connector.SaveAsync(this);
+            await connector.SaveAsync(this).ConfigureAwait(false);
         }
+
     }
 }
