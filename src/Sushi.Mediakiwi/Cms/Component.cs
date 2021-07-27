@@ -1724,21 +1724,31 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                     #region Set Save Message
 
                     // [MR:27-07-2021] moved here from row 1778
-                    string savedMessage = container.CurrentList.Label_Saved;
-                    if (string.IsNullOrEmpty(savedMessage))
+                    // [MR:27-07-2021] When we aren't in this list because of a refer id, set a saved message
+                    string refer = string.Empty;
+                    if (container?.Context?.Request?.Query?.ContainsKey("referid") == true)
                     {
-                        if (container.CurrentApplicationUser.Language == 2)
-                        {
-                            savedMessage = "De gegevens zijn opgeslagen.";
-                        }
-                        else
-                        {
-                            savedMessage = "The data has been saved.";
-                        }
+                        refer = container.Context.Request.Query["referid"];
                     }
 
-                    container.CurrentListInstance.wim.CurrentVisitor.Data.Apply("wim.note", savedMessage);
-                    container.CurrentListInstance.wim.CurrentVisitor.Save();
+                    if (string.IsNullOrWhiteSpace(refer))
+                    {
+                        string savedMessage = container.CurrentList.Label_Saved;
+                        if (string.IsNullOrEmpty(savedMessage))
+                        {
+                            if (container.CurrentApplicationUser.Language == 2)
+                            {
+                                savedMessage = "De gegevens zijn opgeslagen.";
+                            }
+                            else
+                            {
+                                savedMessage = "The data has been saved.";
+                            }
+                        }
+
+                        container.CurrentListInstance.wim.CurrentVisitor.Data.Apply("wim.note", savedMessage);
+                        container.CurrentListInstance.wim.CurrentVisitor.Save();
+                    }
                     // [MR:27-07-2021] moved here from row 1778
 
                     #endregion Set Save Message
