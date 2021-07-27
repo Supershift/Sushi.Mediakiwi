@@ -328,12 +328,16 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
             }
 
             string tabTag = null;
+
             #region Browsing
+
             bool isPageProperty = container.CurrentList.Type == ComponentListType.PageProperties;            
             if (container.CurrentList.Type == ComponentListType.Browsing || isPageProperty)
             {
                 title = Labels.ResourceManager.GetString("list_browsing", new CultureInfo(container.CurrentApplicationUser.LanguageCulture));
+                
                 #region PAGE
+
                 if (container.ItemType == RequestItemType.Page || isPageProperty)
                 {                    
                     Page currentPage;
@@ -409,7 +413,9 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                             );
                     }
                 }
+
                 #endregion PAGE
+
                 else
                 {
                     //  Show NO tabs
@@ -420,8 +426,11 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                         );
                 }
             }
+
             #endregion
+
             #region Folder & page
+
             else if (container.CurrentList.Type == ComponentListType.Folders || container.CurrentList.Type == ComponentListType.PageProperties)
             {
                 tabTag = string.Format(@"
@@ -430,8 +439,11 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                     , container.WimPagePath
                     );
             }
+
             #endregion
+
             #region Assets
+
             else if (container.CurrentList.Type == ComponentListType.Documents || container.CurrentList.Type == ComponentListType.Images)
             {
                 title = "Browsing";
@@ -453,8 +465,12 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                     , container.CurrentList.SingleItemName
                     );
             }
+
             #endregion
+
+
             #region Custom lists
+
             else
             {
                 bool isSingleItemList = (container.CurrentList.IsSingleInstance || container.CurrentListInstance.wim.CanContainSingleInstancePerDefinedList);

@@ -1721,6 +1721,28 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
 
                     var listurl = container.UrlBuild.GetListRequest(container.CurrentListInstance.wim.CurrentList);
 
+                    #region Set Save Message
+
+                    // [MR:27-07-2021] moved here from row 1778
+                    string savedMessage = container.CurrentList.Label_Saved;
+                    if (string.IsNullOrEmpty(savedMessage))
+                    {
+                        if (container.CurrentApplicationUser.Language == 2)
+                        {
+                            savedMessage = "De gegevens zijn opgeslagen.";
+                        }
+                        else
+                        {
+                            savedMessage = "The data has been saved.";
+                        }
+                    }
+
+                    container.CurrentListInstance.wim.CurrentVisitor.Data.Apply("wim.note", savedMessage);
+                    container.CurrentListInstance.wim.CurrentVisitor.Save();
+                    // [MR:27-07-2021] moved here from row 1778
+
+                    #endregion Set Save Message
+
                     if (openInFrame == 0)
                     {
                         int folderID = Utility.ConvertToInt(container.Request.Query["folder"]);
@@ -1758,21 +1780,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                         }
                         else
                         {
-                            string savedMessage = container.CurrentList.Label_Saved;
-                            if (string.IsNullOrEmpty(savedMessage))
-                            {
-                                if (container.CurrentApplicationUser.Language == 2)
-                                {
-                                    savedMessage = "De gegevens zijn opgeslagen.";
-                                }
-                                else
-                                {
-                                    savedMessage = "The data has been saved.";
-                                }
-                            }
-
-                            container.CurrentListInstance.wim.CurrentVisitor.Data.Apply("wim.note", savedMessage);
-                            container.CurrentListInstance.wim.CurrentVisitor.Save();
+                            // [MR:27-07-2021] FROM HERE
 
                             if (container.CurrentList.IsSingleInstance)
                             {

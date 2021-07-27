@@ -39,7 +39,7 @@ namespace Sushi.Mediakiwi.Data
 
         public virtual bool IsNewInstance
         {
-            get { return this.ID == 0; }
+            get { return ID == 0; }
         }
 
         /// <summary>
@@ -57,8 +57,8 @@ namespace Sushi.Mediakiwi.Data
         {
             get
             {
-                if (this.m_GUID == Guid.Empty)
-                    this.m_GUID = Guid.NewGuid();
+                if (m_GUID == Guid.Empty)
+                    m_GUID = Guid.NewGuid();
                 return m_GUID;
             }
             set { m_GUID = value; }
@@ -98,7 +98,7 @@ namespace Sushi.Mediakiwi.Data
             {
                 if (m_Parent == null)
                 {
-                    if (this.ParentID.HasValue)
+                    if (ParentID.HasValue)
                         m_Parent = SelectOne(ParentID.Value);
                     else
                         m_Parent = new Folder();
@@ -165,7 +165,7 @@ namespace Sushi.Mediakiwi.Data
             get
             {
                 if (_site == null)
-                    _site = Site.SelectOne(this.SiteID);
+                    _site = Site.SelectOne(SiteID);
                 return _site;
             }
         }
@@ -202,14 +202,14 @@ namespace Sushi.Mediakiwi.Data
         /// <returns></returns>
         public string CompleteCleanPath()
         {
-            if (this.CompletePath == "/")
+            if (CompletePath == "/")
                 return "/";
 
             if (m_CompleteCleanPath == null)
             {
-                string candidate = this.CompletePath;
+                string candidate = CompletePath;
                 if (candidate.StartsWith("/"))
-                    candidate = this.CompletePath.Remove(0, 1);
+                    candidate = CompletePath.Remove(0, 1);
                 if (candidate.EndsWith("/"))
                     candidate = candidate.Remove(candidate.LastIndexOf("/"), 1);
                 m_CompleteCleanPath = candidate;
@@ -227,8 +227,8 @@ namespace Sushi.Mediakiwi.Data
         {
             get
             {
-                if (this.m_Changed == DateTime.MinValue)
-                    this.m_Changed = Common.DatabaseDateTime;
+                if (m_Changed == DateTime.MinValue)
+                    m_Changed = Common.DatabaseDateTime;
                 return m_Changed;
             }
             set { m_Changed = value; }
@@ -698,13 +698,41 @@ FROM [Wim_ComponentLists] WHERE [ComponentList_Folder_Key] in (SELECT [Folder_Ke
         /// </returns>
         public bool HasRoleAccess(IApplicationUser user)
         {
-            if (this.CompletePath == "/")
+            if (CompletePath == "/")
+            {
                 return true;
+            }
 
-            if (this.ID == 0 || user.Role().All_Folders)
+            if (ID == 0 || user.Role().All_Folders)
+            {
                 return true;
+            }
 
-            var selection = from item in SelectAllAccessible(user) where item.ID == this.ID select item;
+            var selection = from item in SelectAllAccessible(user) where item.ID == ID select item;
+            bool xs = selection.Count() == 1;
+            return xs;
+        }
+
+        /// <summary>
+        /// Determines whether [has role access] [the specified role id].
+        /// </summary>
+        /// <param name="user">The user.</param>
+        /// <returns>
+        /// 	<c>true</c> if [has role access] [the specified role id]; otherwise, <c>false</c>.
+        /// </returns>
+        public async Task<bool> HasRoleAccessAsync(IApplicationUser user)
+        {
+            if (CompletePath == "/")
+            {
+                return true;
+            }
+
+            if (ID == 0 || (await user.RoleAsync().ConfigureAwait(false)).All_Folders)
+            {
+                return true;
+            }
+
+            var selection = from item in (await SelectAllAccessibleAsync(user).ConfigureAwait(false)) where item.ID == ID select item;
             bool xs = selection.Count() == 1;
             return xs;
         }
@@ -1054,13 +1082,13 @@ FROM [Wim_ComponentLists] WHERE [ComponentList_Folder_Key] in (SELECT [Folder_Ke
         public bool Insert()
         {
             var connector = ConnectorFactory.CreateConnector<Folder>();
-            if (this.IsNewInstance)
+            if (IsNewInstance)
             {
-                string name = this.Name;
-                this.Name = GetPageNameProposal(this.ParentID.GetValueOrDefault(), this.Name);
-                if (!this.Name.Equals(name))
+                string name = Name;
+                Name = GetPageNameProposal(ParentID.GetValueOrDefault(), Name);
+                if (!Name.Equals(name))
                 {
-                    this.CompletePath = $"{this.CompletePath.Substring(0, this.CompletePath.Length - name.Length)}{this.Name}";
+                    CompletePath = $"{CompletePath.Substring(0, CompletePath.Length - name.Length)}{Name}";
                 }
             }
 
@@ -1082,13 +1110,13 @@ FROM [Wim_ComponentLists] WHERE [ComponentList_Folder_Key] in (SELECT [Folder_Ke
         public async Task<bool> InsertAsync()
         {
             var connector = ConnectorFactory.CreateConnector<Folder>();
-            if (this.IsNewInstance)
+            if (IsNewInstance)
             {
-                string name = this.Name;
-                this.Name = await GetPageNameProposalAsync(this.ParentID.GetValueOrDefault(), this.Name);
-                if (!this.Name.Equals(name))
+                string name = Name;
+                Name = await GetPageNameProposalAsync(ParentID.GetValueOrDefault(), Name);
+                if (!Name.Equals(name))
                 {
-                    this.CompletePath = $"{this.CompletePath.Substring(0, this.CompletePath.Length - name.Length)}{this.Name}";
+                    CompletePath = $"{CompletePath.Substring(0, CompletePath.Length - name.Length)}{Name}";
                 }
             }
 

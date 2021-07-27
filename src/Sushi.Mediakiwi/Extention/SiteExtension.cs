@@ -1,5 +1,6 @@
 ﻿using Sushi.Mediakiwi.Data;
 using System.Linq;
+using System.Threading.Tasks;
 
 public static class SiteExtension
 {
@@ -15,6 +16,25 @@ public static class SiteExtension
     {
         if (inSite.ID == 0 || user.Role().All_Sites) return true;
         var selection = from item in Site.SelectAllAccessible(user, AccessFilter.RoleAndUser) where item.ID == inSite.ID select item;
+        bool xs = selection.Count() == 1;
+        return xs;
+    }
+
+    /// <summary>
+    /// Determines whether [has role access] [the specified role ID].
+    /// </summary>
+    /// <param name="user">The user.</param>
+    /// <returns>
+    /// 	<c>true</c> if [has role access] [the specified role ID]; otherwise, <c>false</c>.
+    /// </returns>
+    public static async Task<bool> HasRoleAccessAsync(this Site inSite, IApplicationUser user)
+    {
+        if (inSite.ID == 0 || (await user.RoleAsync().ConfigureAwait(false)).All_Sites)
+        {
+            return true;
+        }
+
+        var selection = from item in (await Site.SelectAllAccessibleAsync(user, AccessFilter.RoleAndUser).ConfigureAwait(false)) where item.ID == inSite.ID select item;
         bool xs = selection.Count() == 1;
         return xs;
     }
