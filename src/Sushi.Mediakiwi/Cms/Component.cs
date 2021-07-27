@@ -1661,12 +1661,13 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
 
             CreateGenericErrorMessage(container, build, ref isValidInput);
 
-            if (container.CurrentListInstance.wim.IsDeleteMode)
-            {
-                //  Added delete event
-                container.CurrentListInstance.wim.DoListDelete(container.Item.GetValueOrDefault(0), currentVersion.ID, isValidInput);
-            }
-            else if (container.CurrentListInstance.wim.IsSaveMode)
+            // Duplicate delete (27-07-2021:MM)
+            //if (container.CurrentListInstance.wim.IsDeleteMode)
+            //{
+            //    //  Added delete event
+            //    container.CurrentListInstance.wim.DoListDelete(container.Item.GetValueOrDefault(0), currentVersion.ID, isValidInput);
+            //}
+            if (container.CurrentListInstance.wim.IsSaveMode)
             {
 
                 if (isValidInput)

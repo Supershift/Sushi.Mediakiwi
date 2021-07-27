@@ -369,7 +369,10 @@ namespace Sushi.Mediakiwi.UI
                     }
 
                     //if (isDeleteTriggered)
-                    //    _Console.CurrentListInstance.wim.DoListDelete(component.item);
+                    //{
+                    //    //var searchListGrid = GlobalWimControlBuilder.;
+                    //    //await AddToResponseAsync(searchListGrid).ConfigureAwait(false);
+                    //}
                 }
 
                 if (IsFormatRequest_JSON)
@@ -403,8 +406,8 @@ namespace Sushi.Mediakiwi.UI
                 else if (IsFormatRequest_AJAX)
                 {
                     _Console.Response.ContentType = "text/plain";
-                    string searchListGrid = GlobalWimControlBuilder.SearchGrid;
-                    await AddToResponseAsync(searchListGrid);
+                    var searchListGrid = GlobalWimControlBuilder.SearchGrid;
+                    await AddToResponseAsync(searchListGrid).ConfigureAwait(false);
                     return;
                 }
                 else
@@ -426,8 +429,8 @@ namespace Sushi.Mediakiwi.UI
                 _Console.CurrentListInstance.wim.DoListLoad(_Console.Item.GetValueOrDefault(0), 0);
 
 
-                await AddToResponseAsync(string.Format("{0}<br/>", _Console.CurrentListInstance.wim.CurrentSite.ID));
-                await AddToResponseAsync(string.Format("{0}<br/>", _Console.CurrentListInstance.wim.CurrentSite.MasterID.GetValueOrDefault()));
+                await AddToResponseAsync(string.Format("{0}<br/>", _Console.CurrentListInstance.wim.CurrentSite.ID)).ConfigureAwait(false);
+                await AddToResponseAsync(string.Format("{0}<br/>", _Console.CurrentListInstance.wim.CurrentSite.MasterID.GetValueOrDefault())).ConfigureAwait(false);
                 return;
             }
 
@@ -447,22 +450,22 @@ namespace Sushi.Mediakiwi.UI
                 version.TypeID = 2;
                 version.Save();
 
-                if (_Console.OpenInFrame > 0)
-                    return;
-
-                //  Redirect to the containing folder
-                if (_Console.CurrentList.Type == ComponentListType.Documents)
-                    _Console.Response.Redirect(string.Concat(_Console.WimPagePath, "?gallery=", _Console.CurrentListInstance.wim.CurrentFolder.ID));
-                else if (_Console.CurrentListInstance.wim.CurrentFolder.Type == FolderType.Gallery)
-                    _Console.Response.Redirect(string.Concat(_Console.WimPagePath, "?gallery=", _Console.CurrentListInstance.wim.CurrentFolder.ParentID));
-                else if (_Console.CurrentList.Type == ComponentListType.Folders)
-                    _Console.Response.Redirect(string.Concat(_Console.WimPagePath, "?folder=", _Console.CurrentListInstance.wim.CurrentFolder.ParentID));
-                else if (_Console.Group.HasValue)
-                    _Console.Response.Redirect(string.Concat(_Console.CurrentListInstance.wim.SearchResultItemPassthroughParameter, "=0"), true);
-                else if (_Console.CurrentList.Type == ComponentListType.ComponentListProperties)
-                    _Console.Response.Redirect(string.Concat(_Console.WimPagePath, "?folder=", _Console.CurrentListInstance.wim.CurrentFolder.ID));
-                else
-                    _Console.Response.Redirect(string.Concat(_Console.WimPagePath, "?list=", _Console.CurrentList.ID));
+                if (_Console.OpenInFrame == 0)
+                {
+                    //  Redirect to the containing folder
+                    if (_Console.CurrentList.Type == ComponentListType.Documents)
+                        _Console.Response.Redirect(string.Concat(_Console.WimPagePath, "?gallery=", _Console.CurrentListInstance.wim.CurrentFolder.ID));
+                    else if (_Console.CurrentListInstance.wim.CurrentFolder.Type == FolderType.Gallery)
+                        _Console.Response.Redirect(string.Concat(_Console.WimPagePath, "?gallery=", _Console.CurrentListInstance.wim.CurrentFolder.ParentID));
+                    else if (_Console.CurrentList.Type == ComponentListType.Folders)
+                        _Console.Response.Redirect(string.Concat(_Console.WimPagePath, "?folder=", _Console.CurrentListInstance.wim.CurrentFolder.ParentID));
+                    else if (_Console.Group.HasValue)
+                        _Console.Response.Redirect(string.Concat(_Console.CurrentListInstance.wim.SearchResultItemPassthroughParameter, "=0"), true);
+                    else if (_Console.CurrentList.Type == ComponentListType.ComponentListProperties)
+                        _Console.Response.Redirect(string.Concat(_Console.WimPagePath, "?folder=", _Console.CurrentListInstance.wim.CurrentFolder.ID));
+                    else
+                        _Console.Response.Redirect(string.Concat(_Console.WimPagePath, "?list=", _Console.CurrentList.ID));
+                }
             }
 
             if (_Console.IsComponent)
@@ -505,7 +508,6 @@ namespace Sushi.Mediakiwi.UI
                 GlobalWimControlBuilder.Canvas.Type = _Console.OpenInFrame > 0 ? CanvasType.ListItemInLayer : CanvasType.ListItem;
                 GlobalWimControlBuilder.Rightnav = _PresentationNavigation.RightSideNavigation(_Console, component.m_ButtonList != null ? component.m_ButtonList.ToArray() : null);
 
-
                 if (
                     GlobalWimControlBuilder.Canvas.Type == CanvasType.ListInLayer ||
                     GlobalWimControlBuilder.Canvas.Type == CanvasType.ListItemInLayer
@@ -518,7 +520,7 @@ namespace Sushi.Mediakiwi.UI
                 GlobalWimControlBuilder.Bottom = _PresentationNavigation.NewBottomNavigation(_Console, component.m_ButtonList != null ? component.m_ButtonList.ToArray() : null, false);
                 GlobalWimControlBuilder.Tabularnav = Template.GetTabularTagNewDesign(_Console, _Console.CurrentList.Name, 0, false);
 
-                await AddToResponseAsync(_PresentationMonitor.GetTemplateWrapper(_Console, _Placeholders, _Callbacks, GlobalWimControlBuilder));
+                await AddToResponseAsync(_PresentationMonitor.GetTemplateWrapper(_Console, _Placeholders, _Callbacks, GlobalWimControlBuilder)).ConfigureAwait(false);
             }
         }
 
@@ -1349,7 +1351,7 @@ namespace Sushi.Mediakiwi.UI
                     output = split[1];
                 }
                 Body = output;
-                await _Console.Response.WriteAsync(output);
+                await _Console.Response.WriteAsync(output).ConfigureAwait(false);
             }
         }
 
