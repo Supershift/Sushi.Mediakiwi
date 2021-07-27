@@ -63,6 +63,9 @@ namespace Sushi.Mediakiwi.Data.Configuration
 
         public string Datepicker_Language { get; set; }
 
+        public bool Sql_Install_Enabled { get; set; }
+        public bool Sql_Install_Actions_Enabled { get; set; }
+
         public string Connection { get; set; }
         public string Azure_Image_Container { get; set; }
         public string Azure_Cdn_Uri { get; set; }
