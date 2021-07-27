@@ -55,7 +55,7 @@ namespace Sushi.Mediakiwi.Data
         {
             get
             {
-                if (m_GUID == Guid.Empty) 
+                if (m_GUID == Guid.Empty)
                     m_GUID = Guid.NewGuid();
 
                 return m_GUID;
@@ -74,7 +74,7 @@ namespace Sushi.Mediakiwi.Data
         /// </summary>
         /// <value>The component template ID.</value>
         public int ComponentTemplateID { get; set; }
-        
+
         public string Target { get; set; }
 
         /// <summary>
@@ -96,7 +96,7 @@ namespace Sushi.Mediakiwi.Data
         /// <summary>
         /// The Name of the component template
         /// </summary>
-        public string ComponentTemplate { get; set; }        
+        public string ComponentTemplate { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether this instance is present.
@@ -435,11 +435,42 @@ namespace Sushi.Mediakiwi.Data
             var filter = connector.CreateDataFilter();
             filter.Add(x => x.PageTemplateID, pageTemplateID);
             filter.Add(x => x.IsSecundary, isSecundary);
+
             if (string.IsNullOrEmpty(target))
+            {
                 filter.Add(x => x.Target, null);
+            }
             else
+            {
                 filter.Add(x => x.Target, target);
+            }
+
             connector.Delete(filter);
+        }
+
+        /// <summary>
+        /// Deletes the specified page template ID.
+        /// </summary>
+        /// <param name="pageTemplateID">The page template ID.</param>
+        /// <param name="isSecundary">if set to <c>true</c> [is secundary].</param>
+        /// <param name="target">The target.</param>
+        public static async Task DeleteAsync(int pageTemplateID, bool isSecundary, string target)
+        {
+            var connector = ConnectorFactory.CreateConnector(new AvailableTemplateMap(true));
+            var filter = connector.CreateDataFilter();
+            filter.Add(x => x.PageTemplateID, pageTemplateID);
+            filter.Add(x => x.IsSecundary, isSecundary);
+
+            if (string.IsNullOrEmpty(target))
+            {
+                filter.Add(x => x.Target, null);
+            }
+            else
+            {
+                filter.Add(x => x.Target, target);
+            }
+
+            await connector.DeleteAsync(filter).ConfigureAwait(false);
         }
     }
 }

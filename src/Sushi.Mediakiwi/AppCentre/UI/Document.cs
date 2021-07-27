@@ -42,7 +42,9 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                 get
                 {
                     if (_files == null)
+                    {
                         _files = new List<uploadResultFile>();
+                    }
 
                     return _files;
                 }
@@ -168,7 +170,9 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         async Task Document_ListDelete(ComponentListEventArgs e)
         {
             if (m_Implement == null)
-                m_Implement = await Mediakiwi.Data.Document.SelectOneAsync(e.SelectedKey);
+            {
+                m_Implement = await Mediakiwi.Data.Document.SelectOneAsync(e.SelectedKey).ConfigureAwait(false);
+            }
 
             //m_Implement.CloudDelete();
 
@@ -180,29 +184,52 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             if (wim.IsLayerMode)
             {
                 int rootAsset = Utility.ConvertToInt(Request.Query["base"]);
-                string redirect = wim.GetUrl(new KeyValue() { Key = "item", Value = rootAsset }
-                , new KeyValue() { Key = "base", RemoveKey = true }
-                , new KeyValue() { Key = "sat", RemoveKey = true }
+                string redirect = wim.GetUrl(
+                    new KeyValue()
+                    {
+                        Key = "item",
+                        Value = rootAsset
+                    },
+                    new KeyValue()
+                    {
+                        Key = "base",
+                        RemoveKey = true
+                    },
+                    new KeyValue()
+                    {
+                        Key = "sat",
+                        RemoveKey = true
+                    }
                 );
                 Response.Redirect(redirect);
 
-                wim.OnSaveScript = string.Format(@"<input type=""hidden"" class=""postparent"" id=""{0}"" value=""{1} ({2} KB)"" />", m_Implement.ID, m_Implement.Title, m_Implement.Size > 0 ? (m_Implement.Size / 1024) : 0);
+                wim.OnSaveScript = $@"<input type=""hidden"" class=""postparent"" id=""{m_Implement.ID}"" value=""{m_Implement.Title} ({(m_Implement.Size > 0 ? (m_Implement.Size / 1024) : 0)} KB)"" />";
             }
             else
             {
-                string redirect = wim.GetUrl(new KeyValue() { Key = "gallery", Value = m_Implement.GalleryID }
-                    , new KeyValue() { Key = "asset", RemoveKey = true }
-                    , new KeyValue() { Key = "item", RemoveKey = true }
-                    );
+                string redirect = wim.GetUrl(
+                    new KeyValue()
+                    {
+                        Key = "gallery",
+                        Value = m_Implement.GalleryID
+                    },
+                    new KeyValue()
+                    {
+                        Key = "asset",
+                        RemoveKey = true
+                    },
+                    new KeyValue()
+                    {
+                        Key = "item",
+                        RemoveKey = true
+                    });
                 Response.Redirect(redirect);
             }
         }
 
         public virtual BlobPersister GetPersistor
         {
-            get{
-                return new BlobPersister();
-            }
+            get { return new BlobPersister(); }
         }
 
         /// <summary>
@@ -213,20 +240,20 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         async Task Document_ListSave(ComponentListEventArgs e)
         {
             if (m_Implement == null)
-                m_Implement = await Mediakiwi.Data.Document.SelectOneAsync(e.SelectedKey);
+            {
+                m_Implement = await Mediakiwi.Data.Document.SelectOneAsync(e.SelectedKey).ConfigureAwait(false);
+            }
 
             int? parent = Utility.ConvertToIntNullable(Request.Query["base"]);
             if (parent.HasValue)
+            {
                 m_Implement.ParentID = parent;
+            }
 
             Asset currentAsset = m_Implement;
             if (m_Implement.ParentID.HasValue)
             {
-                //if (wim.CurrentFolder.DatabaseMappingPortal != null)
-                //    currentAsset = Sushi.Mediakiwi.Data.Asset.SelectOneByPortal(m_Implement.ParentID.Value, wim.CurrentFolder.DatabaseMappingPortal.Name);
-                //else
-                currentAsset = Asset.SelectOne(m_Implement.ParentID.Value);
-
+                currentAsset = await Asset.SelectOneAsync(m_Implement.ParentID.Value).ConfigureAwait(false);
                 m_Implement.GalleryID = currentAsset.GalleryID;
             }
 
@@ -234,157 +261,53 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             {
                 _Form.Evaluate();
 
-
-                if (_Form.File.File.ContentType.ToLower() == "image/jpeg" ||
-                   _Form.File.File.ContentType.ToLower() == "image/jpg" ||
-                   _Form.File.File.ContentType.ToLower() == "image/png")
+                if (_Form.File.File.ContentType.Equals("image/jpeg", System.StringComparison.InvariantCultureIgnoreCase) ||
+                   _Form.File.File.ContentType.Equals("image/jpg", System.StringComparison.InvariantCultureIgnoreCase) ||
+                   _Form.File.File.ContentType.Equals("image/png", System.StringComparison.InvariantCultureIgnoreCase))
                 {
                     m_Implement.IsImage = true;
                     using (var image = System.Drawing.Image.FromStream(_Form.File.File.OpenReadStream()))
                     {
                         m_Implement.Width = image.Width;
                         m_Implement.Height = image.Height;
-                        //image.
-                        // use image.Width and image.Height
                     }
                 }
 
-                var upload = await GetPersistor.UploadAsync(_Form.File.File.OpenReadStream(), WimServerConfiguration.Instance?.Azure_Image_Container, _Form.File.File.FileName, _Form.File.File.ContentType);
+                var upload = await GetPersistor.UploadAsync(_Form.File.File.OpenReadStream(), WimServerConfiguration.Instance?.Azure_Image_Container, _Form.File.File.FileName, _Form.File.File.ContentType).ConfigureAwait(false);
                 m_Implement.RemoteLocation = $"{WimServerConfiguration.Instance?.Azure_Cdn_Uri}{upload.Uri.PathAndQuery}";
             }
-            
-            await m_Implement.SaveAsync();
 
-            //if (e.SelectedKey == 0 || Request.Query["redo"] == "1")
-            //{
-            //    string url;
-            //    if (IsPopupRequest)
-            //    {
-            //        url = wim.GetCurrentQueryUrl(true
-            //            , new KeyValue() { Key = "asset", Value = m_Implement.ID.ToString() }
-            //            , new KeyValue() { Key = "redo", RemoveKey = true }
-            //            );
-            //    }
-            //    else
-            //    {
-            //        url = wim.GetCurrentQueryUrl(true
-            //            , new KeyValue() { Key = "item", Value = m_Implement.ID.ToString() }
-            //            , new KeyValue() { Key = "redo", RemoveKey = true }
-            //            , new KeyValue() { Key = "asset", RemoveKey = true }
-            //            );
-            //    }
+            await m_Implement.SaveAsync().ConfigureAwait(false);
 
-            //    Response.Redirect(url);
-            //}
-            //else
-            //{
-                string info = null;
-                if (currentAsset.IsImage)
-                    info = string.Format("{0} <span>({1}px / {2}px)</span>", currentAsset.Title, currentAsset.Width, currentAsset.Height);
-                else
-                    info = string.Format("{0} <span>({1} KB)</span>", currentAsset.Title, currentAsset.Size > 0 ? (currentAsset.Size / 1024) : 0);
+            string info = null;
+            if (currentAsset.IsImage)
+            {
+                info = $"{currentAsset.Title} <span>({currentAsset.Width}px / {currentAsset.Height}px)</span>";
+            }
+            else
+            {
+                info = $"{currentAsset.Title} <span>({(currentAsset.Size > 0 ? (currentAsset.Size / 1024) : 0)} KB)</span>";
+            }
 
-                if (string.IsNullOrEmpty(Request.Query["referid"]))
-                    wim.Page.Body.Form.RefreshParent();
-                else
-                    wim.Page.Body.Form.PostDataToSubSelect(currentAsset.ID, info);
-            //}
+            if (string.IsNullOrEmpty(Request.Query["referid"]))
+            {
+                wim.Page.Body.Form.RefreshParent();
+            }
+            else
+            {
+                wim.Page.Body.Form.PostDataToSubSelect(currentAsset.ID, info);
+            }
         }
 
-        /// <summary>
-        /// Sets the push thread.
-        /// </summary>
-        /// <param name="document">The document.</param>
-        private void SetPushThread(Mediakiwi.Data.Document document)
-        {
-            //List<string> urlList = new List<string>();
-            //foreach (Sushi.Mediakiwi.Data.Site site in Sushi.Mediakiwi.Data.Site.SelectAll())
-            //{
-            //    if (site.StagingEnvironment != null)
-            //    {
-            //        string url = string.Format("{0}/{1}/push.aspx?s={2}&i={3}", site.StagingEnvironment, Sushi.Mediakiwi.Framework.Interfaces.BinaryPush.DocumentRecognition, site.Id, document.Id);
-            //        urlList.Add(url);
-            //    }
-            //    if (site.ProductionEnvironment != null)
-            //    {
-            //        string url = string.Format("{0}/{1}/push.aspx?s={2}&i={3}", site.ProductionEnvironment, Sushi.Mediakiwi.Framework.Interfaces.BinaryPush.DocumentRecognition, site.Id, document.Id);
-            //        urlList.Add(url);
-            //    }
-            //}
-
-            //if (urlList.Count == 0)
-            //    return;
-
-            //Implementations.wim_Documents.url = urlList.ToArray();
-            //Thread tr = new Thread(new ThreadStart(Implementations.wim_Documents.SetScrapeThread));
-            //tr.Start();
-        }
-
-        /// <summary>
-        /// Sets the scrape thread.
-        /// </summary>
-        private static void SetScrapeThread()
-        {
-            //int current = 0;
-            //foreach (string uri in Implementations.wim_Documents.url)
-            //{
-            //    current++;
-            //    string uriToCall = uri;
-            //    try
-            //    {
-            //        string result = Wim.Utilities.WebScrape.GetUrlResponse(uriToCall);
-            //    }
-            //    catch (Exception ex)
-            //    {
-            //        System.Exception except = ex;
-            //        string exceptionMessage = "<b>Exception occured when call page</b><br/>page: " + uriToCall;
-            //        while (except != null)
-            //        {
-            //            exceptionMessage += string.Format("<br/>- {0}", except.Message);
-            //            except = except.InnerException;
-            //        }
-            //        Sushi.Mediakiwi.Data.Notification.InsertOne(Sushi.Mediakiwi.Data.Notification.Tags.InternalWimError, null, exceptionMessage);
-            //    }
-            //}
-        }
-
-        /// <summary>
-        /// Creates the specified document.
-        /// </summary>
-        /// <param name="document">The document.</param>
-        /// <param name="doBlobInsert">if set to <c>true</c> [do BLOB insert].</param>
-        /// <returns></returns>
-        //public Sushi.Mediakiwi.Data.Asset Create(Sushi.Mediakiwi.Data.Asset document, bool doBlobInsert)
-        //{
-        //    int galleryId;
-        //    Guid guid;
-        //    Sushi.Mediakiwi.Data.Gallery gallery = Sushi.Mediakiwi.Data.Gallery.Identify(Request.Query["gallery"]);
-        //    document.GalleryID = gallery.ID;
-        //    document.DatabaseMappingPortal = gallery.DatabaseMappingPortal;
-
-        //    if (File != null && File.ContentLength > 0)
-        //    {
-        //        document.Width = 0;
-        //        document.Height = 0;
-        //    }
-
-        //    if (!AssetLogic.CloudUpload(document, gallery, File))
-        //        document.SaveStream(m_File, gallery);
-
-        //    return document;
-        //}
-
-
-
-        [OnlyVisibleWhenTrue("ShowButtonMulti")]
-        [Framework.ContentListItem.Choice_Dropdown("Gallery", "GalleryCollection", true, true)]
+        [OnlyVisibleWhenTrue(nameof(ShowButtonMulti))]
+        [Framework.ContentListItem.Choice_Dropdown("Gallery", nameof(GalleryCollection), true, true)]
         public int AssignedGalleryID2 { get; set; }
 
         /// <summary>
         /// Gets or sets the multi file.
         /// </summary>
         /// <value>The multi file.</value>
-        [OnlyVisibleWhenTrue("ShowButtonMulti")]
+        [OnlyVisibleWhenTrue(nameof(ShowButtonMulti))]
         [Framework.ContentListItem.HtmlContainer(true)]
         public string MultiFile { get; set; }
 
@@ -392,22 +315,30 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// Gets or sets a value indicating whether [button multi].
         /// </summary>
         /// <value><c>true</c> if [button multi]; otherwise, <c>false</c>.</value>
-        [OnlyVisibleWhenTrue("ShowButtonMulti", false)]
+        [OnlyVisibleWhenTrue(nameof(ShowButtonMulti), false)]
         [Framework.ContentListItem.Button("Multi-file upload", false)]
         public bool ButtonMulti { get; set; }
 
         public string ButtonBack2URL { get; set; }
-        [Framework.ContentListItem.Button("", false, ButtonClassName = "flaticon icon-home", IconTarget = ButtonTarget.TopRight
-            , CustomUrlProperty = "ButtonBack2URL")]
+        [Framework.ContentListItem.Button("", false, 
+            ButtonClassName = "flaticon icon-home", 
+            IconTarget = ButtonTarget.TopRight, 
+            CustomUrlProperty = nameof(ButtonBack2URL))]
         public bool ButtonBack2 { get; set; }
 
 
-        [Framework.ContentListItem.Button("", false, ButtonClassName = "flaticon icon-rotate", IconTarget = ButtonTarget.TopRight, InteractiveHelp = "Redo upload")]
+        [Framework.ContentListItem.Button("", false, 
+            ButtonClassName = "flaticon icon-rotate", 
+            IconTarget = ButtonTarget.TopRight, 
+            InteractiveHelp = "Redo upload")]
         public bool ButtonBack { get; set; }
 
         public string AlternativeURL { get; set; }
-        [Framework.ContentListItem.Button("", false, ButtonClassName = "flaticon icon-platforms", IconTarget = ButtonTarget.TopRight, InteractiveHelp = "Add/update alternative image"
-            , CustomUrlProperty = "AlternativeURL")]
+        [Framework.ContentListItem.Button("", false, 
+            ButtonClassName = "flaticon icon-platforms", 
+            IconTarget = ButtonTarget.TopRight, 
+            InteractiveHelp = "Add/update alternative image", 
+            CustomUrlProperty = nameof(AlternativeURL))]
         public bool ButtonAlternative { get; set; }
 
         /// <summary>
@@ -423,238 +354,12 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         public bool ShowSingleAsset { get { return !ShowButtonMulti; } }
 
         /// <summary>
-        /// Gets a value indicating whether [show single asset and not in cloud].
-        /// </summary>
-        /// <value>
-        /// 	<c>true</c> if [show single asset and not in cloud]; otherwise, <c>false</c>.
-        /// </value>
-        //public bool ShowSingleAssetAndNotInCloud { 
-        //    get {
-        //        if (Sushi.Mediakiwi.Data.Asset.HasCloudSetting)
-        //            return false;
-        //        return ShowSingleAsset;
-        //    }
-        //}
-
-        void ParseStream()
-        {
-
-        }
-
-        /// <summary>
         /// Gets or sets a value indicating whether [button single].
         /// </summary>
         /// <value><c>true</c> if [button single]; otherwise, <c>false</c>.</value>
-        [OnlyVisibleWhenTrue("ShowButtonMulti")]
+        [OnlyVisibleWhenTrue(nameof(ShowButtonMulti))]
         [Framework.ContentListItem.Button("Single file upload", false)]
         public bool ButtonSingle { get; set; }
-
-        void LoadMultiUpload()
-        {
-
-            if (
-                wim.Console.Request.HasFormContentType &&
-                wim.Console.Request.Form.Count > 0 &&
-                wim.Console.Request.Form.Files.Count > 0 &&
-                wim.Console.Request.Form.Files[0].Length > 0)
-            {
-                MultiUpload parser = new MultiUpload();
-                parser.ProcessData(wim.Console.Context);
-                //  Do stream conversion
-            }
-
-            //wim.HideSaveButtons = true;
-            wim.SetPropertyVisibility("ButtonMulti", false);
-            wim.SetPropertyVisibility("ButtonBack", false);
-            wim.SetPropertyVisibility("File", false);
-            wim.SetPropertyVisibility("RemoteLocation", false);
-            wim.SetPropertyVisibility("RemoteDownload", false);
-            wim.SetPropertyVisibility("Title", false);
-            wim.SetPropertyVisibility("Description", false);
-            wim.SetPropertyVisibility("AssetTypeID", false);
-            wim.SetPropertyVisibility("AssignedGalleryID2", false);
-            wim.SetPropertyVisibility("AssignedGalleryID", false);
-            wim.SetPropertyVisibility("FileSize", false);
-
-            string collection = Request.Query["col"];
-            if (!string.IsNullOrEmpty(collection))
-            {
-                var range = Utility.ConvertToIntArray(collection.Split(','));
-
-
-                var asset = Asset.SelectRange(range);
-
-                StringBuilder build = new StringBuilder();
-                bool isFormValid = true;
-                foreach (var q in asset)
-                {
-                    //if (!string.IsNullOrEmpty(Request["delete"]))
-                    //{
-                    //    q.Delete();
-                    //}
-
-                    bool isValid = true;
-                    if (IsPostBack)
-                    {
-                        q.Title = Request.Form[string.Concat("uxTitle_", q.ID)];
-                        if (string.IsNullOrEmpty(q.Title))
-                            isValid = false;
-                        q.Description = Request.Form[string.Concat("uxText_", q.ID)];
-
-                        if (isValid)
-                        {
-                            q.IsActive = true;
-                            q.Save();
-                        }
-                        else
-                            isFormValid = false;
-                    }
-
-                    build.AppendFormat(@"
-			<div class=""imageEdit"">
-				<figure>
-					<img src=""{2}"" style=""width: 216px; height: 207px"" />	
-				</figure>
-				<input class=""half" + (isValid ? string.Empty : " error") + @""" type=""text"" id=""uxTitle_{3}"" name=""uxTitle_{3}"" required=""required"" placeholder=""Titel"" value=""{0}"" />
-				<div class=""half"">
-					<textarea class=""nicEditor half"" id=""uxText_{3}"" name=""uxText_{3}"" cols=""10"" rows=""8"">{1}</textarea>
-				</div>
-				<br class=""clear"" />
-			</div>
-			<hr />
-", q.Title, q.Description, string.Empty
-                        //(q.IsImage ? q.ImageInstance.ApplyForcedBorder(null, 216, 207, new int[] { 236, 236, 236 }
-                        //, true, Sushi.Mediakiwi.Data.ImagePosition.TopCenter, null, true, false) : string.Empty)
-                        , q.ID);
-
-                }
-
-                if (IsPostBack && isFormValid)
-                {
-
-                    build.Append(@"<input type=""hidden"" name=""close"" class=""postParent"">");
-                    //  Close window
-                }
-
-                wim.Page.Body.Add(@"
-		<form method=""POST"" enctype=""multipart/form-data"" action=""#"">
-        <input type=""hidden"" id=""state"" name=""state"" value=""0"">
-        <header>
-			<p>
-				Wijzig hieronder de omschrijving van de bestanden. Pas na het opslaan van de afbeelding(en) worden deze actief.
-			</p>
-			<hr />
-		</header>
-		<article>"
-            + build.ToString() + @"
-            <span class=""clear""></span>
-            <div>"
-            + (range.Length == 1 ? @"<input id=""delete"" name=""delete"" class=""postBack submit left"" type=""submit"" value=""Verwijder"">" : string.Empty) + @"
-                            <input name=""save"" class=""reset right"" type=""submit"" value=""Opslaan"">
-            </div>
-		</article>
-        </form>
-", true);
-
-                return;
-            }
-
-            wim.Page.Head.Add(@"
-		<link rel=""stylesheet"" href=""testdrive/files/jquery.fileupload.css"">
-		<script type=""text/javascript"" src=""testdrive/files/head.load.min.js""></script>
-		<script type=""text/javascript"" src=""testdrive/files/preview.js""></script>
-		<style>
-			html, body {
-				overflow: auto;
-			}
-		</style>");
-
-            wim.Page.Body.Clear(true);
-            wim.Page.Body.Add(@"
-        <div id=""fileupload"" >
-            <form method=""POST"" enctype=""multipart/form-data"" action=""#"">
-		        <input type=""hidden"" id=""gallery"" name=""gallery"" value=""" + Request.Query["gallery"] + @""">
-		        <input type=""hidden"" id=""state"" name=""state"" value=""0"">
-		        <input type=""hidden"" id=""assets"" name=""assets"" value="""">
-                <section id=""popupContent"">
-                    <div class=""fileupload-buttonbar"">
-			             <!-- The fileinput-button span is used to style the file input field as button -->
-			            <span class=""fileinput-button"">
-				            <i class=""glyphicon glyphicon-plus""></i>
-				            <span>Add files...</span>
-				            <!-- The file input field used as target for the file upload widget -->
-				            <input id=""file"" type=""file"" name=""files[]"" multiple />
-			            </span>
-			            <button class=""start"" type=""submit"">
-				            <i class=""glyphicon glyphicon-upload""></i>
-				            <span>Start upload</span>
-			            </button>
-                    </div>
-		        </section>
-            </form>
-            <div class=""fileupload-content"">
-                <table class=""files""></table>
-                <div class=""fileupload-progressbar""></div>
-            </div>
-        </div>
-        <script id=""template-upload"" type=""text/x-jquery-tmpl"">
-            <tr class=""template-upload{{if error}} ui-state-error{{/if}}"">
-                <td class=""preview""></td>
-                <td class=""name"">${name}</td>
-                <td class=""size"">${sizef}</td>
-                {{if error}}
-                    <td class=""error"" colspan=""2"">Error:
-                        {{if error === 'maxFileSize'}}File is too big
-                        {{else error === 'minFileSize'}}File is too small
-                        {{else error === 'acceptFileTypes'}}Filetype not allowed
-                        {{else error === 'maxNumberOfFiles'}}Max number of files exceeded
-                        {{else}}${error}
-                        {{/if}}
-                    </td>
-                {{else}}
-                    <td class=""start""><button>Start</button></td>
-                {{/if}}
-                <td class=""cancel""><button class=""cancel"">Cancel</button></td>
-            </tr>
-        </script>
-        <script id=""template-download"" type=""text/x-jquery-tmpl"">" +
-        //<tr class=""template-download{{if error}} ui-state-error{{/if}}"">
-        //    {{if error}}
-        //        <td></td>
-        //        <td class=""name"">${namefdsa}</td>
-        //        <td class=""size"">${sizef}</td>
-        //        <td class=""error"" colspan=""3"">Error:
-        //            {{if error === 1}}File exceeds upload_max_filesize
-        //            {{else error === 2}}File exceeds MAX_FILE_SIZE (HTML form directive)
-        //            {{else error === 3}}File was only partially uploaded
-        //            {{else error === 4}}No File was uploaded
-        //            {{else error === 5}}Missing a temporary folder
-        //            {{else error === 6}}Failed to write file to disk
-        //            {{else error === 7}}File upload stopped by extension
-        //            {{else error === 'maxFileSize'}}File is too big
-        //            {{else error === 'minFileSize'}}File is too small
-        //            {{else error === 'acceptFileTypes'}}Filetype not allowed
-        //            {{else error === 'maxNumberOfFiles'}}Max number of files exceeded
-        //            {{else error === 'uploadedBytes'}}Uploaded bytes exceed file size
-        //            {{else error === 'emptyResult'}}Empty file upload result
-        //            {{else}}${error}
-        //            {{/if}}
-        //        </td>
-        //    {{/if}}
-        //</tr>
-
-        @"</script>
-        <script type=""text/javascript"" src=""testdrive/files/jquery-1.7.1.js""></script>
-		<script type=""text/javascript"" src=""testdrive/files/jquery-ui-1.8.17.custom.min.js""></script>
-        <script src=""//ajax.aspnetcdn.com/ajax/jquery.templates/beta1/jquery.tmpl.min.js""></script>
-	    <script src=""testdrive/files/jquery.iframe-transport.js""></script>
-	    <script src=""testdrive/files/jquery.fileupload.js""></script>
-        <script src=""testdrive/files/jquery.fileupload-ui.js""></script>
-        <script src=""testdrive/files/jquery.fileupload.init.js""></script>
-        <div id=""loader""></div>
-");
-
-        }
 
 
         [Framework.ContentListItem.DataList()]
@@ -677,12 +382,16 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                         candidate.AssetID = match.ID;
                         candidate.HasAsset = true;
                         if (match.IsImage)
-                            candidate.DisplayName = string.Format("{0} ({1}px / {2}px)", match.Title, match.Width, match.Height);
+                        {
+                            candidate.DisplayName = $"{match.Title} ({match.Width}px / {match.Height}px)";
+                        }
                         else
+                        {
                             candidate.DisplayName = match.Title;
+                        }
                         key = match.ID;
                     }
-                    candidate.PassthroughParameter = string.Concat(url, "&item=", key, "&sat=", type.ID); // = KEY
+                    candidate.PassthroughParameter = $"{url}&item={key}&sat={type.ID}"; 
                     arr.Add(candidate);
                 }
 
@@ -704,24 +413,30 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         {
             int rootAsset = Utility.ConvertToInt(Request.Query["base"]);
 
-            var url = wim.GetUrl(new KeyValue() { Key = "item", RemoveKey = true }
-                );
-            var types = await AssetType.SelectAllAsync(true);
-            var assets = await Asset.SelectAll_VariantAsync(rootAsset, Request.Query["gallery"]);
+            var url = wim.GetUrl(new KeyValue() 
+            { 
+                Key = "item", 
+                RemoveKey = true 
+            });
+
+            var types = await AssetType.SelectAllAsync(true).ConfigureAwait(false);
+            var assets = await Asset.SelectAll_VariantAsync(rootAsset, Request.Query["gallery"]).ConfigureAwait(false);
             AssetTypeMapper mapper = new AssetTypeMapper();
             var mapped = mapper.Map(types, assets, url);
 
-            wim.ListDataColumns.Add(new ListDataColumn("ID", "AssetID", ListDataColumnType.UniqueIdentifier));
-            wim.ListDataColumns.Add(new ListDataColumn("Type", "AssetType", ListDataColumnType.HighlightPresent));
-            wim.ListDataColumns.Add(new ListDataColumn("File", "DisplayName"));
-            wim.ListDataColumns.Add(new ListDataColumn("", "HasAsset") { ColumnWidth = 30 });
+            wim.ListDataColumns.Add(new ListDataColumn("ID", nameof(AssetTypeMapped.AssetID), ListDataColumnType.UniqueIdentifier));
+            wim.ListDataColumns.Add(new ListDataColumn("Type", nameof(AssetTypeMapped.AssetType), ListDataColumnType.HighlightPresent));
+            wim.ListDataColumns.Add(new ListDataColumn("File", nameof(AssetTypeMapped.DisplayName)));
+            wim.ListDataColumns.Add(new ListDataColumn("", nameof(AssetTypeMapped.HasAsset)) { ColumnWidth = 30 });
             wim.ListDataAdd(mapped);
-            wim.SearchResultItemPassthroughParameterProperty = "PassthroughParameter";
+
+            wim.SearchResultItemPassthroughParameterProperty = nameof(AssetTypeMapped.PassthroughParameter);
             wim.Page.Body.Grid.IgnoreInLayerSubSelect = true;
         }
 
         DocumentForm _Form;
         Asset m_Implement;
+
         /// <summary>
         /// Handles the ListLoad event of the Document control.
         /// </summary>
@@ -729,43 +444,76 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// <param name="e">The <see cref="ComponentListEventArgs"/> instance containing the event data.</param>
         async Task Document_ListLoad(ComponentListEventArgs e)
         {
-            this.AssetTypeSelectionList = new DataList();
+            AssetTypeSelectionList = new DataList();
 
             int rootAsset = Utility.ConvertToInt(Request.Query["base"], e.SelectedKey);
             bool isAlternativeImage = !string.IsNullOrEmpty(Request.Query["base"]);
             var alternativeTypeID = Utility.ConvertToIntNullable(Request.Query["sat"]);
 
-            wim.SetPropertyVisibility("ButtonAlternative", false);
-            wim.SetPropertyVisibility("AssetTypeSelectionList", false);
-            wim.SetPropertyVisibility("ButtonBack2", false);
+            wim.SetPropertyVisibility(nameof(ButtonAlternative), false);
+            wim.SetPropertyVisibility(nameof(AssetTypeSelectionList), false);
+            wim.SetPropertyVisibility(nameof(ButtonBack2), false);
             wim.SetPropertyVisibility("AssetTypeID", false);
             ShowButtonMulti = false;
-            wim.SetPropertyVisibility("ButtonMulti", false);
+            wim.SetPropertyVisibility(nameof(ButtonMulti), false);
 
             if (e.SelectedKey > 0)
             {
-                var variantTypes = await AssetType.SelectAllAsync(true);
+                var variantTypes = await AssetType.SelectAllAsync(true).ConfigureAwait(false);
                 if (variantTypes.Length > 0)
-                    wim.SetPropertyVisibility("ButtonAlternative", true);
+                {
+                    wim.SetPropertyVisibility(nameof(ButtonAlternative), true);
+                }
             }
 
-            ButtonBack2URL = wim.GetUrl(new KeyValue() { Key = "base", RemoveKey = true }
-                    , new KeyValue() { Key = "item", Value = rootAsset }
-                    , new KeyValue() { Key = "sat", RemoveKey = true }
-                    , new KeyValue() { Key = "redo", RemoveKey = true }
-                    );
+            ButtonBack2URL = wim.GetUrl(
+                    new KeyValue() 
+                    { 
+                        Key = "base", 
+                        RemoveKey = true 
+                    }, 
+                    new KeyValue() 
+                    { 
+                        Key = "item", 
+                        Value = rootAsset 
+                    },
+                    new KeyValue() 
+                    { 
+                        Key = "sat", 
+                        RemoveKey = true 
+                    }, 
+                    new KeyValue() 
+                    { 
+                        Key = "redo", 
+                        RemoveKey = true 
+                    });
 
             if (rootAsset > 0 && isAlternativeImage)
             {
-
-                wim.SetPropertyVisibility("ButtonBack2", true);
+                wim.SetPropertyVisibility(nameof(ButtonBack2), true);
             }
 
-            AlternativeURL = wim.GetUrl(new KeyValue() { Key = "base", Value = rootAsset }
-                , new KeyValue() { Key = "item", Value = 0 }
-                , new KeyValue() { Key = "sat", RemoveKey = true }
-                , new KeyValue() { Key = "redo", RemoveKey = true }
-                );
+            AlternativeURL = wim.GetUrl(
+                 new KeyValue() 
+                 { 
+                     Key = "base", 
+                     Value = rootAsset 
+                 }, 
+                 new KeyValue() 
+                 { 
+                     Key = "item", 
+                     Value = 0 
+                 }, 
+                 new KeyValue() 
+                 { 
+                     Key = "sat", 
+                     RemoveKey = true 
+                 }, 
+                 new KeyValue() 
+                 { 
+                     Key = "redo", 
+                     RemoveKey = true 
+                 });
 
             if (isAlternativeImage && alternativeTypeID.HasValue)
             {
@@ -775,15 +523,12 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
 
             if (isAlternativeImage && !alternativeTypeID.HasValue)
             {
-
                 wim.SetPropertyVisibility("File", false);
-                wim.SetPropertyVisibility("AssetTypeSelectionList", true);
+                wim.SetPropertyVisibility(nameof(AssetTypeSelectionList), true);
             }
-
 
             if (Request.Query["ismulti"] == "1")
             {
-                //LoadMultiUpload();
                 return;
             }
 
@@ -794,28 +539,13 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                 wim.HideSaveButtons = true;
             }
 
-
-            wim.SetPropertyVisibility("ButtonBack", false);
-
+            wim.SetPropertyVisibility(nameof(ButtonBack), false);
 
             //  In popup layer, hide the multi-file-upload.
             if (wim.Console.OpenInFrame > 0)
             {
-
-                wim.SetPropertyVisibility("ButtonMulti", false);
+                wim.SetPropertyVisibility(nameof(ButtonMulti), false);
             }
-            //if (Request.Query["referid"] == "tmce")
-            //{
-            //    IsRTE_Set_Version = true;
-            //    wim.OnLoadScript = string.Format("<script type=\"text/javascript\" src=\"{0}\"></script>", Utility.AddApplicationPath("repository/wim/scripts/rte/tiny_mce_popup.js"));
-            //    wim.OnLoadScript += string.Format("<script type=\"text/javascript\" src=\"{0}\"></script>", Utility.AddApplicationPath("repository/wim/scripts/rte/utils/form_utils.js"));
-            //    wim.OnLoadScript += string.Format("<script type=\"text/javascript\" src=\"{0}\"></script>", Utility.AddApplicationPath("repository/wim/scripts/rte/utils/editable_selects.js"));
-            //    wim.OnLoadScript += string.Format("<script type=\"text/javascript\" src=\"{0}\"></script>", Utility.AddApplicationPath("repository/wim/scripts/rte/plugins/advimage/js/image.js"));
-            //    wim.SetPropertyVisibility("RemoteLocation", false);
-            //    wim.SetPropertyVisibility("AssetTypeID", false);
-            //    wim.SetPropertyVisibility("FileSize", false);
-            //    wim.SetPropertyVisibility("Thumbnail", false);
-            //}
 
             if (wim.CurrentList.Option_OpenInEditMode)
             {
@@ -823,107 +553,18 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                 wim.CurrentList.Save();
             }
 
-            //if (wim.CurrentFolder.DatabaseMappingPortal != null)
-            //    Implement = Sushi.Mediakiwi.Data.Asset.SelectOneByPortal(e.SelectedKey, wim.CurrentFolder.DatabaseMappingPortal.Name);
-            //else
-            Implement = await Asset.SelectOneAsync(e.SelectedKey);
+            Implement = await Asset.SelectOneAsync(e.SelectedKey).ConfigureAwait(false);
             _Form = new DocumentForm(Implement);
             FormMaps.Add(_Form);
-            
-
-            //wim.Page.HideMenuBar = true;
-            //if (e.SelectedKey == 0 || Request.Query["redo"] == "1")
-            //{
-            //    // Show the home buttons
-            //    if (Request.Query["redo"] == "1")
-            //        wim.SetPropertyVisibility("ButtonBack2", true);
-
-            //    //wim.HideSaveButtons = true;
-            //    wim.SetPropertyVisibility("RemoteLocation", false);
-            //    wim.SetPropertyVisibility("RemoteDownload", false);
-            //    wim.SetPropertyVisibility("Title", false);
-            //    wim.SetPropertyVisibility("Description", false);
-            //    wim.SetPropertyVisibility("AssignedGalleryID2", false);
-            //    wim.SetPropertyVisibility("AssignedGalleryID", false);
-            //    wim.SetPropertyVisibility("FileSize", false);
-            //}
-            //else
-            //{
-            //    wim.SetPropertyVisibility("ButtonBack", true);
-            //    wim.SetPropertyVisibility("File", false);
-            //    wim.SetPropertyVisibility("RemoteLocation", !string.IsNullOrEmpty(Implement.RemoteLocation));
-            //    wim.SetPropertyVisibility("RemoteDownload", false);
-            //    wim.SetPropertyVisibility("AssignedGalleryID2", false);
-            //    wim.SetPropertyVisibility("AssignedGalleryID", false);
-            //    wim.SetPropertyVisibility("FileSize", false);
-            //}
-
-            //IsExisting = (e.SelectedKey > 0);
-            //if (IsExisting)
-            //{
-            //    IsExistingImage = Implement.IsImage;
-            //}
-            //else
-            //    Implement.AssetTypeID = alternativeTypeID;
-
-            //IsPopupRequest = !string.IsNullOrEmpty(Request.Query["openinframe"]) && !string.IsNullOrEmpty(Request.Query["gallery"]);
-
-            //if (!this.IsPostBack && m_Implement.GalleryID == 0)
-            //{
-            //    int galleryId;
-            //    Guid guid;
-            //    if (Utility.IsGuid(Request.Query["gallery"], out guid))
-            //    {
-            //        Sushi.Mediakiwi.Data.Gallery gallery = Sushi.Mediakiwi.Data.Gallery.SelectOne(guid);
-            //        m_Implement.GalleryID = gallery.ID;
-            //    }
-            //    else if (Utility.IsNumeric(Request.Query["gallery"], out galleryId))
-            //    {
-            //        Sushi.Mediakiwi.Data.Gallery gallery = Sushi.Mediakiwi.Data.Gallery.SelectOne(galleryId);
-            //        m_Implement.GalleryID = gallery.ID;
-            //    }
-            //}
-            //this.AssignedGalleryID = m_Implement.GalleryID;
-            //this.AssignedGalleryID2 = Utility.ConvertToInt(Request.Query["AssignedGalleryID2"], m_Implement.GalleryID);
-
-            //if (e.SelectedKey == 0)
-            //    return;
-
-            //IsNotPresentOnServer = !Implement.Exists;
-            //IsPresentOnServerOrSingleMultifile = !IsNotPresentOnServer;
-
-            //m_Gallery = Implement.GalleryID.ToString();
-            //m_FileSize = string.Format("{0} kb", Implement.Size / 1024);
-
-            //wim.SetPropertyVisibility("Thumbnail", Implement.IsImage);
-
-            //m_Thumbnail = string.Format("<img src=\"{0}\" border=\"0\">", Implement.ThumbnailPath);
         }
 
         #region List attributes
-
-        //private HttpPostedFile m_File;
-        ///// <summary>
-        ///// Gets or sets the file.
-        ///// </summary>
-        ///// <value>The file.</value>
-        //[Sushi.Mediakiwi.Framework.OnlyVisibleWhenTrue("ShowButtonMulti", false)]
-        //[Sushi.Mediakiwi.Framework.ContentListItem.FileUpload("_selectfile", false, "", AutoPostBack = true)]
-        //public HttpPostedFile File
-        //{
-        //    get { return m_File; }
-        //    set { m_File = value; }
-        //}
 
         /// <summary>
         /// Gets or sets the implement.
         /// </summary>
         /// <value>The implement.</value>
-        public Asset Implement
-        {
-            get { return m_Implement; }
-            set { m_Implement = value; }
-        }
+        public Asset Implement { get; set; }
 
         private ListItemCollection m_GalleryCollection;
         /// <summary>
@@ -934,74 +575,52 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         {
             get
             {
-                if (m_GalleryCollection != null)
-                    return m_GalleryCollection;
-
-                m_GalleryCollection = new ListItemCollection();
-
-                Gallery[] galleries = Gallery.SelectAllAccessible(wim.CurrentApplicationUser);
-
-                foreach (Gallery gallery in galleries)
+                if (m_GalleryCollection == null)
                 {
-                    m_GalleryCollection.Add(new ListItem(gallery.CompletePath, gallery.ID.ToString()));
-                }
+                    m_GalleryCollection = new ListItemCollection();
 
+                    Gallery[] galleries = Gallery.SelectAllAccessible(wim.CurrentApplicationUser);
+
+                    foreach (Gallery gallery in galleries)
+                    {
+                        m_GalleryCollection.Add(new ListItem(gallery.CompletePath, $"{gallery.ID}"));
+                    }
+                }
                 return m_GalleryCollection;
             }
         }
 
-        private int m_AssignedGalleryID;
         /// <summary>
         /// Gets or sets the gallery.
         /// </summary>
         /// <value>The gallery.</value>
-        [OnlyEditableWhenTrue("IsPopupRequest", false)]
-        [OnlyVisibleWhenTrue("IsPresentOnServerOrSingleMultifile")]
+        [OnlyEditableWhenTrue(nameof(IsPopupRequest), false)]
+        [OnlyVisibleWhenTrue(nameof(IsPresentOnServerOrSingleMultifile))]
         //[Sushi.Mediakiwi.Framework.ContentListItem.Choice_Dropdown("Gallery", "GalleryCollection")]
-        public int AssignedGalleryID
-        {
-            get { return m_AssignedGalleryID; }
-            set { m_AssignedGalleryID = value; }
-        }
+        public int AssignedGalleryID { get; set; }
 
         public bool IsPresentOnServerOrSingleMultifile { get; set; }
 
-
-
         public bool IsPopupRequest { get; set; }
 
-        private string m_Gallery;
-
-        private string m_Thumbnail;
         /// <summary>
         /// Gets or sets the thumbnail.
         /// </summary>
         /// <value>The thumbnail.</value>
-        [OnlyVisibleWhenTrue("IsExistingImage")]
+        [OnlyVisibleWhenTrue(nameof(IsExistingImage))]
         //[Sushi.Mediakiwi.Framework.ContentListItem.TextLine("Thumbnail")]
-        public string Thumbnail
-        {
-            get { return m_Thumbnail; }
-            set { m_Thumbnail = value; }
-        }
+        public string Thumbnail { get; set; }
 
-        private string m_FileSize;
         /// <summary>
         /// Gets or sets the size of the file.
         /// </summary>
         /// <value>The size of the file.</value>
-        [OnlyVisibleWhenTrue("IsExisting")]
+        [OnlyVisibleWhenTrue(nameof(IsExisting))]
         //[Sushi.Mediakiwi.Framework.ContentListItem.TextLine("_filesize")]
-        public string FileSize
-        {
-            get { return m_FileSize; }
-            set { m_FileSize = value; }
-        }
-
-        //plugins_advimage_img_sample
+        public string FileSize { get; set; }
 
 
-        [OnlyVisibleWhenTrue("IsRTE_Set_Version")]
+        [OnlyVisibleWhenTrue(nameof(IsRTE_Set_Version))]
         //[Sushi.Mediakiwi.Framework.ContentListItem.TextLine("Alignment", Expression = Sushi.Mediakiwi.Framework.OutputExpression.Left)]
         public string RTE_Alignment
         {
@@ -1021,7 +640,6 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
 	<option value=""none"">None</option>
 </select>";
             }
-            set { }
         }
 
         public bool IsRTE_Set_Version { get; set; }
@@ -1034,10 +652,10 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             {
                 string url = wim.AddApplicationPath("repository/wim/scripts/rte/plugins/advimage/img/sample.gif");
                 string src = string.Empty;
-                //if (this.m_Implement != null && !this.m_Implement.IsNewInstance)
+                //if (m_Implement != null && !m_Implement.IsNewInstance)
                 //{
-                //    url = this.m_Implement.ImageInstance.ApplyForcedBorder(null, 45, 45, null, false, Sushi.Mediakiwi.Data.ImagePosition.Center, null, true, false);
-                //    src = this.m_Implement.ImageInstance.DownloadUrl;
+                //    url = m_Implement.ImageInstance.ApplyForcedBorder(null, 45, 45, null, false, Sushi.Mediakiwi.Data.ImagePosition.Center, null, true, false);
+                //    src = m_Implement.ImageInstance.DownloadUrl;
                 //}
 
                 return string.Format(@"
@@ -1057,19 +675,6 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             }
             set { }
         }
-
-        //private string m_FileType;
-        ///// <summary>
-        ///// Gets or sets the type of the file.
-        ///// </summary>
-        ///// <value>The type of the file.</value>
-        //[Sushi.Mediakiwi.Framework.OnlyVisibleWhenTrue("IsExisting")]
-        //[Sushi.Mediakiwi.Framework.ContentListItem.TextLine("Type")]
-        //public string FileType
-        //{
-        //    get { return m_FileType; }
-        //    set { m_FileType = value; }
-        //}
 
         public bool IsExisting { get; set; }
         public bool IsExistingImage { get; set; }
@@ -1114,6 +719,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         {
             get { return (Request.Query["openinframe"] == "1"); }
         }
+
         #endregion List attributes
     }
 }

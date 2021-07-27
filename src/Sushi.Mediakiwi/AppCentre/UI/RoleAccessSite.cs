@@ -33,34 +33,33 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// </value>
         public bool IsUserSection { get; set; }
 
-        Task RoleAccessSite_ListLoad(ComponentListEventArgs e)
+        async Task RoleAccessSite_ListLoad(ComponentListEventArgs e)
         {
-            IApplicationRole role = ApplicationRole.SelectOne(e.SelectedGroupItemKey);
+            IApplicationRole role = await ApplicationRole.SelectOneAsync(e.SelectedGroupItemKey).ConfigureAwait(false);
             Role = role.Name;
             IsAccessAllowed = role.IsAccessSite;
 
-            IComponentList list = Mediakiwi.Data.ComponentList.SelectOne(e.SelectedGroupKey);
+            IComponentList list = await Mediakiwi.Data.ComponentList.SelectOneAsync(e.SelectedGroupKey).ConfigureAwait(false);
             IsUserSection = (list.Type == ComponentListType.Users);
             if (IsUserSection)
             {
-                var user = ApplicationUser.SelectOne(e.SelectedGroupItemKey);
+                var user = await ApplicationUser.SelectOneAsync(e.SelectedGroupItemKey).ConfigureAwait(false);
                 User = user.Displayname;
             }
-            return Task.CompletedTask;
         }
 
         /// <summary>
         /// Gets or sets the user.
         /// </summary>
         /// <value>The user.</value>
-        [OnlyVisibleWhenTrue("IsUserSection"), Framework.ContentListItem.TextLine("User", Expression = OutputExpression.Alternating)]
+        [OnlyVisibleWhenTrue(nameof(IsUserSection)), Framework.ContentListItem.TextLine("User", Expression = OutputExpression.Alternating)]
         public string User { get; set; }
 
         /// <summary>
         /// Gets or sets the role.
         /// </summary>
         /// <value>The role.</value>
-        [OnlyVisibleWhenTrue("IsUserSection", false), Framework.ContentListItem.TextLine("Role", Expression = OutputExpression.Alternating)]
+        [OnlyVisibleWhenTrue(nameof(IsUserSection), false), Framework.ContentListItem.TextLine("Role", Expression = OutputExpression.Alternating)]
         public string Role { get; set; }
 
         /// <summary>
@@ -69,7 +68,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// <value>
         /// 	<c>true</c> if this instance is access allowed; otherwise, <c>false</c>.
         /// </value>
-        [OnlyVisibleWhenTrue("IsUserSection", false)]
+        [OnlyVisibleWhenTrue(nameof(IsUserSection), false)]
         [Framework.ContentListItem.Choice_Checkbox("Grant access", true, "Checked selection means 'access granted', unchecked means 'access denied'", Expression = OutputExpression.Alternating)]
         public bool IsAccessAllowed { get; set; }
 
@@ -83,27 +82,31 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// <summary>
         /// Handles the ListAction event of the RoleAccessSite control.
         /// </summary>
-        /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="ComponentActionEventArgs"/> instance containing the event data.</param>
-        Task RoleAccessSite_ListAction(ComponentActionEventArgs e)
+        async Task RoleAccessSite_ListAction(ComponentActionEventArgs e)
         {
             if (IsUserSection)
             {
                 var datalist = wim.Grid.GetRadioValue("HasAccess");
-
-                var user = ApplicationUser.SelectOne(e.SelectedGroupItemKey);
-
-                System.Collections.Generic.Dictionary<int, Access> dict = 
-                    new System.Collections.Generic.Dictionary<int, Access>();
+                var user = await ApplicationUser.SelectOneAsync(e.SelectedGroupItemKey).ConfigureAwait(false);
+                var dict = new System.Collections.Generic.Dictionary<int, Access>();
 
                 foreach (var item in datalist)
                 {
-                    dict.Add(item.Key,
-                        item.Value.Equals("Denied") ? Access.Denied :
-                        item.Value.Equals("Granted") ? Access.Granted :
-                        Access.Inherit);
+                    Access acc = Access.Inherit;
+                    if (item.Value.Equals("Denied", System.StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        acc = Access.Denied;
+                    }
+                    else if (item.Value.Equals("Granted", System.StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        acc = Access.Granted;
+                    }
+
+                    dict.Add(item.Key, acc);
                 }
-                RoleRight.Update(dict, RoleRightType.SiteByUser, user.ID);
+
+                await RoleRight.UpdateAsync(dict, RoleRightType.SiteByUser, user.ID).ConfigureAwait(false);
 
                 //user.IsGrantedSite = IsAccessAllowed;
                 //user.Save();
@@ -112,20 +115,22 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             else
             {
                 int[] checklist = wim.Grid.GetCheckboxChecked("HasAccess");
-                IApplicationRole role = ApplicationRole.SelectOne(e.SelectedGroupItemKey);
+                IApplicationRole role = await ApplicationRole.SelectOneAsync(e.SelectedGroupItemKey).ConfigureAwait(false);
                 role.IsAccessSite = IsAccessAllowed;
-                role.Save();
 
-                RoleRight.Update(checklist, RoleRightType.Site, role.ID);
+                await role.SaveAsync().ConfigureAwait(false);
+                await RoleRight.UpdateAsync(checklist, RoleRightType.Site, role.ID).ConfigureAwait(false);
             }
-            return Task.CompletedTask;
         }
 
         Mediakiwi.Data.Site[] m_AccessList;
-        bool GetRoleGrantedAccess(IApplicationUser user, int siteID)
+
+        async Task<bool> GetRoleGrantedAccessAsync(IApplicationUser user, int siteID)
         {
             if (m_AccessList == null)
-                m_AccessList = user.Sites(AccessFilter.RoleBased);
+            {
+                m_AccessList = await user.SitesAsync(AccessFilter.RoleBased).ConfigureAwait(false);
+            }
 
             int len = (from item in m_AccessList where item.ID == siteID select item).ToArray().Length;
             return len == 0 ? false : true;
@@ -134,38 +139,39 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// <summary>
         /// Handles the ListSearch event of the RoleAccessSite control.
         /// </summary>
-        /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="ComponentListSearchEventArgs"/> instance containing the event data.</param>
-        Task RoleAccessSite_ListSearch(ComponentListSearchEventArgs e)
+        async Task RoleAccessSite_ListSearch(ComponentListSearchEventArgs e)
         {
-            IComponentList list = Mediakiwi.Data.ComponentList.SelectOne(e.SelectedGroupKey);
+            IComponentList list = await Mediakiwi.Data.ComponentList.SelectOneAsync(e.SelectedGroupKey).ConfigureAwait(false);
             IsUserSection = (list.Type == ComponentListType.Users);
 
             wim.CurrentList.Option_Search_MaxResultPerPage = 500;
-            
             wim.SearchListCanClickThrough = false;
-            wim.ListDataColumns.Add("ID", "ID", ListDataColumnType.UniqueIdentifier);
-            wim.ListDataColumns.Add("Name", "Name", ListDataColumnType.HighlightPresent);
+
+            wim.ListDataColumns.Add(new ListDataColumn("ID", nameof(Mediakiwi.Data.Site.ID), ListDataColumnType.UniqueIdentifier));
+            wim.ListDataColumns.Add(new ListDataColumn("Name", nameof(Mediakiwi.Data.Site.Name), ListDataColumnType.HighlightPresent));
 
             if (IsUserSection)
             {
-                wim.ListDataColumns.Add("Granted", "HasAccess", ListDataColumnType.RadioBox, 60);
-                wim.ListDataColumns.Add("Denied", "HasAccess", ListDataColumnType.RadioBox, 60);
-                wim.ListDataColumns.Add("Inherit", "HasAccess", ListDataColumnType.RadioBox, 60);
+                wim.ListDataColumns.Add(new ListDataColumn("Granted", "HasAccess", ListDataColumnType.RadioBox) { ColumnWidth = 60 });
+                wim.ListDataColumns.Add(new ListDataColumn("Denied", "HasAccess", ListDataColumnType.RadioBox) { ColumnWidth = 60 });
+                wim.ListDataColumns.Add(new ListDataColumn("Inherit", "HasAccess", ListDataColumnType.RadioBox) { ColumnWidth = 60 });
+                wim.ListDataColumns.Add(new ListDataColumn("Role", "RoleStatus") { ColumnWidth = 30 });
 
-                wim.ListDataColumns.Add("Role", "RoleStatus", 30);
-                var user = ApplicationUser.SelectOne(e.SelectedGroupItemKey);
+                var user = await ApplicationUser.SelectOneAsync(e.SelectedGroupItemKey).ConfigureAwait(false);
+                var allSites = await Mediakiwi.Data.Site.SelectAllAsync().ConfigureAwait(false);
+                var allRoleRights = await RoleRight.SelectAllAsync(user.ID, RoleRightType.SiteByUser).ConfigureAwait(false);
 
-                var selection =
-                    from item in Mediakiwi.Data.Site.SelectAll()
-                    join relation in RoleRight.SelectAll(user.ID, RoleRightType.SiteByUser) on item.ID equals relation.ItemID
+                var selection = 
+                    from item in allSites
+                    join relation in allRoleRights on item.ID equals relation.ItemID
                     into combination
                     from relation in combination.DefaultIfEmpty()
                     select new {
                         item.ID,
                         item.Name,
                         HasRoleReference = (relation == null ? false : true),
-                        RoleStatus = GetRoleGrantedAccess(user, item.ID),
+                        RoleStatus = GetRoleGrantedAccessAsync(user, item.ID),
                         AccessType = (relation == null ? Access.Inherit : relation.AccessType)
                     };
 
@@ -179,38 +185,48 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             {
                 if (IsAccessAllowed)
                 {
-                    wim.ListDataColumns.Add("Granted", "HasAccess", ListDataColumnType.Checkbox, 60);
+                    wim.ListDataColumns.Add(new ListDataColumn("Granted", "HasAccess", ListDataColumnType.Checkbox) { ColumnWidth = 60 });
                 }
                 else
-                    wim.ListDataColumns.Add("Denied", "HasAccess", ListDataColumnType.Checkbox, 60);
-
+                {
+                    wim.ListDataColumns.Add(new ListDataColumn("Denied", "HasAccess", ListDataColumnType.Checkbox) { ColumnWidth = 60 });
+                }
 
                 ApplicationUser temp = new ApplicationUser();
                 temp.RoleID = e.SelectedGroupItemKey;
-                IApplicationRole role = temp.Role();
+                IApplicationRole role = await temp.RoleAsync().ConfigureAwait(false);
 
-                var allowed = role.Sites(temp);
+                var allowed = await role.SitesAsync(temp).ConfigureAwait(false);
+                var allSites = await Mediakiwi.Data.Site.SelectAllAsync(true).ConfigureAwait(false);
 
                 var selection =
-                    from item in Mediakiwi.Data.Site.SelectAll(true)
+                    from item in allSites
                     join relation in allowed on item.GUID equals relation.GUID
                     into combination
                     from relation in combination.DefaultIfEmpty()
-                    select new { ID = item.ID, Name = item.Name, HasAccess = relation == null ? false : true };
+                    select new 
+                    { 
+                        ID = item.ID, 
+                        Name = item.Name, 
+                        HasAccess = relation == null ? false : true 
+                    };
 
                 foreach (var item in selection)
                 {
                     if (role.IsAccessSite)
                     {
                         if (item.HasAccess)
+                        {
                             wim.Grid.AddCheckboxValue("HasAccess", item.ID, true);
+                        }
                     }
                     else if (!item.HasAccess)
+                    {
                         wim.Grid.AddCheckboxValue("HasAccess", item.ID, true);
+                    }
                 }
                 wim.ListDataAdd(selection);
             }
-            return Task.CompletedTask;
         }
 
         /// <summary>
