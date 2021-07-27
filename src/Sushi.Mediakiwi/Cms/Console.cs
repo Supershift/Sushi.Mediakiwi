@@ -81,11 +81,6 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
             return GetSafeGet(name, false);
         }
 
-        public string GetSafeUrl()
-        {
-            return WimPagePath;
-            //return UrlBuild.GetUrl();
-        }
 
         /// <summary>
         /// Gets the safe get.

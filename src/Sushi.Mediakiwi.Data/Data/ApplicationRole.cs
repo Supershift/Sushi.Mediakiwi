@@ -371,6 +371,15 @@ namespace Sushi.Mediakiwi.Data
         }
 
         /// <summary>
+        /// Gets the sites Async.
+        /// </summary>
+        /// <value>The sites.</value>
+        public async Task<Site[]> SitesAsync(IApplicationUser user)
+        {
+            return await Site.SelectAllAccessibleAsync(user, AccessFilter.RoleAndUser).ConfigureAwait(false);
+        }
+
+        /// <summary>
         /// Gets the lists.
         /// </summary>
         /// <value>The lists.</value>
