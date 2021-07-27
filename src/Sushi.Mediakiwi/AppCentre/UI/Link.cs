@@ -168,16 +168,10 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
 
         #region List Delete
 
-        Task Link_ListDelete(ComponentListEventArgs e)
+        async Task Link_ListDelete(ComponentListEventArgs e)
         {
-            // [MR:19-07-2021] Can be removed ?
-            //  Do not remove
-            //Sushi.Mediakiwi.Data.Link link = Sushi.Mediakiwi.Data.Implement.SelectOne(e.SelectedKey);
-            //Implement.Delete();
-
+            await Implement.DeleteAsync().ConfigureAwait(false);
             wim.OnDeleteScript = "<script type=\"text/javascript\">parent.removeLink();</script>";
-
-            return Task.CompletedTask;
         }
 
         #endregion List Delete

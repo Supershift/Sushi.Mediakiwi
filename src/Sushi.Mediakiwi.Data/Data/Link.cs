@@ -216,5 +216,13 @@ namespace Sushi.Mediakiwi.Data
             await connector.SaveAsync(this).ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Saves this instance Async
+        /// </summary>
+        public async Task DeleteAsync()
+        {
+            var connector = ConnectorFactory.CreateConnector<Link>();
+            await connector.DeleteAsync(this).ConfigureAwait(false);
+        }
     }
 }
