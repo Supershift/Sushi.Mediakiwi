@@ -8,18 +8,20 @@
         }
         public ListItem(object text)
         {
-            this.Text = text.ToString();
-            this.Value = this.Text;
+            Text = text.ToString();
+            Value = Text;
         }
+
         public ListItem(string text)
         {
-            this.Text = text;
-            this.Value = text;
+            Text = text;
+            Value = text;
         }
+
         public ListItem(string text, string value)
         {
-            this.Text = text;
-            this.Value = value;
+            Text = text;
+            Value = value;
         }
 
         public string Text { get; set; }

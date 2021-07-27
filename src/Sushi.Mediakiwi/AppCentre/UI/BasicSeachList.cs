@@ -15,10 +15,10 @@ namespace Sushi.Mediakiwi.AppCentre.Data
         [Framework.ContentListSearchItem.TextField("Search for", 50, AutoPostBack = false, Expression = OutputExpression.Alternating)]
         public string FilterText { get; set; }
 
-        [Framework.ContentListSearchItem.Choice_Dropdown("Type", "FilterTypes", false, false, Expression = OutputExpression.Alternating)]
+        [Framework.ContentListSearchItem.Choice_Dropdown("Type", nameof(FilterTypes), false, false, Expression = OutputExpression.Alternating)]
         public int? FilterType { get; set; }
 
-        [Framework.ContentListSearchItem.Choice_Dropdown("Channel", "SearchSites", false, false, Expression = OutputExpression.Right)]
+        [Framework.ContentListSearchItem.Choice_Dropdown("Channel", nameof(SearchSites), false, false, Expression = OutputExpression.Right)]
         public int? FilterSite { get; set; }
 
         private ListItemCollection m_SearchSites;
@@ -30,18 +30,17 @@ namespace Sushi.Mediakiwi.AppCentre.Data
         {
             get
             {
-                if (m_SearchSites != null) return m_SearchSites;
-
-                m_SearchSites = new ListItemCollection();
-                ListItem li;
-                m_SearchSites.Add(new ListItem("", ""));
-
-                foreach (Mediakiwi.Data.Site site in Mediakiwi.Data.Site.SelectAll())
+                if (m_SearchSites == null)
                 {
-                    //if (site.MasterID.GetValueOrDefault() > 0) continue;
-                    li = new ListItem(site.Name, site.ID.ToString());
-                    m_SearchSites.Add(li);
+                    m_SearchSites = new ListItemCollection();
+                    m_SearchSites.Add(new ListItem("", ""));
+
+                    foreach (Mediakiwi.Data.Site site in Mediakiwi.Data.Site.SelectAll())
+                    {
+                        m_SearchSites.Add(new ListItem(site.Name, $"{site.ID}"));
+                    }
                 }
+
                 return m_SearchSites;
             }
         }
@@ -75,17 +74,19 @@ namespace Sushi.Mediakiwi.AppCentre.Data
         async Task BasicSeachList_ListSearch(ComponentListSearchEventArgs e)
         {
             wim.CanAddNewItem = true;
-            wim.ListDataColumns.Add(new ListDataColumn("ID", "ID", ListDataColumnType.UniqueIdentifier));
-            wim.ListDataColumns.Add(new ListDataColumn("Title", "Title"));
-            wim.ListDataColumns.Add(new ListDataColumn("", "TitleHighlighted", ListDataColumnType.Highlight));
-            
-            wim.ListDataColumns.Add(new ListDataColumn("Description", "Description"));
-            wim.ListDataColumns.Add(new ListDataColumn("Type", "Type") { ColumnWidth = 70 } );
+            wim.ListDataColumns.Add(new ListDataColumn("ID", nameof(Mediakiwi.Data.SearchView.ID), ListDataColumnType.UniqueIdentifier));
+            wim.ListDataColumns.Add(new ListDataColumn("Title", nameof(Mediakiwi.Data.SearchView.Title)));
+            wim.ListDataColumns.Add(new ListDataColumn("", nameof(Mediakiwi.Data.SearchView.TitleHighlighted), ListDataColumnType.Highlight));
+            wim.ListDataColumns.Add(new ListDataColumn("Description", nameof(Mediakiwi.Data.SearchView.Description)));
+            wim.ListDataColumns.Add(new ListDataColumn("Type", nameof(Mediakiwi.Data.SearchView.Type)) { ColumnWidth = 70 } );
 
             if (string.IsNullOrEmpty(FilterText) && FilterType.GetValueOrDefault(0) == 0)
+            {
                 return;
+            }
 
-            wim.ListDataAdd(await Mediakiwi.Data.SearchView.SelectAllAsync(FilterSite, FilterType, FilterText));
+            var results = await Mediakiwi.Data.SearchView.SelectAllAsync(FilterSite, FilterType, FilterText).ConfigureAwait(false);
+            wim.ListDataAdd(results);
         }
     }
 }

@@ -3,6 +3,7 @@ using Sushi.Mediakiwi.UI;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Text;
 
 namespace Sushi.Mediakiwi.AppCentre.Data.Implementation.Forms
 {
@@ -19,10 +20,10 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation.Forms
 
             Map(x => x.SiteID).Dropdown("Channel", "Sites", true, true).Expression(OutputExpression.Alternating);
 
-            Map(x => x.AssemblyName).Dropdown("Assembly", "Assemblies", true, true).Expression(OutputExpression.Alternating);
+            Map(x => x.AssemblyName).Dropdown("Assembly", nameof(Assemblies), true, true).Expression(OutputExpression.Alternating);
             Map(x => x.FolderID).FolderSelect("Folder", true, Mediakiwi.Data.FolderType.Administration_Or_List).Expression(OutputExpression.Alternating);
 
-            Map(x => x.ClassName).Dropdown("Class", "Classes", true).Expression(OutputExpression.Alternating);
+            Map(x => x.ClassName).Dropdown("Class", nameof(Classes), true).Expression(OutputExpression.Alternating);
 
             Map(x => x.Icon).TextField("Icon", 50).Expression(OutputExpression.Alternating);
             Map(x => x.GUID).TextField("GUID", 36, true).Expression(OutputExpression.Alternating);
@@ -78,17 +79,16 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation.Forms
             get
             {
                 if (m_Sites != null)
+                {
                     return m_Sites;
+                }
 
                 m_Sites = new ListItemCollection();
-                ListItem li;
-
                 m_Sites.Add(new ListItem("", ""));
 
                 foreach (Mediakiwi.Data.Site site in Mediakiwi.Data.Site.SelectAll(false))
                 {
-                    li = new ListItem(site.Name, site.ID.ToString());
-                    m_Sites.Add(li);
+                    m_Sites.Add(new ListItem(site.Name, $"{site.ID}"));
                 }
                 return m_Sites;
             }
@@ -103,14 +103,13 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation.Forms
             get
             {
                 ListItemCollection col = new ListItemCollection();
-                ListItem li;
 
                 string exclude = "aspose,cuteeditor,ephtmltopdf,wim.syncfusion,winnovative.webchart,app_,netspell,intersystems,nunit,syncfusion,system,htmlagility,microsoft,newtonsoft";
                 string[] list = exclude.Split(',');
 
                 var file = Assembly.GetExecutingAssembly().ManifestModule.Name;
                 var folder = Assembly.GetExecutingAssembly().Location;
-                var directory = folder.Replace(file, string.Empty);
+                var directory = folder.Replace(file, string.Empty, StringComparison.InvariantCultureIgnoreCase);
 
                 System.IO.DirectoryInfo dir = new System.IO.DirectoryInfo(directory);
                 try
@@ -126,9 +125,11 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation.Forms
                                 break;
                             }
                         }
-                        if (skip) continue;
-                        li = new ListItem(info.Name);
-                        col.Add(li);
+                        if (skip)
+                        {
+                            continue;
+                        }
+                        col.Add(new ListItem(info.Name));
                     }
                 }
                 catch(Exception ex)
@@ -147,15 +148,16 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation.Forms
         {
             get
             {
-                
-
                 ListItemCollection col = new ListItemCollection();
-               
-                if (string.IsNullOrEmpty(Instance.AssemblyName)) return col;
+
+                if (string.IsNullOrEmpty(Instance.AssemblyName))
+                {
+                    return col;
+                }
 
                 var file = Assembly.GetExecutingAssembly().ManifestModule.Name;
                 var folder = Assembly.GetExecutingAssembly().Location;
-                var directory = folder.Replace(file, string.Empty);
+                var directory = folder.Replace(file, string.Empty, StringComparison.InvariantCultureIgnoreCase);
 
                 string assemblyLoadName = string.Concat(directory, Instance.AssemblyName);
 
@@ -167,14 +169,24 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation.Forms
                 {
                     foreach (Type type in assem.GetTypes())
                     {
-                        if (type.BaseType == null) continue;
+                        if (type.BaseType == null)
+                        {
+                            continue;
+                        }
                         Type innerType = type.BaseType;
                         while (innerType != null)
                         {
-                            if (innerType == typeof(ComponentListTemplate)) break;
+                            if (innerType == typeof(ComponentListTemplate))
+                            {
+                                break;
+                            }
+
                             innerType = innerType.BaseType;
                         }
-                        if (innerType != typeof(ComponentListTemplate)) continue;
+                        if (innerType != typeof(ComponentListTemplate))
+                        {
+                            continue;
+                        }
 
                         //  [20090410(MM): Exception introduced to avoid Generic selection. This can(should) be stripped in later versions]
                         if (type.FullName == "Wim.Templates.Templates.UI.GenericList"
@@ -196,10 +208,13 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation.Forms
                 }
                 catch (ReflectionTypeLoadException ex)
                 {
-                    string messages = "";
+                    StringBuilder messages = new StringBuilder();
                     foreach (Exception ex2 in ex.LoaderExceptions)
-                        messages += ex2.Message;
-                    throw new Exception(messages, ex);
+                    {
+                        messages.Append(ex2.Message);
+                    }
+
+                    throw new Exception(messages.ToString(), ex);
                 }
             }
         }

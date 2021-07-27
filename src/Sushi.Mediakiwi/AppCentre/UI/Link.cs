@@ -284,15 +284,14 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
 
             wim.SetPropertyVisibility(nameof(LinkForm.Apply), false);
 
-            // [MR:19-07-2021] Can be removed ?
-            //if (Request.Query["referid"] == "tmce")
-            //{
-            //    if (false)//!wim.CurrentApplicationUser.ShowNewDesign2)
-            //    {
-            //        wim.OnLoadScript = $"<script type=\"text/javascript\" src=\"{wim.AddApplicationPath("repository/wim/scripts/rte/tiny_mce_popup.js")}\"></script>";
-            //        wim.OnLoadScript += $"<script type=\"text/javascript\" src=\"{wim.AddApplicationPath("repository/wim/scripts/rte/plugins/advlink/js/advImplement.js")}\"></script>";
-            //    }
-            //}
+            if (Request.Query["referid"] == "tmce")
+            {
+                if (false)//!wim.CurrentApplicationUser.ShowNewDesign2)
+                {
+                    wim.OnLoadScript = string.Format("<script type=\"text/javascript\" src=\"{0}\"></script>", wim.AddApplicationPath("repository/wim/scripts/rte/tiny_mce_popup.js"));
+                    wim.OnLoadScript += string.Format("<script type=\"text/javascript\" src=\"{0}\"></script>", wim.AddApplicationPath("repository/wim/scripts/rte/plugins/advlink/js/advImplement.js"));
+                }
+            }
 
             if (Request.Query["notitle"] == "1")
             {

@@ -15,7 +15,6 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// </summary>
         public User()
         {
-            //wim.OpenInEditMode = true;
             ListAction += User_ListAction;
             ListLoad += User_ListLoad;
             ListSave += User_ListSave;
@@ -30,42 +29,48 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             {
                 wim.CurrentVisitor.Data.Apply("Wim.Reset.Me", wim.CurrentApplicationUser.GUID.ToString());
 
-                var tmp = await ApplicationUser.SelectOneAsync(m_Implement.GUID);
+                var tmp = await ApplicationUser.SelectOneAsync(m_Implement.GUID).ConfigureAwait(false);
 
                 if (tmp?.ID > 0)
                 {
                     tmp.LastLoggedVisit = DateTime.UtcNow;
-                    tmp.Save();
+                    await tmp.SaveAsync().ConfigureAwait(false);
 
                     wim.CurrentVisitor.ApplicationUserID = m_Implement.ID;
                     wim.SaveVisit();
 
-                    await new AuditTrail()
+                    var audit = new AuditTrail()
                     {
                         Action = ActionType.Login,
                         Type = ItemType.Undefined,
                         ItemID = wim.CurrentApplicationUser.ID,
                         Message = $"Impersonating [{m_Implement.Email}]",
                         Created = tmp.LastLoggedVisit.Value
-                    }.InsertAsync();
+                    };
 
-                    Response.Redirect(wim.Console.GetSafeUrl());
+                    await audit.InsertAsync().ConfigureAwait(false);
+
+                    Response.Redirect(wim.Console.WimPagePath);
                 }
             }
         }
 
         async Task User_ListDelete(ComponentListEventArgs e)
         {
-            await m_Implement.DeleteAsync();
+            await m_Implement.DeleteAsync().ConfigureAwait(false);
         }
 
         Task User_ListPreRender(ComponentListEventArgs e)
         {
-            if (m_Implement?.HasUserName(this.Name) == true)
-                wim.Notification.AddError("Name", "The applied username already exists");
+            if (m_Implement?.HasUserName(Name) == true)
+            {
+                wim.Notification.AddError(nameof(Name), "The applied username already exists");
+            }
 
-            if (m_Implement?.HasEmail(this.Email) == true)
-                wim.Notification.AddError("Email", "The applied email already exists");
+            if (m_Implement?.HasEmail(Email) == true)
+            {
+                wim.Notification.AddError(nameof(Email), "The applied email already exists");
+            }
 
             return Task.CompletedTask;
         }
@@ -90,7 +95,9 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             wim.ListDataColumns.Add(new ListDataColumn("Active", nameof(IApplicationUser.IsActive)) { ColumnWidth = 30, Alignment = Align.Center });
 
             if (wim.IsCachedSearchResult)
+            {
                 return;
+            }
 
             var data = await ApplicationUser.SelectAllAsync(m_SearchUserName, Utility.ConvertToInt(m_SearchRole)).ConfigureAwait(false);
             wim.ListDataAdd(data);
@@ -116,9 +123,9 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
 
             m_Implement.Password = password;
 
-            if (!string.IsNullOrEmpty(m_Password))
+            if (!string.IsNullOrEmpty(Password))
             {
-                m_Implement.ApplyPassword(m_Password);
+                m_Implement.ApplyPassword(Password);
             }
             else
             {
@@ -133,48 +140,26 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                 }
             }
 
-            m_Implement.ShowFullWidth = this.ShowFullWidth;
-            m_Implement.IsDeveloper = this.IsDeveloper;
-            m_Implement.ShowSiteNavigation = this.ShowSiteNavigation;
+            m_Implement.ShowFullWidth = ShowFullWidth;
+            m_Implement.IsDeveloper = IsDeveloper;
+            m_Implement.ShowSiteNavigation = ShowSiteNavigation;
 
             if (m_Implement.GUID == Guid.Empty)
+            {
                 m_Implement.GUID = Guid.NewGuid();
+            }
 
             m_Implement.RoleID = RoleID;
             m_Implement.IsActive = IsActive;
+           
+            await m_Implement.SaveAsync().ConfigureAwait(false);
 
-            //Parser.Save(m_Implement);
-            
-            await m_Implement.SaveAsync();
-
-            if (this.SendCredentials)
+            if (SendCredentials)
             {
                 m_Implement.SendLoginMail(wim.Console);
             }
         }
 
-        #region SetPasswordMask
-        private void SetPasswordMask()
-        {
-            Content content =
-                Content.GetDeserialized(wim.ComponentListVersion.Serialized_XML);
-
-            foreach (Field field in content.Fields)
-            {
-                //  Replace the password value
-                if (field.Property == "Password")
-                {
-                    field.Value = "******";
-                    break;
-                }
-            }
-
-            wim.ComponentListVersion.Serialized_XML = Content.GetSerialized(content);
-            wim.ComponentListVersion.Save();
-        }
-        #endregion SetPasswordMask
-
-        private string m_tempPassword;
 
         public IApplicationUser m_Implement;
         /// <summary>
@@ -186,37 +171,41 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         {
             if (e.SelectedKey > 0)
             {
-                m_Implement = await ApplicationUser.SelectOneAsync(e.SelectedKey);
-                this.UID = m_Implement.GUID.ToString();
+                m_Implement = await ApplicationUser.SelectOneAsync(e.SelectedKey).ConfigureAwait(false);
+                UID = m_Implement.GUID.ToString();
             }
 
             if (e.SelectedKey == 0)
             {
                 PasswordGenerator gen = new PasswordGenerator();
                 string newPassword = gen.Generate();
-                this.Password = newPassword;
+                Password = newPassword;
                 return;
             }
 
             Utility.ReflectProperty(m_Implement, this);
 
-            m_tempPassword = m_Implement.Password;
-
             if (!wim.IsEditMode && !IsPostBack)
-                m_Password = "******";
+            {
+                Password = "******";
+            }
             else
-                m_Password = null;
+            {
+                Password = null;
+            }
 
-            m_IsActive = m_Implement.IsActive;
-            this.Language = m_Implement.Language;
-            this.ShowSiteNavigation = m_Implement.ShowSiteNavigation;
-            this.ShowFullWidth = m_Implement.ShowFullWidth;
-            this.IsDeveloper = m_Implement.IsDeveloper;
-            if (e.SelectedKey == 0) return;
+            IsActive = m_Implement.IsActive;
+            Language = m_Implement.Language;
+            ShowSiteNavigation = m_Implement.ShowSiteNavigation;
+            ShowFullWidth = m_Implement.ShowFullWidth;
+            IsDeveloper = m_Implement.IsDeveloper;
 
-            //if (!m_Implement.All_Sites)
-                wim.AddTab(new Guid("93D10F58-6A1A-493F-8ADB-E53FC7CEDE19"));
+            if (e.SelectedKey == 0)
+            {
+                return;
+            }
 
+            wim.AddTab(new Guid("93D10F58-6A1A-493F-8ADB-E53FC7CEDE19"));
         }
 
         [Framework.ContentSettingItem.RichText("Login intro", 0)]
@@ -255,67 +244,41 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
 
         #region List attributes
 
-        private string m_Name;
         /// <summary>
         /// Gets or sets the name.
         /// </summary>
         /// <value>The name.</value>
         [OnlyEditableWhenTrue(nameof(IsNewElement))]
         [Framework.ContentListItem.TextField("Username", 50, true, Expression = OutputExpression.Alternating)]
-        public string Name
-        {
-            get { return m_Name;  }
-            set { m_Name = value; }
-        }
+        public string Name { get; set; }
 
-        private string m_Email;
         /// <summary>
         /// Gets or sets the email.
         /// </summary>
         /// <value>The email.</value>
         [Framework.ContentListItem.TextField("Emailaddress", 255, true, Expression = OutputExpression.Alternating)]
-        public string Email
-        {
-            get { return m_Email; }
-            set { m_Email = value; }
-        }
+        public string Email { get; set; }
 
-        private string m_Displayname;
         /// <summary>
         /// Gets or sets the displayname.
         /// </summary>
         /// <value>The displayname.</value>
         [Framework.ContentListItem.TextField("Displayname", 50, true, Expression = OutputExpression.Alternating)]
-        public string Displayname
-        {
-            get { return m_Displayname; }
-            set { m_Displayname = value; }
-        }
+        public string Displayname { get; set; }
 
-        private int m_RoleID;
         /// <summary>
         /// Gets or sets the role.
         /// </summary>
         /// <value>The role.</value>
-        [Framework.ContentListItem.Choice_Dropdown("Role", "AvailableRoles", true, true, Expression = OutputExpression.Alternating)]
-        public int RoleID
-        {
-            get { return m_RoleID; }
-            set { m_RoleID = value; }
-        }
+        [Framework.ContentListItem.Choice_Dropdown("Role", nameof(AvailableRoles), true, true, Expression = OutputExpression.Alternating)]
+        public int RoleID { get; set; }
 
-        private string m_Password;
         /// <summary>
         /// Gets or sets the password.
         /// </summary>
         /// <value>The password.</value>
         //[Sushi.Mediakiwi.Framework.ContentListItem.TextField("Password", 50, false, null, Expression = Sushi.Mediakiwi.Framework.OutputExpression.Alternating)]
-        public string Password
-        {
-            get { return m_Password; }
-            set { m_Password = value; }
-        }
-
+        public string Password { get; set; }
 
         [Framework.ContentListItem.TextField("UID", 50, false, null, Expression = OutputExpression.Alternating)]
         public string UID { get; set; }
@@ -324,21 +287,15 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// Gets or sets the language.
         /// </summary>
         /// <value>The language.</value>
-        [Framework.ContentListItem.Choice_Dropdown("Language", "AvailableLanguages", true, Expression = OutputExpression.Alternating)]
+        [Framework.ContentListItem.Choice_Dropdown("Language", nameof(AvailableLanguages), true, Expression = OutputExpression.Alternating)]
         public int Language { get; set; }
 
-        private bool m_IsActive;
         /// <summary>
         /// Gets or sets a value indicating whether this instance is active.
         /// </summary>
         /// <value><c>true</c> if this instance is active; otherwise, <c>false</c>.</value>
         [Framework.ContentListItem.Choice_Checkbox("Is active", Expression = OutputExpression.Alternating)]
-        public bool IsActive
-        {
-            get { return m_IsActive; }
-            set { m_IsActive = value; }
-        }
-
+        public bool IsActive { get; set; }
        
         //[Sushi.Mediakiwi.Framework.ContentListItem.Choice_Checkbox("Site navigation", Expression = Sushi.Mediakiwi.Framework.OutputExpression.Alternating)]
         public bool ShowSiteNavigation { get; set; }
@@ -346,36 +303,14 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         [Framework.ContentListItem.Choice_Checkbox("Is Developer", Expression = OutputExpression.Alternating)]
         public bool IsDeveloper { get; set; }
 
-        private bool _ForceNewStyle = true;
         //[Sushi.Mediakiwi.Framework.ContentListItem.Choice_Checkbox("Mediakiwi (Beta)", Expression = Sushi.Mediakiwi.Framework.OutputExpression.Alternating)]
-        public bool ForceNewStyle { 
-            get
-            {
-                return _ForceNewStyle;
-            }
-            set
-            {
-                _ForceNewStyle = value;
-            }
-        }
+        public bool ForceNewStyle { get; set; }
 
-        private bool _ForceNewStyle2 = true;
         //[Sushi.Mediakiwi.Framework.ContentListItem.Choice_Checkbox("Mediakiwi (Beta:2)", Expression = Sushi.Mediakiwi.Framework.OutputExpression.Alternating)]
-        public bool ForceNewStyle2
-        {
-            get
-            {
-                return _ForceNewStyle2;
-            }
-            set
-            {
-                _ForceNewStyle2 = value;
-            }
-        }
+        public bool ForceNewStyle2 { get; set; } = true;
 
         //[Sushi.Mediakiwi.Framework.ContentListItem.Choice_Checkbox("Full width", Expression = Sushi.Mediakiwi.Framework.OutputExpression.Alternating)]
         public bool ShowFullWidth { get; set; }
-
 
         /// <summary>
         /// Gets the available roles.
@@ -385,31 +320,11 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         {
             get
             {
-                //Page.Trace.Write("AvailableRoles get{}", string.Format("{0}-{1}", SearchRole, SearchRole2));
                 ListItemCollection collection = new ListItemCollection();
                 collection.Add(new ListItem("Select a role", ""));
-                foreach (ApplicationRole role in ApplicationRole.SelectAll())
+                foreach (var role in ApplicationRole.SelectAll())
                 {
-                    collection.Add(new ListItem(role.Name, role.ID.ToString()));
-                }
-                return collection;
-            }
-        }
-
-        /// <summary>
-        /// Gets the available roles2.
-        /// </summary>
-        /// <value>The available roles2.</value>
-        public ListItemCollection AvailableRoles2
-        {
-            get
-            {
-                //Page.Trace.Write("AvailableRoles2 get{}", string.Format("{0}-{1}", SearchRole, SearchRole2));
-                ListItemCollection collection = new ListItemCollection();
-                collection.Add(new ListItem("Select a role", ""));
-                foreach (ApplicationRole role in ApplicationRole.SelectAll())
-                {
-                    collection.Add(new ListItem(role.Name, role.ID.ToString()));
+                    collection.Add(new ListItem(role.Name, $"{role.ID}"));
                 }
                 return collection;
             }
@@ -423,58 +338,23 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         {
             get
             {
-                //Page.Trace.Write("AvailableLanguages get{}", string.Format("{0}", Role));
                 ListItemCollection collection = new ListItemCollection();
-                ListItem li = new ListItem("English", "1");
-                li.Selected = true;
-                collection.Add(li);
+                collection.Add(new ListItem("English", "1") { Selected = true });
                 collection.Add(new ListItem("Nederlands","2"));
                 return collection;
             }
         }
 
-        private bool m_SendCredentials;
         /// <summary>
         /// Gets or sets a value indicating whether [send credentials].
         /// </summary>
         /// <value><c>true</c> if [send credentials]; otherwise, <c>false</c>.</value>
-        //[Sushi.Mediakiwi.Framework.OnlyVisibleWhenTrue("IsTextMode")]
         [Framework.ContentListItem.Button("", true, ButtonClassName = "flaticon icon-envelope", InteractiveHelp = "Email login details")]
-        public bool SendCredentials
-        {
-            get { return m_SendCredentials; }
-            set { m_SendCredentials = value; }
-        }
+        public bool SendCredentials { get; set; }
 
         [Framework.ContentListItem.Button("", false, ButtonClassName = "flaticon icon-eye-slash", InteractiveHelp = "Impersonate this user")]
         public bool HijackUser { get; set; }
-
-        //private bool m_CreateNewPassword;
-        ///// <summary>
-        ///// Gets or sets a value indicating whether [create new password].
-        ///// </summary>
-        ///// <value><c>true</c> if [create new password]; otherwise, <c>false</c>.</value>
-        //[Sushi.Mediakiwi.Framework.OnlyVisibleWhenTrue("IsNewElement", false)]
-        //[Sushi.Mediakiwi.Framework.ContentListItem.Button("Send new password")]
-        //public bool CreateNewPassword
-        //{
-        //    get { return m_CreateNewPassword;  }
-        //    set { m_CreateNewPassword = value; }
-        //}
-
-        //private Sushi.Mediakiwi.Data.SubList m_Sites;
-        ///// <summary>
-        ///// Gets or sets the sites.
-        ///// </summary>
-        ///// <value>The sites.</value>
-        //[Sushi.Mediakiwi.Framework.ContentListItem.SubListSelect("Channels", "18b297dc-7e01-404d-bc45-bb3ea3eb344e", false, "Select the channels to which this user has access")]
-        //public Sushi.Mediakiwi.Data.SubList Sites
-        //{
-        //    get { return m_Sites; }
-        //    set { m_Sites = value; }
-        //}
-
-
+        
         #endregion List attributes
     }
 }
