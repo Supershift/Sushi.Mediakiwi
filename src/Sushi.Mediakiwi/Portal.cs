@@ -58,7 +58,10 @@ namespace Sushi.Mediakiwi
             if (!Version.HasValue)
             {
                 var comparelogic = new Framework.Functions.DataBaseCompareLogic();
-                await comparelogic.Verify().ConfigureAwait(false);
+                
+                await comparelogic.Verify(WimServerConfiguration.Instance.Sql_Install_Enabled
+                    , WimServerConfiguration.Instance.Sql_Install_Actions_Enabled).ConfigureAwait(false);
+                
                 await comparelogic.Start().ConfigureAwait(false);
 
                 Version = CommonConfiguration.Version;
