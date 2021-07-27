@@ -170,12 +170,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// <param name="e">The <see cref="ComponentListEventArgs"/> instance containing the event data.</param>
         async Task Document_ListDelete(ComponentListEventArgs e)
         {
-            ///m_Implement.CloudDelete();
-
-            //if (m_Implement.IsImage)
-            //    m_Implement.ImageInstance.Delete();
-            //else
-            //m_Implement.Delete();
+            await m_Implement.CompleteDeleteAsync().ConfigureAwait(false);
 
             if (wim.IsLayerMode)
             {
@@ -223,7 +218,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             }
         }
 
-        public virtual BlobPersister GetPersistor
+        public BlobPersister GetPersistor
         {
             get { return new BlobPersister(); }
         }
@@ -254,6 +249,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
 
                 if (_Form.File.File.ContentType.Equals("image/jpeg", System.StringComparison.InvariantCultureIgnoreCase) ||
                    _Form.File.File.ContentType.Equals("image/jpg", System.StringComparison.InvariantCultureIgnoreCase) ||
+                   _Form.File.File.ContentType.Equals("image/gif", System.StringComparison.InvariantCultureIgnoreCase) ||
                    _Form.File.File.ContentType.Equals("image/png", System.StringComparison.InvariantCultureIgnoreCase))
                 {
                     m_Implement.IsImage = true;
@@ -267,7 +263,6 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                 var upload = await GetPersistor.UploadAsync(_Form.File.File.OpenReadStream(), WimServerConfiguration.Instance?.Azure_Image_Container, _Form.File.File.FileName, _Form.File.File.ContentType).ConfigureAwait(false);
                 m_Implement.RemoteLocation = $"{WimServerConfiguration.Instance?.Azure_Cdn_Uri}{upload.Uri.PathAndQuery}";
             }
-
             await m_Implement.SaveAsync().ConfigureAwait(false);
 
             string info = null;
@@ -286,7 +281,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             }
             else
             {
-                wim.Page.Body.Form.PostDataToSubSelect(currentAsset.ID, info);
+                wim.Page.Body.Form.PostDataToSubSelect(currentAsset.ID, info, editUrl: wim.GetUrl(new KeyValue[] { new KeyValue("item", currentAsset.ID) } ), listTitle: wim.ListTitle);
             }
         }
 
@@ -440,6 +435,8 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             int rootAsset = Utility.ConvertToInt(Request.Query["base"], e.SelectedKey);
             bool isAlternativeImage = !string.IsNullOrEmpty(Request.Query["base"]);
             var alternativeTypeID = Utility.ConvertToIntNullable(Request.Query["sat"]);
+            var isImage = Utility.ConvertToInt(Request.Query["isimage"], 0) == 1;
+            var galleryId = Utility.ConvertToInt(Request.Query["gallery"], 0);
 
             wim.SetPropertyVisibility(nameof(ButtonAlternative), false);
             wim.SetPropertyVisibility(nameof(AssetTypeSelectionList), false);
@@ -545,7 +542,17 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             }
 
             m_Implement = await Asset.SelectOneAsync(e.SelectedKey).ConfigureAwait(false);
-            _Form = new DocumentForm(m_Implement);
+
+            // If we land here from a gallery upload, preselect that gallery
+            if (galleryId > 0 && (m_Implement == null || m_Implement.ID == 0))
+            {
+                m_Implement = new Asset()
+                {
+                    GalleryID = galleryId
+                };
+            }
+
+            _Form = new DocumentForm(m_Implement, isImage);
             FormMaps.Add(_Form);
         }
 

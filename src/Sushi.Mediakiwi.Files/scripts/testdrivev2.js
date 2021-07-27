@@ -682,33 +682,69 @@ $(document).ready(function () {
         var idv = $(this).attr('id');
         var sel = $(this).attr('value');
         var multiple = $(this).attr('data-multiple');
+        var editUrl = $(this).attr('data-editurl');
+        var editTitle = $(this).attr('data-listtitle');
         var ref = $(this).attr('data-target');
+
         if (ref == undefined)
             ref = getUrlVars()["referid"];
 
         var val = idv + '|' + sel;
         if (ref != undefined) {
-            /* Remove the _ at the begin */
-            //var put = ref + '$' + idv;
+
             var put = ref.substring(1, ref.length) + '$' + idv;
             var pnt = '#' + ref;
             var att = parent.$(pnt).attr('class');
             if (att != undefined) {
-                var loc = att.indexOf('single');
+                var isSingle = att.indexOf('single') > -1;
                 var addOnTop = att.indexOf('newItemsOnTop');
                 console.log('Add on top : ' + addOnTop);
 
-                if (multiple != '1') {
-                    if (loc > -1) parent.$(pnt + ' li').remove();
-                    parent.$(pnt).append('<li class="ui-state-default">' + sel + '<figure class="flaticon solid x-1 icon check del"> <input type="hidden" id="' + put + '" name="' + put + '" value="' + val + '" /> </li>');
+                if (multiple != '1' && isSingle) {
+                    var existingInput = parent.$(pnt).find(' > li > input').get(0);
+                    var existingLink = parent.$(pnt).find(' > li > a').get(0);
+
+                    // update existing Input field (if any)
+                    if (existingInput) {
+                        $(existingInput).attr('id', put);
+                        $(existingInput).attr('name', put);
+                        $(existingInput).attr('value', val);
+                    }
+
+                    // Update existing link (if any)
+                    if (existingLink) {
+                        $(existingLink).html(sel);
+                    }
+
+                    // When both dont exist, add them
+                    if (!existingInput && !existingLink) {
+                        var newEl = '<li class="instant">';
+
+                        // Did we receive the edit list url ? Create a link if we did
+                        if (editUrl) {
+                            newEl += `<a class="openlayer" data-layer="width:790px,height:450px,iframe:true,scrolling:false" title="${editTitle}" href="${editUrl}">${sel}</a>`;
+                        }
+                        // Else just add the selected value
+                        else {
+                            newEl += sel;
+                        }
+
+                        // Add remove link and hidden input
+                        newEl += `<figure class="icon-x del"></figure> <input type="hidden" id="${put}" name="${put}" value="${val}" /> </li>`;
+
+                        // Add element to parent
+                        parent.$(pnt).append(newEl);
+                    }
                 }
                 else {
 
                     // Add new items on top, instead of bottom
-                    if (addOnTop > -1)
+                    if (addOnTop > -1) {
                         parent.$(pnt).prepend('<li class="ui-state-default">' + sel + '<figure class="icon-x del"> <input type="hidden" id="' + put + '" name="' + put + '" value="' + val + '" /> </li>');
-                    else
+                    }
+                    else {
                         parent.$(pnt).append('<li class="ui-state-default">' + sel + '<figure class="icon-x del"> <input type="hidden" id="' + put + '" name="' + put + '" value="' + val + '" /> </li>');
+                    }
                 }
             }
         }

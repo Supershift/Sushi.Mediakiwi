@@ -5,20 +5,27 @@ namespace Sushi.Mediakiwi.AppCentre.UI.Forms
 {
     public class DocumentForm : FormMap<Asset>
     {
-        public DocumentForm(Asset asset)
+        public DocumentForm(Asset asset, bool isImage)
         {
             Load(asset);
 
             if (asset.ID == 0)
             {
-                Map(x => x.File, this).FileUpload("Upload", true, "image/*");
+                if (isImage)
+                {
+                    Map(x => x.File, this).FileUpload("Upload", true, "image/*");
+                }
+                else
+                {
+                    Map(x => x.File, this).FileUpload("Upload", true);
+                }
 
-                Map(x => x.Title).TextField("Title", 255, false);
+                Map(x => x.Title).TextField("Title", 255);
                 Map(x => x.Description).TextArea("Description");
             }
             else
             {
-                Map(x => x.Title).TextField("Title", 255, false);
+                Map(x => x.Title).TextField("Title", 255);
                 Map(x => x.Description).TextArea("Description");
                 Map(x => x.File, this).FileUpload("Upload");
             }
@@ -31,7 +38,7 @@ namespace Sushi.Mediakiwi.AppCentre.UI.Forms
             if (File != null && File.File != null)
             {
                 Instance.Type = File.File.ContentType;
-                Instance.Extention = File.File.FileName.Substring(File.File.FileName.LastIndexOf("."));
+                Instance.Extention = File.File.FileName.Substring(File.File.FileName.LastIndexOf('.'));
                 Instance.FileName = File.File.FileName;
                 Instance.Size = File.File.Length;
 

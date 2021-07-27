@@ -376,9 +376,11 @@ namespace Sushi.Mediakiwi.Framework
         /// <param name="value">The value.</param>
         /// <param name="canAddMultiple">Should to be added or replace the existing value?</param>
         /// <param name="dataTarget">The target, if not set this will be taken from the querystring (referID), this is the ID of the field</param>
-        public void PostDataToSubSelect(int id, string value, bool canAddMultiple = false, string dataTarget = null)
+        /// <param name="editUrl">The URL where this item can be changed</param>
+        /// <param name="listTitle">The title of the Edit list</param>
+        public void PostDataToSubSelect(int id, string value, bool canAddMultiple = false, string dataTarget = null, string editUrl = null, string listTitle = null)
         {
-            PostDataToSubSelect(id.ToString(), value, canAddMultiple, dataTarget);
+            PostDataToSubSelect(id.ToString(), value, canAddMultiple, dataTarget, editUrl, listTitle);
         }
 
         /// <summary>
@@ -388,7 +390,9 @@ namespace Sushi.Mediakiwi.Framework
         /// <param name="value">The value.</param>
         /// <param name="canAddMultiple">Should to be added or replace the existing value?</param>
         /// <param name="dataTarget">The target, if not set this will be taken from the querystring (referID), this is the ID of the field</param>
-        public void PostDataToSubSelect(string id, string value, bool canAddMultiple = false, string dataTarget = null)
+        /// <param name="editUrl">The URL where this item can be changed</param>
+        /// <param name="listTitle">The title of the Edit list</param>
+        public void PostDataToSubSelect(string id, string value, bool canAddMultiple = false, string dataTarget = null, string editUrl = null, string listTitle = null)
         {
             if (_instance.OnSaveScript == null)
             {
@@ -396,8 +400,10 @@ namespace Sushi.Mediakiwi.Framework
             }
 
             var target = dataTarget != null ? $@" data-target=""{dataTarget}""" : null;
+            var url = string.IsNullOrWhiteSpace(editUrl) ? null : $@" data-editurl=""{Uri.EscapeUriString(Utility.CleanUrl(editUrl))}""";
+            var title = string.IsNullOrWhiteSpace(listTitle) ? null : $@" data-listtitle=""{listTitle}""";
 
-            _instance.OnSaveScript += $@"<input type=""hidden"" class=""postparent""{(canAddMultiple ? @" data-multiple=""1""" : null)}{target} id=""{id}"" value=""{value}"" />";
+            _instance.OnSaveScript += $@"<input type=""hidden"" class=""postparent""{(canAddMultiple ? @" data-multiple=""1""" : null)}{target}{url}{title} id=""{id}"" value=""{value}"" />";
         }
 
         /// <summary>
