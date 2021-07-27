@@ -11,7 +11,9 @@ namespace Sushi.Mediakiwi.Persistors
     {
         public BlobPersister() : this(Data.Common.GetConnection("azurestore"))
         {
+
         }
+
         public BlobPersister(string connectionString)
         {
             ConnectionString = connectionString;
@@ -35,10 +37,32 @@ namespace Sushi.Mediakiwi.Persistors
 
         public async Task<bool> ExistsAsync(string containerName, string blobName)
         {
-            var blobReference = await GetBlockBlobReferenceAsync(containerName, blobName);
-            return await blobReference.ExistsAsync();
+            var blobReference = await GetBlockBlobReferenceAsync(containerName, blobName).ConfigureAwait(false);
+            return await blobReference.ExistsAsync().ConfigureAwait(false);
         }
 
+        public async Task<BlobClient> GetBlockBlobReferenceAsync(string blobName)
+        {
+            if (string.IsNullOrWhiteSpace(Data.Configuration.WimServerConfiguration.Instance?.Azure_Image_Container) == false)
+            {
+                string containerName = Data.Configuration.WimServerConfiguration.Instance?.Azure_Image_Container;
+                try
+                {
+                    return await GetBlockBlobReferenceAsync(containerName, blobName).ConfigureAwait(false);
+                }
+                catch (Exception ex)
+                {
+                    await Data.Notification.InsertOneAsync(nameof(BlobPersister), ex).ConfigureAwait(false);
+                    return null;
+                }
+            }
+            else
+            {
+                await Data.Notification.InsertOneAsync(nameof(BlobPersister), "Azure_Image_Container is empty").ConfigureAwait(false);
+                return null;
+            }
+        }
+            
         public async Task<BlobClient> GetBlockBlobReferenceAsync(string containerName, string blobName)
         {
             var storageAccount = new BlobContainerClient(ConnectionString, containerName);
@@ -56,8 +80,8 @@ namespace Sushi.Mediakiwi.Persistors
                 info.HttpHeaders.ContentType = contentType;
             }
 
-            var blob = await GetBlockBlobReferenceAsync(container, blobName);
-            var data = await blob.UploadAsync(stream, info);
+            var blob = await GetBlockBlobReferenceAsync(container, blobName).ConfigureAwait(false);
+            await blob.UploadAsync(stream, info).ConfigureAwait(false);
             return blob;
         }
 
@@ -65,19 +89,18 @@ namespace Sushi.Mediakiwi.Persistors
         {
             var storageAccount = new BlobContainerClient(ConnectionString, containerName);
 
-            var accountName = storageAccount.AccountName;
             var uri = storageAccount.GenerateSasUri( BlobContainerSasPermissions.Read, DateTimeOffset.UtcNow.AddHours(1));
             return uri.ToString();
         }
 
         public async Task<T> LoadFromJsonAsync<T>(string containerName, string blobName)
         {
-            var blob = await GetBlockBlobReferenceAsync(containerName, blobName);
-            if (await blob.ExistsAsync())
+            var blob = await GetBlockBlobReferenceAsync(containerName, blobName).ConfigureAwait(false);
+            if (await blob.ExistsAsync().ConfigureAwait(false))
             {
-                using (var blobStream = await blob.OpenReadAsync())
+                using (var blobStream = await blob.OpenReadAsync().ConfigureAwait(false))
                 {
-                    return await System.Text.Json.JsonSerializer.DeserializeAsync<T>(blobStream);
+                    return await System.Text.Json.JsonSerializer.DeserializeAsync<T>(blobStream).ConfigureAwait(false);
                 }
             }
             else return default;

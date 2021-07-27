@@ -119,6 +119,7 @@
     <Compile Include="Cms\Template.cs" />
     <Compile Include="DataEntities\GridExtention.cs" />
     <Compile Include="Extention\ApplicationUserExtention.cs" />
+    <Compile Include="Extention\AssetExtension.cs" />
     <Compile Include="Extention\ComponentVersionExtension.cs" />
     <Compile Include="Extention\FieldExtension.cs" />
     <Compile Include="Extention\GalleryExtension.cs" />

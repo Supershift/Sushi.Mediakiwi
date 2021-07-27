@@ -112,6 +112,18 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
 
             ListAction += Browsing_ListAction;
             ListSearch += Browsing_ListSearch;
+            ListLoad += Browsing_ListLoad;
+            ListSave += Browsing_ListSave;
+        }
+
+        private Task Browsing_ListSave(ComponentListEventArgs arg)
+        {
+            return Task.CompletedTask;
+        }
+
+        private Task Browsing_ListLoad(ComponentListEventArgs arg)
+        {
+            return Task.CompletedTask;
         }
 
         #endregion CTor
@@ -169,7 +181,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             bool isSearchInitiate = !string.IsNullOrEmpty(FilterTitle);
             if (wim.CurrentFolder.Type == FolderType.Gallery)
             {
-                list = await GetGalleryListV2Async(isSearchInitiate).ConfigureAwait(false);
+                list = await GetGalleryListAsync(isSearchInitiate).ConfigureAwait(false);
             }
             else if (wim.CurrentFolder.Type == FolderType.List || wim.CurrentFolder.Type == FolderType.Administration)
             {
@@ -386,97 +398,6 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             var folderSettings = await Mediakiwi.Data.ComponentList.SelectOneAsync(new Guid("97292dd5-ebda-4318-8aaf-4c49e887cdad")).ConfigureAwait(false);
 
             Gallery[] galleries;
-            
-            Gallery rootGallery = await Gallery.SelectOneAsync(Utility.ConvertToGuid(Request.Query["root"])).ConfigureAwait(false);
-            if (!IsPostBack || string.IsNullOrEmpty(FilterTitle))
-            {
-                if (wim.CurrentFolder.ParentID.GetValueOrDefault(0) > 0 && wim.CurrentFolder.ID != rootGallery.ID && wim.CurrentFolder.ID != baseGalleryID)
-                {
-                    BrowseItem item = new BrowseItem();
-                    item.ID = wim.CurrentFolder.ParentID.Value;
-                    item.Title = "...";
-                    item.PassThrough = "gallery";
-                    item.Icon = "<figure class=\"icon-folder icon\"></figure>";
-                    item.Info1 = $"<a href=\"{wim.Console.WimPagePath}?list={folderSettings.ID}&gallery={item.ID}&item={item.ID}\"><figure class=\"icon-settings-02 icon\"></figure></a>";
-                    list.Add(item);
-                }
-
-                galleries = await Gallery.SelectAllByParentAsync(wim.CurrentFolder.ID).ConfigureAwait(false);
-            }
-            else
-            {
-                galleries = await Gallery.SelectAllAsync(FilterTitle).ConfigureAwait(false);
-            }
-
-            bool isRootLevelView = false;
-            if (wim.CurrentFolder.Level == 0 && galleries.Length == 0 && !isSearchInitiate)
-            {
-                isRootLevelView = true;
-            }
-
-            foreach (Gallery entry in galleries)
-            {
-                BrowseItem item = new BrowseItem();
-                item.ID = entry.ID;
-                item.Title = isRootLevelView ? entry.CompleteCleanPath() : entry.Name;
-                item.PassThrough = "gallery";
-                item.Icon = "<figure class=\"icon-folder icon\"></figure>";
-                item.Info1 = $"<a href=\"{wim.Console.WimPagePath}?list={folderSettings.ID}&gallery={entry.ID}&item={entry.ID}\"><figure class=\"icon-settings-02 icon\"></figure></a>";
-                item.Info3 = entry.Created;
-                list.Add(item);
-            }
-
-            List<Asset> assets;
-
-            if (!IsPostBack || string.IsNullOrEmpty(FilterTitle))
-            {
-                assets = await Asset.SelectAllAsync(wim.CurrentFolder.ID).ConfigureAwait(false);
-            }
-            else
-            {
-                assets = await Asset.SearchAllAsync(FilterTitle).ConfigureAwait(false);
-            }
-
-            foreach (Asset entry in assets)
-            {
-                BrowseItem item = new BrowseItem();
-                item.ID = entry.ID;
-                item.Title = entry.Title;
-                item.PassThrough = "asset";
-
-                item.Icon = "<figure class=\"icon-document icon\"></figure>";
-                item.Info1 = $"<a href=\"{wim.Console.WimPagePath}?asset={entry.ID}\"><figure class=\"icon-settings-02 icon\"></figure></a>";
-                item.Info2 = entry.Type;
-                item.Info3 = entry.Created;
-
-                if (!string.IsNullOrEmpty(entry.RemoteLocation) || entry.Exists)
-                {
-                    item.Info4 = Utils.GetIconImageString(wim.Console, Utils.IconImage.File, Utils.IconSize.Normal, null, entry.DownloadFullUrl);
-                }
-                else
-                {
-                    item.Info4 = Utils.GetIconImageString(wim.Console, Utils.IconImage.NoFile, Utils.IconSize.Normal, null);
-                }
-
-                item.HiddenField = $"{item.Title} ({item.Info1})";
-                list.Add(item);
-            }
-
-            return list;
-        }
-
-        #endregion Get Gallery List Async
-
-        #region Get Gallery List Async V2
-
-        async Task<List<BrowseItem>> GetGalleryListV2Async(bool isSearchInitiate)
-        {
-            var list = new List<BrowseItem>();
-            int baseGalleryID = wim.CurrentApplicationUserRole.GalleryRoot.GetValueOrDefault();
-
-            var folderSettings = await Mediakiwi.Data.ComponentList.SelectOneAsync(new Guid("97292dd5-ebda-4318-8aaf-4c49e887cdad")).ConfigureAwait(false);
-
-            Gallery[] galleries;
 
             Gallery rootGallery = await Gallery.SelectOneAsync(Utility.ConvertToGuid(Request.Query["root"])).ConfigureAwait(false);
             if (!IsPostBack || string.IsNullOrEmpty(FilterTitle))
@@ -556,7 +477,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             return list;
         }
 
-        #endregion Get Gallery List Async V2
+        #endregion Get Gallery List Async
 
         #region Get List List Async
 
