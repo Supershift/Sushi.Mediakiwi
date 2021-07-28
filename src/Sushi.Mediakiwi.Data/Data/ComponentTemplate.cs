@@ -1,6 +1,7 @@
 ﻿using Sushi.Mediakiwi.Data.MicroORM;
 using Sushi.MicroORM.Mapping;
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
@@ -365,6 +366,71 @@ namespace Sushi.Mediakiwi.Data
             var filter = connector.CreateDataFilter();
             var result = await connector.FetchAllAsync(filter);
             return result.ToArray();
+        }
+
+        /// <summary>
+        /// Retrieves all component templates containing the supplied <paramref name="searchText" /> in either the name, description, location or sourcetag
+        /// </summary>
+        /// <param name="searchText">The text to search for</param>
+        /// <returns></returns>
+        public static List<ComponentTemplate> SearchAll(string searchText) 
+        {
+            return SearchAll(searchText, null);
+        }
+
+        /// <summary>
+        /// Retrieves all component templates containing the supplied <paramref name="searchText" /> in either the name, description, location or sourcetag
+        /// </summary>
+        /// <param name="searchText">The text to search for</param>
+        /// <param name="siteId">The SiteID to which the component is attached</param>
+        /// <returns></returns>
+        public static List<ComponentTemplate> SearchAll(string searchText, int? siteId)
+        {
+            var connector = ConnectorFactory.CreateConnector<ComponentTemplate>();
+            var filter = connector.CreateDataFilter();
+            if (siteId.GetValueOrDefault(0) > 0)
+            {
+                filter.Add(x => x.SiteID, siteId.Value);
+            }
+            if (string.IsNullOrWhiteSpace(searchText) == false)
+            {
+                filter.AddParameter("@searchParam", $"%{searchText}%");
+                filter.AddSql("[ComponentTemplate_Name] LIKE @searchParam OR [ComponentTemplate_Location] LIKE @searchParam OR [ComponentTemplate_Description] LIKE @searchParam OR [ComponentTemplate_Tag] LIKE @searchParam");
+            }
+            return connector.FetchAll(filter);
+        }
+
+        /// <summary>
+        /// Retrieves all component templates containing the supplied <paramref name="searchText" /> in either the name, description, location or sourcetag
+        /// </summary>
+        /// <param name="searchText">The text to search for</param>
+        /// <returns></returns>
+        public static async Task<List<ComponentTemplate>> SearchAllAsync(string searchText)
+        {
+            return await SearchAllAsync(searchText, null).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Retrieves all component templates containing the supplied <paramref name="searchText" /> in either the name, description, location or sourcetag
+        /// </summary>
+        /// <param name="searchText">The text to search for</param>
+        /// <param name="siteId">The SiteID to which the component is attached</param>
+        /// <returns></returns>
+        public static async Task<List<ComponentTemplate>> SearchAllAsync(string searchText, int? siteId)
+        {
+            var connector = ConnectorFactory.CreateConnector<ComponentTemplate>();
+            var filter = connector.CreateDataFilter();
+            if (siteId.GetValueOrDefault(0) > 0)
+            {
+                filter.Add(x => x.SiteID, siteId.Value);
+            }
+            if (string.IsNullOrWhiteSpace(searchText) == false)
+            {
+                filter.AddParameter("@searchParam", $"%{searchText}%");
+                filter.AddSql("[ComponentTemplate_Name] LIKE @searchParam OR [ComponentTemplate_Location] LIKE @searchParam OR [ComponentTemplate_Description] LIKE @searchParam OR [ComponentTemplate_Tag] LIKE @searchParam");
+            }
+
+            return await connector.FetchAllAsync(filter).ConfigureAwait(false);
         }
 
         /// <summary>
