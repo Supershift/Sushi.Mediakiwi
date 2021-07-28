@@ -171,7 +171,20 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         async Task Link_ListDelete(ComponentListEventArgs e)
         {
             await Implement.DeleteAsync().ConfigureAwait(false);
-            wim.OnDeleteScript = "<script type=\"text/javascript\">parent.removeLink();</script>";
+
+            // When not editing this link from any context
+            if (string.IsNullOrEmpty(Request.Query["referid"]))
+            {
+                wim.Page.Body.Form.RefreshParent();
+            }
+            else
+            {
+                // When not editing this link from a RTE
+                if (!Form.RichTextInnerlink)
+                {
+                    wim.OnDeleteScript = $"<script type=\"text/javascript\">parent.$('#{Request.Query["referid"]}').find('li').remove();parent.$.colorbox.close();</script>";
+                }
+            }
         }
 
         #endregion List Delete
@@ -237,17 +250,6 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
 
             await Implement.SaveAsync().ConfigureAwait(false);
 
-            // [MR:19-07-2021] Can be removed ?
-            //string url = Implement.ExternalUrl;
-            //if (Implement.IsInternal && Implement.PageID.HasValue)
-            //{
-            //    Page page = await Page.SelectOneAsync(Implement.PageID.Value, false).ConfigureAwait(false);
-            //    if (page != null)
-            //    {
-            //        url = string.Format("{0}{1}.aspx", page.CompletePath, page.Name);
-            //    }
-            //}
-
             if (Form.RichTextInnerlink)
             {
                 if (Request.Query["referid"] == "tmce")
@@ -262,7 +264,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             }
             else
             {
-                 wim.OnSaveScript = $@"<input type=""hidden"" class=""postparent"" id=""{Implement.ID}"" value=""<a title='url: {Implement.GetUrl(wim.CurrentSite, false)}'>{Implement.Text}</a> (open in {Implement.TargetInfo})"" />";
+                 wim.OnSaveScript = $@"<input type=""hidden"" class=""postparent single"" id=""{Implement.ID}"" data-editurl=""{wim.GetUrl(new KeyValue[] { new KeyValue("item", Implement.ID) })}"" data-listtitle=""{wim.ListTitle}"" value=""{Implement.Text} <span>(open in {Implement.TargetInfo})</span>"" />";
             }
         }
         #endregion List Save
