@@ -1084,7 +1084,7 @@ namespace Sushi.Mediakiwi.UI
                                         passthrough = GetValue(infoCollection, item, root.ListDataColumns.ColumnItemUrl).ToString();
                                     }
 
-                                    if (caller != null && !caller.wim.CurrentList.ID.Equals(container.CurrentList.ID))
+                                    if (string.IsNullOrWhiteSpace(passthrough) && caller != null && !caller.wim.CurrentList.ID.Equals(container.CurrentList.ID))
                                     {
                                         passthrough = $"{Utils.ToUrl(container.CurrentList.Name)}?item";
                                     }
