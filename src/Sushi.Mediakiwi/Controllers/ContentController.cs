@@ -193,18 +193,6 @@ namespace Sushi.Mediakiwi.Controllers
                         }
                     }
 
-
-                    // [MR:05-07-2021] This shouldn't be needed, since these are passed in as a querystring
-                    //if ((uri.IsAbsoluteUri && !string.IsNullOrWhiteSpace(uri.Query) && uri.Query.Equals("?flush=me")))
-                    //{
-                    //    flush = true;
-                    //}
-
-                    //if ((uri.IsAbsoluteUri && !string.IsNullOrWhiteSpace(uri.Query) && uri.Query.Equals("?preview=1")))
-                    //{
-                    //    ispreview = true;
-                    //}
-
                     var maps = await PageMapping.SelectAllAsync(0, true).ConfigureAwait(false);
                     foreach (var map in maps)
                     {
@@ -256,7 +244,7 @@ namespace Sushi.Mediakiwi.Controllers
 
                     if (page == null || page?.ID.Equals(0) == true)
                     {
-                        page = await Page.SelectOneAsync(uri.ToString(), !ispreview);
+                        page = await Page.SelectOneAsync(uri.ToString(), !ispreview).ConfigureAwait(false);
                     }
                 }
 
@@ -269,16 +257,16 @@ namespace Sushi.Mediakiwi.Controllers
                     // Check if this page is the Homepage 
                     if (url == "/" || string.IsNullOrWhiteSpace(url))
                     {
-                        response = await GetHomePageAsync(null);
+                        response = await GetHomePageAsync(null).ConfigureAwait(false);
                     }
                     else
                     {
-                        response = await GetPageNotFoundAsync(null);
+                        response = await GetPageNotFoundAsync(null).ConfigureAwait(false);
                     }
                 }
                 else
                 {
-                    response = await GetPageContentAsync(page, pageMap, ispreview);
+                    response = await GetPageContentAsync(page, pageMap, ispreview).ConfigureAwait(false);
                 }
 
                 // Save data in cache.
@@ -649,7 +637,7 @@ namespace Sushi.Mediakiwi.Controllers
 
             if (pageMap != null && status == HttpStatusCode.NotFound)
             {
-                return await GetPageNotFoundAsync(page.SiteID);
+                return await GetPageNotFoundAsync(page.SiteID).ConfigureAwait(false);
             }
 
             // validation parse url?
@@ -724,7 +712,7 @@ namespace Sushi.Mediakiwi.Controllers
             if (ispreview)
             {
                 // Get the non-published versions of the components  for this page
-                var versions = await ComponentVersion.SelectAllAsync(page.ID);
+                var versions = await ComponentVersion.SelectAllAsync(page.ID).ConfigureAwait(false);
                 List<Component> converted = new List<Component>();
                 foreach (var version in versions)
                 {
@@ -738,11 +726,11 @@ namespace Sushi.Mediakiwi.Controllers
             else
             {
                 // Get the published versions of the components for this page
-                components = await Component.SelectAllAsync(page.ID);
+                components = await Component.SelectAllAsync(page.ID).ConfigureAwait(false);
             }
 
             // Store all SharedFieldTranslations
-            var allSharedFieldTranslations = await SharedFieldTranslation.FetchAllForPageAsync(page.ID);
+            var allSharedFieldTranslations = await SharedFieldTranslation.FetchAllForPageAsync(page.ID).ConfigureAwait(false);
 
             int sort = 0;
             foreach (var component in components)
@@ -791,7 +779,7 @@ namespace Sushi.Mediakiwi.Controllers
                 if (component?.Content?.Fields?.Length > 0)
                 {
                     // Store all wim_Properties 
-                    var allWimProperties = await Property.SelectAllByTemplateAsync(component.Template.ID);
+                    var allWimProperties = await Property.SelectAllByTemplateAsync(component.Template.ID).ConfigureAwait(false);
 
                     foreach (var field in component.Content.Fields)
                     {
@@ -815,7 +803,7 @@ namespace Sushi.Mediakiwi.Controllers
                         }
 
                         // Get the content based on the fieldItem, this will resolve based on the contenttype
-                        (ContentItem content, bool isFilled) result = await getContentItemFromFieldAsync(request, fieldItem);
+                        (ContentItem content, bool isFilled) result = await getContentItemFromFieldAsync(request, fieldItem).ConfigureAwait(false);
 
                         // Only add this property when it's not yet added and the content for it is filled.
                         if (!mapped.Content.ContainsKey(fieldItem.Property) && result.isFilled)
