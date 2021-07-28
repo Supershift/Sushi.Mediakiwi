@@ -218,6 +218,23 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             }
         }
 
+        public virtual string Azure_Image_Container
+        {
+            get
+            {
+                return WimServerConfiguration.Instance?.Azure_Image_Container;
+            }
+        }
+
+        public virtual string Azure_Cdn_Uri
+        {
+            get
+            {
+                return WimServerConfiguration.Instance?.Azure_Cdn_Uri;
+            }
+        }
+
+
         public virtual BlobPersister GetPersistor
         {
             get { return new BlobPersister(); }
@@ -260,8 +277,8 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                     }
                 }
 
-                var upload = await GetPersistor.UploadAsync(_Form.File.File.OpenReadStream(), WimServerConfiguration.Instance?.Azure_Image_Container, _Form.File.File.FileName, _Form.File.File.ContentType).ConfigureAwait(false);
-                m_Implement.RemoteLocation = $"{WimServerConfiguration.Instance?.Azure_Cdn_Uri}{upload.Uri.PathAndQuery}";
+                var upload = await GetPersistor.UploadAsync(_Form.File.File.OpenReadStream(), Azure_Image_Container, _Form.File.File.FileName, _Form.File.File.ContentType).ConfigureAwait(false);
+                m_Implement.RemoteLocation = $"{Azure_Cdn_Uri}{upload.Uri.PathAndQuery}";
             }
             await m_Implement.SaveAsync().ConfigureAwait(false);
 
