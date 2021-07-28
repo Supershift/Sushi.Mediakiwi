@@ -98,7 +98,7 @@ namespace Sushi.Mediakiwi
             else
             {
                 var monitor = new Monitor(context, _env, _configuration);
-                await monitor.AuthenticateViaSingleSignOnAsyc(false).ConfigureAwait(false);
+                await monitor.AuthenticateViaSingleSignOnAsyc(false, true).ConfigureAwait(false);
             }
             await _next.Invoke(context).ConfigureAwait(false);
         }
