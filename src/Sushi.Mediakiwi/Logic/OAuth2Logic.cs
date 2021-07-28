@@ -10,11 +10,17 @@ namespace Sushi.Mediakiwi.Logic
 {
     public class OAuth2Logic
     {
-        public static System.Uri AuthenticationUrl(string state)
+        public static System.Uri AuthenticationUrl(string state, string domain)
         {
             if (WimServerConfiguration.Instance.Authentication != null && WimServerConfiguration.Instance.Authentication.Aad != null && WimServerConfiguration.Instance.Authentication.Aad.Enabled)
             {
                 var callback = WimServerConfiguration.Instance.Authentication.Aad.RedirectUrl;
+                
+                if (callback.OriginalString.StartsWith("/", StringComparison.OrdinalIgnoreCase))
+                {
+                    callback = new Uri($"{domain}{callback}");
+                }
+                
                 var ad_clientid = WimServerConfiguration.Instance.Authentication.Aad.Client;
                 var ad_tenantid = WimServerConfiguration.Instance.Authentication.Aad.Tenant;
 

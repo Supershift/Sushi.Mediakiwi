@@ -1392,7 +1392,7 @@ namespace Sushi.Mediakiwi.UI
                         {
                             url = _Console.GetWimPagePath(null);
                         }
-                        _Context.Response.Redirect(OAuth2Logic.AuthenticationUrl(url).ToString());
+                        _Context.Response.Redirect(OAuth2Logic.AuthenticationUrl(url, _Console.CurrentDomain).ToString());
                     }
                 }
             }
