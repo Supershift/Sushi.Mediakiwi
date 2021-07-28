@@ -218,7 +218,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             }
         }
 
-        public BlobPersister GetPersistor
+        public virtual BlobPersister GetPersistor
         {
             get { return new BlobPersister(); }
         }
