@@ -31,7 +31,12 @@ public static class AssetExtension
     {
         BlobPersister persister = new BlobPersister();
         var blobRef = await persister.GetBlockBlobReferenceAsync(inAsset.FileName).ConfigureAwait(false);
-        return await blobRef.DeleteIfExistsAsync().ConfigureAwait(false);
+        if (blobRef != null)
+        {
+            return await blobRef.DeleteIfExistsAsync().ConfigureAwait(false);
+        }
+
+        return false;
     }
 
 }
