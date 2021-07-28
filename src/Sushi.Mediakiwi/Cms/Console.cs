@@ -822,6 +822,12 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
             {
                 throw new Exception(string.Format("Could not find '{0}' or there could be a problem with initializing the class, this could be the case if there is coding present in the CTor!", CurrentList.ClassName));
             }
+
+            if (CurrentEnvironment == null)
+            {
+                CurrentEnvironment = Data.Environment.Current;
+            }
+
             CurrentListInstance = tmp;
             CurrentListInstance.wim.Console = this;
             CurrentListInstance.wim.CurrentList = CurrentList;

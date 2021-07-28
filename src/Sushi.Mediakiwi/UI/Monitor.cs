@@ -1332,7 +1332,7 @@ namespace Sushi.Mediakiwi.UI
             }
         }
 
-        internal async Task AuthenticateViaSingleSignOnAsyc(bool redirectOnAnonymous)
+        internal async Task AuthenticateViaSingleSignOnAsyc(bool redirectOnAnonymous, bool outputRedirectPage = false)
         {
             if (WimServerConfiguration.Instance.Authentication != null && WimServerConfiguration.Instance.Authentication.Aad != null && WimServerConfiguration.Instance.Authentication.Aad.Enabled && _Console.CurrentApplicationUser == null)
             {
@@ -1362,7 +1362,18 @@ namespace Sushi.Mediakiwi.UI
                             _Console.CurrentApplicationUser.LastLoggedVisit = now;
                             await _Console.CurrentApplicationUser.SaveAsync().ConfigureAwait(false);
 
+                            _Console.SaveVisit();
                             _Console.SetClientRedirect(new Uri(_Console.GetSafePost("state")), true);
+
+                            if (outputRedirectPage)
+                            {
+                                var presentation = new Framework.Presentation.Presentation();
+
+                                await _Console.ApplyListAsync(ComponentListType.Browsing).ConfigureAwait(false);
+
+                                var output = presentation.GetTemplateWrapper(_Console, null, null, null);
+                                await _Console.Response.WriteAsync(output).ConfigureAwait(false);
+                            }
                             return;
                         }
                     }
@@ -1370,7 +1381,19 @@ namespace Sushi.Mediakiwi.UI
 
                 if (redirectOnAnonymous)
                 {
-                    _Context.Response.Redirect(OAuth2Logic.AuthenticationUrl(_Console.Url).ToString());
+                    if (_Console.CurrentApplicationUser != null && _Console.CurrentApplicationUser.IsActive)
+                    {
+                        // do nothing, user is logged in.
+                    }
+                    else
+                    {
+                        var url = _Console.Url;
+                        if (url.Contains("?logout", StringComparison.CurrentCultureIgnoreCase))
+                        {
+                            url = _Console.GetWimPagePath(null);
+                        }
+                        _Context.Response.Redirect(OAuth2Logic.AuthenticationUrl(url).ToString());
+                    }
                 }
             }
         }

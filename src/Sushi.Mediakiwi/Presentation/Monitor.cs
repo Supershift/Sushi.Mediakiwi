@@ -87,46 +87,6 @@ namespace Sushi.Mediakiwi.Framework.Presentation
             return string.Concat(_FolderVersionCDN, subfolder, "/");
         }
 
-        //public string RenderHelp(string propertyButton, Sushi.Mediakiwi.Beta.GeneratedCms.Console console, out string script)
-        //{
-        //    script = null;
-        //    var applyList = console.CurrentEnvironment["HELP_ON_LISTS", true, "0", "Add help option to all lists"] == "1";
-        //    var applyPage = console.CurrentEnvironment["HELP_ON_PAGES", true, "0", "Add help option to all pages"] == "1";
-
-        //    if (!applyList && !applyPage) return propertyButton;
-
-        //    var existingArticle = ArticleParser.CheckIfItemExists(console.CurrentList?.ID, console.CurrentPage?.ID);
-        //    if (console.CurrentListInstance.wim.CurrentApplicationUserRole.CanSeeAdmin ||
-        //        existingArticle.ID > 0)
-        //    {
-        //        string mkWikiUrl = null;
-        //        if (existingArticle.ID > 0)
-        //        {
-        //            mkWikiUrl = string.Concat(console.WimPagePath, "?", "list=", WikiList.WIKI_LIST_GUID, "&openinframe=1&item=", existingArticle.ID);
-        //        }
-        //        else if (applyPage && console.CurrentPage != null)
-        //        {
-        //            mkWikiUrl = string.Concat(console.WimPagePath, "?", "list=", WikiList.WIKI_LIST_GUID, "&openinframe=1&item=-1&forPageID=", console.CurrentPage.ID, "&listName=" + console.CurrentPage.Name);
-        //        }
-        //        else if (applyList && console.CurrentList != null)
-        //        {
-        //            mkWikiUrl = string.Concat(console.WimPagePath, "?", "list=", WikiList.WIKI_LIST_GUID, "&openinframe=1&item=-1&forListID=", console.CurrentList.ID, "&listName=" + console.CurrentList.Name);
-        //        }
-
-        //        if (mkWikiUrl != null)
-        //        {
-        //            script = $@"
-        //        <script>
-        //        function openHelpWindow() {{
-        //            window.open(""{mkWikiUrl}"", ""_blank"", ""toolbar=no,scrollbars=yes,resizable=yes,top=10,left=200,width=1010,height=600"");
-        //        }}
-        //        </script> ";
-
-        //            propertyButton += $@"<a href=""#help"" onclick=""openHelpWindow()"" class=""icon-question-circle""></a>";
-        //        }
-        //    }
-        //    return propertyButton;
-        //}
 
         /// <summary>
         /// Gets the template wrapper.
@@ -139,6 +99,11 @@ namespace Sushi.Mediakiwi.Framework.Presentation
             m_container = container;
             m_Placeholders = placeholders;
             m_Callbacks = callbacks;
+
+            if (builder == null)
+            {
+                builder = new WimControlBuilder();
+            }
 
             var url = container.Url;
 
@@ -162,14 +127,6 @@ namespace Sushi.Mediakiwi.Framework.Presentation
             {
                 configButton = $@"<a href=""{container.UrlBuild.GetListPropertiesRequest()}"" class=""flaticon icon-gears""></a>";
             }
-
-            //if (!container.CurrentListInstance.wim.IsSubSelectMode && container.OpenInFrame == 0 &&
-            //    (!String.IsNullOrEmpty(container.Context.Request.Query["list"]) ||
-            //     !String.IsNullOrEmpty(container.Context.Request.Query["page"]))
-            //)
-            //{
-            //    helpButton = RenderHelp(helpButton, container, out helpScript);
-            //}
 
             if (container.CurrentListInstance.wim.m_ListTitle == string.Empty)
             {
@@ -199,79 +156,30 @@ namespace Sushi.Mediakiwi.Framework.Presentation
             if (!string.IsNullOrEmpty(container.CurrentListInstance.wim.ListDescription))
                 description = string.Format("<p>{0}</p>", Utility.CleanLineFeed(container.CurrentListInstance.wim.ListDescription, true, true, true));
 
-            if (container.CurrentListInstance.wim.Page.Body.ShowInFullWidthMode
-                || container.CurrentList.Option_HideNavigation
+            if (builder != null && (container.CurrentListInstance.wim.Page.Body.ShowInFullWidthMode || container.CurrentList.Option_HideNavigation)
                 )
             {
                 builder.Canvas.LeftNavigation.Hide = true;
                 builder.Leftnav = null;
             }
 
-            if (builder.Canvas.Type == CanvasType.Explorer)
+            if (builder != null)
             {
-
-                builder.Canvas.LeftNavigation.Hide = true;
-                builder.Leftnav = null;
-
-                section_start = "\n\t\t\t\t<section id=\"thumbs\" class=\"style\">";
-
-                //cboxTopCenter
-                section_end = "\n\t\t\t\t</section>";
-
-                title = string.Format("\n\t\t\t\t\t<header>{0}\n\t\t\t\t\t\t<h1>{1}</h1>\n\t\t\t\t\t\t<hr>\n\t\t\t\t\t</header>"
-                    , true ? "\n\t\t\t\t\t\t<a id=\"toggle\" class=\"arrowU\" href=\"#\"> </a>" : string.Empty
-                    , pageTitle
-                );
-
-                if (!container.CurrentListInstance.wim.Page.HideDataForm)
+                if (builder.Canvas.Type == CanvasType.Explorer)
                 {
-                    if (builder.Formdata.Contains("<bottombuttonbar />"))
-                        builder.Formdata = builder.Formdata.Replace("<bottombuttonbar />", builder.Bottom);
-                    else
-                        builder.Formdata = string.Concat(builder.Formdata, builder.Bottom);
-                }
 
-                builder.Formdata = string.Concat(builder.Notifications.ToString()
-                    , container.CurrentListInstance.wim.Page.HideDataForm
-                        ? null
-                        : string.Concat(builder.Rightnav, string.Format("<h2>{0}</h2><hr />", "&nbsp;"), builder.Formdata, "")
-                );
+                    builder.Canvas.LeftNavigation.Hide = true;
+                    builder.Leftnav = null;
 
-                if (container.CurrentListInstance.wim.HideTitle)
-                    title = null;
+                    section_start = "\n\t\t\t\t<section id=\"thumbs\" class=\"style\">";
 
-                section = string.Concat(section_start
-                    , title
-                    , builder.Tabularnav
-                    , section_end
-                    , container.CurrentListInstance.wim.Page.HideDataGrid || string.IsNullOrEmpty(builder.SearchGrid)
-                        ? null
-                        : string.Concat((true ? "\n\t\t\t\t<section id=\"gridsection\">" : "\n\t\t\t\t<section class=\"nowidth\">")
-                            , builder.SearchGrid
-                            , section_end)
-                    );
-            }
-            else
-            {
-                #region List information
-                //if (container.CurrentListInstance.wim.Page.HideTabs)
-                //{
-                #region CanvasType.ListInLayer
-                if (builder.Canvas.Type == CanvasType.ListInLayer || builder.Canvas.Type == CanvasType.ListItemInLayer)
-                {
-                    //section_start = "\n\t\t\t\t<section id=\"thumbs\" class=\"component style\">";
-
-                    ////cboxTopCenter
+                    //cboxTopCenter
                     section_end = "\n\t\t\t\t</section>";
-                    //title = string.Format("\n\t\t\t\t\t<header>\n\t\t\t\t\t\t{1}\n\t\t\t\t\t\t<hr>\n\t\t\t\t\t</header>"
-                    //        , pageTitle
-                    //        , builder.Rightnav
-                    //    );
 
-                    if (!container.CurrentListInstance.wim.Page.HideTopIconBar)
-                        title = string.Concat(builder.Rightnav, "<hr/>");
-                    else
-                        title = string.Empty;
+                    title = string.Format("\n\t\t\t\t\t<header>{0}\n\t\t\t\t\t\t<h1>{1}</h1>\n\t\t\t\t\t\t<hr>\n\t\t\t\t\t</header>"
+                        , true ? "\n\t\t\t\t\t\t<a id=\"toggle\" class=\"arrowU\" href=\"#\"> </a>" : string.Empty
+                        , pageTitle
+                    );
 
                     if (!container.CurrentListInstance.wim.Page.HideDataForm)
                     {
@@ -282,62 +190,112 @@ namespace Sushi.Mediakiwi.Framework.Presentation
                     }
 
                     builder.Formdata = string.Concat(builder.Notifications.ToString()
-                        , container.CurrentListInstance.wim.Page.HideDataForm ? null : builder.Formdata
-
-                        );
-
-                    //section = string.Concat(section_start, title, builder.Tabularnav, description, section_end, "\n\t\t\t\t<section id=\"gridsection\" class=\"component forms\">", builder.Formdata
-                    //    , report
-                    //    , container.CurrentListInstance.wim.Page.HideDataGrid
-                    //        ? null
-                    //        : builder.SearchGrid
-                    //    , section_end);
-
-                    if (container.CurrentListInstance.wim.Page.Body.Grid._GridAddition != null)
-                    {
-                        if (container.CurrentListInstance.wim.Page.Body.Grid._ClearGridBase)
-                            builder.SearchGrid = container.CurrentListInstance.wim.Page.Body.Grid._GridAddition.ToString();
-                        else
-                            builder.SearchGrid += container.CurrentListInstance.wim.Page.Body.Grid._GridAddition.ToString();
-
-                    }
-
-                    //class=\"forms\" remove (27-1-14)
-                    section = string.Concat("\n\t\t\t\t<section id=\"gridsection\"><div class=\"container\">", title, builder.Formdata
-                        //, report
-                        , container.CurrentListInstance.wim.Page.HideDataGrid
+                        , container.CurrentListInstance.wim.Page.HideDataForm
                             ? null
-                            : builder.SearchGrid
-                        , "</div>"
-                        , section_end);
+                            : string.Concat(builder.Rightnav, string.Format("<h2>{0}</h2><hr />", "&nbsp;"), builder.Formdata, "")
+                    );
 
+                    if (container.CurrentListInstance.wim.HideTitle)
+                        title = null;
 
+                    section = string.Concat(section_start
+                        , title
+                        , builder.Tabularnav
+                        , section_end
+                        , container.CurrentListInstance.wim.Page.HideDataGrid || string.IsNullOrEmpty(builder.SearchGrid)
+                            ? null
+                            : string.Concat((true ? "\n\t\t\t\t<section id=\"gridsection\">" : "\n\t\t\t\t<section class=\"nowidth\">")
+                                , builder.SearchGrid
+                                , section_end)
+                        );
                 }
-                #endregion CanvasType.ListInLayer
                 else
                 {
-                    //section_start = "\n\t\t\t\t<section id=\"folders\" class=\"component style\">";
-                    section_start = "\n\t\t\t\t<section id=\"pageHeaderV2\" class=\"pageHeader\">";
-
-                    //cboxTopCenter
-                    section_end = "\n\t\t\t\t</section>";
-
-                    #region Breadcrumbs
-                    string bread = null;
-                    string urlAddition = Logic.Navigation.GetQueryStringRecording(container);
-
-                    bool hideBreadCrumb = CommonConfiguration.HIDE_BREADCRUMB;
-
-                    if (!container.CurrentListInstance.wim.Page.HideBreadCrumbs
-                        && !container.CurrentList.Option_HideBreadCrumbs && !hideBreadCrumb)
+                    #region List information
+                    //if (container.CurrentListInstance.wim.Page.HideTabs)
+                    //{
+                    #region CanvasType.ListInLayer
+                    if (builder.Canvas.Type == CanvasType.ListInLayer || builder.Canvas.Type == CanvasType.ListItemInLayer)
                     {
-                        if (container.Group.HasValue)
+                        //section_start = "\n\t\t\t\t<section id=\"thumbs\" class=\"component style\">";
+
+                        ////cboxTopCenter
+                        section_end = "\n\t\t\t\t</section>";
+                        //title = string.Format("\n\t\t\t\t\t<header>\n\t\t\t\t\t\t{1}\n\t\t\t\t\t\t<hr>\n\t\t\t\t\t</header>"
+                        //        , pageTitle
+                        //        , builder.Rightnav
+                        //    );
+
+                        if (!container.CurrentListInstance.wim.Page.HideTopIconBar)
+                            title = string.Concat(builder.Rightnav, "<hr/>");
+                        else
+                            title = string.Empty;
+
+                        if (!container.CurrentListInstance.wim.Page.HideDataForm)
                         {
+                            if (builder.Formdata.Contains("<bottombuttonbar />"))
+                                builder.Formdata = builder.Formdata.Replace("<bottombuttonbar />", builder.Bottom);
+                            else
+                                builder.Formdata = string.Concat(builder.Formdata, builder.Bottom);
+                        }
 
-                            var c = ComponentList.SelectOne(container.Group.Value);
-                            var f = Folder.SelectOne(c.FolderID.GetValueOrDefault(0));
+                        builder.Formdata = string.Concat(builder.Notifications.ToString()
+                            , container.CurrentListInstance.wim.Page.HideDataForm ? null : builder.Formdata
 
-                            bread = string.Format(@"
+                            );
+
+                        //section = string.Concat(section_start, title, builder.Tabularnav, description, section_end, "\n\t\t\t\t<section id=\"gridsection\" class=\"component forms\">", builder.Formdata
+                        //    , report
+                        //    , container.CurrentListInstance.wim.Page.HideDataGrid
+                        //        ? null
+                        //        : builder.SearchGrid
+                        //    , section_end);
+
+                        if (container.CurrentListInstance.wim.Page.Body.Grid._GridAddition != null)
+                        {
+                            if (container.CurrentListInstance.wim.Page.Body.Grid._ClearGridBase)
+                                builder.SearchGrid = container.CurrentListInstance.wim.Page.Body.Grid._GridAddition.ToString();
+                            else
+                                builder.SearchGrid += container.CurrentListInstance.wim.Page.Body.Grid._GridAddition.ToString();
+
+                        }
+
+                        //class=\"forms\" remove (27-1-14)
+                        section = string.Concat("\n\t\t\t\t<section id=\"gridsection\"><div class=\"container\">", title, builder.Formdata
+                            //, report
+                            , container.CurrentListInstance.wim.Page.HideDataGrid
+                                ? null
+                                : builder.SearchGrid
+                            , "</div>"
+                            , section_end);
+
+
+                    }
+                    #endregion CanvasType.ListInLayer
+                    else
+                    {
+                        //section_start = "\n\t\t\t\t<section id=\"folders\" class=\"component style\">";
+                        section_start = "\n\t\t\t\t<section id=\"pageHeaderV2\" class=\"pageHeader\">";
+
+                        //cboxTopCenter
+                        section_end = "\n\t\t\t\t</section>";
+
+                        #region Breadcrumbs
+                        string bread = null;
+                        string urlAddition = Logic.Navigation.GetQueryStringRecording(container);
+
+                        bool hideBreadCrumb = CommonConfiguration.HIDE_BREADCRUMB;
+
+                        if (!container.CurrentListInstance.wim.Page.HideBreadCrumbs
+                            && !container.CurrentList.Option_HideBreadCrumbs && !hideBreadCrumb)
+                        {
+                            if (container.Group.HasValue)
+                            {
+
+                                var c = ComponentList.SelectOne(container.Group.Value);
+                                var f = Folder.SelectOne(c.FolderID.GetValueOrDefault(0));
+
+                                bread = string.Format(@"
     <div class=""trail"">
 		<a href=""?list={1}{8}"" class=""back"">Back</a>
         <menu id=""breadCrumbs"">
@@ -349,31 +307,31 @@ namespace Sushi.Mediakiwi.Framework.Presentation
 	    </menu>
 	</div>
 "
-                                , container.AddApplicationPath(CommonConfiguration.PORTAL_PATH)
-                                , container.Group.GetValueOrDefault() // 1
-                                , container.GroupItem.GetValueOrDefault() //2
-                                , c.Name //3
-                                , c.SingleItemName // 4
-                                , container.CurrentList.SingleItemName //5
-                                , f.ID //6
-                                , f.Name //7
-                                , urlAddition //8
-                                );
+                                    , container.AddApplicationPath(CommonConfiguration.PORTAL_PATH)
+                                    , container.Group.GetValueOrDefault() // 1
+                                    , container.GroupItem.GetValueOrDefault() //2
+                                    , c.Name //3
+                                    , c.SingleItemName // 4
+                                    , container.CurrentList.SingleItemName //5
+                                    , f.ID //6
+                                    , f.Name //7
+                                    , urlAddition //8
+                                    );
 
-                        }
-                        else if (container.Item.HasValue && container.ItemType == RequestItemType.Page)
-                        {
-                            var back = string.Concat("?folder=", container.CurrentListInstance.wim.CurrentFolder.ID);
+                            }
+                            else if (container.Item.HasValue && container.ItemType == RequestItemType.Page)
+                            {
+                                var back = string.Concat("?folder=", container.CurrentListInstance.wim.CurrentFolder.ID);
 
-                            string currentFolderName = container.CurrentListInstance.wim.CurrentFolder.Name;
-                            if (currentFolderName == "/")
-                                currentFolderName = container.CurrentListInstance.wim.CurrentSite.Name;
+                                string currentFolderName = container.CurrentListInstance.wim.CurrentFolder.Name;
+                                if (currentFolderName == "/")
+                                    currentFolderName = container.CurrentListInstance.wim.CurrentSite.Name;
 
-                            pageHeaderTitle = container.CurrentPage.Name;
-                            pageTitle = string.Format("\n\t\t\t\t\t\t<h1>{0}</h1>", pageHeaderTitle);
-                            description = container.CurrentPage.Description;
+                                pageHeaderTitle = container.CurrentPage.Name;
+                                pageTitle = string.Format("\n\t\t\t\t\t\t<h1>{0}</h1>", pageHeaderTitle);
+                                description = container.CurrentPage.Description;
 
-                            bread = string.Format(@"
+                                bread = string.Format(@"
     <div class=""trail"">
 		<a href=""{3}{5}"" class=""back"">Back</a>
         <menu id=""breadCrumbs"">
@@ -383,30 +341,30 @@ namespace Sushi.Mediakiwi.Framework.Presentation
 	    </menu>
 	</div>
 "
-                                , container.AddApplicationPath(CommonConfiguration.PORTAL_PATH)
-                                , container.CurrentListInstance.wim.CurrentFolder.ID //1
-                                , currentFolderName //2
-                                , back
-                                , container.CurrentPage.Name
-                                , urlAddition //5
-                                );
-                        }
-                        else if (container.CurrentList.Type == ComponentListType.PageProperties)
-                        {
-                            if (container.Item.GetValueOrDefault(0) == 0)
+                                    , container.AddApplicationPath(CommonConfiguration.PORTAL_PATH)
+                                    , container.CurrentListInstance.wim.CurrentFolder.ID //1
+                                    , currentFolderName //2
+                                    , back
+                                    , container.CurrentPage.Name
+                                    , urlAddition //5
+                                    );
+                            }
+                            else if (container.CurrentList.Type == ComponentListType.PageProperties)
                             {
-                                Folder f = Folder.SelectOne(Utility.ConvertToInt(container.Request.Query["folder"]));
+                                if (container.Item.GetValueOrDefault(0) == 0)
+                                {
+                                    Folder f = Folder.SelectOne(Utility.ConvertToInt(container.Request.Query["folder"]));
 
-                                var back = string.Concat("?folder=", f.ID);
+                                    var back = string.Concat("?folder=", f.ID);
 
-                                string currentFolderName = f.Name;
-                                if (currentFolderName == "/")
-                                    currentFolderName = container.CurrentListInstance.wim.CurrentSite.Name;
+                                    string currentFolderName = f.Name;
+                                    if (currentFolderName == "/")
+                                        currentFolderName = container.CurrentListInstance.wim.CurrentSite.Name;
 
-                                pageHeaderTitle = "New page";
-                                pageTitle = string.Format("\n\t\t\t\t\t\t<h1>{0}</h1>", pageHeaderTitle);
+                                    pageHeaderTitle = "New page";
+                                    pageTitle = string.Format("\n\t\t\t\t\t\t<h1>{0}</h1>", pageHeaderTitle);
 
-                                bread = string.Format(@"
+                                    bread = string.Format(@"
     <div class=""trail"">
 		<a href=""{3}{4}"" class=""back"">Back</a>
         <menu id=""breadCrumbs"">
@@ -416,28 +374,28 @@ namespace Sushi.Mediakiwi.Framework.Presentation
 	    </menu>
 	</div>
 "
-                                    , container.AddApplicationPath(CommonConfiguration.PORTAL_PATH)
-                                    , f.ID //1
-                                    , currentFolderName //2
-                                    , back
-                                    , urlAddition //4
-                                    );
-                            }
-                            else
-                            {
-                                Page p = Page.SelectOne(container.Item.Value);
+                                        , container.AddApplicationPath(CommonConfiguration.PORTAL_PATH)
+                                        , f.ID //1
+                                        , currentFolderName //2
+                                        , back
+                                        , urlAddition //4
+                                        );
+                                }
+                                else
+                                {
+                                    Page p = Page.SelectOne(container.Item.Value);
 
-                                var back = string.Concat("?folder=", p.FolderID);
+                                    var back = string.Concat("?folder=", p.FolderID);
 
-                                string currentFolderName = p.Folder.Name;
-                                if (currentFolderName == "/")
-                                    currentFolderName = container.CurrentListInstance.wim.CurrentSite.Name;
+                                    string currentFolderName = p.Folder.Name;
+                                    if (currentFolderName == "/")
+                                        currentFolderName = container.CurrentListInstance.wim.CurrentSite.Name;
 
-                                pageHeaderTitle = p.Name;
-                                pageTitle = string.Format("\n\t\t\t\t\t\t<h1>{0}</h1>", pageHeaderTitle);
-                                description = p.Description;
+                                    pageHeaderTitle = p.Name;
+                                    pageTitle = string.Format("\n\t\t\t\t\t\t<h1>{0}</h1>", pageHeaderTitle);
+                                    description = p.Description;
 
-                                bread = string.Format(@"
+                                    bread = string.Format(@"
     <div class=""trail"">
 		<a href=""{3}{5}"" class=""back"">Back</a>
         <menu id=""breadCrumbs"">
@@ -448,29 +406,29 @@ namespace Sushi.Mediakiwi.Framework.Presentation
 	    </menu>
 	</div>
 "
-                                    , container.AddApplicationPath(CommonConfiguration.PORTAL_PATH)
-                                    , p.Folder.ID //1
-                                    , currentFolderName //2
-                                    , back
-                                    , p.Name
-                                    , urlAddition //5
-                                    , p.ID
-                                    );
+                                        , container.AddApplicationPath(CommonConfiguration.PORTAL_PATH)
+                                        , p.Folder.ID //1
+                                        , currentFolderName //2
+                                        , back
+                                        , p.Name
+                                        , urlAddition //5
+                                        , p.ID
+                                        );
+                                }
                             }
-                        }
-                        else if (container.Item.HasValue)
-                        {
-                            var back = string.Concat("?list=", container.CurrentList.ID);
-                            if (container.CurrentList.Type == ComponentListType.ComponentListProperties)
+                            else if (container.Item.HasValue)
                             {
-                                if (container.Item.GetValueOrDefault(0) != 0)
-                                    back = string.Concat("?list=", container.CurrentList.ID);
-                                else
-                                    back = string.Concat("?folder=", container.CurrentListInstance.wim.CurrentFolder.ID);
-                            }
+                                var back = string.Concat("?list=", container.CurrentList.ID);
+                                if (container.CurrentList.Type == ComponentListType.ComponentListProperties)
+                                {
+                                    if (container.Item.GetValueOrDefault(0) != 0)
+                                        back = string.Concat("?list=", container.CurrentList.ID);
+                                    else
+                                        back = string.Concat("?folder=", container.CurrentListInstance.wim.CurrentFolder.ID);
+                                }
 
-                            string currentFolderName = container.CurrentListInstance.wim.CurrentFolder.Name;
-                            bread = string.Format(@"
+                                string currentFolderName = container.CurrentListInstance.wim.CurrentFolder.Name;
+                                bread = string.Format(@"
     <div class=""trail"">
 		<a href=""{6}{7}"" class=""back"">Back</a>
         <menu id=""breadCrumbs"">
@@ -481,36 +439,36 @@ namespace Sushi.Mediakiwi.Framework.Presentation
 	    </menu>
 	</div>
 "
-                                , container.AddApplicationPath(CommonConfiguration.PORTAL_PATH)
-                                , container.CurrentList.ID
-                                , container.CurrentList.Name
-                                , container.CurrentList.SingleItemName
-                                , container.CurrentListInstance.wim.CurrentFolder.ID //4
-                                , currentFolderName //5
-                                , back //6
-                                , urlAddition //7
-                                );
-                        }
-                        else
-                        {
-                            if (container.CurrentList.Type == ComponentListType.Browsing)
+                                    , container.AddApplicationPath(CommonConfiguration.PORTAL_PATH)
+                                    , container.CurrentList.ID
+                                    , container.CurrentList.Name
+                                    , container.CurrentList.SingleItemName
+                                    , container.CurrentListInstance.wim.CurrentFolder.ID //4
+                                    , currentFolderName //5
+                                    , back //6
+                                    , urlAddition //7
+                                    );
+                            }
+                            else
                             {
-                                pageTitle = null;
-                                if (container.CurrentListInstance.wim.CurrentFolder.Name == "/")
+                                if (container.CurrentList.Type == ComponentListType.Browsing)
                                 {
-                                    bread = string.Format(@"
+                                    pageTitle = null;
+                                    if (container.CurrentListInstance.wim.CurrentFolder.Name == "/")
+                                    {
+                                        bread = string.Format(@"
     <div class=""trail"">
         <menu id=""breadCrumbs"">
 		    <li><a href=""{0}"">Home</a></li>
 	    </menu>
 	</div>
 "
-                                        , container.AddApplicationPath(CommonConfiguration.PORTAL_PATH)
-                                        );
-                                }
-                                else
-                                {
-                                    bread = string.Format(@"
+                                            , container.AddApplicationPath(CommonConfiguration.PORTAL_PATH)
+                                            );
+                                    }
+                                    else
+                                    {
+                                        bread = string.Format(@"
     <div class=""trail"">
 		<a href=""?folder={2}"" class=""back"">Back</a>
         <menu id=""breadCrumbs"">
@@ -519,22 +477,22 @@ namespace Sushi.Mediakiwi.Framework.Presentation
 	    </menu>
 	</div>
 "
-                                        , container.AddApplicationPath(CommonConfiguration.PORTAL_PATH)
-                                        , container.CurrentListInstance.wim.CurrentFolder.Name //1
-                                        , container.CurrentListInstance.wim.CurrentFolder.ParentID.GetValueOrDefault(0) //2
-                                        );
+                                            , container.AddApplicationPath(CommonConfiguration.PORTAL_PATH)
+                                            , container.CurrentListInstance.wim.CurrentFolder.Name //1
+                                            , container.CurrentListInstance.wim.CurrentFolder.ParentID.GetValueOrDefault(0) //2
+                                            );
+                                    }
                                 }
-                            }
-                            else
-                            {
-
-                                string currentFolderName = container.CurrentListInstance.wim.CurrentFolder.Name;
-                                if (currentFolderName == "/")
+                                else
                                 {
-                                    currentFolderName = container.CurrentListInstance.wim.CurrentSite.Name;
-                                }
 
-                                bread = string.Format(@"
+                                    string currentFolderName = container.CurrentListInstance.wim.CurrentFolder.Name;
+                                    if (currentFolderName == "/")
+                                    {
+                                        currentFolderName = container.CurrentListInstance.wim.CurrentSite.Name;
+                                    }
+
+                                    bread = string.Format(@"
     <div class=""trail"">
 		<a href=""?folder={2}"" class=""back"">Back</a>
         <menu id=""breadCrumbs"">
@@ -544,213 +502,214 @@ namespace Sushi.Mediakiwi.Framework.Presentation
 	    </menu>
 	</div>
 "
-                                    , container.AddApplicationPath(CommonConfiguration.PORTAL_PATH)
-                                    , container.CurrentList.Name
-                                    , container.CurrentListInstance.wim.CurrentFolder.ID //2
-                                    , currentFolderName //3
-                                    );
+                                        , container.AddApplicationPath(CommonConfiguration.PORTAL_PATH)
+                                        , container.CurrentList.Name
+                                        , container.CurrentListInstance.wim.CurrentFolder.ID //2
+                                        , currentFolderName //3
+                                        );
+                                }
                             }
                         }
-                    }
 
 
-                    
-                    //<a href=\"#\" class=\"button\">Wijzigen</a>
-                    #endregion Breadcrumbs
 
-                    title = string.Format("\n\t\t\t\t\t<header>{0}{1}\n\t\t\t\t\t</header>{2}"
-                        , bread, pageTitle, report
-                    );
+                        //<a href=\"#\" class=\"button\">Wijzigen</a>
+                        #endregion Breadcrumbs
 
-                    if (!string.IsNullOrEmpty(description))
-                        title += string.Format("<article>{0}</article>", description);
+                        title = string.Format("\n\t\t\t\t\t<header>{0}{1}\n\t\t\t\t\t</header>{2}"
+                            , bread, pageTitle, report
+                        );
 
-                    // [CB:24-06-2015] Functionality regarding the bar to add 
-                    // TODO check CanAddNewPageComponents property
-                    if (container.CurrentPage != null)
-                    {
-                        var target = container.Request.Query["tab"].ToString();
-                        if (string.IsNullOrEmpty(target))
+                        if (!string.IsNullOrEmpty(description))
+                            title += string.Format("<article>{0}</article>", description);
+
+                        // [CB:24-06-2015] Functionality regarding the bar to add 
+                        // TODO check CanAddNewPageComponents property
+                        if (container.CurrentPage != null)
                         {
-                            var sections = container.CurrentPage.Template.GetPageSections();
-                            if (sections != null)
-                                target = sections.FirstOrDefault();
-                        }
-                        AddPageComponentControl addpageComponent = new AddPageComponentControl(container.CurrentPage, container);
+                            var target = container.Request.Query["tab"].ToString();
+                            if (string.IsNullOrEmpty(target))
+                            {
+                                var sections = container.CurrentPage.Template.GetPageSections();
+                                if (sections != null)
+                                    target = sections.FirstOrDefault();
+                            }
+                            AddPageComponentControl addpageComponent = new AddPageComponentControl(container.CurrentPage, container);
 
-                        var isSecundary = false;
-                        var components = ComponentVersion.SelectAll(container.CurrentPage.ID);
-                        var visibleComponents = Data.Component.VerifyVisualisation(container.CurrentPage.Template, components, target, ref isSecundary, true);
+                            var isSecundary = false;
+                            var components = ComponentVersion.SelectAll(container.CurrentPage.ID);
+                            var visibleComponents = Data.Component.VerifyVisualisation(container.CurrentPage.Template, components, target, ref isSecundary, true);
 
-                        addpageComponent.StartOpen = visibleComponents.Length == 0; //handig voor dev, hoef je dat ding niet steeds te openen
+                            addpageComponent.StartOpen = visibleComponents.Length == 0; //handig voor dev, hoef je dat ding niet steeds te openen
 
-                        int slot = 0;
-                        if (target == Data.CommonConfiguration.DEFAULT_CONTENT_TAB)
-                        {
-                            slot = 1;
-                            target = null;
-                        }
+                            int slot = 0;
+                            if (target == Data.CommonConfiguration.DEFAULT_CONTENT_TAB)
+                            {
+                                slot = 1;
+                                target = null;
+                            }
 
-                        IAvailableTemplate[] availableComponentTemplates = null;
+                            IAvailableTemplate[] availableComponentTemplates = null;
 
-                        //if (container.CurrentPage.Template.IsSourceBased)
-                        //{
-                        //    availableComponentTemplates = Sushi.Mediakiwi.Data.AvailableTemplate.SelectAllBySlot(slot);
-                        //}
-                        //else
-                        //{
+                            //if (container.CurrentPage.Template.IsSourceBased)
+                            //{
+                            //    availableComponentTemplates = Sushi.Mediakiwi.Data.AvailableTemplate.SelectAllBySlot(slot);
+                            //}
+                            //else
+                            //{
                             availableComponentTemplates = AvailableTemplate.SelectAll(container.CurrentPage.TemplateID);
-                        //}
+                            //}
 
-                        var visibleAvailableComponents = Data.Component.VerifyVisualisation(container.CurrentPage.Template, availableComponentTemplates, target, ref isSecundary, true);
+                            var visibleAvailableComponents = Data.Component.VerifyVisualisation(container.CurrentPage.Template, availableComponentTemplates, target, ref isSecundary, true);
 
 
-                        int selectableElements = 0;
-                        foreach (var item in visibleAvailableComponents)
-                        {
-                            var ct = item.Template;
-                            // TODO: filter out for the container 
-
-                           
-                            var newPco = new PageComponentOption()
+                            int selectableElements = 0;
+                            foreach (var item in visibleAvailableComponents)
                             {
-                                ID = ct.ID,
-                                Icon = "align-left",
-                                Name = ct.Name,
-                                OnlyOneUsage = !ct.CanReplicate
-                            };
+                                var ct = item.Template;
+                                // TODO: filter out for the container 
 
-                            if (!ct.CanReplicate)
-                            {
-                                //  Check if it is present on the page
-                                var count = visibleComponents.Count(x => x.Template.ID == ct.ID);
-                                if (count > 0)
-                                    newPco.HideOnInit = true;
+
+                                var newPco = new PageComponentOption()
+                                {
+                                    ID = ct.ID,
+                                    Icon = "align-left",
+                                    Name = ct.Name,
+                                    OnlyOneUsage = !ct.CanReplicate
+                                };
+
+                                if (!ct.CanReplicate)
+                                {
+                                    //  Check if it is present on the page
+                                    var count = visibleComponents.Count(x => x.Template.ID == ct.ID);
+                                    if (count > 0)
+                                        newPco.HideOnInit = true;
+                                    else
+                                        selectableElements++;
+                                }
                                 else
                                     selectableElements++;
+
+                                if (!(newPco.HideOnInit && ct.IsFixedOnPage))  // filter out fixed on page that are on page. 
+                                    addpageComponent.Options.Add(newPco);
                             }
-                            else
-                                selectableElements++;
+                            //foreach (var item in possibleComponentTemplates)
+                            //{
+                            //    Sushi.Mediakiwi.Data.ComponentTemplate ct = Sushi.Mediakiwi.Data.ComponentTemplate.SelectOne(item.ComponentTemplateID);
+                            //    // TODO: filter out for the container 
 
-                            if (!(newPco.HideOnInit && ct.IsFixedOnPage))  // filter out fixed on page that are on page. 
-                                addpageComponent.Options.Add(newPco);
+                            //    if (item.Target == target  )
+                            //    {
+                            //        var newPco = new PageComponentOption()
+                            //          {
+                            //              ID = item.ComponentTemplateID,
+                            //              Icon = "align-left",
+                            //              Name = item.ComponentTemplate,
+                            //              OnlyOneUsage = !ct.CanReplicate
+                            //          };
+
+
+                            //        if (!ct.CanReplicate)
+                            //        {
+                            //            //  Check if it is present on the page
+                            //            var count = currentComponents.Count(x => x.TemplateID == ct.ID);
+                            //            if (count > 0)
+                            //                newPco.HideOnInit = true;
+                            //            else
+                            //                selectableElements++;
+                            //        }
+                            //        else
+                            //            selectableElements++;
+
+                            //        if (!(newPco.HideOnInit && ct.IsFixedOnPage))  // filter out fixed on page that are on page. 
+                            //            addpageComponent.Options.Add(newPco);
+                            //    }
+                            //}
+                            if (selectableElements > 0)
+                                builder.Formdata = string.Concat(builder.Formdata, addpageComponent.RenderControl());
+
                         }
-                        //foreach (var item in possibleComponentTemplates)
+                        if (!container.CurrentListInstance.wim.Page.HideDataForm)
+                        {
+                            if (builder.Formdata.Contains("<bottombuttonbar />"))
+                                builder.Formdata = builder.Formdata.Replace("<bottombuttonbar />", builder.Bottom);
+                            else
+                                builder.Formdata = string.Concat(builder.Formdata, builder.Bottom);
+                        }
+
+                        //builder.Formdata = string.Concat(builder.Notifications.ToString()
+                        //        , builder.Formdata
+                        //);
+                        //builder.Formdata = builder.Formdata;
+                        builder.Rightnav += builder.Notifications.ToString();
+
+                        //  When there is no form, report or description the topsection looks empty, so add a shrink class
+                        bool noTopSectionData = !builder.Formdata.Contains("table");// && string.IsNullOrEmpty(report);
+
+                        string reportTop = null;
+                        string reportMiddle = null;
+
+                        //if (container.CurrentListInstance.wim.Page.ShowReportFirst)
                         //{
-                        //    Sushi.Mediakiwi.Data.ComponentTemplate ct = Sushi.Mediakiwi.Data.ComponentTemplate.SelectOne(item.ComponentTemplateID);
-                        //    // TODO: filter out for the container 
-
-                        //    if (item.Target == target  )
-                        //    {
-                        //        var newPco = new PageComponentOption()
-                        //          {
-                        //              ID = item.ComponentTemplateID,
-                        //              Icon = "align-left",
-                        //              Name = item.ComponentTemplate,
-                        //              OnlyOneUsage = !ct.CanReplicate
-                        //          };
-
-
-                        //        if (!ct.CanReplicate)
-                        //        {
-                        //            //  Check if it is present on the page
-                        //            var count = currentComponents.Count(x => x.TemplateID == ct.ID);
-                        //            if (count > 0)
-                        //                newPco.HideOnInit = true;
-                        //            else
-                        //                selectableElements++;
-                        //        }
-                        //        else
-                        //            selectableElements++;
-
-                        //        if (!(newPco.HideOnInit && ct.IsFixedOnPage))  // filter out fixed on page that are on page. 
-                        //            addpageComponent.Options.Add(newPco);
-                        //    }
+                        //    reportTop = string.Concat(@"<section id=""dash2"" class=""component"">", report, "</section>");
                         //}
-                        if (selectableElements > 0)
-                            builder.Formdata = string.Concat(builder.Formdata, addpageComponent.RenderControl());
+                        //else
+                        //    reportMiddle = string.Concat(@"<section id=""dash2"" class=""component"">", report, "</section>");
 
-                    }
-                    if (!container.CurrentListInstance.wim.Page.HideDataForm)
-                    {
-                        if (builder.Formdata.Contains("<bottombuttonbar />"))
-                            builder.Formdata = builder.Formdata.Replace("<bottombuttonbar />", builder.Bottom);
-                        else
-                            builder.Formdata = string.Concat(builder.Formdata, builder.Bottom);
-                    }
+                        if (container.CurrentListInstance.wim.HideTitle)
+                            title = null;
 
-                    //builder.Formdata = string.Concat(builder.Notifications.ToString()
-                    //        , builder.Formdata
-                    //);
-                    //builder.Formdata = builder.Formdata;
-                    builder.Rightnav += builder.Notifications.ToString();
-
-                    //  When there is no form, report or description the topsection looks empty, so add a shrink class
-                    bool noTopSectionData = !builder.Formdata.Contains("table");// && string.IsNullOrEmpty(report);
-
-                    string reportTop = null;
-                    string reportMiddle = null;
-
-                    //if (container.CurrentListInstance.wim.Page.ShowReportFirst)
-                    //{
-                    //    reportTop = string.Concat(@"<section id=""dash2"" class=""component"">", report, "</section>");
-                    //}
-                    //else
-                    //    reportMiddle = string.Concat(@"<section id=""dash2"" class=""component"">", report, "</section>");
-
-                    if (container.CurrentListInstance.wim.HideTitle)
-                        title = null;
-
-                    if (string.IsNullOrEmpty(title))
-                        section = string.Concat(reportTop
-                        , builder.Rightnav);
-                    else
-                        section = string.Concat(reportTop, section_start
-                            , title
-                            , section_end
+                        if (string.IsNullOrEmpty(title))
+                            section = string.Concat(reportTop
                             , builder.Rightnav);
-
-                    if (!string.IsNullOrEmpty(builder.Formdata))
-                    {
-                        bool isListItem = (builder.Canvas.Type == CanvasType.ListItem
-                            || builder.Canvas.Type == CanvasType.ListItemInLayer
-                            );
-
-                        section += string.Concat(
-                                isListItem
-                                ? "\n\t\t\t\t<section id=\"formStylesv2\" class=\"component forms\"><div class=\"container\">"
-                                : string.Format("\n\t\t\t\t<section id=\"formFilter\" class=\"formfilters\" style=\"display:{0}\">", container.CurrentListInstance.wim.Page.HideFormFilter ? "none" : "block")
-                            , builder.Formdata
-                            , isListItem
-                                ? "\n\t\t\t\t</div>"
-                                : string.Empty
-                            , section_end
-                            , reportMiddle);
-                    }
-
-                    if (container.CurrentListInstance.wim.Page.Body.Grid._GridAddition != null)
-                    {
-                        if (container.CurrentListInstance.wim.Page.Body.Grid._ClearGridBase)
-                            section += container.CurrentListInstance.wim.Page.Body.Grid._GridAddition.ToString();
                         else
-                            section +=
-                                container.CurrentListInstance.wim.Page.Body.Grid._GridAddition.ToString();
+                            section = string.Concat(reportTop, section_start
+                                , title
+                                , section_end
+                                , builder.Rightnav);
+
+                        if (!string.IsNullOrEmpty(builder.Formdata))
+                        {
+                            bool isListItem = (builder.Canvas.Type == CanvasType.ListItem
+                                || builder.Canvas.Type == CanvasType.ListItemInLayer
+                                );
+
+                            section += string.Concat(
+                                    isListItem
+                                    ? "\n\t\t\t\t<section id=\"formStylesv2\" class=\"component forms\"><div class=\"container\">"
+                                    : string.Format("\n\t\t\t\t<section id=\"formFilter\" class=\"formfilters\" style=\"display:{0}\">", container.CurrentListInstance.wim.Page.HideFormFilter ? "none" : "block")
+                                , builder.Formdata
+                                , isListItem
+                                    ? "\n\t\t\t\t</div>"
+                                    : string.Empty
+                                , section_end
+                                , reportMiddle);
+                        }
+
+                        if (container.CurrentListInstance.wim.Page.Body.Grid._GridAddition != null)
+                        {
+                            if (container.CurrentListInstance.wim.Page.Body.Grid._ClearGridBase)
+                                section += container.CurrentListInstance.wim.Page.Body.Grid._GridAddition.ToString();
+                            else
+                                section +=
+                                    container.CurrentListInstance.wim.Page.Body.Grid._GridAddition.ToString();
+                        }
+                        else
+                        {
+                            section += string.Concat(
+                                    container.CurrentListInstance.wim.Page.HideDataGrid || string.IsNullOrEmpty(builder.SearchGrid)
+                                    ? null
+                                    : string.Concat(string.Format("\n\t\t\t\t<section id=\"datagrid\" class=\"{1}{0}\">"
+                                            , container.CurrentListInstance.wim.CurrentList.Option_SearchAsync ? " async" : string.Empty
+                                            , container.CurrentListInstance.wim.Page.Body.Grid.ClassName)
+                                        , builder.SearchGrid
+                                        , section_end
+                                        )
+                                );
+                        }
                     }
-                    else
-                    {
-                        section += string.Concat(
-                                container.CurrentListInstance.wim.Page.HideDataGrid || string.IsNullOrEmpty(builder.SearchGrid)
-                                ? null
-                                : string.Concat(string.Format("\n\t\t\t\t<section id=\"datagrid\" class=\"{1}{0}\">"
-                                        , container.CurrentListInstance.wim.CurrentList.Option_SearchAsync ? " async" : string.Empty
-                                        , container.CurrentListInstance.wim.Page.Body.Grid.ClassName)
-                                    , builder.SearchGrid
-                                    , section_end
-                                    )
-                            );
-                    }
+                    #endregion List information
                 }
-                #endregion List information
             }
 
             string candidate = null;
@@ -801,7 +760,6 @@ namespace Sushi.Mediakiwi.Framework.Presentation
 
                 //if (container.CurrentListInstance.wim.Page.Head._HeadAddition != null)
                 //    layerHead += container.CurrentListInstance.wim.Page.Head._HeadAddition.ToString();
-
                 if (string.IsNullOrEmpty(m_container.CurrentListInstance.wim.HeaderScript))
                     layerHead += m_container.CurrentListInstance.wim.HeaderScript;
                 #endregion layerHead
@@ -861,7 +819,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation
                 if (container.CurrentListInstance.wim.Page.Body._BodyTarget == Body.BodyTarget.Nested)
                     section += bodyAddition;
 
-                string navigation = builder.Leftnav;
+                string navigation = builder?.Leftnav;
 
                 if (container.CurrentListInstance.wim.Page.Body.Navigation.Side._ClearBodyBase)
                     navigation = string.Empty;
