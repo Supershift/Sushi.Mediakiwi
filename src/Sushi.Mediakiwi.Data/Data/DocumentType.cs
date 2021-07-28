@@ -4,6 +4,17 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
+namespace Sushi.Mediakiwi.Data.Data
+{
+    public class DocumentType
+    {
+        public DocumentType()
+        {
+
+        }
+    }
+}
+
 namespace Sushi.Mediakiwi.Data
 {
     public class DocumentType
