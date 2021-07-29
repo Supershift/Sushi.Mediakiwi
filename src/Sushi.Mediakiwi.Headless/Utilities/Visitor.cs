@@ -12,9 +12,10 @@ namespace Sushi.Mediakiwi.Headless.Utilities
         public Visitor(HttpContext context)
         {
             m_Context = context;
-            this.TicketName = ".auth";
-            this.Password = m_Context.Request.Headers["User-Agent"];
-            this.LifeTime = DateTime.UtcNow.AddMinutes(15);
+            TicketName = ".auth";
+            Password = Common.GetPassPhraseFromContext(m_Context);
+
+            LifeTime = DateTime.UtcNow.AddMinutes(15);
         }
 
         /// <summary>
@@ -90,7 +91,7 @@ namespace Sushi.Mediakiwi.Headless.Utilities
         /// </summary>
         public virtual void Save()
         {
-            this.CreateTicket();
+            CreateTicket();
         }
 
         /// <summary>
@@ -100,10 +101,10 @@ namespace Sushi.Mediakiwi.Headless.Utilities
         /// <param name="Value">Value belonging to the key</param>
         public void AddValue(string key, string Value)
         {
-            if (this.CookieSettings == null)
-                this.CookieSettings = new NameValueCollection();
+            if (CookieSettings == null)
+                CookieSettings = new NameValueCollection();
 
-            this.CookieSettings.Add(key, Value);
+            CookieSettings.Add(key, Value);
         }
 
         /// <summary>
@@ -199,7 +200,7 @@ namespace Sushi.Mediakiwi.Headless.Utilities
                         httpContext.Response.Cookies.Append(TicketName, encryption, new CookieOptions()
                         {
                             Expires = LifeTime,
-                            Domain = this.Domain.Split(':')[0],
+                            Domain = Domain.Split(':')[0],
                             HttpOnly = true,
                             Secure = true,
                             IsEssential = true
