@@ -351,6 +351,34 @@ namespace Sushi.Mediakiwi.Framework
             }
         }
 
+        internal bool IsInitialLoaded
+        {
+            get
+            {
+                if (m_ForceLoadEvent)
+                {
+                    return true;
+                }
+                //  Return true when there is no postback or state == -1 detected 
+
+                if (Context.Request.HasFormContentType)
+                {
+                    // Introduced as of $ which can not be used for the richtextbox
+                    string cleanKey = ID.Replace("$", string.Empty);
+                    foreach (string key in Context.Request.Form.Keys)
+                    {
+                        // Introduced as of $ which can not be used for the richtextbox
+                        string candidate = key.Replace("$", string.Empty);
+                        if (cleanKey == candidate)
+                        {
+                            return false;
+                        }
+                    }
+                }
+                return !Console.HasPost;
+            }
+        }
+
         public bool IsInheritedField { get; set; }
         internal protected bool IsEnabled(bool isEnabled = true)
         {

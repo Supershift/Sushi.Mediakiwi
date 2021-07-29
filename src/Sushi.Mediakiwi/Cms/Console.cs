@@ -150,34 +150,34 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
             }
         }
 
-        //internal bool HasPost
-        //{
-        //    get
-        //    {
-        //        if (!Context.Request.HasFormContentType)
-        //            return false;
+        internal bool HasPost
+        {
+            get
+            {
+                if (!Context.Request.HasFormContentType)
+                    return false;
 
-        //        if (IsJson)
-        //        {
-        //            if (JsonForm != null)
-        //            {
-        //                if (JsonForm.Count == 0) return false;
-        //                return true;
-        //            }
-        //            return false;
-        //        }
-        //        else
-        //        {
-        //            if (!Context.Request.HasFormContentType)
-        //                return false;
+                if (IsJson)
+                {
+                    if (JsonForm != null)
+                    {
+                        if (JsonForm.Count == 0) return false;
+                        return true;
+                    }
+                    return false;
+                }
+                else
+                {
+                    if (!Context.Request.HasFormContentType)
+                        return false;
 
-        //            if (Context.Request.Form.Count == 0) 
-        //                return false;
+                    if (Context.Request.Form.Count == 0)
+                        return false;
 
-        //            return true;
-        //        }
-        //    }
-        //}
+                    return true;
+                }
+            }
+        }
 
         public string JsonReferrer
         {
