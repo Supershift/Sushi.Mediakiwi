@@ -145,9 +145,22 @@ namespace Sushi.Mediakiwi.Framework
         {
             _instance = instance;
             Side = new SideNavigation(instance);
+            Menu = new ButtonMenu(instance);
         }
 
         public SideNavigation Side { get; set; }
+        public ButtonMenu Menu { get; set; }
+    }
+
+    public class ButtonMenu
+    {
+        public ButtonTarget DeleteButtonTarget = ButtonTarget.TopRight;
+
+        WimComponentListRoot _instance;
+        public ButtonMenu(WimComponentListRoot instance)
+        {
+            _instance = instance;
+        }
     }
 
     public class SideNavigation

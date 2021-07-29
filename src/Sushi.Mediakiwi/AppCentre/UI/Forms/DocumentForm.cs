@@ -31,6 +31,7 @@ namespace Sushi.Mediakiwi.AppCentre.UI.Forms
             }
             
             Map(x => x.GalleryID).FolderSelect("Folder", true, FolderType.Gallery);
+            Map(x => x.RemoteLocation).TextLine("Url");
         }
 
         public override void Evaluate()

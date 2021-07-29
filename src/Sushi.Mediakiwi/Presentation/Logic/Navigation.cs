@@ -1110,6 +1110,17 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                     isTextMode = true;
                 }
 
+                if (container.CurrentListInstance.wim.HasListDelete && container.Item.GetValueOrDefault() > 0)
+                {
+                    if (container.CurrentListInstance.wim.Page.Body.Navigation.Menu.DeleteButtonTarget == ButtonTarget.BottomLeft || container.CurrentListInstance.wim.Page.Body.Navigation.Menu.DeleteButtonTarget == ButtonTarget.BottomRight)
+                    {
+                        var target = container.CurrentListInstance.wim.Page.Body.Navigation.Menu.DeleteButtonTarget == ButtonTarget.BottomLeft ? " left" : " right";
+                        var button = $"<li><a href=\"#\" id=\"delete\" class=\"abbr type_confirm left flaticon icon-trash-o{target}\"{ConfirmationQuestion(true, container)} title=\"{Labels.ResourceManager.GetString("delete", new CultureInfo(container.CurrentApplicationUser.LanguageCulture))}\"></a></li>";
+
+                        build2.Append(button);
+                    }
+                }
+
                 if (container.CurrentListInstance.wim.HasListSave && (container.CurrentListInstance.wim.CanAddNewItem || container.Item.GetValueOrDefault() > 0 || container.CurrentListInstance.wim.CurrentList.IsSingleInstance))
                 {
                     if (!container.CurrentListInstance.wim.HideSaveButtons && container.CurrentListInstance.wim.CurrentList.Data["wim_CanSave"].ParseBoolean(true))
@@ -1445,7 +1456,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
 
                         if (container.CurrentListInstance.wim.CurrentApplicationUser.IsDeveloper)
                         {
-                           
+
                             if (container.CurrentListInstance.wim.CurrentApplicationUser.ShowHidden)
                             {
                                 Build_TopRight.AppendFormat(@"<li><abbr title=""{0}""><a href=""#"" id=""dev_showvisible"" class=""flaticon icon-eye2 postBack""></a></abbr></li>"
@@ -1457,7 +1468,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                                 Build_TopRight.AppendFormat(@"<li><abbr title=""{0}""><a href=""#"" id=""dev_showhidden"" class=""flaticon icon-eye-slash postBack""></a></abbr></li>"
                                  , "Show hidden"
                                  );
-                        
+
                             }
                         }
 
@@ -1549,7 +1560,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                         && !container.CurrentListInstance.wim.HideCreateNew
                         && container.GroupItem.HasValue
                         )
-                        
+
                         Build_TopLeft.Append(string.Format("<li><a id=\"new\" class=\"submit\" href=\"{0}\">{1}</a></li>", container.UrlBuild.GetListNewRecordRequest(), newRecord
                        , Labels.ResourceManager.GetString("edit", new CultureInfo(container.CurrentApplicationUser.LanguageCulture))
 
@@ -1560,22 +1571,31 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                         if (container.CurrentListInstance.wim.HasListDelete && !container.CurrentListInstance.wim.HideDelete && container.Item.GetValueOrDefault() > 0)
                         {
                             if (container.CurrentListInstance.wim.CurrentList.Data["wim_CanDelete"].ParseBoolean(true))
-                                Build_TopLeft.Append(string.Format("<li><a href=\"#\" id=\"delete\" class=\"abbr type_confirm left flaticon icon-trash-o\"{1} title=\"{0}\"></a></li>"
-                                    , Labels.ResourceManager.GetString("delete", new CultureInfo(container.CurrentApplicationUser.LanguageCulture))
-                                    , ConfirmationQuestion(true, container)
-                                    ));
+                            {
+                                var button = $"<li><a href=\"#\" id=\"delete\" class=\"abbr type_confirm left flaticon icon-trash-o\"{ConfirmationQuestion(true, container)} title=\"{Labels.ResourceManager.GetString("delete", new CultureInfo(container.CurrentApplicationUser.LanguageCulture))}\"></a></li>";
+
+                                switch (container.CurrentListInstance.wim.Page.Body.Navigation.Menu.DeleteButtonTarget)
+                                {
+                                    case ButtonTarget.TopLeft:
+                                        Build_TopLeft.Append(button);
+                                        break;
+                                    case ButtonTarget.TopRight:
+                                        Build_TopRight.Append(button);
+                                        break;
+                                }
+                            }
 
                             builder.ApiResponse.Buttons.Add(new MediakiwiField()
                             {
                                 PropertyName = "delete",
-                                Title = string.Empty,//Labels.ResourceManager.GetString("delete", new CultureInfo(container.CurrentApplicationUser.LanguageCulture)),
+                                Title = string.Empty,
                                 PropertyType = "bool",
                                 VueType = MediakiwiFormVueType.wimButton,
                                 Event = MediakiwiJSEvent.click,
                                 ClassName = "abbr type_confirm left flaticon icon-trash-o",
                                 Section = ButtonSection.Top,
                                 ContentTypeID = ContentType.Button
-                            }); ;
+                            });
                         }
                     }
 
@@ -1652,10 +1672,17 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                 {
                     if (container.CurrentListInstance.wim.HasListDelete && container.Item.GetValueOrDefault() > 0)
                     {
-                        Build_TopRight.Append(string.Format("<li><a href=\"#\" id=\"delete\" class=\"abbr type_confirm left flaticon icon-trash-o\"{1} title=\"{0}\"></a></li>"
-                            , Labels.ResourceManager.GetString("delete", new CultureInfo(container.CurrentApplicationUser.LanguageCulture))
-                            , ConfirmationQuestion(true, container)
-                            ));
+                        var button = $"<li><a href=\"#\" id=\"delete\" class=\"abbr type_confirm left flaticon icon-trash-o\"{ConfirmationQuestion(true, container)} title=\"{Labels.ResourceManager.GetString("delete", new CultureInfo(container.CurrentApplicationUser.LanguageCulture))}\"></a></li>";
+
+                        switch (container.CurrentListInstance.wim.Page.Body.Navigation.Menu.DeleteButtonTarget)
+                        {
+                            case ButtonTarget.TopLeft:
+                                Build_TopLeft.Append(button);
+                                break;
+                            case ButtonTarget.TopRight:
+                                Build_TopRight.Append(button);
+                                break;
+                        }
                     }
                 }
             }
@@ -1689,7 +1716,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                 else if (isEditMode)
                 {
                     Page page = Page.SelectOne(container.Item.Value, false);
-                    
+
                     var pagePreviewHandler = new PagePreview();
                     ICollection<IPageModule> pageModules = default(List<IPageModule>);
 
@@ -1697,7 +1724,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                     {
                         pageModules = container.Context.RequestServices.GetServices<IPageModule>().ToList();
                     }
-       
+
                     if (page.IsPublished)
                     {
                         Build_TopRight.AppendFormat("<li><a href=\"{0}\" target=\"preview\" class=\"abbr submit\">{1}</a></li>"
@@ -1707,7 +1734,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                     }
 
                     Build_TopRight.AppendFormat("<li><a href=\"{0}\" target=\"preview\" class=\"abbr submit\">{1}</a></li>"
-                            , pagePreviewHandler.GetPreviewUrl(page) 
+                            , pagePreviewHandler.GetPreviewUrl(page)
                             , Labels.ResourceManager.GetString("page_preview", new CultureInfo(container.CurrentApplicationUser.LanguageCulture))
                     );
 
@@ -1750,8 +1777,8 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                     );
 
                     Build_TopRight.AppendFormat("<li><a href=\"{0}&openinframe=1\" id=\"dev_refreshcode\" class=\"abbr flaticon  icon-clipboard Small\" title=\"{1}\"></a></li>"
-                     , container.UrlBuild.GetPageCopyContentRequest(container.CurrentPage.ID) 
-                     , Labels.ResourceManager.GetString("copy_page_content", new CultureInfo(container.CurrentApplicationUser.LanguageCulture)) 
+                     , container.UrlBuild.GetPageCopyContentRequest(container.CurrentPage.ID)
+                     , Labels.ResourceManager.GetString("copy_page_content", new CultureInfo(container.CurrentApplicationUser.LanguageCulture))
                      );
                     Build_TopRight.AppendFormat("<li><a href=\"{0}&openinframe=1\" id=\"dev_refreshcode\" class=\"abbr flaticon  icon-history Small\" title=\"{1}\"></a></li>"
                      , container.UrlBuild.GetPageHistoryRequest(container.CurrentPage.ID)

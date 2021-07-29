@@ -76,7 +76,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
             }
 
             m_Candidate = false;
-            if (IsInitialLoad || !isEditMode)
+            if (IsInitialLoaded || !isEditMode)
             {
                 if (IsBluePrint)
                 {

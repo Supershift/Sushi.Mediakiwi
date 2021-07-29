@@ -61,67 +61,11 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// <returns></returns>
         public void ProcessData(HttpContext context)
         {
-            //context.Response.Clear();
-            //context.Response.ContentType = "application/json";
-            //context.Response.ContentEncoding = System.Text.Encoding.UTF8;
-            //context.Response.Cache.SetCacheability(HttpCacheability.NoCache);
-            //context.Response.Write(Utilities.JSON.Instance.ToJSON(Parse(context)));
-            //context.Response.Flush();
-            //context.Response.End();
         }
-
-        //    object Parse(HttpContext context)
-        //    {
-        //        uploadResult result = new uploadResult();
-
-        //        // only do something when nonempty
-        //        if (context.Request.Files.Count > 0)
-        //        {
-        //            // Assign Gallery ID
-        //            var galleryID = Utility.ConvertToInt(context.Request.Form["gallery"], Sushi.Mediakiwi.Data.Gallery.SelectOneRoot().ID);
-
-        //            // get all files from request
-        //            HttpFileCollection files = context.Request.Files;
-        //            Sushi.Mediakiwi.Data.Gallery gallery = Sushi.Mediakiwi.Data.Gallery.SelectOne(galleryID);
-
-        //            // Loop through files to upload
-        //            for (int i = 0; i < files.Count; i++)
-        //            {
-        //                HttpPostedFile file = files[i];
-        //                Sushi.Mediakiwi.Data.Asset asset = new Sushi.Mediakiwi.Data.Asset();
-        //                asset.IsActive = false;
-        //                asset.SaveStream(file, gallery);
-
-        //                // JSON row for returning
-        //                uploadResultFile fileRow = new uploadResultFile();
-
-        //                fileRow.ID = asset.ID;
-
-        //                // Set size
-        //                fileRow.Length = file.ContentLength;
-
-        //                // Set Name
-        //                fileRow.Name = file.FileName;
-
-        //                // Set type
-        //                fileRow.Type = file.ContentType;
-
-        //                // Set Error or URL
-        //                fileRow.Thumbnail_url = asset.ThumbnailPath;
-
-        //                // Add uploaded file result to result
-        //                result.files.Add(fileRow);
-        //            }
-        //        }
-        //        return result;
-        //    }
     }
 
     public class Image : Document
     {
-        public Image()
-        {
-        }
     }
 
     /// <summary>
@@ -156,6 +100,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             wim.HideOpenCloseToggle = true;
             wim.OpenInEditMode = true;
             wim.Page.HideBreadCrumbs = true;
+            wim.Page.Body.Navigation.Menu.DeleteButtonTarget = ButtonTarget.BottomLeft;
 
             ListLoad += Document_ListLoad;
             ListSave += Document_ListSave;
@@ -278,9 +223,16 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                 }
 
                 var upload = await GetPersistor.UploadAsync(_Form.File.File.OpenReadStream(), Azure_Image_Container, _Form.File.File.FileName, _Form.File.File.ContentType).ConfigureAwait(false);
-                m_Implement.RemoteLocation = $"{Azure_Cdn_Uri}{upload.Uri.PathAndQuery}";
+                if (string.IsNullOrWhiteSpace(Azure_Cdn_Uri))
+                {
+                    m_Implement.RemoteLocation = $"{upload.Uri}";
+                }
+                else
+                {
+                    m_Implement.RemoteLocation = $"{Azure_Cdn_Uri}{upload.Uri.PathAndQuery}";
+                }
+                await m_Implement.SaveAsync().ConfigureAwait(false);
             }
-            await m_Implement.SaveAsync().ConfigureAwait(false);
 
             string info = null;
             if (currentAsset.IsImage)
@@ -447,6 +399,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// <param name="e">The <see cref="ComponentListEventArgs"/> instance containing the event data.</param>
         async Task Document_ListLoad(ComponentListEventArgs e)
         {
+
             AssetTypeSelectionList = new DataList();
 
             int rootAsset = Utility.ConvertToInt(Request.Query["base"], e.SelectedKey);
