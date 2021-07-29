@@ -174,5 +174,6 @@ namespace Sushi.Mediakiwi.Data.Configuration
         public System.Uri RedirectUrl { get; set; }
         public string Client { get; set; }
         public string Tenant { get; set; }
+        public string EmailClaim { get; set; }
     }
 }

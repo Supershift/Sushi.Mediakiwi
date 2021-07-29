@@ -38,8 +38,11 @@ namespace Sushi.Mediakiwi.Logic
                 var jsonToken = handler.ReadToken(idtoken);
                 var token = jsonToken as JwtSecurityToken;
 
-                var email = token.Claims.First(claim => claim.Type == "upn").Value;
-                return email;
+                var claimtype = string.IsNullOrWhiteSpace(WimServerConfiguration.Instance.Authentication.Aad.EmailClaim) ? "email" :
+                    WimServerConfiguration.Instance.Authentication.Aad.EmailClaim;
+
+                var email = token.Claims.First(claim => claim.Type.Equals(claimtype, StringComparison.CurrentCultureIgnoreCase));
+                return email?.Value;
             }
             return null;
         }
