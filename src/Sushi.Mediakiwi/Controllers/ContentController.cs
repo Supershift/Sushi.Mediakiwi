@@ -621,6 +621,16 @@ namespace Sushi.Mediakiwi.Controllers
             return status;
         }
 
+        // TODO: replace this on the fly with real data
+        // Same as PriceLogic.cs line 276
+        private Dictionary<string, List<string>> NestedComponentCollection { get; set; } = new Dictionary<string, List<string>>()
+        {
+            {
+                // PARENT :                               CHILDS :
+                "C000_NavigationFR", new List<string>() { "C000_MegaMenuColumn", "C000_MegaMenuLink" }
+            }
+        };
+
         /// <summary>
         /// Returns the full page content for the requested Page 
         /// </summary>
@@ -810,6 +820,28 @@ namespace Sushi.Mediakiwi.Controllers
                         {
                             mapped.Content.Add(fieldItem.Property, result.content);
                         }
+                    }
+                }
+
+                // Check if we have a NestedComponent Collection match for this (child) item
+                if (NestedComponentCollection.Any(x => x.Value.Contains(request.Component.Template.SourceTag)))
+                {
+                    // Find out to which parent this (child) component belongs
+                    var nestedItem = NestedComponentCollection.FirstOrDefault(x => x.Value.Contains(request.Component.Template.SourceTag));
+
+                    // Get the parent component in which this child component will be nested
+                    var parent = response.Components.FirstOrDefault(x => x.ComponentName.Equals(nestedItem.Key));
+                    if (parent != null)
+                    {
+                        if (parent.Nested == null)
+                        {
+                            parent.Nested = new List<ContentComponent>();
+                        }
+
+                        // Add this component to the Nested Collection of the Parent
+                        parent.Nested.Add(mapped);
+
+                        continue;
                     }
                 }
 
