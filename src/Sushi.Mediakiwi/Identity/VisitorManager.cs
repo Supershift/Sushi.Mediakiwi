@@ -113,7 +113,7 @@ namespace Sushi.Mediakiwi
             using (var auth = new AuthenticationLogic(Context))
             {
                 auth.TicketName = CommonConfiguration.AUTHENTICATION_COOKIE;
-                auth.Password = Context.Request.Headers["User-Agent"];
+                auth.Password = Common.GetPassPhraseFromContext(Context);
 
                 if (Context != null)
                 {
@@ -148,7 +148,7 @@ namespace Sushi.Mediakiwi
             using (var auth = new AuthenticationLogic(Context))
             {
                 auth.TicketName = CommonConfiguration.AUTHENTICATION_COOKIE;
-                auth.Password = Context.Request.Headers["User-Agent"];
+                auth.Password = Common.GetPassPhraseFromContext(Context);
 
                 if (Context != null)
                 {
@@ -331,7 +331,7 @@ namespace Sushi.Mediakiwi
             if (Context == null) return;
             using (var auth = new AuthenticationLogic(Context))
             {
-                auth.Password = Context.Request.Headers["User-Agent"];
+                auth.Password = Common.GetPassPhraseFromContext(Context);
                 auth.TicketName = CommonConfiguration.AUTHENTICATION_COOKIE;
 
                 auth.AddValue(m_Attribute_TimeStamp, DateTime.UtcNow.Ticks.ToString());

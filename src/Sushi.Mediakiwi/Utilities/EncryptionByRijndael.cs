@@ -3,7 +3,7 @@ using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace Wim.Utilities
+namespace Sushi.Mediakiwi.Utilities
 {
     /// <summary>
     /// This class uses a symmetric key algorithm (Rijndael/AES) to encrypt and
@@ -382,17 +382,18 @@ namespace Wim.Utilities
                                 string saltValue,
                                 int passwordIterations)
         {
+      
             // Save min salt length; set it to default if invalid value is passed.
             if (minSaltLen < MIN_ALLOWED_SALT_LEN)
-                this.minSaltLen = DEFAULT_MIN_SALT_LEN;
+                minSaltLen = DEFAULT_MIN_SALT_LEN;
             else
-                this.minSaltLen = minSaltLen;
+                minSaltLen = minSaltLen;
 
             // Save max salt length; set it to default if invalid value is passed.
             if (maxSaltLen < 0 || maxSaltLen > MAX_ALLOWED_SALT_LEN)
-                this.maxSaltLen = DEFAULT_MAX_SALT_LEN;
+                maxSaltLen = DEFAULT_MAX_SALT_LEN;
             else
-                this.maxSaltLen = maxSaltLen;
+                maxSaltLen = maxSaltLen;
 
             // Set the size of cryptographic key.
             if (keySize <= 0)
@@ -405,11 +406,11 @@ namespace Wim.Utilities
             else
                 hashAlgorithm = hashAlgorithm.ToUpper().Replace("-", "");
 
-            this.m_passPhrase = passPhrase;
-            this.m_initVector = initVector;
-            this.m_hashAlgorithm = hashAlgorithm;
-            this.PasswordIterations = passwordIterations;
-            this.m_keySize = keySize;
+            m_passPhrase = passPhrase;
+            m_initVector = initVector;
+            m_hashAlgorithm = hashAlgorithm;
+            PasswordIterations = passwordIterations;
+            m_keySize = keySize;
 
             AddExtraSalt(saltValue);
         }
@@ -448,16 +449,16 @@ namespace Wim.Utilities
             else
                 saltValueBytes = Encoding.ASCII.GetBytes(saltValue);
 
-            // Generate password, which will be used to derive the key.
             PasswordDeriveBytes password = new PasswordDeriveBytes(
-                                                       this.m_passPhrase,
-                                                       saltValueBytes,
-                                                       this.m_hashAlgorithm,
-                                                       this.PasswordIterations);
-
+                                                    m_passPhrase,
+                                                    saltValueBytes,
+                                                    m_hashAlgorithm,
+                                                    PasswordIterations);
+       
+         
             // Convert key to a byte array adjusting the size from bits to bytes.
             byte[] keyBytes = password.GetBytes(m_keySize / 8);
-            
+
             // Initialize Rijndael key object.
             RijndaelManaged symmetricKey = new RijndaelManaged();
 
