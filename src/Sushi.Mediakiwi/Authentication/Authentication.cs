@@ -8,7 +8,7 @@ namespace Sushi.Mediakiwi.Authentication
 {
     public class AuthenticationLogic : IDisposable
 	{
-        private Wim.Utilities.EncryptionByRijndael m_Encryption = null;
+        private Utilities.EncryptionByRijndael m_Encryption = null;
 
         public AuthenticationLogic()
         {
@@ -84,7 +84,7 @@ namespace Sushi.Mediakiwi.Authentication
             if (m_Encryption == null)
             {
                 string vector = "@1B2c3D4e5v6g7H8";
-                m_Encryption = new Wim.Utilities.EncryptionByRijndael(password, vector, 8, 16);
+                m_Encryption = new Utilities.EncryptionByRijndael(password, vector, 8, 16);
                 m_Encryption.PasswordIterations = 3;
             }
         }

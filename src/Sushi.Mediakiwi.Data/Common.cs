@@ -1,4 +1,5 @@
-﻿using Sushi.Mediakiwi.Data.Configuration;
+﻿using Microsoft.AspNetCore.Http;
+using Sushi.Mediakiwi.Data.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
@@ -357,6 +358,30 @@ namespace Sushi.Mediakiwi
         public static string FolderRoot
         {
             get { return "/"; }
+        }
+
+        public static string GetPassPhraseFromContext(HttpContext context)
+        {
+            string returnValue = string.Empty;
+
+            if (context?.Request?.Headers?.ContainsKey("User-Agent") == true)
+            {
+                returnValue = context.Request.Headers["User-Agent"];
+            }
+            else if (context?.Request?.Headers?.ContainsKey("Request-Id") == true)
+            {
+                returnValue = context.Request.Headers["Request-Id"];
+            }
+            else if (context?.Request?.Host != null && context?.Request?.Host.HasValue == true)
+            {
+                returnValue = context?.Request?.Host.Value;
+            }
+            else 
+            {
+                returnValue = EncryptionKey;
+            }
+
+            return returnValue;
         }
 
     }
