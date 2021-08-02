@@ -42,8 +42,8 @@ namespace Sushi.Mediakiwi.Headless.Utilities
         private static int DEFAULT_MAX_SALT_LEN = 8;
 
         // Use these members to save min and max salt lengths.
-        private int minSaltLen = -1;
-        private int maxSaltLen = -1;
+        private int m_minSaltLen = -1;
+        private int m_maxSaltLen = -1;
 
         // These members will be used to perform encryption and decryption.
         private ICryptoTransform encryptor = null;
@@ -384,15 +384,15 @@ namespace Sushi.Mediakiwi.Headless.Utilities
         {
             // Save min salt length; set it to default if invalid value is passed.
             if (minSaltLen < MIN_ALLOWED_SALT_LEN)
-                this.minSaltLen = DEFAULT_MIN_SALT_LEN;
+                m_minSaltLen = DEFAULT_MIN_SALT_LEN;
             else
-                this.minSaltLen = minSaltLen;
+                m_minSaltLen = minSaltLen;
 
             // Save max salt length; set it to default if invalid value is passed.
             if (maxSaltLen < 0 || maxSaltLen > MAX_ALLOWED_SALT_LEN)
-                this.maxSaltLen = DEFAULT_MAX_SALT_LEN;
+                m_maxSaltLen = DEFAULT_MAX_SALT_LEN;
             else
-                this.maxSaltLen = maxSaltLen;
+                m_maxSaltLen = maxSaltLen;
 
             // Set the size of cryptographic key.
             if (keySize <= 0)
@@ -405,11 +405,11 @@ namespace Sushi.Mediakiwi.Headless.Utilities
             else
                 hashAlgorithm = hashAlgorithm.ToUpper().Replace("-", "");
 
-            this.m_passPhrase = passPhrase;
-            this.m_initVector = initVector;
-            this.m_hashAlgorithm = hashAlgorithm;
-            this.PasswordIterations = passwordIterations;
-            this.m_keySize = keySize;
+            m_passPhrase = passPhrase;
+            m_initVector = initVector;
+            m_hashAlgorithm = hashAlgorithm;
+            PasswordIterations = passwordIterations;
+            m_keySize = keySize;
 
             AddExtraSalt(saltValue);
         }
@@ -689,7 +689,7 @@ namespace Sushi.Mediakiwi.Headless.Utilities
 
             // If we are using salt, get its length from the first 4 bytes of plain
             // text data.
-            if (maxSaltLen > 0 && maxSaltLen >= minSaltLen)
+            if (m_maxSaltLen > 0 && m_maxSaltLen >= m_minSaltLen)
             {
                 saltLen = (decryptedBytes[0] & 0x03) |
                             (decryptedBytes[1] & 0x0c) |
@@ -727,7 +727,7 @@ namespace Sushi.Mediakiwi.Headless.Utilities
             // The max salt value of 0 (zero) indicates that we should not use 
             // salt. Also do not use salt if the max salt value is smaller than
             // the min value.
-            if (maxSaltLen == 0 || maxSaltLen < minSaltLen)
+            if (m_maxSaltLen == 0 || m_maxSaltLen < m_minSaltLen)
                 return plainTextBytes;
 
             // Generate the salt.
@@ -765,11 +765,11 @@ namespace Sushi.Mediakiwi.Headless.Utilities
             int saltLen = 0;
 
             // If min and max salt values are the same, it should not be random.
-            if (minSaltLen == maxSaltLen)
-                saltLen = minSaltLen;
+            if (m_minSaltLen == m_maxSaltLen)
+                saltLen = m_minSaltLen;
             // Use random number generator to calculate salt length.
             else
-                saltLen = GenerateRandomNumber(minSaltLen, maxSaltLen);
+                saltLen = GenerateRandomNumber(m_minSaltLen, m_maxSaltLen);
 
             // Allocate byte array to hold our salt.
             byte[] salt = new byte[saltLen];
