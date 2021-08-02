@@ -14,7 +14,7 @@
     <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
     <EnableNETAnalyzers>true</EnableNETAnalyzers>
     <RunAnalyzersDuringBuild>false</RunAnalyzersDuringBuild>
-    <AssemblyVersion>7.15.48.0</AssemblyVersion>
+    <AssemblyVersion>7.15.49.0</AssemblyVersion>
     <FileVersion>7.15.48.0</FileVersion>
   </PropertyGroup>
 
