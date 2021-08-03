@@ -154,9 +154,6 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
         {
             get
             {
-                if (!Context.Request.HasFormContentType)
-                    return false;
-
                 if (IsJson)
                 {
                     if (JsonForm != null)
