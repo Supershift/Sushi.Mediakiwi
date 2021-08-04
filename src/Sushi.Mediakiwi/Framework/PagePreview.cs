@@ -14,6 +14,10 @@ namespace Sushi.Mediakiwi.Framework
         /// <returns></returns>
         public virtual Uri GetPreviewUrl(Data.Page page)
         {
+            if (string.IsNullOrWhiteSpace(page?.HRefFull))
+            {
+                return null;
+            }
             return new Uri(string.Concat(page.HRefFull, "?preview=1"));
         }
 
