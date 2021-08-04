@@ -341,12 +341,12 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                 if (container.ItemType == RequestItemType.Page || isPageProperty)
                 {                    
                     Page currentPage;
-                    if (container.CurrentList.Type == ComponentListType.PageProperties)
+                    if (container.CurrentList.Type == ComponentListType.PageProperties && container.Item.HasValue)
                         currentPage = Page.SelectOne(container.Item.Value);
                     else
                         currentPage = container.CurrentPage;
 
-                    if (currentPage.Template.GetPageSections().Length > 0)
+                    if (currentPage?.Template?.GetPageSections()?.Length > 0)
                     {
                         var sections = currentPage.Template.GetPageSections();
 
@@ -1713,179 +1713,183 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
 
                     }
                 }
-                else if (isEditMode)
+                else if (isEditMode && container.Item.HasValue)
                 {
                     Page page = Page.SelectOne(container.Item.Value, false);
 
-                    var pagePreviewHandler = new PagePreview();
-                    ICollection<IPageModule> pageModules = default(List<IPageModule>);
-
-                    if (container?.Context?.RequestServices?.GetServices<IPageModule>().Any() == true)
+                    if (page.ID == container.Item.Value)
                     {
-                        pageModules = container.Context.RequestServices.GetServices<IPageModule>().ToList();
-                    }
 
-                    if (page.IsPublished)
-                    {
-                        Build_TopRight.AppendFormat("<li><a href=\"{0}\" target=\"preview\" class=\"abbr submit\">{1}</a></li>"
-                                , pagePreviewHandler.GetOnlineUrl(page)
-                                , Labels.ResourceManager.GetString("page_live", new CultureInfo(container.CurrentApplicationUser.LanguageCulture))
-                        );
-                    }
+                        var pagePreviewHandler = new PagePreview();
+                        ICollection<IPageModule> pageModules = default(List<IPageModule>);
 
-                    Build_TopRight.AppendFormat("<li><a href=\"{0}\" target=\"preview\" class=\"abbr submit\">{1}</a></li>"
-                            , pagePreviewHandler.GetPreviewUrl(page)
-                            , Labels.ResourceManager.GetString("page_preview", new CultureInfo(container.CurrentApplicationUser.LanguageCulture))
-                    );
-
-                    // ADd Page Modules (if any)
-                    if (pageModules?.Count > 0)
-                    {
-                        foreach (var pmodule in pageModules)
+                        if (container?.Context?.RequestServices?.GetServices<IPageModule>().Any() == true)
                         {
-                            if (pmodule.ShowOnPage(page, container.CurrentApplicationUser))
-                            {
-                                string confirmOption = "";
-                                string iconClass = (string.IsNullOrWhiteSpace(pmodule.IconURL)) ? pmodule.IconClass : "";
-                                string iconUrl = pmodule.IconURL;
-
-                                if (pmodule.ConfirmationNeeded)
-                                {
-                                    iconClass += " type_confirm";
-                                    confirmOption = ConfirmationQuestion(true, container, pmodule.ConfirmationQuestion, pmodule.ConfirmationTitle);
-                                }
-                                else
-                                {
-                                    iconClass += " postBack";
-                                }
-
-                                if (string.IsNullOrWhiteSpace(iconUrl) == false)
-                                    iconUrl = $"<img src=\"{iconUrl}\" width=\"16px\" height=\"16px\" />";
-                                Build_TopRight.AppendFormat("<li><a href=\"#\" id=\"pagemod_{3}\" class=\"abbr flaticon {1}\" title=\"{0}\"{2}>{4}</a></li>"
-                                    , pmodule.Tooltip
-                                    , iconClass
-                                    , confirmOption
-                                    , pmodule.GetType().Name
-                                    , iconUrl
-                                );
-                            }
+                            pageModules = container.Context.RequestServices.GetServices<IPageModule>().ToList();
                         }
-                    }
-                    Build_TopRight.AppendFormat("<li><a href=\"{0}&openinframe=1\" id=\"dev_refreshcode\" class=\"abbr flaticon icon-copy Small\" title=\"{1}\"></a></li>"
-                        , container.UrlBuild.GetPageCopyRequest(container.CurrentPage.ID)
-                        , "Copy page"
-                    );
 
-                    Build_TopRight.AppendFormat("<li><a href=\"{0}&openinframe=1\" id=\"dev_refreshcode\" class=\"abbr flaticon  icon-clipboard Small\" title=\"{1}\"></a></li>"
-                     , container.UrlBuild.GetPageCopyContentRequest(container.CurrentPage.ID)
-                     , Labels.ResourceManager.GetString("copy_page_content", new CultureInfo(container.CurrentApplicationUser.LanguageCulture))
-                     );
-                    Build_TopRight.AppendFormat("<li><a href=\"{0}&openinframe=1\" id=\"dev_refreshcode\" class=\"abbr flaticon  icon-history Small\" title=\"{1}\"></a></li>"
-                     , container.UrlBuild.GetPageHistoryRequest(container.CurrentPage.ID)
-                     , Labels.ResourceManager.GetString("page_history", new CultureInfo(container.CurrentApplicationUser.LanguageCulture))
-                     );
-
-                    if (!(container.CurrentPage == null || container.CurrentPage.ID == 0))
-                    {
-                        string path = container.MapPath(container.AddApplicationPath(page.Template.Location));
-                        if (System.IO.File.Exists(path))
+                        if (page.IsPublished)
                         {
-                            System.IO.FileInfo nfo = new System.IO.FileInfo(path);
-                            DateTime file = Utility.ConvertToSystemDataTime(nfo.LastWriteTimeUtc);
-
-                            // [MR:26-04-2019] when a file is smaller than 120 bytes, it's probably a marker file and
-                            // should not trigger an update.
-                            if (nfo.Length > 120 && (file.Ticks > page.Template.LastWriteTimeUtc.GetValueOrDefault().Ticks))
-                            {
-                                Build_TopRight.AppendFormat("<li><a href=\"{0}&refreshcode=1\" id=\"dev_refreshcode\" class=\"abbr action flaticon icon-refresh\" title=\"{1}\"></a></li>"
-                                    , container.UrlBuild.GetPageRequest(page)
-                                    , "The page possible has new form elements, click to update!"
-                                );
-                            }
-
-                        }
-                    }
-
-                    if (container.CurrentApplicationUser.IsDeveloper)
-                    {
-                        var list = ComponentList.SelectOne(ComponentListType.PageTemplates);
-
-                        Build_TopRight.AppendFormat("<li><a href=\"?list={0}&item={2}\" id=\"source\" class=\"abbr flaticon icon-code\" title=\"{1}\"></a></li>", list.ID
-                            , "Visit the pagetemplate", container.CurrentPage.Template.ID
+                            Build_TopRight.AppendFormat("<li><a href=\"{0}\" target=\"preview\" class=\"abbr submit\">{1}</a></li>"
+                                    , pagePreviewHandler.GetOnlineUrl(page)
+                                    , Labels.ResourceManager.GetString("page_live", new CultureInfo(container.CurrentApplicationUser.LanguageCulture))
                             );
-                    }
+                        }
 
-                    if (!page.IsPublished)
-                    {
-                        if (container.CurrentListInstance.wim.CurrentApplicationUserRole.CanDeletePage && !page.MasterID.HasValue)
+                        Build_TopRight.AppendFormat("<li><a href=\"{0}\" target=\"preview\" class=\"abbr submit\">{1}</a></li>"
+                                , pagePreviewHandler.GetPreviewUrl(page)
+                                , Labels.ResourceManager.GetString("page_preview", new CultureInfo(container.CurrentApplicationUser.LanguageCulture))
+                        );
+
+                        // ADd Page Modules (if any)
+                        if (pageModules?.Count > 0)
                         {
-                            Build_TopRight.AppendFormat("<li><a href=\"{0}\"{2} id=\"delete\" class=\"abbr type_confirm flaticon icon-trash-o\" title=\"{1}\"></a></li>"
-                                , "#"
-                                , Labels.ResourceManager.GetString("delete", new CultureInfo(container.CurrentApplicationUser.LanguageCulture))
-                                , ConfirmationQuestion(true, container)
+                            foreach (var pmodule in pageModules)
+                            {
+                                if (pmodule.ShowOnPage(page, container.CurrentApplicationUser))
+                                {
+                                    string confirmOption = "";
+                                    string iconClass = (string.IsNullOrWhiteSpace(pmodule.IconURL)) ? pmodule.IconClass : "";
+                                    string iconUrl = pmodule.IconURL;
+
+                                    if (pmodule.ConfirmationNeeded)
+                                    {
+                                        iconClass += " type_confirm";
+                                        confirmOption = ConfirmationQuestion(true, container, pmodule.ConfirmationQuestion, pmodule.ConfirmationTitle);
+                                    }
+                                    else
+                                    {
+                                        iconClass += " postBack";
+                                    }
+
+                                    if (string.IsNullOrWhiteSpace(iconUrl) == false)
+                                        iconUrl = $"<img src=\"{iconUrl}\" width=\"16px\" height=\"16px\" />";
+                                    Build_TopRight.AppendFormat("<li><a href=\"#\" id=\"pagemod_{3}\" class=\"abbr flaticon {1}\" title=\"{0}\"{2}>{4}</a></li>"
+                                        , pmodule.Tooltip
+                                        , iconClass
+                                        , confirmOption
+                                        , pmodule.GetType().Name
+                                        , iconUrl
+                                    );
+                                }
+                            }
+                        }
+                        Build_TopRight.AppendFormat("<li><a href=\"{0}&openinframe=1\" id=\"dev_refreshcode\" class=\"abbr flaticon icon-copy Small\" title=\"{1}\"></a></li>"
+                            , container.UrlBuild.GetPageCopyRequest(container.CurrentPage.ID)
+                            , "Copy page"
+                        );
+
+                        Build_TopRight.AppendFormat("<li><a href=\"{0}&openinframe=1\" id=\"dev_refreshcode\" class=\"abbr flaticon  icon-clipboard Small\" title=\"{1}\"></a></li>"
+                         , container.UrlBuild.GetPageCopyContentRequest(container.CurrentPage.ID)
+                         , Labels.ResourceManager.GetString("copy_page_content", new CultureInfo(container.CurrentApplicationUser.LanguageCulture))
+                         );
+                        Build_TopRight.AppendFormat("<li><a href=\"{0}&openinframe=1\" id=\"dev_refreshcode\" class=\"abbr flaticon  icon-history Small\" title=\"{1}\"></a></li>"
+                         , container.UrlBuild.GetPageHistoryRequest(container.CurrentPage.ID)
+                         , Labels.ResourceManager.GetString("page_history", new CultureInfo(container.CurrentApplicationUser.LanguageCulture))
+                         );
+
+                        if (!(container.CurrentPage == null || container.CurrentPage.ID == 0))
+                        {
+                            string path = container.MapPath(container.AddApplicationPath(page.Template.Location));
+                            if (System.IO.File.Exists(path))
+                            {
+                                System.IO.FileInfo nfo = new System.IO.FileInfo(path);
+                                DateTime file = Utility.ConvertToSystemDataTime(nfo.LastWriteTimeUtc);
+
+                                // [MR:26-04-2019] when a file is smaller than 120 bytes, it's probably a marker file and
+                                // should not trigger an update.
+                                if (nfo.Length > 120 && (file.Ticks > page.Template.LastWriteTimeUtc.GetValueOrDefault().Ticks))
+                                {
+                                    Build_TopRight.AppendFormat("<li><a href=\"{0}&refreshcode=1\" id=\"dev_refreshcode\" class=\"abbr action flaticon icon-refresh\" title=\"{1}\"></a></li>"
+                                        , container.UrlBuild.GetPageRequest(page)
+                                        , "The page possible has new form elements, click to update!"
+                                    );
+                                }
+
+                            }
+                        }
+
+                        if (container.CurrentApplicationUser.IsDeveloper)
+                        {
+                            var list = ComponentList.SelectOne(ComponentListType.PageTemplates);
+
+                            Build_TopRight.AppendFormat("<li><a href=\"?list={0}&item={2}\" id=\"source\" class=\"abbr flaticon icon-code\" title=\"{1}\"></a></li>", list.ID
+                                , "Visit the pagetemplate", container.CurrentPage.Template.ID
                                 );
                         }
-                    }
 
-                    if (page.MasterID.HasValue || page.Site.MasterID.HasValue)
-                    {
-                        if (page.InheritContentEdited)
+                        if (!page.IsPublished)
                         {
-                            //  Inherits content, so can localize
-                            Build_TopRight.AppendFormat("<li><a href=\"{0}\" id=\"page.localize\" class=\"submit postBack abbr\">{1}</a></li>"
-                                , "#"
-                                , Labels.ResourceManager.GetString("page_localise", new CultureInfo(container.CurrentApplicationUser.LanguageCulture))
-                                );
-
-
-
-                        }
-                        else
-                        {
-
-                            Build_TopRight.AppendFormat("<li><a href=\"{0}\" id=\"page.copy\" class=\"submit type_confirm postBack abbr\" {2}>{1}</a></li>"
-                                , "#"
-                                , Labels.ResourceManager.GetString("page_pastemode", new CultureInfo(container.CurrentApplicationUser.LanguageCulture))
-                                , ConfirmationQuestion(true, container)
-                                );
-
-                            //  Inherits no content, so can unlocalize
-                            Build_TopRight.AppendFormat("<li><a href=\"{0}\" id=\"page.inherit\" class=\"submit postBack abbr\">{1}</a></li>"
-                                , "#"
-                                , Labels.ResourceManager.GetString("page_inherit", new CultureInfo(container.CurrentApplicationUser.LanguageCulture))
-                                );
-
-                        }
-                    }
-
-                    if (container.CurrentListInstance.wim.CurrentApplicationUserRole.CanPublishPage)
-                    {
-                        var pagePublicationHandler = new PagePublication();
-                        pagePublicationHandler.ValidateConfirmation(container.CurrentApplicationUser, page);
-
-                        if (pagePublicationHandler.CanTakeOffline(container.CurrentApplicationUser, page))
-                        {
-                            if (page.Published != DateTime.MinValue)
-                                Build_TopRight.AppendFormat("<li><a href=\"{0}\" id=\"pageoffline\" class=\"abbr flaticon icon-power-off type_confirm\"{2} title=\"{1}\"></a></li>", "#"
-                                    , Labels.ResourceManager.GetString("page_takeoffline", new CultureInfo(container.CurrentApplicationUser.LanguageCulture))
+                            if (container.CurrentListInstance.wim.CurrentApplicationUserRole.CanDeletePage && !page.MasterID.HasValue)
+                            {
+                                Build_TopRight.AppendFormat("<li><a href=\"{0}\"{2} id=\"delete\" class=\"abbr type_confirm flaticon icon-trash-o\" title=\"{1}\"></a></li>"
+                                    , "#"
+                                    , Labels.ResourceManager.GetString("delete", new CultureInfo(container.CurrentApplicationUser.LanguageCulture))
                                     , ConfirmationQuestion(true, container)
                                     );
+                            }
                         }
 
-                        if (pagePublicationHandler.CanPublish(container.CurrentApplicationUser, page))
+                        if (page.MasterID.HasValue || page.Site.MasterID.HasValue)
                         {
-                            if (page.Published == DateTime.MinValue || page.Published.GetValueOrDefault().Ticks != page.Updated.Ticks)
+                            if (page.InheritContentEdited)
                             {
-                                Build_TopRight.AppendFormat("<li><a href=\"{0}\" id=\"pagepublish\" class=\"abbr submit {2}\"{3} title=\"{1}\">{1}</a></li>", "#"
-                                    , Labels.ResourceManager.GetString("page_publish", new CultureInfo(container.CurrentApplicationUser.LanguageCulture))
-                                    , pagePublicationHandler.AskConfirmation ? "type_confirm" : "postBack"
-                                    , ConfirmationQuestion(pagePublicationHandler.AskConfirmation, container
-                                        , pagePublicationHandler.ConfirmationQuestion
-                                        , pagePublicationHandler.ConfirmationTitle
-                                        , pagePublicationHandler.ConfirmationRejectLabel
-                                        , pagePublicationHandler.ConfirmationAcceptLabel
-                                        )
+                                //  Inherits content, so can localize
+                                Build_TopRight.AppendFormat("<li><a href=\"{0}\" id=\"page.localize\" class=\"submit postBack abbr\">{1}</a></li>"
+                                    , "#"
+                                    , Labels.ResourceManager.GetString("page_localise", new CultureInfo(container.CurrentApplicationUser.LanguageCulture))
                                     );
+
+
+
+                            }
+                            else
+                            {
+
+                                Build_TopRight.AppendFormat("<li><a href=\"{0}\" id=\"page.copy\" class=\"submit type_confirm postBack abbr\" {2}>{1}</a></li>"
+                                    , "#"
+                                    , Labels.ResourceManager.GetString("page_pastemode", new CultureInfo(container.CurrentApplicationUser.LanguageCulture))
+                                    , ConfirmationQuestion(true, container)
+                                    );
+
+                                //  Inherits no content, so can unlocalize
+                                Build_TopRight.AppendFormat("<li><a href=\"{0}\" id=\"page.inherit\" class=\"submit postBack abbr\">{1}</a></li>"
+                                    , "#"
+                                    , Labels.ResourceManager.GetString("page_inherit", new CultureInfo(container.CurrentApplicationUser.LanguageCulture))
+                                    );
+
+                            }
+                        }
+
+                        if (container.CurrentListInstance.wim.CurrentApplicationUserRole.CanPublishPage)
+                        {
+                            var pagePublicationHandler = new PagePublication();
+                            pagePublicationHandler.ValidateConfirmation(container.CurrentApplicationUser, page);
+
+                            if (pagePublicationHandler.CanTakeOffline(container.CurrentApplicationUser, page))
+                            {
+                                if (page.Published != DateTime.MinValue)
+                                    Build_TopRight.AppendFormat("<li><a href=\"{0}\" id=\"pageoffline\" class=\"abbr flaticon icon-power-off type_confirm\"{2} title=\"{1}\"></a></li>", "#"
+                                        , Labels.ResourceManager.GetString("page_takeoffline", new CultureInfo(container.CurrentApplicationUser.LanguageCulture))
+                                        , ConfirmationQuestion(true, container)
+                                        );
+                            }
+
+                            if (pagePublicationHandler.CanPublish(container.CurrentApplicationUser, page))
+                            {
+                                if (page.Published == DateTime.MinValue || page.Published.GetValueOrDefault().Ticks != page.Updated.Ticks)
+                                {
+                                    Build_TopRight.AppendFormat("<li><a href=\"{0}\" id=\"pagepublish\" class=\"abbr submit {2}\"{3} title=\"{1}\">{1}</a></li>", "#"
+                                        , Labels.ResourceManager.GetString("page_publish", new CultureInfo(container.CurrentApplicationUser.LanguageCulture))
+                                        , pagePublicationHandler.AskConfirmation ? "type_confirm" : "postBack"
+                                        , ConfirmationQuestion(pagePublicationHandler.AskConfirmation, container
+                                            , pagePublicationHandler.ConfirmationQuestion
+                                            , pagePublicationHandler.ConfirmationTitle
+                                            , pagePublicationHandler.ConfirmationRejectLabel
+                                            , pagePublicationHandler.ConfirmationAcceptLabel
+                                            )
+                                        );
+                                }
                             }
                         }
                     }
