@@ -11,7 +11,7 @@ using Sushi.Mediakiwi.Data;
 using Sushi.Mediakiwi.Framework;
 using Sushi.Mediakiwi.UI;
 
-namespace Wim.AppCentre.Data.Implementation
+namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
 {
     public class PageList : BaseImplementation
     {
