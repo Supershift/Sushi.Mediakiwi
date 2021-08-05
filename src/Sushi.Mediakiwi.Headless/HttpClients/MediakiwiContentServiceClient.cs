@@ -112,7 +112,11 @@ namespace Sushi.Mediakiwi.Headless.HttpClients
 
             // Create querystring for adding SiteID to the Request
             Dictionary<string, string> queryString = new Dictionary<string, string>();
-            queryString.Add("url", Uri.EscapeUriString(forUrl));
+            if (!string.IsNullOrWhiteSpace(forUrl))
+            {
+                queryString.Add("url", Uri.EscapeUriString(forUrl));
+            }
+
             if (clearCache)
             {
                 queryString.Add("flush", "me");
