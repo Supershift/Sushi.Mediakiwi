@@ -147,7 +147,7 @@ namespace Sushi.Mediakiwi.PageModules.ExportPage
         private async Task ExportComponentsAsync(int pageID)
         {
             // Copy Components
-            List<Component> pageComponents = (await Component.SelectAllAsync(pageID)).ToList();
+            List<Component> pageComponents = (await Component.SelectAllInheritedAsync(pageID, false, false)).ToList();
             foreach (var item in pageComponents)
             {
                 // When the component template does not yet exist in the export, 
