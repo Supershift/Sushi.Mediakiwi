@@ -42,6 +42,12 @@ namespace Sushi.Mediakiwi.Logic
                 var jsonToken = handler.ReadToken(idtoken);
                 var token = jsonToken as JwtSecurityToken;
 
+                if (token == null)
+                {
+                    await Data.Notification.InsertOneAsync(nameof(ExtractUpnAsync), Data.NotificationType.Error, $"No token encountered: {idtoken}").ConfigureAwait(false);
+                    return null;
+                }
+
                 const string DEFAULT_CLAIM_TYPE = "email";
                 var claimtype = string.IsNullOrWhiteSpace(WimServerConfiguration.Instance.Authentication.Aad.EmailClaim) ? DEFAULT_CLAIM_TYPE :
                     WimServerConfiguration.Instance.Authentication.Aad.EmailClaim;
