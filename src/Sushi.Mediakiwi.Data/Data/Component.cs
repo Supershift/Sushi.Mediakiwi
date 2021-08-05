@@ -497,6 +497,10 @@ namespace Sushi.Mediakiwi.Data
             return result.ToArray();
         }
 
+        public static async Task<Component[]> SelectAllAsync(int pageID)
+        {
+            return await SelectAllInheritedAsync(pageID, false, true).ConfigureAwait(false);
+        }
 
         /// <summary>
         /// Select all available components on a page
