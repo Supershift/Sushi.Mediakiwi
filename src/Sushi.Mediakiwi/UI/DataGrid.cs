@@ -457,6 +457,11 @@ namespace Sushi.Mediakiwi.UI
             return container.CurrentListInstance.wim.GetUrl(new KeyValue() { Key = "set", Value = page.ToString() });
         }
 
+        string GetUri(Beta.GeneratedCms.Console container, string page)
+        {
+            return container.CurrentListInstance.wim.GetUrl(new KeyValue() { Key = "set", Value = page });
+        }
+
         string GetListPaging(Beta.GeneratedCms.Console container, Splitlist splitlist, int currentPage, bool knockout, bool isTop)
         {
             if (container.CurrentListInstance.wim.Page.Body.Grid.HidePager)
@@ -481,11 +486,11 @@ namespace Sushi.Mediakiwi.UI
                     {
                         if (isShowAll)
                         {
-                            paging.Append($"<a href=\"{BuildUrl(container, "set", "1")}\" class=\"back{(isFormatRequest_AJAX ? " async" : string.Empty)}\"><span class=\"fa icon-list-ul\"></span>Reset</a>");
+                            paging.Append($"<a href=\"{GetUri(container, 1)}\" class=\"back{(isFormatRequest_AJAX ? " async" : string.Empty)}\"><span class=\"fa icon-list-ul\"></span>Reset</a>");
                         }
                         else
                         {
-                            paging.Append($"<a href=\"{BuildUrl(container, "set", "all")}\" class=\"back{(isFormatRequest_AJAX ? " async" : string.Empty)}\"><span class=\"fa icon-list-ul\"></span>Show All</a>");
+                            paging.Append($"<a href=\"{GetUri(container, "all")}\" class=\"back{(isFormatRequest_AJAX ? " async" : string.Empty)}\"><span class=\"fa icon-list-ul\"></span>Show All</a>");
                         }
                     }
                     paging.Append("</li>");
