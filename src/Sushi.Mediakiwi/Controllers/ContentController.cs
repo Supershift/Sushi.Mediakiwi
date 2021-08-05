@@ -269,8 +269,12 @@ namespace Sushi.Mediakiwi.Controllers
                     response = await GetPageContentAsync(page, pageMap, flushCache, ispreview).ConfigureAwait(false);
                 }
 
-                // Save data in cache.
-                AddToCache(cacheKey, response);
+                // BD 2021-08-05: Only add live pages to the cache to prevent collisions
+                if (!isPreview)
+                {
+                    // Save data in cache.
+                    AddToCache(cacheKey, response);
+                }
             }
             catch (Exception ex)
             {
