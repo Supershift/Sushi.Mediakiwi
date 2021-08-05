@@ -502,15 +502,13 @@ namespace Sushi.Mediakiwi.Data
         /// Select all available components on a page
         /// </summary>
         /// <param name="pageID">The page ID.</param>
+        /// <param name="ignoreInheritance">Ignore ingeritance.</param>
+        /// <param name="allowCache">Is caching based on the query allowed.</param>
         /// <returns></returns>
-        public static async Task<Component[]> SelectAllAsync(int pageID)
-        {
-            return await SelectAllInheritedAsync(pageID, false);
-        }
-
-        public static async Task<Component[]> SelectAllInheritedAsync(int pageID, bool ignoreInheritance)
+        public static async Task<Component[]> SelectAllInheritedAsync(int pageID, bool ignoreInheritance, bool allowCache)
         {
             var connector = ConnectorFactory.CreateConnector<Component>();
+            connector.UseCacheOnSelect = allowCache;
 
             Page page = await Page.SelectOneAsync(pageID, false);
 

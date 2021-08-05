@@ -266,7 +266,7 @@ namespace Sushi.Mediakiwi.Controllers
                 }
                 else
                 {
-                    response = await GetPageContentAsync(page, pageMap, ispreview).ConfigureAwait(false);
+                    response = await GetPageContentAsync(page, pageMap, flushCache, ispreview).ConfigureAwait(false);
                 }
 
                 // Save data in cache.
@@ -301,7 +301,7 @@ namespace Sushi.Mediakiwi.Controllers
                     var page = await Page.SelectOneAsync(site.HomepageID.Value);
                     if (page?.ID > 0)
                     {
-                        response = await GetPageContentAsync(page, null, false);
+                        response = await GetPageContentAsync(page, null, false, false);
                     }
                 }
             }
@@ -330,7 +330,7 @@ namespace Sushi.Mediakiwi.Controllers
                     var page = await Page.SelectOneAsync(site.PageNotFoundID.Value);
                     if (page?.ID > 0)
                     {
-                        response = await GetPageContentAsync(page, null, false);
+                        response = await GetPageContentAsync(page, null, false, false);
                     }
                 }
             }
@@ -638,7 +638,7 @@ namespace Sushi.Mediakiwi.Controllers
         /// <param name="pageMap">The pagemap to use, if any</param>
         /// <param name="ispreview">Is this preview mode ? then the non-published version will be returned</param>
         /// <returns></returns>
-        private async Task<PageContentResponse> GetPageContentAsync(Page page, IPageMapping pageMap, bool ispreview)
+        private async Task<PageContentResponse> GetPageContentAsync(Page page, IPageMapping pageMap, bool flushCache, bool ispreview)
         {
             var response = new PageContentResponse();
 
@@ -736,7 +736,7 @@ namespace Sushi.Mediakiwi.Controllers
             else
             {
                 // Get the published versions of the components for this page
-                components = await Component.SelectAllAsync(page.ID).ConfigureAwait(false);
+                components = await Component.SelectAllInheritedAsync(page.ID, false, !flushCache).ConfigureAwait(false);
             }
 
             // Store all SharedFieldTranslations
