@@ -78,8 +78,14 @@ namespace Sushi.Mediakiwi.AppCentre.UI.Forms
             Map(x => x.ContentTypeID).Dropdown("Type", nameof(TypeOptions), true, true).Expression(OutputExpression.FullWidth);
             Map(x => x.IsMandatory).Checkbox("Required").Expression(OutputExpression.FullWidth);
 
-            Map(x => x.ListCollection).Dropdown("Module", nameof(ListOptions), true).Expression(OutputExpression.FullWidth).Show(isSublist);
-            Map(x => x.ListCollection).Dropdown("Module", nameof(ListOptionsWithEmpty), interactiveHelp: "When filled, this will be used instead of the options below.").Expression(OutputExpression.FullWidth).Show(isChoiceType);
+            if (isSublist)
+            {
+                Map(x => x.ListCollection).Dropdown("Module", nameof(ListOptions), true).Expression(OutputExpression.FullWidth).Show(isSublist);
+            }
+            else if (isChoiceType)
+            {
+                Map(x => x.ListCollection).Dropdown("Module", nameof(ListOptionsWithEmpty), interactiveHelp: "When filled, this will be used instead of the options below.").Expression(OutputExpression.FullWidth).Show(isChoiceType);
+            }
 
             Map(x => x.CanContainOneItem).Checkbox("Only one item").Expression(OutputExpression.FullWidth).Show(isSublist);
 
