@@ -537,7 +537,7 @@ namespace Sushi.Mediakiwi.Logic
                 components = converted.ToArray();
             }
             else
-                components = await Component.SelectAllAsync(page.ID).ConfigureAwait(false);
+                components = await Component.SelectAllInheritedAsync(page.ID, false, false).ConfigureAwait(false);
 
             int sort = 0;
             foreach (var component in components.OrderBy(x => x.SortOrder))

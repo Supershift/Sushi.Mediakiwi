@@ -292,7 +292,7 @@ public static class PageExtension
             return;
         }
 
-        Component[] pageComponents = await Component.SelectAllAsync(inPage.ID);
+        Component[] pageComponents = await Component.SelectAllInheritedAsync(inPage.ID, false, false);
 
         StringBuilder searchableContent = null;
         foreach (Component component in pageComponents)
@@ -534,7 +534,7 @@ public static class PageExtension
 
     internal static async Task CopyComponentsAsync(this Page inPage)
     {
-        Component[] liveComponents = await Component.SelectAllInheritedAsync(inPage.ID, true);
+        Component[] liveComponents = await Component.SelectAllInheritedAsync(inPage.ID, true, false);
         ComponentVersion[] stagingComponents = await ComponentVersion.SelectAllAsync(inPage.ID);
 
         await inPage.CopyComponentsAsync(liveComponents, stagingComponents);
