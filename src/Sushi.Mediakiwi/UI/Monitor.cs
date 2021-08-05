@@ -1338,7 +1338,7 @@ namespace Sushi.Mediakiwi.UI
             {
                 if (!string.IsNullOrEmpty(_Console.GetSafePost("id_token")))
                 {
-                    string email = OAuth2Logic.ExtractUpn(WimServerConfiguration.Instance.Authentication.Token, _Console.GetSafePost("id_token"));
+                    string email = await OAuth2Logic.ExtractUpnAsync(WimServerConfiguration.Instance.Authentication.Token, _Console.GetSafePost("id_token")).ConfigureAwait(false);
                 
                     if (!string.IsNullOrEmpty(email))
                     {
