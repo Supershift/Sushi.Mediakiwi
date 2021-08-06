@@ -1534,7 +1534,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
         /// <param name="container">The container.</param>
         /// <param name="openInFrame">The open in frame.</param>
         /// <returns></returns>
-        internal WimControlBuilder CreateList(Console container, int openInFrame)
+        internal WimControlBuilder CreateList(Console container, int openInFrame, bool isJSONRequest = false)
         {
             int listId = container.CurrentList.ID;
 
@@ -1661,12 +1661,12 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
 
             CreateGenericErrorMessage(container, build, ref isValidInput);
 
-            // Duplicate delete (27-07-2021:MM)
-            //if (container.CurrentListInstance.wim.IsDeleteMode)
-            //{
-            //    //  Added delete event
-            //    container.CurrentListInstance.wim.DoListDelete(container.Item.GetValueOrDefault(0), currentVersion.ID, isValidInput);
-            //}
+            // [JP 06-08-2021: Added to enable ListDelete for JSON Request]
+            if (container.CurrentListInstance.wim.IsDeleteMode && isJSONRequest)
+            {
+                //  Added delete event
+                container.CurrentListInstance.wim.DoListDelete(container.Item.GetValueOrDefault(0), currentVersion.ID, isValidInput);
+            }
             if (container.CurrentListInstance.wim.IsSaveMode)
             {
 
