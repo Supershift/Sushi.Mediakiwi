@@ -33,7 +33,7 @@ namespace Sushi.Mediakiwi.Logic
             return null;
         }
 
-        private static Regex EmailRegex { get; set; } = new Regex(Data.Utility.GlobalRegularExpression.EmailAddress);
+        private static Regex EmailRegex { get; set; } = new Regex(Data.Utility.GlobalRegularExpression.EmailAddress, RegexOptions.IgnoreCase);
         public static async Task<string> ExtractUpnAsync(TokenValidation validation, string idtoken)
         {
             if (IsValidToken(validation, idtoken))
@@ -49,15 +49,27 @@ namespace Sushi.Mediakiwi.Logic
                 }
 
                 const string DEFAULT_CLAIM_TYPE = "email";
-                var claimtype = string.IsNullOrWhiteSpace(WimServerConfiguration.Instance.Authentication.Aad.EmailClaim) ? DEFAULT_CLAIM_TYPE :
-                    WimServerConfiguration.Instance.Authentication.Aad.EmailClaim;
+                List<string> claimtypes = new List<string> { DEFAULT_CLAIM_TYPE };
+                try
+                {
+                    var claimtypesSetting = WimServerConfiguration.Instance.Authentication.Aad.EmailClaim;
+                    if (!string.IsNullOrWhiteSpace(claimtypesSetting))
+                    {
+                        claimtypes.AddRange(claimtypesSetting.Split(new char[] { ',' }));
+                        claimtypes = claimtypes.Distinct().ToList();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    await Data.Notification.InsertOneAsync(nameof(ExtractUpnAsync), ex).ConfigureAwait(false);
+                }
 
                 // BD 2021-08-05: Loop through all the claims and look for the email
                 Claim claimOfDefaultType = null;
                 Claim claimWithEmailValue = null;
                 foreach (var claim in token.Claims)
                 {
-                    if (claim.Type.Equals(claimtype, StringComparison.CurrentCultureIgnoreCase))
+                    if (claimtypes.Any(x => x.Equals(claim.Type, StringComparison.CurrentCultureIgnoreCase)))
                     {
                         // If we find the claim with the configured type, return it immediately
                         return claim.Value;
