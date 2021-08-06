@@ -374,7 +374,7 @@ namespace Sushi.Mediakiwi.UI
                 else
                 {
                     _Console.CurrentListInstance.wim.DoListInit();
-                    GlobalWimControlBuilder = component.CreateList(_Console, _Console.OpenInFrame);
+                    GlobalWimControlBuilder = component.CreateList(_Console, _Console.OpenInFrame, IsFormatRequest_JSON);
                     if (GlobalWimControlBuilder.IsTerminated)
                     {
                         return;
