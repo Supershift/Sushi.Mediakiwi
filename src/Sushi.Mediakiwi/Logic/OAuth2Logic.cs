@@ -49,14 +49,13 @@ namespace Sushi.Mediakiwi.Logic
                 }
 
                 const string DEFAULT_CLAIM_TYPE = "email";
-                List<string> claimtypes = new List<string> { DEFAULT_CLAIM_TYPE };
+                List<string> claimtypes = new List<string>();
                 try
                 {
                     var claimtypesSetting = WimServerConfiguration.Instance.Authentication.Aad.EmailClaim;
                     if (!string.IsNullOrWhiteSpace(claimtypesSetting))
                     {
                         claimtypes.AddRange(claimtypesSetting.Split(new char[] { ',' }));
-                        claimtypes = claimtypes.Distinct().ToList();
                     }
                 }
                 catch (Exception ex)
