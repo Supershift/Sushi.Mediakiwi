@@ -278,7 +278,6 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
             }
             else
             {
-                //  [MM:14.12.14] Moved to central location
                 m_Candidate = SublistParsing.Parse(
                     Context, 
                     Property, 
@@ -319,6 +318,12 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
             OutputText = null;
             if (m_Candidate != null && m_Candidate.Items != null && m_Candidate.Items.Length > 0)
             {
+                // assigned the list identifier for serialization reference
+                if (Guid.TryParse(Componentlist, out var guid))
+                {
+                    m_Candidate.List = guid;
+                }
+
                 if (CanContainOneItem)
                 {
                     OutputText = string.Concat(m_Candidate.Items[0].TextID, "|", m_Candidate.Items[0].Description);
