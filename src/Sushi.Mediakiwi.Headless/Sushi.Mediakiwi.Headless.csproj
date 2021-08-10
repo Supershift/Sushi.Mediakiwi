@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <Version>7.15.52</Version>
+    <Version>7.15.53</Version>
     <Authors>Marc Molenwijk, Mark Rienstra</Authors>
     <Company>Supershift</Company>
     <Product>Mediakiwi</Product>
@@ -11,8 +11,8 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://mediakiwi.atlassian.net/wiki/spaces/CORE/overview</PackageProjectUrl>
     <RepositoryUrl>https://github.com/Supershift/Sushi.Mediakiwi</RepositoryUrl>
-    <AssemblyVersion>7.15.52.0</AssemblyVersion>
-    <FileVersion>7.15.52.0</FileVersion>
+    <AssemblyVersion>7.15.53.0</AssemblyVersion>
+    <FileVersion>7.15.53.0</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
