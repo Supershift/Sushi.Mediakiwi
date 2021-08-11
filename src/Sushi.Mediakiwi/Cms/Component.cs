@@ -1805,7 +1805,14 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                                 }
                                 else
                                 {
-                                    container.Redirect(string.Concat(listurl, "?", folderInfo));
+                                    if (folderInfo == null)
+                                    {
+                                        container.Redirect(listurl);
+                                    }
+                                    else
+                                    {
+                                        container.Redirect(string.Concat(listurl, "?", folderInfo));
+                                    }
                                 }
                             }
                             else
