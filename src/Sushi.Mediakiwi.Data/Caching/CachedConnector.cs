@@ -69,7 +69,9 @@ namespace Sushi.Mediakiwi.Data.Caching
                 //hash the parameters
                 var sb = new StringBuilder();
                 foreach (var parameter in statement.Parameters)
+                {
                     sb.Append(parameter.Name).Append(parameter.Value);
+                }
                 string parameters = sb.ToString();
                 hashedBytes = md5.ComputeHash(Encoding.UTF8.GetBytes(parameters));
                 var thirdKeyPart = Convert.ToBase64String(hashedBytes);

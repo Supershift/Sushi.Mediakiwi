@@ -3,6 +3,7 @@ using Sushi.Mediakiwi.Data;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Sushi.Mediakiwi.Framework
 {
@@ -25,17 +26,10 @@ namespace Sushi.Mediakiwi.Framework
                 }
                 return _Memory;
             }
-            set
-            {
-                _Memory = value;
-            }
         }
 
-        static void Reset(bool resetDefault = true)
+        static void Reset()
         {
-            //if (resetDefault)
-            //    MemoryCache.Default.Dispose();
-
             if (_Memory == null)
             {
                 return;
@@ -161,14 +155,9 @@ namespace Sushi.Mediakiwi.Framework
             {
                 return;
             }
-            //if (Context != null)
-            //    Context.Cache.Insert(key, item, null, Cache.NoAbsoluteExpiration, slidingExpiration);
-            //else
+
             Memory.Set(key, item, slidingExpiration);
             _CacheLookup.TryAdd(key, DateTime.UtcNow);
-
-            //if (Memory.Add(key, item, new CacheItemPolicy() { SlidingExpiration = slidingExpiration }))
-            //    _CacheLookup.TryAdd(key, DateTime.UtcNow);
         }
 
         /// <summary>
@@ -234,15 +223,7 @@ namespace Sushi.Mediakiwi.Framework
                 CacheItemLogic.ApplyLoadBalancedCacheCheckItem(cacheKey, true);
             }
         }
-
-        /// <summary>
-        /// Flushes all.
-        /// </summary>
-        public static void FlushAll()
-        {
-            FlushAll(false);
-        }
-
+   
         /// <summary>
         /// Flushes all.
         /// </summary>
@@ -260,12 +241,46 @@ namespace Sushi.Mediakiwi.Framework
                 _CacheLookup.TryRemove(key, out output);
             }
            
-            Reset(true);
+            Reset();
             _CacheLookup.Clear();
             Portal.Caches.Clear();
 
-            //if (setEnvironment)
-            //    EnvironmentVersionLogic.Flush(true);
+            if (setEnvironment)
+            {
+                var env = EnvironmentVersion.Select();
+                env.Updated = Common.DatabaseDateTime;
+                env.Save();
+            }
+        }
+
+
+        /// <summary>
+        /// Flushes all.
+        /// </summary>
+        /// <param name="setEnvironment">if set to <c>true</c> [set environment].</param>
+        public static async Task FlushAllAsync(bool setEnvironment)
+        {
+            var keys = _CacheLookup.Keys;
+            foreach (var key in keys)
+            {
+                if (IsCached(key))
+                {
+                    Memory.Remove(key);
+                }
+                DateTime output;
+                _CacheLookup.TryRemove(key, out output);
+            }
+
+            Reset();
+            _CacheLookup.Clear();
+            Portal.Caches.Clear();
+
+            if (setEnvironment)
+            {
+                var env = await EnvironmentVersion.SelectAsync().ConfigureAwait(false);
+                env.Updated = Common.DatabaseDateTime;
+                await env.SaveAsync().ConfigureAwait(false);
+            }
         }
     }
 }

@@ -289,8 +289,7 @@ namespace Sushi.Mediakiwi.UI
             else if (isPageOfflineTriggered)
             {
                 var pagePublicationHandler = new PagePublication();
-
-                await page.TakeDown(pagePublicationHandler, _Console.CurrentApplicationUser);
+                await page.TakeDownPageAsync().ConfigureAwait(false);
                 //Wim.Framework2.Functions.AuditTrail.Insert(_Console.CurrentApplicationUser, page, Framework2.Functions.Auditing.ActionType.TakeOffline, null);
                 _Console.Response.Redirect(string.Concat(_Console.WimPagePath, "?page=", _Console.Item.Value, redirect));
             }
@@ -729,15 +728,17 @@ namespace Sushi.Mediakiwi.UI
         /// </summary>
         void HandleActionRequest()
         {
-            if (_Console.CurrentListInstance == null) return;
-            if (string.IsNullOrEmpty(_Console.CurrentListInstance.wim.PostbackValue)) return;
+            if (_Console.CurrentListInstance == null || string.IsNullOrEmpty(_Console.CurrentListInstance.wim.PostbackValue))
+            {
+                return;
+            }
 
             switch (_Console.CurrentListInstance.wim.PostbackValue)
             {
                 case "PageContentPublication":
-                    //EnvironmentVersionLogic.Flush();
-                    _Console.CurrentListInstance.wim.Notification.AddNotification("The webcontent has been refreshed.");
-                    return;
+                    {
+                        _Console.CurrentListInstance.wim.Notification.AddNotification("The webcontent has been refreshed.");
+                    } break;
             }
         }
 
