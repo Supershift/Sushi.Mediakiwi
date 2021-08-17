@@ -522,7 +522,7 @@ namespace Sushi.Mediakiwi.Data
 
             var filter = connector.CreateDataFilter();
             filter.Add(x => x.PageID, pageID);
-
+            filter.AddOrder(x => x.SortOrder, Sushi.MicroORM.SortOrder.ASC);
 
             // [MR:24-01-2020] this should go !
             //if (!string.IsNullOrEmpty(SqlConnectionString2)) component.SqlConnectionString = SqlConnectionString2;
