@@ -161,6 +161,7 @@ namespace Sushi.Mediakiwi.Controllers
                 bool flush = flushCache;
                 bool ispreview = isPreview;
                 var pageMap = default(IPageMapping);
+                bool isCached = (await Flush(Last_Flush.Ticks)).Value;
 
                 // When a pageID is supplied, this takes presedence over the URL
                 if (pageId.GetValueOrDefault(0) > 0)
@@ -168,7 +169,7 @@ namespace Sushi.Mediakiwi.Controllers
                     page = await Page.SelectOneAsync(pageId.Value, !ispreview).ConfigureAwait(false);
                     cacheKey = $"page{pageId.Value}";
 
-                    if (flush)
+                    if (flush || isCached == false)
                     {
                         ClearCache();
                         _cache.Remove(cacheKey);
@@ -179,7 +180,7 @@ namespace Sushi.Mediakiwi.Controllers
                     Uri uri = new Uri(WebUtility.UrlDecode(url), UriKind.Relative);
                     cacheKey = $"{uri}";
 
-                    if (flush)
+                    if (flush || isCached == false)
                     {
                         ClearCache();
                         _cache.Remove(cacheKey);
@@ -295,7 +296,9 @@ namespace Sushi.Mediakiwi.Controllers
 
             int _siteId = (siteId.GetValueOrDefault(0) > 0) ? siteId.Value : 0;
             if (_siteId == 0 && Mediakiwi.Data.Environment.Current?.DefaultSiteID.GetValueOrDefault(0) > 0)
+            {
                 _siteId = Mediakiwi.Data.Environment.Current.DefaultSiteID.Value;
+            }
 
             if (_siteId > 0)
             {
@@ -380,7 +383,9 @@ namespace Sushi.Mediakiwi.Controllers
 
             object candidate = null;
             if (_cache.TryGetValue(ckey, out candidate))
+            {
                 dt = (DateTime)candidate;
+            }
             else
             {
                 dt = DateTime.UtcNow;
@@ -389,9 +394,13 @@ namespace Sushi.Mediakiwi.Controllers
 
             var cleanup = await CacheItem.SelectAllAsync(dt);
             if (cleanup == null)
+            {
                 return false;
+            }
             else
+            {
                 ClearCache();
+            }
 
             SetCacheVersion(dt);
             return true;

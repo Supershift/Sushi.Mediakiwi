@@ -45,7 +45,11 @@ namespace Sushi.Mediakiwi
                     //this serves a new instance of the cache for each unit test
                     //this ensures different unit tests running in the same application context don't share a cache
                     string key = "mediakiwi_cache";
-                    var result = Caches.GetOrAdd(key, (string s) => { return new CacheManager(); });
+                    var result = Caches.GetOrAdd(key, (string s) => 
+                    { 
+                        return new CacheManager(); 
+                    });
+
                     return result;
                 };
             }
