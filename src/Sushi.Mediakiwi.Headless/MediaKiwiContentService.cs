@@ -52,8 +52,6 @@ namespace Sushi.Mediakiwi.Headless
 
         public static MemoryCacheEntryOptions ExpirationToken(DateTimeOffset expiration)
         {
-            expiration = DateTimeOffset.UtcNow.AddDays(1);
-
             var options = new MemoryCacheEntryOptions().SetPriority(CacheItemPriority.Normal).SetAbsoluteExpiration(expiration);
             options.AddExpirationToken(new CancellationChangeToken(_resetCacheToken.Token));
             return options;
@@ -82,11 +80,15 @@ namespace Sushi.Mediakiwi.Headless
             }
         }
 
+        #region Get Page Content - Not Found
+
         public async Task<PageContentResponse> GetPageNotFoundContent(int? siteId = null, bool clearCache = false)
         {
             PageContentResponse returnObj = new PageContentResponse();
             if (string.IsNullOrWhiteSpace(_configuration.MediaKiwi.ContentService.ServiceUrl))
+            {
                 return returnObj;
+            }
 
             if (_configuration.MediaKiwi.ContentService.PingFirst && await PingSucceeded() == false)
             {
@@ -108,9 +110,10 @@ namespace Sushi.Mediakiwi.Headless
                 _logger.LogInformation($"A cache clear was requested for '{cacheKey}'");
             }
 
+            bool isCached = await IsCacheValid();
 
             // Try to get from cache
-            if (_memCache == null || _memCache.TryGetValue(cacheKey, out returnObj) == false || clearCache)
+            if (_memCache == null || _memCache.TryGetValue(cacheKey, out returnObj) == false || clearCache || isCached == false)
             {
                 try
                 {
@@ -132,18 +135,14 @@ namespace Sushi.Mediakiwi.Headless
                 // Add content to cache if needed
                 if (returnObj?.PageID > 0 && _memCache != null)
                 {
-                    AddCache(cacheKey, returnObj);
+                    AddToCache(cacheKey, returnObj);
                 }
             }
 
             return returnObj;
         }
 
-        void AddCache(string key, object item)
-        {
-            _memCache.Set(key, item, ExpirationToken());
-            _logger.LogInformation($"Added content to cache for '{key}'", item);
-        }
+        #endregion Get Page Content - Not Found
 
         #region Get Page Content - HttpRequest
 
@@ -152,9 +151,14 @@ namespace Sushi.Mediakiwi.Headless
             // Get URL
             var url = request.GetDisplayUrl();
             if (url.Contains("?"))
+            {
                 url = url.Substring(0, url.IndexOf('?'));
+            }
+
             if (url.Contains("#"))
+            {
                 url = url.Substring(0, url.IndexOf('#'));
+            }
 
             // Remove current PathBase from the URL
             string AppBaseUrl = $"{request.Scheme}://{request.Host}{request.PathBase}";
@@ -249,7 +253,7 @@ namespace Sushi.Mediakiwi.Headless
                 isCached = await IsCacheValid();
 
                 // Try to get from cache (ASYNC!)
-                if (_memCache == null || _memCache.TryGetValue(cacheKey, out returnObj) == false || clearCache)
+                if (_memCache == null || _memCache.TryGetValue(cacheKey, out returnObj) == false || clearCache || isCached == false)
                 {
                     try
                     {
@@ -275,13 +279,17 @@ namespace Sushi.Mediakiwi.Headless
                     catch (Exception ex)
                     {
                         _logger.LogError(ex, ex.Message, null);
+                        if (returnObj == null) 
+                        {
+                            returnObj = new PageContentResponse();
+                        }
                         returnObj.StatusCode = System.Net.HttpStatusCode.InternalServerError;
                     }
 
                     // Add content to cache if needed
                     if (returnObj?.PageID > 0 && _memCache != null)
                     {
-                        AddCache(cacheKey, returnObj);
+                        AddToCache(cacheKey, returnObj);
                     }
                 }
                 else 
@@ -312,40 +320,51 @@ namespace Sushi.Mediakiwi.Headless
         {
             string pageDescription = "";
             if (string.IsNullOrWhiteSpace(PageContent.MetaData.PageDescription) && PageContent.MetaData.ContainsKey("description"))
+            {
                 pageDescription = PageContent.MetaData["description"].Value;
+            }
             else
+            {
                 pageDescription = PageContent.MetaData.PageDescription;
+            }
 
             // Facebook 
             if (PageContent.MetaData.ContainsKey("og:title") == false)
+            {
                 PageContent.MetaData.Add("og:title", PageContent.MetaData.PageTitle, MetaTagRenderKey.PROPERTY);
+            }
 
             if (PageContent.MetaData.ContainsKey("og:description") == false)
+            {
                 PageContent.MetaData.Add("og:description", pageDescription, MetaTagRenderKey.PROPERTY);
-
-            //if (PageContent.MetaData.ContainsKey("og:image") == false)
-            //    PageContent.MetaData.Add("og:image", "https://cdn-demo.supershift.nl/web/header1.jpg", MetaTagRenderKey.PROPERTY);
+            }
 
             if (PageContent.MetaData.ContainsKey("og:url") == false)
+            {
                 PageContent.MetaData.Add("og:url", url);
-
+            }
 
             // Twitter
             if (PageContent.MetaData.ContainsKey("twitter:title") == false)
+            {
                 PageContent.MetaData.Add("twitter:title", PageContent.MetaData.PageTitle);
+            }
 
             if (PageContent.MetaData.ContainsKey("twitter:description") == false)
+            {
                 PageContent.MetaData.Add("twitter:description", pageDescription);
-
-            //if (PageContent.MetaData.ContainsKey("twitter:image") == false)
-            //    PageContent.MetaData.Add("twitter:image", "https://cdn-demo.supershift.nl/web/header1.jpg");
+            }
 
             if (PageContent.MetaData.ContainsKey("twitter:card") == false)
+            {
                 PageContent.MetaData.Add("twitter:card", "summary_large_image");
+            }
 
             // General
             if (PageContent.MetaData.ContainsKey("description") == false)
+            {
                 PageContent.MetaData.Add("description", pageDescription);
+            }
         }
 
         #endregion Set Meta Info (TEMPORARY FIX)
@@ -355,19 +374,28 @@ namespace Sushi.Mediakiwi.Headless
         public bool IsPageExcluded(HttpRequest request)
         {
             if (_configuration.MediaKiwi.ContentService.ExcludePaths == null || _configuration.MediaKiwi.ContentService.ExcludePaths.Count == 0)
+            {
                 return false;
+            }
 
             // Get URL
-            var url = request.GetDisplayUrl().ToLower();
+            var url = request.GetDisplayUrl().ToLowerInvariant();
+
             if (url.Contains("?"))
+            {
                 url = url.Substring(0, url.IndexOf('?'));
+            }
             if (url.Contains("#"))
+            {
                 url = url.Substring(0, url.IndexOf('#'));
+            }
 
             foreach (var excludeRule in _configuration.MediaKiwi.ContentService.ExcludePaths)
             {
-                if (url.Contains(excludeRule.ToLower()))
+                if (url.Contains(excludeRule.ToLowerInvariant()))
+                {
                     return true;
+                }
             }
 
             return false;
@@ -380,14 +408,18 @@ namespace Sushi.Mediakiwi.Headless
         public bool IsPageExcluded(string forUrl)
         {
             if (_configuration.MediaKiwi.ContentService.ExcludePaths == null || _configuration.MediaKiwi.ContentService.ExcludePaths.Count == 0)
+            {
                 return false;
+            }
 
-            string temp = forUrl.ToLower();
+            string temp = forUrl.ToLowerInvariant();
 
             foreach (var excludeRule in _configuration.MediaKiwi.ContentService.ExcludePaths)
             {
-                if (temp.Contains(excludeRule.ToLower()))
+                if (temp.Contains(excludeRule.ToLowerInvariant()))
+                {
                     return true;
+                }
             }
 
             return false;
@@ -395,11 +427,14 @@ namespace Sushi.Mediakiwi.Headless
 
         #endregion Is Page Excluded - Url
 
+        #region Is Cache Valid
 
         public async Task<bool> IsCacheValid()
         {
             if (string.IsNullOrWhiteSpace(_configuration.MediaKiwi.ContentService.ServiceUrl))
+            {
                 return true;
+            }
 
             try
             {
@@ -421,22 +456,39 @@ namespace Sushi.Mediakiwi.Headless
             return true;
         }
 
+        #endregion Is Cache Valid
+
+        #region Add To Cache
+
+        void AddToCache(string key, object item)
+        {
+            _memCache.Set(key, item, ExpirationToken());
+            _logger.LogInformation($"Added content to cache for '{key}'", item);
+        }
+
+        #endregion Add To Cache
+
+        #region Ping Succeeded
+
         public async Task<bool> PingSucceeded()
         {
-            if (string.IsNullOrWhiteSpace(_configuration.MediaKiwi.ContentService.ServiceUrl))
-                return false;
-
             bool success = false;
-            try
+
+            if (string.IsNullOrWhiteSpace(_configuration?.MediaKiwi?.ContentService?.ServiceUrl) == false)
             {
-                success = await _httpClient.PingAsync();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, ex.Message, null);
+                try
+                {
+                    success = await _httpClient.PingAsync();
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, ex.Message, null);
+                }
             }
 
             return success;
         }
+
+        #endregion Ping Succeeded
     }
 }

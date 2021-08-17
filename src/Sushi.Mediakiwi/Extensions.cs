@@ -4,7 +4,6 @@ using Sushi.Mediakiwi.Authentication;
 using Sushi.Mediakiwi.Framework;
 using Sushi.Mediakiwi.PageModules.ExportPage;
 
-
 namespace Sushi.Mediakiwi
 {
     public static class Extensions
