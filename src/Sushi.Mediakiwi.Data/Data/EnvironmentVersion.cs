@@ -62,33 +62,25 @@ namespace Sushi.Mediakiwi.Data
             return await connector.FetchSingleAsync(filter);
         }
 
-        public bool Save()
+        public static bool SetUpdated()
         {
             var connector = ConnectorFactory.CreateConnector<EnvironmentVersion>();
-            try
-            {
-                connector.Save(this);
-                return true;
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
+            var sql = @"UPDATE wim_Environments SET Environment_Update = @update";
+            var filter = connector.CreateDataFilter();
+            filter.AddParameter("@update", DateTime.UtcNow);
+            connector.ExecuteNonQuery(sql, filter);
+            return true;
         }
 
-        public async Task<bool> SaveAsync()
+        public static async Task<bool> SetUpdatedAsync()
         {
             var connector = ConnectorFactory.CreateConnector<EnvironmentVersion>();
-            try
-            {
-                await connector.SaveAsync(this);
-                return true;
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }        
+            var sql = @"UPDATE wim_Environments SET Environment_Update = @update";
+            var filter = connector.CreateDataFilter();
+            filter.AddParameter("@update", DateTime.UtcNow);
+            await connector.ExecuteNonQueryAsync(sql, filter).ConfigureAwait(false);
+            return true;
+        }
 
         #endregion Methods
     }

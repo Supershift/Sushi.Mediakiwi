@@ -5137,20 +5137,14 @@ namespace Sushi.Mediakiwi.Framework
         public ComponentListVersion ComponentListVersion { get; internal set; }
 
         /// <summary>
-        /// Flush all caching, equivalent as "?Flush=me"
+        /// Flush all caching, equivalent to "?Flush=me"
         /// </summary>
         public void FlushCache(bool redirectToSelf = false)
         {
-            var environment = EnvironmentVersion.Select();
-            environment.Updated = DateTime.UtcNow;
-            environment.Save();
-
             Caching.FlushAll(true);
 
             if (redirectToSelf && Console != null && Console.Context != null)
                 Console.Context.Response.Redirect(GetUrl());
-
-            //Console.Context.Response.Redirect(Utility.GetSafeUrl(Console.Context.Request).Replace("?flush=me", string.Empty).Replace("&flush=me", string.Empty), true);
 
         }
 

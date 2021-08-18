@@ -35,6 +35,8 @@ namespace Sushi.Mediakiwi.Data.Caching
             Cache = cache;
         }
 
+        public static DateTime? LastFlush { get; set; }
+
         /// <summary>
         /// Gets or sets a value indicating if cache must be used if a SELECT statement is executed. 
         /// A flush of cache for all objects with type <typeparamref name="T"/> is always performed, regardless of this setting.
@@ -83,6 +85,12 @@ namespace Sushi.Mediakiwi.Data.Caching
 
         public override SqlStatementResult<TResult> ExecuteSqlStatement<TResult>(SqlStatement<T> statement)
         {
+            if (typeof(T) == typeof(EnvironmentVersion))
+            {
+                // Never cache EnvironmentVersion
+                return base.ExecuteSqlStatement<TResult>(statement);
+            }
+
             SqlStatementResult<TResult> result = null;
 
             //does this operation interact with the cache?
@@ -91,17 +99,34 @@ namespace Sushi.Mediakiwi.Data.Caching
                 case DMLStatementType.Delete:
                 case DMLStatementType.Insert:
                 case DMLStatementType.Update:
-                case DMLStatementType.InsertOrUpdate:                    
+                case DMLStatementType.InsertOrUpdate:
                     //perform the operation
                     result = base.ExecuteSqlStatement<TResult>(statement);
 
                     //force a cache flush for all cached objects that have a matching first part of the key (= all objects for same type)
                     Cache?.FlushRegion(CacheRegion);
 
+                    // Update the environment
+                    EnvironmentVersion.SetUpdated();
+
                     break;
                 case DMLStatementType.Select:
                     if (UseCacheOnSelect)
                     {
+                        // See if the cache needs to be flushed
+                        if (!LastFlush.HasValue)
+                        {
+                            LastFlush = DateTime.UtcNow;
+                        }
+                        else
+                        {
+                            if (Configuration.EnvironmentUpdated.HasValue && LastFlush.Value < Configuration.EnvironmentUpdated.Value)
+                            {
+                                Cache?.FlushRegion(CacheRegion);
+                                LastFlush = DateTime.UtcNow;
+                            }
+                        }
+
                         //check if in cache, return if found
                         string key = GenerateKey(statement);
                         result = Cache?.Get<SqlStatementResult<TResult>>(CacheRegion, key);
@@ -126,6 +151,12 @@ namespace Sushi.Mediakiwi.Data.Caching
 
         public async override Task<SqlStatementResult<TResult>> ExecuteSqlStatementAsync<TResult>(SqlStatement<T> statement, CancellationToken cancellationToken)
         {
+            if (typeof(T) == typeof(EnvironmentVersion))
+            {
+                // Never cache EnvironmentVersion
+                return await base.ExecuteSqlStatementAsync<TResult>(statement, cancellationToken).ConfigureAwait(false);
+            }
+
             SqlStatementResult<TResult> result = null;
 
             //does this operation interact with the cache?
@@ -136,15 +167,32 @@ namespace Sushi.Mediakiwi.Data.Caching
                 case DMLStatementType.Update:
                 case DMLStatementType.InsertOrUpdate:
                     //perform the operation
-                    result = await base.ExecuteSqlStatementAsync<TResult>(statement, cancellationToken);
+                    result = await base.ExecuteSqlStatementAsync<TResult>(statement, cancellationToken).ConfigureAwait(false);
 
                     //force a cache flush for all cached objects that have a matching first part of the key (= all objects for same type)
                     Cache?.FlushRegion(CacheRegion);
+
+                    // Update the environment
+                    EnvironmentVersion.SetUpdated();
 
                     break;
                 case DMLStatementType.Select:
                     if (UseCacheOnSelect)
                     {
+                        // See if the cache needs to be flushed
+                        if (!LastFlush.HasValue)
+                        {
+                            LastFlush = DateTime.UtcNow;
+                        }
+                        else
+                        {
+                            if (Configuration.EnvironmentUpdated.HasValue && LastFlush.Value < Configuration.EnvironmentUpdated.Value)
+                            {
+                                Cache?.FlushRegion(CacheRegion);
+                                LastFlush = DateTime.UtcNow;
+                            }
+                        }
+
                         //check if in cache, return if found
                         string key = GenerateKey(statement);
                         result = Cache?.Get<SqlStatementResult<TResult>>(CacheRegion, key);
@@ -152,15 +200,15 @@ namespace Sushi.Mediakiwi.Data.Caching
                         //if not, perform the query and cache result
                         if (result == null)
                         {
-                            result = await base.ExecuteSqlStatementAsync<TResult>(statement, cancellationToken);
+                            result = await base.ExecuteSqlStatementAsync<TResult>(statement, cancellationToken).ConfigureAwait(false);
                             Cache?.Add(CacheRegion, key, result);
                         }
                     }
                     else
-                        result = await base.ExecuteSqlStatementAsync<TResult>(statement, cancellationToken);
+                        result = await base.ExecuteSqlStatementAsync<TResult>(statement, cancellationToken).ConfigureAwait(false);
                     break;
                 default:
-                    result = await base.ExecuteSqlStatementAsync<TResult>(statement, cancellationToken);
+                    result = await base.ExecuteSqlStatementAsync<TResult>(statement, cancellationToken).ConfigureAwait(false);
                     break;
             }
 
