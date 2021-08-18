@@ -18,7 +18,7 @@ namespace Sushi.Mediakiwi.Data.Caching
         }
 
         /// <summary>
-        /// Indicated the time the environment was last updated
+        /// Indicates the time the environment was last updated
         /// </summary>
         public static DateTime? EnvironmentUpdated { get; set; }
     }
