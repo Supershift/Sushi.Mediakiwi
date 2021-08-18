@@ -60,7 +60,7 @@ namespace Sushi.Mediakiwi.Controllers
         [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
         public async Task<ActionResult<bool>> Flush([FromQuery] long now)
         {
-            var cached = await EnvironmentVersion.SelectAsync().ConfigureAwait(false);
+            var environment = await EnvironmentVersion.SelectAsync().ConfigureAwait(false);
 
             if (now == 0)
             {
@@ -69,9 +69,9 @@ namespace Sushi.Mediakiwi.Controllers
                 return true;
             }
 
-            if (now < cached.Updated.GetValueOrDefault().Ticks)
+            if (now < environment.Updated.GetValueOrDefault().Ticks)
             {
-                if (Last_Flush < cached.Updated.GetValueOrDefault())
+                if (Last_Flush < environment.Updated.GetValueOrDefault())
                 {
                     ClearCache();
                     Last_Flush = DateTime.UtcNow;
@@ -88,10 +88,10 @@ namespace Sushi.Mediakiwi.Controllers
         [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
         public async Task<ActionResult<string>> Status()
         {
-            var cached = await EnvironmentVersion.SelectAsync().ConfigureAwait(false);
+            var environment = await EnvironmentVersion.SelectAsync().ConfigureAwait(false);
             var information = string.Empty;
 
-            information += $"Data updated: {cached.Updated.Value} \n";
+            information += $"Data updated: {environment.Updated.Value} \n";
             information += $"Cache updated: {Last_Flush} \n";
             information += $"Timestamp: {DateTime.UtcNow.Ticks} \n";
             return Ok(information);

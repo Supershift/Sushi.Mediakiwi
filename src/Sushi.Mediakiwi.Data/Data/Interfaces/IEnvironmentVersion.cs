@@ -9,9 +9,5 @@ namespace Sushi.Mediakiwi.Data
         DateTime ServerEnvironmentVersion { get; set; }
         DateTime? Updated { get; set; }
         decimal Version { get; set; }
-
-        bool Save();
-
-        Task<bool> SaveAsync();
     }
 }

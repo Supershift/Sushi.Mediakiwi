@@ -237,8 +237,7 @@ namespace Sushi.Mediakiwi.Framework
                 {
                     Memory.Remove(key);
                 }
-                DateTime output;
-                _CacheLookup.TryRemove(key, out output);
+                _CacheLookup.TryRemove(key, out var output);
             }
            
             Reset();
@@ -247,9 +246,7 @@ namespace Sushi.Mediakiwi.Framework
 
             if (setEnvironment)
             {
-                var env = EnvironmentVersion.Select();
-                env.Updated = Common.DatabaseDateTime;
-                env.Save();
+                EnvironmentVersion.SetUpdated();
             }
         }
 
@@ -267,8 +264,7 @@ namespace Sushi.Mediakiwi.Framework
                 {
                     Memory.Remove(key);
                 }
-                DateTime output;
-                _CacheLookup.TryRemove(key, out output);
+                _CacheLookup.TryRemove(key, out var output);
             }
 
             Reset();
@@ -277,9 +273,7 @@ namespace Sushi.Mediakiwi.Framework
 
             if (setEnvironment)
             {
-                var env = await EnvironmentVersion.SelectAsync().ConfigureAwait(false);
-                env.Updated = Common.DatabaseDateTime;
-                await env.SaveAsync().ConfigureAwait(false);
+                await EnvironmentVersion.SetUpdatedAsync().ConfigureAwait(false);
             }
         }
     }

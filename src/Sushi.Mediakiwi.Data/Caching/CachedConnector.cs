@@ -91,12 +91,15 @@ namespace Sushi.Mediakiwi.Data.Caching
                 case DMLStatementType.Delete:
                 case DMLStatementType.Insert:
                 case DMLStatementType.Update:
-                case DMLStatementType.InsertOrUpdate:                    
+                case DMLStatementType.InsertOrUpdate:
                     //perform the operation
                     result = base.ExecuteSqlStatement<TResult>(statement);
 
                     //force a cache flush for all cached objects that have a matching first part of the key (= all objects for same type)
                     Cache?.FlushRegion(CacheRegion);
+
+                    // Update the environment
+                    EnvironmentVersion.SetUpdated();
 
                     break;
                 case DMLStatementType.Select:
