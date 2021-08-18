@@ -5145,6 +5145,7 @@ namespace Sushi.Mediakiwi.Framework
 
             if (redirectToSelf && Console != null && Console.Context != null)
                 Console.Context.Response.Redirect(GetUrl());
+
         }
 
         public void FlushCacheIndex(params string[] index)
