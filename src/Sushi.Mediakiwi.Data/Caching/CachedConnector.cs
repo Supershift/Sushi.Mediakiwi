@@ -85,6 +85,12 @@ namespace Sushi.Mediakiwi.Data.Caching
 
         public override SqlStatementResult<TResult> ExecuteSqlStatement<TResult>(SqlStatement<T> statement)
         {
+            if (typeof(T) == typeof(EnvironmentVersion))
+            {
+                // Never cache EnvironmentVersion
+                return base.ExecuteSqlStatement<TResult>(statement);
+            }
+
             SqlStatementResult<TResult> result = null;
 
             //does this operation interact with the cache?
