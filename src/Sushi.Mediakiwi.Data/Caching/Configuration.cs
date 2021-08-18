@@ -16,5 +16,10 @@ namespace Sushi.Mediakiwi.Data.Caching
                 return CacheManagerProvider?.Invoke();
             }
         }
+
+        /// <summary>
+        /// Indicated the time the environment was last updated
+        /// </summary>
+        public static DateTime? EnvironmentUpdated { get; set; }
     }
 }

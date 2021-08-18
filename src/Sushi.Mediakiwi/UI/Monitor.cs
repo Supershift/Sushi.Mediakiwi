@@ -88,6 +88,8 @@ namespace Sushi.Mediakiwi.UI
         {
             //  Set the current environment
             _Console.CurrentEnvironment = Data.Environment.Current;
+            var environmentVersion = await EnvironmentVersion.SelectAsync().ConfigureAwait(false);
+            Data.Caching.Configuration.EnvironmentUpdated = environmentVersion.Updated;
 
             var path = _Console.AddApplicationPath(CommonConfiguration.PORTAL_PATH);
             var requestPath = _Console.AddApplicationPath(_Console.Request.Path.Value);
