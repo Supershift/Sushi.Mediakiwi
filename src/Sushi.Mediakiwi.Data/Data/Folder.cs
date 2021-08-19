@@ -1436,7 +1436,7 @@ FROM [Wim_ComponentLists] WHERE [ComponentList_Folder_Key] in (SELECT [Folder_Ke
             filter.AddParameter("@masterId", masterID);
 
             List<Folder> list = connector.FetchAll($@"
-    SELECT x.* FROM [wim_Folders] x join wim_Sites on Site_Key = [Folder_Site_Key]
+    SELECT x.* FROM [wim_Folders] x JOIN [wim_Sites] on [Site_Key] = [Folder_Site_Key]
     WHERE [Folder_Type] = @folderType 
     AND [Folder_Site_Key] = @masterId 
     AND NOT [Folder_Folder_Key] IS NULL 
@@ -1465,7 +1465,7 @@ FROM [Wim_ComponentLists] WHERE [ComponentList_Folder_Key] in (SELECT [Folder_Ke
             filter.AddParameter("@folderType", folderType);
 
             List<Folder> list = await connector.FetchAllAsync($@"
-SELECT * FROM [wim_Folders] x 
+SELECT * FROM [wim_Folders] x JOIN [wim_Sites] ON [Site_Key] = [Folder_Site_Key]
 WHERE [Folder_Type] = @folderType 
 AND [Folder_Site_Key] = @masterId 
 AND NOT [Folder_Folder_Key] IS NULL 
