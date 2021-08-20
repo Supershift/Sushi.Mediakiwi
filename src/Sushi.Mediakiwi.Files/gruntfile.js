@@ -87,7 +87,7 @@ module.exports = function (grunt) {
                             'compiled/jquery-ambiance.min.js',
                             'compiled/fixedBar.min.js',
                             'compiled/jquery-nicescroll.min.js',
-                            'compiled/slip.min.js',
+                            /*'compiled/slip.min.js',*/
                             'compiled/testdrivev2.min.js',
                             'compiled/select2.min.js'
                         ], dest: 'compiled/bundel.nl.min.js'
@@ -109,7 +109,7 @@ module.exports = function (grunt) {
                             'compiled/jquery-ambiance.min.js',
                             'compiled/fixedBar.min.js',
                             'compiled/jquery-nicescroll.min.js',
-                            'compiled/slip.min.js',
+                           /* 'compiled/slip.min.js',*/
                             'compiled/testdrivev2.min.js',
                             'compiled/select2.min.js'
                         ], dest: 'compiled/bundel.en.min.js'

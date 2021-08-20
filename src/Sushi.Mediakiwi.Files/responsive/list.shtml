@@ -31,7 +31,7 @@
 	<script type="text/javascript" src="//az609478.vo.msecnd.net/6-25/scripts/jquery-hoverIntent.js"></script>
 	<script type="text/javascript" src="//az609478.vo.msecnd.net/6-25/scripts/jquery-curtainMenu.js"></script>
 	<script type="text/javascript" src="//az609478.vo.msecnd.net/6-25/scripts/jquery-ambiance.js"></script>
-	<script type="text/javascript" src="//az609478.vo.msecnd.net/6-25/scripts/slip.js"></script>
+	<!--<script type="text/javascript" src="//az609478.vo.msecnd.net/6-25/scripts/slip.js"></script>-->
 	<script type="text/javascript" src="//az609478.vo.msecnd.net/6-25/scripts/fixedBar.js"></script>
 	<script type="text/javascript" src="//az609478.vo.msecnd.net/6-25/scripts/testdrivev2.js"></script>
 	<script type="text/javascript" src="//az609478.vo.msecnd.net/6-25/scripts/tinymce/tinymce.js"></script>

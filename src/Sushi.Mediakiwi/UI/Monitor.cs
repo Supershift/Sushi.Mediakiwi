@@ -9,6 +9,7 @@ using Sushi.Mediakiwi.Beta.GeneratedCms.Source;
 using Sushi.Mediakiwi.Controllers;
 using Sushi.Mediakiwi.Data;
 using Sushi.Mediakiwi.Data.Configuration;
+using Sushi.Mediakiwi.Extention;
 using Sushi.Mediakiwi.Framework;
 using Sushi.Mediakiwi.Interfaces;
 using Sushi.Mediakiwi.Logic;
@@ -160,9 +161,19 @@ namespace Sushi.Mediakiwi.UI
         /// <param name="isDeleteTriggered">if set to <c>true</c> [is delete triggered].</param>
         async Task HandleRequestAsync(DataGrid grid, Beta.GeneratedCms.Source.Component component, bool isDeleteTriggered)
         {
-            HandleActionRequest();
-            if (await HandleAsyncRequestAsync(component).ConfigureAwait(false))
+            // Check if it's a sorting request
+            if (await HandleSortingRequestAsync().ConfigureAwait(false))
+            {
                 return;
+            }
+
+            // Check if it's an action request
+            HandleActionRequest();
+
+            if (await HandleAsyncRequestAsync(component).ConfigureAwait(false))
+            {
+                return;
+            }
 
             if (_Console.ItemType == RequestItemType.Item || _Console.ItemType == RequestItemType.Asset || _Console.CurrentListInstance.wim.CanContainSingleInstancePerDefinedList)
             {//  Handles the list item request.
@@ -725,6 +736,30 @@ namespace Sushi.Mediakiwi.UI
             return false;
         }
 
+        async Task<bool> HandleSortingRequestAsync()
+        {
+            // Is this a sorting Request ?
+            if (_Console.Request?.Query?.ContainsKey("sortF") == true && _Console.Request?.Query?.ContainsKey("sortT") == true)
+            {
+                int list = Utility.ConvertToInt(_Console.Request.Query["list"]);
+                int sortF = Utility.ConvertToInt(_Console.Request.Query["sortF"]);
+                int sortT = Utility.ConvertToInt(_Console.Request.Query["sortT"]);
+
+                if (list > 0 && sortF > 0 && sortT > 0)
+                {
+                    IComponentList implement = ComponentList.SelectOne(list);
+                    IComponentListTemplate currentListInstance = implement.GetInstance(_Console);
+
+                    if (currentListInstance != null)
+                    {
+                       return await currentListInstance.UpdateSortOrderAsync(sortF, sortT).ConfigureAwait(false);
+                    }
+                }
+            }
+
+            return false;
+        }
+
         /// <summary>
         /// Handles the action request.
         /// </summary>
@@ -735,6 +770,7 @@ namespace Sushi.Mediakiwi.UI
                 return;
             }
 
+            // 
             switch (_Console.CurrentListInstance.wim.PostbackValue)
             {
                 case "PageContentPublication":
