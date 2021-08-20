@@ -279,13 +279,7 @@ namespace Sushi.Mediakiwi.Framework
             get { return m_CanHaveExpression; }
         }
 
-        ListItemCollection _ListItemCollection;
-        internal ListItemCollection m_ListItemCollection
-        {
-            get { return _ListItemCollection; }
-            set { _ListItemCollection = value; }
-        }
-
+        internal ListItemCollection m_ListItemCollection { get; set; }
 
         /// <summary>
         /// Applies the meta data list.
@@ -293,7 +287,10 @@ namespace Sushi.Mediakiwi.Framework
         /// <param name="listItems">The list items.</param>
         public void ApplyMetaDataList(MetaDataList[] listItems)
         {
-            if (listItems == null || listItems.Length == 0) return;
+            if (listItems == null || listItems.Length == 0)
+            {
+                return;
+            }
 
             m_ListItemCollection = new ListItemCollection();
             foreach (MetaDataList item in listItems)
@@ -1082,7 +1079,7 @@ namespace Sushi.Mediakiwi.Framework
             if (sender is MetaData)
             {
                 MetaData item = ((MetaData)sender);
-                return item.GetCollection();
+                return item.GetCollection(Console);
             }
 
             foreach (System.Reflection.PropertyInfo info in sender.GetType().GetProperties())
@@ -1121,7 +1118,7 @@ namespace Sushi.Mediakiwi.Framework
             if (sender is MetaData)
             {
                 MetaData item = ((MetaData)sender);
-                return item.GetCollection();
+                return item.GetCollection(Console);
             }
 
             foreach (System.Reflection.MethodInfo info in sender.GetType().GetMethods())
