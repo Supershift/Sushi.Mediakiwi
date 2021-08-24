@@ -343,6 +343,17 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
             }
             else
             {
+                if (m_Candidate != null && m_Candidate.ID != 0)
+                {
+                    if (m_Candidate.FileName.Equals(m_Candidate.Title, StringComparison.InvariantCultureIgnoreCase) == true)
+                    {
+                        OutputText = $"{m_Candidate.FileName} ({(m_Candidate.Size > 0 ? (m_Candidate.Size / 1024) : 0)} KB)</a>";
+                    }
+                    else
+                    {
+                        OutputText = $"{m_Candidate.FileName} ({m_Candidate.Title}) ({(m_Candidate.Size > 0 ? (m_Candidate.Size / 1024) : 0)} KB)</a>";
+                    }
+                }
                 build.Append(GetSimpleTextElement(OutputText));
             }
             return ReadCandidate(m_Candidate.ID);

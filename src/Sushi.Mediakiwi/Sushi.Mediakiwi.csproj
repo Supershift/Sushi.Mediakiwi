@@ -75,6 +75,7 @@
   <ItemGroup>
     <Compile Include="AppCentre\UI\ComponentTemplate.cs" />
     <Compile Include="AppCentre\UI\PageList.cs" />
+    <Compile Include="AppCentre\UI\RoleAccessList.cs" />
     <Compile Include="AppCentre\UI\RoleAccessSite.cs" />
     <Compile Include="AppCentre\UI\Forms\PageMappingForm.cs" />
     <Compile Include="AppCentre\UI\PageMapping.cs" />

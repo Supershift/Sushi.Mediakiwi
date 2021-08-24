@@ -8,9 +8,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source.Xml
         internal static async Task<string> GetAsync(Console container, int componentTemplateId, int pageId, int componentId, string target)
         {
             StringBuilder build = new StringBuilder();
-            // [CB: 24-06-2015] With permision of marc I can omit this
-            //build.Append(@"<?xml version=""1.0""?><root>");
-
+            
             await container.ApplyListAsync(Data.ComponentListType.Browsing).ConfigureAwait(false);
 
             container.Item = pageId;
@@ -18,9 +16,9 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source.Xml
             container.ItemType = RequestItemType.Page;
 
             Source.Component component = new Source.Component();
-            build.Append(component.CreateComponentContent(container, componentTemplateId, pageId, componentId, target).Replace("&", "&amp;"));
-            // [CB: 24-06-2015] With permision of marc I can omit this
-            //build.Append(@"</root>");
+            var componentContent = await component.CreateComponentContentAsync(container, componentTemplateId, pageId, componentId, target).ConfigureAwait(false);
+            build.Append(componentContent.Replace("&", "&amp;"));
+            
             
             return build.ToString();
         }
