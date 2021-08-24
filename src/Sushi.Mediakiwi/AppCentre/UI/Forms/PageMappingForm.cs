@@ -10,14 +10,19 @@ namespace Sushi.Mediakiwi.AppCentre.UI.Forms
         {
             Load(implement);
 
+            bool isPageType = implement.TargetTypeID == (int)PageMappingTargetType.PAGE;
+            bool isFileType = implement.TargetTypeID == (int)PageMappingTargetType.FILE;
+            bool isExpressionType = implement.TargetTypeID == (int)PageMappingTargetType.EXPRESSION;
+
             Map(x => x.Path).TextField("URL", 150, true, false, "relative path that can end with [*] for a wildcard");
             Map(x => x.TargetTypeID).Radio("Page or document", nameof(TargetTypes), "uxTargetType", true, true);
-            Map(x => x.MappingTypeID).Dropdown("Type", nameof(MappingTypes), true).Show(implement.TargetTypeID == (int)PageMappingTargetType.PAGE);
-            Map(x => x.PageID).PageSelect("Internal page", true).Show(implement.TargetTypeID == (int)PageMappingTargetType.PAGE);
-            Map(x => x.Query).TextField("Querystring", 50, false, false, "Use this for a specific item like ?productID=1").Show(implement.TargetTypeID == (int)PageMappingTargetType.PAGE);
-            Map(x => x.Expression).TextField("Expression", 200, false, false, "Can be used to replace a file extension<br/>(if URL starts with a '.' this expression will be used as a replacement for that extension)").Show(implement.TargetTypeID == (int)PageMappingTargetType.PAGE);
-            Map(x => x.AssetID).Document("Internal document", true).Show(implement.TargetTypeID == (int)PageMappingTargetType.FILE);
+            Map(x => x.MappingTypeID).Dropdown("Type", nameof(MappingTypes), true).Show(isPageType || isExpressionType);            
+            Map(x => x.PageID).PageSelect("Internal page", isPageType).Show(isPageType || isExpressionType);
+            Map(x => x.Query).TextField("Querystring", 50, false, false, "Use this for a specific item like ?productID=1").Show(isPageType || isExpressionType);            
+            Map(x => x.Expression).TextField("Expression", 200, isExpressionType, false, "Can be used to replace a file extension<br/>(if URL starts with a '.' this expression will be used as a replacement for that extension)").Show(isPageType || isExpressionType);            
+            Map(x => x.AssetID).Document("Internal document", isFileType).Show(isFileType);            
             Map(x => x.Title).TextField("Browser title", 150, false);
+            
             Map(x => x.IsActive).Checkbox("Active");
         }
 
@@ -50,6 +55,7 @@ namespace Sushi.Mediakiwi.AppCentre.UI.Forms
                     m_TargetTypes = new ListItemCollection();
                     m_TargetTypes.Add(new ListItem("Page", $"{(int)PageMappingTargetType.PAGE}"));
                     m_TargetTypes.Add(new ListItem("File", $"{(int)PageMappingTargetType.FILE}"));
+                    m_TargetTypes.Add(new ListItem("Expression", $"{(int)PageMappingTargetType.EXPRESSION}"));
                 }
 
                 return m_TargetTypes;

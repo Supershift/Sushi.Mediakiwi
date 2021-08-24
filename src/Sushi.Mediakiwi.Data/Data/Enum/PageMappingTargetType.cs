@@ -11,5 +11,10 @@
         /// Sets the target for a pagemap to a File
         /// </summary>
         FILE = 1,
+
+        /// <summary>
+        /// Sets the target for a pagemap to a Expression
+        /// </summary>
+        EXPRESSION = 2,
     }
 }
