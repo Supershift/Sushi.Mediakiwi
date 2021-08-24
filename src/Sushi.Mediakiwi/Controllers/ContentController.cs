@@ -34,7 +34,7 @@ namespace Sushi.Mediakiwi.Controllers
 
         public ContentController(IMemoryCache memoryCache)
         {
-            _cache = memoryCache; 
+            _cache = memoryCache;
         }
 
         const string ckey = "Node.TimeStamp";
@@ -119,10 +119,11 @@ namespace Sushi.Mediakiwi.Controllers
         public async Task<ActionResult<PageContentResponse>> GetPageContent(PageRequest req)
         {
             return await GetPageContentInternalAsync(
-                req.Path, 
-                req.ClearCache, 
-                req.IsPreview, 
-                req.PageID)
+                req.Path,
+                req.ClearCache,
+                req.IsPreview,
+                req.PageID,
+                Request?.Query)
                 .ConfigureAwait(false);
         }
 
@@ -140,11 +141,12 @@ namespace Sushi.Mediakiwi.Controllers
                 url,
                 flush?.Equals("me", StringComparison.InvariantCultureIgnoreCase) == true,
                 preview?.Equals("1", StringComparison.InvariantCultureIgnoreCase) == true,
-                pageId)
+                pageId,
+                Request?.Query)
                 .ConfigureAwait(false);
         }
- 
-        private async Task<ActionResult<PageContentResponse>> GetPageContentInternalAsync(string url, bool flushCache = false,  bool isPreview = false, int? pageId = null)
+
+        private async Task<ActionResult<PageContentResponse>> GetPageContentInternalAsync(string url, bool flushCache = false, bool isPreview = false, int? pageId = null, IQueryCollection queryParameters = null)
         {
             var response = new PageContentResponse();
             if (string.IsNullOrWhiteSpace(url) && pageId.GetValueOrDefault(0) == 0)
@@ -162,6 +164,23 @@ namespace Sushi.Mediakiwi.Controllers
                 bool ispreview = isPreview;
                 var pageMap = default(IPageMapping);
                 bool isCached = (await Flush(Last_Flush.Ticks)).Value;
+                string queryString = string.Empty;
+
+                if (queryParameters != null)
+                {
+                    // These params are already accounted for in url and flushCache, no need to pass them again
+                    string[] excludeParams = new string[] { "url", "flush" };
+
+                    // Create a new collection of name=value items, where the excludeParams are removed
+                    var queryParams = queryParameters?.Where(query => !excludeParams.Contains(query.Key)).Select(x => { return $"{x.Key}={x.Value}"; }).ToList();
+                    if (queryParams != null && queryParams.Count > 0)
+                    {
+                        // create a querystring
+                        // starting with ?
+                        // join each name=value item separated with &
+                        queryString = $"?{string.Join("&", queryParams)}";
+                    }
+                }
 
                 // When a pageID is supplied, this takes presedence over the URL
                 if (pageId.GetValueOrDefault(0) > 0)
@@ -218,6 +237,9 @@ namespace Sushi.Mediakiwi.Controllers
                                 var redirection = url.Remove(url.Length - map.Path.Length, map.Path.Length);
                                 var newurl = mapped.Expression.Equals(".") ? redirection : string.Concat(redirection, mapped.Expression);
 
+                                // append queryString to the new url
+                                newurl += queryString;
+
                                 // to do, replace with actual content
                                 response = await GetPageNotFoundAsync(null);
                                 response.PageInternalPath = newurl;
@@ -230,7 +252,11 @@ namespace Sushi.Mediakiwi.Controllers
                         {
                             // to do, replace with actual content
                             response = await GetPageNotFoundAsync(null);
-                            response.PageInternalPath = mapped.Expression;
+
+                            // append queryString to the new url
+                            var newUrl = mapped.Expression + queryString;
+
+                            response.PageInternalPath = newUrl;
                             response.StatusCode = GetStatusCode(map);
                             return Ok(response);
                         }
@@ -249,7 +275,7 @@ namespace Sushi.Mediakiwi.Controllers
                     }
                 }
 
-              
+
                 // Key not in cache, so get data.
                 response = new PageContentResponse();
 
@@ -258,7 +284,7 @@ namespace Sushi.Mediakiwi.Controllers
                     // Check if this page is the Homepage 
                     if (url == "/" || string.IsNullOrWhiteSpace(url))
                     {
-                        response = await GetHomePageAsync(null).ConfigureAwait(false);
+                        response = await GetHomePageAsync(null, ispreview).ConfigureAwait(false);
                     }
                     else
                     {
@@ -290,7 +316,7 @@ namespace Sushi.Mediakiwi.Controllers
         /// </summary>
         /// <param name="siteId">The site for which to get this page (or default environment site when none supplied)</param>
         /// <returns></returns>
-        private async Task<PageContentResponse> GetHomePageAsync(int? siteId)
+        private async Task<PageContentResponse> GetHomePageAsync(int? siteId, bool isPreview = false)
         {
             PageContentResponse response = new PageContentResponse();
 
@@ -308,7 +334,7 @@ namespace Sushi.Mediakiwi.Controllers
                     var page = await Page.SelectOneAsync(site.HomepageID.Value);
                     if (page?.ID > 0)
                     {
-                        response = await GetPageContentAsync(page, null, false, false);
+                        response = await GetPageContentAsync(page, null, false, isPreview);
                     }
                 }
             }
@@ -618,7 +644,7 @@ namespace Sushi.Mediakiwi.Controllers
 
             if (pageMap != null)
             {
-                if (pageMap.MappingType ==  PageMappingType.Redirect302)
+                if (pageMap.MappingType == PageMappingType.Redirect302)
                 {
                     status = HttpStatusCode.Redirect;
                 }
