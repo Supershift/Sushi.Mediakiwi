@@ -35,8 +35,6 @@ namespace Sushi.Mediakiwi.Data.Caching
             Cache = cache;
         }
 
-        //public static DateTime? LastFlush { get; set; }
-
         /// <summary>
         /// Gets or sets a value indicating if cache must be used if a SELECT statement is executed. 
         /// A flush of cache for all objects with type <typeparamref name="T"/> is always performed, regardless of this setting.
@@ -113,20 +111,6 @@ namespace Sushi.Mediakiwi.Data.Caching
                 case DMLStatementType.Select:
                     if (UseCacheOnSelect)
                     {
-                        // See if the cache needs to be flushed
-                        //if (!LastFlush.HasValue)
-                        //{
-                        //    LastFlush = DateTime.UtcNow;
-                        //}
-                        //else
-                        //{
-                        //    if (Configuration.EnvironmentUpdated.HasValue && LastFlush.Value < Configuration.EnvironmentUpdated.Value)
-                        //    {
-                        //        Cache?.FlushRegion(CacheRegion);
-                        //        LastFlush = DateTime.UtcNow;
-                        //    }
-                        //}
-
                         //check if in cache, return if found
                         string key = GenerateKey(statement);
                         result = Cache?.Get<SqlStatementResult<TResult>>(CacheRegion, key);
@@ -179,20 +163,6 @@ namespace Sushi.Mediakiwi.Data.Caching
                 case DMLStatementType.Select:
                     if (UseCacheOnSelect)
                     {
-                        // See if the cache needs to be flushed
-                        //if (!LastFlush.HasValue)
-                        //{
-                        //    LastFlush = DateTime.UtcNow;
-                        //}
-                        //else
-                        //{
-                        //    if (Configuration.EnvironmentUpdated.HasValue && LastFlush.Value < Configuration.EnvironmentUpdated.Value)
-                        //    {
-                        //        Cache?.FlushRegion(CacheRegion);
-                        //        LastFlush = DateTime.UtcNow;
-                        //    }
-                        //}
-
                         //check if in cache, return if found
                         string key = GenerateKey(statement);
                         result = Cache?.Get<SqlStatementResult<TResult>>(CacheRegion, key);
