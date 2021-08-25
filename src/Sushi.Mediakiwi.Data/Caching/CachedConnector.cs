@@ -35,8 +35,6 @@ namespace Sushi.Mediakiwi.Data.Caching
             Cache = cache;
         }
 
-        public static DateTime? LastFlush { get; set; }
-
         /// <summary>
         /// Gets or sets a value indicating if cache must be used if a SELECT statement is executed. 
         /// A flush of cache for all objects with type <typeparamref name="T"/> is always performed, regardless of this setting.
@@ -103,30 +101,16 @@ namespace Sushi.Mediakiwi.Data.Caching
                     //perform the operation
                     result = base.ExecuteSqlStatement<TResult>(statement);
 
-                    //force a cache flush for all cached objects that have a matching first part of the key (= all objects for same type)
-                    Cache?.FlushRegion(CacheRegion);
-
-                    // Update the environment
-                    EnvironmentVersion.SetUpdated();
+                    if (UseCacheOnSelect)
+                    {
+                        //force a cache flush for all cached objects that have a matching first part of the key (= all objects for same type)
+                        Cache?.FlushRegion(CacheRegion);
+                    }
 
                     break;
                 case DMLStatementType.Select:
                     if (UseCacheOnSelect)
                     {
-                        // See if the cache needs to be flushed
-                        if (!LastFlush.HasValue)
-                        {
-                            LastFlush = DateTime.UtcNow;
-                        }
-                        else
-                        {
-                            if (Configuration.EnvironmentUpdated.HasValue && LastFlush.Value < Configuration.EnvironmentUpdated.Value)
-                            {
-                                Cache?.FlushRegion(CacheRegion);
-                                LastFlush = DateTime.UtcNow;
-                            }
-                        }
-
                         //check if in cache, return if found
                         string key = GenerateKey(statement);
                         result = Cache?.Get<SqlStatementResult<TResult>>(CacheRegion, key);
@@ -169,30 +153,16 @@ namespace Sushi.Mediakiwi.Data.Caching
                     //perform the operation
                     result = await base.ExecuteSqlStatementAsync<TResult>(statement, cancellationToken).ConfigureAwait(false);
 
-                    //force a cache flush for all cached objects that have a matching first part of the key (= all objects for same type)
-                    Cache?.FlushRegion(CacheRegion);
-
-                    // Update the environment
-                    EnvironmentVersion.SetUpdated();
+                    if (UseCacheOnSelect)
+                    {
+                        //force a cache flush for all cached objects that have a matching first part of the key (= all objects for same type)
+                        Cache?.FlushRegion(CacheRegion);
+                    }
 
                     break;
                 case DMLStatementType.Select:
                     if (UseCacheOnSelect)
                     {
-                        // See if the cache needs to be flushed
-                        if (!LastFlush.HasValue)
-                        {
-                            LastFlush = DateTime.UtcNow;
-                        }
-                        else
-                        {
-                            if (Configuration.EnvironmentUpdated.HasValue && LastFlush.Value < Configuration.EnvironmentUpdated.Value)
-                            {
-                                Cache?.FlushRegion(CacheRegion);
-                                LastFlush = DateTime.UtcNow;
-                            }
-                        }
-
                         //check if in cache, return if found
                         string key = GenerateKey(statement);
                         result = Cache?.Get<SqlStatementResult<TResult>>(CacheRegion, key);

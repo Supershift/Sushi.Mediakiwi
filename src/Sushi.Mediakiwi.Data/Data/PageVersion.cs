@@ -70,13 +70,27 @@ namespace Sushi.Mediakiwi.Data
         #endregion Properties
 
         /// <summary>
+        /// Get an instande of the connector
+        /// </summary>
+        static Caching.CachedConnector<PageVersion> Connector
+        {
+            get
+            {
+                var connector = ConnectorFactory.CreateConnector<PageVersion>();
+                // do not cache the select, also preventing from generating cache references 
+                connector.UseCacheOnSelect = false;
+                return connector;
+            }
+        }
+
+        /// <summary>
         /// Select a single page version by Identifier
         /// </summary>
         /// <param name="ID">The PageVersion Identifier</param>
         /// <returns></returns>
         public static IPageVersion SelectOne(int ID)
         {
-            var connector = ConnectorFactory.CreateConnector<PageVersion>();
+            var connector = Connector;
             return connector.FetchSingle(ID);
         }
 
@@ -87,7 +101,7 @@ namespace Sushi.Mediakiwi.Data
         /// <returns></returns>
         public static async Task<IPageVersion> SelectOneAsync(int ID)
         {
-            var connector = ConnectorFactory.CreateConnector<PageVersion>();
+            var connector = Connector;
             return await connector.FetchSingleAsync(ID);
         }
 
@@ -97,7 +111,7 @@ namespace Sushi.Mediakiwi.Data
         /// <returns></returns>
         public virtual bool Save()
         {
-            var connector = ConnectorFactory.CreateConnector<PageVersion>();
+            var connector = Connector;
             connector.Save(this);
             return true;
         }
@@ -108,7 +122,7 @@ namespace Sushi.Mediakiwi.Data
         /// <returns></returns>
         public async virtual Task<bool> SaveAsync()
         {
-            var connector = ConnectorFactory.CreateConnector<PageVersion>();
+            var connector = Connector;
             await connector.SaveAsync(this);
             return true;
         }
@@ -120,7 +134,7 @@ namespace Sushi.Mediakiwi.Data
         /// <returns></returns>
         public static List<IPageVersion> SelectAllOfPage(int pageID)
         {
-            var connector = ConnectorFactory.CreateConnector<PageVersion>();
+            var connector = Connector;
             var filter = connector.CreateDataFilter();
             filter.Add(x => x.PageID, pageID);
 
@@ -134,7 +148,7 @@ namespace Sushi.Mediakiwi.Data
         /// <returns></returns>
         public static async Task<List<IPageVersion>> SelectAllOfPageAsync(int pageID)
         {
-            var connector = ConnectorFactory.CreateConnector<PageVersion>();
+            var connector = Connector;
             var filter = connector.CreateDataFilter();
             filter.Add(x => x.PageID, pageID);
 
