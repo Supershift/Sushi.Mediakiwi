@@ -218,6 +218,19 @@ namespace Sushi.Mediakiwi.Data
         #endregion Properties
 
         #region Methods
+        /// <summary>
+        /// Get an instande of the connector
+        /// </summary>
+        static Caching.CachedConnector<Visitor> Connector
+        {
+            get
+            {
+                var connector = ConnectorFactory.CreateConnector<Visitor>();
+                // do not cache the select, also preventing from generating cache references 
+                connector.UseCacheOnSelect = false;
+                return connector;
+            }
+        }
 
         /// <summary>
         /// Selects the specified visitor reference.
@@ -226,7 +239,7 @@ namespace Sushi.Mediakiwi.Data
         /// <returns></returns>
         public static IVisitor Select(Guid visitorReference)
         {
-            var connector = ConnectorFactory.CreateConnector<Visitor>();
+            var connector = Connector;
             var filter = connector.CreateDataFilter();
             filter.Add(x => x.GUID, visitorReference);
 
@@ -241,7 +254,7 @@ namespace Sushi.Mediakiwi.Data
         /// <returns></returns>
         public static async Task<IVisitor> SelectAsync(Guid visitorReference)
         {
-            var connector = ConnectorFactory.CreateConnector<Visitor>();
+            var connector = Connector;
             var filter = connector.CreateDataFilter();
             filter.Add(x => x.GUID, visitorReference);
 
@@ -255,21 +268,20 @@ namespace Sushi.Mediakiwi.Data
         /// <returns></returns>
         public static IVisitor SelectOne(int ID)
         {
-            var connector = ConnectorFactory.CreateConnector<Visitor>();
-
+            var connector = Connector;
             return connector.FetchSingle(ID);
         }
 
         public static void Save(Visitor entity)
         {
-            var connector = ConnectorFactory.CreateConnector<Visitor>();
+            var connector = Connector;
             connector.Save(entity);
         }
 
 
         public static async Task SaveAsync(Visitor entity)
         {
-            var connector = ConnectorFactory.CreateConnector<Visitor>();
+            var connector = Connector;
             await connector.SaveAsync(entity).ConfigureAwait(false);
         }
 
@@ -292,7 +304,7 @@ namespace Sushi.Mediakiwi.Data
         /// <returns></returns>
         public static async Task<IVisitor> SelectOneAsync(int ID)
         {
-            var connector = ConnectorFactory.CreateConnector<Visitor>();
+            var connector = Connector;
 
             return await connector.FetchSingleAsync(ID);
         }
@@ -305,7 +317,7 @@ namespace Sushi.Mediakiwi.Data
         /// <returns></returns>
         public static IVisitor[] SelectAllByProfile(int profileId, int excludeVisitorID)
         {
-            var connector = ConnectorFactory.CreateConnector<Visitor>();
+            var connector = Connector;
             var filter = connector.CreateDataFilter();
             filter.Add(x => x.ProfileID, profileId);
 
@@ -330,7 +342,7 @@ namespace Sushi.Mediakiwi.Data
         /// <returns></returns>
         public static async Task<IVisitor[]> SelectAllByProfileAsync(int profileId, int excludeVisitorID)
         {
-            var connector = ConnectorFactory.CreateConnector<Visitor>();
+            var connector = Connector;
             var filter = connector.CreateDataFilter();
             filter.Add(x => x.ProfileID, profileId);
 

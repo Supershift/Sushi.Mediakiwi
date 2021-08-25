@@ -46,13 +46,27 @@ namespace Sushi.Mediakiwi.Data
         #endregion properties
 
         /// <summary>
+        /// Get an instande of the connector
+        /// </summary>
+        static Caching.CachedConnector<CacheItem> Connector
+        {
+            get
+            {
+                var connector = ConnectorFactory.CreateConnector<CacheItem>();
+                // do not cache the select, also preventing from generating cache references 
+                connector.UseCacheOnSelect = false;
+                return connector;
+            }
+        }
+
+        /// <summary>
         /// Selects the one.
         /// </summary>
         /// <param name="Key">The key.</param>
         /// <returns></returns>
         public static ICacheItem SelectOne(int Key)
         {
-            var connector = ConnectorFactory.CreateConnector<CacheItem>();
+            var connector = Connector;
             return connector.FetchSingle(Key);
         }
 
@@ -62,7 +76,7 @@ namespace Sushi.Mediakiwi.Data
         /// <param name="Key">Uniqe identifier of the Menu</param>
         public static async Task<ICacheItem> SelectOneAsync(int Key)
         {
-            var connector = ConnectorFactory.CreateConnector<CacheItem>();
+            var connector = Connector;
             return await connector.FetchSingleAsync(Key);
         }
 
@@ -73,10 +87,20 @@ namespace Sushi.Mediakiwi.Data
         /// <returns></returns>
         public static ICacheItem[] SelectAll(DateTime dt)
         {
-            var connector = ConnectorFactory.CreateConnector<CacheItem>();
+            var connector = Connector;
             var filter = connector.CreateDataFilter();
             filter.Add(x => x.Created, dt, ComparisonOperator.GreaterThan);
             return connector.FetchAll(filter).ToArray();
+        }
+
+        /// <summary>
+        /// Truncate the entire cache registry
+        /// </summary>
+        /// <returns></returns>
+        public static async Task TruncateAsync()
+        {
+            var connector = Connector;
+            await connector.ExecuteNonQueryAsync("truncate table wim_CacheItems").ConfigureAwait(false);
         }
 
         /// <summary>
@@ -86,7 +110,7 @@ namespace Sushi.Mediakiwi.Data
         /// <returns></returns>
         public static async Task<ICacheItem[]> SelectAllAsync(DateTime dt)
         {
-            var connector = ConnectorFactory.CreateConnector<CacheItem>();
+            var connector = Connector;
             var filter = connector.CreateDataFilter();
             filter.Add(x => x.Created, dt, ComparisonOperator.GreaterThan);
             var result = await connector.FetchAllAsync(filter);
@@ -95,10 +119,8 @@ namespace Sushi.Mediakiwi.Data
 
         public void Save()
         {
-            var connector = ConnectorFactory.CreateConnector<CacheItem>();
+            var connector = Connector;
             connector.Save(this);
         }
-
-        
     }
 }
