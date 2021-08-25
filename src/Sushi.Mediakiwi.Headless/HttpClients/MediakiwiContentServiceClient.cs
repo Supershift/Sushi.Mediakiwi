@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.WebUtilities;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Sushi.Mediakiwi.Headless.Config;
@@ -108,6 +109,12 @@ namespace Sushi.Mediakiwi.Headless.HttpClients
 
         public async Task<string> GetPageContentStringAsync(string forUrl, string basePath, bool clearCache, bool isPreview, int? pageId)
         {
+            return await GetPageContentStringAsync(forUrl, basePath, clearCache, isPreview, null, null);
+
+        }
+
+        public async Task<string> GetPageContentStringAsync(string forUrl, string basePath, bool clearCache, bool isPreview, int? pageId, IQueryCollection queryCollection)
+        { 
             CancellationTokenSource cts = new CancellationTokenSource(_settings.MediaKiwi.ContentService.TimeOut); // 2 seconds timeout
 
             // Create querystring for adding SiteID to the Request
@@ -130,6 +137,18 @@ namespace Sushi.Mediakiwi.Headless.HttpClients
             if (pageId.GetValueOrDefault(0) > 0)
             {
                 queryString.Add("pageId", pageId.GetValueOrDefault(0).ToString());
+            }
+
+            // Add remaining items from queryCollection to the queryString
+            if (queryCollection != null)
+            {
+                foreach(var query in queryCollection)
+                {
+                    if(queryString.ContainsKey(query.Key) == false)
+                    {
+                        queryString.Add(query.Key, query.Value);
+                    }
+                }
             }
 
             // Create Http Request object

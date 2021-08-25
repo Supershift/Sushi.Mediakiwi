@@ -114,6 +114,10 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                 {
                     Implement.TargetTypeID = 1;
                 }
+                else if (Request.Form[nameof(IPageMapping.TargetTypeID)] == "2")
+                {
+                    Implement.TargetTypeID = 2;
+                }
             }
 
             Form = new PageMappingForm(Implement);

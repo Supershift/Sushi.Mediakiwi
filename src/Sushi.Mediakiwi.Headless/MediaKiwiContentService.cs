@@ -177,7 +177,7 @@ namespace Sushi.Mediakiwi.Headless
             }
             else
             {
-                return await GetPageContentAsync(url, AppBaseUrl, isClearCacheCall, isPreviewCall);
+                return await GetPageContentAsync(url, AppBaseUrl, isClearCacheCall, isPreviewCall, null, request.Query);
             }
         }
 
@@ -185,7 +185,7 @@ namespace Sushi.Mediakiwi.Headless
 
         #region Get Page Content - Url / PageID
 
-        public async Task<PageContentResponse> GetPageContentAsync(string forUrl, string basePath, bool clearCache = false, bool isPreview = false, int? pageId = null)
+        public async Task<PageContentResponse> GetPageContentAsync(string forUrl, string basePath, bool clearCache = false, bool isPreview = false, int? pageId = null, IQueryCollection queryCollection = null)
         {
             PageContentResponse returnObj = new PageContentResponse();
             if (string.IsNullOrWhiteSpace(_configuration.MediaKiwi.ContentService.ServiceUrl))
@@ -258,7 +258,7 @@ namespace Sushi.Mediakiwi.Headless
                     try
                     {
                         // Read the JSON content.
-                        string responseFromServer = await _httpClient.GetPageContentStringAsync(forUrl, basePath, clearCache, isPreview, pageId);
+                        string responseFromServer = await _httpClient.GetPageContentStringAsync(forUrl, basePath, clearCache, isPreview, pageId, queryCollection);
 
                         // Convert the JSON content.
                         if (string.IsNullOrWhiteSpace(responseFromServer) == false)
