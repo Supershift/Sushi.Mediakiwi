@@ -37,8 +37,6 @@ namespace Sushi.Mediakiwi.Headless
         {
             if (request != null && request.Query["flush"] == "me")
                 return true;
-            else if (request != null && request?.HttpContext?.Items?.ContainsKey("mediakiwi.flush") == true)
-                return true;
             else
                 return false;
         }

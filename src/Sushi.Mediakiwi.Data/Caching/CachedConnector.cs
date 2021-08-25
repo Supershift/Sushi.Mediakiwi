@@ -106,9 +106,6 @@ namespace Sushi.Mediakiwi.Data.Caching
                     //force a cache flush for all cached objects that have a matching first part of the key (= all objects for same type)
                     Cache?.FlushRegion(CacheRegion);
 
-                    // Update the environment
-                    EnvironmentVersion.SetUpdated();
-
                     break;
                 case DMLStatementType.Select:
                     if (UseCacheOnSelect)
@@ -171,9 +168,6 @@ namespace Sushi.Mediakiwi.Data.Caching
 
                     //force a cache flush for all cached objects that have a matching first part of the key (= all objects for same type)
                     Cache?.FlushRegion(CacheRegion);
-
-                    // Update the environment
-                    EnvironmentVersion.SetUpdated();
 
                     break;
                 case DMLStatementType.Select:
