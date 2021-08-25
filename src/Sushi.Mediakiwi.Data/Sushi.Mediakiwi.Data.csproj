@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <Version>7.15.56</Version>
+    <Version>7.15.57</Version>
     <Authors>Marc Molenwijk, Mark Rienstra</Authors>
     <Company>Supershift</Company>
     <Product>Mediakiwi</Product>
@@ -14,8 +14,8 @@
     <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
     <EnableNETAnalyzers>true</EnableNETAnalyzers>
     <RunAnalyzersDuringBuild>false</RunAnalyzersDuringBuild>
-    <AssemblyVersion>7.15.56.0</AssemblyVersion>
-    <FileVersion>7.15.56.0</FileVersion>
+    <AssemblyVersion>7.15.57.0</AssemblyVersion>
+    <FileVersion>7.15.57.0</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
