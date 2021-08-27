@@ -620,6 +620,34 @@ namespace Sushi.Mediakiwi.Controllers
                         }
                     }
                     break;
+                case ContentType.Date:
+                    {
+                        if (!string.IsNullOrWhiteSpace(inField.Value))
+                        {
+                            if (long.TryParse(inField.Value, out long unitTime))
+                            {
+                                isFilled = true;
+                                var dateTimeValue = new DateTime(unitTime);
+                                System.Globalization.CultureInfo dateCulture = new System.Globalization.CultureInfo("nl-NL");
+                                content.Text = dateTimeValue.ToString("dd-MM-yyyy", dateCulture);
+                            }
+                        }
+                    }
+                    break;
+                case ContentType.DateTime:
+                    {
+                        if (!string.IsNullOrWhiteSpace(inField.Value))
+                        {
+                            if (long.TryParse(inField.Value, out long unitTime))
+                            {
+                                isFilled = true;
+                                var dateTimeValue = new DateTime(unitTime);
+                                System.Globalization.CultureInfo dateCulture = new System.Globalization.CultureInfo("nl-NL");
+                                content.Text = dateTimeValue.ToString("dd-MM-yyyy HH:mm:ss", dateCulture);
+                            }
+                        }
+                    }
+                    break;
             }
 
             return (content, isFilled);
