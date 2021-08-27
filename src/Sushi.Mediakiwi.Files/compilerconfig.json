@@ -2,5 +2,9 @@
   {
     "outputFile": "Presentation/styles/styles.css",
     "inputFile": "Presentation/styles/styles.less"
+  },
+  {
+    "outputFile": "styles/documentType.css",
+    "inputFile": "styles/documentType.scss"
   }
 ]
