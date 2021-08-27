@@ -214,7 +214,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
 
             if (m_Candidate?.ID > 0)
             {
-                if (m_Candidate.IsImage)
+                if (m_Candidate.IsImage && m_Candidate.Width > 0 && m_Candidate.Height > 0)
                 {
                     OutputText = $"{m_Candidate.Title} <span>({m_Candidate.Width}px / {m_Candidate.Height}px)</span>";
                 }
