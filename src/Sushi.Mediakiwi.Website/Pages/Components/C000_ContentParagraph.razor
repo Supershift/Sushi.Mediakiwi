@@ -1,0 +1,23 @@
+﻿@inherits Sushi.Mediakiwi.Headless.BaseRazorComponent<Models.ApplicationSettings>
+@using Sushi.Mediakiwi.Headless.Data;
+
+<div class="content-paragraph">
+    @if (string.IsNullOrEmpty(title?.Text) == false)
+    {
+        <h3>@title.Text</h3>
+    }
+
+    @if (string.IsNullOrEmpty(contentText?.Text) == false)
+    {
+        <p>@((MarkupString)contentText.Text)</p>
+    }
+</div>
+
+
+@code {
+    [Parameter]
+    public ContentItem title { get; set; }
+
+    [Parameter]
+    public ContentItem contentText { get; set; }
+}
