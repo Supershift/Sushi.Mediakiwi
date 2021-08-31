@@ -24,10 +24,10 @@ namespace Sushi.Mediakiwi.Headless
             if (script?.ReplacementItems?.Count > 0)
             {
                 // Are all marked as mandatory ?
-                var allMandatory = script.ReplacementItems.Count == script.ReplacementItems.Count(x => x.MustBeFilled);
+                var allMandatory = script.ReplacementItems.All(x => x.MustBeFilled);
 
                 // are all values filled ?
-                var allFilled = script.ReplacementItems.Count == script.ReplacementItems.Count(x => string.IsNullOrWhiteSpace(x.Value) == false);
+                var allFilled = script.ReplacementItems.All(x => string.IsNullOrWhiteSpace(x.Value) == false);
 
                 // if all replacement values are marked as mandatory, but not all are filled, empty the code.
                 if (allMandatory && !allFilled) 
