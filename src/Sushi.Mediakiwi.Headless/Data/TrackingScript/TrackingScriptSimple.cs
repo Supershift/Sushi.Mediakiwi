@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
 namespace Sushi.Mediakiwi.Headless.Data.TrackingScript
@@ -36,5 +37,8 @@ namespace Sushi.Mediakiwi.Headless.Data.TrackingScript
 
         [JsonPropertyName("isActive")]
         public bool IsActive { get; set; }
+
+        [JsonPropertyName("replacementItems")]
+        public List<TrackingScriptReplacementItem> ReplacementItems { get; set; } = new List<TrackingScriptReplacementItem>();
     }
 }
