@@ -56,7 +56,8 @@ namespace Sushi.Mediakiwi.Demonstration
             app.UseAuthentication();
             app.UseAuthorization();
 
-            app.UseMediakiwi();
+            string[] excludePaths = new string[] { "/api/custom", "/myfiles" };
+            app.UseMediakiwi(excludePaths);
 
             app.UseEndpoints(endpoints =>
             {
