@@ -712,7 +712,8 @@
         border-radius: 2px !important;
         -webkit-appearance: none;
         /*font-weight: 600;*/
-        height: 30px !important;/*!important auto !important;*/
+        height: 30px !important; /*!important auto !important;*/
+        line-height: 16px;
         border: none;
         /*text-transform: uppercase;*/
         color: #ffffff;
@@ -1898,6 +1899,7 @@ body.popupPage .OrderingField {
                 cursor: pointer;
                 display: inline-block;
                 height: 29px;
+                line-height: 14px;
             }
 
     .forms .note h3 {

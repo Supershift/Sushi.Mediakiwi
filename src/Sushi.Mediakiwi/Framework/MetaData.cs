@@ -469,15 +469,26 @@ namespace Sushi.Mediakiwi.Framework
         /// 
         /// </summary>
         /// <returns></returns>
-        public ListItemCollection GetCollection()
+        public ListItemCollection GetCollection(Sushi.Mediakiwi.Beta.GeneratedCms.Console console)
         {
-            ListItemCollection Collection = new ListItemCollection();
+            ListItemCollection _collection = new ListItemCollection();
             if (CollectionList != null && CollectionList.Length > 0)
             {
                 foreach (MetaDataList item in CollectionList)
-                    Collection.Add(new ListItem(item.Text, item.Value));
+                {
+                    _collection.Add(new ListItem(item.Text, item.Value));
+                }
             }
-            return Collection;
+            else if (Utils.IsGuid(Collection))
+            {
+                var clist = ComponentList.SelectOne(Utils.ConvertToGuid(Collection));
+                if (clist?.ID > 0) 
+                {
+                    _collection = Utils.GetListCollection(console, clist);
+                }
+            }
+
+            return _collection;
         }
     }
 }

@@ -3,12 +3,22 @@
   font-family: "Open Sans Condensed", sans-serif !important;
   font-weight: 600 !important; }
 
+#homeContent {
+  display: flex;
+  flex-direction: row; }
+
+#homeAside {
+  margin-right: 0;
+  position: initial; }
+
 #homeArticle {
   display: flex;
   flex-direction: column;
   height: calc(100vh - 54px);
   padding-bottom: 0;
-  position: relative; }
+  padding-left: 0;
+  position: relative;
+  flex: 1; }
   #homeArticle #mediakiwifootnote {
     position: absolute;
     bottom: 0;
@@ -48,6 +58,7 @@
   .documentTypeArticle .rightContainer,
   .documentTypeArticle .leftContainer {
     width: 50%;
+    overflow: auto;
     /*max-width: 50%;
         min-width: 0;*/ }
 
@@ -103,7 +114,8 @@
     .selections span div.field div input.half,
     .selections span div.field div input.long,
     .selections span div.field div input[type=checkbox],
-    .selections span div.field div input[type=radio], .selections span div.field div .formTable select {
+    .selections span div.field div input[type=radio],
+    .selections span div.field div select {
       height: 30px !important;
       border: 1px solid #aaa;
       color: #000 !important; }

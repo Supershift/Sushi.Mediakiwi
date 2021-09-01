@@ -17,9 +17,9 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
 
         #region Header
 
-        void CreateBlock(Console container, string title, WimControlBuilder build, WimControlBuilder build2, ComponentVersion component, bool isContainerClosed, bool skipHeader)
+        void CreateBlock(Console container, string title, WimControlBuilder build, WimControlBuilder build2, ComponentVersion component)
         {
-            CreateBlock(container, title, build, build2, component, isContainerClosed, skipHeader, true, false);
+            CreateBlock(container, title, build, build2, component, true, false);
         }
 
         void CreateContentBlock(Console container, string title, WimControlBuilder build, WimControlBuilder build2, ComponentVersion component, bool isContainerClosed, bool skipHeader, bool skipTitle, bool isClosingStatement)
@@ -29,28 +29,39 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
             if (m_IsNewDesign)
             {
                 if (!hasContent && hasTableContent)
+                {
                     CreateHeader(title, build, true, false, component);
+                }
 
                 if (hasTableContent)
                 {
                     build.Append(build2);
-                    CreateFooter(container, build, build2);
+                    CreateFooter(container, build);
                 }
+
                 if (isClosingStatement)
+                {
                     return;
+                }
             }
             else
             {
                 if (!skipHeader)
+                {
                     CreateHeader(container, title, build, build2, component, isContainerClosed);
+                }
 
                 if (component == null || !component.TemplateIsShared || container.IsComponent)
+                {
                     build.Append(build2);
-                CreateFooter(container, build, build2);
+                }
+
+                CreateFooter(container, build);
 
             }
         }
-        void CreateBlock(Console container, string title, WimControlBuilder build, WimControlBuilder build2, ComponentVersion component, bool isContainerClosed, bool skipHeader, bool skipTitle, bool isClosingStatement)
+
+        void CreateBlock(Console container, string title, WimControlBuilder build, WimControlBuilder build2, ComponentVersion component, bool skipTitle, bool isClosingStatement)
         {
             bool hasTableContent = (build2.Length > 0);
             bool hasContent = (build.Length > 0);
@@ -80,7 +91,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                     }
                 }
             }
-            CreateFooter(container, build, build2);
+            CreateFooter(container, build);
 
             build.Append("</dd>");
 
@@ -558,11 +569,6 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
 
         void CreateFooter(Console container, WimControlBuilder build)
         {
-            CreateFooter(container, build, null);
-        }
-
-        void CreateFooter(Console container, WimControlBuilder build, WimControlBuilder currentContent)
-        {
             if (container.ExpressionPrevious == OutputExpression.Left)
             {
                 build.Append("<th><label>&nbsp;</label></th><td>&nbsp;</td></tr>");
@@ -575,7 +581,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                 build.Append($"</table>{cloaked}");
                 return;
             }
-            if (!build.ToString().EndsWith("</article>"))
+            if (!build.ToString().EndsWith("</article>", StringComparison.InvariantCultureIgnoreCase))
             {
                 build.Append($"</table>{cloaked}</div>");
             }
@@ -593,7 +599,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
         {
             if (sender is MetaData item)
             {
-                return item.GetCollection();
+                return item.GetCollection(container);
             }
 
             foreach (System.Reflection.PropertyInfo info in sender.GetType().GetProperties())
@@ -629,38 +635,35 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
         /// <param name="pageId">The page id.</param>
         /// <param name="copyComponentId">The copy component id.</param>
         /// <returns></returns>
-        internal string CreateComponentContent(Console container, int componentTemplateId, int pageId, int copyComponentId, string target)
+        internal async Task<string> CreateComponentContentAsync(Console container, int componentTemplateId, int pageId, int copyComponentId, string target)
         {
             WimControlBuilder build = new WimControlBuilder();
             WimControlBuilder build2 = new WimControlBuilder();
             List<Field> fieldList;
 
             int count = 0;
-
             bool isContainerClosed = false;
-
-            isContainerClosed = false;
 
             fieldList = new List<Field>();
 
-            ComponentTemplate template = ComponentTemplate.SelectOne(componentTemplateId);
+            ComponentTemplate template = await ComponentTemplate.SelectOneAsync(componentTemplateId).ConfigureAwait(false);
 
-            ComponentVersion copy = ComponentVersion.SelectOne(copyComponentId);
+            ComponentVersion copy = await ComponentVersion.SelectOneAsync(copyComponentId).ConfigureAwait(false);
 
             ComponentVersion version = new ComponentVersion();
+
             version.ApplicationUserID = container.CurrentApplicationUser.ID;
             version.TemplateID = template.ID;
             version.PageID = pageId;
             version.Name = template.Name;
             version.TemplateIsShared = template.IsShared;
-
             version.IsFixed = false;
             version.IsAlive = true;
             version.IsSecundary = copy.IsSecundary;
             version.SortOrder = 1000;
             version.IsActive = true;
-            version.Target = (copy == null || copy.ID == 0) ? target : copy.Target;
-            version.Save();
+            version.Target = (copy?.ID > 0) ? copy.Target : target;
+            await version.SaveAsync().ConfigureAwait(false);
 
 
             MetaData[] metadata = (MetaData[])Utility.GetDeserialized(typeof(MetaData[]), template.MetaData);
@@ -681,7 +684,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
 
                         x.ID = string.Concat("e", version.ID, "c", count);
                         x.FieldName = item.Name;
-                        ((ContentSharedAttribute)x).m_ListItemCollection = item.GetCollection();
+                        ((ContentSharedAttribute)x).m_ListItemCollection = item.GetCollection(container);
 
                         Field field2;
                         if (content == null)
@@ -1225,7 +1228,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                         x.FieldName = item.Name;
 
 
-                        ((ContentSharedAttribute)x).m_ListItemCollection = item.GetCollection();
+                        ((ContentSharedAttribute)x).m_ListItemCollection = item.GetCollection(container);
 
                         Field field2;
                         if (content == null)
@@ -1296,7 +1299,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
 
             if (createBlock)
             {
-                CreateBlock(container, component.Name, build, build2, component, isContainerClosed, false, false, isClosing);
+                CreateBlock(container, component.Name, build, build2, component, false, isClosing);
             }
             else
             {
@@ -2687,7 +2690,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                                 }
                             }
 
-                            CreateBlock(container, containerTitle, build, build2, null, isContainerClosed, skipHeader, false, false);
+                            CreateBlock(container, containerTitle, build, build2, null, false, false);
 
                             build2 = new WimControlBuilder();
                         }
@@ -3084,8 +3087,21 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
 
             ContentType previousContentType = ContentType.Undefined;
 
-            ScanClassProperties(container, container.CurrentListInstance, ref build, writeOutput, forceLoadEvent, ref isValidInput, fieldList, ref build2, container.CurrentListInstance.GetType().GetProperties(),
-                ref count, ref containerTitle, ref isValidContainerInput, ref isContainerClosed, ref skipHeader, ref previousContentType);
+            ScanClassProperties(container, 
+                container.CurrentListInstance, 
+                ref build, 
+                writeOutput, 
+                forceLoadEvent, 
+                ref isValidInput, 
+                fieldList, 
+                ref build2, 
+                container.CurrentListInstance.GetType().GetProperties(),
+                ref count, 
+                ref containerTitle, 
+                ref isValidContainerInput, 
+                ref isContainerClosed, 
+                ref skipHeader, 
+                ref previousContentType);
 
             if (writeOutput)
             {
@@ -3096,13 +3112,17 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
 
                 if (build2.Length > 0)
                 {
-                    CreateBlock(container, containerTitle, build, build2, null, isContainerClosed, skipHeader, true, true);
+                    CreateBlock(container, containerTitle, build, build2, null, true, true);
                     skipHeader = false;
                 }
             }
 
             System.Diagnostics.Trace.WriteLine("Scanning done");
-            if (count == 0) return false;
+            if (count == 0)
+            {
+                return false;
+            }
+
             return true;
         }
     }

@@ -19,6 +19,40 @@ namespace Sushi.Mediakiwi.Headless
         [ViewContext]
         public ViewContext ViewContext { get; set; }
 
+        private void PerformReplacements(TrackingScriptSimple script)
+        {
+            if (script?.ReplacementItems?.Count > 0)
+            {
+                // Are all marked as mandatory ?
+                var allMandatory = script.ReplacementItems.All(x => x.MustBeFilled);
+
+                // are all values filled ?
+                var allFilled = script.ReplacementItems.All(x => string.IsNullOrWhiteSpace(x.Value) == false);
+
+                // if all replacement values are marked as mandatory, but not all are filled, empty the code.
+                if (allMandatory && !allFilled) 
+                {
+                    script.Code = string.Empty;
+                    return;
+                }
+
+                // Only continue when we have a non-empty code
+                if (string.IsNullOrWhiteSpace(script.Code) == false)
+                {
+                    foreach (var repitem in script.ReplacementItems)
+                    {
+                        if (string.IsNullOrWhiteSpace(repitem.Value) == false)
+                        {
+                            script.Code = script.Code.Replace($"[{repitem.Code}]", repitem.Value, StringComparison.InvariantCultureIgnoreCase);
+                        }
+                        else if (string.IsNullOrWhiteSpace(repitem.Fallback) == false)
+                        {
+                            script.Code = script.Code.Replace($"[{repitem.Code}]", repitem.Fallback, StringComparison.InvariantCultureIgnoreCase);
+                        }
+                    }
+                }
+            }
+        }
 
         public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
         {
@@ -35,10 +69,14 @@ namespace Sushi.Mediakiwi.Headless
 
             if (ViewContext.HttpContext.Items.ContainsKey(ContextItemNames.ScriptTags))
             {
-                if (ViewContext.HttpContext.Items[ContextItemNames.ScriptTags] is List<TrackingScriptSimple>)
-                    availableScriptTags = (List<TrackingScriptSimple>)ViewContext.HttpContext.Items[ContextItemNames.ScriptTags];
-                else if (ViewContext.HttpContext.Items[ContextItemNames.ScriptTags] is TrackingScriptSimple)
-                    availableScriptTags.Add((TrackingScriptSimple)ViewContext.HttpContext.Items[ContextItemNames.ScriptTags]);
+                if (ViewContext.HttpContext.Items[ContextItemNames.ScriptTags] is List<TrackingScriptSimple> scriptList)
+                {
+                    availableScriptTags = scriptList;
+                }
+                else if (ViewContext.HttpContext.Items[ContextItemNames.ScriptTags] is TrackingScriptSimple scriptItem)
+                {
+                    availableScriptTags.Add(scriptItem);
+                }
             }
 
             if (availableScriptTags?.Count > 0)
@@ -54,17 +92,29 @@ namespace Sushi.Mediakiwi.Headless
                 {
                     foreach (var script in headAfterCloseTags)
                     {
-                        output.PostElement.AppendHtmlLine(script.Code);
+                        PerformReplacements(script);
+                        if (string.IsNullOrWhiteSpace(script.Code) == false)
+                        {
+                            output.PostElement.AppendHtmlLine(script.Code);
+                        }
                     }
 
                     foreach (var script in headAfterOpenTags)
                     {
-                        output.PreContent.AppendHtmlLine(script.Code);
+                        PerformReplacements(script);
+                        if (string.IsNullOrWhiteSpace(script.Code) == false)
+                        {
+                            output.PreContent.AppendHtmlLine(script.Code);
+                        }
                     }
 
                     foreach (var script in headBeforeCloseTags)
                     {
-                        output.PostContent.AppendHtmlLine(script.Code);
+                        PerformReplacements(script);
+                        if (string.IsNullOrWhiteSpace(script.Code) == false)
+                        {
+                            output.PostContent.AppendHtmlLine(script.Code);
+                        }
                     }
                 }
 
@@ -72,17 +122,29 @@ namespace Sushi.Mediakiwi.Headless
                 {
                     foreach (var script in bodyAfterCloseTags)
                     {
-                        output.PostElement.AppendHtmlLine(script.Code);
+                        PerformReplacements(script);
+                        if (string.IsNullOrWhiteSpace(script.Code) == false)
+                        {
+                            output.PostElement.AppendHtmlLine(script.Code);
+                        }
                     }
 
                     foreach (var script in bodyAfterOpenTags)
                     {
-                        output.PreContent.AppendHtmlLine(script.Code);
+                        PerformReplacements(script);
+                        if (string.IsNullOrWhiteSpace(script.Code) == false)
+                        {
+                            output.PreContent.AppendHtmlLine(script.Code);
+                        }
                     }
 
                     foreach (var script in bodyBeforeCloseTags)
                     {
-                        output.PostContent.AppendHtmlLine(script.Code);
+                        PerformReplacements(script);
+                        if (string.IsNullOrWhiteSpace(script.Code) == false)
+                        {
+                            output.PostContent.AppendHtmlLine(script.Code);
+                        }
                     }
                 }
 

@@ -90,7 +90,10 @@ namespace Sushi.Mediakiwi.UI
             //  Set the current environment
             _Console.CurrentEnvironment = Data.Environment.Current;
             var environmentVersion = await EnvironmentVersion.SelectAsync().ConfigureAwait(false);
-            Data.Caching.Configuration.EnvironmentUpdated = environmentVersion.Updated;
+
+            // Validate load balanced cache state
+            var updated = environmentVersion.Updated.GetValueOrDefault(DateTime.UtcNow);
+            await Data.Caching.Configuration.CacheManager.ValidateAsync(updated).ConfigureAwait(false);
 
             var path = _Console.AddApplicationPath(CommonConfiguration.PORTAL_PATH);
             var requestPath = _Console.AddApplicationPath(_Console.Request.Path.Value);
@@ -296,6 +299,9 @@ namespace Sushi.Mediakiwi.UI
                 var pagePublicationHandler = new PagePublication();
 
                 await page.PublishAsync(pagePublicationHandler, _Console.CurrentApplicationUser);
+                // Flush all cache
+                await EnvironmentVersion.SetUpdatedAsync().ConfigureAwait(false);
+
                 //Wim.Framework2.Functions.AuditTrail.Insert(_Console.CurrentApplicationUser, page, Framework2.Functions.Auditing.ActionType.Publish, null);
                 _Console.Response.Redirect(string.Concat(_Console.WimPagePath, "?page=", _Console.Item.Value, redirect));
             }
@@ -303,6 +309,9 @@ namespace Sushi.Mediakiwi.UI
             {
                 var pagePublicationHandler = new PagePublication();
                 await page.TakeDownPageAsync().ConfigureAwait(false);
+                // Flush all cache
+                await EnvironmentVersion.SetUpdatedAsync().ConfigureAwait(false);
+
                 //Wim.Framework2.Functions.AuditTrail.Insert(_Console.CurrentApplicationUser, page, Framework2.Functions.Auditing.ActionType.TakeOffline, null);
                 _Console.Response.Redirect(string.Concat(_Console.WimPagePath, "?page=", _Console.Item.Value, redirect));
             }

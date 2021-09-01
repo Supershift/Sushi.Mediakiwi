@@ -153,7 +153,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
 
                         //element.ID = fieldinstance.p
                         element.ID = string.Concat(ID, "__", meta.ContentTypeSelection, "__", count);
-                        ((ContentSharedAttribute)element).m_ListItemCollection = meta.GetCollection();
+                        ((ContentSharedAttribute)element).m_ListItemCollection = meta.GetCollection(Console);
                         //((Framework.ContentSharedAttribute)element).Collection = Collection;
 
                         if (element.ContentTypeSelection == ContentType.Binary_Image)

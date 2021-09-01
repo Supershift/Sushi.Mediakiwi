@@ -1,6 +1,7 @@
 ﻿using Sushi.Mediakiwi.Data.Caching;
 using System.Collections.Concurrent;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Sushi.Mediakiwi.Tests
 {
@@ -41,6 +42,16 @@ namespace Sushi.Mediakiwi.Tests
             }
             
             return default(T);
+        }
+
+        public Task ValidateAsync(System.DateTime changed)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public Task FlushAsync()
+        {
+            throw new System.NotImplementedException();
         }
     }
 }

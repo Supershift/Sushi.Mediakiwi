@@ -12,25 +12,25 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation.Forms
     {
         public SiteForm(Mediakiwi.Data.Site implement)
         {
-            Load(implement as Mediakiwi.Data.Site);
+            Load(implement);
 
             Map(x => x.Name).TextField("Title", 50, true).Expression(OutputExpression.Alternating);
             Map(x => x.IsActive).Checkbox("Active").Expression(OutputExpression.Alternating);
-            Map(x => x.CountryID).Dropdown("Country", nameof(AvailableCountries), false).Expression(OutputExpression.Alternating);
-            Map(x => x.TimeZoneIndex).Dropdown("Timezone", nameof(AvailableTimeZones), false).Expression(OutputExpression.Alternating);
-            Map(x => x.Language).Dropdown("Language", nameof(AvailableCulturesCollection), false).Expression(OutputExpression.Alternating);
-            Map(x => x.Culture).Dropdown("Culture", nameof(AvailableCulturesCollection), false).Expression(OutputExpression.Alternating);
-            Map(x => x.MasterID).Dropdown("Inherit from", nameof(AvailableSitesCollection), false);
-            Map(x => x.Domain).TextField("Domain", 50, false, false, "https://www.website.com");
+            Map(x => x.CountryID).Dropdown("Country", nameof(AvailableCountries)).Expression(OutputExpression.Alternating);
+            Map(x => x.TimeZoneIndex).Dropdown("Timezone", nameof(AvailableTimeZones)).Expression(OutputExpression.Alternating);
+            Map(x => x.Language).Dropdown("Language", nameof(AvailableCulturesCollection)).Expression(OutputExpression.Alternating);
+            Map(x => x.Culture).Dropdown("Culture", nameof(AvailableCulturesCollection)).Expression(OutputExpression.Alternating);
+            Map(x => x.MasterID).Dropdown("Inherit from", nameof(AvailableSitesCollection));
+            Map(x => x.Domain).TextField("Domain", 50, interactiveHelp: "https://www.website.com");
 
             Map(x => x.Section1, this).Section("Settings");
 
+            Map(x => x.HomepageID).PageSelect("Homepage").Expression(OutputExpression.FullWidth);
             Map(x => x.HasLists).Checkbox("Lists").Expression(OutputExpression.Alternating);
             Map(x => x.HasPages).Checkbox("Pages").Expression(OutputExpression.Alternating);
         }
 
         public string Section1 { get; set; }
-
 
         private ListItemCollection m_AvailableCountries;
         /// <summary>
@@ -45,9 +45,9 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation.Forms
                 {
                     m_AvailableCountries = new ListItemCollection();
                     m_AvailableCountries.Add(new ListItem("", ""));
-                    foreach (Country country in Country.SelectAll(false, "en"))
+                    foreach (var country in Country.SelectAll(false, "en"))
                     {
-                        m_AvailableCountries.Add(new ListItem(country.Country_EN, country.ID.ToString()));
+                        m_AvailableCountries.Add(new ListItem(country.Country_EN, $"{country.ID}"));
                     }
                 }
                 return m_AvailableCountries;
@@ -55,32 +55,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation.Forms
         }
 
         private ListItemCollection m_AvailableTimeZones;
-        /// <summary>
-        /// Gets the available time zones.
-        /// </summary>
-        /// <value>The available time zones.</value>
-        //public ListItemCollection AvailableTimeZones
-        //{
-        //    get
-        //    {
-        //        if (m_AvailableTimeZones == null)
-        //        {
-        //            m_AvailableTimeZones = new ListItemCollection();
-        //            m_AvailableTimeZones.Add(new ListItem("", ""));
-        //            try
-        //            {
-        //                //Wim.Utilities.TimeZoneInformation tz = Utilities.TimeZoneInformation.CurrentTimeZone;
-        //                //Wim.Utilities.TimeZoneInformation.FromIndex("").FromUniversalTime()
-        //                foreach (Wim.Utilities.TimeZoneInformation tz in Wim.Utilities.TimeZoneInformation.EnumZones())
-        //                {
-        //                    m_AvailableTimeZones.Add(new ListItem(tz.DisplayName, tz.Index));
-        //                }
-        //            }
-        //            catch (Exception) { }
-        //        }
-        //        return m_AvailableTimeZones;
-        //    }
-        //}
+
         public ListItemCollection AvailableTimeZones
         {
             get
@@ -116,13 +91,14 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation.Forms
 
             SortedList<string, string> list = new SortedList<string, string>();
 
-            CultureInfo[] allCultures;
             foreach (CultureTypes ct in mostCultureTypes)
             {
-                allCultures = CultureInfo.GetCultures(ct);
-                foreach (CultureInfo ci in allCultures)
+                foreach (var ci in CultureInfo.GetCultures(ct))
                 {
-                    if (onlyReturnNeutral && !ci.IsNeutralCulture) continue;
+                    if (onlyReturnNeutral && !ci.IsNeutralCulture)
+                    {
+                        continue;
+                    }
                     list.Add(ci.EnglishName, ci.Name);
                 }
             }
@@ -145,7 +121,9 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation.Forms
             get
             {
                 if (m_AvailableCultures == null)
+                {
                     m_AvailableCultures = GetCulturesCollection(new CultureTypes[] { CultureTypes.SpecificCultures }, false);
+                }
                 return m_AvailableCultures;
             }
         }
@@ -160,7 +138,9 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation.Forms
             get
             {
                 if (m_AvailableLanguageCollection == null)
+                {
                     m_AvailableLanguageCollection = GetCulturesCollection(new CultureTypes[] { CultureTypes.AllCultures }, true);
+                }
                 return m_AvailableLanguageCollection;
             }
         }
@@ -191,15 +171,18 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation.Forms
 
                     foreach (var site in Mediakiwi.Data.Site.SelectAll())
                     {
-                        if (site.ID == this.Instance.ID)
+                        if (site.ID == Instance.ID)
+                        {
                             continue;
+                        }
 
                         // do not include administration
                         if (site.Type == 1)
+                        {
                             continue;
+                        }
 
-
-                        m_AvailableSites.Add(new ListItem(site.Name, site.ID.ToString()));
+                        m_AvailableSites.Add(new ListItem(site.Name, $"{site.ID}"));
                     }
                 }
                 return m_AvailableSites;

@@ -56,7 +56,7 @@ namespace Sushi.Mediakiwi.Headless
                     try
                     {
                         if (PageId.GetValueOrDefault(0) > 0)
-                            PageContent = ContentService.GetPageContentAsync(null, null, request.IsClearCacheCall(), request.IsPreviewCall(), PageId.Value).ConfigureAwait(true).GetAwaiter().GetResult();
+                            PageContent = ContentService.GetPageContentAsync(null, null, request.IsClearCacheCall(), request.IsPreviewCall(), PageId.Value, request.Query).ConfigureAwait(true).GetAwaiter().GetResult();
                         else
                             PageContent = ContentService.GetPageContentAsync(request).ConfigureAwait(true).GetAwaiter().GetResult();
                     }
@@ -67,18 +67,15 @@ namespace Sushi.Mediakiwi.Headless
 
                     var dt2 = DateTime.UtcNow;
 
-                    response.Headers.Add(HttpHeaderNames.TimeSpend,new TimeSpan(dt2.Ticks - dt1.Ticks).TotalMilliseconds.ToString());
-                    response.Headers.Add(HttpHeaderNames.CachedData, PageContent.IsCached.ToString());
-                    response.Headers.Add(HttpHeaderNames.CacheInvalidData, PageContent.IsCacheInvalidated.ToString());
-                    
-                    if (!PageContent.IsCached)
-                        context.HttpContext.Items["mediakiwi.flush"] = "me";
-
                     // Set internal info in the Page
                     if (PageContent == null)
                     {
                         PageContent = new PageContentResponse();
                     }
+
+                    response.Headers.Add(HttpHeaderNames.TimeSpend,new TimeSpan(dt2.Ticks - dt1.Ticks).TotalMilliseconds.ToString());
+                    response.Headers.Add(HttpHeaderNames.CachedData, PageContent.IsCached.ToString());
+                    response.Headers.Add(HttpHeaderNames.CacheInvalidData, PageContent.IsCacheInvalidated.ToString());
 
                     // apply the proper status code based on the headless result
                     response.StatusCode = (int)PageContent.StatusCode;

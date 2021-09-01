@@ -9,6 +9,7 @@ using Sushi.Mediakiwi.Headless.Config;
 using Sushi.Mediakiwi.Headless.Data;
 using Sushi.Mediakiwi.Headless.HttpClients.Interfaces;
 using System;
+using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -177,7 +178,7 @@ namespace Sushi.Mediakiwi.Headless
             }
             else
             {
-                return await GetPageContentAsync(url, AppBaseUrl, isClearCacheCall, isPreviewCall);
+                return await GetPageContentAsync(url, AppBaseUrl, isClearCacheCall, isPreviewCall, null, request.Query);
             }
         }
 
@@ -185,7 +186,7 @@ namespace Sushi.Mediakiwi.Headless
 
         #region Get Page Content - Url / PageID
 
-        public async Task<PageContentResponse> GetPageContentAsync(string forUrl, string basePath, bool clearCache = false, bool isPreview = false, int? pageId = null)
+        public async Task<PageContentResponse> GetPageContentAsync(string forUrl, string basePath, bool clearCache = false, bool isPreview = false, int? pageId = null, IQueryCollection queryCollection = null)
         {
             PageContentResponse returnObj = new PageContentResponse();
             if (string.IsNullOrWhiteSpace(_configuration.MediaKiwi.ContentService.ServiceUrl))
@@ -237,6 +238,22 @@ namespace Sushi.Mediakiwi.Headless
             // Log that this was a preview call and set ClearCache to true, since we don't want caching for previews
             if (isPreview)
             {
+                // Add queryparameters to cacheKey regardless of pageId or url
+                if (queryCollection != null && queryCollection.Count > 0)
+                {
+                    // Order the query params and create a new collection of name=value items
+                    var queryParams = queryCollection.OrderBy(x => x.Key).Select(x => { return $"{x.Key}={x.Value}"; }).ToList();
+                    if (queryParams != null && queryParams.Count > 0)
+                    {
+                        // starting with ?
+                        // join each name=value item separated with &
+                        string queryString = $"?{string.Join("&", queryParams)}";
+
+                        // Append to the cacheKey
+                        cacheKey += queryString;
+                    }
+                }
+
                 _logger.LogInformation($"A preview call was requested for '{cacheKey}' cache will be ignored");
                 clearCache = true;
             }
@@ -258,7 +275,7 @@ namespace Sushi.Mediakiwi.Headless
                     try
                     {
                         // Read the JSON content.
-                        string responseFromServer = await _httpClient.GetPageContentStringAsync(forUrl, basePath, clearCache, isPreview, pageId);
+                        string responseFromServer = await _httpClient.GetPageContentStringAsync(forUrl, basePath, clearCache, isPreview, pageId, queryCollection);
 
                         // Convert the JSON content.
                         if (string.IsNullOrWhiteSpace(responseFromServer) == false)

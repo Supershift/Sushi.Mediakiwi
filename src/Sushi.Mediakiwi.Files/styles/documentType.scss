@@ -4,12 +4,24 @@
     font-weight: 600 !important;
 }
 
+#homeContent {    
+    display: flex;
+    flex-direction: row;
+}
+
+#homeAside {
+    margin-right: 0;
+    position: initial;
+}
+
 #homeArticle {
     display: flex;
     flex-direction: column;
     height: calc(100vh - 54px);
     padding-bottom: 0;
+    padding-left: 0;
     position: relative;
+    flex: 1;
 
     #mediakiwifootnote {
         position: absolute;
@@ -70,9 +82,10 @@
     .rightContainer,
     .leftContainer {
         width: 50%;
+        overflow: auto;
         /*max-width: 50%;
         min-width: 0;*/
-    }
+}
 }
 
 .selections {
@@ -154,7 +167,8 @@
                 input.half,
                 input.long,
                 input[type=checkbox],
-                input[type=radio], .formTable select {
+                input[type=radio],
+                select {
                     height: 30px !important;
                     border: 1px solid #aaa;
                     color: #000 !important;
