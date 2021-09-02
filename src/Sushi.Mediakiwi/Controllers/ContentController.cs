@@ -486,6 +486,11 @@ namespace Sushi.Mediakiwi.Controllers
         {
             var content = new ContentItem();
             bool isFilled = false;
+            var culture = "en-US";
+            if (request.Page != null && request.Page.Site != null)
+            {
+                culture = request.Page.Site.Culture;
+            }
 
             switch ((ContentType)inField.Type)
             {
@@ -628,7 +633,7 @@ namespace Sushi.Mediakiwi.Controllers
                             {
                                 isFilled = true;
                                 var dateTimeValue = new DateTime(unitTime);
-                                System.Globalization.CultureInfo dateCulture = new System.Globalization.CultureInfo("nl-NL");
+                                System.Globalization.CultureInfo dateCulture = new System.Globalization.CultureInfo(culture);
                                 content.Text = dateTimeValue.ToString("dd-MM-yyyy", dateCulture);
                             }
                         }
@@ -642,7 +647,7 @@ namespace Sushi.Mediakiwi.Controllers
                             {
                                 isFilled = true;
                                 var dateTimeValue = new DateTime(unitTime);
-                                System.Globalization.CultureInfo dateCulture = new System.Globalization.CultureInfo("nl-NL");
+                                System.Globalization.CultureInfo dateCulture = new System.Globalization.CultureInfo(culture);
                                 content.Text = dateTimeValue.ToString("dd-MM-yyyy HH:mm:ss", dateCulture);
                             }
                         }
