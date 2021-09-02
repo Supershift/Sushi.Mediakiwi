@@ -222,6 +222,12 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                     }
                 }
 
+                // SVG is also an image, but not one from which you can get the width and height
+                if (_Form.File.File.ContentType.Equals("image/svg+xml", System.StringComparison.InvariantCultureIgnoreCase))
+                {
+                    m_Implement.IsImage = true;
+                }
+
                 var upload = await GetPersistor.UploadAsync(_Form.File.File.OpenReadStream(), Azure_Image_Container, _Form.File.File.FileName, _Form.File.File.ContentType).ConfigureAwait(false);
                 if (string.IsNullOrWhiteSpace(Azure_Cdn_Uri))
                 {
