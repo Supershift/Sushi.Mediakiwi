@@ -648,8 +648,6 @@ namespace Sushi.Mediakiwi.Controllers
                                 isFilled = true;
                                 var dateTimeValue = new DateTime(unitTime);
                                 System.Globalization.CultureInfo dateCulture = new System.Globalization.CultureInfo(culture);
-                                // create patter to include both the short date and short time
-                                var pattern = $"{dateCulture.DateTimeFormat.ShortDatePattern} {dateCulture.DateTimeFormat.ShortTimePattern}";
                                 content.Text = dateTimeValue.ToString(dateCulture.DateTimeFormat.SortableDateTimePattern);
                             }
                         }
