@@ -634,7 +634,7 @@ namespace Sushi.Mediakiwi.Controllers
                                 isFilled = true;
                                 var dateTimeValue = new DateTime(unitTime);
                                 System.Globalization.CultureInfo dateCulture = new System.Globalization.CultureInfo(culture);
-                                content.Text = dateTimeValue.ToString("dd-MM-yyyy", dateCulture);
+                                content.Text = dateTimeValue.ToString(dateCulture.DateTimeFormat.SortableDateTimePattern);
                             }
                         }
                     }
@@ -648,7 +648,9 @@ namespace Sushi.Mediakiwi.Controllers
                                 isFilled = true;
                                 var dateTimeValue = new DateTime(unitTime);
                                 System.Globalization.CultureInfo dateCulture = new System.Globalization.CultureInfo(culture);
-                                content.Text = dateTimeValue.ToString("dd-MM-yyyy HH:mm:ss", dateCulture);
+                                // create patter to include both the short date and short time
+                                var pattern = $"{dateCulture.DateTimeFormat.ShortDatePattern} {dateCulture.DateTimeFormat.ShortTimePattern}";
+                                content.Text = dateTimeValue.ToString(dateCulture.DateTimeFormat.SortableDateTimePattern);
                             }
                         }
                     }
