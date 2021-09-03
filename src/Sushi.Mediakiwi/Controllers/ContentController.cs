@@ -486,6 +486,11 @@ namespace Sushi.Mediakiwi.Controllers
         {
             var content = new ContentItem();
             bool isFilled = false;
+            var culture = "en-US";
+            if (request.Page != null && request.Page.Site != null)
+            {
+                culture = request.Page.Site.Culture;
+            }
 
             switch ((ContentType)inField.Type)
             {
@@ -617,6 +622,34 @@ namespace Sushi.Mediakiwi.Controllers
                         {
                             isFilled = true;
                             content.MultiFieldContent = await getMultiFieldContentAsync(request, inField);
+                        }
+                    }
+                    break;
+                case ContentType.Date:
+                    {
+                        if (!string.IsNullOrWhiteSpace(inField.Value))
+                        {
+                            if (long.TryParse(inField.Value, out long unitTime))
+                            {
+                                isFilled = true;
+                                var dateTimeValue = new DateTime(unitTime);
+                                System.Globalization.CultureInfo dateCulture = new System.Globalization.CultureInfo(culture);
+                                content.Text = dateTimeValue.ToString(dateCulture.DateTimeFormat.SortableDateTimePattern);
+                            }
+                        }
+                    }
+                    break;
+                case ContentType.DateTime:
+                    {
+                        if (!string.IsNullOrWhiteSpace(inField.Value))
+                        {
+                            if (long.TryParse(inField.Value, out long unitTime))
+                            {
+                                isFilled = true;
+                                var dateTimeValue = new DateTime(unitTime);
+                                System.Globalization.CultureInfo dateCulture = new System.Globalization.CultureInfo(culture);
+                                content.Text = dateTimeValue.ToString(dateCulture.DateTimeFormat.SortableDateTimePattern);
+                            }
                         }
                     }
                     break;
