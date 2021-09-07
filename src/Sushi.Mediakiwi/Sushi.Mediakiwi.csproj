@@ -121,6 +121,7 @@
     <Compile Include="DataEntities\GridExtention.cs" />
     <Compile Include="Extention\ApplicationUserExtention.cs" />
     <Compile Include="Extention\AssetExtension.cs" />
+    <Compile Include="Extention\ComponentListTemplateExtension.cs" />
     <Compile Include="Extention\ComponentVersionExtension.cs" />
     <Compile Include="Extention\FieldExtension.cs" />
     <Compile Include="Extention\GalleryExtension.cs" />
@@ -275,7 +276,7 @@
     <Compile Include="Framework\InstallableAttribute.cs" />
     <Compile Include="Framework\InstallableVersion.cs" />
     <Compile Include="Framework\Interfaces\ICallback.cs" />
-    <Compile Include="Framework\Interfaces\IComponentListTemplate2.cs" />
+    <Compile Include="Framework\Interfaces\IComponentListTemplate.cs" />
     <Compile Include="Framework\Interfaces\IContentInfo.cs" />
     <Compile Include="Framework\Interfaces\IContentSettingInfo.cs" />
     <Compile Include="Framework\Interfaces\IListContentInfo.cs" />

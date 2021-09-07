@@ -931,93 +931,6 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
-/***/ "./app/document-type-app/components/fields/wimSublistSelect.vue":
-/*!**********************************************************************!*\
-  !*** ./app/document-type-app/components/fields/wimSublistSelect.vue ***!
-  \**********************************************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _wimSublistSelect_vue_vue_type_template_id_44f4fdb2___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./wimSublistSelect.vue?vue&type=template&id=44f4fdb2& */ "./app/document-type-app/components/fields/wimSublistSelect.vue?vue&type=template&id=44f4fdb2&");
-/* harmony import */ var _wimSublistSelect_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./wimSublistSelect.vue?vue&type=script&lang=js& */ "./app/document-type-app/components/fields/wimSublistSelect.vue?vue&type=script&lang=js&");
-/* empty/unused harmony star reexport *//* harmony import */ var _wimSublistSelect_vue_vue_type_style_index_0_lang_css___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./wimSublistSelect.vue?vue&type=style&index=0&lang=css& */ "./app/document-type-app/components/fields/wimSublistSelect.vue?vue&type=style&index=0&lang=css&");
-/* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
-
-
-
-
-
-
-/* normalize component */
-
-var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__["default"])(
-  _wimSublistSelect_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
-  _wimSublistSelect_vue_vue_type_template_id_44f4fdb2___WEBPACK_IMPORTED_MODULE_0__["render"],
-  _wimSublistSelect_vue_vue_type_template_id_44f4fdb2___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
-  false,
-  null,
-  null,
-  null
-  
-)
-
-/* hot reload */
-if (false) { var api; }
-component.options.__file = "app/document-type-app/components/fields/wimSublistSelect.vue"
-/* harmony default export */ __webpack_exports__["default"] = (component.exports);
-
-/***/ }),
-
-/***/ "./app/document-type-app/components/fields/wimSublistSelect.vue?vue&type=script&lang=js&":
-/*!***********************************************************************************************!*\
-  !*** ./app/document-type-app/components/fields/wimSublistSelect.vue?vue&type=script&lang=js& ***!
-  \***********************************************************************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _node_modules_babel_loader_lib_index_js_node_modules_vue_loader_lib_index_js_vue_loader_options_wimSublistSelect_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../node_modules/babel-loader/lib!../../../../node_modules/vue-loader/lib??vue-loader-options!./wimSublistSelect.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js!./node_modules/vue-loader/lib/index.js?!./app/document-type-app/components/fields/wimSublistSelect.vue?vue&type=script&lang=js&");
-/* empty/unused harmony star reexport */ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_babel_loader_lib_index_js_node_modules_vue_loader_lib_index_js_vue_loader_options_wimSublistSelect_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"]); 
-
-/***/ }),
-
-/***/ "./app/document-type-app/components/fields/wimSublistSelect.vue?vue&type=style&index=0&lang=css&":
-/*!*******************************************************************************************************!*\
-  !*** ./app/document-type-app/components/fields/wimSublistSelect.vue?vue&type=style&index=0&lang=css& ***!
-  \*******************************************************************************************************/
-/*! no static exports found */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _node_modules_vue_style_loader_index_js_node_modules_css_loader_dist_cjs_js_ref_2_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_vue_loader_lib_index_js_vue_loader_options_wimSublistSelect_vue_vue_type_style_index_0_lang_css___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../node_modules/vue-style-loader!../../../../node_modules/css-loader/dist/cjs.js??ref--2-1!../../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../../node_modules/vue-loader/lib??vue-loader-options!./wimSublistSelect.vue?vue&type=style&index=0&lang=css& */ "./node_modules/vue-style-loader/index.js!./node_modules/css-loader/dist/cjs.js?!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/vue-loader/lib/index.js?!./app/document-type-app/components/fields/wimSublistSelect.vue?vue&type=style&index=0&lang=css&");
-/* harmony import */ var _node_modules_vue_style_loader_index_js_node_modules_css_loader_dist_cjs_js_ref_2_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_vue_loader_lib_index_js_vue_loader_options_wimSublistSelect_vue_vue_type_style_index_0_lang_css___WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_vue_style_loader_index_js_node_modules_css_loader_dist_cjs_js_ref_2_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_vue_loader_lib_index_js_vue_loader_options_wimSublistSelect_vue_vue_type_style_index_0_lang_css___WEBPACK_IMPORTED_MODULE_0__);
-/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in _node_modules_vue_style_loader_index_js_node_modules_css_loader_dist_cjs_js_ref_2_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_vue_loader_lib_index_js_vue_loader_options_wimSublistSelect_vue_vue_type_style_index_0_lang_css___WEBPACK_IMPORTED_MODULE_0__) if(["default"].indexOf(__WEBPACK_IMPORT_KEY__) < 0) (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return _node_modules_vue_style_loader_index_js_node_modules_css_loader_dist_cjs_js_ref_2_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_vue_loader_lib_index_js_vue_loader_options_wimSublistSelect_vue_vue_type_style_index_0_lang_css___WEBPACK_IMPORTED_MODULE_0__[key]; }) }(__WEBPACK_IMPORT_KEY__));
- /* harmony default export */ __webpack_exports__["default"] = (_node_modules_vue_style_loader_index_js_node_modules_css_loader_dist_cjs_js_ref_2_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_vue_loader_lib_index_js_vue_loader_options_wimSublistSelect_vue_vue_type_style_index_0_lang_css___WEBPACK_IMPORTED_MODULE_0___default.a); 
-
-/***/ }),
-
-/***/ "./app/document-type-app/components/fields/wimSublistSelect.vue?vue&type=template&id=44f4fdb2&":
-/*!*****************************************************************************************************!*\
-  !*** ./app/document-type-app/components/fields/wimSublistSelect.vue?vue&type=template&id=44f4fdb2& ***!
-  \*****************************************************************************************************/
-/*! exports provided: render, staticRenderFns */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_wimSublistSelect_vue_vue_type_template_id_44f4fdb2___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../../node_modules/vue-loader/lib??vue-loader-options!./wimSublistSelect.vue?vue&type=template&id=44f4fdb2& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./app/document-type-app/components/fields/wimSublistSelect.vue?vue&type=template&id=44f4fdb2&");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_wimSublistSelect_vue_vue_type_template_id_44f4fdb2___WEBPACK_IMPORTED_MODULE_0__["render"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_wimSublistSelect_vue_vue_type_template_id_44f4fdb2___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
-
-
-
-/***/ }),
-
 /***/ "./app/document-type-app/components/fields/wimTag.vue":
 /*!************************************************************!*\
   !*** ./app/document-type-app/components/fields/wimTag.vue ***!
@@ -3429,117 +3342,6 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
-/***/ "./node_modules/babel-loader/lib/index.js!./node_modules/vue-loader/lib/index.js?!./app/document-type-app/components/fields/wimSublistSelect.vue?vue&type=script&lang=js&":
-/*!*********************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/babel-loader/lib!./node_modules/vue-loader/lib??vue-loader-options!./app/document-type-app/components/fields/wimSublistSelect.vue?vue&type=script&lang=js& ***!
-  \*********************************************************************************************************************************************************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _input__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./input */ "./app/document-type-app/components/fields/input.js");
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-
-
-
-/* harmony default export */ __webpack_exports__["default"] = ({
-    props: ['field', 'classname'],
-    mixins: [_input__WEBPACK_IMPORTED_MODULE_0__["shared"]],
-    components: {},
-    data() {
-        return {
-            value: [],
-            preloadedValue: []
-        };
-    },
-    computed: {
-        targetListUrl() {
-            var listGuid = this.field.additionalProperties['ListGuid'];
-            return `/mediakiwi?list=${listGuid}&openinframe=1&referid=${this.fieldId}`;
-        },
-        targetListName() {
-            return this.field.additionalProperties['ListTitle'];
-        },
-        fieldId() {
-            return '_' + this.field.propertyName;
-        }
-    },
-    methods: {
-        init() {
-            this.$forceUpdate(); // Notice we have to use a $ here
-
-            if (!this.field.value) {
-                this.preloadedValue = [];
-            } else {
-                this.preloadedValue = this.field.value;
-            }
-
-            var that = this;
-
-            // When an item is added to the sublist
-            this.$refs.sublistContainer.addEventListener('DOMNodeInserted', function (event) {
-
-                var input = event.target.querySelector('figure > input');
-                var optionId = parseInt(input.value.split('|')[0].replace("T", ""));
-
-                if (!that.value.some(data => data.ID === optionId)) {
-                    that.value.push({
-                        ID: parseInt(input.value.split('|')[0].replace("T", "")),
-                        Description: input.value.split('|')[1].trim()
-                    });
-                    that.valueChanged(event);
-                }
-            }, false);
-
-            this.$refs.sublistContainer.addEventListener('DOMNodeRemoved', function (event) {
-
-                var input = event.target.querySelector('figure > input');
-                var optionId = parseInt(input.value.split('|')[0].replace("T", ""));
-
-                if (that.value.some(data => data.ID === optionId)) {
-                    that.value = that.value.filter(function (el) {
-                        return el.ID != optionId;
-                    });
-                    that.valueChanged(event);
-                }
-            }, false);
-        },
-        valueChanged() {
-            console.log('trigger:valueChanged');
-            this.$emit('input', this.value);
-        }
-    },
-    mounted() {
-        this.init();
-    },
-    destroyed() {}
-});
-
-/***/ }),
-
 /***/ "./node_modules/babel-loader/lib/index.js!./node_modules/vue-loader/lib/index.js?!./app/document-type-app/components/fields/wimTag.vue?vue&type=script&lang=js&":
 /*!***********************************************************************************************************************************************************************!*\
   !*** ./node_modules/babel-loader/lib!./node_modules/vue-loader/lib??vue-loader-options!./app/document-type-app/components/fields/wimTag.vue?vue&type=script&lang=js& ***!
@@ -3934,7 +3736,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _fields_wimDate_vue__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./fields/wimDate.vue */ "./app/document-type-app/components/fields/wimDate.vue");
 /* harmony import */ var _fields_wimSection_vue__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ./fields/wimSection.vue */ "./app/document-type-app/components/fields/wimSection.vue");
 /* harmony import */ var _fields_wimNameValue_vue__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ./fields/wimNameValue.vue */ "./app/document-type-app/components/fields/wimNameValue.vue");
-/* harmony import */ var _fields_wimSublistSelect_vue__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ./fields/wimSublistSelect.vue */ "./app/document-type-app/components/fields/wimSublistSelect.vue");
 //
 //
 //
@@ -3965,7 +3766,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-
 
 
 
@@ -4003,8 +3803,7 @@ __webpack_require__.r(__webpack_exports__);
         wimDateTime: _fields_wimDateTime_vue__WEBPACK_IMPORTED_MODULE_12__["default"],
         wimDate: _fields_wimDate_vue__WEBPACK_IMPORTED_MODULE_13__["default"],
         wimSection: _fields_wimSection_vue__WEBPACK_IMPORTED_MODULE_14__["default"],
-        wimNameValue: _fields_wimNameValue_vue__WEBPACK_IMPORTED_MODULE_15__["default"],
-        wimSublistSelect: _fields_wimSublistSelect_vue__WEBPACK_IMPORTED_MODULE_16__["default"]
+        wimNameValue: _fields_wimNameValue_vue__WEBPACK_IMPORTED_MODULE_15__["default"]
     },
     data() {
         return {
@@ -4058,20 +3857,13 @@ __webpack_require__.r(__webpack_exports__);
         },
         postFields: function ($event, target) {
             console.log('post fields:');
-            console.log('evt:');
-            console.log($event);
-            console.log('tgt:');
-            console.log(target);
-
-            if ($event) {
-                if ($event.target.id && $event.target.id === 'IsSharedField') {
-                    console.log('go for the check shared field');
-                    if (this.$parent.checkSharedField) {
-                        this.$parent.checkSharedField($event.target.checked);
-                    }
+            console.log($event.target.id);
+            if ($event.target.id && $event.target.id === 'IsSharedField') {
+                console.log('go for the check shared field');
+                if (this.$parent.checkSharedField) {
+                    this.$parent.checkSharedField($event.target.checked);
                 }
             }
-
             if (this.$parent.postFields) {
                 this.$parent.postFields($event, target);
             }
@@ -4265,21 +4057,6 @@ exports.push([module.i, "\ninput[type=checkbox] {\n    width: auto !important;\n
 /*!*******************************************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/css-loader/dist/cjs.js??ref--2-1!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/vue-loader/lib??vue-loader-options!./app/document-type-app/components/fields/wimChoiceDropdown.vue?vue&type=style&index=0&lang=css& ***!
   \*******************************************************************************************************************************************************************************************************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-exports = module.exports = __webpack_require__(/*! ../../../../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js")(false);
-// Module
-exports.push([module.i, "\ntd [aria-hidden=true] {\n    display: block;\n}\n", ""]);
-
-
-
-/***/ }),
-
-/***/ "./node_modules/css-loader/dist/cjs.js?!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/vue-loader/lib/index.js?!./app/document-type-app/components/fields/wimSublistSelect.vue?vue&type=style&index=0&lang=css&":
-/*!******************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/css-loader/dist/cjs.js??ref--2-1!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/vue-loader/lib??vue-loader-options!./app/document-type-app/components/fields/wimSublistSelect.vue?vue&type=style&index=0&lang=css& ***!
-  \******************************************************************************************************************************************************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -27488,92 +27265,6 @@ render._withStripped = true
 
 /***/ }),
 
-/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./app/document-type-app/components/fields/wimSublistSelect.vue?vue&type=template&id=44f4fdb2&":
-/*!***********************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./app/document-type-app/components/fields/wimSublistSelect.vue?vue&type=template&id=44f4fdb2& ***!
-  \***********************************************************************************************************************************************************************************************************************************/
-/*! exports provided: render, staticRenderFns */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "render", function() { return render; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return staticRenderFns; });
-var render = function() {
-  var _vm = this
-  var _h = _vm.$createElement
-  var _c = _vm._self._c || _h
-  return _c("div", [
-    _vm.prefix(_vm.field)
-      ? _c("label", { domProps: { innerHTML: _vm._s(_vm.prefix(_vm.field)) } })
-      : _vm._e(),
-    _vm._v(" "),
-    _c("div", { class: _vm.classname }, [
-      _c("div", { staticClass: "multiSortable select" }, [
-        _c("input", {
-          attrs: {
-            type: "hidden",
-            name: _vm.field.propertyName,
-            value: "_MK$PH_"
-          }
-        }),
-        _vm._v(" "),
-        _c(
-          "ul",
-          {
-            ref: "sublistContainer",
-            staticClass: "connectedSortable multiple add ui-sortable",
-            attrs: { id: _vm.fieldId }
-          },
-          _vm._l(_vm.preloadedValue, function(item) {
-            return _c("li", { staticClass: "ui-state-default" }, [
-              _vm._v(
-                "\n                    " +
-                  _vm._s(item.Description) +
-                  "\n                    "
-              ),
-              _c("figure", { staticClass: "icon-x del" }, [
-                _c("input", {
-                  attrs: {
-                    type: "hidden",
-                    id: _vm.field.propertyName + "$T" + item.ID,
-                    name: _vm.field.propertyName + "$T" + item.ID
-                  },
-                  domProps: { value: "T" + item.ID + "|" + item.Description }
-                })
-              ])
-            ])
-          }),
-          0
-        )
-      ]),
-      _vm._v(" "),
-      _c("div", { staticClass: "buttonContainer" }, [
-        _c(
-          "a",
-          {
-            staticClass: "openlayer",
-            attrs: {
-              "data-layer": "width:790px,height:90%,iframe:true,scrolling:true",
-              href: _vm.targetListUrl,
-              "data-title": _vm.targetListName
-            }
-          },
-          [_c("figure", { staticClass: "icon-plus" })]
-        )
-      ]),
-      _vm._v(" "),
-      _c("div", { staticClass: "clear" })
-    ])
-  ])
-}
-var staticRenderFns = []
-render._withStripped = true
-
-
-
-/***/ }),
-
 /***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./app/document-type-app/components/fields/wimTag.vue?vue&type=template&id=333b8587&":
 /*!*************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./app/document-type-app/components/fields/wimTag.vue?vue&type=template&id=333b8587& ***!
@@ -29790,27 +29481,6 @@ if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
 var add = __webpack_require__(/*! ../../../../node_modules/vue-style-loader/lib/addStylesClient.js */ "./node_modules/vue-style-loader/lib/addStylesClient.js").default
 var update = add("3bed34d2", content, false, {});
-// Hot Module Replacement
-if(false) {}
-
-/***/ }),
-
-/***/ "./node_modules/vue-style-loader/index.js!./node_modules/css-loader/dist/cjs.js?!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/vue-loader/lib/index.js?!./app/document-type-app/components/fields/wimSublistSelect.vue?vue&type=style&index=0&lang=css&":
-/*!**************************************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/vue-style-loader!./node_modules/css-loader/dist/cjs.js??ref--2-1!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/vue-loader/lib??vue-loader-options!./app/document-type-app/components/fields/wimSublistSelect.vue?vue&type=style&index=0&lang=css& ***!
-  \**************************************************************************************************************************************************************************************************************************************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-// style-loader: Adds some css to the DOM by adding a <style> tag
-
-// load the styles
-var content = __webpack_require__(/*! !../../../../node_modules/css-loader/dist/cjs.js??ref--2-1!../../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../../node_modules/vue-loader/lib??vue-loader-options!./wimSublistSelect.vue?vue&type=style&index=0&lang=css& */ "./node_modules/css-loader/dist/cjs.js?!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/vue-loader/lib/index.js?!./app/document-type-app/components/fields/wimSublistSelect.vue?vue&type=style&index=0&lang=css&");
-if(typeof content === 'string') content = [[module.i, content, '']];
-if(content.locals) module.exports = content.locals;
-// add the styles to the DOM
-var add = __webpack_require__(/*! ../../../../node_modules/vue-style-loader/lib/addStylesClient.js */ "./node_modules/vue-style-loader/lib/addStylesClient.js").default
-var update = add("2f2b7530", content, false, {});
 // Hot Module Replacement
 if(false) {}
 

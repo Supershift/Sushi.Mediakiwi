@@ -838,28 +838,6 @@ $(document).ready(function () {
 
     //var list = document.querySelectorAll(".connectedSortable");
 
-    /*$('.connectedSortable').each(function (a, ol) {
-        
-        
-        //var ol = $(this);
-        new Slip(ol);
-
-        ol.addEventListener('slip:beforeswipe', function (e) {
-            e.preventDefault(); // won't move sideways if prevented
-        });
-
-        ol.addEventListener('slip:reorder', function (e) {
-
-            e.target.parentNode.insertBefore(e.target, e.detail.insertBefore);
-          
-        });
-
-        ol.addEventListener('slip:beforewait', function (e) {
-            e.preventDefault();
-        }, false);
-    });*/
-
-
 
     $('.multiSortable li figure.del').live('click', function () {
         var liParent = $(this).parent();
@@ -887,11 +865,13 @@ $(document).ready(function () {
     //  Part of sortable
     var sortableIsAlive = false;
     $(document).on("click", ".sortOrder", function () {
-        //$('.sortOrder').click(function () {
+        
         if ($(this).attr('class').indexOf('icon-sort') > -1) {
-            if (sortableIsAlive)
+            if (sortableIsAlive) {
                 $(".dataBlock table tbody").sortable("enable");
+            }
             else {
+                let wscrolltop = 0;
                 $('.dataBlock table tbody').sortable({
                     placeholder: "ui-state-highlight",
                     items: "tr:not(.nosort)",
@@ -916,71 +896,17 @@ $(document).ready(function () {
             }
             $(this).attr('class', $(this).attr('class').replace("icon-sort", "icon-list2"));
             $('.dataBlock table td').off('click');
-            $.ambiance({ message: 'Sorteren staat aan' });
+            $.ambiance({ message: 'Sorting is enabled.' });
         } else {
             $(".dataBlock table tbody").sortable("disable");
             $(this).attr('class', $(this).attr('class').replace("icon-list2", "icon-sort"));
             $('.dataBlock table td').click(function () {
                 SetClick(this);
             });
-            $.ambiance({ message: 'Sorteren staat uit.' });
+            $.ambiance({ message: 'Sorting is disabled.' });
         }
         return false;
     });
-
-
-    $(document).on("click", ".sortOrder", function () {
-
-        //$('.sortOrder').click(function () {
-        if ($(this).attr('class').indexOf('icon-sort') > -1) {
-
-            var ol = document.querySelector('.dataBlock table tbody');
-            new Slip(ol);
-
-            ol.addEventListener('slip:beforeswipe', function (e) {
-                e.preventDefault(); // won't move sideways if prevented
-            });
-
-            ol.addEventListener('slip:reorder', function (e) {
-                if (isNoClick) {
-                    if (e.detail.insertBefore == null) {
-                        $.ambiance({ message: 'Sort action denied' });
-                        e.preventDefault();
-                        return false;
-                    }
-                    else {
-                        e.target.parentNode.insertBefore(e.target, e.detail.insertBefore);
-                        Switch(e.target);
-                    }
-                }
-                else
-                    e.preventDefault();
-            });
-
-            ol.addEventListener('slip:beforewait', function (e) {
-                e.preventDefault();
-            }, false);
-
-            $(this).attr('class', $(this).attr('class').replace("icon-sort", "icon-list2"));
-            $('.dataBlock table td').off('click');
-            $.ambiance({ message: 'Sorting is enabled' });
-            isNoClick = true;
-
-        } else {
-            //$(".dataBlock table tbody").sortable("disable");
-
-
-            $(this).attr('class', $(this).attr('class').replace("icon-list2", "icon-sort"));
-            $('.dataBlock table td').click(function () {
-                SetClick(this);
-            });
-
-            isNoClick = false;
-            $.ambiance({ message: 'Sorting is disabled' });
-        }
-        return false;
-    });
-
 
     // Return a helper with preserved width of cells
     var fixHelper = function (e, ui) {
