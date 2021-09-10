@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <Version>7.15.60</Version>
+    <Version>7.15.61</Version>
     <Product>Mediakiwi</Product>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <Company>Supershift</Company>
@@ -15,8 +15,8 @@
     <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
     <EnableNETAnalyzers>true</EnableNETAnalyzers>
     <RunAnalyzersDuringBuild>false</RunAnalyzersDuringBuild>
-    <AssemblyVersion>7.15.60.0</AssemblyVersion>
-    <FileVersion>7.15.60.0</FileVersion>
+    <AssemblyVersion>7.15.61.0</AssemblyVersion>
+    <FileVersion>7.15.61.0</FileVersion>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
