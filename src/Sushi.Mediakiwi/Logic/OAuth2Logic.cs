@@ -38,74 +38,93 @@ namespace Sushi.Mediakiwi.Logic
         {
             if (IsValidToken(validation, idtoken))
             {
-                var handler = new JwtSecurityTokenHandler();
-                var jsonToken = handler.ReadToken(idtoken);
-                var token = jsonToken as JwtSecurityToken;
-
-                if (token == null)
-                {
-                    await Data.Notification.InsertOneAsync(nameof(ExtractUpnAsync), Data.NotificationType.Error, $"No token encountered: {idtoken}").ConfigureAwait(false);
-                    return null;
-                }
-
-                const string DEFAULT_CLAIM_TYPE = "email";
-                List<string> claimtypes = new List<string>();
                 try
                 {
-                    var claimtypesSetting = WimServerConfiguration.Instance.Authentication.Aad.EmailClaim;
-                    if (!string.IsNullOrWhiteSpace(claimtypesSetting))
+                    var handler = new JwtSecurityTokenHandler();
+                    var jsonToken = handler.ReadToken(idtoken);
+                    var token = jsonToken as JwtSecurityToken;
+
+                    if (token == null)
                     {
-                        claimtypes.AddRange(claimtypesSetting.Split(new char[] { ',' }));
+                        await Data.Notification.InsertOneAsync(nameof(ExtractUpnAsync), Data.NotificationType.Error, $"No token encountered: {idtoken}").ConfigureAwait(false);
+                        return null;
                     }
+
+                    const string DEFAULT_CLAIM_TYPE = "email";
+                    List<string> claimtypes = new List<string>();
+                    try
+                    {
+                        var claimtypesSetting = WimServerConfiguration.Instance.Authentication.Aad.EmailClaim;
+                        if (!string.IsNullOrWhiteSpace(claimtypesSetting))
+                        {
+                            claimtypes.AddRange(claimtypesSetting.Split(new char[] { ',' }));
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        await Data.Notification.InsertOneAsync(nameof(ExtractUpnAsync), ex).ConfigureAwait(false);
+                    }
+
+                    // BD 2021-08-05: Loop through all the claims and look for the email
+                    Claim claimOfDefaultType = null;
+                    Claim claimWithEmailValue = null;
+                    foreach (var claim in token.Claims)
+                    {
+                        if (claimtypes.Any(x => x.Equals(claim.Type, StringComparison.CurrentCultureIgnoreCase)))
+                        {
+                            // If we find the claim with the configured type, return it immediately
+                            return await LogAndReturnAsync(claim.Value).ConfigureAwait(false);
+                        }
+                        else if (claim.Type.Equals(DEFAULT_CLAIM_TYPE, StringComparison.CurrentCultureIgnoreCase))
+                        {
+                            // Remember we have encountered a claim of the default type
+                            claimOfDefaultType = claim;
+                        }
+                        else if (EmailRegex.Match(claim.Value).Success)
+                        {
+                            // Remember we have encountered a claim that looks like an email address
+                            claimWithEmailValue = claim;
+                        }
+                    }
+
+                    // If we have not found the claim of the configured type, return the claim of the default type if we found it
+                    if (claimOfDefaultType != null)
+                    {
+                        return await LogAndReturnAsync(claimOfDefaultType.Value).ConfigureAwait(false);
+                    }
+
+                    // Otherwise, if we found a claim that has the form of an email address, return that
+                    if (claimWithEmailValue != null)
+                    {
+                        return await LogAndReturnAsync(claimWithEmailValue.Value).ConfigureAwait(false);
+                    }
+
+                    // If we could not find a claim of an expected type, but we only have one claim, return that
+                    if (token.Claims.Count() == 1)
+                    {
+                        return await LogAndReturnAsync(token.Claims.First().Value).ConfigureAwait(false);
+                    }
+
+                    // We could not find a claim. Log the token for examination.
+                    await Data.Notification.InsertOneAsync(nameof(ExtractUpnAsync), Data.NotificationType.Error, $"No email claim found: {idtoken}").ConfigureAwait(false);
                 }
                 catch (Exception ex)
                 {
                     await Data.Notification.InsertOneAsync(nameof(ExtractUpnAsync), ex).ConfigureAwait(false);
+                    return null;
                 }
-
-                // BD 2021-08-05: Loop through all the claims and look for the email
-                Claim claimOfDefaultType = null;
-                Claim claimWithEmailValue = null;
-                foreach (var claim in token.Claims)
-                {
-                    if (claimtypes.Any(x => x.Equals(claim.Type, StringComparison.CurrentCultureIgnoreCase)))
-                    {
-                        // If we find the claim with the configured type, return it immediately
-                        return claim.Value;
-                    }
-                    else if (claim.Type.Equals(DEFAULT_CLAIM_TYPE, StringComparison.CurrentCultureIgnoreCase))
-                    {
-                        // Remember we have encountered a claim of the default type
-                        claimOfDefaultType = claim;
-                    }
-                    else if (EmailRegex.Match(claim.Value).Success)
-                    {
-                        claimWithEmailValue = claim;
-                    }
-                }
-
-                // If we have not found the claim of the configured type, return the claim of the default type if we found it
-                if (claimOfDefaultType != null)
-                {
-                    return claimOfDefaultType.Value;
-                }
-
-                // Otherwise, if we found a claim that has the form of an email address, return that
-                if (claimWithEmailValue != null)
-                {
-                    return claimWithEmailValue.Value;
-                }
-
-                // If we could not find a claim of an expected type, but we only have one claim, return that
-                if (token.Claims.Count() == 1)
-                {
-                    return token.Claims.First().Value;
-                }
-
-                // We could not find a claim. Log the token for examination.
-                await Data.Notification.InsertOneAsync(nameof(ExtractUpnAsync), Data.NotificationType.Error, idtoken).ConfigureAwait(false);
+            }
+            else
+            {
+                await Data.Notification.InsertOneAsync(nameof(ExtractUpnAsync), Data.NotificationType.Error, $"Token not valid: {idtoken}").ConfigureAwait(false);
             }
             return null;
+        }
+
+        private static async Task<string> LogAndReturnAsync(string email)
+        {
+            await Data.Notification.InsertOneAsync(nameof(ExtractUpnAsync), Data.NotificationType.Information, $"Extracted: {email}").ConfigureAwait(false);
+            return email;
         }
 
         public static bool IsValidToken(TokenValidation validation, string idtoken)
