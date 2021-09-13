@@ -18,18 +18,6 @@ namespace Sushi.Mediakiwi.Headless.Data
         }
 
         /// <summary>
-        /// Is the response a cached response
-        /// </summary>
-        [DataMember(Name = "cached")]
-        public bool IsCached { get; set; }
-
-        /// <summary>
-        /// Is the response a cached response
-        /// </summary>
-        [DataMember(Name = "invalidCache")]
-        public bool IsCacheInvalidated { get; set; }
-
-        /// <summary>
         /// The PadeID from mediakiwi
         /// </summary>
         [DataMember(Name = "pageId")]

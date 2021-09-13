@@ -49,7 +49,9 @@ namespace Sushi.Mediakiwi.Headless.Data
             get
             {
                 if (MetaTags?.Count > 0)
-                    return MetaTags?.Where(x => x.Name == key).FirstOrDefault();
+                {
+                    return MetaTags?.FirstOrDefault(x => x.Name == key);
+                }
 
                 return null;
             }
@@ -80,7 +82,7 @@ namespace Sushi.Mediakiwi.Headless.Data
             }
             else if (overWriteIfExists)
             {
-                ContentMetaTag metaTag = MetaTags.Where(x => x.Name == name).FirstOrDefault();
+                ContentMetaTag metaTag = MetaTags.FirstOrDefault(x => x.Name == name);
                 metaTag.Value = content;
                 metaTag.RenderKey = renderKey;
             }

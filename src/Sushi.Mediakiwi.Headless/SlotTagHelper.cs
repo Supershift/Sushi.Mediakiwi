@@ -141,6 +141,9 @@ namespace Sushi.Mediakiwi.Headless
 
                             if (compType != null)// && compType.IsAssignableFrom(typeof(Microsoft.AspNetCore.Mvc.ViewComponent)))
                             {
+                                comp.InternalInfo.ClearCache = cont.InternalInfo.ClearCache || ViewContext.HttpContext.Request.IsClearCacheCall();
+                                comp.InternalInfo.IsPreview = cont.InternalInfo.IsPreview || ViewContext.HttpContext.Request.IsPreviewCall();
+
                                 var type = Type.GetType("Microsoft.AspNetCore.Mvc.ViewFeatures.IComponentRenderer, Microsoft.AspNetCore.Mvc.ViewFeatures, Version=3.1.1.0, Culture=neutral, PublicKeyToken=adb9793829ddae60");
                                 var componentRenderer = ViewContext.HttpContext.RequestServices.GetRequiredService(type);
                                 var method = type.GetMethod("RenderComponentAsync");
@@ -155,10 +158,10 @@ namespace Sushi.Mediakiwi.Headless
                                 Parameters[nameof(BaseRazorComponent<ISushiApplicationSettings>.PageMetaData)] = cont.MetaData;
 
                                 // Set ClearCache property
-                                Parameters[nameof(BaseRazorComponent<ISushiApplicationSettings>.ClearCache)] = ViewContext.HttpContext.Request.IsClearCacheCall();
+                                Parameters[nameof(BaseRazorComponent<ISushiApplicationSettings>.ClearCache)] = comp.InternalInfo.ClearCache;
 
                                 // Set IsPreview property
-                                Parameters[nameof(BaseRazorComponent<ISushiApplicationSettings>.IsPreview)] = ViewContext.HttpContext.Request.IsPreviewCall();
+                                Parameters[nameof(BaseRazorComponent<ISushiApplicationSettings>.IsPreview)] = comp.InternalInfo.IsPreview;
 
                                 // Get dynamic property
                                 var tempComp = Activator.CreateInstance(compType);

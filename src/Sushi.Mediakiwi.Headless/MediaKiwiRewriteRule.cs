@@ -74,8 +74,8 @@ namespace Sushi.Mediakiwi.Headless
                     }
 
                     response.Headers.Add(HttpHeaderNames.TimeSpend,new TimeSpan(dt2.Ticks - dt1.Ticks).TotalMilliseconds.ToString());
-                    response.Headers.Add(HttpHeaderNames.CachedData, PageContent.IsCached.ToString());
-                    response.Headers.Add(HttpHeaderNames.CacheInvalidData, PageContent.IsCacheInvalidated.ToString());
+                    response.Headers.Add(HttpHeaderNames.CachedData, (PageContent?.InternalInfo?.ClearCache == false).ToString());
+                    //response.Headers.Add(HttpHeaderNames.CacheInvalidData, PageContent.IsCacheInvalidated.ToString());
 
                     // apply the proper status code based on the headless result
                     response.StatusCode = (int)PageContent.StatusCode;

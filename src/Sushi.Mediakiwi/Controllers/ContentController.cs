@@ -13,7 +13,6 @@ using System.Reflection;
 using Sushi.Mediakiwi.Controllers.Data;
 using Sushi.Mediakiwi.Connectors;
 using Sushi.Mediakiwi.Extention;
-using Microsoft.AspNetCore.Authorization;
 
 namespace Sushi.Mediakiwi.Controllers
 {
@@ -36,8 +35,6 @@ namespace Sushi.Mediakiwi.Controllers
         {
             _cache = memoryCache;
         }
-
-        const string ckey = "Node.TimeStamp";
 
         [Produces("application/json")]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -149,6 +146,7 @@ namespace Sushi.Mediakiwi.Controllers
         private async Task<ActionResult<PageContentResponse>> GetPageContentInternalAsync(string url, bool flushCache = false, bool isPreview = false, int? pageId = null, IQueryCollection queryParameters = null)
         {
             var response = new PageContentResponse();
+
             if (string.IsNullOrWhiteSpace(url) && pageId.GetValueOrDefault(0) == 0)
             {
                 response.Exception = "There was no URL or PageID supplied";
@@ -156,14 +154,15 @@ namespace Sushi.Mediakiwi.Controllers
                 return BadRequest(response);
             }
 
+            // Check if we received an explicit request to clear the cache (flushCache)
+            // Or that the cache is invalid based on the Last_Flush datetime 
+            bool isCacheInvalid = flushCache || (await Flush(Last_Flush.Ticks).ConfigureAwait(false)).Value;
+
             try
             {
                 var page = default(Page);
                 string cacheKey = "";
-                bool flush = flushCache;
-                bool ispreview = isPreview;
                 var pageMap = default(IPageMapping);
-                bool isCached = (await Flush(Last_Flush.Ticks)).Value;
                 string queryString = string.Empty;
 
                 if (queryParameters != null)
@@ -185,10 +184,10 @@ namespace Sushi.Mediakiwi.Controllers
                 // When a pageID is supplied, this takes presedence over the URL
                 if (pageId.GetValueOrDefault(0) > 0)
                 {
-                    page = await Page.SelectOneAsync(pageId.Value, !ispreview).ConfigureAwait(false);
+                    page = await Page.SelectOneAsync(pageId.Value, !isPreview).ConfigureAwait(false);
                     cacheKey = $"page{pageId.Value}";
 
-                    if (flush || isCached == false)
+                    if (isCacheInvalid)
                     {
                         ClearCache();
                         _cache.Remove(cacheKey);
@@ -199,7 +198,7 @@ namespace Sushi.Mediakiwi.Controllers
                     Uri uri = new Uri(WebUtility.UrlDecode(url), UriKind.Relative);
                     cacheKey = $"{uri}";
 
-                    if (flush || isCached == false)
+                    if (isCacheInvalid)
                     {
                         ClearCache();
                         _cache.Remove(cacheKey);
@@ -207,8 +206,11 @@ namespace Sushi.Mediakiwi.Controllers
                     else
                     {
                         // Look for cache key.
-                        if (!ispreview && _cache.TryGetValue(cacheKey, out response))
+                        if (!isPreview && _cache.TryGetValue(cacheKey, out response))
                         {
+                            response.InternalInfo.ClearCache = false;
+                            response.InternalInfo.IsPreview = false;
+
                             return Ok(response);
                         }
                     }
@@ -241,7 +243,7 @@ namespace Sushi.Mediakiwi.Controllers
                                 newurl += queryString;
 
                                 // to do, replace with actual content
-                                response = await GetPageNotFoundAsync(null);
+                                response = await GetPageNotFoundAsync(null, isCacheInvalid).ConfigureAwait(false);
                                 response.PageInternalPath = newurl;
                                 response.StatusCode = GetStatusCode(map);
                                 return Ok(response);
@@ -251,7 +253,7 @@ namespace Sushi.Mediakiwi.Controllers
                         else if (mapped != null && map.Path.Equals(url, StringComparison.CurrentCultureIgnoreCase) && !string.IsNullOrWhiteSpace(mapped.Expression))
                         {
                             // to do, replace with actual content
-                            response = await GetPageNotFoundAsync(null);
+                            response = await GetPageNotFoundAsync(null, isCacheInvalid).ConfigureAwait(false);
 
                             // append queryString to the new url
                             var newUrl = mapped.Expression + queryString;
@@ -271,35 +273,39 @@ namespace Sushi.Mediakiwi.Controllers
 
                     if (page == null || page?.ID.Equals(0) == true)
                     {
-                        page = await Page.SelectOneAsync(uri.ToString(), !ispreview).ConfigureAwait(false);
+                        page = await Page.SelectOneAsync(uri.ToString(), !isPreview).ConfigureAwait(false);
                     }
                 }
 
 
                 // Key not in cache, so get data.
-                response = new PageContentResponse();
+                if (response == null)
+                {
+                    response = new PageContentResponse();
+                }
 
                 if (page == null || page?.ID == 0)
                 {
                     // Check if this page is the Homepage 
                     if (url == "/" || string.IsNullOrWhiteSpace(url))
                     {
-                        response = await GetHomePageAsync(null, ispreview).ConfigureAwait(false);
+                        response = await GetHomePageAsync(null, isPreview, isCacheInvalid).ConfigureAwait(false);
                     }
                     else
                     {
-                        response = await GetPageNotFoundAsync(null).ConfigureAwait(false);
+                        response = await GetPageNotFoundAsync(null, isCacheInvalid).ConfigureAwait(false);
                     }
                 }
                 else
                 {
-                    response = await GetPageContentAsync(page, pageMap, flushCache, ispreview).ConfigureAwait(false);
+                    response = await GetPageContentAsync(page, pageMap, isCacheInvalid, isPreview).ConfigureAwait(false);
                 }
 
                 // BD 2021-08-05: Only add live pages to the cache to prevent collisions
                 if (!isPreview)
                 {
                     // Save data in cache.
+                    response.InternalInfo.ClearCache = false;
                     AddToCache(cacheKey, response);
                 }
             }
@@ -307,6 +313,9 @@ namespace Sushi.Mediakiwi.Controllers
             {
                 response.Exception = $"{ex.Message} {ex.StackTrace}";
             }
+
+            response.InternalInfo.ClearCache = isCacheInvalid;
+            response.InternalInfo.IsPreview = isPreview;
 
             return Ok(response);
         }
@@ -316,7 +325,7 @@ namespace Sushi.Mediakiwi.Controllers
         /// </summary>
         /// <param name="siteId">The site for which to get this page (or default environment site when none supplied)</param>
         /// <returns></returns>
-        private async Task<PageContentResponse> GetHomePageAsync(int? siteId, bool isPreview = false)
+        private async Task<PageContentResponse> GetHomePageAsync(int? siteId, bool isPreview = false, bool flushCache = false)
         {
             PageContentResponse response = new PageContentResponse();
 
@@ -328,13 +337,13 @@ namespace Sushi.Mediakiwi.Controllers
 
             if (_siteId > 0)
             {
-                var site = await Site.SelectOneAsync(_siteId);
+                var site = await Site.SelectOneAsync(_siteId).ConfigureAwait(false);
                 if (site?.HomepageID.GetValueOrDefault(0) > 0)
                 {
-                    var page = await Page.SelectOneAsync(site.HomepageID.Value);
+                    var page = await Page.SelectOneAsync(site.HomepageID.Value).ConfigureAwait(false);
                     if (page?.ID > 0)
                     {
-                        response = await GetPageContentAsync(page, null, false, isPreview);
+                        response = await GetPageContentAsync(page, null, flushCache, isPreview).ConfigureAwait(false);
                     }
                 }
             }
@@ -346,7 +355,7 @@ namespace Sushi.Mediakiwi.Controllers
         /// </summary>
         /// <param name="siteId">The site for which to get this page (or default environment site when none supplied)</param>
         /// <returns></returns>
-        private async Task<PageContentResponse> GetPageNotFoundAsync(int? siteId)
+        private async Task<PageContentResponse> GetPageNotFoundAsync(int? siteId, bool flushCache = false)
         {
             PageContentResponse response = new PageContentResponse();
             int _siteId = (siteId.GetValueOrDefault(0) > 0) ? siteId.Value : 0;
@@ -357,13 +366,13 @@ namespace Sushi.Mediakiwi.Controllers
 
             if (_siteId > 0)
             {
-                var site = await Site.SelectOneAsync(_siteId);
+                var site = await Site.SelectOneAsync(_siteId).ConfigureAwait(false);
                 if (site?.PageNotFoundID.GetValueOrDefault(0) > 0)
                 {
-                    var page = await Page.SelectOneAsync(site.PageNotFoundID.Value);
+                    var page = await Page.SelectOneAsync(site.PageNotFoundID.Value).ConfigureAwait(false);
                     if (page?.ID > 0)
                     {
-                        response = await GetPageContentAsync(page, null, false, false);
+                        response = await GetPageContentAsync(page, null, flushCache, false).ConfigureAwait(false);
                     }
                 }
             }
@@ -372,16 +381,7 @@ namespace Sushi.Mediakiwi.Controllers
             return response;
         }
 
-        private void SetCacheVersion(DateTime dt)
-        {
-            var cacheEntryOptions = new MemoryCacheEntryOptions()
-                .SetSlidingExpiration(TimeSpan.FromDays(1));
-
-            // Save data in cache.
-            _cache.Set(ckey, dt, cacheEntryOptions);
-        }
-
-        private bool ClearCache()
+        private static void ClearCache()
         {
             if (_resetCacheToken != null && !_resetCacheToken.IsCancellationRequested && _resetCacheToken.Token.CanBeCanceled)
             {
@@ -389,7 +389,6 @@ namespace Sushi.Mediakiwi.Controllers
                 _resetCacheToken.Dispose();
             }
             _resetCacheToken = new CancellationTokenSource();
-            return true;
         }
 
         private static CancellationTokenSource _resetCacheToken = new CancellationTokenSource();
@@ -401,35 +400,6 @@ namespace Sushi.Mediakiwi.Controllers
             options.AddExpirationToken(new CancellationChangeToken(_resetCacheToken.Token));
 
             _cache.Set(key, item, options);
-        }
-
-        private async Task<bool> VerifyLoadBalancedCache()
-        {
-            DateTime dt;
-
-            object candidate = null;
-            if (_cache.TryGetValue(ckey, out candidate))
-            {
-                dt = (DateTime)candidate;
-            }
-            else
-            {
-                dt = DateTime.UtcNow;
-                SetCacheVersion(dt);
-            }
-
-            var cleanup = await CacheItem.SelectAllAsync(dt);
-            if (cleanup == null)
-            {
-                return false;
-            }
-            else
-            {
-                ClearCache();
-            }
-
-            SetCacheVersion(dt);
-            return true;
         }
 
         private async Task<Dictionary<string, ContentItem>> getMultiFieldContentAsync(HeadlessRequest request, Field inField)
@@ -719,7 +689,7 @@ namespace Sushi.Mediakiwi.Controllers
 
             if (pageMap != null && status == HttpStatusCode.NotFound)
             {
-                return await GetPageNotFoundAsync(page.SiteID).ConfigureAwait(false);
+                return await GetPageNotFoundAsync(page.SiteID, flushCache).ConfigureAwait(false);
             }
 
             // validation parse url?

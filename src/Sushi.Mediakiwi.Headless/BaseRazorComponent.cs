@@ -72,7 +72,7 @@ namespace Sushi.Mediakiwi.Headless
                 var propertyInfos = this.GetType().GetProperties(System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public);
                 foreach (var propInfo in propertyInfos)
                 {
-                    var contentProp = Content.Content.Where(x => x.Key == propInfo.Name).FirstOrDefault();
+                    var contentProp = Content.Content.FirstOrDefault(x => x.Key == propInfo.Name);
                     if (contentProp.Value != null)
                     {
                         propInfo.SetValue(this, contentProp.Value);
@@ -115,7 +115,7 @@ namespace Sushi.Mediakiwi.Headless
                 var propertyInfos = this.GetType().GetProperties(System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public);
                 foreach (var propInfo in propertyInfos)
                 {
-                    var contentProp = Content.Content.Where(x => x.Key == propInfo.Name).FirstOrDefault();
+                    var contentProp = Content.Content.FirstOrDefault(x => x.Key == propInfo.Name);
                     if (contentProp.Value != null)
                     {
                         propInfo.SetValue(this, contentProp.Value);

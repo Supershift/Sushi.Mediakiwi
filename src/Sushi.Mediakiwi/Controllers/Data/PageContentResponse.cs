@@ -1,10 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net;
+using System.Runtime.Serialization;
 using System.Text;
 
 namespace Sushi.Mediakiwi.Controllers.Data
 {
+    /// <summary>
+    /// The response from the Content API
+    /// </summary>
+    [DataContract]
     public class PageContentResponse
     {
         public PageContentResponse()
@@ -14,39 +19,52 @@ namespace Sushi.Mediakiwi.Controllers.Data
         }
 
         /// <summary>
-        /// Is there an exception thrown ?
+        /// The PadeID from mediakiwi
         /// </summary>
-        public string Exception { get; set; }
-
-        /// <summary>
-        /// What is the page ID of the page
-        /// </summary>
+        [DataMember(Name = "pageId")]
         public int PageID { get; set; }
 
         /// <summary>
-        /// The Path of the page in the CMS
+        /// The Page Location (path) to the Page template
         /// </summary>
-        public string PageInternalPath { get; set; }
-
-        /// <summary>
-        /// Sets the page location for StatusCode OK,
-        /// or a redirect path for StatusCode NotFound
-        /// </summary>
+        [DataMember(Name = "pageLocation")]
         public string PageLocation { get; set; }
 
         /// <summary>
-        /// All components belonging to this page.
+        /// The Internal path from MediaKiwi
         /// </summary>
-        public List<ContentComponent> Components { get; set; }
+        [DataMember(Name = "pageInternalPath")]
+        public string PageInternalPath { get; set; }
 
         /// <summary>
-        /// All MetaData belonging to this page.
+        /// All page Components
         /// </summary>
-        public ContentMetaData MetaData { get; set; }
+        [DataMember(Name = "components")]
+        public List<ContentComponent> Components { get; set; }
 
         /// <summary>
         /// The Http statuscode for the response
         /// </summary>
+        [DataMember(Name = "statusCode")]
         public HttpStatusCode StatusCode { get; set; }
+
+
+        /// <summary>
+        /// The exception (if any)
+        /// </summary>
+        [DataMember(Name = "exception")]
+        public string Exception { get; set; }
+
+        /// <summary>
+        /// The Metadata for this page
+        /// </summary>
+        [DataMember(Name = "metaData")]
+        public ContentMetaData MetaData { get; set; }
+
+        /// <summary>
+        /// Internal information for this Page (if any)
+        /// </summary>
+        [DataMember(Name = "internalInfo")]
+        public InternalInformation InternalInfo { get; set; } = new InternalInformation();
     }
 }
