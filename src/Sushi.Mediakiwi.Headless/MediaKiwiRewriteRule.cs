@@ -5,13 +5,14 @@ using Microsoft.Extensions.Logging;
 using Sushi.Mediakiwi.Headless.Config;
 using Sushi.Mediakiwi.Headless.Data;
 using System;
+using System.Globalization;
 
 namespace Sushi.Mediakiwi.Headless
 {
     public class MediaKiwiRewriteRule : IRule
     {
-        private IMediaKiwiContentService ContentService;
-        private ISushiApplicationSettings Configuration;
+        private readonly IMediaKiwiContentService ContentService;
+        private readonly ISushiApplicationSettings Configuration;
         private readonly ILogger _logger;
 
         public MediaKiwiRewriteRule(IServiceProvider serviceProvider)
@@ -26,17 +27,29 @@ namespace Sushi.Mediakiwi.Headless
         public void ApplyRule(RewriteContext context)
         {
             if (context == null)
+            {
                 _logger.LogError("RewriteContext IS NULL, skipping the MK Rewrite rule");
+            }
             else if (context?.HttpContext == null)
+            {
                 _logger.LogError("HttpContext IS NULL, skipping the MK Rewrite rule");
+            }
             else if (context?.HttpContext?.Request == null)
+            {
                 _logger.LogError("HttpContext Request IS NULL, skipping the MK Rewrite rule");
+            }
             else if (context?.HttpContext?.Response == null)
+            {
                 _logger.LogError("HttpContext Response IS NULL, skipping the MK Rewrite rule");
+            }
             else if (Configuration == null)
+            {
                 _logger.LogError("Configuration IS NULL, skipping the MK Rewrite rule");
+            }
             else if (ContentService == null)
+            {
                 _logger.LogError("ContentService IS NULL, skipping the MK Rewrite rule");
+            }
             else
             {
                 var request = context.HttpContext.Request;
@@ -56,11 +69,15 @@ namespace Sushi.Mediakiwi.Headless
                     try
                     {
                         if (PageId.GetValueOrDefault(0) > 0)
+                        {
                             PageContent = ContentService.GetPageContentAsync(null, null, request.IsClearCacheCall(), request.IsPreviewCall(), PageId.Value, request.Query).ConfigureAwait(true).GetAwaiter().GetResult();
+                        }
                         else
+                        {
                             PageContent = ContentService.GetPageContentAsync(request).ConfigureAwait(true).GetAwaiter().GetResult();
+                        }
                     }
-                    catch(Exception ex)
+                    catch (Exception ex)
                     {
                         _logger.LogError(ex.Message);
                     }
@@ -73,9 +90,8 @@ namespace Sushi.Mediakiwi.Headless
                         PageContent = new PageContentResponse();
                     }
 
-                    response.Headers.Add(HttpHeaderNames.TimeSpend,new TimeSpan(dt2.Ticks - dt1.Ticks).TotalMilliseconds.ToString());
+                    response.Headers.Add(HttpHeaderNames.TimeSpend, new TimeSpan(dt2.Ticks - dt1.Ticks).TotalMilliseconds.ToString(CultureInfo.InvariantCulture));
                     response.Headers.Add(HttpHeaderNames.CachedData, (PageContent?.InternalInfo?.ClearCache == false).ToString());
-                    //response.Headers.Add(HttpHeaderNames.CacheInvalidData, PageContent.IsCacheInvalidated.ToString());
 
                     // apply the proper status code based on the headless result
                     response.StatusCode = (int)PageContent.StatusCode;
@@ -98,7 +114,9 @@ namespace Sushi.Mediakiwi.Headless
                     if (PageContent?.Components?.Count > 0)
                     {
                         foreach (var item in PageContent.Components)
+                        {
                             item.InternalInfo = PageContent.InternalInfo;
+                        }
                     }
 
                     // We have a result.
@@ -109,13 +127,19 @@ namespace Sushi.Mediakiwi.Headless
 
                         // When we have this, this is a redirect so add our current URL as referrer
                         if (PageId.GetValueOrDefault(0) > 0)
+                        {
                             request.Headers[HttpHeaderNames.OriginalRequestURL] = request.GetEncodedUrl();
+                        }
 
                         if (context.HttpContext.Items.ContainsKey(ContextItemNames.PageContent) == false)
+                        {
                             request.HttpContext.Items.Add(ContextItemNames.PageContent, PageContent);
+                        }
 
                         if (response.Headers.ContainsKey(HttpHeaderNames.FullRequestURL) == false)
+                        {
                             response.Headers.Add(HttpHeaderNames.FullRequestURL, request.GetEncodedUrl());
+                        }
 
                         if (string.IsNullOrWhiteSpace(PageContent?.PageLocation) == false)
                         {
