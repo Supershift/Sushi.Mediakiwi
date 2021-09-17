@@ -58,10 +58,15 @@ namespace Sushi.Mediakiwi.Headless
             return options;
         }
 
+        /// <summary>
+        /// Performs a cache flush and updates the Last_Flush date
+        /// </summary>
         public static void FlushCache()
         {
             if (_resetCacheToken != null && !_resetCacheToken.IsCancellationRequested && _resetCacheToken.Token.CanBeCanceled)
             {
+                Last_Flush = DateTime.UtcNow;
+
                 _resetCacheToken.Cancel();
                 _resetCacheToken.Dispose();
             }
@@ -133,9 +138,19 @@ namespace Sushi.Mediakiwi.Headless
                     returnObj.StatusCode = System.Net.HttpStatusCode.InternalServerError;
                 }
 
+                // If the API returned us a page that needs a cache flush, perform it here as well.
+                if (returnObj?.InternalInfo?.ClearCache == true)
+                {
+                    FlushCache();
+                }
+
                 // Add content to cache if needed
                 if (returnObj?.PageID > 0 && _memCache != null)
                 {
+                    // When stored to cache, make sure to set this value to False,
+                    // else it will keep flushing the cache everytime it is collected from cache.
+                    returnObj.InternalInfo.ClearCache = false;
+
                     AddToCache(cacheKey, returnObj);
                 }
             }
@@ -282,14 +297,17 @@ namespace Sushi.Mediakiwi.Headless
                         {
                             returnObj = JsonConvert.DeserializeObject<PageContentResponse>(responseFromServer);
                         }
-                        else 
-                        {
-                            // EMPTY
-                        }
 
-                        // Set MetaData 
+                        
                         if (returnObj != null)
                         {
+                            // If the API returned us a page that needs a cache flush, perform it here as well.
+                            if (returnObj?.InternalInfo?.ClearCache == true)
+                            {
+                                FlushCache();
+                            }
+
+                            // Set MetaData 
                             SetMetaInfo(returnObj, forUrl);
                         }
                     }
@@ -306,6 +324,10 @@ namespace Sushi.Mediakiwi.Headless
                     // Add content to cache if needed
                     if (returnObj?.PageID > 0 && _memCache != null)
                     {
+                        // When stored to cache, make sure to set this value to False,
+                        // else it will keep flushing the cache everytime it is collected from cache.
+                        returnObj.InternalInfo.ClearCache = false;
+
                         AddToCache(cacheKey, returnObj);
                     }
                 }
@@ -320,7 +342,7 @@ namespace Sushi.Mediakiwi.Headless
                 returnObj = new PageContentResponse();
             }
 
-            returnObj.IsCached = isCached;
+            returnObj.InternalInfo.ClearCache = !isCached || clearCache;
             return returnObj;
         }
 
@@ -461,7 +483,6 @@ namespace Sushi.Mediakiwi.Headless
                 if (responseFromServer)
                 {
                     FlushCache();
-                    Last_Flush = DateTime.UtcNow;
                     return false;
                 }
             }
