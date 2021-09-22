@@ -1,18 +1,24 @@
 ﻿@inherits Sushi.Mediakiwi.Headless.BaseRazorComponent<Models.ApplicationSettings>
 @using Sushi.Mediakiwi.Headless.Data;
 
-<div class="content-paragraph">
-    @if (string.IsNullOrEmpty(title?.Text) == false)
-    {
-        <h3>@title.Text</h3>
-    }
 
-    @if (string.IsNullOrEmpty(contentText?.Text) == false)
+<div class="card mb-3">
+    @if (string.IsNullOrEmpty(image?.Url) == false)
     {
-        <p>@((MarkupString)contentText.Text)</p>
+        <img src="@image.Url" class="card-img-top" alt="@image.Text">
     }
+    
+    <div class="card-body">
+        @if (string.IsNullOrEmpty(title?.Text) == false)
+        {
+            <h5 class="card-title">@title.Text</h5>
+        }
+        @if (string.IsNullOrEmpty(contentText?.Text) == false)
+        {
+            <p class="card-text">@((MarkupString)contentText.Text)</p>
+        }
+    </div>
 </div>
-
 
 @code {
     [Parameter]
@@ -20,4 +26,8 @@
 
     [Parameter]
     public ContentItem contentText { get; set; }
+
+    [Parameter]
+    public ContentItem image { get; set; }
+
 }
