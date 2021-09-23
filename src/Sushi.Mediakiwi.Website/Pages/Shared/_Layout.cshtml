@@ -18,13 +18,15 @@
     }
 </head>
 <body>
+    <component type="typeof(Pages.Components.Shared.C000_TopNavigation)" render-mode="ServerPrerendered" />
+
     <div class="container">
         @RenderBody()
     </div>
 
     <footer class="border-top footer text-muted">
         <div class="container">
-            &copy; 2021 - Sushi.Mediakiwi.Website - <a asp-area="" asp-page="/Privacy">Privacy</a>
+            &copy; @DateTime.UtcNow.Year - Sushi.Mediakiwi.Website - <a asp-area="" asp-page="/Privacy">Privacy</a>
         </div>
     </footer>
 
