@@ -127,7 +127,9 @@ namespace Sushi.Mediakiwi.Framework
         protected string MandatoryWrap(string title)
         {
             if (Mandatory)
+            {
                 return $"{title}*";
+            }
             return title;
         }
 
@@ -163,7 +165,9 @@ namespace Sushi.Mediakiwi.Framework
             get
             {
                 if (_Console != null && _Console.CurrentListInstance != null && _Console.CurrentListInstance.wim.Page.Body.Form.DisableInput)
+                {
                     return true;
+                }
                 return _OverrideEditMode;
             }
             set
@@ -188,16 +192,21 @@ namespace Sushi.Mediakiwi.Framework
             }
 
             if (Property.PropertyType != typeof(CustomData))
+            {
                 return;
+            }
 
             m_ContentContainer = Property.GetValue(SenderInstance, null) as CustomData;
 
             if (m_ContentContainer == null)
+            {
                 m_ContentContainer = new CustomData();
-
+            }
 
             if (!m_ContentContainer[field.Property].IsEditable)
+            {
                 OverrideEditMode = true;
+            }
 
             CustomDataFieldName = field.Property;
         }
@@ -399,8 +408,19 @@ namespace Sushi.Mediakiwi.Framework
         internal protected class NameItemValue
         {
             public string Name { get; set; }
-            public int? m_ID;
-            public int? ID { get { return m_ID; } set { m_ID = value; TextID = value.ToString(); } }
+            private int? m_ID;
+            public int? ID 
+            { 
+                get 
+                { 
+                    return m_ID;                 
+                } 
+                set 
+                { 
+                    m_ID = value; 
+                    TextID = value.ToString(); 
+                } 
+            }
             public string TextID { get; set; }
             public string Value { get; set; }
         }
@@ -478,13 +498,9 @@ namespace Sushi.Mediakiwi.Framework
 
             StringBuilder list = new StringBuilder();
 
-            string url = string.Format("{0}?{1}openinframe={4}&referid=_{2}{3}"
-                    , Console.WimPagePath.Replace("http://", "//").Replace("https://", "//")
-                    , string.IsNullOrEmpty(selectionlistID) ? string.Empty : string.Format("list={0}&", selectionlistID)
-                    , id
-                    , urlAddition
-                    , ((int)size).ToString()
-                    );
+            string path = Console.WimPagePath.Replace("http://", "//", StringComparison.InvariantCultureIgnoreCase).Replace("https://", "//", StringComparison.InvariantCultureIgnoreCase);
+            string query = string.IsNullOrEmpty(selectionlistID) ? string.Empty : $"list={selectionlistID}&";
+            string url = $"{path}?{query}openinframe={(int)size}&referid=_{id}{urlAddition}";
 
             if (specification == null)
             {
@@ -523,8 +539,6 @@ namespace Sushi.Mediakiwi.Framework
             {
                 if (!string.IsNullOrEmpty(item.TextID) && item.TextID != "0")
                 {
-                    //string classname = "ui-state-default";
-
                     index++;
                     if (canOnlyOrderSort)
                     {
@@ -603,17 +617,9 @@ namespace Sushi.Mediakiwi.Framework
                 }
             }
 
-
-            //if ((items == null || items.Length == 0) || items[0].ID == 0)
-            //{
-            //    list.AppendFormat("\n\t\t\t\t\t\t\t\t\t\t\t<li class=\"instant\"><em style=\"color:#a7aab3;margin-left:-5px\">{0}</em></li>", Data.Utility.CleanFormatting(InteractiveHelp));
-            //}
-
-
             if (IsCloaked)
             {
                 build.AppendCloaked($"<input type=\"hidden\" name=\"{id}\" value=\"_MK$PH_\"/>");
-
             }
             else
             {
@@ -650,8 +656,6 @@ namespace Sushi.Mediakiwi.Framework
                     {
                         build.AppendFormat($"<th><label for=\"{ID}\">{TitleLabel}</label></th>");
                     }
-
-                    //build.AppendFormat("\n\t\t\t\t\t\t\t<th><label for=\"{0}\">{1}</label></th>", ID, TitleLabel);
 
                     build.AppendFormat("<td{0}{1}>{2}"
                         , (Expression == OutputExpression.FullWidth && Console.HasDoubleCols) ? " colspan=\"3\"" : null
@@ -690,9 +694,6 @@ namespace Sushi.Mediakiwi.Framework
                 if (!canOnlyOrderSort)
                 {
                     build.Append("<div class=\"buttonContainer\">");
-
-                    //if (!url.Contains("item="))
-                    //    url += "&item=0";
 
                     build.AppendFormat("<a class=\"openlayer\" data-layer=\"{1}\" href=\"{0}\" data-title=\"{2}\"><figure class=\"{3}\"></figure></a>"
                         , url // 0
@@ -774,7 +775,7 @@ namespace Sushi.Mediakiwi.Framework
             {
                 if (!string.IsNullOrEmpty(Console.Form(SelectedKey)))
                 {
-                    return Console.Form(SelectedKey).ToString().Replace("T", string.Empty);
+                    return Console.Form(SelectedKey);
                 }
                 return null;
             }
@@ -792,7 +793,6 @@ namespace Sushi.Mediakiwi.Framework
                 if (!m_SelectedKeysSet)
                 {
                     List<string> list = new List<string>();
-                    //m_SelectedKeysSet = true;
                     if (Context.Request.HasFormContentType)
                     {
                         foreach (string key in Context.Request.Form.Keys)
@@ -809,6 +809,7 @@ namespace Sushi.Mediakiwi.Framework
                 return m_SelectedKeys;
             }
         }
+
         /// <summary>
         /// Gets the selected I ds.
         /// </summary>
@@ -824,6 +825,7 @@ namespace Sushi.Mediakiwi.Framework
                 return list.ToArray();
             }
         }
+
         /// <summary>
         /// Gets the selected value.
         /// </summary>
@@ -938,11 +940,7 @@ namespace Sushi.Mediakiwi.Framework
         /// <value>The console.</value>
         internal Beta.GeneratedCms.Console Console
         {
-            set
-            {
-                _Console = value;
-
-            }
+            set { _Console = value; }
             get { return _Console; }
         }
 
@@ -961,11 +959,14 @@ namespace Sushi.Mediakiwi.Framework
             get
             {
                 if (m_SenderInstance == null)
+                {
                     m_SenderInstance = Console.CurrentListInstance;
+                }
                 return m_SenderInstance;
             }
             set { m_SenderInstance = value; }
         }
+
         public object SenderSponsorInstance { get; set; }
 
         /// <summary>
