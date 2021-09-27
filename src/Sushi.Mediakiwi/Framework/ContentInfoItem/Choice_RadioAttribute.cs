@@ -234,35 +234,27 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
             SetWriteEnvironment();
             IsCloaked = isCloaked;
             Mandatory = isRequired;
+            bool _isEditMode = isEditMode;
+
             if (OverrideEditMode)
             {
-                isEditMode = false;
+                _isEditMode = false;
             }
 
             ListItemCollection optionsList = new ListItemCollection();
 
-            if (isEditMode)
+            if (_isEditMode)
             {
                 #region Element creation
 
                 var cloaked = isCloaked ? " hidden" : null;
 
                 StringBuilder element = new StringBuilder();
-                string className = $" class=\"radio{cloaked}\"";
-                if (AutoPostBack)
-                {
-                    className = $" class=\"radio {PostBackValue}{cloaked}\"";
-                }
-                else if (Expression != OutputExpression.FullWidth)
-                {
-                    className = $" class=\"radio{cloaked}\"";
-                }
-
-                string options = "";
+                StringBuilder options = new StringBuilder();
                 int count = 0;
                 if (!string.IsNullOrEmpty(SupplierChoiceHeaderProp))
                 {
-                    options += GetProperty(Console.CurrentListInstance, SupplierChoiceHeaderProp);
+                    options.Append(GetProperty(Console.CurrentListInstance, SupplierChoiceHeaderProp));
                 }
                 foreach (var li in m_ListItemCollection)
                 {
@@ -318,7 +310,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                     var optionValid = IsValid(isRequired) ? $" class=\"{cloaked}\"" : $" class=\"error{cloaked}\"";
                     var optionVertical = (ShowVertically ? "<br/>" : null);
 
-                    options += $"<input type=\"radio\"{optionChecked} name=\"{ID}\" id=\"{ID}{count}\" value=\"{li.Value}\"{optionChecked} {optionEnabled}/> <label for=\"{ID}{count}\"{optionValid}>{li.Text}</label>{optionVertical}";
+                    options.Append($"<input type=\"radio\"{optionChecked} name=\"{ID}\" id=\"{ID}{count}\" value=\"{li.Value}\"{optionChecked} {optionEnabled}/> <label for=\"{ID}{count}\"{optionValid}>{li.Text}</label>{optionVertical}");
                 }
                 element.Append(options);
 

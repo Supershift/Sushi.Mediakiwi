@@ -107,6 +107,35 @@ namespace Sushi.Mediakiwi.Framework
             return (_isSharedField, _isEnabled, _isHidden, _outputValue);
         }
 
+        /// <summary>
+        /// Checks if this is a shared Field and if the shared field has a valaue
+        /// </summary>
+        /// <returns></returns>
+        public (bool isSharedField, bool hasValue) HasSharedValue()
+        {
+            if (IsSharedField && ComponentTemplateID.GetValueOrDefault(0) > 0)
+            {
+                var sharedField = SharedField.FetchSingleForComponentTemplate(FieldName, ContentTypeSelection, ComponentTemplateID.Value);
+
+                // Shared Field addition
+                var _isSharedField = (sharedField?.ID > 0) ? true : false;
+
+                // Disable the field when it is shared
+                if (_isSharedField)
+                {
+                    var sharedValue = SharedFieldTranslation.FetchSingleForFieldAndSite(sharedField.ID, Console.ChannelIndentifier);
+                    if (sharedValue?.ID > 0)
+                    {
+                        var _outputValue = sharedValue.GetPublishedValue();
+
+                        return (true, string.IsNullOrWhiteSpace(_outputValue) == false);
+                    }
+                }
+                return (true, false);
+            }
+            return (false, false);
+        }
+
         public ListInfoItem InfoItem { get; set; }
 
         public bool IsCloaked { get; set; }

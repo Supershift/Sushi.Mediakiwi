@@ -993,17 +993,13 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                     }
                     else if (_OutputValues == null || _OutputValues.Count == 0)
                     {
-                        if (IsSharedField)
+                        var hasValue = HasSharedValue();
+                        if (hasValue.isSharedField)
                         {
-                            // [MR:03-06-2021] Apply shared field clickable icon.
-                            var sharedInfoApply = ApplySharedFieldInformation(IsEnabled(), OutputText);
-
-                            // If we have a document assigned, overwrite the current one
-                            if (sharedInfoApply.isShared && string.IsNullOrWhiteSpace(sharedInfoApply.outputValue) == false)
-                            {
-                                return true;
-                            }
+                            return hasValue.hasValue;
                         }
+
+                        return false;
                     }
                     else
                     {
