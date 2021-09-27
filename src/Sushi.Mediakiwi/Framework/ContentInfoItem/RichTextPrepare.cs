@@ -12,11 +12,11 @@ namespace Sushi.Mediakiwi.Framework
         /// </summary>
         public RichTextPrepare()
         {
-            this.ConvertTableHeadCellToTH = true;
-            this.TableTag = "cellspacing=\"1\" class=\"dataTable\"";
-            this.TableRowTagEven = "class=\"even\"";
-            this.TableRowTagOdd = "class=\"odd\"";
-            this.TableRowFirstCell = "class=\"firstChild\"";
+            ConvertTableHeadCellToTH = true;
+            TableTag = "cellspacing=\"1\" class=\"dataTable\"";
+            TableRowTagEven = "class=\"even\"";
+            TableRowTagOdd = "class=\"odd\"";
+            TableRowFirstCell = "class=\"firstChild\"";
         }
 
         /// <summary>
@@ -54,13 +54,28 @@ namespace Sushi.Mediakiwi.Framework
         /// <returns></returns>
         public string Clean(string candidate)
         {
-            if (!string.IsNullOrEmpty(this.TableTag)) this.TableTag = string.Concat(" ", this.TableTag);
-            if (!string.IsNullOrEmpty(this.TableRowTagEven)) this.TableRowTagEven = string.Concat(" ", this.TableRowTagEven);
-            if (!string.IsNullOrEmpty(this.TableRowTagOdd)) this.TableRowTagOdd = string.Concat(" ", this.TableRowTagOdd);
-            if (!string.IsNullOrEmpty(this.TableRowFirstCell)) this.TableRowFirstCell = string.Concat(" ", this.TableRowFirstCell);
+            if (!string.IsNullOrEmpty(TableTag))
+            {
+                TableTag = string.Concat(" ", TableTag);
+            }
+
+            if (!string.IsNullOrEmpty(TableRowTagEven))
+            {
+                TableRowTagEven = string.Concat(" ", TableRowTagEven);
+            }
+
+            if (!string.IsNullOrEmpty(TableRowTagOdd))
+            {
+                TableRowTagOdd = string.Concat(" ", TableRowTagOdd);
+            }
+
+            if (!string.IsNullOrEmpty(TableRowFirstCell))
+            {
+                TableRowFirstCell = string.Concat(" ", TableRowFirstCell);
+            }
 
             Regex tableFind = new Regex(@"(?<TEXT><table[^>]*>(.*?)</table>)", RegexOptions.IgnoreCase);
-            return tableFind.Replace(candidate, this.ReplaceTable);
+            return tableFind.Replace(candidate, ReplaceTable);
         }
 
         /// <summary>
@@ -70,22 +85,23 @@ namespace Sushi.Mediakiwi.Framework
         /// <returns></returns>
         private string ReplaceTable(Match m)
         {
-            this.m_TableCellIndex = 0;
-            this.m_TableRowGroupIndex = 0;
-            this.m_TableRowGroupIndexMax = 0;
-            this.m_TableRowIndex = 0;
+            m_TableCellIndex = 0;
+            m_TableRowGroupIndex = 0;
+            m_TableRowGroupIndexMax = 0;
+            m_TableRowIndex = 0;
 
             string candidate = m.Value;
 
             Regex table = new Regex("<(?=(table )).*?>", RegexOptions.IgnoreCase);
 
-            candidate = candidate.Replace("<tbody>", string.Empty).Replace("</tbody>", string.Empty);
-            candidate = table.Replace(candidate, this.ReplaceTableItem);
+            candidate = candidate.Replace("<tbody>", string.Empty, System.StringComparison.InvariantCultureIgnoreCase);
+            candidate = candidate.Replace("</tbody>", string.Empty, System.StringComparison.InvariantCultureIgnoreCase);
+            candidate = table.Replace(candidate, ReplaceTableItem);
 
             Regex tableRow = new Regex(@"(?<TEXT><tr[^>]*>(.*?)</tr>)", RegexOptions.IgnoreCase);
             m_TableRowGroupIndexMax = tableRow.Match(candidate).Groups.Count;
 
-            candidate = tableRow.Replace(candidate, this.ReplaceTableRowGroup);
+            candidate = tableRow.Replace(candidate, ReplaceTableRowGroup);
             return candidate;
         }
 
@@ -96,7 +112,7 @@ namespace Sushi.Mediakiwi.Framework
         /// <returns></returns>
         private string ReplaceTableItem(Match m)
         {
-            return string.Concat("<table", this.TableTag, ">");
+            return $"<table{TableTag}>";
         }
 
         int m_TableRowGroupIndex;
@@ -113,20 +129,29 @@ namespace Sushi.Mediakiwi.Framework
 
             m_TableRowGroupIndex++;
 
-            string candidate = tr.Replace(m.Value, this.ReplaceTableRow);
-            candidate = td.Replace(candidate, this.ReplaceTableCell);
+            string candidate = tr.Replace(m.Value, ReplaceTableRow);
+            candidate = td.Replace(candidate, ReplaceTableCell);
 
             if (m_TableRowGroupIndex == 1)
-                return string.Concat("<thead>", candidate, "</thead>");
+            {
+                return $"<thead>{candidate}</thead>";
+            }
             else if (m_TableRowGroupIndex == 2)
-                return string.Concat("<tbody>", candidate);
+            {
+                return $"<tbody>{candidate}";
+            }
             else if (m_TableRowGroupIndex == 2 && m_TableRowGroupIndex == m_TableRowGroupIndexMax)
-                return string.Concat("<tbody>", candidate, "</tbody>");
+            {
+                return $"<tbody>{candidate}</tbody>";
+            }
             else if (m_TableRowGroupIndex == m_TableRowGroupIndexMax)
-                return string.Concat(candidate, "</tbody>");
+            {
+                return $"{candidate}</tbody>";
+            }
             else
+            {
                 return candidate;
-
+            }
         }
 
         int m_TableRowIndex;
@@ -140,12 +165,18 @@ namespace Sushi.Mediakiwi.Framework
             m_TableRowIndex++;
 
             if (m_TableRowIndex == 1)
+            {
                 return "<tr>";
+            }
 
             if (m_TableRowIndex % 2 == 1)
-                return string.Format("<tr{0}>", this.TableRowTagEven);
+            {
+                return $"<tr{TableRowTagEven}>";
+            }
             else
-                return string.Format("<tr{0}>", this.TableRowTagOdd);
+            {
+                return $"<tr{TableRowTagOdd}>";
+            }
         }
 
         int m_TableCellIndex;
@@ -160,12 +191,18 @@ namespace Sushi.Mediakiwi.Framework
 
             string tag = "td";
             if (m_TableRowGroupIndex == 1 && ConvertTableHeadCellToTH)
+            {
                 tag = "th";
+            }
 
             if (m_TableCellIndex == 1)
-                return string.Format("<{0}{1}>", tag, this.TableRowFirstCell);
+            {
+                return $"<{tag}{TableRowFirstCell}>";
+            }
             else
-                return string.Format("<{0}>", tag);
+            {
+                return $"<{tag}>";
+            }
         }
     }
 }

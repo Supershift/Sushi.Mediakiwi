@@ -22,13 +22,18 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
             meta.Default = defaultValue;
             meta.ContentTypeSelection = ((int)ContentTypeSelection).ToString();
 
-            if (this.EnableTable)
+            if (EnableTable)
+            {
                 meta.AddOption(OPTION_ENABLE_TABLE);
+            }
             else
+            {
                 meta.RemoveOption(OPTION_ENABLE_TABLE);
+            }
 
             return meta;
         }
+
         /// <summary>
         /// Possible return types: System.String
         /// </summary>
@@ -100,17 +105,12 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
         /// <param name="isEditMode">if set to <c>true</c> [is edit mode].</param>
         public void SetCandidate(Field field, bool isEditMode)
         {
-            this.SetMultiFieldTitleHTML(Labels.ResourceManager.GetString("input_richtext", new CultureInfo(Console.CurrentApplicationUser.LanguageCulture)), "icon-align-justify");
+            SetMultiFieldTitleHTML(Labels.ResourceManager.GetString("input_richtext", new CultureInfo(Console.CurrentApplicationUser.LanguageCulture)), "icon-align-justify");
 
-            //string _useNewRichTextCleaning = System.Configuration.ConfigurationManager.AppSettings["RICHTEXT_NEW_CLEAN"];
-
-            //bool useNewRichTextCleaning =false;
-            //if (!string.IsNullOrEmpty(_useNewRichTextCleaning) && _useNewRichTextCleaning == "1")
-            //{
-                //useNewRichTextCleaning = true;
-            //}
             if (Property != null && Property.PropertyType == typeof(CustomData))
+            {
                 SetContentContainer(field);
+            }
 
             string candidate = null;
             if (IsInitialLoad || !isEditMode)
@@ -132,25 +132,27 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                     {
                         object value = Property.GetValue(SenderInstance, null);
                         if (value != null)
+                        {
                             candidate = value.ToString();
+                        }
                     }
                 }
             }
             else
             {
-                candidate = Console.Form(this.ID.Replace("$", ""));
-                if (candidate == null) candidate = string.Empty;
+                candidate = Console.Form(ID.Replace("$", ""));
 
-                if (!this.EnableTable)
+                if (candidate == null)
+                {
+                    candidate = string.Empty;
+                }
+
+                if (!EnableTable)
                 {
                     candidate = _table.Replace(candidate, "");
                 }
-                //else
-                //{
-                //    var tableHandler = Data.Environment.GetInstance<IHtmlTableParser>();
-                //}
-            
-                candidate = Utils.CleanLink(this.Console.CurrentListInstance.wim.CurrentSite, candidate);
+
+                candidate = Utils.CleanLink(Console.CurrentListInstance.wim.CurrentSite, candidate);
             }
 
             if (!string.IsNullOrEmpty(candidate))
@@ -159,142 +161,75 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
 
                 //if candidate is empy or contains only html tags and no real content, set candidate to null
                 if (string.IsNullOrEmpty(Utility.CleanFormatting(candidate)))
+                {
                     candidate = null;
+                }
                 else
                 {
                     string emptyTest = candidate.Replace("&nbsp;", string.Empty).Trim();
-                    if (string.IsNullOrEmpty(emptyTest))
+                    if (string.IsNullOrEmpty(emptyTest) || string.IsNullOrEmpty(Utility.CleanFormatting(emptyTest)))
+                    {
                         candidate = null;
-                    if (string.IsNullOrEmpty(Utility.CleanFormatting(emptyTest)))
-                        candidate = null;
+                    }
                 }
             }
+
             if (NoCleaning == false)
             {
                 Cleaner cleaner = new Cleaner();
                 candidate = cleaner.ApplyFullClean(candidate, false);
-
-
-                //if (_richTextDataCleanHandler == null)
-                //    _richTextDataCleanHandler = new RichTextDataCleaner();
-                //candidate = _richTextDataCleanHandler.ParseData(this.Console.ItemType, this.Console.Item, this.ID, candidate);
             }
+
             if (!IsBluePrint && Property != null && Property.CanWrite)
             {
                 if (Property.PropertyType == typeof(CustomData))
+                {
                     ApplyContentContainer(field, candidate);
+                }
                 else if (Property.PropertyType == typeof(string))
+                {
                     Property.SetValue(SenderInstance, candidate, null);
+                }
             }
 
             OutputText = candidate;
 
             //  Inherited content section
-            if (ShowInheritedData)
+            if (ShowInheritedData && field != null && !string.IsNullOrEmpty(field.InheritedValue))
             {
-                //field.InheritedValue = field.Value;
-
-                if (field != null && !string.IsNullOrEmpty(field.InheritedValue))
-                {
-                    string candidate2 = field.InheritedValue;
-                    RichTextLink.CreateLinkPreview(ref candidate2);
-                    InhertitedOutputText = candidate2;
-                }
+                string candidate2 = field.InheritedValue;
+                RichTextLink.CreateLinkPreview(ref candidate2);
+                InhertitedOutputText = candidate2;
             }
-
         }
+
         static Regex striketroughFix = new Regex(@"<span\sstyle=""text-decoration:line-through;"">(.*?)</span>", RegexOptions.Multiline | RegexOptions.IgnoreCase | RegexOptions.IgnorePatternWhitespace | RegexOptions.Compiled);
         static Regex underlineFix = new Regex(@"<span\sstyle=""text-decoration:underline;"">(.*?)</span>", RegexOptions.Multiline | RegexOptions.IgnoreCase | RegexOptions.IgnorePatternWhitespace | RegexOptions.Compiled);
         static Regex tofillFails = new Regex(@"<a\shref=""TOFILL"">(.*?)</a>",  RegexOptions.Multiline | RegexOptions.IgnoreCase | RegexOptions.IgnorePatternWhitespace | RegexOptions.Compiled);
-        private string PreCleanHTML(string candidate)
-        {
-            if (!string.IsNullOrEmpty(candidate))
-            {
-                // Underline            
-                candidate = underlineFix.Replace(candidate, "<u>$1</u>");
 
-                // Stiketrough
-                candidate = striketroughFix.Replace(candidate, "<s>$1</s>");
-
-                // To fill fails; if this part of the codes detects links with href="TOFILL" it means the editor missed this
-                // First Log, then remove
-                if (tofillFails.IsMatch(candidate)) Notification.InsertOne("RichTextBoxEditor.Save", "Failed to create html link");
-                candidate = tofillFails.Replace(candidate, "$1");
-            }
-            return candidate;
-        }
-
-        string ExtendParagraphWrap(string input)
-        {
-            if (string.IsNullOrEmpty(input)) return null;
-            if (!input.StartsWith("<p>", StringComparison.OrdinalIgnoreCase))
-                input = string.Concat("<p>", input, "</p>");
-            return input;
-        }
-
-        //CuteEditor.Editor m_Editor;
-        ///// <summary>
-        ///// Gets the editor.
-        ///// </summary>
-        ///// <value>The editor.</value>
-        //internal CuteEditor.Editor Editor
-        //{
-        //    get
-        //    {
-        //        if (m_Editor == null) SetEditor();
-        //        return m_Editor;
-        //    }
-        //}
         Editor m_NewEditor;
         internal Editor NewEditor
         {
             get
             {
-                if (m_NewEditor == null) SetNewEditor();
+                if (m_NewEditor == null)
+                {
+                    SetNewEditor();
+                }
                 return m_NewEditor;
             }
         }
+
         void SetNewEditor()
         {
 
             m_NewEditor = new Editor()
             {
-                //BoldButton = true,
-                //ItalicButton = true,
-                //UnderlineButton = true,
-                //LinkButton = true,
-                //ListButton = true,
-                //SubscriptButton = true,
-                //SuperscriptButton = true,
-                //StrikeThroughButton = true,
-                //IndentButton = true,
-                //HtmlButton = true,
-                //HRButton = true,
-                //RemoveformatButton = true,
-                //ImageButton = CommonConfiguration.USE_RICHTEXT_IMAGEADD,
-                //TableButton = CommonConfiguration.USE_RICHTEXT_TABLE,
-                //AddTableRowButton = CommonConfiguration.USE_RICHTEXT_TABLE,
-                //StyleButton = CommonConfiguration.USE_RICHTEXT_STYLE,
-                //ShowToolTips = false,
                 ID = "ta_" + ID
             };
-            //if (ShowInheritedData)
-            //{
-            //    if (Console.CurrentListInstance.wim.ShowInFullWidthMode)
-            //        m_NewEditor.Width = 450;
-            //    else
-            //        m_NewEditor.Width = 416;
-            //}
-            //else
-            //{
-            //    if (Console.CurrentListInstance.wim.ShowInFullWidthMode)
-            //        m_NewEditor.Width = 776;
-            //    else
-            //        m_NewEditor.Width = 538;
-            //}
-            //m_NewEditor.Height = 50;
-            m_NewEditor.ID = this.ID.Replace("$", string.Empty);
-            string item = this.OutputText;
+     
+            m_NewEditor.ID = ID.Replace("$", string.Empty);
+            string item = OutputText;
 
             //replace all strong tags with b tags, because of firefox bug. 
             if (item != null)
@@ -308,10 +243,9 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                 m_NewEditor.Content = Utility.CleanParagraphWrap(item);
             }
             else
+            {
                 m_NewEditor.Content = item;
-
-            //if (!this.m_IsNewDesign)
-            //    Wim.RichtextEditor.RichtextEditorManager.RegisterInstance(m_NewEditor);
+            }
         }
 
         public class Editor
@@ -321,18 +255,10 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
             {
                 if (isCloaked)
                 {
-                    return string.Format(@"<textarea class=""long {2}"" id=""{0}"" name=""{0}""{3}>{1}</textarea>",
-                       ID,
-                       CleanUpBadChars(Content),
-                       "hidden",
-                       isEnabled ? null : " disabled=\"disabled\"");
+                    return $@"<textarea class=""long hidden"" id=""{ID}"" name=""{ID}""{(isEnabled ? null : " disabled=\"disabled\"")}>{CleanUpBadChars(Content)}</textarea>";
                 }
-                return string.Format(@"<textarea class=""long {2}"" id=""{0}"" name=""{0}""{3}>{1}</textarea>",
-                    ID, 
-                    CleanUpBadChars(Content), 
-                    hasTable ? "table_rte" : "rte", 
-                    isEnabled ? null : " disabled=\"disabled\"");
 
+                return $@"<textarea class=""long {(hasTable ? "table_rte" : "rte")}"" id=""{ID}"" name=""{ID}""{(isEnabled ? null : " disabled=\"disabled\"")}>{CleanUpBadChars(Content)}</textarea>";
             }
 
             public string ID { get; set; }
@@ -342,8 +268,8 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                 if (Content != null)
                 {
                     return Content.Replace("{", "&#123;").Replace("}", "&#125;");
-
                 }
+
                 return Content;
             }
             public string Content { get; set; }
@@ -412,37 +338,38 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                     {
                         if (ShowInheritedData)
                         {
-                            this.ApplyTranslation(build);
+                            ApplyTranslation(build);
                         }
                         else
                         {
                             if (Console.ExpressionPrevious == OutputExpression.Left)
-                                build.Append("\t\t\t\t\t\t\t<th><label>&nbsp;</label></th><td>&nbsp;</td></tr>");
+                            {
+                                build.Append("<th><label>&nbsp;</label></th><td>&nbsp;</td></tr>");
+                            }
 
                             if (Expression == OutputExpression.FullWidth || Expression == OutputExpression.Left)
-                                build.Append("\t\t\t\t\t\t<tr>");
+                            {
+                                build.Append("<tr>");
+                            }
                         }
 
                         if (string.IsNullOrWhiteSpace(EditSharedFieldLink) == false)
                         {
-                            build.Append($"<th><label for=\"{ID}\">{EditSharedFieldLink.Replace("[LABEL]", this.TitleLabel)}</label></th>");
+                            build.Append($"<th><label for=\"{ID}\">{EditSharedFieldLink.Replace("[LABEL]", TitleLabel)}</label></th>");
                         }
                         else
                         {
                             build.Append($"<th><label for=\"{ID}\">{TitleLabel}</label></th>");
                         }
 
-                        //if (ShowInheritedData)
-                        //    build.AppendFormat("\t\t\t\t\t\t\t<th class=\"local\"><label>{0}:</label></th>\t\t\t\t\t\t</tr>\t\t\t\t\t\t<tr>\t\t\t\t\t\t\t<td><div class=\"description\">{1}</div></td>\n", this.ID, this.TitleLabel);
-
-                        build.AppendFormat("\n\t\t\t\t\t\t\t<td{0}{1}>{2}"
+                        build.AppendFormat("<td{0}{1}>{2}"
                             , (Expression == OutputExpression.FullWidth && Console.HasDoubleCols) ? " colspan=\"3\"" : null
-                            , this.InputCellClassName(this.IsValid(isRequired))
+                            , InputCellClassName(IsValid(isRequired))
                             , CustomErrorText
                             );
                     }
 
-                    build.AppendFormat("\n\t\t\t\t\t\t\t\t<div class=\"{0}\">", (Expression == OutputExpression.FullWidth) ? this.Class_Wide
+                    build.AppendFormat("<div class=\"{0}\">", (Expression == OutputExpression.FullWidth) ? Class_Wide
                         : (OverrideTableGeneration ? "halfer" : "half")
                     );
 
@@ -454,15 +381,17 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
 
                     build.Append(element.ToString());
 
-                    build.Append("\n\t\t\t\t\t\t\t\t</div>");
+                    build.Append("</div>");
 
                     //  If set all table cell/row creation will be ignored
                     if (!OverrideTableGeneration)
                     {
-                        build.Append("\n\t\t\t\t\t\t\t</td>");
+                        build.Append("</td>");
 
                         if (Expression == OutputExpression.FullWidth || Expression == OutputExpression.Right)
-                            build.Append("\n\t\t\t\t\t\t</tr>\n");
+                        {
+                            build.Append("</tr>");
+                        }
                     }
                     #endregion Wrapper
                 }
@@ -478,17 +407,17 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
             build.ApiResponse.Fields.Add(new Api.MediakiwiField()
             {
                 Event = Api.MediakiwiJSEvent.none,
-                Title = MandatoryWrap(this.Title),
-                Value = this.OutputText,
+                Title = MandatoryWrap(Title),
+                Value = OutputText,
                 Expression = OutputExpression.FullWidth,
-                PropertyName = this.ID,
+                PropertyName = ID,
                 PropertyType = (Property == null) ? typeof(string).FullName : Property.PropertyType.FullName,
                 VueType = Api.MediakiwiFormVueType.wimRichText,
-                ReadOnly = this.IsReadOnly,
+                ReadOnly = IsReadOnly,
                 ContentTypeID = ContentTypeSelection
             });
 
-            return ReadCandidate(this.OutputText);
+            return ReadCandidate(OutputText);
         }
 
         /// <summary>
@@ -497,20 +426,31 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
         /// <returns></returns>
         public override bool IsValid(bool isRequired)
         {
-            this.Mandatory = isRequired;
+            Mandatory = isRequired;
             if (Console.CurrentListInstance.wim.IsSaveMode)
             {
                 //  Custom error validation
                 if (!base.IsValid(isRequired))
+                {
                     return false;
+                }
 
                 if (Mandatory && string.IsNullOrEmpty(OutputText))
+                {
+                    if (IsSharedField)
+                    {
+                        // [MR:03-06-2021] Apply shared field clickable icon.
+                        var sharedInfoApply = ApplySharedFieldInformation(IsEnabled(), OutputText);
+
+                        // If we have a document assigned, overwrite the current one
+                        if (sharedInfoApply.isShared && string.IsNullOrWhiteSpace(sharedInfoApply.outputValue) == false)
+                        {
+                            return true;
+                        }
+                    }
+
                     return false;
-
-                //if (this.MaxValueLength > 0 && !string.IsNullOrEmpty(OutputText) && OutputText.Length > MaxValueLength)
-                //    return false;
-
-
+                }
             }
             return true;
         }

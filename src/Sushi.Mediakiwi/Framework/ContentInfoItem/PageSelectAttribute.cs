@@ -335,9 +335,21 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                     return false;
                 }
 
-                if (Mandatory)
+                if (Mandatory && (m_Candidate == null || m_Candidate.ID == 0))
                 {
-                    return !(m_Candidate == null || m_Candidate.ID == 0);
+                    if (IsSharedField)
+                    {
+                        // [MR:03-06-2021] Apply shared field clickable icon.
+                        var sharedInfoApply = ApplySharedFieldInformation(IsEnabled(), OutputText);
+
+                        // If we have a document assigned, overwrite the current one
+                        if (sharedInfoApply.isShared && string.IsNullOrWhiteSpace(sharedInfoApply.outputValue) == false)
+                        {
+                            return true;
+                        }
+                    }
+
+                    return false;
                 }
             }
             return true;

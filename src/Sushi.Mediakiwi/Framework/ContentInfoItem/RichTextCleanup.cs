@@ -18,7 +18,6 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
 
             candidate = new Regex(@"<table.*?>", RegexOptions.IgnoreCase).Replace(candidate, "<table class=\"dataTable\">");
             candidate = new Regex(@"<td.*?>", RegexOptions.IgnoreCase).Replace(candidate, "<td>");
-
             candidate = new Regex(@"<td.*?>", RegexOptions.IgnoreCase).Replace(candidate, "<td>");
 
             bool hasMatch = true;
@@ -40,26 +39,22 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                 }
             }
 
-            candidate = new Regex(@"<tbody>(?<TEXT>.*?)(</tbody>)", RegexOptions.IgnoreCase).Replace(candidate, this.OnlyReturnText);
-            candidate = new Regex(@"<thead>(?<TEXT>.*?)(</thead>)", RegexOptions.IgnoreCase).Replace(candidate, this.OnlyReturnText);
+            candidate = new Regex(@"<tbody>(?<TEXT>.*?)(</tbody>)", RegexOptions.IgnoreCase).Replace(candidate, OnlyReturnText);
+            candidate = new Regex(@"<thead>(?<TEXT>.*?)(</thead>)", RegexOptions.IgnoreCase).Replace(candidate, OnlyReturnText);
 
-            //candidate = candidate.Replace("<tbody>", string.Empty).Replace("</tbody>", string.Empty);
-
-            candidate = new Regex(@"<span.*?(>)(?<TEXT>.*?)(</span>)", RegexOptions.IgnoreCase).Replace(candidate, this.OnlyReturnText);
-            candidate = new Regex(@"<font.*?(>)(?<TEXT>.*?)(</font>)", RegexOptions.IgnoreCase).Replace(candidate, this.OnlyReturnText);
+            candidate = new Regex(@"<span.*?(>)(?<TEXT>.*?)(</span>)", RegexOptions.IgnoreCase).Replace(candidate, OnlyReturnText);
+            candidate = new Regex(@"<font.*?(>)(?<TEXT>.*?)(</font>)", RegexOptions.IgnoreCase).Replace(candidate, OnlyReturnText);
             
             //  Sometimes only a <span..> exists
             candidate = new Regex(@"<span.*?(>)", RegexOptions.IgnoreCase).Replace(candidate, string.Empty);
             candidate = new Regex(@"<font.*?(>)", RegexOptions.IgnoreCase).Replace(candidate, string.Empty);
 
             return Prepare.Clean(candidate);
-
-            //return candidate;
         }
 
         public RichTextCleanup()
         {
-            this.Prepare = new RichTextPrepare();
+            Prepare = new RichTextPrepare();
         }
 
         public RichTextPrepare Prepare { get; set; }

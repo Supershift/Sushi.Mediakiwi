@@ -377,6 +377,17 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
 
                 if (Mandatory)
                 {
+                    if (IsSharedField && m_Candidate.HasValue == false)
+                    {
+                        // [MR:03-06-2021] Apply shared field clickable icon.
+                        var sharedInfoApply = ApplySharedFieldInformation(IsEnabled(), OutputText);
+
+                        // If we have a document assigned, overwrite the current one
+                        if (sharedInfoApply.isShared && string.IsNullOrWhiteSpace(sharedInfoApply.outputValue) == false)
+                        {
+                            return true;
+                        }
+                    }
                     return m_Candidate.HasValue;
                 }
             }

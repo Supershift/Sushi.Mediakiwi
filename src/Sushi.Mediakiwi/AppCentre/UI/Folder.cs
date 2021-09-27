@@ -14,22 +14,27 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         [Framework.ContentListItem.Button("Copy folder")]
         public bool Btn_CopyFolder { get; set; }
 
+
         /// <summary>
         /// Initializes a new instance of the <see cref="Folder"/> class.
         /// </summary>
         public Folder()
+        {
+          
+            ListInit += Folder_ListInit;
+            ListLoad += Folder_ListLoad;
+            ListSave += Folder_ListSave;
+            ListPreRender += Folder_ListPreRender;
+            ListAction += Folder_ListAction;
+        }
+
+        private async Task Folder_ListInit()
         {
             wim.OpenInEditMode = true;
             wim.CanSaveAndAddNew = false;
             wim.HideOpenCloseToggle = false;
             wim.HideOpenCloseToggle = true;
 
-            IsVisible = true;
-
-            ListLoad += Folder_ListLoad;
-            ListSave += Folder_ListSave;
-            ListPreRender += Folder_ListPreRender;
-            ListAction += Folder_ListAction;
         }
 
         async Task Folder_ListAction(ComponentActionEventArgs e)
@@ -59,7 +64,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
 
             if (Implement.Type == FolderType.List && Implement.ParentID.GetValueOrDefault() == ParentFolder)
             {
-                wim.Notification.AddError("ParentID", "Can not assigned to self!");
+                wim.Notification.AddError(nameof(ParentFolder), "Can not assigned to self!");
             }
             return Task.CompletedTask;
         }
@@ -158,7 +163,6 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                     await Framework.Functions.FolderPathLogic.UpdateCompletePathAsync().ConfigureAwait(false);
                 }
                 await Mediakiwi.Data.Folder.VerifyCompletePathAsync().ConfigureAwait(false);
-                wim.FlushCache();
             }
 
             wim.FlushCache();
@@ -233,30 +237,38 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                 return;
             }
 
-            Implement = await Mediakiwi.Data.Folder.SelectOneAsync(e.SelectedKey).ConfigureAwait(false);
-            ParentFolder = Implement.ParentID.GetValueOrDefault();
-            GUID = Implement.GUID.ToString();
-            IsVisible = Implement.IsVisible;
-
-            if (e.SelectedKey == 0)
+            if (IsExistingFolder)
             {
-                return;
+                Implement = await Mediakiwi.Data.Folder.SelectOneAsync(e.SelectedKey).ConfigureAwait(false);
+                ParentFolder = Implement.ParentID.GetValueOrDefault();
+                GUID = Implement.GUID.ToString();
+                IsVisible = Implement.IsVisible;
+            }
+            else
+            {
+                Implement = new Mediakiwi.Data.Folder()
+                {
+                    IsVisible = true
+                };
             }
 
-            wim.ListTitle = Implement.Name;
-
             Utility.ReflectProperty(Implement, this);
+            
+            if (IsExistingFolder)
+            {
+                wim.ListTitle = Implement.Name;
+            }
 
             //  Only lists can be reassigned
             if (wim.CurrentFolder.Type != FolderType.List)
             {
-                wim.SetPropertyVisibility("ParentFolder", false);
+                wim.SetPropertyVisibility(nameof(ParentFolder), false);
             }
 
             if (!wim.CurrentApplicationUser.IsDeveloper)
             {
-                wim.SetPropertyVisibility("GUID", false);
-                wim.SetPropertyVisibility("IsVisible", false);
+                wim.SetPropertyVisibility(nameof(GUID), false);
+                wim.SetPropertyVisibility(nameof(IsVisible), false);
             }
 
             if (wim.CurrentFolder.Type == FolderType.Page)
@@ -272,7 +284,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                     SortOrder.Add(lo);
                 }
             }
-            else if (wim.CurrentFolder.Type == FolderType.List)
+            else if (IsExistingFolder && wim.CurrentFolder.Type == FolderType.List)
             {
                 var list = await Mediakiwi.Data.ComponentList.SelectAllAsync(e.SelectedKey).ConfigureAwait(false);
                 SortOrder = new SubList();
@@ -282,12 +294,12 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                 }
             }
 
-            if (Implement.ChildCount == 0 && !Implement.MasterID.HasValue)
+            if (IsExistingFolder && Implement.ChildCount == 0 && !Implement.MasterID.HasValue)
             {
                 ListDelete += Folder_ListDelete;
             }
 
-            if (Implement.Level > 0 && e.SelectedKey > 0)
+            if (IsExistingFolder && Implement.Level > 0)
             {
                 ShowRoles = true;
             }
@@ -295,7 +307,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
 
         async Task LoadGalleryFolderAsync(ComponentListEventArgs e)
         {
-            wim.SetPropertyVisibility("ParentFolder", false);
+            wim.SetPropertyVisibility(nameof(ParentFolder), false);
 
             if (e.SelectedKey == 0)
             {
@@ -333,7 +345,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
 
             if (wim.IsLayerMode)
             {
-                wim.OnSaveScript = string.Format(@"<input type=""hidden"" class=""postParent"">");
+                wim.OnSaveScript = "<input type=\"hidden\" class=\"postParent\">";
             }
         }
 
@@ -440,15 +452,15 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// <summary>
         /// Sorts   pages 
         /// </summary>
-        [OnlyVisibleWhenTrue("IsWebPageFolder")]
-        [Framework.ContentListItem.Choice_Dropdown("Sortorder", "SortTypes", false)]
+        [OnlyVisibleWhenTrue(nameof(IsWebPageFolder))]
+        [Framework.ContentListItem.Choice_Dropdown("Sortorder", nameof(SortTypes), false)]
         public int SortOrderMethod { get; set; }
 
         /// <summary>
         /// Gets or sets the sort order.
         /// </summary>
         /// <value>The sort order.</value>
-        [OnlyVisibleWhenTrue("IsExistingFolder")]
+        [OnlyVisibleWhenTrue(nameof(IsExistingFolder))]
         [Framework.ContentListItem.SubListSelect("Items", "", false, true)]
         public SubList SortOrder { get; set; }
 

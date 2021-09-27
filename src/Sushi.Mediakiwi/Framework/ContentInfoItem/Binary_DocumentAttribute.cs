@@ -370,10 +370,26 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
             {
                 //  Custom error validation
                 if (!base.IsValid(isRequired))
+                {
                     return false;
+                }
 
                 if (Mandatory)
-                    return m_Candidate.ID != 0;
+                {
+                    if (IsSharedField && m_Candidate.ID == 0)
+                    {
+                        // [MR:03-06-2021] Apply shared field clickable icon.
+                        var sharedInfoApply = ApplySharedFieldInformation(IsEnabled(), OutputText);
+
+                        // If we have a document assigned, overwrite the current one
+                        if (sharedInfoApply.isShared && Utility.ConvertToInt(sharedInfoApply.outputValue, 0) > 0)
+                        {
+                            m_Candidate = Document.SelectOne(Utility.ConvertToInt(sharedInfoApply.outputValue, 0));
+                        }
+                    }
+
+                    return (m_Candidate?.ID > 0);
+                }
             }
             return true;
         }

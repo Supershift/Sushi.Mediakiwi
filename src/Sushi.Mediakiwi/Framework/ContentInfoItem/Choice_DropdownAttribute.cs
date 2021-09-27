@@ -739,7 +739,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                         }
                         catch (Exception ex)
                         {
-                            Notification.InsertOne("Sushi.Mediakiwi.Choice_DropdownAttribute", $"Does the list assigned to the dropdown field '{FieldName}' exist?.<br/>{ex.Message}" );
+                            Notification.InsertOne("Sushi.Mediakiwi.Choice_DropdownAttribute", $"Does the list assigned to the dropdown field '{FieldName}' exist?.<br/>{ex.Message}");
                         }
                     }
                 }
@@ -992,6 +992,20 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                         return false;
                     }
                     else if (_OutputValues == null || _OutputValues.Count == 0)
+                    {
+                        if (IsSharedField)
+                        {
+                            // [MR:03-06-2021] Apply shared field clickable icon.
+                            var sharedInfoApply = ApplySharedFieldInformation(IsEnabled(), OutputText);
+
+                            // If we have a document assigned, overwrite the current one
+                            if (sharedInfoApply.isShared && string.IsNullOrWhiteSpace(sharedInfoApply.outputValue) == false)
+                            {
+                                return true;
+                            }
+                        }
+                    }
+                    else
                     {
                         return false;
                     }

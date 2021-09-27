@@ -409,7 +409,18 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
 
                 if (Mandatory)
                 {
-                    return !m_Candidate.IsNewInstance;
+                    if (IsSharedField && m_Candidate == null || m_Candidate?.ID == 0)
+                    {
+                        // [MR:03-06-2021] Apply shared field clickable icon.
+                        var sharedInfoApply = ApplySharedFieldInformation(IsEnabled(), OutputText);
+                        // If we have a document assigned, overwrite the current one
+                        if (sharedInfoApply.isShared && string.IsNullOrWhiteSpace(sharedInfoApply.outputValue) == false)
+                        {
+                            return true;
+                        }
+                    }
+
+                    return (m_Candidate?.ID > 0);
                 }
             }
             return true;

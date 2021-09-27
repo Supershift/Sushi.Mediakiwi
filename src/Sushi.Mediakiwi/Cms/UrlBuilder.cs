@@ -17,7 +17,9 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
             get
             {
                 if (m_List_Folders == null)
+                {
                     m_List_Folders = ComponentList.SelectOne(ComponentListType.Folders);
+                }
                 return m_List_Folders;
             }
         }
@@ -28,7 +30,9 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
             get
             {
                 if (m_List_PageProperties == null)
+                {
                     m_List_PageProperties = ComponentList.SelectOne(ComponentListType.PageProperties);
+                }
                 return m_List_PageProperties;
             }
         }
@@ -39,7 +43,9 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
             get
             {
                 if (m_List_ComponentListProperties == null)
+                {
                     m_List_ComponentListProperties = ComponentList.SelectOne(ComponentListType.ComponentListProperties);
+                }
                 return m_List_ComponentListProperties;
             }
         }
@@ -51,7 +57,9 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
             get
             {
                 if (m_List_SubscribeProperties == null)
+                {
                     m_List_SubscribeProperties = ComponentList.SelectOne(ComponentListType.Subscription);
+                }
                 return m_List_SubscribeProperties;
             }
         }
@@ -63,7 +71,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
         /// <param name="console">The console.</param>
         public UrlBuilder(Console console)
         {
-            this.Console = console;
+            Console = console;
         }
 
         /// <summary>
@@ -73,7 +81,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
         /// <returns></returns>
         public string GetFolderRequest(Folder folder)
         {
-            return string.Concat(Console.WimPagePath, "?folder=", folder.ID);
+            return $"{Console.WimPagePath}?folder={folder.ID}";
         }
 
         /// <summary>
@@ -82,7 +90,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
         /// <returns></returns>
         public string GetFolderCreateRequest()
         {
-                return string.Concat(Console.WimPagePath, "?", "list=", List_Folders.ID, "&folder=", Console.CurrentListInstance.wim.CurrentFolder.ID, "&item=0");
+            return $"{Console.WimPagePath}?list={List_Folders.ID}&folder={Console.CurrentListInstance.wim.CurrentFolder.ID}&item=0&openinframe=2";
         }
 
         /// <summary>
@@ -91,36 +99,36 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
         /// <returns></returns>
         public string GetFolderOptionsRequest()
         {
-            return string.Concat(Console.WimPagePath, "?", "list=", List_Folders.ID, "&folder=", Console.CurrentListInstance.wim.CurrentFolder.ID, "&item=", Console.CurrentListInstance.wim.CurrentFolder.ID);
+            return $"{Console.WimPagePath}?list={List_Folders.ID}&folder={Console.CurrentListInstance.wim.CurrentFolder.ID}&item={Console.CurrentListInstance.wim.CurrentFolder.ID}";
         }
 
         public string GetFolderCopyRequest(int folder)
         {
             var list = ComponentList.SelectOne(typeof(AppCentre.Data.Implementation.Copy));
-            return string.Concat(Console.WimPagePath, "?", "list=", list.ID, "&type=1&folder=", Console.CurrentListInstance.wim.CurrentFolder.ID, "&item=", folder);
+            return $"{Console.WimPagePath}?list={list.ID}&type=1&folder={Console.CurrentListInstance.wim.CurrentFolder.ID}&item={folder}";
         }
 
         public string GetPageCopyRequest(int page)
         {
             var list = ComponentList.SelectOne(typeof(AppCentre.Data.Implementation.Copy));
-            return string.Concat(Console.WimPagePath, "?", "list=", list.ID, "&type=2&folder=", Console.CurrentListInstance.wim.CurrentFolder.ID, "&item=", page);
+            return $"{Console.WimPagePath}?list={list.ID}&type=2&folder={Console.CurrentListInstance.wim.CurrentFolder.ID}&item={page}";
         }
 
         public string GetPageCopyContentRequest(int page)
         {
             var list = ComponentList.SelectOne(typeof(AppCentre.Data.Implementation.CopyContent));
-            return string.Concat(Console.WimPagePath, "?", "list=", list.ID, "&type=2&item=", page);
+            return $"{Console.WimPagePath}?list={list.ID}&type=2&item={page}";
         }
 
         public string GetPageHistoryRequest(int page)
         {
             var list = ComponentList.SelectOne(typeof(AppCentre.Data.Implementation.PageHistory));
-            return string.Concat(Console.WimPagePath, "?", "list=", list.ID, "&type=2&pageItem=", page);
+            return $"{Console.WimPagePath}?list={list.ID}&type=2&pageItem={page}";
         }
 
         public string GetGalleryOptionsRequest()
         {
-            return string.Concat(Console.WimPagePath, "?", "list=", List_Folders.ID, "&gallery=", Console.CurrentListInstance.wim.CurrentFolder.ID, "&item=", Console.CurrentListInstance.wim.CurrentFolder.ID);
+            return $"{Console.WimPagePath}?list={List_Folders.ID}&gallery={Console.CurrentListInstance.wim.CurrentFolder.ID}&item={Console.CurrentListInstance.wim.CurrentFolder.ID}";
         }
 
         /// <summary>
@@ -130,7 +138,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
         /// <returns></returns>
         public string GetFolderRequest(int folderID)
         {
-            return string.Concat(Console.WimPagePath, "?folder=", folderID);
+            return $"{Console.WimPagePath}?folder={folderID}";
         }
 
         /// <summary>
@@ -141,6 +149,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
         {
             return GetFolderRequest(Console.CurrentListInstance.wim.CurrentFolder.ID);
         }
+
         public static string GetCustomQueryString(HttpContext context, params KeyValue[] keyvalues)
         {
             StringBuilder build = new StringBuilder();
@@ -156,7 +165,9 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                     if (selection.Length == 1)
                     {
                         if (selection[0].RemoveKey)
+                        {
                             continue;
+                        }
 
                         build.AppendFormat("{0}{1}={2}"
                             , build.Length == 0 ? "?" : "&"
@@ -196,18 +207,15 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
         {
             if (keyvalues != null && keyvalues.Any())
             {
-                var listkey = keyvalues.Where(x => x.Key.Equals("list", StringComparison.CurrentCultureIgnoreCase)).FirstOrDefault();
-                if (listkey != null && !listkey.RemoveKey)
+                var listkey = keyvalues.FirstOrDefault(x => x.Key.Equals("list", StringComparison.CurrentCultureIgnoreCase));
+                if (listkey != null && !listkey.RemoveKey && Utils.IsNumeric(listkey.Value, out int listid))
                 {
-                    if (Utils.IsNumeric(listkey.Value, out int listid))
-                    {
-                        // remote the key if applied as the url takes over.
-                        listkey.RemoveKey = true;
+                    // remote the key if applied as the url takes over.
+                    listkey.RemoveKey = true;
 
-                        if (!listid.Equals(Console.CurrentList.ID))
-                        {
-                            return GetUrl(listid, keyvalues);
-                        }
+                    if (!listid.Equals(Console.CurrentList.ID))
+                    {
+                        return GetUrl(listid, keyvalues);
                     }
                 }
             }
@@ -254,13 +262,19 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
             }
 
             if (!string.IsNullOrEmpty(Console.Request.Query["openinframe"]) && !newItemRequest.Contains("openinframe"))
+            {
                 newItemRequest += string.Concat("&openinframe=", Console.Request.Query["openinframe"]);
+            }
 
             if (Console.CurrentList.Option_LayerResult && !newItemRequest.Contains("openinframe"))
+            {
                 newItemRequest += "&openinframe=2";
+            }
 
             if (!string.IsNullOrEmpty(Console.Request.Query["referid"]) && !newItemRequest.Contains("referid"))
+            {
                 newItemRequest += string.Concat("&referid=", Console.Request.Query["referid"]);
+            }
 
             return newItemRequest;
         }
@@ -271,7 +285,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
         /// <returns></returns>
         public string GetListPropertiesRequest()
         {
-            return string.Concat(Console.WimPagePath, "?", "list=", List_ComponentListProperties.ID, "&folder=", Console.CurrentListInstance.wim.CurrentFolder.ID, "&base=", Console.CurrentList.ID, "&item=", Console.CurrentList.ID);
+            return $"{Console.WimPagePath}?list={List_ComponentListProperties.ID}&folder={Console.CurrentListInstance.wim.CurrentFolder.ID}&base={Console.CurrentList.ID}&item={Console.CurrentList.ID}";
         }
 
 
@@ -296,11 +310,8 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
         /// <summary>
         /// Gets the list request.
         /// </summary>
-        public string GetListRequest(IComponentList list, int? itemID = null, int? channelId = null)
+        public string GetListRequest(IComponentList list, int? itemID = null)
         {
-            if (channelId == null)
-                channelId = Console.ChannelIndentifier;
-
             var path = string.Empty;
             if (list != null)
             {
@@ -322,7 +333,9 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
             }
 
             if (itemID.HasValue)
+            {
                 return string.Concat(Console.WimPagePath, Utils.ToUrl(path), "?item=", itemID);
+            }
 
             return string.Concat(Console.WimPagePath, Utils.ToUrl(path));
         }
@@ -438,7 +451,9 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
         {
             string url = string.Concat(Console.WimPagePath, "?", "list=", List_ComponentListProperties.ID, "&folder=", Console.CurrentListInstance.wim.CurrentFolder.ID, "&item=0");
             if (!string.IsNullOrEmpty(Console.Request.Query["openinframe"]))
+            {
                 url += string.Concat("&openinframe=", Console.Request.Query["openinframe"]);
+            }
             return url;
         }
 
