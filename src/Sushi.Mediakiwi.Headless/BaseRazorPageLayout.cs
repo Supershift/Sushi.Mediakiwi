@@ -44,7 +44,9 @@ namespace Sushi.Mediakiwi.Headless
             get
             {
                 if (m_PageContent == null && Context.Items.ContainsKey(ContextItemNames.PageContent) == true)
+                {
                     m_PageContent = Context.Items[ContextItemNames.PageContent] as PageContentResponse;
+                }
 
                 return m_PageContent;
             }
@@ -59,6 +61,5 @@ namespace Sushi.Mediakiwi.Headless
         {
             PageContent.MetaData.Add(name, content, renderKey, true);
         }
-
     }
 }
