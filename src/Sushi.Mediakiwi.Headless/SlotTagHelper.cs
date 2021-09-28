@@ -48,7 +48,9 @@ namespace Sushi.Mediakiwi.Headless
             get
             {
                 if (_parameters == null)
+                {
                     _parameters = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
+                }
 
                 return _parameters;
             }
@@ -66,13 +68,19 @@ namespace Sushi.Mediakiwi.Headless
         {
             Type compType = null;
             if (string.IsNullOrWhiteSpace(comp.ComponentName) == true)
+            {
                 return compType;
+            }
 
             Assembly assembly = null;
             if (assemblyName == null)
+            {
                 assembly = Assembly.GetEntryAssembly();
+            }
             else
+            {
                 assembly = Assembly.Load(assemblyName);
+            }
 
             List<Type> possibleTypes = assembly.ExportedTypes
                 .Where(x => x.IsSubclassOf(typeof(Microsoft.AspNetCore.Components.ComponentBase)))
@@ -93,24 +101,24 @@ namespace Sushi.Mediakiwi.Headless
 
             if (compType == null && settings?.MediaKiwi?.ComponentAssemblies?.Count > 0)
             {
-                if (string.IsNullOrWhiteSpace(assemblyName) == false)
+                // If this is the last assembly name in the collection, exit here, else we keep on repeating 
+                if (string.IsNullOrWhiteSpace(assemblyName) == false && settings.MediaKiwi.ComponentAssemblies.IndexOf(assemblyName) == settings.MediaKiwi.ComponentAssemblies.Count - 1)
                 {
-                    // If this is the last assembly name in the collection, exit here, 
-                    // else we keep on repeating
-                    if (settings.MediaKiwi.ComponentAssemblies.IndexOf(assemblyName) == settings.MediaKiwi.ComponentAssemblies.Count - 1)
-                        return null;
+                    return null;
                 }
 
                 foreach (var componentAssembly in settings.MediaKiwi.ComponentAssemblies)
                 {
                     compType = GetCompType(comp, componentAssembly);
                     if (compType != null)
+                    {
                         break;
+                    }
                 }
             }
             return compType;
         }
-        
+
 
         /// <inheritdoc />
         public async override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
@@ -127,55 +135,55 @@ namespace Sushi.Mediakiwi.Headless
 
             // Check if we have components registered
             var cont = ViewContext.HttpContext.Items[ContextItemNames.PageContent] as PageContentResponse;
-            
-            if (string.IsNullOrWhiteSpace(SlotTitle) == false)
+
+            if (string.IsNullOrWhiteSpace(SlotTitle) == false && cont?.Components?.Exists(x => string.IsNullOrWhiteSpace(x.Slot) == false && x.Slot.ToLowerInvariant() == SlotTitle.ToLowerInvariant()) == true)
             {
-                if (cont?.Components?.Exists(x => string.IsNullOrWhiteSpace(x.Slot) == false && x.Slot.ToLowerInvariant() == SlotTitle.ToLowerInvariant()) == true)
+
+                var slotComponents = cont.Components?.Where(x => string.IsNullOrWhiteSpace(x.Slot) == false && x.Slot.ToLowerInvariant() == SlotTitle.ToLowerInvariant())?.ToList();
+                if (slotComponents?.Count > 0)
                 {
-                    var slotComponents = cont.Components?.Where(x => string.IsNullOrWhiteSpace(x.Slot) == false && x.Slot.ToLowerInvariant() == SlotTitle.ToLowerInvariant())?.ToList();
-                    if (slotComponents.Count > 0)
+                    foreach (var comp in slotComponents.OrderBy(x => x.SortOrder))
                     {
-                        foreach (var comp in slotComponents.OrderBy(x => x.SortOrder))
+                        var compType = GetCompType(comp);
+
+                        if (compType != null)// && compType.IsAssignableFrom(typeof(Microsoft.AspNetCore.Mvc.ViewComponent)))
                         {
-                            var compType = GetCompType(comp);
+                            comp.InternalInfo.ClearCache = cont.InternalInfo.ClearCache || ViewContext.HttpContext.Request.IsClearCacheCall();
+                            comp.InternalInfo.IsPreview = cont.InternalInfo.IsPreview || ViewContext.HttpContext.Request.IsPreviewCall();
 
-                            if (compType != null)// && compType.IsAssignableFrom(typeof(Microsoft.AspNetCore.Mvc.ViewComponent)))
+                            var type = Type.GetType("Microsoft.AspNetCore.Mvc.ViewFeatures.IComponentRenderer, Microsoft.AspNetCore.Mvc.ViewFeatures, Version=3.1.1.0, Culture=neutral, PublicKeyToken=adb9793829ddae60");
+                            var componentRenderer = ViewContext.HttpContext.RequestServices.GetRequiredService(type);
+                            var method = type.GetMethod("RenderComponentAsync");
+
+                            // Pass content component as param to component
+                            Parameters[nameof(BaseRazorComponent<ISushiApplicationSettings>.Content)] = comp;
+
+                            // Pass shared components as param to component
+                            Parameters[nameof(BaseRazorComponent<ISushiApplicationSettings>.SharedContent)] = cont.SharedComponents;
+
+                            // Pass Page MetaData as param to component
+                            Parameters[nameof(BaseRazorComponent<ISushiApplicationSettings>.PageMetaData)] = cont.MetaData;
+
+                            // Set ClearCache property
+                            Parameters[nameof(BaseRazorComponent<ISushiApplicationSettings>.ClearCache)] = comp.InternalInfo.ClearCache;
+
+                            // Set IsPreview property
+                            Parameters[nameof(BaseRazorComponent<ISushiApplicationSettings>.IsPreview)] = comp.InternalInfo.IsPreview;
+
+                            // Get dynamic property
+                            var tempComp = Activator.CreateInstance(compType);
+                            var isDynamic = (bool)compType.GetProperty("DynamicComponent").GetValue(tempComp);
+                            int renderMethod = 1;
+                            if (isDynamic)
                             {
-                                comp.InternalInfo.ClearCache = cont.InternalInfo.ClearCache || ViewContext.HttpContext.Request.IsClearCacheCall();
-                                comp.InternalInfo.IsPreview = cont.InternalInfo.IsPreview || ViewContext.HttpContext.Request.IsPreviewCall();
-
-                                var type = Type.GetType("Microsoft.AspNetCore.Mvc.ViewFeatures.IComponentRenderer, Microsoft.AspNetCore.Mvc.ViewFeatures, Version=3.1.1.0, Culture=neutral, PublicKeyToken=adb9793829ddae60");
-                                var componentRenderer = ViewContext.HttpContext.RequestServices.GetRequiredService(type);
-                                var method = type.GetMethod("RenderComponentAsync");
-
-                                // Pass content component as param to component
-                                Parameters[nameof(BaseRazorComponent<ISushiApplicationSettings>.Content)] = comp;
-
-                                // Pass shared components as param to component
-                                Parameters[nameof(BaseRazorComponent<ISushiApplicationSettings>.SharedContent)] = cont.SharedComponents;
-
-                                // Pass Page MetaData as param to component
-                                Parameters[nameof(BaseRazorComponent<ISushiApplicationSettings>.PageMetaData)] = cont.MetaData;
-
-                                // Set ClearCache property
-                                Parameters[nameof(BaseRazorComponent<ISushiApplicationSettings>.ClearCache)] = comp.InternalInfo.ClearCache;
-
-                                // Set IsPreview property
-                                Parameters[nameof(BaseRazorComponent<ISushiApplicationSettings>.IsPreview)] = comp.InternalInfo.IsPreview;
-
-                                // Get dynamic property
-                                var tempComp = Activator.CreateInstance(compType);
-                                var isDynamic = (bool)compType.GetProperty("DynamicComponent").GetValue(tempComp);
-                                int renderMethod = 1;
-                                if (isDynamic)
-                                    renderMethod = 3;
-
-                                var result = await (Task<IHtmlContent>)method.Invoke(componentRenderer, new object[] { ViewContext, compType, renderMethod, Parameters });
-
-                                // Reset the TagName. We don't want `component` to render.
-                                output.TagName = null;
-                                output.Content.AppendHtml(result);
+                                renderMethod = 3;
                             }
+
+                            var result = await (Task<IHtmlContent>)method.Invoke(componentRenderer, new object[] { ViewContext, compType, renderMethod, Parameters });
+
+                            // Reset the TagName. We don't want `component` to render.
+                            output.TagName = null;
+                            output.Content.AppendHtml(result);
                         }
                     }
                 }

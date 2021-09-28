@@ -116,6 +116,8 @@ namespace Sushi.Mediakiwi.Headless
                 _logger.LogInformation($"A cache clear was requested for '{cacheKey}'");
             }
 
+            // Call the Web API to validate our cache
+            // Returns FALSE when a cache flush is needed
             bool isCached = await IsCacheValid();
 
             // Try to get from cache
@@ -138,7 +140,7 @@ namespace Sushi.Mediakiwi.Headless
                     returnObj.StatusCode = System.Net.HttpStatusCode.InternalServerError;
                 }
 
-                // If the API returned us a page that needs a cache flush, perform it here as well.
+                // If the Content API returned us a page that needs a cache flush, perform it here as well.
                 if (returnObj?.InternalInfo?.ClearCache == true)
                 {
                     FlushCache();
@@ -151,8 +153,14 @@ namespace Sushi.Mediakiwi.Headless
                     // else it will keep flushing the cache everytime it is collected from cache.
                     returnObj.InternalInfo.ClearCache = false;
 
+                    // Add pagecontent to cache
                     AddToCache(cacheKey, returnObj);
                 }
+            }
+
+            if (!isCached || clearCache)
+            {
+                returnObj.InternalInfo.ClearCache = true;
             }
 
             return returnObj;
@@ -193,7 +201,13 @@ namespace Sushi.Mediakiwi.Headless
             }
             else
             {
-                return await GetPageContentAsync(url, AppBaseUrl, isClearCacheCall, isPreviewCall, null, request.Query);
+                return await GetPageContentAsync(
+                    forUrl: url,
+                    basePath: AppBaseUrl,
+                    clearCache: isClearCacheCall,
+                    isPreview: isPreviewCall,
+                    queryCollection: request.Query
+                    );
             }
         }
 
@@ -298,7 +312,6 @@ namespace Sushi.Mediakiwi.Headless
                             returnObj = JsonConvert.DeserializeObject<PageContentResponse>(responseFromServer);
                         }
 
-                        
                         if (returnObj != null)
                         {
                             // If the API returned us a page that needs a cache flush, perform it here as well.
@@ -306,7 +319,7 @@ namespace Sushi.Mediakiwi.Headless
                             {
                                 FlushCache();
                             }
-
+   
                             // Set MetaData 
                             SetMetaInfo(returnObj, forUrl);
                         }
@@ -323,11 +336,12 @@ namespace Sushi.Mediakiwi.Headless
 
                     // Add content to cache if needed
                     if (returnObj?.PageID > 0 && _memCache != null)
-                    {
+                    {     
                         // When stored to cache, make sure to set this value to False,
                         // else it will keep flushing the cache everytime it is collected from cache.
                         returnObj.InternalInfo.ClearCache = false;
-
+                        
+                        // Add pagecontent to cache
                         AddToCache(cacheKey, returnObj);
                     }
                 }
@@ -342,7 +356,10 @@ namespace Sushi.Mediakiwi.Headless
                 returnObj = new PageContentResponse();
             }
 
-            returnObj.InternalInfo.ClearCache = !isCached || clearCache;
+            if (!isCached || clearCache)
+            {
+                returnObj.InternalInfo.ClearCache = true;
+            }
             return returnObj;
         }
 

@@ -84,18 +84,21 @@ namespace Sushi.Mediakiwi.Headless
             {
                 // When IsPreview is set to true, its probably set by a parent component
                 if (IsPreview == false)
+                {
                     IsPreview = Content.InternalInfo.IsPreview;
+                }
 
                 // When ClearCache is set to true, its probably set by a parent component
                 if (ClearCache == false)
+                {
                     ClearCache = Content.InternalInfo.ClearCache;
+                }
             }
 
             if (serviceProvider != null)
             {
                 var _loggerFactory = serviceProvider.GetService<ILoggerFactory>();
-                var _config = serviceProvider.GetService<T>();
-                
+               
                 logger = _loggerFactory.CreateLogger<BaseRazorComponent<T>>();
             }
 
@@ -127,20 +130,28 @@ namespace Sushi.Mediakiwi.Headless
             {
                 // When IsPreview is set to true, its probably set by a parent component
                 if (IsPreview == false)
+                {
                     IsPreview = Content.InternalInfo.IsPreview;
+                }
 
                 // When ClearCache is set to true, its probably set by a parent component
                 if (ClearCache == false)
+                {
                     ClearCache = Content.InternalInfo.ClearCache;
+                }
             }
 
             if (httpContextAccessor != null)
             {
                 if (ClearCache == false)
+                {
                     ClearCache = httpContextAccessor.HttpContext.Request.IsClearCacheCall();
+                }
 
                 if (IsPreview == false)
+                {
                     IsPreview = httpContextAccessor.HttpContext.Request.IsPreviewCall();
+                }
             }
 
             if (serviceProvider != null)

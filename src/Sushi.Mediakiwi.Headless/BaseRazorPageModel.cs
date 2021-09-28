@@ -64,10 +64,14 @@ namespace Sushi.Mediakiwi.Headless
             get 
             {
                 if (m_PageContent == null && ViewData?.ContainsKey(ContextItemNames.PageContent) == true)
+                {
                     m_PageContent = ViewData[ContextItemNames.PageContent] as PageContentResponse;
+                }
 
                 if (m_PageContent == null)
+                {
                     m_PageContent = new PageContentResponse();
+                }
 
                 return m_PageContent;
             }
@@ -85,7 +89,7 @@ namespace Sushi.Mediakiwi.Headless
 
         protected void NotifyContentSet()
         {
-            var handler = this.OnContentSet;
+            var handler = OnContentSet;
             if (handler == null)
             {
                 return;
@@ -122,21 +126,27 @@ namespace Sushi.Mediakiwi.Headless
             // If we landed here from the rewrite rule, we should already have the pagecontent
             // in the request items
             if (context.HttpContext.Items.ContainsKey(ContextItemNames.PageContent))
+            {
                 PageContent = context.HttpContext.Items[ContextItemNames.PageContent] as PageContentResponse;
+            }
 
             // We dont have PageContent yet, call the service
             if (contentService != null && PageContent == null)
+            {
                 PageContent = await contentService.GetPageContentAsync(context.HttpContext.Request);
+            }
 
             // Set PreviewMode
-            IsPreview = context.HttpContext.Request.IsPreviewCall();
+            IsPreview = (PageContent?.InternalInfo?.IsPreview == true || context.HttpContext.Request.IsPreviewCall());
 
             // Set clearCache
-            ClearCache = context.HttpContext.Request.IsClearCacheCall();
+            ClearCache = (PageContent?.InternalInfo?.ClearCache == true || context.HttpContext.Request.IsClearCacheCall());
 
             // Set referrer from header
             if (context.HttpContext.Request.Headers.ContainsKey(HttpHeaderNames.OriginalRequestURL))
+            {
                 OriginalRequestURL = context.HttpContext.Request.Headers[HttpHeaderNames.OriginalRequestURL].ToString();
+            }
 
             // Check if we have an action to do (Async)
             await NotifyContentSetAsync(context);

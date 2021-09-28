@@ -36,11 +36,14 @@ namespace Sushi.Mediakiwi.Headless
                             switch (metaTag.RenderKey)
                             {
                                 default:
-                                case MetaTagRenderKey.NAME:
-                                    output.PreContent.AppendHtmlLine($"<meta name=\"{metaTag.Name}\" content=\"{metaTag.Value}\" />");
+                                    {
+                                        output.PreContent.AppendHtmlLine($"<meta name=\"{metaTag.Name}\" content=\"{metaTag.Value}\" />");
+                                    }
                                     break;
                                 case MetaTagRenderKey.PROPERTY:
-                                    output.PreContent.AppendHtmlLine($"<meta property=\"{metaTag.Name}\" content=\"{metaTag.Value}\" />");
+                                    {
+                                        output.PreContent.AppendHtmlLine($"<meta property=\"{metaTag.Name}\" content=\"{metaTag.Value}\" />");
+                                    }
                                     break;
                             }
                         }

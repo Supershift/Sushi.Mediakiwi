@@ -90,6 +90,17 @@ namespace Sushi.Mediakiwi.Headless
                         PageContent = new PageContentResponse();
                     }
 
+                    if (request.IsClearCacheCall())
+                    {
+                        PageContent.InternalInfo.ClearCache = true;
+                    }
+
+                    if (request.IsPreviewCall())
+                    {
+                        PageContent.InternalInfo.IsPreview = true;
+                    }
+
+                    // Add MK Information headers
                     response.Headers.Add(HttpHeaderNames.TimeSpend, new TimeSpan(dt2.Ticks - dt1.Ticks).TotalMilliseconds.ToString(CultureInfo.InvariantCulture));
                     response.Headers.Add(HttpHeaderNames.CachedData, (PageContent?.InternalInfo?.ClearCache == false).ToString());
 
@@ -106,9 +117,6 @@ namespace Sushi.Mediakiwi.Headless
                         // apply the new location
                         response.Headers.Add("Location", PageContent.PageInternalPath);
                     }
-
-                    PageContent.InternalInfo.ClearCache = request.IsClearCacheCall();
-                    PageContent.InternalInfo.IsPreview = request.IsPreviewCall();
 
                     // Set internal info in the Component
                     if (PageContent?.Components?.Count > 0)
