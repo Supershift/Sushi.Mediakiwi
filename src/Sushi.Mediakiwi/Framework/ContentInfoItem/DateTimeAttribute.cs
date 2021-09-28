@@ -377,6 +377,12 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
 
                 if (Mandatory)
                 {
+                    var hasValue = HasSharedValue();
+                    if (hasValue.isSharedField)
+                    {
+                        return hasValue.hasValue;
+                    }
+
                     return m_Candidate.HasValue;
                 }
             }

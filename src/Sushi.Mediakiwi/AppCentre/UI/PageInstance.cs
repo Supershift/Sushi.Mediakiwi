@@ -58,16 +58,20 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// </summary>
         public PageInstance()
         {
-            wim.CanContainSingleInstancePerDefinedList = true;
-            wim.CanAddNewItem = true;
-            wim.OpenInEditMode = true;
-
+            ListInit += PageInstance_ListInit;
             ListLoad += PageInstance_ListLoad;
             ListSave += PageInstance_ListSave;
         }
 
         #endregion CTor
-        
+
+        private async Task PageInstance_ListInit()
+        {
+            wim.CanContainSingleInstancePerDefinedList = true;
+            wim.CanAddNewItem = true;
+            wim.OpenInEditMode = true;
+        }
+
         #region List Save
 
         async Task PageInstance_ListSave(ComponentListEventArgs e)
@@ -102,6 +106,8 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                 Implement.FolderID = folderID;
 
                 await Implement.SaveAsync().ConfigureAwait(false);
+                
+                wim.Console.Item = Implement.ID;
             }
             else
             {
@@ -120,6 +126,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                 }
 
                 await Implement.SaveAsync().ConfigureAwait(false);
+                wim.Console.Item = Implement.ID;
             }
 
             if (e.SelectedKey == 0)

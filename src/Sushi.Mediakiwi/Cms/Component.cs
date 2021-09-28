@@ -1226,7 +1226,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                         }
 
                         x.FieldName = item.Name;
-
+                        x.IsSharedField = item.IsSharedField == "1";
 
                         ((ContentSharedAttribute)x).m_ListItemCollection = item.GetCollection(container);
 
@@ -1789,6 +1789,13 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                                 {
                                     container.Redirect(string.Concat(container.WimPagePath, "?asset=", container.Item));
                                 }
+                            }
+                        }
+                        else if (container.CurrentListInstance is AppCentre.Data.Implementation.PageInstance)
+                        {
+                            if (container.Context.Request.Query["item"] == "0" && container.Item.GetValueOrDefault(0) > 0)
+                            {
+                                container.Redirect($"{container.WimPagePath}?page={container.Item.Value}");
                             }
                         }
                         else

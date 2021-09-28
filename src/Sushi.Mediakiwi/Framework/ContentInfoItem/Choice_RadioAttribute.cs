@@ -146,7 +146,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                     }
                     else
                     {
-                        object value = Property.GetValue(this.SenderInstance, null);
+                        object value = Property.GetValue(SenderInstance, null);
                         if (value != null)
                             candidate = value.ToString();
                     }
@@ -154,24 +154,8 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
             }
             else
             {
-                candidate = Console.Form(this.ID);
+                candidate = Console.Form(ID);
             }
-
-            //if (Property.PropertyType == typeof(bool) || Property.PropertyType == typeof(bool?))
-            //{
-            //    if (string.IsNullOrEmpty(candidate) || candidate == "0")
-            //        candidate = "false";
-            //    else if (string.IsNullOrEmpty(candidate) || candidate == "1")
-            //        candidate = "true";
-            //    else if (string.IsNullOrEmpty(candidate) || candidate.Equals("yes", StringComparison.CurrentCultureIgnoreCase))
-            //        candidate = "true";
-            //    else if (string.IsNullOrEmpty(candidate) || candidate.Equals("no", StringComparison.CurrentCultureIgnoreCase))
-            //        candidate = "false";
-            //    else if (string.IsNullOrEmpty(candidate) || candidate.Equals("true", StringComparison.CurrentCultureIgnoreCase))
-            //        candidate = "true";
-            //    else if (string.IsNullOrEmpty(candidate) || candidate.Equals("false", StringComparison.CurrentCultureIgnoreCase))
-            //        candidate = "false";
-            //}
 
             if (!IsBluePrint)
             {
@@ -185,7 +169,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                 }
                 else
                 {
-                    m_ListItemCollection = GetCollection(this.CollectionProperty, Property.Name, SenderSponsorInstance, SenderInstance);
+                    m_ListItemCollection = GetCollection(CollectionProperty, Property.Name, SenderSponsorInstance, SenderInstance);
                 }
             }
 
@@ -194,9 +178,9 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                 if (Property.PropertyType == typeof(CustomData))
                     ApplyContentContainer(field, candidate);
                 else if (Property.PropertyType == typeof(int))
-                    Property.SetValue(this.SenderInstance, Utility.ConvertToInt(candidate), null);
+                    Property.SetValue(SenderInstance, Utility.ConvertToInt(candidate), null);
                 else if (Property.PropertyType == typeof(short))
-                    Property.SetValue(this.SenderInstance, short.Parse(candidate), null);
+                    Property.SetValue(SenderInstance, short.Parse(candidate), null);
                 else if (Property.PropertyType == typeof(int?))
                 {
                     if (string.IsNullOrEmpty(candidate) || candidate == "0")
@@ -220,23 +204,20 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                         Property.SetValue(SenderInstance, false, null);
                 }
                 else
-                    Property.SetValue(this.SenderInstance, candidate, null);
+                    Property.SetValue(SenderInstance, candidate, null);
             }
 
             OutputText = candidate;
 
             //  Inherited content section
-            if (ShowInheritedData)
+            if (ShowInheritedData && field != null && !string.IsNullOrEmpty(field.InheritedValue))
             {
-                if (field != null && !string.IsNullOrEmpty(field.InheritedValue))
+                foreach (var li in m_ListItemCollection)
                 {
-                    foreach (var li in m_ListItemCollection)
+                    if (li.Value == field.InheritedValue)
                     {
-                        if (li.Value == field.InheritedValue)
-                        {
-                            InhertitedOutputText = li.Text;
-                            break;
-                        }
+                        InhertitedOutputText = li.Text;
+                        break;
                     }
                 }
             }
@@ -250,32 +231,30 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
         /// <returns></returns>
         public Field WriteCandidate(WimControlBuilder build, bool isEditMode, bool isRequired, bool isCloaked)
         {
-            this.SetWriteEnvironment();
-            this.IsCloaked = isCloaked;
-            this.Mandatory = isRequired;
-            if (OverrideEditMode) isEditMode = false;
+            SetWriteEnvironment();
+            IsCloaked = isCloaked;
+            Mandatory = isRequired;
+            bool _isEditMode = isEditMode;
+
+            if (OverrideEditMode)
+            {
+                _isEditMode = false;
+            }
 
             ListItemCollection optionsList = new ListItemCollection();
 
-            if (isEditMode)
+            if (_isEditMode)
             {
                 #region Element creation
+
                 var cloaked = isCloaked ? " hidden" : null;
 
                 StringBuilder element = new StringBuilder();
-                string className = $" class=\"radio{cloaked}\"";
-                if (AutoPostBack)
-                    className = string.Format(" class=\"radio {0}{1}\""
-                        , PostBackValue, cloaked
-                        );
-                else if (Expression != OutputExpression.FullWidth)
-                    className = $" class=\"radio{cloaked}\"";
-
-                string options = "";
+                StringBuilder options = new StringBuilder();
                 int count = 0;
                 if (!string.IsNullOrEmpty(SupplierChoiceHeaderProp))
                 {
-                    options += GetProperty(Console.CurrentListInstance, SupplierChoiceHeaderProp);
+                    options.Append(GetProperty(Console.CurrentListInstance, SupplierChoiceHeaderProp));
                 }
                 foreach (var li in m_ListItemCollection)
                 {
@@ -288,24 +267,34 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                         if (OutputText == "0"
                             || OutputText.Equals("no", StringComparison.CurrentCultureIgnoreCase)
                             || OutputText.Equals("false", StringComparison.CurrentCultureIgnoreCase))
+                        {
                             value = false;
+                        }
                         else if (OutputText == "1"
                              || OutputText.Equals("yes", StringComparison.CurrentCultureIgnoreCase)
                              || OutputText.Equals("true", StringComparison.CurrentCultureIgnoreCase))
+                        {
                             value = true;
+                        }
 
                         bool? prop = null;
                         if (li.Value == "0"
                             || li.Value.Equals("no", StringComparison.CurrentCultureIgnoreCase)
                             || li.Value.Equals("false", StringComparison.CurrentCultureIgnoreCase))
+                        {
                             prop = false;
+                        }
                         else if (li.Value == "1"
                              || li.Value.Equals("yes", StringComparison.CurrentCultureIgnoreCase)
                              || li.Value.Equals("true", StringComparison.CurrentCultureIgnoreCase))
+                        {
                             prop = true;
+                        }
 
                         if (value.HasValue && prop.HasValue)
+                        {
                             selected = (value.Value.Equals(prop.Value));
+                        }
                     }
 
                     optionsList.Add(new ListItem()
@@ -316,20 +305,15 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                         Selected = selected,
                     });
 
-                    options += string.Format("\n\t\t\t\t\t\t\t\t\t<input type=\"radio\"{5} name=\"{0}\" id=\"{0}{1}\" value=\"{2}\"{4} {8}/> <label for=\"{0}{1}\"{7}>{3}</label>{6}"
-                        , this.ID
-                        , count
-                        , li.Value
-                        , li.Text
-                        , selected ? " checked=\"checked\"" : string.Empty
-                        , className
-                        , ShowVertically ? "<br/>" : null
-                        , IsValid(isRequired) ? $" class=\"{cloaked}\"" : $" class=\"error{cloaked}\""
-                        , (li.Enabled == false) ? " disabled=\"true\" " : ""
-                        );
+                    var optionChecked = selected ? " checked=\"checked\"" : string.Empty;
+                    var optionEnabled = (li.Enabled == false) ? " disabled=\"true\" " : "";
+                    var optionValid = IsValid(isRequired) ? $" class=\"{cloaked}\"" : $" class=\"error{cloaked}\"";
+                    var optionVertical = (ShowVertically ? "<br/>" : null);
 
+                    options.Append($"<input type=\"radio\"{optionChecked} name=\"{ID}\" id=\"{ID}{count}\" value=\"{li.Value}\"{optionChecked} {optionEnabled}/> <label for=\"{ID}{count}\"{optionValid}>{li.Text}</label>{optionVertical}");
                 }
                 element.Append(options);
+
                 #endregion Element creation
 
                 if (isCloaked)
@@ -339,44 +323,47 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                 else
                 {
                     #region Wrapper
-                    string titleTag = string.Concat(Title, Mandatory ? "<em>*</em>" : "");
 
                     if (ShowInheritedData)
                     {
-                        this.ApplyTranslation(build);
+                        ApplyTranslation(build);
                     }
                     else
                     {
                         if ((Console.ExpressionPrevious == OutputExpression.Left && Expression == OutputExpression.FullWidth) || (Console.ExpressionPrevious == OutputExpression.Left && Expression == OutputExpression.Left))
-                            build.Append("\t\t\t\t\t\t\t<th><label>&nbsp;</label></th><td>&nbsp;</td></tr>");
+                        {
+                            build.Append("<th><label>&nbsp;</label></th><td>&nbsp;</td></tr>");
+                        }
 
                         if ((Console.ExpressionPrevious == OutputExpression.FullWidth && Expression == OutputExpression.Right) || (Console.ExpressionPrevious == OutputExpression.Right && Expression == OutputExpression.Right))
-                            build.Append("\t\t\t\t\t\t<tr><th><label>&nbsp;</label></th>\n\t\t\t\t\t\t\t<td>&nbsp;</td>");
+                        {
+                            build.Append("<tr><th><label>&nbsp;</label></th><td>&nbsp;</td>");
+                        }
 
                         if (Expression == OutputExpression.FullWidth || Expression == OutputExpression.Left)
-                            build.Append("\t\t\t\t\t\t<tr>");
+                        {
+                            build.Append("<tr>");
+                        }
                     }
 
-                    build.AppendFormat("\n\t\t\t\t\t\t\t<th><label for=\"{0}\">{1}</label></th>", this.ID, this.TitleLabel);
+                    build.AppendFormat("<th><label for=\"{0}\">{1}</label></th>", ID, TitleLabel);
 
-                    //if (ShowInheritedData)
-                    //    build.AppendFormat("\t\t\t\t\t\t\t<th class=\"local\"><label>{0}:</label></th>\t\t\t\t\t\t</tr>\t\t\t\t\t\t<tr>\t\t\t\t\t\t\t<td><div class=\"description\">{1}</div></td>\n", this.ID, this.TitleLabel);
-
-                    build.AppendFormat("\n\t\t\t\t\t\t\t<td{0}{1}>{2}"
+                    build.AppendFormat("<td{0}{1}>{2}"
                         , (Expression == OutputExpression.FullWidth && Console.HasDoubleCols) ? " colspan=\"3\"" : null
-                        , this.InputCellClassName(this.IsValid(isRequired))
+                        , InputCellClassName(IsValid(isRequired))
                         , CustomErrorText
                         );
 
-                    build.AppendFormat("\n\t\t\t\t\t\t\t\t<div class=\"{0}\">", (Expression == OutputExpression.FullWidth) ? this.Class_Wide : "half");
+                    build.AppendFormat("<div class=\"{0}\">", (Expression == OutputExpression.FullWidth) ? Class_Wide : "half");
 
                     build.Append(element.ToString());
 
-                    build.Append("\n\t\t\t\t\t\t\t\t</div>");
-                    build.Append("\n\t\t\t\t\t\t\t</td>");
+                    build.Append("</div></td>");
 
                     if (Expression == OutputExpression.FullWidth || Expression == OutputExpression.Right)
-                        build.Append("\n\t\t\t\t\t\t</tr>\n");
+                    {
+                        build.Append("</tr>\n");
+                    }
 
                     #endregion Wrapper
                 }
@@ -385,11 +372,13 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
             {
                 string candidate = null;
                 foreach (var li in m_ListItemCollection)
+                {
                     if (li.Value == OutputText)
                     {
                         candidate = li.Text;
                         break;
                     }
+                }
 
                 build.Append(GetSimpleTextElement(candidate));
             }
@@ -397,15 +386,15 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
             build.ApiResponse.Fields.Add(new Api.MediakiwiField()
             {
                 Event = AutoPostBack ? Api.MediakiwiJSEvent.change : Api.MediakiwiJSEvent.none,
-                Title = MandatoryWrap(this.Title),
-                Value = this.OutputText,
-                Expression = this.Expression,
-                PropertyName = this.ID,
+                Title = MandatoryWrap(Title),
+                Value = OutputText,
+                Expression = Expression,
+                PropertyName = ID,
                 PropertyType = (Property == null) ? typeof(string).FullName : Property.PropertyType.FullName,
                 VueType = Api.MediakiwiFormVueType.wimChoiceRadio,
                 Options = optionsList,
                 GroupName = Groupname,
-                ReadOnly = this.IsReadOnly,
+                ReadOnly = IsReadOnly,
                 ContentTypeID = ContentTypeSelection
             });
 
@@ -418,15 +407,19 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
         /// <returns></returns>
         public override bool IsValid(bool isRequired)
         {
-            this.Mandatory = isRequired;
+            Mandatory = isRequired;
             if (Console.CurrentListInstance.wim.IsSaveMode)
             {
                 //  Custom error validation
                 if (!base.IsValid(isRequired))
+                {
                     return false;
+                }
 
                 if (Mandatory && string.IsNullOrEmpty(OutputText))
+                {
                     return false;
+                }
             }
             return true;
         }

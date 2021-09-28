@@ -409,7 +409,13 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
 
                 if (Mandatory)
                 {
-                    return !m_Candidate.IsNewInstance;
+                    var hasValue = HasSharedValue();
+                    if (hasValue.isSharedField)
+                    {
+                        return hasValue.hasValue;
+                    }
+
+                    return (m_Candidate?.ID > 0);
                 }
             }
             return true;

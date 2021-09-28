@@ -413,6 +413,12 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
 
                 if (Mandatory && string.IsNullOrEmpty(OutputText))
                 {
+                    var hasValue = HasSharedValue();
+                    if (hasValue.isSharedField)
+                    {
+                        return hasValue.hasValue;
+                    }
+
                     return false;
                 }
                 if (MaxValueLength > 0 && !string.IsNullOrEmpty(OutputText) && OutputText.Length > MaxValueLength)

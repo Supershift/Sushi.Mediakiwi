@@ -14,14 +14,16 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
         /// <param name="candidate">The candidate.</param>
         internal static void CreateLinkPreview(ref string candidate)
         {
-            if (string.IsNullOrEmpty(candidate)) return;
+            if (string.IsNullOrEmpty(candidate))
+            {
+                return;
+            }
 
             Regex rex = new Regex(@"<a href=""?link_(?<TEXT>\d*).*?>", RegexOptions.IgnoreCase);
 
             RichTextLink link = new RichTextLink();
             candidate = rex.Replace(candidate, link.CreateTitle);
 
-            //Regex rex2 = new Regex(@"<a.*?wim:(?<TEXT>\d*).*?>", RegexOptions.IgnoreCase);
             Regex rex2 = new Regex(@"<a href=""?wim:(?<TEXT>\d*).*?>", RegexOptions.IgnoreCase);
 
             candidate = rex2.Replace(candidate, link.CreateTitle);
@@ -36,14 +38,16 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
         internal static void CreateLinkMasterCopy(ref string candidate, int siteID)
         {
             m_SiteID = siteID;
-            if (string.IsNullOrEmpty(candidate)) return;
+            if (string.IsNullOrEmpty(candidate))
+            {
+                return;
+            }
 
             Regex rex = new Regex(@"<a href=""?link_(?<TEXT>\d*).*?>", RegexOptions.IgnoreCase);
 
             RichTextLink link = new RichTextLink();
             candidate = rex.Replace(candidate, link.CreateCopy);
 
-            //Regex rex2 = new Regex(@"<a.*?wim:(?<TEXT>\d*).*?>", RegexOptions.IgnoreCase);
             Regex rex2 = new Regex(@"<a href=""?wim:(?<TEXT>\d*).*?>", RegexOptions.IgnoreCase);
 
             candidate = rex2.Replace(candidate, link.CreateCopy);
@@ -65,14 +69,14 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                             link.ID = 0;
                             link.PageID = page.ID;
                             link.Save();
-                            return string.Format("<a href=\"wim:{0}\">", link.ID);
+                            return $"<a href=\"wim:{link.ID}\">";
                         }
                     }
                     else 
                     {
                         link.ID = 0;
                         link.Save();
-                        return string.Format("<a href=\"wim:{0}\">", link.ID);
+                        return $"<a href=\"wim:{link.ID}\">";
                     }
                 }
             }
@@ -91,19 +95,18 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                     {
                         Page page = Page.SelectOne(link.PageID.Value, false);
                         if (page != null)
-                            return string.Format("<a class=\"link\" title=\"{0}\" href=\"{0}\" target=\"blank\">", page.HRef);
+                        {
+                            return $"<a class=\"link\" title=\"{page.HRef}\" href=\"{page.HRef}\" target=\"blank\">";
+                        }
                     }
                     else if (link.Type == LinkType.InternalAsset)
                     {
                         Asset asset = Asset.SelectOne(link.AssetID.Value);
-                        return string.Format("<a class=\"link\" title=\"{0}\" href=\"{1}\" target=\"blank\">", asset.Path, asset.DownloadUrl);
+                        return $"<a class=\"link\" title=\"{asset.Path}\" href=\"{asset.DownloadUrl}\" target=\"blank\">";
                     }
-                    else if (link.Type == LinkType.ExternalUrl)
+                    else if (link.Type == LinkType.ExternalUrl && link.ExternalUrl != null && link.ExternalUrl.Trim().Length > 0)
                     {
-                        if (link.ExternalUrl != null && link.ExternalUrl.Trim().Length > 0)
-                        {
-                            return string.Format("<a class=\"link\" title=\"{0}\" href=\"{0}\" target=\"blank\">", link.ExternalUrl);
-                        }
+                        return $"<a class=\"link\" title=\"{link.ExternalUrl}\" href=\"{link.ExternalUrl}\" target=\"blank\">";
                     }
                 }
             }
@@ -116,7 +119,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
             int linkKey;
             if (Utility.IsNumeric(m.Groups["TEXT"].Value, out linkKey))
             {
-                return string.Format("<a id=\"link_{0}\">", linkKey);
+                return $"<a id=\"link_{linkKey}\">";
             }
             return "<a>";
         }

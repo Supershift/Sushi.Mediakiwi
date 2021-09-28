@@ -550,6 +550,12 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
 
                 if (Mandatory && (m_Candidate == null || m_Candidate.Items == null || m_Candidate.Items.Length == 0))
                 {
+                    var hasValue = HasSharedValue();
+                    if (hasValue.isSharedField)
+                    {
+                        return hasValue.hasValue;
+                    }
+
                     return false;
                 }
             }

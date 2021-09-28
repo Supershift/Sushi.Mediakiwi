@@ -370,10 +370,20 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
             {
                 //  Custom error validation
                 if (!base.IsValid(isRequired))
+                {
                     return false;
+                }
 
                 if (Mandatory)
-                    return m_Candidate.ID != 0;
+                {
+                    var hasValue = HasSharedValue();
+                    if (hasValue.isSharedField)
+                    {
+                        return hasValue.hasValue;
+                    }
+
+                    return (m_Candidate?.ID > 0);
+                }
             }
             return true;
         }

@@ -335,9 +335,15 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                     return false;
                 }
 
-                if (Mandatory)
+                if (Mandatory && (m_Candidate == null || m_Candidate.ID == 0))
                 {
-                    return !(m_Candidate == null || m_Candidate.ID == 0);
+                    var hasValue = HasSharedValue();
+                    if (hasValue.isSharedField)
+                    {
+                        return hasValue.hasValue;
+                    }
+
+                    return false;
                 }
             }
             return true;

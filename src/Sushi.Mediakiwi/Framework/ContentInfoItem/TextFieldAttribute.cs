@@ -103,14 +103,21 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
             InteractiveHelp = interactiveHelp;
             AutoPostBack = autoPostback;
             TextType = inputType;
+
             if (mustMatchRegex != null)
+            {
                 MustMatch = new Regex(mustMatchRegex, RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+            }
             else
             {
                 if (TextType == InputType.Money)
+                {
                     MustMatch = new Regex(Utility.GlobalRegularExpression.OnlyDecimal, RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+                }
                 else if (TextType == InputType.Numeric)
+                {
                     MustMatch = new Regex(Utility.GlobalRegularExpression.OnlyNumeric, RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+                }
             }
         }
 
@@ -200,14 +207,15 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                         candidate = m_ContentContainer[field.Property].Value;
                     }
                     else
+                    {
                         candidate = Property.GetValue(SenderInstance, null);
+                    }
                 }
             }
             else
             {
                 candidate = Console.Form(ID);
                 isCandidateUserInput = true;
-
             }
 
             if (!IsBluePrint && Property != null && Property.CanWrite)
@@ -230,7 +238,9 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                         }
                         //enforce max length of string
                         if (MaxValueLength > 0)
+                        {
                             candidateString = Utility.ConvertToFixedLengthText(candidateString, MaxValueLength);
+                        }
 
                         candidate = candidateString;
                     }
@@ -246,9 +256,13 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                 else if (Property.PropertyType == typeof(int?))
                 {
                     if (candidate == null || candidate.ToString() == string.Empty)
+                    {
                         Property.SetValue(SenderInstance, null, null);
+                    }
                     else
+                    {
                         Property.SetValue(SenderInstance, Utility.ConvertToInt(candidate), null);
+                    }
                 }
                 else if (Property.PropertyType == typeof(decimal))
                 {
@@ -258,10 +272,12 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                            .Replace(".", ",")
                            .Replace(",", ".");
                     }
-                    
 
                     decimal candidate2 = Utility.ConvertToDecimal(candidate);
-                    if (TextType == InputType.Money) candidate = Utility.ConvertToDecimalString(candidate2);
+                    if (TextType == InputType.Money)
+                    {
+                        candidate = Utility.ConvertToDecimalString(candidate2);
+                    }
 
                     Property.SetValue(SenderInstance, candidate2, null);
                 }
@@ -273,7 +289,6 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                            .Replace(".", ",")
                            .Replace(",", ".");
                     }
-                    
 
                     double candidate2 = Utility.ConvertToDouble(candidate);
                     Property.SetValue(SenderInstance, candidate2, null);
@@ -292,9 +307,12 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                                 .Replace(".", ",")
                                 .Replace(",", ".");
                         }
+
                         decimal candidate2 = Utility.ConvertToDecimal(candidate);
                         if (TextType == InputType.Money)
+                        {
                             candidate = Utility.ConvertToDecimalString(candidate2);
+                        }
                         Property.SetValue(SenderInstance, candidate2, null);
                     }
                 }
@@ -312,15 +330,11 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
             OutputText = candidate == null ? null : candidate.ToString();
 
             //  Inherited content section
-            if (ShowInheritedData)
+            if (ShowInheritedData && field != null && !string.IsNullOrEmpty(field.InheritedValue))
             {
-                if (field != null && !string.IsNullOrEmpty(field.InheritedValue))
-                {
-                    InhertitedOutputText = field.InheritedValue;
-                    InhertitedOutputText = string.IsNullOrEmpty(InhertitedOutputText) ? null : WebUtility.HtmlEncode(InhertitedOutputText);
-                }
+                InhertitedOutputText = field.InheritedValue;
+                InhertitedOutputText = string.IsNullOrEmpty(InhertitedOutputText) ? null : WebUtility.HtmlEncode(InhertitedOutputText);
             }
-
         }
 
         public bool AutoPostBack
@@ -579,14 +593,24 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
             {
                 //  Custom error validation
                 if (!base.IsValid(isRequired))
+                {
                     return false;
+                }
 
                 if (Mandatory && string.IsNullOrEmpty(OutputText))
+                {
+                    var hasValue = HasSharedValue();
+                    if (hasValue.isSharedField)
+                    {
+                        return hasValue.hasValue;
+                    }
+
                     return false;
+                }
+
                 if (!string.IsNullOrEmpty(OutputText) && MustMatch != null)
                 {
-                    bool isMatch = MustMatch.IsMatch(OutputText);
-                    return isMatch;
+                    return MustMatch.IsMatch(OutputText);
                 }
             }
             return true;

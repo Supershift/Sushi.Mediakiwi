@@ -739,7 +739,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                         }
                         catch (Exception ex)
                         {
-                            Notification.InsertOne("Sushi.Mediakiwi.Choice_DropdownAttribute", $"Does the list assigned to the dropdown field '{FieldName}' exist?.<br/>{ex.Message}" );
+                            Notification.InsertOne("Sushi.Mediakiwi.Choice_DropdownAttribute", $"Does the list assigned to the dropdown field '{FieldName}' exist?.<br/>{ex.Message}");
                         }
                     }
                 }
@@ -992,6 +992,16 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                         return false;
                     }
                     else if (_OutputValues == null || _OutputValues.Count == 0)
+                    {
+                        var hasValue = HasSharedValue();
+                        if (hasValue.isSharedField)
+                        {
+                            return hasValue.hasValue;
+                        }
+
+                        return false;
+                    }
+                    else
                     {
                         return false;
                     }
