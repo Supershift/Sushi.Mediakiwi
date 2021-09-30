@@ -83,15 +83,10 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
             get { return m_Groupname; }
         }
 
-        private string m_CollectionProperty;
         /// <summary>
         /// 
         /// </summary>
-        public string CollectionProperty
-        {
-            set { m_CollectionProperty = value; }
-            get { return m_CollectionProperty; }
-        }
+        public string CollectionProperty { get; set; }
 
         public bool ShowVertically { get; set; }
 
@@ -103,7 +98,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
         /// <summary>
         /// 
         /// </summary>
-        public bool AutoPostBack
+        public bool AutoPostBack 
         {
             set { m_AutoPostBack = value; }
             get { return m_AutoPostBack; }
@@ -176,35 +171,59 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
             if (!IsBluePrint && Property != null && Property.CanWrite)
             {
                 if (Property.PropertyType == typeof(CustomData))
+                {
                     ApplyContentContainer(field, candidate);
+                }
                 else if (Property.PropertyType == typeof(int))
+                {
                     Property.SetValue(SenderInstance, Utility.ConvertToInt(candidate), null);
+                }
                 else if (Property.PropertyType == typeof(short))
+                {
                     Property.SetValue(SenderInstance, short.Parse(candidate), null);
+                }
                 else if (Property.PropertyType == typeof(int?))
                 {
                     if (string.IsNullOrEmpty(candidate) || candidate == "0")
+                    {
                         Property.SetValue(SenderInstance, null, null);
+                    }
                     else
+                    {
                         Property.SetValue(SenderInstance, Utility.ConvertToInt(candidate), null);
+                    }
                 }
                 else if (Property.PropertyType == typeof(bool) || Property.PropertyType == typeof(bool?))
                 {
                     if (string.IsNullOrEmpty(candidate) || candidate == "0")
+                    {
                         Property.SetValue(SenderInstance, false, null);
-                    else if (string.IsNullOrEmpty(candidate) || candidate == "1")
+                    }
+                    else if (candidate == "1")
+                    {
                         Property.SetValue(SenderInstance, true, null);
-                    else if (string.IsNullOrEmpty(candidate) || candidate.Equals("yes", StringComparison.CurrentCultureIgnoreCase))
+                    }
+                    else if (candidate.Equals("yes", StringComparison.CurrentCultureIgnoreCase))
+                    {
                         Property.SetValue(SenderInstance, true, null);
-                    else if (string.IsNullOrEmpty(candidate) || candidate.Equals("no", StringComparison.CurrentCultureIgnoreCase))
+                    }
+                    else if (candidate.Equals("no", StringComparison.CurrentCultureIgnoreCase))
+                    {
                         Property.SetValue(SenderInstance, false, null);
-                    else if (string.IsNullOrEmpty(candidate) || candidate.Equals("true", StringComparison.CurrentCultureIgnoreCase))
+                    }
+                    else if (candidate.Equals("true", StringComparison.CurrentCultureIgnoreCase))
+                    {
                         Property.SetValue(SenderInstance, true, null);
-                    else if (string.IsNullOrEmpty(candidate) || candidate.Equals("false", StringComparison.CurrentCultureIgnoreCase))
+                    }
+                    else if (candidate.Equals("false", StringComparison.CurrentCultureIgnoreCase))
+                    {
                         Property.SetValue(SenderInstance, false, null);
+                    }
                 }
                 else
+                {
                     Property.SetValue(SenderInstance, candidate, null);
+                }
             }
 
             OutputText = candidate;
@@ -248,6 +267,12 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                 #region Element creation
 
                 var cloaked = isCloaked ? " hidden" : null;
+
+                string className = $" class=\"radio{cloaked}\"";
+                if (AutoPostBack)
+                {
+                    className = $" class=\"radio {PostBackValue}{cloaked}\"";
+                }
 
                 StringBuilder element = new StringBuilder();
                 StringBuilder options = new StringBuilder();
@@ -310,7 +335,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                     var optionValid = IsValid(isRequired) ? $" class=\"{cloaked}\"" : $" class=\"error{cloaked}\"";
                     var optionVertical = (ShowVertically ? "<br/>" : null);
 
-                    options.Append($"<input type=\"radio\"{optionChecked} name=\"{ID}\" id=\"{ID}{count}\" value=\"{li.Value}\"{optionChecked} {optionEnabled}/> <label for=\"{ID}{count}\"{optionValid}>{li.Text}</label>{optionVertical}");
+                    options.Append($"<input type=\"radio\"{optionChecked}{className} name=\"{ID}\" id=\"{ID}{count}\" value=\"{li.Value}\"{optionChecked} {optionEnabled}/> <label for=\"{ID}{count}\"{optionValid}>{li.Text}</label>{optionVertical}");
                 }
                 element.Append(options);
 

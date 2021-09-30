@@ -177,13 +177,7 @@ namespace Sushi.Mediakiwi.Framework
         /// Gets the post back value.
         /// </summary>
         /// <value>The post back value.</value>
-        public string PostBackValue
-        {
-            get
-            {
-                return "postBack";
-            }
-        }
+        public static string PostBackValue { get { return "postBack"; } }
 
         bool _OverrideEditMode;
         /// <summary>
@@ -193,7 +187,7 @@ namespace Sushi.Mediakiwi.Framework
         {
             get
             {
-                if (_Console != null && _Console.CurrentListInstance != null && _Console.CurrentListInstance.wim.Page.Body.Form.DisableInput)
+                if (Console != null && Console.CurrentListInstance != null && Console.CurrentListInstance.wim.Page.Body.Form.DisableInput)
                 {
                     return true;
                 }
@@ -279,16 +273,11 @@ namespace Sushi.Mediakiwi.Framework
             set { m_ForceLoadEvent = value; }
         }
 
-        OutputExpression m_Expression;
         /// <summary>
         /// Gets or sets the expression.
         /// </summary>
         /// <value>The expression.</value>
-        public OutputExpression Expression
-        {
-            get { return m_Expression; }
-            set { m_Expression = value; }
-        }
+        public OutputExpression Expression { get; set; }
 
         internal string Class_Wide
         {
@@ -337,23 +326,15 @@ namespace Sushi.Mediakiwi.Framework
             }
         }
 
-
-        bool m_IsBluePrint;
         /// <summary>
         /// Gets or sets a value indicating whether this instance is blue print.
         /// </summary>
         /// <value>
         /// 	<c>true</c> if this instance is blue print; otherwise, <c>false</c>.
         /// </value>
-        public bool IsBluePrint
-        {
-            set { m_IsBluePrint = value; }
-            get { return m_IsBluePrint; }
-        }
+        public bool IsBluePrint { get; set; }
 
         public bool IsSharedField { get; set; }
-
-        //protected bool IsMultiFile { get; set; }
 
         /// <summary>
         /// Is this the edit mode start up
@@ -871,52 +852,30 @@ namespace Sushi.Mediakiwi.Framework
             }
         }
 
-
-
-
-        string m_ID;
         /// <summary>
         /// Gets or sets the ID.
         /// </summary>
         /// <value>The ID.</value>
-        public string ID
-        {
-            get { return m_ID; }
-            set { m_ID = value; }
-        }
+        public string ID { get; set; }
 
-        string m_OutputText;
         /// <summary>
         /// Gets or sets the output text.
         /// </summary>
         /// <value>The output text.</value>
-        public string OutputText
-        {
-            get { return m_OutputText; }
-            set { m_OutputText = value; }
-        }
+        public string OutputText { get; set; }
 
-        internal bool m_ShowInheritedData;
         /// <summary>
         /// Gets or sets the show inherited data.
         /// </summary>
         /// <value>The show inherited data.</value>
-        public bool ShowInheritedData
-        {
-            get { return m_ShowInheritedData; }
-            set { m_ShowInheritedData = value; }
-        }
+        public bool ShowInheritedData { get; set; }
 
-        string m_InhertitedOutputText;
         /// <summary>
         /// Gets or sets the inhertited output text.
         /// </summary>
         /// <value>The inhertited output text.</value>
-        public string InhertitedOutputText
-        {
-            get { return m_InhertitedOutputText; }
-            set { m_InhertitedOutputText = value; }
-        }
+        public string InhertitedOutputText { get; set; }
+
 
         string m_FieldName;
         /// <summary>
@@ -962,16 +921,11 @@ namespace Sushi.Mediakiwi.Framework
             return field;
         }
 
-        Beta.GeneratedCms.Console _Console;
         /// <summary>
         /// Gets or sets the console.
         /// </summary>
         /// <value>The console.</value>
-        internal Beta.GeneratedCms.Console Console
-        {
-            set { _Console = value; }
-            get { return _Console; }
-        }
+        internal Beta.GeneratedCms.Console Console { get; set; }
 
         public bool HasSenderInstance
         {
@@ -1317,25 +1271,15 @@ namespace Sushi.Mediakiwi.Framework
             }
         }
 
-        private System.Reflection.PropertyInfo m_Property;
         /// <summary>
         /// 
         /// </summary>
-        public System.Reflection.PropertyInfo Property
-        {
-            set { m_Property = value; }
-            get { return m_Property; }
-        }
+        public System.Reflection.PropertyInfo Property { get; set; }
 
-        private ContentType _contenttype;
         /// <summary>
         /// 
         /// </summary>
-        public ContentType ContentTypeSelection
-        {
-            set { _contenttype = value; }
-            get { return _contenttype; }
-        }
+        public ContentType ContentTypeSelection { get; set; }
 
         internal bool HasCSS3
         {
@@ -1404,7 +1348,7 @@ namespace Sushi.Mediakiwi.Framework
                 className += " short";
             }
 
-            if (m_AutoPostBack && !_Console.IsJson)
+            if (m_AutoPostBack && !Console.IsJson)
             {
                 className += " postBack";
             }
@@ -1553,35 +1497,20 @@ namespace Sushi.Mediakiwi.Framework
             }
         }
 
-        private bool m_Mandatory;
         /// <summary>
         /// 
         /// </summary>
-        public bool Mandatory
-        {
-            set { m_Mandatory = value; }
-            get { return m_Mandatory; }
-        }
+        public bool Mandatory { get; set; }
 
-        private int m_MaxValueLength;
         /// <summary>
         /// 
         /// </summary>
-        public int MaxValueLength
-        {
-            set { m_MaxValueLength = value; }
-            get { return m_MaxValueLength; }
-        }
+        public int MaxValueLength { get; set; }
 
-        private string m_Collection;
         /// <summary>
         /// 
         /// </summary>
-        public string Collection
-        {
-            set { m_Collection = value; }
-            get { return m_Collection; }
-        }
+        public string Collection { get; set; }
 
         /// <summary>
         /// 
@@ -1654,7 +1583,6 @@ namespace Sushi.Mediakiwi.Framework
                 SenderInstance = InfoItem.SenderInstance;
             }
         }
-
 
         public void Chain(string id)
         {
