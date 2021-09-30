@@ -26,14 +26,20 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
 
             List<MetaDataList> list = new List<MetaDataList>();
             foreach (var li in collectionPropertyValue)
+            {
                 list.Add(new MetaDataList(li.Text, li.Value));
+            }
 
             meta.CollectionList = list.ToArray();
 
             if (IsMultiSelect.GetValueOrDefault())
+            {
                 meta.AddOption(OPTION_ENABLE_MULTI);
+            }
             else
+            {
                 meta.RemoveOption(OPTION_ENABLE_MULTI);
+            }
 
             return meta;
         }
@@ -100,6 +106,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
         ///   <c>true</c> if [is asynchronous]; otherwise, <c>false</c>.
         /// </value>
         public bool IsAsync { get; set; }
+
         /// <summary>
         /// Gets or sets the on change reset.
         /// </summary>
@@ -107,6 +114,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
         /// The on change reset.
         /// </value>
         public string[] OnChangeReset { get; set; }
+
         /// <summary>
         /// Gets or sets the placeholder.
         /// </summary>
@@ -114,14 +122,17 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
         /// The placeholder.
         /// </value>
         public string Placeholder { get; set; }
+
         /// <summary>
         /// The widht of the dropdown set in px
         /// </summary>
         public int Width { get; set; }
+
         /// <summary>
         /// Ignore setting the select2 style
         /// </summary>
         public bool IgnoreStyle { get; set; }
+
         /// <summary>
         /// Gets or sets the asynchronous minimum input length.
         /// </summary>
@@ -129,24 +140,12 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
         /// The asynchronous minimum input.
         /// </value>
         public int AsyncMinInput { get; set; }
-        /// <summary>
-        /// Gets or sets the componentlist; this can be an GUID, INT or a ClassName.
-        /// </summary>
-        /// <value>
-        /// The componentlist.
-        /// </value>
-        //public string Componentlist { get; set; }
-
-        private string m_CollectionProperty;
+      
         /// <summary>
         /// Gets or sets the collection property.
         /// </summary>
         /// <value>The collection property.</value>
-        public string CollectionProperty
-        {
-            set { m_CollectionProperty = value; }
-            get { return m_CollectionProperty; }
-        }
+        public string CollectionProperty { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether [auto post back].
@@ -170,78 +169,8 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
         List<string> _OutputValues;
         Option _OutputOption;
 
-
-
-        //void OutputAsync()
-        //{
-        //    if (!IsAsync || Console.HasAsyncEvent)
-        //        return;
-
-        //    var async = Data.Utility.GetAsyncQuery();
-        //    if (async == null)
-        //        return;
-
-        //    if (OnChangeReset != null && OnChangeReset.Length > 0)
-        //        async.ApplyReset(false, OnChangeReset);
-
-        //    Regex rex = null;
-
-        //    var search = async.SearchQuery;
-        //    if (!string.IsNullOrEmpty(search))
-        //    {
-        //        search = search.Replace(" ", ".*");
-
-        //        rex = new Regex(search, RegexOptions.IgnoreCase);
-        //    }
-
-        //    if (async.Property == Property.Name)
-        //    {
-        //        List<Option> options = new List<Option>();
-        //        for (int i = 0; i < m_ListItemCollection.Count; i++)
-        //        {
-        //            var option = m_ListItemCollection[i];
-
-        //            if (async.SearchType == ASyncQueryType.SelectOneByID)
-        //            {
-        //                if (option.Value == async.SearchQuery)
-        //                {
-        //                    options.Add(new Option() { Text = option.Text, Value = option.Value
-        //                        , Disabled = option.Enabled ? (bool?)null : true
-        //                    });
-        //                    break;
-        //                }
-        //            }
-        //            else
-        //            {
-        //                if (rex == null || rex.IsMatch(option.Text))
-        //                    options.Add(new Option() { Text = option.Text, Value = option.Value
-        //                        , Disabled = option.Enabled ? (bool?)null : true
-
-        //                    });
-        //            }
-        //        }
-        //        ASyncResult result = new ASyncResult()
-        //        {
-        //            Property = async.Property,
-        //            Result = options,
-        //            Reset = async.Reset
-        //        };
-        //        string val = Wim.Utilities.JSON.Instance.ToJSON(result,
-        //            new Wim.Utilities.JSONParameters()
-        //            {
-        //                EnableAnonymousTypes = true,
-        //                UsingGlobalTypes = false,
-        //                SerializeNullValues = false
-        //            }
-        //        );
-
-        //        Console.Response.Write(val);
-        //        Console.Response.End();
-        //    }
-        //}
-
-        //internal bool? _isMultiSelect;
         public bool? IsMultiSelect { get; set; }
+
         /// <summary>
         /// Sets the candidate.
         /// </summary>
@@ -656,7 +585,6 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
             SetWriteEnvironment();
             IsCloaked = isCloaked;
             Mandatory = isRequired;
-            //OutputAsync();
 
             if (OverrideEditMode)
             {
