@@ -136,7 +136,7 @@ namespace Sushi.Mediakiwi.Headless
                         // When we have this, this is a redirect so add our current URL as referrer
                         if (PageId.GetValueOrDefault(0) > 0)
                         {
-                            request.Headers[HttpHeaderNames.OriginalRequestURL] = request.GetEncodedUrl();
+                            request.Headers[HttpHeaderNames.OriginalRequestURL] = Common.ConstructUrl(request, request.Path, request.QueryString);
                         }
 
                         if (context.HttpContext.Items.ContainsKey(ContextItemNames.PageContent) == false)
@@ -146,7 +146,7 @@ namespace Sushi.Mediakiwi.Headless
 
                         if (response.Headers.ContainsKey(HttpHeaderNames.FullRequestURL) == false)
                         {
-                            response.Headers.Add(HttpHeaderNames.FullRequestURL, request.GetEncodedUrl());
+                            response.Headers.Add(HttpHeaderNames.FullRequestURL, Common.ConstructUrl(request, request.Path, request.QueryString));
                         }
 
                         if (string.IsNullOrWhiteSpace(PageContent?.PageLocation) == false)
