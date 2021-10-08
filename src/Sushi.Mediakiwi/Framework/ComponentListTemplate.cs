@@ -37,14 +37,14 @@ namespace Sushi.Mediakiwi.Framework
     /// </summary>
     public class ComponentListTemplate : FormMapList, IComponentListTemplate, iHeadlessListTemplate
     {
-        public virtual void DoHeadLessFetch(Sushi.Mediakiwi.Data.HeadlessRequest request)
+        public async Task DoHeadLessFetchAsync(HeadlessRequest request)
         {
             if (ListHeadless == null)
             {
                 return;
             }
 
-            ListHeadless(request);
+            await ListHeadless(request).ConfigureAwait(false);
         }
 
         public string FormState { get; set; }
@@ -193,7 +193,7 @@ namespace Sushi.Mediakiwi.Framework
         }
 
 
-        public event Func<Sushi.Mediakiwi.Data.HeadlessRequest, Task> ListHeadless;
+        public event Func<HeadlessRequest, Task> ListHeadless;
         public event Func<ComponentListEventArgs, Task> ListPreRender;
         public event Func<ComponentListEventArgs, Task> ListSave;
         public event Func<ComponentListEventArgs, Task> ListDelete;

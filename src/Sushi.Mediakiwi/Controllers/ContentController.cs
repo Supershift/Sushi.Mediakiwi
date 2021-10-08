@@ -171,7 +171,7 @@ namespace Sushi.Mediakiwi.Controllers
                     string[] excludeParams = new string[] { "url", "flush" };
 
                     // Create a new collection of name=value items, where the excludeParams are removed
-                    var queryParams = queryParameters?.Where(query => !excludeParams.Contains(query.Key)).Select(x => { return $"{x.Key}={x.Value}"; }).ToList();
+                    var queryParams = queryParameters.Where(query => !excludeParams.Contains(query.Key)).Select(x => { return $"{x.Key}={x.Value}"; }).ToList();
                     if (queryParams != null && queryParams.Count > 0)
                     {
                         // create a querystring
@@ -219,7 +219,7 @@ namespace Sushi.Mediakiwi.Controllers
                     foreach (var map in maps)
                     {
                         var mapped = map as PageMapping;
-                        if (map.Path.EndsWith("*"))
+                        if (map.Path.EndsWith("*", StringComparison.InvariantCultureIgnoreCase))
                         {
                             var path = map.Path.Substring(0, map.Path.Length - 1);
 
@@ -231,13 +231,13 @@ namespace Sushi.Mediakiwi.Controllers
                             }
                         }
                         // replace extention, f.e. *.html => .
-                        else if (map.Path.StartsWith(".") && mapped != null && !string.IsNullOrWhiteSpace(mapped.Expression))
+                        else if (map.Path.StartsWith(".", StringComparison.InvariantCultureIgnoreCase) && mapped != null && !string.IsNullOrWhiteSpace(mapped.Expression))
                         {
                             // found a match
                             if (url.EndsWith(map.Path, StringComparison.InvariantCulture))
                             {
                                 var redirection = url.Remove(url.Length - map.Path.Length, map.Path.Length);
-                                var newurl = mapped.Expression.Equals(".") ? redirection : string.Concat(redirection, mapped.Expression);
+                                var newurl = mapped.Expression.Equals(".", StringComparison.InvariantCultureIgnoreCase) ? redirection : string.Concat(redirection, mapped.Expression);
 
                                 // append queryString to the new url
                                 newurl += queryString;
@@ -418,7 +418,7 @@ namespace Sushi.Mediakiwi.Controllers
                 foreach (var item in mfs)
                 {
                     idx++;
-                    (ContentItem contentItem, bool isFilled) result = await getContentItemFromFieldAsync(request, new Field(item.Property, item.Type, item.Value));
+                    (ContentItem contentItem, bool isFilled) result = await getContentItemFromFieldAsync(request, new Field(item.Property, item.Type, item.Value)).ConfigureAwait(false);
                     if (result.isFilled)
                     {
                         lst.Add($"Multifield_{idx}", result.contentItem);
@@ -523,12 +523,12 @@ namespace Sushi.Mediakiwi.Controllers
                             {
                                 if (inField.Link.IsInternal)
                                 {
-                                    var pagelink = await Page.SelectOneAsync(inField.Link.PageID.GetValueOrDefault());
+                                    var pagelink = await Page.SelectOneAsync(inField.Link.PageID.GetValueOrDefault()).ConfigureAwait(false);
                                     content.Href = ConvertUrl(pagelink?.InternalPath);
                                 }
                                 else
                                 {
-                                    content.Href = inField.Link?.ExternalUrl;
+                                    content.Href = inField.Link.ExternalUrl;
                                 }
                             }
                         }
@@ -553,9 +553,9 @@ namespace Sushi.Mediakiwi.Controllers
                         if (!string.IsNullOrWhiteSpace(inField.Value))
                         {
                             var data = SubList.GetDeserialized(inField.Value);
-                            if (data != null && data.Items != null && data.Items.Any() && data.List.HasValue)
+                            if (data?.Items?.Any() == true && data.List.HasValue)
                             {
-                                var list = await ComponentList.SelectOneAsync(data.List.Value);
+                                var list = await ComponentList.SelectOneAsync(data.List.Value).ConfigureAwait(false);
                                 if (list != null && !list.IsNewInstance)
                                 {
                                     var instance = CreateInstance(list.AssemblyName, list.ClassName);
@@ -567,7 +567,7 @@ namespace Sushi.Mediakiwi.Controllers
                                         foreach (var item in data.Items)
                                         {
                                             request.Listitem = item;
-                                            instance.DoHeadLessFetch(request);
+                                            await instance.DoHeadLessFetchAsync(request).ConfigureAwait(false);
                                             if (request.Result != null)
                                             {
                                                 listcollection.Add(request.Result);
@@ -591,35 +591,29 @@ namespace Sushi.Mediakiwi.Controllers
                         if (!string.IsNullOrWhiteSpace(inField.Value))
                         {
                             isFilled = true;
-                            content.MultiFieldContent = await getMultiFieldContentAsync(request, inField);
+                            content.MultiFieldContent = await getMultiFieldContentAsync(request, inField).ConfigureAwait(false);
                         }
                     }
                     break;
                 case ContentType.Date:
                     {
-                        if (!string.IsNullOrWhiteSpace(inField.Value))
+                        if (!string.IsNullOrWhiteSpace(inField.Value) && long.TryParse(inField.Value, out long unitTime))
                         {
-                            if (long.TryParse(inField.Value, out long unitTime))
-                            {
-                                isFilled = true;
-                                var dateTimeValue = new DateTime(unitTime);
-                                System.Globalization.CultureInfo dateCulture = new System.Globalization.CultureInfo(culture);
-                                content.Text = dateTimeValue.ToString(dateCulture.DateTimeFormat.SortableDateTimePattern);
-                            }
+                            isFilled = true;
+                            var dateTimeValue = new DateTime(unitTime);
+                            System.Globalization.CultureInfo dateCulture = new System.Globalization.CultureInfo(culture);
+                            content.Text = dateTimeValue.ToString(dateCulture.DateTimeFormat.SortableDateTimePattern, dateCulture);
                         }
                     }
                     break;
                 case ContentType.DateTime:
                     {
-                        if (!string.IsNullOrWhiteSpace(inField.Value))
+                        if (!string.IsNullOrWhiteSpace(inField.Value) && long.TryParse(inField.Value, out long unitTime))
                         {
-                            if (long.TryParse(inField.Value, out long unitTime))
-                            {
-                                isFilled = true;
-                                var dateTimeValue = new DateTime(unitTime);
-                                System.Globalization.CultureInfo dateCulture = new System.Globalization.CultureInfo(culture);
-                                content.Text = dateTimeValue.ToString(dateCulture.DateTimeFormat.SortableDateTimePattern);
-                            }
+                            isFilled = true;
+                            var dateTimeValue = new DateTime(unitTime);
+                            System.Globalization.CultureInfo dateCulture = new System.Globalization.CultureInfo(culture);
+                            content.Text = dateTimeValue.ToString(dateCulture.DateTimeFormat.SortableDateTimePattern, dateCulture);
                         }
                     }
                     break;
@@ -628,20 +622,19 @@ namespace Sushi.Mediakiwi.Controllers
             return (content, isFilled);
         }
 
-        private string ConvertUrl(string path)
+       private static string ConvertUrl(string path)
         {
             if (string.IsNullOrWhiteSpace(path))
             {
                 return string.Empty;
             }
 
-
             return path
                 .ToLowerInvariant()
                 .Replace(" ", "-", StringComparison.InvariantCulture);
         }
 
-        HttpStatusCode GetStatusCode(IPageMapping pageMap)
+        static HttpStatusCode GetStatusCode(IPageMapping pageMap)
         {
             var status = HttpStatusCode.OK;
 
@@ -788,9 +781,9 @@ namespace Sushi.Mediakiwi.Controllers
             foreach (var component in components)
             {
                 // TODO: slot targets must be settable in the CMS
-                if (component?.Template?.SourceTag?.Contains(" ") == true)
+                if (component?.Template?.SourceTag?.Contains(" ", StringComparison.InvariantCultureIgnoreCase) == true)
                 {
-                    component.Template.SourceTag = component.Template.SourceTag.Replace(" ", "_");
+                    component.Template.SourceTag = component.Template.SourceTag.Replace(" ", "_", StringComparison.InvariantCultureIgnoreCase);
                 }
 
                 string slotTarget = "content";
@@ -872,7 +865,7 @@ namespace Sushi.Mediakiwi.Controllers
                     var nestedItem = NestedComponentCollection.FirstOrDefault(x => x.Value.Contains(request.Component.Template.SourceTag));
 
                     // Get the parent component in which this child component will be nested
-                    var parent = response.Components.FirstOrDefault(x => x.ComponentName.Equals(nestedItem.Key));
+                    var parent = response.Components.FirstOrDefault(x => x.ComponentName.Equals(nestedItem.Key, StringComparison.InvariantCultureIgnoreCase));
                     if (parent != null)
                     {
                         if (parent.Nested == null)
@@ -893,12 +886,12 @@ namespace Sushi.Mediakiwi.Controllers
                     var parent = default(ContentComponent);
                     if (request.Component.Template.NestedType == 1)
                     {
-                        parent = response.Components.FirstOrDefault(x => x.ComponentName.Equals(request.Component.Template.SourceTag));
+                        parent = response.Components.FirstOrDefault(x => x.ComponentName.Equals(request.Component.Template.SourceTag, StringComparison.InvariantCultureIgnoreCase));
                     }
                     else if (request.Component.Template.NestedType == 2)
                     {
                         var previous = response.Components.LastOrDefault();
-                        if (parent.ComponentName.Equals(request.Component.Template.SourceTag))
+                        if (parent.ComponentName.Equals(request.Component.Template.SourceTag, StringComparison.InvariantCultureIgnoreCase))
                         {
                             parent = previous;
                         }

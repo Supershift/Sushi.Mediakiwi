@@ -83,7 +83,9 @@ namespace Sushi.Mediakiwi.Data
             get
             {
                 if (m_Template == null)
-                    m_Template = ComponentTemplate.SelectOne(this.ComponentTemplateID.GetValueOrDefault());
+                {
+                    m_Template = ComponentTemplate.SelectOne(ComponentTemplateID.GetValueOrDefault());
+                }
                 return m_Template;
             }
         }
@@ -97,10 +99,14 @@ namespace Sushi.Mediakiwi.Data
             get
             {
                 if (m_Content != null)
+                {
                     return m_Content;
+                }
 
                 if (Serialized_XML == null || Serialized_XML.Trim().Length == 0)
+                {
                     return null;
+                }
 
                 m_Content = Content.GetDeserialized(Serialized_XML);
                 return m_Content;
@@ -128,7 +134,7 @@ namespace Sushi.Mediakiwi.Data
             var filter = connector.CreateDataFilter();
             filter.AddOrder(x => x.SortOrder);
 
-            var result = await connector.FetchAllAsync(filter);
+            var result = await connector.FetchAllAsync(filter).ConfigureAwait(false);
             return result.ToArray();
         }
 
@@ -151,7 +157,7 @@ namespace Sushi.Mediakiwi.Data
         public static async Task<Component> SelectOneAsync(int ID)
         {
             var connector = ConnectorFactory.CreateConnector<Component>();
-            return await connector.FetchSingleAsync(ID);
+            return await connector.FetchSingleAsync(ID).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -179,7 +185,7 @@ namespace Sushi.Mediakiwi.Data
             var filter = connector.CreateDataFilter();
             filter.Add(x => x.GUID, componentGUID);
 
-            return await connector.FetchSingleAsync(filter);
+            return await connector.FetchSingleAsync(filter).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -213,7 +219,7 @@ namespace Sushi.Mediakiwi.Data
             filter.Add(x => x.IsFixedOnTemplate, true);
             filter.Add(x => x.PageID, pageID);
 
-            return await connector.FetchSingleAsync(filter);
+            return await connector.FetchSingleAsync(filter).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -247,7 +253,7 @@ namespace Sushi.Mediakiwi.Data
             filter.Add(x => x.PageID, pageID);
             filter.Add("[ComponentTemplate_Type]", SqlDbType.NVarChar, type.BaseType.ToString());
 
-            return await connector.FetchSingleAsync(filter);
+            return await connector.FetchSingleAsync(filter).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -281,7 +287,7 @@ namespace Sushi.Mediakiwi.Data
             filter.Add(x => x.ComponentTemplateID, componentTemplateID);
             filter.Add(x => x.PageID, pageID);
 
-            var result = await connector.FetchAllAsync(filter);
+            var result = await connector.FetchAllAsync(filter).ConfigureAwait(false);
             return result.ToArray();
         }
 
@@ -298,9 +304,13 @@ namespace Sushi.Mediakiwi.Data
             filter.AddOrder(x => x.SortOrder);
 
             if (isSecundary)
+            {
                 filter.Add(x => x.IsSecundaryContainerItem, isSecundary);
+            }
             else
+            {
                 filter.AddSql("ISNULL([ComponentTemplate_IsSecundaryContainerItem], 0) = 0");
+            }
 
             filter.Add(x => x.PageID, pageID);
 
@@ -320,13 +330,17 @@ namespace Sushi.Mediakiwi.Data
             filter.AddOrder(x => x.SortOrder);
 
             if (isSecundary)
+            {
                 filter.Add(x => x.IsSecundaryContainerItem, isSecundary);
+            }
             else
+            {
                 filter.AddSql("ISNULL([ComponentTemplate_IsSecundaryContainerItem], 0) = 0");
+            }
 
             filter.Add(x => x.PageID, pageID);
 
-            var result = await connector.FetchAllAsync(filter);
+            var result = await connector.FetchAllAsync(filter).ConfigureAwait(false);
             return result.ToArray();
         }
 
@@ -345,7 +359,7 @@ namespace Sushi.Mediakiwi.Data
         public async Task SaveAsync()
         {
             var connector = ConnectorFactory.CreateConnector(new ComponentMap(true));
-            await connector.SaveAsync(this);
+            await connector.SaveAsync(this).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -363,7 +377,7 @@ namespace Sushi.Mediakiwi.Data
         public async Task DeleteAsync()
         {
             var connector = ConnectorFactory.CreateConnector(new ComponentMap(true));
-            await connector.DeleteAsync(this);
+            await connector.DeleteAsync(this).ConfigureAwait(false);
         }
 
 
@@ -388,7 +402,9 @@ namespace Sushi.Mediakiwi.Data
                 legacyServiceTab = template.Data["TAB.LST"].Value ?? CommonConfiguration.DEFAULT_SERVICE_TAB;
 
                 if (!string.IsNullOrEmpty(legacyServiceTab) && section == legacyServiceTab)
+                {
                     isSecundaryContentContainer = true;
+                }
             }
 
             List<IComponent> selection = new List<IComponent>();
@@ -399,16 +415,22 @@ namespace Sushi.Mediakiwi.Data
                 if (template != null)
                 {
                     if (component.Template.IsSecundaryContainerItem != isSecundaryContentContainer)
+                    {
                         continue;
+                    }
 
                     if (component.FixedFieldName != null)
                     {
                         if (!isCmsRequest)
+                        {
                             continue;
+                        }
                         else
                         {
                             if (isSecundaryContentContainer)
+                            {
                                 continue;
+                            }
                         }
                     }
 
@@ -445,19 +467,20 @@ namespace Sushi.Mediakiwi.Data
 
             //  If the page is set to hold inherited content, please take that content
             if (!ignoreInheritance && page.InheritContent && page.MasterID.HasValue)
+            {
                 pageID = page.MasterID.Value;
+            }
 
             var filter = connector.CreateDataFilter();
             filter.Add(x => x.PageID, pageID);
             
-
-            // [MR:24-01-2020] this should go !
-            //if (!string.IsNullOrEmpty(SqlConnectionString2)) component.SqlConnectionString = SqlConnectionString2;
             var result = connector.FetchAll(filter);
             foreach (var component in result)
             {
-                if (!ignoreInheritance && page.InheritContent && page.MasterID.HasValue) 
+                if (!ignoreInheritance && page.InheritContent && page.MasterID.HasValue)
+                {
                     component.PageID = page.ID;
+                }
             }
 
             return result.ToArray();
@@ -471,7 +494,9 @@ namespace Sushi.Mediakiwi.Data
 
             //  If the page is set to hold inherited content, please take that content
             if (page.InheritContent && page.MasterID.HasValue)
+            {
                 pageID = page.MasterID.Value;
+            }
             
             var filter = connector.CreateDataFilter();
             filter.AddParameter("@pageId", pageID);
@@ -484,14 +509,13 @@ namespace Sushi.Mediakiwi.Data
                 WHERE [ComponentTarget_Page_Key] = @pageId
                 AND [ComponentTemplate_IsShared] = @isShared", filter);
 
-
-            // [MR:24-01-2020] this should go !
-            //if (!string.IsNullOrEmpty(SqlConnectionString2)) component.SqlConnectionString = SqlConnectionString2;
             foreach (var component in result)
             {
                 //  When the content is set to inherit please apply the child page ID
-                if (page.InheritContent && page.MasterID.HasValue) 
+                if (page.InheritContent && page.MasterID.HasValue)
+                {
                     component.PageID = page.ID;
+                }
             }
 
             return result.ToArray();
@@ -514,23 +538,25 @@ namespace Sushi.Mediakiwi.Data
             var connector = ConnectorFactory.CreateConnector<Component>();
             connector.UseCacheOnSelect = allowCache;
 
-            Page page = await Page.SelectOneAsync(pageID, false);
+            Page page = await Page.SelectOneAsync(pageID, false).ConfigureAwait(false);
 
             //  If the page is set to hold inherited content, please take that content
             if (!ignoreInheritance && page.InheritContent && page.MasterID.HasValue)
+            {
                 pageID = page.MasterID.Value;
+            }
 
             var filter = connector.CreateDataFilter();
             filter.Add(x => x.PageID, pageID);
             filter.AddOrder(x => x.SortOrder, Sushi.MicroORM.SortOrder.ASC);
 
-            // [MR:24-01-2020] this should go !
-            //if (!string.IsNullOrEmpty(SqlConnectionString2)) component.SqlConnectionString = SqlConnectionString2;
-            var result = await connector.FetchAllAsync(filter);
+            var result = await connector.FetchAllAsync(filter).ConfigureAwait(false);
             foreach (var component in result)
             {
                 if (!ignoreInheritance && page.InheritContent && page.MasterID.HasValue)
+                {
                     component.PageID = page.ID;
+                }
             }
 
             return result.ToArray();
@@ -540,11 +566,13 @@ namespace Sushi.Mediakiwi.Data
         {
             var connector = ConnectorFactory.CreateConnector<Component>();
 
-            Page page = await Page.SelectOneAsync(pageID, false);
+            Page page = await Page.SelectOneAsync(pageID, false).ConfigureAwait(false);
 
             //  If the page is set to hold inherited content, please take that content
             if (page.InheritContent && page.MasterID.HasValue)
+            {
                 pageID = page.MasterID.Value;
+            }
 
             var filter = connector.CreateDataFilter();
             filter.AddParameter("@pageId", pageID);
@@ -555,16 +583,15 @@ namespace Sushi.Mediakiwi.Data
                 JOIN [wim_ComponentTargets] ON [Component_GUID] = [ComponentTarget_Component_Source]
 				LEFT JOIN [dbo].[wim_ComponentTemplates] ON [ComponentTemplate_Key] = Component_ComponentTemplate_Key
                 WHERE [ComponentTarget_Page_Key] = @pageId
-                AND [ComponentTemplate_IsShared] = @isShared", filter);
+                AND [ComponentTemplate_IsShared] = @isShared", filter).ConfigureAwait(false);
 
-
-            // [MR:24-01-2020] this should go !
-            //if (!string.IsNullOrEmpty(SqlConnectionString2)) component.SqlConnectionString = SqlConnectionString2;
             foreach (var component in result)
             {
                 //  When the content is set to inherit please apply the child page ID
                 if (page.InheritContent && page.MasterID.HasValue)
+                {
                     component.PageID = page.ID;
+                }
             }
 
             return result.ToArray();

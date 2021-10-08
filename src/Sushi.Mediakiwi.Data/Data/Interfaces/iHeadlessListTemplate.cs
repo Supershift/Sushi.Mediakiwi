@@ -1,4 +1,6 @@
-﻿namespace Sushi.Mediakiwi.Data
+﻿using System.Threading.Tasks;
+
+namespace Sushi.Mediakiwi.Data
 {
     public interface iHeadlessListTemplate
     {
@@ -7,6 +9,6 @@
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        void DoHeadLessFetch(HeadlessRequest request);
+        Task DoHeadLessFetchAsync(HeadlessRequest request);
     }
 }
