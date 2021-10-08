@@ -385,7 +385,7 @@ namespace Sushi.Mediakiwi.Logic
                                         foreach (var item in data.Items)
                                         {
                                             request.Listitem = item;
-                                            instance.DoHeadLessFetch(request);
+                                            await instance.DoHeadLessFetchAsync(request).ConfigureAwait(false);
                                             if (request.Result != null)
                                             {
                                                 listcollection.Add(request.Result);
