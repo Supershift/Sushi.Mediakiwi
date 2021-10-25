@@ -678,10 +678,11 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
 
                     if (x != null)
                     {
+                        ((ContentSharedAttribute)x).ComponentTemplateID = template.ID;
                         ((ContentSharedAttribute)x).Console = container;
                         ((ContentSharedAttribute)x).IsBluePrint = true;
                         count++;
-
+                        
                         x.ID = string.Concat("e", version.ID, "c", count);
                         x.FieldName = item.Name;
                         ((ContentSharedAttribute)x).m_ListItemCollection = item.GetCollection(container);
@@ -714,13 +715,20 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                         }
 
                         Field field = x.WriteCandidate(build2, container.CurrentListInstance.wim.IsEditMode, x.Mandatory, x.IsCloaked);
-                        if (field != null)
+
+                        
+                        // IsCloacked will be set to true whenever a shared field is
+                        // loaded that is not supposed to output to the page
+                        if (field != null && ((item.IsSharedField == "0") || (item.IsSharedField != "0" && x.IsCloaked == false)))
                         {
                             fieldList.Add(field);
                         }
+                        else 
+                        { 
+                            // Do nothing, this is a Shared field that should not be added to the output
+                        }
                     }
                 }
-
             }
             CreateBlock(container, template.Name, build, build2, version, isContainerClosed, false);
 
