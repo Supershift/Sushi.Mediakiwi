@@ -849,15 +849,36 @@ $(document).ready(function () {
         var cmsBox = $(this).parents('.cmsable');
         var nextBox = cmsBox.next();
         if (nextBox != null || nextBox[0] != null) {
+
+            cmsBox.find('textarea.rte').each(function () {
+                tinymce.execCommand('mceRemoveEditor', false, $(this).attr('id'));
+            });
+
+            cmsBox.detach(); // detatch;
             cmsBox.insertAfter(nextBox);
+
+            cmsBox.find('textarea.rte').each(function () {
+                tinymce.execCommand('mceAddEditor', true, $(this).attr('id'));
+            });
         }
         return false;
     });
+
     $('.simpleSortUp').live('click', function () {
         var cmsBox = $(this).parents('.cmsable');
         var prevBox = cmsBox.prev();
         if (prevBox != null || prevBox[0] != null) {
+
+            cmsBox.find('textarea.rte').each(function () {
+                tinymce.execCommand('mceRemoveEditor', false, $(this).attr('id'));
+            });
+
+            cmsBox.detach(); // detatch;
             cmsBox.insertBefore(prevBox);
+
+            cmsBox.find('textarea.rte').each(function () {
+                tinymce.execCommand('mceAddEditor', true, $(this).attr('id'));
+            });
         }
         return false;
     });
@@ -1488,6 +1509,13 @@ $(function () {
         $(document).on("click", ".cmsable .closer", function () {
             var that = $(this);
             var data = that.parent('h3').parent('div');
+
+            // Check if we need to remove tiny MCE implementation first.
+            var tinyMceImplementation = data.find('textarea.rte');
+            if (tinyMceImplementation) {
+                tinymce.execCommand('mceRemoveEditor', false, $(tinyMceImplementation).attr('id'));
+            }
+
             data.remove();
             return false;
         });

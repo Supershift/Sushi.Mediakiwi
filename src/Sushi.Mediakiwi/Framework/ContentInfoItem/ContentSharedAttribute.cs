@@ -444,10 +444,10 @@ namespace Sushi.Mediakiwi.Framework
         /// <param name="classTag"></param>
         protected void SetMultiFieldTitleHTML(string title, string classTag = "icon-cube")
         {
-            string sortOption = @"<a href=""#"" class=""icon-caret-up simpleSortUp"" title=""Move component up"">&nbsp;</a>
-                                  <a href=""#""  class=""icon-caret-down simpleSortDown"" title=""Move component down"">&nbsp;</a>";
-            _MultiFieldTitleHTML = string.Format("<h3><span class=\"{0}\"></span> {1}</h3>", classTag, title);
-            _MultiFieldTitleHTML_Edit = string.Format("<h3><span class=\"{0}\"></span> {1}<a href=\"#\" class=\"closer icon-x\"></a> {2}</h3>", classTag, title, sortOption);
+            string sortOption = @"<a href=""#"" class=""icon-caret-up simpleSortUp"" title=""Move component up""> </a>
+                                  <a href=""#""  class=""icon-caret-down simpleSortDown"" title=""Move component down""> </a>";
+            _MultiFieldTitleHTML = @$"<h3><span class=""{classTag}""></span> {title}</h3>";
+            _MultiFieldTitleHTML_Edit = @$"<h3><span class=""{classTag}""></span> {title}<a href=""#"" class=""closer icon-x""></a> {sortOption}</h3>";
         }
         string _MultiFieldTitleHTML;
         string _MultiFieldTitleHTML_Edit;
