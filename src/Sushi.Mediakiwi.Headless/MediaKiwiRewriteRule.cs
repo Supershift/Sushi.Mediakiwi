@@ -50,6 +50,11 @@ namespace Sushi.Mediakiwi.Headless
             {
                 _logger.LogError("ContentService IS NULL, skipping the MK Rewrite rule");
             }
+            else if (ContentService.IsPageExcluded(context.HttpContext.Request))
+            {
+                var url = context.HttpContext.Request.GetDisplayUrl();
+                _logger.LogInformation($"This url ({url}) was Excluded from the content service");
+            }
             else
             {
                 var request = context.HttpContext.Request;
