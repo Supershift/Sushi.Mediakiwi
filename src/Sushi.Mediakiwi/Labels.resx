@@ -126,6 +126,9 @@
   <data name="copy_page_content" xml:space="preserve">
     <value>Copy content </value>
   </data>
+  <data name="create_or_select" xml:space="preserve">
+    <value>Create new</value>
+  </data>
   <data name="custom_actions" xml:space="preserve">
     <value>Custom actions</value>
   </data>

@@ -126,6 +126,9 @@
   <data name="copy_page_content" xml:space="preserve">
     <value>Kopieër content</value>
   </data>
+  <data name="create_or_select" xml:space="preserve">
+    <value>Upload nieuwe</value>
+  </data>
   <data name="custom_actions" xml:space="preserve">
     <value>Aangepaste acties</value>
   </data>

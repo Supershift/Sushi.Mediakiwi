@@ -125,6 +125,7 @@ function handleAccordionClick(self, dataAccordion) {
 
     }
 }
+
 // the accordion header panel close button click
 function handleAccordionSelfClose(self) {
     console.log('Self close');
@@ -132,11 +133,11 @@ function handleAccordionSelfClose(self) {
     panel.css('display', 'none');
     accordionOpened = null;
 }
+
 function SetClick(self) {
 
     if (isNoClick)
         return;
-
 
     /* for table cells that should not be clickable */
     /* REMOVED:  || $(self).find('input').length > 0 || $(self).find('a').length > 0 as this holds back the normal proces */
@@ -156,37 +157,40 @@ function SetClick(self) {
         isTable = false;
     }
     if (id != null) {
-        var spli = id.split('_')[1].split('$');
-        var datalink = $(self).parent('tr').attr('data-link');
         var url = '';
-        if (datalink != null) {
+        if (id.indexOf('_') > -1 && id.indexOf('$') > -1) {
+            var spli = id.split('_')[1].split('$');
+            var datalink = $(self).parent('tr').attr('data-link');
+            
+            if (datalink != null) {
 
-            if (datalink.indexOf('[KEY]') > -1)
-                url = datalink.replace('[KEY]', spli[1]);
+                if (datalink.indexOf('[KEY]') > -1)
+                    url = datalink.replace('[KEY]', spli[1]);
+                else {
+                    if (datalink.indexOf('&item=') > -1)
+                        url = datalink;
+                    else if (!datalink.indexOf('&item') > -1)
+                        url = datalink + '=' + spli[1];
+                    else
+                        url = datalink;
+                }
+            }
             else {
-                if (datalink.indexOf('&item=') > -1)
-                    url = datalink;
-                else if (!datalink.indexOf('&item') > -1)
-                    url = datalink + '=' + spli[1];
+                var group = getUrlVars()["group"];
+                var folder = getUrlVars()["folder"];
+
+                if (folder != undefined)
+                    folder = '&folder=' + folder;
                 else
-                    url = datalink;
-            }
-        }
-        else {
-            var group = getUrlVars()["group"];
-            var folder = getUrlVars()["folder"];
+                    folder = '';
 
-            if (folder != undefined)
-                folder = '&folder=' + folder;
-            else
-                folder = '';
-
-            if (group != undefined) {
-                var groupitem = getUrlVars()["groupitem"];
-                url = document.URL.split('?')[0] + '?group=' + group + folder + '&groupitem=' + groupitem + '&item=' + spli[1];
+                if (group != undefined) {
+                    var groupitem = getUrlVars()["groupitem"];
+                    url = document.URL.split('?')[0] + '?group=' + group + folder + '&groupitem=' + groupitem + '&item=' + spli[1];
+                }
+                else
+                    url = document.URL.split('?')[0] + '?item=' + spli[1] + folder;
             }
-            else
-                url = document.URL.split('?')[0] + '?item=' + spli[1] + folder;
         }
         var datatarget = null;
         var title = null;
@@ -263,6 +267,7 @@ function SetClick(self) {
         }
     }
 }
+
 function getUrl(u, a, b, c, d) {
     u = u.split('#')[0];
     var url = '';
@@ -678,13 +683,39 @@ $(document).ready(function () {
         $('body').addClass('ie11');
     }
 
-    $('.postparent').each(function () {
-        var idv = $(this).attr('id');
-        var sel = $(this).attr('value');
-        var multiple = $(this).attr('data-multiple');
-        var editUrl = $(this).attr('data-editurl');
-        var editTitle = $(this).attr('data-listtitle');
-        var ref = $(this).attr('data-target');
+    var updateQueryStringParameter = function (uri, key, value) {
+        var re = new RegExp("([?&])" + key + "=.*?(&|#|$)", "i");
+        if (uri.match(re)) {
+            return uri.replace(re, '$1' + key + "=" + value + '$2');
+        } else {
+            var hash = '';
+            if (uri.indexOf('#') !== -1) {
+                hash = uri.replace(/.*#/, '#');
+                uri = uri.replace(/#.*/, '');
+            }
+            var separator = uri.indexOf('?') !== -1 ? "&" : "?";
+            return uri + separator + key + "=" + value + hash;
+        }
+    }
+
+    var postToParent = function (event) {
+        var idv = $(event).attr('id');
+        var sel = $(event).attr('value');
+        var multiple = $(event).attr('data-multiple');
+        var editUrl = $(event).attr('data-editurl');
+        var editTitle = $(event).attr('data-listtitle');
+        var ref = $(event).attr('data-target');
+        var parentLevel = $(event).attr('data-parentlevel');
+
+        var par = window;
+        if (!parentLevel)
+        {
+            parentLevel = 1;
+        }
+
+        for (var i = 0; i <= parentLevel; i++) {
+            par = par.parent;
+        }
 
         if (ref == undefined)
             ref = getUrlVars()["referid"];
@@ -694,15 +725,15 @@ $(document).ready(function () {
 
             var put = ref.substring(1, ref.length) + '$' + idv;
             var pnt = '#' + ref;
-            var att = parent.$(pnt).attr('class');
+            var att = par.$(pnt).attr('class');
             if (att != undefined) {
                 var isSingle = att.indexOf('single') > -1;
                 var addOnTop = att.indexOf('newItemsOnTop');
                 console.log('Add on top : ' + addOnTop);
 
                 if (multiple != '1' && isSingle) {
-                    var existingInput = parent.$(pnt).find(' > li > input').get(0);
-                    var existingLink = parent.$(pnt).find(' > li > a').get(0);
+                    var existingInput = par.$(pnt).find(' > li > input').get(0);
+                    var existingLink = par.$(pnt).find(' > li > a').get(0);
 
                     // update existing Input field (if any)
                     if (existingInput) {
@@ -714,6 +745,12 @@ $(document).ready(function () {
                     // Update existing link (if any)
                     if (existingLink) {
                         $(existingLink).html(sel);
+                        var url = $(existingLink).attr('href');
+
+                        // Update with new received Item id, only when it's a valid number
+                        if (isNaN(idv) === false) {
+                            $(existingLink).attr('href', updateQueryStringParameter(url, "item", idv));
+                        }
                     }
 
                     // When both dont exist, add them
@@ -722,7 +759,7 @@ $(document).ready(function () {
 
                         // Did we receive the edit list url ? Create a link if we did
                         if (editUrl) {
-                            newEl += `<a class="openlayer" data-layer="width:790px,height:450px,iframe:true,scrolling:false" title="${editTitle}" href="${editUrl}">${sel}</a>`;
+                            newEl += '<a class="openlayer" data-layer="width:790px,height:450px,iframe:true,scrolling:false" title="' + editTitle + '" href="' + editUrl + '">' + sel + '</a>';
                         }
                         // Else just add the selected value
                         else {
@@ -730,26 +767,34 @@ $(document).ready(function () {
                         }
 
                         // Add remove link and hidden input
-                        newEl += `<figure class="icon-x del"></figure> <input type="hidden" id="${put}" name="${put}" value="${val}" /> </li>`;
+                        newEl += '<figure class="icon-x del"></figure> <input type="hidden" id="' + put + '" name="' + put + '" value="' + val + '" /> </li>';
 
                         // Add element to parent
-                        parent.$(pnt).append(newEl);
+                        par.$(pnt).append(newEl);
                     }
                 }
                 else {
 
                     // Add new items on top, instead of bottom
                     if (addOnTop > -1) {
-                        parent.$(pnt).prepend('<li class="ui-state-default">' + sel + '<figure class="icon-x del"> <input type="hidden" id="' + put + '" name="' + put + '" value="' + val + '" /> </li>');
+                        par.$(pnt).prepend('<li class="ui-state-default">' + sel + '<figure class="icon-x del"> <input type="hidden" id="' + put + '" name="' + put + '" value="' + val + '" /> </li>');
                     }
                     else {
-                        parent.$(pnt).append('<li class="ui-state-default">' + sel + '<figure class="icon-x del"> <input type="hidden" id="' + put + '" name="' + put + '" value="' + val + '" /> </li>');
+                        par.$(pnt).append('<li class="ui-state-default">' + sel + '<figure class="icon-x del"> <input type="hidden" id="' + put + '" name="' + put + '" value="' + val + '" /> </li>');
                     }
                 }
             }
         }
-        mediakiwi.closeLayer();
+
+        par.mediakiwi.closeLayer();
+    }
+
+    $('.postparentnow').live('click', function () { postToParent(this) });
+
+    $('.postparent').each(function () {
+        postToParent(this);
     });
+
     $('.closeLayer').each(function () {
         mediakiwi.closeLayer();
     });
@@ -892,7 +937,7 @@ $(document).ready(function () {
                 $(".dataBlock table tbody").sortable("enable");
             }
             else {
-                let wscrolltop = 0;
+                var wscrolltop = 0;
                 $('.dataBlock table tbody').sortable({
                     placeholder: "ui-state-highlight",
                     items: "tr:not(.nosort)",

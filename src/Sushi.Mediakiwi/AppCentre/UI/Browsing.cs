@@ -110,10 +110,37 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             FilterPath = false;
             wim.HideProperties = true;
 
+            ListDataItemCreated += Browsing_ListDataItemCreated;
             ListAction += Browsing_ListAction;
             ListSearch += Browsing_ListSearch;
             ListLoad += Browsing_ListLoad;
             ListSave += Browsing_ListSave;
+        }
+
+        private void Browsing_ListDataItemCreated(object sender, ListDataItemCreatedEventArgs e)
+        {
+            if (e.Item is BrowseItem item && item.Attributes?.Count > 0 && e.Type == DataItemType.TableRow)
+            {
+                foreach (var att in item.Attributes)
+                {
+                    if (att.Key.Equals("class", StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        e.Attribute.Class = att.Value;
+                    }
+                    else if (att.Key.Equals("style", StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        e.Attribute.Style.Add(att.Value.Split(':')[0], att.Value.Split(':')[1]);
+                    }
+                    else if (att.Key.Equals("id", StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        e.Attribute.ID = att.Value;
+                    }
+                    else
+                    {
+                        e.Attribute.Add(att.Key, att.Value);
+                    }
+                }
+            }
         }
 
         private Task Browsing_ListSave(ComponentListEventArgs arg)
@@ -392,10 +419,16 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
 
         async Task<List<BrowseItem>> GetGalleryListAsync(bool isSearchInitiate)
         {
+            var isOnlySelect = Request.Query.ContainsKey("selectOnly") && Request.Query["selectOnly"].Equals("1");
+            var isOnlyImages = Request.Query.ContainsKey("isimage") && Request.Query["isimage"].Equals("1");
+
             var list = new List<BrowseItem>();
             int baseGalleryID = wim.CurrentApplicationUserRole.GalleryRoot.GetValueOrDefault();
 
             var folderSettings = await Mediakiwi.Data.ComponentList.SelectOneAsync(new Guid("97292dd5-ebda-4318-8aaf-4c49e887cdad")).ConfigureAwait(false);
+            wim.Page.Body.Grid.IgnoreInLayerSubSelect = isOnlySelect;
+            wim.Page.HideTopIconBar = isOnlySelect;
+            wim.HideSearchButton = !isOnlySelect;
 
             Gallery[] galleries;
 
@@ -409,7 +442,21 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                     item.Title = "...";
                     item.PassThrough = "?gallery";
                     item.Icon = "<figure class=\"icon-folder icon\"></figure>";
-                    item.Info1 = $"<a href=\"{wim.Console.WimPagePath}?list={folderSettings.ID}&gallery={item.ID}&item={item.ID}\"><figure class=\"icon-settings-02 icon\"></figure></a>";
+                    if (isOnlySelect == false)
+                    {
+                        item.Info1 = $"<a href=\"{wim.Console.WimPagePath}?list={folderSettings.ID}&gallery={item.ID}&item={item.ID}\"><figure class=\"icon-settings-02 icon\"></figure></a>";
+                    }
+                    else 
+                    {
+                        if (Request?.Query?.ContainsKey("referid") == true)
+                        {
+                            item.PassThrough = $"?referid={Request.Query["referid"]}&selectOnly=1&gallery";
+                        }
+                        else
+                        {
+                            item.PassThrough = "?selectOnly=1&gallery";
+                        }
+                    }
                     list.Add(item);
                 }
 
@@ -433,7 +480,21 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                 item.Title = isRootLevelView ? entry.CompleteCleanPath() : entry.Name;
                 item.PassThrough = "?gallery";
                 item.Icon = "<figure class=\"icon-folder icon\"></figure>";
-                item.Info1 = $"<a href=\"{wim.Console.WimPagePath}?list={folderSettings.ID}&gallery={entry.ID}&item={entry.ID}\"><figure class=\"icon-settings-02 icon\"></figure></a>";
+                if (isOnlySelect == false)
+                {
+                    item.Info1 = $"<a href=\"{wim.Console.WimPagePath}?list={folderSettings.ID}&gallery={entry.ID}&item={entry.ID}\"><figure class=\"icon-settings-02 icon\"></figure></a>";
+                }
+                else
+                {
+                    if (Request?.Query?.ContainsKey("referid") == true)
+                    {
+                        item.PassThrough = $"?referid={Request.Query["referid"]}&selectOnly=1&gallery";
+                    }
+                    else
+                    {
+                        item.PassThrough = "?selectOnly=1&gallery";
+                    }
+                }
                 item.Info3 = entry.Created;
                 list.Add(item);
             }
@@ -442,11 +503,11 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
 
             if (!IsPostBack || string.IsNullOrEmpty(FilterTitle))
             {
-                assets = await Asset.SelectAllAsync(wim.CurrentFolder.ID).ConfigureAwait(false);
+                assets = await Asset.SelectAllAsync(wim.CurrentFolder.ID, onlyReturnImages: isOnlyImages).ConfigureAwait(false);
             }
             else
             {
-                assets = await Asset.SearchAllAsync(FilterTitle).ConfigureAwait(false);
+                assets = await Asset.SearchAllAsync(FilterTitle, onlyReturnImages: isOnlyImages).ConfigureAwait(false);
             }
 
             foreach (Asset entry in assets)
@@ -455,9 +516,29 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                 item.ID = entry.ID;
                 item.Title = entry.Title;
                 item.PassThrough = "?asset";
+                if (entry.IsImage)
+                {
+                    item.Icon = "<figure class=\"icon-picture icon\"></figure>";
+                }
+                else
+                {
+                    item.Icon = "<figure class=\"icon-document icon\"></figure>";
+                }
 
-                item.Icon = "<figure class=\"icon-document icon\"></figure>";
-                item.Info1 = $"<a href=\"{wim.Console.WimPagePath}?asset={entry.ID}\"><figure class=\"icon-settings-02 icon\"></figure></a>";
+                if (isOnlySelect == false)
+                {
+                    item.Info1 = $"<a href=\"{wim.Console.WimPagePath}?asset={entry.ID}\"><figure class=\"icon-settings-02 icon\"></figure></a>";
+                }
+                else 
+                {
+                    item.Attributes.Add("class", "hand postparentnow");
+                    item.Attributes.Add("data-parentlevel", "2");
+                    item.Attributes.Add("value", item.Title);
+                    item.Attributes.Add("id", item.ID.ToString());
+                    item.Attributes.Add("data-link", string.Empty);
+                    item.PassThrough = "?selectOnly=1&asset";
+                }
+
                 item.Info2 = entry.Type;
                 item.Info3 = entry.Created;
 

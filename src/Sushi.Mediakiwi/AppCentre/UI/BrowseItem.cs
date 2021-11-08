@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
 {
@@ -6,7 +7,8 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
     /// Represents a Browsing entity.
     /// </summary>
     public partial class Browsing
-    {       /// <summary>
+    {      
+        /// <summary>
         /// Represents a BrowseItem entity.
         /// </summary>
         public class BrowseItem
@@ -77,8 +79,20 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             /// <value>The pass through.</value>
             public string PassThrough { get; set; }
 
+            /// <summary>
+            /// The Link to Edit this entity
+            /// </summary>
             public string EditLink { get; set; }
+
+            /// <summary>
+            /// The Link to download this entity
+            /// </summary>
             public string DownloadLink { get; set; }
+
+            /// <summary>
+            /// These attributes will be added to the row in the ItemCreated event
+            /// </summary>
+            public Dictionary<string, string> Attributes { get; set; } = new Dictionary<string, string>();
         }
     }
 }
