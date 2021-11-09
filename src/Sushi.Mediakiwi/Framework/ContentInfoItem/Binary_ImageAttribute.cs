@@ -67,18 +67,13 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
         /// </value>
         public int SavedAssetTypeID { get; set; }
 
-        bool _CanOnlyAdd = false;
         /// <summary>
         /// Gets or sets a value indicating whether this instance can only add.
         /// </summary>
         /// <value>
         /// <c>true</c> if this instance can only add; otherwise, <c>false</c>.
         /// </value>
-        public bool CanOnlyAdd
-        {
-            get { return _CanOnlyAdd; }
-            set { _CanOnlyAdd = value; }
-        }
+        public bool CanOnlyAdd { get; set; }
 
         /// <summary>
         /// Sets the candidate.
@@ -346,14 +341,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                 IComponentList documentList = ComponentList.SelectOne(ComponentListType.Documents);
                 lst = documentList.ID.ToString();
 
-                if (CanOnlyAdd || m_Candidate.ID == 0)
-                {
-                    url = string.Concat("&gallery=", galleryUrlParam, "&item=0", "&isimage=1");
-                }
-                else
-                {
-                    url = string.Concat("&gallery=", galleryUrlParam, "&isimage=1");
-                }
+                url = string.Concat("&gallery=", galleryUrlParam, "&item=0", "&isimage=1");
 
                 if (CanOnlyAdd)
                 {

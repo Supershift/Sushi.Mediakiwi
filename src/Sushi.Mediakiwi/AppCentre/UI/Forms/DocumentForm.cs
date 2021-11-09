@@ -21,6 +21,7 @@ namespace Sushi.Mediakiwi.AppCentre.UI.Forms
 
         public DocumentForm(WimComponentListRoot wim, Asset asset)
         {
+            wim.OpenInEditMode = true;
             if (wim?.Console?.Request?.Query?.ContainsKey("isimage") == true)
             {
                 IsImage = wim.Console.Request.Query["isimage"].Equals("1");
@@ -32,7 +33,7 @@ namespace Sushi.Mediakiwi.AppCentre.UI.Forms
             }
 
             Load(asset);
-
+            
             if (Instance.ID == 0)
             {
                 // only show Select Existing when user can see galleries
@@ -59,7 +60,7 @@ namespace Sushi.Mediakiwi.AppCentre.UI.Forms
 
             Map(x => x.GalleryID).FolderSelect(Labels.ResourceManager.GetString("_folder", new CultureInfo(wim.CurrentApplicationUser.LanguageCulture)), true, FolderType.Gallery);
             Map(x => x.RemoteLocation).TextLine("Url");
-            Map(x => x.BrowsingFrame, this).HtmlContainer().Hide(true);
+            Map(x => x.BrowsingFrame, this).HtmlContainer().Hide();
         }
 
         private void SetBrowsingFrame()
@@ -85,7 +86,11 @@ namespace Sushi.Mediakiwi.AppCentre.UI.Forms
             SetBrowsingFrame();
             if (wim?.CurrentApplicationUserRole?.CanSeeGallery != true || OnlyCreate)
             {
-                Find(x => x.CreateOrSelect, this).Hide();
+                var createOrSelect = Find(x => x.CreateOrSelect, this);
+                if (createOrSelect != null)
+                {
+                    createOrSelect.Hide();
+                }
             }
 
             if (wim?.Console?.Request?.Query?.ContainsKey("asset") == true && wim?.Console?.Request?.Query?.ContainsKey("selectOnly") == true)

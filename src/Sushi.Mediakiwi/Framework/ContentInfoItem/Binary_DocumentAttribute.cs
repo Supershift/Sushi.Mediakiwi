@@ -319,15 +319,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                 IComponentList documentList = ComponentList.SelectOne(ComponentListType.Documents);
                 lst = documentList.ID.ToString();
 
-                
-                if (m_Candidate.ID == 0)
-                {
-                    url = string.Concat("&gallery=", galleryUrlParam, "&item=0", "&isimage=0");
-                }
-                else
-                {
-                    url = string.Concat("&gallery=", galleryUrlParam, "&isimage=0");
-                }
+                url = string.Concat("&gallery=", galleryUrlParam, "&item=0", "&isimage=0");
 
                 if (CanOnlyCreate)
                 {
