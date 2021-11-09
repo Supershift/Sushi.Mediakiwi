@@ -12,5 +12,6 @@
         /// Zero based order
         /// </summary>
         public int SortOrder { get; set; }
+        public bool CanOnlyCreate { get; set; }
     }
 }

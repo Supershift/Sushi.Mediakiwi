@@ -97,15 +97,19 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// </summary>
         public Document()
         {
+            ListInit += Document_ListInit;
+            ListLoad += Document_ListLoad;
+            ListSave += Document_ListSave;
+            ListDelete += Document_ListDelete;
+        }
+
+        async Task Document_ListInit()
+        {
+            wim.HideEditOption = true;
             wim.HideOpenCloseToggle = true;
             wim.OpenInEditMode = true;
             wim.Page.HideBreadCrumbs = true;
             wim.Page.Body.Navigation.Menu.DeleteButtonTarget = ButtonTarget.BottomLeft;
-
-            ListLoad += Document_ListLoad;
-            ListSave += Document_ListSave;
-            ListDelete += Document_ListDelete;
-            ListSearch += Document_ListSearch;
         }
 
         /// <summary>
@@ -370,31 +374,6 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             public string PassthroughParameter { get; set; }
         }
 
-        async Task Document_ListSearch(ComponentListSearchEventArgs e)
-        {
-            int rootAsset = Utility.ConvertToInt(Request.Query["base"]);
-
-            var url = wim.GetUrl(new KeyValue() 
-            { 
-                Key = "item", 
-                RemoveKey = true 
-            });
-
-            var types = await AssetType.SelectAllAsync(true).ConfigureAwait(false);
-            var assets = await Asset.SelectAll_VariantAsync(rootAsset, Request.Query["gallery"]).ConfigureAwait(false);
-            AssetTypeMapper mapper = new AssetTypeMapper();
-            var mapped = mapper.Map(types, assets, url);
-
-            wim.ListDataColumns.Add(new ListDataColumn("ID", nameof(AssetTypeMapped.AssetID), ListDataColumnType.UniqueIdentifier));
-            wim.ListDataColumns.Add(new ListDataColumn("Type", nameof(AssetTypeMapped.AssetType), ListDataColumnType.HighlightPresent));
-            wim.ListDataColumns.Add(new ListDataColumn("File", nameof(AssetTypeMapped.DisplayName)));
-            wim.ListDataColumns.Add(new ListDataColumn("", nameof(AssetTypeMapped.HasAsset)) { ColumnWidth = 30 });
-            wim.ListDataAdd(mapped);
-
-            wim.SearchResultItemPassthroughParameterProperty = nameof(AssetTypeMapped.PassthroughParameter);
-            wim.Page.Body.Grid.IgnoreInLayerSubSelect = true;
-        }
-
         DocumentForm _Form;
         Asset m_Implement;
 
@@ -405,6 +384,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// <param name="e">The <see cref="ComponentListEventArgs"/> instance containing the event data.</param>
         async Task Document_ListLoad(ComponentListEventArgs e)
         {
+            wim.IsEditMode = true;
 
             AssetTypeSelectionList = new DataList();
 
@@ -511,11 +491,11 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                 wim.SetPropertyVisibility(nameof(ButtonMulti), false);
             }
 
-            if (wim.CurrentList.Option_OpenInEditMode)
-            {
-                wim.CurrentList.Option_OpenInEditMode = false;
-                wim.CurrentList.Save();
-            }
+            //if (wim.CurrentList.Option_OpenInEditMode)
+            //{
+            //    wim.CurrentList.Option_OpenInEditMode = false;
+            //    wim.CurrentList.Save();
+            //}
 
             m_Implement = await Asset.SelectOneAsync(e.SelectedKey).ConfigureAwait(false);
 

@@ -7,18 +7,6 @@ using System.Xml.Serialization;
 
 namespace Sushi.Mediakiwi.Framework
 {
-    ///// <summary>
-    ///// 
-    ///// </summary>
-    //public interface iMetaDataContainer
-    //{
-    //    /// <summary>
-    //    /// Gets the inner control collection.
-    //    /// </summary>
-    //    /// <returns></returns>
-    //    ControlCollection GetInnerControlCollection();
-    //}
-
     /// <summary>
     /// 
     /// </summary>
@@ -36,19 +24,20 @@ namespace Sushi.Mediakiwi.Framework
         /// <param name="value"></param>
         public MetaDataList(string text, string value)
         {
-            this.Text = text;
-            this.Value = value;
+            Text = text;
+            Value = value;
         }
 
         /// <summary>
         /// 
         /// </summary>
-        public string Text;
+        public string Text { get; set; }
+        
         /// <summary>
         /// 
         /// </summary>
-        public string Value;
-    }
+        public string Value { get; set; }
+}
 
     /// <summary>
     /// 
@@ -72,98 +61,162 @@ namespace Sushi.Mediakiwi.Framework
         /// <returns></returns>
         public IContentInfo GetContentInfo()
         {
-            int ContentTypeSelection = Utility.ConvertToInt(this.ContentTypeSelection);
+            int contentTypeSelection = Utility.ConvertToInt(ContentTypeSelection);
 
-            if (ContentTypeSelection == (int)ContentType.Binary_Document)
-                return new ContentInfoItem.Binary_DocumentAttribute(Title, Mandatory == "1", InteractiveHelp);
-
-            if (ContentTypeSelection == (int)ContentType.Binary_Image)
-                return new ContentInfoItem.Binary_ImageAttribute(Title, Mandatory == "1", InteractiveHelp) { CanOnlyAdd = true };
-
-            if (ContentTypeSelection == (int)ContentType.Choice_Dropdown)
-                return new ContentInfoItem.Choice_DropdownAttribute(Title, Collection, Mandatory == "1", AutoPostBack == "1", InteractiveHelp)
-                { IsMultiSelect = this.ContainsOption(ContentInfoItem.Choice_DropdownAttribute.OPTION_ENABLE_MULTI) };
-
-            if (ContentTypeSelection == (int)ContentType.Choice_Checkbox)
-                return new ContentInfoItem.Choice_CheckboxAttribute(Title, AutoPostBack == "1", InteractiveHelp);
-
-            if (ContentTypeSelection == (int)ContentType.Choice_Radio)
-                return new ContentInfoItem.Choice_RadioAttribute(Title, Collection, Groupname, Mandatory == "1", AutoPostBack == "1", InteractiveHelp);
-
-            if (ContentTypeSelection == (int)ContentType.Date)
-                return new ContentInfoItem.DateAttribute(Title, Mandatory == "1", InteractiveHelp);
-
-            if (ContentTypeSelection == (int)ContentType.DateTime)
-                return new ContentInfoItem.DateTimeAttribute(Title, Mandatory == "1", IsDbSortField == "1", InteractiveHelp);
-
-            if (ContentTypeSelection == (int)ContentType.FolderSelect)
-                return new ContentInfoItem.FolderSelectAttribute(Title, Mandatory == "1", InteractiveHelp);
-
-            if (ContentTypeSelection == (int)ContentType.PageSelect)
-                return new ContentInfoItem.PageSelectAttribute(Title, Mandatory == "1", InteractiveHelp);
-
-            if (ContentTypeSelection == (int)ContentType.MultiField)
-                return new ContentInfoItem.MultiFieldAttribute(Title, InteractiveHelp);
-
-            if (ContentTypeSelection == (int)ContentType.RichText)
+            switch (contentTypeSelection)
             {
-                return new ContentInfoItem.RichTextAttribute(Title
-                    , string.IsNullOrEmpty(MaxValueLength) ? 0 : Convert.ToInt32(MaxValueLength), Mandatory == "1", InteractiveHelp)
-                { EnableTable = this.ContainsOption(ContentInfoItem.RichTextAttribute.OPTION_ENABLE_TABLE) };
+                case (int)ContentType.Binary_Document:
+                    {
+                        return new ContentInfoItem.Binary_DocumentAttribute(Title,
+                            Mandatory == "1",
+                            InteractiveHelp);
+                    }
+                case (int)ContentType.Binary_Image:
+                    {
+                        return new ContentInfoItem.Binary_ImageAttribute(Title,
+                            Mandatory == "1",
+                            InteractiveHelp)
+                        {
+                            CanOnlyAdd = CanOnlyCreate == "1"
+                        };
+                    }
+                case (int)ContentType.Choice_Dropdown:
+                    {
+                        return new ContentInfoItem.Choice_DropdownAttribute(Title,
+                            Collection,
+                            Mandatory == "1",
+                            AutoPostBack == "1",
+                            InteractiveHelp)
+                        {
+                            IsMultiSelect = ContainsOption(ContentInfoItem.Choice_DropdownAttribute.OPTION_ENABLE_MULTI)
+                        };
+                    }
+                case (int)ContentType.Choice_Checkbox:
+                    {
+                        return new ContentInfoItem.Choice_CheckboxAttribute(Title,
+                            AutoPostBack == "1",
+                            InteractiveHelp);
+                    }
+                case (int)ContentType.Choice_Radio:
+                    {
+                        return new ContentInfoItem.Choice_RadioAttribute(Title,
+                            Collection,
+                            Groupname,
+                            Mandatory == "1",
+                            AutoPostBack == "1",
+                            InteractiveHelp);
+                    }
+                case (int)ContentType.Date:
+                    {
+                        return new ContentInfoItem.DateAttribute(Title,
+                            Mandatory == "1",
+                            InteractiveHelp);
+                    }
+                case (int)ContentType.DateTime:
+                    {
+                        return new ContentInfoItem.DateTimeAttribute(Title,
+                            Mandatory == "1",
+                            IsDbSortField == "1",
+                            InteractiveHelp);
+                    }
+                case (int)ContentType.FolderSelect:
+                    {
+                        return new ContentInfoItem.FolderSelectAttribute(Title,
+                            Mandatory == "1",
+                            InteractiveHelp);
+                    }
+                case (int)ContentType.PageSelect:
+                    {
+                        return new ContentInfoItem.PageSelectAttribute(Title,
+                            Mandatory == "1",
+                            InteractiveHelp);
+                    }
+                case (int)ContentType.MultiField:
+                    {
+                        return new ContentInfoItem.MultiFieldAttribute(Title,
+                            InteractiveHelp);
+                    }
+                case (int)ContentType.RichText:
+                    {
+                        return new ContentInfoItem.RichTextAttribute(
+                            Title,
+                            string.IsNullOrEmpty(MaxValueLength) ? 0 : Convert.ToInt32(MaxValueLength),
+                            Mandatory == "1",
+                            InteractiveHelp)
+                        {
+                            EnableTable = ContainsOption(ContentInfoItem.RichTextAttribute.OPTION_ENABLE_TABLE)
+                        };
+                    }
+                case (int)ContentType.SubListSelect:
+                    {
+                        // [MR: 11-06-2021] added these lines, for as a datatype definition saves its GUID
+                        // in the Collection property, not the ComponentList property
+                        string componentListGuid = Componentlist;
+                        if (string.IsNullOrWhiteSpace(Componentlist) && string.IsNullOrWhiteSpace(Collection) == false)
+                        {
+                            componentListGuid = Collection;
+                        }
+                        return new ContentInfoItem.SubListSelectAttribute(Title,
+                            componentListGuid,
+                            Mandatory == "1",
+                            CanOnlySortOrder == "1",
+                            CanContainOneItem == "1",
+                            CanClickOnItem == "1",
+                            InteractiveHelp);
+                    }
+                case (int)ContentType.ListItemSelect:
+                    {
+                        return new ContentInfoItem.ListItemSelectAttribute(Title,
+                            Collection,
+                            CanReuseItem == "1",
+                            InteractiveHelp);
+                    }
+                case (int)ContentType.Hyperlink:
+                    {
+                        return new ContentInfoItem.HyperlinkAttribute(Title,
+                            Mandatory == "1",
+                            InteractiveHelp);
+                    }
+                case (int)ContentType.TextArea:
+                    {
+                        return new ContentInfoItem.TextAreaAttribute(Title,
+                            string.IsNullOrEmpty(MaxValueLength) ? 0 : Convert.ToInt32(MaxValueLength),
+                            Mandatory == "1",
+                            InteractiveHelp,
+                            MustMatch);
+                    }
+                case (int)ContentType.Sourcecode:
+                    {
+                        return new ContentInfoItem.SourcecodeAttribute(Title,
+                            string.IsNullOrEmpty(MaxValueLength) ? 0 : Convert.ToInt32(MaxValueLength),
+                            Mandatory == "1",
+                            InteractiveHelp,
+                            MustMatch);
+                    }
+                case (int)ContentType.TextField:
+                    {
+                        return new ContentInfoItem.TextFieldAttribute(Title,
+                            string.IsNullOrEmpty(MaxValueLength) ? 0 : Convert.ToInt32(MaxValueLength),
+                            Mandatory == "1",
+                            InteractiveHelp,
+                            MustMatch);
+                    }
+                case (int)ContentType.TextLine:
+                    {
+                        return new ContentInfoItem.TextLineAttribute(Title,
+                            InteractiveHelp);
+                    }
+                case (int)ContentType.Section:
+                    {
+                        return new ContentListItem.SectionAttribute(false,
+                            null,
+                            Title);
+                    }
+                default:
+                    {
+                        return null;
+                    }
             }
-
-            if (ContentTypeSelection == (int)ContentType.SubListSelect)
-            {
-                // [MR: 11-06-2021] added these lines, for as a datatype definition saves its GUID
-                // in the Collection property, not the ComponentList property
-                string componentListGuid = Componentlist;
-                if (string.IsNullOrWhiteSpace(Componentlist) && string.IsNullOrWhiteSpace(Collection) == false)
-                {
-                    componentListGuid = Collection;
-                }
-                return new ContentInfoItem.SubListSelectAttribute(Title, componentListGuid, Mandatory == "1", CanOnlySortOrder == "1", CanContainOneItem == "1", CanClickOnItem == "1", InteractiveHelp);
-            }
-
-            //if (ContentTypeSelection == (int)ContentType.MultiImageSelect)
-            //    return new ContentInfoItem.MultiImageSelectAttribute(Title, InteractiveHelp);
-
-            if (ContentTypeSelection == (int)ContentType.ListItemSelect)
-                return new ContentInfoItem.ListItemSelectAttribute(Title, Collection, CanReuseItem == "1", InteractiveHelp);
-
-            if (ContentTypeSelection == (int)ContentType.Hyperlink)
-                return new ContentInfoItem.HyperlinkAttribute(Title, Mandatory == "1", InteractiveHelp);
-
-            if (ContentTypeSelection == (int)ContentType.TextArea)
-                return new ContentInfoItem.TextAreaAttribute(Title, string.IsNullOrEmpty(MaxValueLength) ? 0 : Convert.ToInt32(MaxValueLength), Mandatory == "1", InteractiveHelp, this.MustMatch);
-
-            if (ContentTypeSelection == (int)ContentType.Sourcecode)
-                return new ContentInfoItem.SourcecodeAttribute(Title, string.IsNullOrEmpty(MaxValueLength) ? 0 : Convert.ToInt32(MaxValueLength), Mandatory == "1", InteractiveHelp, this.MustMatch);
-
-            if (ContentTypeSelection == (int)ContentType.TextField)
-            {
-                //if (!string.IsNullOrEmpty(this.MustMatchID))
-                //    this.MustMatch = Sushi.Mediakiwi.Framework.ValidationRule.SelectOne(Convert.ToInt32(this.MustMatchID)).RegEx;
-
-                return new ContentInfoItem.TextFieldAttribute(Title, string.IsNullOrEmpty(MaxValueLength) ? 0 : Convert.ToInt32(MaxValueLength), Mandatory == "1", InteractiveHelp, this.MustMatch);
-            }
-
-            if (ContentTypeSelection == (int)ContentType.TextLine)
-                return new ContentInfoItem.TextLineAttribute(Title, InteractiveHelp);
-
-            if (ContentTypeSelection == (int)ContentType.Section)
-                return new ContentListItem.SectionAttribute(false, null, Title);
-            return null;
-        }
-
-        private string m_Name;
-        /// <summary>
-        /// 
-        /// </summary>
-        [XmlElement("id")]
-        public string Name
-        {
-            set { m_Name = value; }
-            get { return m_Name; }
         }
 
         /// <summary>
@@ -173,14 +226,14 @@ namespace Sushi.Mediakiwi.Framework
         public void AddOption(string option)
         {
             List<string> tags = new List<string>();
-            if (!string.IsNullOrEmpty(this.Options))
+            if (!string.IsNullOrEmpty(Options))
             {
-                tags.AddRange(this.Options.Split(','));
+                tags.AddRange(Options.Split(','));
                 if (tags.Contains(option))
                     return;
             }
             tags.Add(option);
-            this.Options = Utility.ConvertToCsvString(tags.ToArray(), false);
+            Options = Utility.ConvertToCsvString(tags.ToArray(), false);
         }
 
         /// <summary>
@@ -189,287 +242,173 @@ namespace Sushi.Mediakiwi.Framework
         /// <param name="option"></param>
         public void RemoveOption(string option)
         {
-            if (string.IsNullOrEmpty(this.Options))
+            if (string.IsNullOrEmpty(Options))
+            {
                 return;
+            }
 
             List<string> tags = new List<string>();
-            tags.AddRange(this.Options.Split(','));
+            tags.AddRange(Options.Split(','));
             if (tags.Contains(option))
             {
                 tags.Remove(option);
-                this.Options = Utility.ConvertToCsvString(tags.ToArray(), false);
+                Options = Utility.ConvertToCsvString(tags.ToArray(), false);
             }
         }
 
         public bool ContainsOption(string option)
         {
-            if (string.IsNullOrEmpty(this.Options))
+            if (string.IsNullOrEmpty(Options))
+            {
                 return false;
+            }
 
             List<string> tags = new List<string>();
-            tags.AddRange(this.Options.Split(','));
+            tags.AddRange(Options.Split(','));
             return tags.Contains(option);
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        [XmlElement("id")]
+        public string Name { get; set; }
 
 
         [XmlElement("options")]
         public string Options { get; set; }
 
-
-        //private string m_AvailableCollectionProperty;
-        ///// <summary>
-        ///// 
-        ///// </summary>
-        //[XmlElement("collectionprop")]
-        //public string AvailableCollectionProperty
-        //{
-        //    set { m_AvailableCollectionProperty = value; }
-        //    get { return m_AvailableCollectionProperty; }
-        //}
-
-        private string m_Title;
         /// <summary>
         /// 
         /// </summary>
         [XmlElement("title")]
-        public string Title
-        {
-            set { m_Title = value; }
-            get { return m_Title; }
-        }
+        public string Title { get; set; }
 
-        private string m_contenttype;
         /// <summary>
         /// 
         /// </summary>
         [XmlElement("type")]
-        public string ContentTypeSelection
-        {
-            set { m_contenttype = value; }
-            get { return m_contenttype; }
-        }
+        public string ContentTypeSelection { get; set; }
 
-        private string m_Componentlist;
         /// <summary>
         /// 
         /// </summary>
         [XmlElement("list")]
-        public string Componentlist
-        {
-            set { m_Componentlist = value; }
-            get { return m_Componentlist; }
-        }
+        public string Componentlist { get; set; }
 
-        private string m_InteractiveHelp;
         /// <summary>
         /// 
         /// </summary>
         [XmlElement("help")]
-        public string InteractiveHelp
-        {
-            set { m_InteractiveHelp = value; }
-            get { return m_InteractiveHelp; }
-        }
+        public string InteractiveHelp { get; set; }
 
-        private string m_CanReuseItem;
         /// <summary>
         /// 
         /// </summary>
         [XmlElement("reuse")]
-        public string CanReuseItem
-        {
-            set { m_CanReuseItem = value; }
-            get { return m_CanReuseItem; }
-        }
+        public string CanReuseItem { get; set; }
 
         [XmlElement("inherit")]
         public string IsInheritedField { get; set; }
 
-        private string m_CanOnlySortOrder;
         /// <summary>
         /// 
         /// </summary>
         [XmlElement("sortorder")]
-        public string CanOnlySortOrder
-        {
-            set { m_CanOnlySortOrder = value; }
-            get { return m_CanOnlySortOrder; }
-        }
+        public string CanOnlySortOrder { get; set; }
 
-        private string m_CanContainOneItem;
         /// <summary>
         /// 
         /// </summary>
         [XmlElement("containone")]
-        public string CanContainOneItem
-        {
-            set { m_CanContainOneItem = value; }
-            get { return m_CanContainOneItem; }
-        }
+        public string CanContainOneItem { get; set; }
 
-
-        private string m_CanClickOnItem;
         /// <summary>
         /// 
         /// </summary>
         [XmlElement("CanClickOnItem")]
-        public string CanClickOnItem
-        {
-            set { m_CanClickOnItem = value; }
-            get { return m_CanClickOnItem; }
-        }
+        public string CanClickOnItem { get; set; }
 
-
-        private string m_Mandatory;
         /// <summary>
         /// 
         /// </summary>
         [XmlElement("mandatory")]
-        public string Mandatory
-        {
-            set { m_Mandatory = value; }
-            get { return m_Mandatory; }
-        }
+        public string Mandatory { get; set; }
 
-
-        private string m_EmptyFirst;
         /// <summary>
         /// 
         /// </summary>
         [XmlElement("emptyfirst")]
-        public string EmptyFirst
-        {
-            set { m_EmptyFirst = value; }
-            get { return m_EmptyFirst; }
-        }
+        public string EmptyFirst { get; set; }
 
-        private string m_OnlyRead;
         /// <summary>
         /// 
         /// </summary>
         [XmlElement("onlyread")]
-        public string OnlyRead
-        {
-            set { m_OnlyRead = value; }
-            get { return m_OnlyRead; }
-        }
+        public string OnlyRead { get; set; }
 
-        private string m_MaxValueLength;
         /// <summary>
         /// 
         /// </summary>
         [XmlElement("length")]
-        public string MaxValueLength
-        {
-            set { m_MaxValueLength = value; }
-            get { return m_MaxValueLength; }
-        }
+        public string MaxValueLength { get; set; }
 
-        private string m_Collection;
         /// <summary>
         /// 
         /// </summary>
         [XmlElement("collection")]
-        public string Collection
-        {
-            set { m_Collection = value; }
-            get { return m_Collection; }
-        }
+        public string Collection { get; set; }
 
-        private string m_AutoPostBack;
         /// <summary>
         /// 
         /// </summary>
         [XmlElement("postback")]
-        public string AutoPostBack
-        {
-            set { m_AutoPostBack = value; }
-            get { return m_AutoPostBack; }
-        }
+        public string AutoPostBack { get; set; }
 
-        private string m_Groupname;
         /// <summary>
         /// 
         /// </summary>
         [XmlElement("group")]
-        public string Groupname
-        {
-            set { m_Groupname = value; }
-            get { return m_Groupname; }
-        }
+        public string Groupname { get; set; }
 
-        private string m_Text;
         /// <summary>
         /// 
         /// </summary>
         [XmlElement("default")]
-        public string Default
-        {
-            set { m_Text = value; }
-            get { return m_Text; }
-        }
+        public string Default { get; set; }
 
-        private string m_IsDbSortField;
         /// <summary>
         /// 
         /// </summary>
         [XmlElement("dbsort")]
-        public string IsDbSortField
-        {
-            set { m_IsDbSortField = value; }
-            get { return m_IsDbSortField; }
-        }
+        public string IsDbSortField { get; set; }
 
-        private string m_MustMatch;
         /// <summary>
         /// 
         /// </summary>
         [XmlElement("regex")]
-        public string MustMatch
-        {
-            set { m_MustMatch = value; }
-            get { return m_MustMatch; }
-        }
+        public string MustMatch { get; set; }
 
-        //private string m_MustMatchID;
-        ///// <summary>
-        ///// Gets or sets the must match ID.
-        ///// </summary>
-        ///// <value>The must match ID.</value>
-        //[XmlElement("regex_id")]
-        //public string MustMatchID
-        //{
-        //    set { m_MustMatchID = value; }
-        //    get { return m_MustMatchID; }
-        //}
-
-        private MetaDataList[] m_CollectionList;
         /// <summary>
         /// 
         /// </summary>
         [XmlElement("items")]
-        public MetaDataList[] CollectionList
-        {
-            set { m_CollectionList = value; }
-            get { return m_CollectionList; }
-        }
+        public MetaDataList[] CollectionList { get; set; }
 
-        private string m_IsSharedField;
         /// <summary>
         /// 
         /// </summary>
         [XmlElement("isshared")]
-        public string IsSharedField
-        {
-            set { m_IsSharedField = value; }
-            get { return m_IsSharedField; }
-        }
+        public string IsSharedField { get; set; }
+
+        [XmlElement("canonlycreate")]
+        public string CanOnlyCreate { get; set; }
 
         /// <summary>
         /// 
         /// </summary>
         /// <returns></returns>
-        public ListItemCollection GetCollection(Sushi.Mediakiwi.Beta.GeneratedCms.Console console)
+        public ListItemCollection GetCollection(Beta.GeneratedCms.Console console)
         {
             ListItemCollection _collection = new ListItemCollection();
             if (CollectionList != null && CollectionList.Length > 0)

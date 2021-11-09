@@ -80,6 +80,7 @@ namespace Sushi.Mediakiwi.AppCentre.UI
                     item.InteractiveHelp = property.InteractiveHelp;
                     item.Mandatory = property.IsMandatory ? "1" : "0";
                     item.IsSharedField = property.IsSharedField ? "1" : "0";
+                    item.CanOnlyCreate = property.CanOnlyCreate ? "1" : "0";
 
                     if (property.MaxValueLength.HasValue)
                     {

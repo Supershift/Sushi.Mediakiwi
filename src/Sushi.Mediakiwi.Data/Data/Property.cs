@@ -34,7 +34,7 @@ namespace Sushi.Mediakiwi.Data
                 Map(x => x.PropertyType, "Property_CodeType");
                 Map(x => x.Filter, "Property_Column").Length(50);
                 Map(x => x.CanFilter, "Property_CanFilter");
-                Map(x => x.OnlyInput, "Property_OnlyInput");
+                Map(x => x.CanOnlyCreate, "Property_OnlyInput");
                 Map(x => x.Data, "Property_Data");
                 Map(x => x.IsFixed, "Property_IsFixed");
                 Map(x => x.InheritedID, "Property_Property_Key");
@@ -242,7 +242,11 @@ namespace Sushi.Mediakiwi.Data
         /// </value>
         public bool CanFilter { get; set; }
 
-        public bool OnlyInput { get; set; }
+        /// <summary>
+        /// When set to true, only New items can be created, this goes for Assets
+        /// where the Select From Gallery option will then be skipped
+        /// </summary>
+        public bool CanOnlyCreate { get; set; }
 
         /// <summary>
         /// Gets or sets the data.

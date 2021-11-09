@@ -90,7 +90,8 @@ namespace Sushi.Mediakiwi.Controllers
                             IsMandatory = meta.Mandatory.Equals("1"),
                             SortOrder = index,
                             TemplateID = request.DocumentTypeID,
-                            IsSharedField = meta.IsSharedField.Equals("1")
+                            IsSharedField = meta.IsSharedField.Equals("1"),
+                            CanOnlyCreate = meta.CanOnlyCreate.Equals("1")
                         };
                         await property.SaveAsync().ConfigureAwait(false);
 
@@ -127,6 +128,7 @@ namespace Sushi.Mediakiwi.Controllers
                     ContentTypeID = (int)property.ContentTypeID,
                     SortOrder = property.SortOrder,
                     FieldName = property.FieldName,
+                    CanOnlyCreate = property.CanOnlyCreate
                 });
             }
 

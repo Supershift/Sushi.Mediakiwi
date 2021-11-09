@@ -778,9 +778,14 @@ namespace Sushi.Mediakiwi.Framework
         /// <param name="appendApplicationPath">when false the application path will not be added to the path param</param>
         public void AddStyle(string path, bool appendApplicationPath = true)
         {
-            string fileVersion = CommonConfiguration.FILE_VERSION;
             string _path = (appendApplicationPath) ? _root.AddApplicationPath(path) : path;
-            Add($"<link rel=\"stylesheet\" href=\"{_path}?v={fileVersion}\" type=\"text/css\" media=\"all\" />");
+            if (string.IsNullOrWhiteSpace(CommonConfiguration.FILE_VERSION)) 
+            {
+                Add($"<link rel=\"stylesheet\" href=\"{_path}\" type=\"text/css\" media=\"all\" />");
+                return;
+            }
+            
+            Add($"<link rel=\"stylesheet\" href=\"{_path}?v={CommonConfiguration.FILE_VERSION}\" type=\"text/css\" media=\"all\" />");
         }
 
         /// <summary>

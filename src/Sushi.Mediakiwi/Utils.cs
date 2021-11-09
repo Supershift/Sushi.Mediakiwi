@@ -131,6 +131,20 @@ namespace Sushi.Mediakiwi
             }
         }
 
+        static string _FullVersion;
+        internal static string FullVersion
+        {
+            get
+            {
+                if (_FullVersion == null)
+                {
+                    var split = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileVersion.Split('.');
+                    _FullVersion = $"{split[0]}.{split[1]}.{split[2]}";
+                }
+                return _FullVersion;
+            }
+        }
+
         /// <summary>
         /// Gets the asynchronous query properties.
         /// </summary>
