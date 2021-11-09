@@ -31,7 +31,7 @@
     "IIS": {
       "commandName": "IIS",
       "launchBrowser": true,
-      "launchUrl": "https://localhost/Sushi.Mediakiwi.Demonstration/2/repository/wim/portal.ashx?list=1",
+      "launchUrl": "https://localhost/Sushi.Mediakiwi.Demonstration/mediakiwi",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT ": "Development"
       }

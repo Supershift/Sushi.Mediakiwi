@@ -524,11 +524,13 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             {
                 m_Implement = new Asset()
                 {
-                    GalleryID = galleryId
+                    GalleryID = galleryId,
+                    IsImage = isImage
                 };
             }
 
-            _Form = new DocumentForm(m_Implement, isImage);
+            _Form = new DocumentForm(wim, m_Implement);
+
             FormMaps.Add(_Form);
         }
 

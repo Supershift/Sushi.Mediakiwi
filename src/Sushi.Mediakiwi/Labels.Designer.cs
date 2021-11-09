@@ -223,6 +223,15 @@ namespace Sushi.Mediakiwi {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Create new.
+        /// </summary>
+        internal static string create_or_select {
+            get {
+                return ResourceManager.GetString("create_or_select", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Custom actions.
         /// </summary>
         internal static string custom_actions {

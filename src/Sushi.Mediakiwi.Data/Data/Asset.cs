@@ -446,34 +446,60 @@ where
 
         }
 
-        public static List<Asset> SelectAll(int galleryID, int? assetTypeID = null, bool onlyReturnActiveAssets = false)
+        public static List<Asset> SelectAll(int galleryID, int? assetTypeID = null, bool onlyReturnActiveAssets = false, bool onlyReturnDocuments = false, bool onlyReturnImages = false)
         {
             var connector = ConnectorFactory.CreateConnector<Asset>();
             var filter = connector.CreateDataFilter();
             filter.Add(x => x.GalleryID, galleryID);
             filter.Add(x => x.ParentID, null);
 
+            if (onlyReturnImages)
+            {
+                filter.Add(x => x.IsImage, true);
+            }
+            else if (onlyReturnDocuments)
+            {
+                filter.Add(x => x.IsImage, false);
+            }
+
             if (onlyReturnActiveAssets)
+            {
                 filter.Add(x => x.IsActive, true);
+            }
 
             if (assetTypeID.HasValue)
+            {
                 filter.Add(x => x.AssetTypeID, assetTypeID.Value);
+            }
 
             return connector.FetchAll(filter);
         }
 
-        public static async Task<List<Asset>> SelectAllAsync(int galleryID, int? assetTypeID = null, bool onlyReturnActiveAssets = false)
+        public static async Task<List<Asset>> SelectAllAsync(int galleryID, int? assetTypeID = null, bool onlyReturnActiveAssets = false, bool onlyReturnDocuments = false, bool onlyReturnImages = false)
         {
             var connector = ConnectorFactory.CreateConnector<Asset>();
             var filter = connector.CreateDataFilter();
             filter.Add(x => x.GalleryID, galleryID);
             filter.Add(x => x.ParentID, null);
+            
+            if (onlyReturnImages)
+            {
+                filter.Add(x => x.IsImage, true);
+            }
+            else if (onlyReturnDocuments)
+            {
+                filter.Add(x => x.IsImage, false);
+            }
 
             if (onlyReturnActiveAssets)
+            {
                 filter.Add(x => x.IsActive, true);
+            }
 
             if (assetTypeID.HasValue)
+            {
                 filter.Add(x => x.AssetTypeID, assetTypeID.Value);
+            }
 
             return await connector.FetchAllAsync(filter);
         }
@@ -501,7 +527,7 @@ where
             return connector.FetchAll(filter);
         }
 
-        public static async Task<List<Asset>> SearchAllAsync(string searchCandidate, int? galleryID = null, bool onlyReturnActiveAssets = false)
+        public static async Task<List<Asset>> SearchAllAsync(string searchCandidate, int? galleryID = null, bool onlyReturnActiveAssets = false, bool onlyReturnDocuments = false, bool onlyReturnImages = false)
         {
             var connector = ConnectorFactory.CreateConnector<Asset>();
             var filter = connector.CreateDataFilter();
@@ -513,13 +539,26 @@ where
                 filter.AddParameter("search", searchCandidate);
             }
 
+            if (onlyReturnImages)
+            {
+                filter.Add(x => x.IsImage, true);
+            }
+            else if (onlyReturnDocuments)
+            {
+                filter.Add(x => x.IsImage, false);
+            }
+
             filter.AddSql("(Asset_Title like @search or Asset_Description like @search)");
 
             if (onlyReturnActiveAssets)
+            {
                 filter.Add(x => x.IsActive, true);
+            }
 
             if (galleryID.HasValue)
+            {
                 filter.Add(x => x.GalleryID, galleryID.Value);
+            }
 
             return await connector.FetchAllAsync(filter);
         }

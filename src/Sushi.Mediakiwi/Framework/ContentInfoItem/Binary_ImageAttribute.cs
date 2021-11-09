@@ -67,13 +67,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
         /// </value>
         public int SavedAssetTypeID { get; set; }
 
-        /// <summary>
-        /// Gets or sets a value indicating whether this instance can only add.
-        /// </summary>
-        /// <value>
-        /// 	<c>true</c> if this instance can only add; otherwise, <c>false</c>.
-        /// </value>
-        bool _CanOnlyAdd = true;
+        bool _CanOnlyAdd = false;
         /// <summary>
         /// Gets or sets a value indicating whether this instance can only add.
         /// </summary>
@@ -361,13 +355,18 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                     url = string.Concat("&gallery=", galleryUrlParam, "&isimage=1");
                 }
 
+                if (CanOnlyAdd)
+                {
+                    url += "&onlycreate=1";
+                }
+
                 int? key = null;
                 if (m_Candidate != null)
                 {
                     key = m_Candidate.ID;
                 }
 
-                ApplyItemSelect(build, true, true, titleTag, ID, lst, url, false, isRequired, false, false, LayerSize.Normal, (CanOnlyAdd ? false : true), 450
+                ApplyItemSelect(build, true, true, titleTag, ID, lst, url, false, isRequired, false, false, LayerSize.Normal, (CanOnlyAdd ? false : true), 500
                     , null, new NameItemValue() { Name = ID, ID = key, Value = OutputText }
                     );
             }
