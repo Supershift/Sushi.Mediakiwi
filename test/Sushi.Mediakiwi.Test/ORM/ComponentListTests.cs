@@ -7,7 +7,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Sushi.Mediakiwi.Tests.ORM
+namespace Sushi.Mediakiwi.Test.ORM
 {
     [TestClass]
     public class ComponentListTests : BaseTest
@@ -22,8 +22,8 @@ namespace Sushi.Mediakiwi.Tests.ORM
             ReferenceID = 0,
             SingleItemName = "",
             IsVisible = false,
-            AssemblyName = "Sushi.Mediakiwi.Tests.dll",
-            ClassName = "Sushi.Mediakiwi.Tests.ORM.ComponentListTests",
+            AssemblyName = "Sushi.Mediakiwi.Test.dll",
+            ClassName = "Sushi.Mediakiwi.Test.ORM.ComponentListTests",
             Icon = null,
             Description = "Test Asset voor UNIT TEST",
             GUID = new Guid("DF197673-A021-46AD-A59D-1E78330B4D48"),
@@ -51,8 +51,8 @@ namespace Sushi.Mediakiwi.Tests.ORM
             ReferenceID = 0,
             SingleItemName = "",
             IsVisible = false,
-            AssemblyName = "Sushi.Mediakiwi.Tests.dll",
-            ClassName = "Sushi.Mediakiwi.Tests.ORM.ComponentListTests",
+            AssemblyName = "Sushi.Mediakiwi.Test.dll",
+            ClassName = "Sushi.Mediakiwi.Test.ORM.ComponentListTests",
             Icon = null,
             Description = "Test Asset voor UNIT ASYNC TEST",
             GUID = new Guid("77E2F74B-E355-469D-9EFD-4D7C96A9FD63"),

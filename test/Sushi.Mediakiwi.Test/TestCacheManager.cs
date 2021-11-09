@@ -3,7 +3,7 @@ using System.Collections.Concurrent;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Sushi.Mediakiwi.Tests
+namespace Sushi.Mediakiwi.Test
 {
     public class TestCacheManager : ICacheManager
     {

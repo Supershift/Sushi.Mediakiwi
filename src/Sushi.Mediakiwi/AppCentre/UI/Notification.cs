@@ -12,7 +12,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
 
 
     /// <summary>
-    /// 
+    /// Represents the UI to display Notifications stored using SQL.
     /// </summary>
     public class Notification : BaseImplementation
     {
@@ -29,9 +29,11 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             ListAction += Notification_ListAction;
         }
 
+        private Mediakiwi.Data.Repositories.Sql.NotificationRepository _repository = new Mediakiwi.Data.Repositories.Sql.NotificationRepository();
+
         async Task Notification_ListAction(ComponentActionEventArgs e)
         {
-            await Mediakiwi.Data.Notification.DeleteAllAsync(FilterGroup);
+            await _repository.DeleteAllAsync(FilterGroup);
             Response.Redirect(wim.Console.WimPagePath);
         }
 
@@ -59,7 +61,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             }
         }
 
-        INotification _implement;
+        Mediakiwi.Data.Notification _implement;
 
         async Task Notification_ListLoad(ComponentListEventArgs e)
         {
@@ -68,7 +70,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                 return;
             }
 
-            _implement = await Mediakiwi.Data.Notification.SelectOneAsync(e.SelectedKey).ConfigureAwait(false);
+            _implement = await _repository.SelectOneAsync(e.SelectedKey).ConfigureAwait(false);
             Date = _implement.Created.ToString("dd-MM-yy hh:mm tt");
             Note = _implement.Text;
             Type = _implement.Group;
@@ -102,7 +104,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                 wim.ListDataColumns.Add(new ListDataColumn("Notification", nameof(Mediakiwi.Data.Notification.Text), ListDataColumnType.HighlightPresent));
                 wim.ListDataColumns.Add(new ListDataColumn("Created", nameof(Mediakiwi.Data.Notification.Created), ListDataColumnType.Default) { ContentType = ListDataContentType.ItemSelect });
 
-                var results = await Mediakiwi.Data.Notification.SelectAllAsync(FilterGroup, FilterSelection, null).ConfigureAwait(false);
+                var results = await _repository.SelectAllAsync(FilterGroup, FilterSelection, null).ConfigureAwait(false);
                 wim.ListDataAdd(results);
             }
         }

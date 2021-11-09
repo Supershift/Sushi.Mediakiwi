@@ -21,10 +21,13 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             ListLoad += NoteList_ListLoad;
         }
 
+
+
         async Task NoteList_ListLoad(ComponentListEventArgs e)
         {
             int lastError = wim.CurrentVisitor.Data["last.error"].ParseInt().GetValueOrDefault();
-            var note = await Mediakiwi.Data.Notification.SelectOneAsync(lastError).ConfigureAwait(false);
+            var repository = new Mediakiwi.Data.Repositories.Sql.NotificationRepository();
+            var note = await repository.SelectOneAsync(lastError).ConfigureAwait(false);
             
             string errorShort = note.Text.Split(new string[] { "<b>Error:</b><br/>", "<br/><br/><b>Source:</b>" }, StringSplitOptions.RemoveEmptyEntries)[0];
             int errorCode = Utility.ConvertToInt(errorShort.Split(':')[0]);
