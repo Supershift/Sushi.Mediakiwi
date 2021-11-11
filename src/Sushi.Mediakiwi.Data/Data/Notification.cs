@@ -41,7 +41,10 @@ namespace Sushi.Mediakiwi.Data
             return "unknown";
         }
 
-        public static INotificationRepository Repository { get; } = new Repositories.Sql.NotificationRepository();
+        /// <summary>
+        /// Gets or sets the instance of <see cref="INotificationRepository" /> used when calling static Insert methods on <see cref="Notification"/>.
+        /// </summary>
+        public static INotificationRepository Repository { get; set; } = new Repositories.Sql.NotificationRepository();
 
         /// <summary>
         /// Insert a notification

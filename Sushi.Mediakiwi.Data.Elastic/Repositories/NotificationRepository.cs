@@ -7,16 +7,17 @@ using System.Threading.Tasks;
 namespace Sushi.Mediakiwi.Data.Elastic.Repositories
 {
     /// <summary>
-    /// Provides methods to store and retrieve instances of <see cref="Notification"/> from a Sql database.
+    /// Provides methods to store and retrieve instances of <see cref="Notification"/> from a Sql database. 
+    /// It is advised to use one instance of <see cref="NotificationRepository"/> per application.
     /// </summary>
     public class NotificationRepository : INotificationRepository
     {
         private Nest.IElasticClient _client;
         private string _dataStreamName;
-        public NotificationRepository(Nest.ConnectionSettings connectionSettings, string dataStreamName)
-        {   
+        public NotificationRepository(Nest.IElasticClient client, string dataStreamName)
+        {
             // create client
-            _client = new Nest.ElasticClient(connectionSettings);
+            _client = client;
             _dataStreamName = dataStreamName;
         }
         
