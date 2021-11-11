@@ -11,7 +11,7 @@ namespace Sushi.Mediakiwi.Test.Elastic
     [TestClass]
     public class NotificationTest : BaseTest
     {
-        private static NotificationRepository _repository = new NotificationRepository(ElasticConnectionSettings, "notifications");
+        private static NotificationRepository _repository = new NotificationRepository(ElasticClient, "notifications");
 
         private Notification GetNotificationInstance()
         {

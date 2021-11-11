@@ -13,7 +13,7 @@ namespace Sushi.Mediakiwi.Test
     public abstract class BaseTest
     {
         private static ConcurrentDictionary<string, ICacheManager> Caches = new ConcurrentDictionary<string, ICacheManager>();
-        public static Nest.ConnectionSettings ElasticConnectionSettings { get; private set; }
+        public static Nest.IElasticClient ElasticClient { get; private set; }
         [AssemblyInitialize]
         public static void Initialize(TestContext context)
         {
@@ -33,10 +33,11 @@ namespace Sushi.Mediakiwi.Test
             .AddUserSecrets(System.Reflection.Assembly.GetExecutingAssembly(), optional: true)
             .Build();
 
-            ElasticConnectionSettings = new Nest.ConnectionSettings(new Uri(config["ElasticUrl"]))
-                .BasicAuthentication(config["ElasticUsername"], config["ElasticPassword"])
-                //.DefaultMappingFor<Data.Notification>(d => d.PropertyName(p => p.Created, "@timestamp"))
-                .ThrowExceptions(true);            
+
+            var elasticSettings = new Nest.ConnectionSettings(new Uri(config["ElasticUrl"]))
+                .BasicAuthentication(config["ElasticUsername"], config["ElasticPassword"])                
+                .ThrowExceptions(true);
+            ElasticClient = new Nest.ElasticClient(elasticSettings);
 
             //// Assign json section to config
             //WimServerConfiguration.LoadJsonConfig(AppDomain.CurrentDomain.BaseDirectory + "appsettings.json");
