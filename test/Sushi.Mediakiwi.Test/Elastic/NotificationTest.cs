@@ -11,7 +11,7 @@ namespace Sushi.Mediakiwi.Test.Elastic
     [TestClass]
     public class NotificationTest : BaseTest
     {
-        private static NotificationRepository _repository = new NotificationRepository(ElasticClient, "notifications");
+        private static NotificationRepository _repository = new NotificationRepository(ElasticConnectionSettings, "notifications");
 
         private Notification GetNotificationInstance()
         {
@@ -33,7 +33,29 @@ namespace Sushi.Mediakiwi.Test.Elastic
         {
             var notification = GetNotificationInstance();
             var result = await _repository.SaveAsync(notification);
-            Assert.IsNotNull(result.ID);
+            WriteResult(result);
+            Assert.IsInstanceOfType(result, typeof(Data.Elastic.Notification));
+            Assert.IsNotNull(((Data.Elastic.Notification)result).ElasticId);            
+        }
+
+        [TestMethod]
+        public async Task GetIdMessage()
+        {
+            var notification = GetNotificationInstance();
+            var result = await _repository.SaveAsync(notification);
+            WriteResult(notification.GetIdMessage());
+            WriteResult(result.GetIdMessage());
+            Assert.AreNotEqual(notification.GetIdMessage(), result.GetIdMessage());
+        }
+
+        [TestMethod]
+        public async Task GetAllAsync()
+        {
+            //var result = await ElasticConnectionSettings.SearchAsync<Notification>(d => d
+            //    .Index("notifications")
+            //    .Query(q => q.MatchAll())
+            //    );
+            //WriteResult(result);
         }
     }
 }

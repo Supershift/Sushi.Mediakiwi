@@ -13,24 +13,29 @@ namespace Sushi.Mediakiwi.Data.Elastic.Repositories
     {
         private Nest.IElasticClient _client;
         private string _dataStreamName;
-        public NotificationRepository(Nest.IElasticClient client, string dataStreamName)
-        {
-            _client = client;
+        public NotificationRepository(Nest.ConnectionSettings connectionSettings, string dataStreamName)
+        {   
+            // create client
+            _client = new Nest.ElasticClient(connectionSettings);
             _dataStreamName = dataStreamName;
         }
         
-        public Notification Save(Notification notification)
+        public Data.Notification Save(Data.Notification notification)
         {
-            var response = _client.Index(notification, i => i.Index(_dataStreamName));
-            notification.ID = response.Id;
-            return notification;
+            var elasticNotification = new Notification(notification);
+            var response = _client.Index(elasticNotification, i => i.Index(_dataStreamName));
+            elasticNotification.ElasticId = new ElasticId(response.Id, response.Index);
+            return elasticNotification;
         }
 
-        public async Task<Notification> SaveAsync(Notification notification)
+        public async Task<Data.Notification> SaveAsync(Data.Notification notification)
         {
-            var response = await _client.IndexAsync(notification, i => i.Index(_dataStreamName));
-            notification.ID = response.Id;
-            return notification;
+            var elasticNotification = new Notification(notification);
+            var response = await _client.IndexAsync(elasticNotification, i => i.Index(_dataStreamName));
+            elasticNotification.ElasticId = new ElasticId(response.Id, response.Index);
+            return elasticNotification;
         }
+
+        
     }
 }

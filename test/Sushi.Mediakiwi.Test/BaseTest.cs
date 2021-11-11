@@ -13,7 +13,7 @@ namespace Sushi.Mediakiwi.Test
     public abstract class BaseTest
     {
         private static ConcurrentDictionary<string, ICacheManager> Caches = new ConcurrentDictionary<string, ICacheManager>();
-        public static Nest.IElasticClient ElasticClient { get; private set; }
+        public static Nest.ConnectionSettings ElasticConnectionSettings { get; private set; }
         [AssemblyInitialize]
         public static void Initialize(TestContext context)
         {
@@ -33,10 +33,10 @@ namespace Sushi.Mediakiwi.Test
             .AddUserSecrets(System.Reflection.Assembly.GetExecutingAssembly(), optional: true)
             .Build();
 
-            var elasticConnection = new Nest.ConnectionSettings(new Uri(config["ElasticUrl"]))
+            ElasticConnectionSettings = new Nest.ConnectionSettings(new Uri(config["ElasticUrl"]))
                 .BasicAuthentication(config["ElasticUsername"], config["ElasticPassword"])
-                .ThrowExceptions(true);
-            ElasticClient = new Nest.ElasticClient(elasticConnection);
+                //.DefaultMappingFor<Data.Notification>(d => d.PropertyName(p => p.Created, "@timestamp"))
+                .ThrowExceptions(true);            
 
             //// Assign json section to config
             //WimServerConfiguration.LoadJsonConfig(AppDomain.CurrentDomain.BaseDirectory + "appsettings.json");
@@ -44,6 +44,20 @@ namespace Sushi.Mediakiwi.Test
             //// retrieve default portal and set connectionstring
             //WimServerPortal portal = WimServerConfiguration.Instance.Portals.Where(x => x.Name == WimServerConfiguration.Instance.DefaultPortal).FirstOrDefault();
             DatabaseConfiguration.SetDefaultConnectionString(config.GetConnectionString("datastore"));
+        }
+
+        public void WriteResult<T>(T result)
+        {
+            var type = typeof(T);
+            if (result is string || type.IsPrimitive)
+            {
+                Console.WriteLine(result);
+            }
+            else
+            {
+                var line = Newtonsoft.Json.JsonConvert.SerializeObject(result, Newtonsoft.Json.Formatting.Indented);
+                Console.WriteLine(line);
+            }
         }
     }
 }

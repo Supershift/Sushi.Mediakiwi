@@ -1,50 +1,47 @@
 ﻿using Sushi.Mediakiwi.Data.MicroORM;
+using sql = Sushi.Mediakiwi.Data.Sql;   
 using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Sushi.Mediakiwi.Data.Repositories.Sql
-{
+{   
     /// <summary>
     /// Provides methods to store and retrieve instances of <see cref="Notification"/> from a Sql database.
     /// </summary>
     public class NotificationRepository : INotificationRepository
-    {   
+    {
+        private Sushi.MicroORM.Connector<sql.Notification> connector = new Sushi.MicroORM.Connector<sql.Notification>();
+        
         public Notification Save(Notification notification)
         {
-            var connector = new Sushi.MicroORM.Connector<Notification>();
-            
-            connector.Save(notification);
-            return notification;
+            var sqlNotification = new sql.Notification(notification);
+            connector.Save(sqlNotification);
+            return sqlNotification;
         }
 
         public async Task<Notification> SaveAsync(Notification notification)
         {
-            var connector = new Sushi.MicroORM.Connector<Notification>();            
-            
-            await connector.SaveAsync(notification);
-            return notification;
+            var sqlNotification = new sql.Notification(notification);
+            await connector.SaveAsync(sqlNotification);
+            return sqlNotification;
         }
 
         /// <summary>
         /// Delete all stored notifications
         /// </summary>
         public void DeleteAll()
-        {
-            var connector = ConnectorFactory.CreateConnector<Notification>();
-            connector.ExecuteNonQuery("TRUNCATE TABLE [wim_Notifications]");
-            connector.Cache?.FlushRegion(connector.CacheRegion);
+        {   
+            connector.ExecuteNonQuery("TRUNCATE TABLE [wim_Notifications]");            
         }
 
         /// <summary>
         /// Delete all stored notifications
         /// </summary>
         public async Task DeleteAllAsync()
-        {
-            var connector = ConnectorFactory.CreateConnector<Notification>();
-            await connector.ExecuteNonQueryAsync("TRUNCATE TABLE [wim_Notifications]").ConfigureAwait(false);
-            connector.Cache?.FlushRegion(connector.CacheRegion);
+        {  
+            await connector.ExecuteNonQueryAsync("TRUNCATE TABLE [wim_Notifications]").ConfigureAwait(false);         
         }
 
         /// <summary>
@@ -52,13 +49,11 @@ namespace Sushi.Mediakiwi.Data.Repositories.Sql
         /// </summary>
         /// <param name="group">The group.</param>
         public void DeleteAll(string group)
-        {
-            var connector = ConnectorFactory.CreateConnector<Notification>();
+        {   
             var filter = connector.CreateDataFilter();
             filter.AddParameter("@type", group);
 
-            connector.ExecuteNonQuery("DELETE FROM [wim_Notifications] WHERE [Notification_Type] = @TYPE", filter);
-            connector.Cache?.FlushRegion(connector.CacheRegion);
+            connector.ExecuteNonQuery("DELETE FROM [wim_Notifications] WHERE [Notification_Type] = @TYPE", filter);         
         }
 
         /// <summary>
@@ -66,34 +61,31 @@ namespace Sushi.Mediakiwi.Data.Repositories.Sql
         /// </summary>
         /// <param name="group">The group.</param>
         public async Task DeleteAllAsync(string group)
-        {
-            var connector = ConnectorFactory.CreateConnector<Notification>();
+        {   
             var filter = connector.CreateDataFilter();
             filter.AddParameter("@type", group);
 
             await connector.ExecuteNonQueryAsync("DELETE FROM [wim_Notifications] WHERE [Notification_Type] = @TYPE", filter).ConfigureAwait(false);
-            connector.Cache?.FlushRegion(connector.CacheRegion);
         }
 
         /// <summary>
-        /// Selects a single Notification by Identifier.
+        /// Selects a single sql.Notification by Identifier.
         /// </summary>
         /// <param name="Id">The i.</param>
         /// <returns></returns>
-        public Notification SelectOne(int Id)
-        {
-            var connector = ConnectorFactory.CreateConnector<Notification>();
+        public sql.Notification SelectOne(int Id)
+        {   
             return connector.FetchSingle(Id);
         }
 
         /// <summary>
-        /// Selects a single Notification by Identifier Async.
+        /// Selects a single sql.Notification by Identifier Async.
         /// </summary>
         /// <param name="Id">The i.</param>
         /// <returns></returns>
-        public async Task<Notification> SelectOneAsync(int Id)
+        public async Task<sql.Notification> SelectOneAsync(int Id)
         {
-            var connector = ConnectorFactory.CreateConnector<Notification>();
+            
             return await connector.FetchSingleAsync(Id).ConfigureAwait(false);
         }
 
@@ -102,8 +94,7 @@ namespace Sushi.Mediakiwi.Data.Repositories.Sql
         /// </summary>
         /// <returns></returns>
         public string[] SelectAll_Groups()
-        {
-            var connector = ConnectorFactory.CreateConnector<Notification>();
+        {   
             string sql = "SELECT DISTINCT [Notification_Type] FROM [wim_Notifications] ORDER BY [Notification_Type] ASC";
 
             return connector.ExecuteSet<string>(sql).ToArray();
@@ -115,9 +106,7 @@ namespace Sushi.Mediakiwi.Data.Repositories.Sql
         /// <returns></returns>
         public async Task<string[]> SelectAll_GroupsAsync()
         {
-            var connector = ConnectorFactory.CreateConnector<Notification>();
             string sql = "SELECT DISTINCT [Notification_Type] FROM [wim_Notifications] ORDER BY [Notification_Type] ASC";
-
             var result = await connector.ExecuteSetAsync<string>(sql).ConfigureAwait(false);
             return result.ToArray();
         }
@@ -128,7 +117,7 @@ namespace Sushi.Mediakiwi.Data.Repositories.Sql
         /// <param name="group">The Group name.</param>
         /// <param name="selection">The Selection Identifier.</param>
         /// <returns></returns>
-        public Notification[] SelectAll(string group, int selection)
+        public sql.Notification[] SelectAll(string group, int selection)
         {
             int maxPageCount;
             return SelectAll(group, selection, null, out maxPageCount);
@@ -140,7 +129,7 @@ namespace Sushi.Mediakiwi.Data.Repositories.Sql
         /// <param name="group">The Group name.</param>
         /// <param name="selection">The Selection Identifier.</param>
         /// <returns></returns>
-        public async Task<Notification[]> SelectAllAsync(string group, int selection)
+        public async Task<sql.Notification[]> SelectAllAsync(string group, int selection)
         {
             return await SelectAllAsync(group, selection, null).ConfigureAwait(false);
         }
@@ -154,9 +143,8 @@ namespace Sushi.Mediakiwi.Data.Repositories.Sql
         /// <param name="maxResult">The max result.</param>
         /// <param name="maxPageCount">The max page count.</param>
         /// <returns></returns>
-        public Notification[] SelectAll(string group, int selection, int? maxResult, out int maxPageCount)
-        {
-            var connector = ConnectorFactory.CreateConnector<Notification>();
+        public sql.Notification[] SelectAll(string group, int selection, int? maxResult, out int maxPageCount)
+        {   
             var filter = connector.CreateDataFilter();
             filter.AddOrder(x => x.ID);
             if (maxResult.GetValueOrDefault(0) > 0)
@@ -179,9 +167,8 @@ namespace Sushi.Mediakiwi.Data.Repositories.Sql
         /// <param name="maxResult">The max result.</param>
         /// <param name="maxPageCount">The max page count.</param>
         /// <returns></returns>
-        public async Task<Notification[]> SelectAllAsync(string group, int selection, int? maxResult)
-        {
-            var connector = ConnectorFactory.CreateConnector<Notification>();
+        public async Task<sql.Notification[]> SelectAllAsync(string group, int selection, int? maxResult)
+        {   
             var filter = connector.CreateDataFilter();
             filter.AddOrder(x => x.ID);
             filter.Add(x => x.Group, group);

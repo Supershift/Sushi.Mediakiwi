@@ -100,9 +100,9 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             }
             else
             {
-                wim.ListDataColumns.Add(new ListDataColumn("ID", nameof(Mediakiwi.Data.Notification.ID), ListDataColumnType.UniqueIdentifier));
-                wim.ListDataColumns.Add(new ListDataColumn("Notification", nameof(Mediakiwi.Data.Notification.Text), ListDataColumnType.HighlightPresent));
-                wim.ListDataColumns.Add(new ListDataColumn("Created", nameof(Mediakiwi.Data.Notification.Created), ListDataColumnType.Default) { ContentType = ListDataContentType.ItemSelect });
+                wim.ListDataColumns.Add(new ListDataColumn("ID", nameof(Mediakiwi.Data.Sql.Notification.ID), ListDataColumnType.UniqueIdentifier));
+                wim.ListDataColumns.Add(new ListDataColumn("Notification", nameof(Mediakiwi.Data.Sql.Notification.Text), ListDataColumnType.HighlightPresent));
+                wim.ListDataColumns.Add(new ListDataColumn("Created", nameof(Mediakiwi.Data.Sql.Notification.Created), ListDataColumnType.Default) { ContentType = ListDataContentType.ItemSelect });
 
                 var results = await _repository.SelectAllAsync(FilterGroup, FilterSelection, null).ConfigureAwait(false);
                 wim.ListDataAdd(results);

@@ -21,33 +21,25 @@ namespace Sushi.Mediakiwi.Data
             Created = DateTime.UtcNow;
         }
 
-        public class NotificationMap : DataMap<Notification>
-        {
-            public NotificationMap()
-            {
-                Table("wim_Notifications");
-                Id(x => x.ID, "Notification_Key").Identity();
-                Map(x => x.Group, "Notification_Type").Length(50);
-                Map(x => x.Text, "Notification_Text");
-                Map(x => x.Selection, "Notification_Selection");
-                Map(x => x.UserID, "Notification_User");
-                Map(x => x.VisitorID, "Notification_Visitor_Key");
-                Map(x => x.PageID, "Notification_Page_Key");
-                Map(x => x.Created, "Notification_Created");
-                Map(x => x.XML, "Notification_XML").SqlType(System.Data.SqlDbType.Xml);
-            }
-        }
-
-        public virtual object ID { get; set; }
-        public DateTime Created { get; set; }
-        public string Group { get; set; }
-        public int? PageID { get; set; }
-        public NotificationType? Selection { get; set; }
-        public string Text { get; set; }
-        public int? UserID { get; set; }
-        public int? VisitorID { get; set; }
+        
+        public virtual DateTime Created { get; set; }
+        public virtual string Group { get; set; }
+        public virtual int? PageID { get; set; }
+        public virtual NotificationType? Selection { get; set; }
+        public virtual string Text { get; set; }
+        public virtual int? UserID { get; set; }
+        public virtual int? VisitorID { get; set; }
         [Obsolete("Will be removed in future version")]
-        public XmlDocument XML { get; set; }
+        public virtual XmlDocument XML { get; set; }
+
+        /// <summary>
+        /// Returns a human readable representation of the ID to retrieve this instance from storage.
+        /// </summary>
+        /// <returns></returns>
+        public virtual string GetIdMessage()
+        {
+            return "unknown";
+        }
 
         public static INotificationRepository Repository { get; } = new Repositories.Sql.NotificationRepository();
 

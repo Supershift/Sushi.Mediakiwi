@@ -24,7 +24,7 @@ namespace Sushi.Mediakiwi.Test.ORM
 
         private Data.Repositories.Sql.NotificationRepository _repository = new Data.Repositories.Sql.NotificationRepository();
 
-        private Data.Notification _TestObj = new Data.Notification()
+        private Data.Sql.Notification _TestObj = new Data.Sql.Notification()
         {
             Group = "RewriteAssetPath",
             Text = "Notifcation for xUNIT TESTx",
@@ -37,7 +37,7 @@ namespace Sushi.Mediakiwi.Test.ORM
 
         };
         // Async test object
-        private Data.Notification _TestObjAsync = new Data.Notification()
+        private Data.Sql.Notification _TestObjAsync = new Data.Sql.Notification()
         {
             Group = "RewriteAssetPathAsync",
             Text = "Notifcation for xASYNC UNIT TESTx",
@@ -676,8 +676,7 @@ namespace Sushi.Mediakiwi.Test.ORM
             foreach (var a in notifications)
             {
                 if ((int)a?.ID > 0)
-                {
-                    var connector = ConnectorFactory.CreateConnector<Notification>();
+                {   
                     var testDelete = _repository.SelectOne((int)a?.ID);
                     if (testDelete != null && testDelete.ID == a.ID)
                         errorList.Add($"{a?.ID}");
@@ -706,8 +705,7 @@ namespace Sushi.Mediakiwi.Test.ORM
             foreach (var a in notifications)
             {
                 if ((int)a?.ID > 0)
-                {
-                    var connector = ConnectorFactory.CreateConnector<Notification>();
+                {   
                     var testDelete = await _repository.SelectOneAsync((int)a?.ID);
                     if (testDelete != null && testDelete.ID == a.ID)
                         errorList.Add($"{a?.ID}");
@@ -721,7 +719,7 @@ namespace Sushi.Mediakiwi.Test.ORM
         #region ResetAutoIndent
         public void F_Reset_AutoIndent()
         {
-            var connector = ConnectorFactory.CreateConnector<Notification>();
+            var connector = ConnectorFactory.CreateConnector<Data.Sql.Notification>();
             var filter = connector.CreateDataFilter();
 
             // Query for resetting the autoincrement in the table
@@ -739,7 +737,7 @@ namespace Sushi.Mediakiwi.Test.ORM
 
         public async Task F_Reset_AutoIndentAsync()
         {
-            var connector = ConnectorFactory.CreateConnector<Notification>();
+            var connector = ConnectorFactory.CreateConnector<Data.Sql.Notification>();
             var filter = connector.CreateDataFilter();
 
             // Query for resetting the autoincrement in the table
