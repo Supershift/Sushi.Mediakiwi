@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Sushi.Mediakiwi.Data;
-using Sushi.Mediakiwi.Persistors;
+using Sushi.Mediakiwi.Persisters;
 
 public static class AssetExtension
 {

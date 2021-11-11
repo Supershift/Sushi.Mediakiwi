@@ -29,7 +29,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             ListAction += Notification_ListAction;
         }
 
-        private Mediakiwi.Data.Repositories.Sql.NotificationRepository _repository = new Mediakiwi.Data.Repositories.Sql.NotificationRepository();
+        private readonly Mediakiwi.Data.Repositories.Sql.NotificationRepository _repository = new Mediakiwi.Data.Repositories.Sql.NotificationRepository();
 
         async Task Notification_ListAction(ComponentActionEventArgs e)
         {

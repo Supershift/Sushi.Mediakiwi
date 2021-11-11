@@ -1499,7 +1499,7 @@ namespace Sushi.Mediakiwi
                 Assembly assem = Assembly.LoadFrom(nfo.FullName);
                 type = assem.GetType(className);
 
-                return Activator.CreateInstance(type);
+                return Activator.CreateInstance(type);                
             }
             catch(Exception ex)
             {

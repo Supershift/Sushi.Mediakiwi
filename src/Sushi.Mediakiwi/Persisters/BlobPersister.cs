@@ -5,7 +5,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
 
-namespace Sushi.Mediakiwi.Persistors
+namespace Sushi.Mediakiwi.Persisters
 {
     public class BlobPersister
     {

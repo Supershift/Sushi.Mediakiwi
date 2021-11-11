@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 namespace Sushi.Mediakiwi.Data.Elastic.Repositories
 {
     /// <summary>
-    /// Provides methods to store and retrieve instances of <see cref="Notification"/> from a Sql database. 
-    /// It is advised to use one instance of <see cref="NotificationRepository"/> per application.
+    /// Provides methods to store and retrieve instances of <see cref="Notification"/> from an Elastic server. 
+    /// It is advised to use one instance of <see cref="NotificationRepository"/> per application or at least per Elastic connection.
     /// </summary>
     public class NotificationRepository : INotificationRepository
     {
