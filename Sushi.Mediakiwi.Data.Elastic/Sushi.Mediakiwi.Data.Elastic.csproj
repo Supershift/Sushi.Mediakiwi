@@ -21,6 +21,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\src\Sushi.Mediakiwi.Data\Sushi.Mediakiwi.Data.csproj" />
+    <ProjectReference Include="..\src\Sushi.Mediakiwi\Sushi.Mediakiwi.csproj" />
   </ItemGroup>
 
 </Project>

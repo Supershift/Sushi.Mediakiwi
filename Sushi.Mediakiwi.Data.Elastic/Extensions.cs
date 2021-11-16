@@ -17,6 +17,7 @@ namespace Sushi.Mediakiwi.Data.Elastic
         {
             var repository = new Repositories.NotificationRepository(client, dataStreamName);
             services.AddSingleton<Data.Repositories.INotificationRepository>(repository);
+            services.AddSingleton(repository);
 
             // set the repository on static Notification for backwards compatability
             Data.Notification.Repository = repository;

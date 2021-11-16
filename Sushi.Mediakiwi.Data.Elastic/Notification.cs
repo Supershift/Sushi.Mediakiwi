@@ -9,13 +9,15 @@ namespace Sushi.Mediakiwi.Data.Elastic
     {
         public Notification(Data.Notification notification)
         {
-            Utility.ReflectProperty(notification, this);            
+            Utility.ReflectProperty(notification, this);
+            this.Timestamp = notification.Created;
         }
         
         [Ignore]
         public ElasticId ElasticId { get; set; }
+        
         [PropertyName("@timestamp")]
-        public override DateTime Created { get; set; }
+        public DateTime Timestamp { get; set; }
 
         public override string GetIdMessage()
         {

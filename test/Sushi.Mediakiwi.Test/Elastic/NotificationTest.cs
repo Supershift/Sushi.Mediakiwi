@@ -1,10 +1,13 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Nest;
+using static Nest.Infer;
 using Sushi.Mediakiwi.Data;
 using Sushi.Mediakiwi.Data.Elastic.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using System.IO;
 
 namespace Sushi.Mediakiwi.Test.Elastic
 {
@@ -49,13 +52,36 @@ namespace Sushi.Mediakiwi.Test.Elastic
         }
 
         [TestMethod]
-        public async Task GetAllAsync()
+        public async Task GetAll()
         {
-            //var result = await ElasticConnectionSettings.SearchAsync<Notification>(d => d
-            //    .Index("notifications")
-            //    .Query(q => q.MatchAll())
-            //    );
-            //WriteResult(result);
+            var result = await _repository.GetAllAsync(null, "Elastic notification test", null, null, 25, null);
+            WriteResult(result);
+        }
+
+        [TestMethod]
+        public async Task GetAggregated()
+        {
+            var result = await _repository.GetAggregatedGroupsAsync(null, null, null);
+            WriteResult(result);
+            Assert.AreNotEqual(0, result.Count);
+        }
+
+        public class BuiltIn
+        {
+            [Text(Name = "naam")]
+            public string Name { get; set; }
+        }
+
+        [TestMethod]
+        public async Task TimestampNameInference()
+        {
+            var fieldExpression = Field<Data.Elastic.Notification>(p => p.Timestamp);
+            
+            var fieldResolver = new FieldResolver(ElasticClient.ConnectionSettings);
+            
+            var fieldName = fieldResolver.Resolve(fieldExpression);
+            Console.WriteLine(fieldName);
+            Assert.AreEqual("@timestamp", fieldName);
         }
     }
 }

@@ -36,7 +36,8 @@ namespace Sushi.Mediakiwi.Test
 
             var elasticSettings = new Nest.ConnectionSettings(new Uri(config["ElasticUrl"]))
                 .BasicAuthentication(config["ElasticUsername"], config["ElasticPassword"])                
-                .ThrowExceptions(true);
+                .ThrowExceptions(true)
+                .DisableDirectStreaming();
             ElasticClient = new Nest.ElasticClient(elasticSettings);
 
             //// Assign json section to config

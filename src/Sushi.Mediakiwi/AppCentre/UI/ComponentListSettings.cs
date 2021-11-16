@@ -74,7 +74,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         async Task ComponentListSettings_ListLoad(ComponentListEventArgs e)
         {
             ComponentListInstance = await Mediakiwi.Data.ComponentList.SelectOneAsync(e.SelectedGroupItemKey).ConfigureAwait(false);
-            Implement = Utils.CreateInstance(ComponentListInstance) as ComponentListTemplate;
+            Implement = Utils.CreateInstance(ComponentListInstance, Context.RequestServices) as ComponentListTemplate;
             Implement.SenderInstance = Implement;
 
             await Implement.OnListConfigure().ConfigureAwait(false);

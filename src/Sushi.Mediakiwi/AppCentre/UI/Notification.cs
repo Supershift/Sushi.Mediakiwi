@@ -4,13 +4,10 @@ using Sushi.Mediakiwi.UI;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
-//using ColorCode;
 using System.Xml;
 
 namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
 {
-
-
     /// <summary>
     /// Represents the UI to display Notifications stored using SQL.
     /// </summary>
@@ -21,8 +18,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// </summary>
         public Notification()
         {
-            FilterSelection = 1;
-            //ShowInFullWidthMode = true;
+            FilterSelection = 1;            
 
             ListSearch += Notification_ListSearch;
             ListLoad += Notification_ListLoad;

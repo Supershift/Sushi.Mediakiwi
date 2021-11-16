@@ -7,6 +7,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Sushi.Mediakiwi.Data;
+using Sushi.Mediakiwi.Data.Elastic;
+using System;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Text.Json;
@@ -40,6 +42,15 @@ namespace Sushi.Mediakiwi.Demonstration
                 options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
                 options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
             });
+
+
+            var elasticSettings = new Nest.ConnectionSettings(new Uri(Configuration["ElasticUrl"]))
+                .BasicAuthentication(Configuration["ElasticUsername"], Configuration["ElasticPassword"])
+                .ThrowExceptions(true);
+                
+            var elasticClient = new Nest.ElasticClient(elasticSettings);
+
+            services.AddElasticNotifications(elasticClient);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -28,8 +28,6 @@ namespace Sushi.Mediakiwi.Data
             }
         }
 
-        #region Properties
-
         /// <summary>
         ///
         /// </summary>
@@ -47,7 +45,6 @@ namespace Sushi.Mediakiwi.Data
         ///
         /// </summary>
         public virtual DateTime Last { get; set; }
-        #endregion Properties
 
 
         /// <summary>
