@@ -57,8 +57,6 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             }
         }
 
-        Mediakiwi.Data.Notification _implement;
-
         async Task Notification_ListLoad(ComponentListEventArgs e)
         {
             if (e.SelectedKey == 0)
@@ -66,7 +64,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                 return;
             }
 
-            _implement = await _repository.SelectOneAsync(e.SelectedKey).ConfigureAwait(false);
+            Mediakiwi.Data.Notification _implement = await _repository.SelectOneAsync(e.SelectedKey).ConfigureAwait(false);
             Date = _implement.Created.ToString("dd-MM-yy hh:mm tt");
             Note = _implement.Text;
             Type = _implement.Group;

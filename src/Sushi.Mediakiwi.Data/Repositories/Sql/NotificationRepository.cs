@@ -1,8 +1,4 @@
-﻿using Sushi.Mediakiwi.Data.MicroORM;
-using sql = Sushi.Mediakiwi.Data.Sql;   
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using sql = Sushi.Mediakiwi.Data.Sql;   
 using System.Threading.Tasks;
 
 namespace Sushi.Mediakiwi.Data.Repositories.Sql
@@ -12,7 +8,7 @@ namespace Sushi.Mediakiwi.Data.Repositories.Sql
     /// </summary>
     public class NotificationRepository : INotificationRepository
     {
-        private Sushi.MicroORM.Connector<sql.Notification> connector = new Sushi.MicroORM.Connector<sql.Notification>();
+        private readonly Sushi.MicroORM.Connector<sql.Notification> connector = new Sushi.MicroORM.Connector<sql.Notification>();
         
         public Notification Save(Notification notification)
         {
@@ -119,8 +115,7 @@ namespace Sushi.Mediakiwi.Data.Repositories.Sql
         /// <returns></returns>
         public sql.Notification[] SelectAll(string group, int selection)
         {
-            int maxPageCount;
-            return SelectAll(group, selection, null, out maxPageCount);
+            return SelectAll(group, selection, null);
         }
 
         /// <summary>
@@ -139,11 +134,9 @@ namespace Sushi.Mediakiwi.Data.Repositories.Sql
         /// </summary>
         /// <param name="group">The group.</param>
         /// <param name="selection">The selection.</param>
-        /// <param name="page">The page.</param>
         /// <param name="maxResult">The max result.</param>
-        /// <param name="maxPageCount">The max page count.</param>
         /// <returns></returns>
-        public sql.Notification[] SelectAll(string group, int selection, int? maxResult, out int maxPageCount)
+        public sql.Notification[] SelectAll(string group, int selection, int? maxResult)
         {   
             var filter = connector.CreateDataFilter();
             filter.AddOrder(x => x.ID);
@@ -154,7 +147,6 @@ namespace Sushi.Mediakiwi.Data.Repositories.Sql
             filter.Add(x => x.Selection, selection);
 
             var result = connector.FetchAll(filter);
-            maxPageCount = result.Count;
             return result.ToArray();
         }
 

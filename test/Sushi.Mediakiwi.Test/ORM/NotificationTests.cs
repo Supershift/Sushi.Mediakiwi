@@ -15,16 +15,17 @@ namespace Sushi.Mediakiwi.Test.ORM
     public class NotificationTests : BaseTest
     {
         #region Test Data
-        private string _table = "wim_Notifications";
-        private string _key = "Notification_Key";
 
-        private static DateTime _date = DateTime.Now;
+        private readonly string _table = "wim_Notifications";
+        private readonly string _key = "Notification_Key";
+
+        private static readonly DateTime _date = DateTime.Now;
         // Test object
-        private static string _xmlData = @"<Content xmlns:xsd=""http://www.w3.org/2001/XMLSchema"" xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance""><Fields></Fields></Content>";
+        private static readonly string _xmlData = @"<Content xmlns:xsd=""http://www.w3.org/2001/XMLSchema"" xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance""><Fields></Fields></Content>";
 
-        private Data.Repositories.Sql.NotificationRepository _repository = new Data.Repositories.Sql.NotificationRepository();
+        private readonly Data.Repositories.Sql.NotificationRepository _repository = new Data.Repositories.Sql.NotificationRepository();
 
-        private Data.Sql.Notification _TestObj = new Data.Sql.Notification()
+        private readonly Data.Sql.Notification _TestObj = new Data.Sql.Notification()
         {
             Group = "RewriteAssetPath",
             Text = "Notifcation for xUNIT TESTx",
@@ -36,8 +37,9 @@ namespace Sushi.Mediakiwi.Test.ORM
             XML = null // Set in test
 
         };
+
         // Async test object
-        private Data.Sql.Notification _TestObjAsync = new Data.Sql.Notification()
+        private readonly Data.Sql.Notification _TestObjAsync = new Data.Sql.Notification()
         {
             Group = "RewriteAssetPathAsync",
             Text = "Notifcation for xASYNC UNIT TESTx",
@@ -466,14 +468,14 @@ namespace Sushi.Mediakiwi.Test.ORM
                 A_Create_TestObj();
 
                 // Function that we are testing BELOW...
-                var notifications = _repository.SelectAll(_TestObj.Group, (int)_TestObj.Selection, maxResult, out int pageCount);                
+                var notifications = _repository.SelectAll(_TestObj.Group, (int)_TestObj.Selection, maxResult);                
 
                 if (notifications?.Length > 0)
                     Trace.WriteLine($"FOUND Notification: {notifications.Select(x => x.ID.ToString()).Aggregate((a, b) => a + ", " + b)}");
                 else
                     Assert.Fail("Notification NOT FOUND...");
 
-                Assert.AreEqual(notifications.Count(), pageCount);
+                Assert.IsTrue(notifications.Count() > 0);
             }
             finally
             {
