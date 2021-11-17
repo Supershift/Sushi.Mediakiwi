@@ -13,8 +13,8 @@ namespace Sushi.Mediakiwi.Data.Elastic.Repositories
     /// </summary>
     public class NotificationRepository : INotificationRepository
     {
-        private Nest.IElasticClient _client;
-        private string _dataStreamName;
+        private readonly Nest.IElasticClient _client;
+        private readonly string _dataStreamName;
         public NotificationRepository(Nest.IElasticClient client, string dataStreamName)
         {
             // create client
@@ -38,6 +38,13 @@ namespace Sushi.Mediakiwi.Data.Elastic.Repositories
             return elasticNotification;
         }
 
+        /// <summary>
+        /// Get all unique <see cref="Data.Notification.Group"/> values and number of notifications per <see cref="Data.Notification.Group"/>.
+        /// </summary>
+        /// <param name="selectionID"></param>
+        /// <param name="from">Inclusive lower bound.</param>
+        /// <param name="to">Exclusive upper bound.</param>
+        /// <returns></returns>
         public async Task<List<NotificationGroup>> GetAggregatedGroupsAsync(NotificationType? selectionID, DateTime? from, DateTime? to)
         {
             var response = await _client.SearchAsync<Notification>(s => s
@@ -74,6 +81,16 @@ namespace Sushi.Mediakiwi.Data.Elastic.Repositories
             return result;
         }
 
+        /// <summary>
+        /// Retrieve all notifications from Elastic for the given parameters.
+        /// </summary>
+        /// <param name="selectionID"></param>
+        /// <param name="groupName"></param>
+        /// <param name="from">Inclusive lower bound.</param>
+        /// <param name="to">Exclusive upper bound.</param>
+        /// <param name="pageSize"></param>
+        /// <param name="searchAfter"></param>
+        /// <returns></returns>
         public async Task<List<Notification>> GetAllAsync(NotificationType? selectionID, string groupName, DateTime? from, DateTime? to, int pageSize, object[] searchAfter)
         {
             var response = await _client.SearchAsync<Notification>(s => s

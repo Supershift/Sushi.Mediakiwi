@@ -10,7 +10,7 @@ namespace Sushi.Mediakiwi.Data.Elastic
         public Notification(Data.Notification notification)
         {
             Utility.ReflectProperty(notification, this);
-            this.Timestamp = notification.Created;
+            Timestamp = notification.Created;
         }
         
         [Ignore]
