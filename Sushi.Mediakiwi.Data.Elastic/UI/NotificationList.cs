@@ -14,7 +14,7 @@ namespace Sushi.Mediakiwi.Data.Elastic.UI
 {
     public class NotificationList : BaseImplementation
     {
-        private Repositories.NotificationRepository _repository;
+        private readonly Repositories.NotificationRepository _repository;
 
         public NotificationList(Repositories.NotificationRepository repository)
         {
