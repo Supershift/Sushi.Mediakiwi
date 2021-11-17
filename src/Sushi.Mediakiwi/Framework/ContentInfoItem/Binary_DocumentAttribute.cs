@@ -51,7 +51,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
             Collection = gallery;
         }
 
-        bool _CanOnlyCreate = true;
+        bool _CanOnlyCreate = false;
         /// <summary>
         /// Gets or sets a value indicating whether this instance can only create new documents (and not change/select other documents). 
         /// The gallery (GUID or INT32) should be set.
@@ -319,13 +319,11 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                 IComponentList documentList = ComponentList.SelectOne(ComponentListType.Documents);
                 lst = documentList.ID.ToString();
 
-                if (m_Candidate.ID == 0)
+                url = string.Concat("&gallery=", galleryUrlParam, "&item=0", "&isimage=0");
+
+                if (CanOnlyCreate)
                 {
-                    url = string.Concat("&gallery=", galleryUrlParam, "&item=0", "&isimage=0");
-                }
-                else
-                {
-                    url = string.Concat("&gallery=", galleryUrlParam, "&isimage=0");
+                    url += "&onlycreate=1";
                 }
 
                 int? key = null;
@@ -335,7 +333,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                     key = m_Candidate.ID;
                 }
 
-                ApplyItemSelect(build, true, isEnabled, titleTag, ID, lst, url, false, isRequired, false, false, LayerSize.Small, false, 450,
+                ApplyItemSelect(build, true, isEnabled, titleTag, ID, lst, url, false, isRequired, false, false, LayerSize.Small, false, 500,
                     null,
                     new NameItemValue() { Name = ID, ID = key, Value = OutputText }
                     );

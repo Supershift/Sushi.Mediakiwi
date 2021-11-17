@@ -1536,7 +1536,7 @@ namespace Sushi.Mediakiwi.Data
         /// </summary>
         /// <param name="array">The array.</param>
         /// <returns></returns>
-        public static string ConvertToCsvString(object[] array)
+        public static string ConvertToCsvString(ICollection<object> array)
         {
             return ConvertToCsvString(array, true);
         }
@@ -1547,7 +1547,7 @@ namespace Sushi.Mediakiwi.Data
         /// <param name="array">The array.</param>
         /// <param name="shouldUseQuoteForStringValues">if set to <c>true</c> [should use quote for string values].</param>
         /// <returns></returns>
-        public static string ConvertToCsvString(object[] array, bool shouldUseQuoteForStringValues)
+        public static string ConvertToCsvString(ICollection<object> array, bool shouldUseQuoteForStringValues)
         {
             if (array == null) return null;
 

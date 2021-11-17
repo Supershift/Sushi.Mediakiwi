@@ -43,6 +43,9 @@ namespace Sushi.Mediakiwi.AppCentre.UI.Forms
                 implement.ContentTypeID.Equals(ContentType.ListItemSelect) ||
                 implement.ContentTypeID.Equals(ContentType.Choice_Radio);
 
+            bool isAsset = implement.ContentTypeID.Equals(ContentType.Binary_Document) ||
+                 implement.ContentTypeID.Equals(ContentType.Binary_Image);
+
             if (isChoiceType)
             {
                 var propertydate = PropertyOption.SelectAll(implement.ID);
@@ -98,6 +101,11 @@ namespace Sushi.Mediakiwi.AppCentre.UI.Forms
 
             Map(x => x.FieldName).TextField("Field", 50, false).Expression(OutputExpression.FullWidth).ReadOnly(!wim.CurrentApplicationUser.IsDeveloper);
             Map(x => x.IsSharedField).Checkbox("Is shared field", true).Expression(OutputExpression.FullWidth).Hide(isSublist);
+            
+            if (isAsset)
+            {
+                Map(x => x.CanOnlyCreate).Checkbox("Only create", false, "When checked, only new assets can be created.").Expression(OutputExpression.FullWidth);
+            }
 
             //if (implement.IsSharedField)
             //{

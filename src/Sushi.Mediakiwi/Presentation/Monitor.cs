@@ -10,6 +10,12 @@ namespace Sushi.Mediakiwi.Framework.Presentation
 {
     public class Presentation : iPresentationMonitor
     {
+        public string FileVersion { get; set; }
+        public Presentation()
+        {
+            FileVersion = GetFileVersion();
+        }
+
         //width=device-width, user-scalable=yes,initial-scale=0.1
         //const string VIEWPORT = "width=device-width, user-scalable=yes,initial-scale=0.1";// width=device-width, initial-scale=1";
 
@@ -52,41 +58,20 @@ namespace Sushi.Mediakiwi.Framework.Presentation
 
         string _Domain = "https://sushi-mediakiwi.azureedge.net/";
 
-        string _FolderVersion;
         string FolderVersion(string subfolder = null)
         {
-            //if (_IsCDN)
-            //{
-            if (_FolderVersion == null)
+            return CommonConfiguration.CDN_Folder(m_container, subfolder);
+        }
+
+        string GetFileVersion()
+        {
+            if (string.IsNullOrWhiteSpace(CommonConfiguration.FILE_VERSION))
             {
-                // CDN
-                if (string.IsNullOrEmpty(CommonConfiguration.LOCAL_FILE_PATH))
-                {
-                    _FolderVersion = string.Concat(_Domain, Utils.Version.Replace(".", "-"), "/");
-                }
-                else
-                {
-                    if (CommonConfiguration.LOCAL_FILE_PATH.IndexOf("http", StringComparison.InvariantCultureIgnoreCase) > -1)
-                        _FolderVersion = CommonConfiguration.LOCAL_FILE_PATH;
-                    else
-                        _FolderVersion = m_container.AddApplicationPath(string.Concat(CommonConfiguration.LOCAL_FILE_PATH), true);
-                }
+                return Utils.FullVersion.Replace(".", "_");
             }
 
-            if (!string.IsNullOrWhiteSpace(subfolder))
-                return string.Concat(_FolderVersion, subfolder, "/");
-
-            return _FolderVersion;
+            return CommonConfiguration.FILE_VERSION;
         }
-
-        string _FolderVersionCDN;
-        string FolderVersionCDN(string subfolder)
-        {
-            if (_FolderVersionCDN == null)
-                _FolderVersionCDN = string.Concat(_Domain, Utils.Version.Replace(".", "-"), "/");
-            return string.Concat(_FolderVersionCDN, subfolder, "/");
-        }
-
 
         /// <summary>
         /// Gets the template wrapper.
@@ -99,6 +84,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation
             m_container = container;
             m_Placeholders = placeholders;
             m_Callbacks = callbacks;
+           
 
             if (builder == null)
             {
@@ -725,14 +711,15 @@ namespace Sushi.Mediakiwi.Framework.Presentation
             {
                 if (m_container.CurrentListInstance.wim.HeaderScript == null)
                     m_container.CurrentListInstance.wim.HeaderScript = string.Empty;
+                
 
-                m_container.CurrentListInstance.wim.HeaderScript += @"
-        <link type=""text/css"" rel=""stylesheet"" href=""" + FolderVersion("scripts/codemirror") + @"codemirror.min.css"" />
-        <script type=""text/javascript"" src=""" + FolderVersion("scripts/codemirror") + @"codemirror.min.js""></script>
-        <script type=""text/javascript"" src=""" + FolderVersion("scripts/codemirror") + @"codemirror.formatting.min.js""></script>
-        <script type=""text/javascript"" src=""" + FolderVersion("scripts/codemirror/mode/clike") + @"clike.min.js""></script>
-        <script type=""text/javascript"" src=""" + FolderVersion("scripts/codemirror/mode/xml") + @"xml.min.js""></script>
-        <script type=""text/javascript"" src=""" + FolderVersion("scripts/codemirror/mode/htmlmixed") + @"htmlmixed.js""></script>";
+                m_container.CurrentListInstance.wim.HeaderScript += $@"
+        <link type=""text/css"" rel=""stylesheet"" href=""{FolderVersion("scripts/codemirror")}codemirror.min.css?v={FileVersion}"" />
+        <script type=""text/javascript"" src=""{FolderVersion("scripts/codemirror")}codemirror.min.js?v={FileVersion}""></script>
+        <script type=""text/javascript"" src=""{FolderVersion("scripts/codemirror")}codemirror.formatting.min.js?v={FileVersion}""></script>
+        <script type=""text/javascript"" src=""{FolderVersion("scripts/codemirror/mode/clike")}clike.min.js?v={FileVersion}""></script>
+        <script type=""text/javascript"" src=""{FolderVersion("scripts/codemirror/mode/xml")}xml.min.js?v={FileVersion}""></script>
+        <script type=""text/javascript"" src=""{FolderVersion("scripts/codemirror/mode/htmlmixed")}htmlmixed.js?v={FileVersion}""></script>";
             }
 
             //"width=device-width, user-scalable=yes,initial-scale=0.1"
@@ -746,11 +733,10 @@ namespace Sushi.Mediakiwi.Framework.Presentation
 		<meta charset=""UTF-8"" />
 		<title>" + pageHeaderTitle + @"</title>
         <meta http-equiv=""X-UA-Compatible"" content=""IE=Edge"" />
-        <meta name=""viewport"" content=""" + viewport + @""">
+        <meta name=""viewport"" content=""" + viewport + $@""">
 		<!--[if IE]>
 			<meta http-equiv=""imagetoolbar"" content=""no""/>
-			
-			<script type=""text/javascript"" src=""" + FolderVersion("scripts") + @"html5.js""></script>
+			<script type=""text/javascript"" src=""{FolderVersion("scripts")}html5.js?v={FileVersion}""></script>
 		<![endif]-->
 		<meta http-equiv=""Content-Type"" content=""text/html; charset=UTF-8"" />"
         + GetHeader(styleAddition, (container.View == (int)ContainerView.ItemSelect && container.CurrentList.Option_FormAsync)) + addedHead + m_container.CurrentListInstance.wim.HeaderScript + container.CurrentListInstance.wim.Page.Body.Form.Elements.GetHeaderStyle();
@@ -927,10 +913,10 @@ namespace Sushi.Mediakiwi.Framework.Presentation
 		<meta charset=""UTF-8"" />
 		<title>" + pageHeaderTitle + @"</title>
         <meta http-equiv=""X-UA-Compatible"" content=""IE=Edge"" />
-        <meta name=""viewport"" content=""" + viewport + @""">
+        <meta name=""viewport"" content=""" + viewport + $@""">
 		<!--[if IE]>
 			<meta http-equiv=""imagetoolbar"" content=""no""/>
-			<script type=""text/javascript"" src=""" + FolderVersion("scripts") + @"html5.js""></script>
+			<script type=""text/javascript"" src=""{FolderVersion("scripts")}html5.js?v={FileVersion}""></script>
 		<![endif]-->
 		<meta http-equiv=""Content-Type"" content=""text/html; charset=UTF-8"" />
 	</head>
@@ -952,12 +938,12 @@ namespace Sushi.Mediakiwi.Framework.Presentation
 		<meta charset=""UTF-8"" />
 		<title>" + pageHeaderTitle + @"</title>
         <meta http-equiv=""X-UA-Compatible"" content=""IE=Edge"" />
-        <meta name=""viewport"" content=""" + viewport + @""">
+        <meta name=""viewport"" content=""" + viewport + $@""">
 		<!--[if IE]>
 			<meta http-equiv=""imagetoolbar"" content=""no""/>
-			<script type=""text/javascript"" src=""" + FolderVersion("scripts") + @"html5.js""></script>
+			<script type=""text/javascript"" src=""{FolderVersion("scripts")}html5.js?v={FileVersion}""></script>
 		<![endif]-->
-		<meta http-equiv=""Content-Type"" content=""text/html; charset=UTF-8"" />" 
+		<meta http-equiv=""Content-Type"" content=""text/html; charset=UTF-8"" />"
         + GetHeader(styleAddition, (container.View == (int)ContainerView.ItemSelect && container.CurrentList.Option_FormAsync)) + addedHead + m_container.CurrentListInstance.wim.HeaderScript + container.CurrentListInstance.wim.Page.Body.Form.Elements.GetHeaderStyle() + @"
 	</head>
 	<body class=""" + (builder.Canvas.LeftNavigation.Hide ? "full" : null) + addedBodyClass
@@ -1235,7 +1221,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation
 
         string GetStyleAddition()
         {
-            var style = @"<link rel=""stylesheet"" href=""" + FolderVersion("compiled") + @"styles.min.css"">";
+            var style = $@"<link rel=""stylesheet"" href=""{FolderVersion("compiled")}styles.min.css?v={FileVersion}"">";
 
             if (!string.IsNullOrEmpty(CommonConfiguration.STYLE_INCLUDE))
             {
@@ -1257,106 +1243,70 @@ namespace Sushi.Mediakiwi.Framework.Presentation
             if (CommonConfiguration.FORM_DATEPICKER.Equals("nl", StringComparison.CurrentCultureIgnoreCase))
             {
                 lang = CommonConfiguration.FORM_DATEPICKER.ToLowerInvariant();
-                datepicker = @"<script type=""text/javascript"" src=""" + FolderVersion("scripts") + @"jquery-ui-datepicker-nl.js""></script>";
+                datepicker = $@"<script type=""text/javascript"" src=""{FolderVersion("scripts")}jquery-ui-datepicker-nl.js?v={FileVersion}""></script>";
             }
 
             string vuelibrary = string.Empty;
             if (asyncEnabled)
-                vuelibrary = @"<script type=""text/javascript"" src=""" + FolderVersion("app/dist") + @"bundle.js""></script>";
+                vuelibrary = $@"<script type=""text/javascript"" src=""{FolderVersion("app/dist")}bundle.js?v={FileVersion}""></script>";
 
 #if DEBUG
 
-            return @"
-		<link rel=""stylesheet"" href=""" + FolderVersion("compiled") + @"mediakiwiForm.min.css"" type=""text/css"" media=""all"" />
-		<link rel=""stylesheet"" href=""" + FolderVersion("styles") + @"stylesFlatv2.css"" type=""text/css"" media=""all"" />
-		<link rel=""stylesheet"" href=""" + FolderVersion("styles") + @"mainMenuFlatv2.css"" type=""text/css""  media=""all"" />
-        <link rel=""stylesheet"" href=""" + FolderVersion("styles") + @"fontello.css"" type=""text/css"">
-        <link rel=""stylesheet"" href=""" + FolderVersion("styles") + @"colorbox.css"" type=""text/css""/>
-		<link rel=""stylesheet"" href=""" + FolderVersion("styles") + @"solid.css"" type=""text/css""/>
-		<link rel=""stylesheet"" href=""" + FolderVersion("styles") + @"formalizev2.css"" type=""text/css"" media=""all"" />
-        <link rel=""stylesheet"" href=""" + FolderVersion("styles") + @"jquery-ui-1-8-16-custom.css"" type=""text/css"" media=""all"" />
-        " + styleAddition + @"
-        <script type=""text/javascript"" src=""" + FolderVersion("scripts") + @"jquery-1-7-1.js""></script>
-		<script type=""text/javascript"" src=""" + FolderVersion("scripts") + @"jquery-ui-1-10-3-custom.min.js""></script>
-        " + datepicker + @"
-		<script type=""text/javascript"" src=""" + FolderVersion("scripts") + @"jquery-shorten.js""></script>
-		<script type=""text/javascript"" src=""" + FolderVersion("scripts") + @"jquery-tipTip.js""></script>
-		<script type=""text/javascript"" src=""" + FolderVersion("scripts") + @"jquery-slimscroll.js""></script>
-        <script type=""text/javascript"" src=""" + FolderVersion("scripts") + @"jquery-numeric.js""></script>
-		<script type=""text/javascript"" src=""" + FolderVersion("scripts") + @"jquery-formalize.js""></script>
-		<script type=""text/javascript"" src=""" + FolderVersion("scripts") + @"jquery-colorbox.js""></script>
-		<script type=""text/javascript"" src=""" + FolderVersion("scripts") + @"jquery-ui-timepicker-addon.js""></script>
-		<script type=""text/javascript"" src=""" + FolderVersion("scripts") + @"jquery-hoverIntent.js""></script>
-		<script type=""text/javascript"" src=""" + FolderVersion("scripts") + @"jquery-curtainMenu.js""></script>
-        <script type=""text/javascript"" src=""" + FolderVersion("scripts") + @"jquery-ambiance.js""></script>
-		<script type=""text/javascript"" src=""" + FolderVersion("scripts") + @"slip.js""></script>
-		<script type=""text/javascript"" src=""" + FolderVersion("scripts") + @"fixedBar.js""></script>
-        <script type=""text/javascript"" src=""" + FolderVersion("scripts") + @"testdrivev2.js""></script>
-		<script type=""text/javascript"" src=""" + FolderVersion("scripts/tinymce") + @"tinymce.js""></script>
-        <link rel=""stylesheet"" href=""" + FolderVersion("scripts/dist/css") + @"select2.css"" type=""text/css"" media=""all"" />
-		<script type=""text/javascript"" src=""" + FolderVersion("scripts") + @"select2.js""></script>
-		<script type=""text/javascript"" src=""" + FolderVersion("scripts") + @"jquery-nicescroll.js""></script>" + vuelibrary;
+            return $@"
+		<link rel=""stylesheet"" href=""{FolderVersion("compiled")}mediakiwiForm.min.css?v={FileVersion}"" type=""text/css"" media=""all"" />
+		<link rel=""stylesheet"" href=""{FolderVersion("styles")}stylesFlatv2.css?v={FileVersion}"" type=""text/css"" media=""all"" />
+		<link rel=""stylesheet"" href=""{FolderVersion("styles")}mainMenuFlatv2.css?v={FileVersion}"" type=""text/css""  media=""all"" />
+        <link rel=""stylesheet"" href=""{FolderVersion("styles")}fontello.css?v={FileVersion}"" type=""text/css"">
+        <link rel=""stylesheet"" href=""{FolderVersion("styles")}colorbox.css?v={FileVersion}"" type=""text/css""/>
+		<link rel=""stylesheet"" href=""{FolderVersion("styles")}solid.css?v={FileVersion}"" type=""text/css""/>
+		<link rel=""stylesheet"" href=""{FolderVersion("styles")}formalizev2.css?v={FileVersion}"" type=""text/css"" media=""all"" />
+        <link rel=""stylesheet"" href=""{FolderVersion("styles")}jquery-ui-1-8-16-custom.css?v={FileVersion}"" type=""text/css"" media=""all"" />
+        " + styleAddition + $@"
+        <script type=""text/javascript"" src=""{FolderVersion("scripts")}jquery-1-7-1.js?v={FileVersion}""></script>
+		<script type=""text/javascript"" src=""{FolderVersion("scripts")}jquery-ui-1-10-3-custom.min.js?v={FileVersion}""></script>
+        " + datepicker + $@"
+		<script type=""text/javascript"" src=""{FolderVersion("scripts")}jquery-shorten.js?v={FileVersion}""></script>
+		<script type=""text/javascript"" src=""{FolderVersion("scripts")}jquery-tipTip.js?v={FileVersion}""></script>
+		<script type=""text/javascript"" src=""{FolderVersion("scripts")}jquery-slimscroll.js?v={FileVersion}""></script>
+        <script type=""text/javascript"" src=""{FolderVersion("scripts")}jquery-numeric.js?v={FileVersion}""></script>
+		<script type=""text/javascript"" src=""{FolderVersion("scripts")}jquery-formalize.js?v={FileVersion}""></script>
+		<script type=""text/javascript"" src=""{FolderVersion("scripts")}jquery-colorbox.js?v={FileVersion}""></script>
+		<script type=""text/javascript"" src=""{FolderVersion("scripts")}jquery-ui-timepicker-addon.js?v={FileVersion}""></script>
+		<script type=""text/javascript"" src=""{FolderVersion("scripts")}jquery-hoverIntent.js?v={FileVersion}""></script>
+		<script type=""text/javascript"" src=""{FolderVersion("scripts")}jquery-curtainMenu.js?v={FileVersion}""></script>
+        <script type=""text/javascript"" src=""{FolderVersion("scripts")}jquery-ambiance.js?v={FileVersion}""></script>
+		<script type=""text/javascript"" src=""{FolderVersion("scripts")}slip.js?v={FileVersion}""></script>
+		<script type=""text/javascript"" src=""{FolderVersion("scripts")}fixedBar.js?v={FileVersion}""></script>
+        <script type=""text/javascript"" src=""{FolderVersion("scripts")}testdrivev2.js?v={FileVersion}""></script>
+		<script type=""text/javascript"" src=""{FolderVersion("scripts/tinymce")}tinymce.js?v={FileVersion}""></script>
+        <link rel=""stylesheet"" href=""{FolderVersion("scripts/dist/css")}select2.css?v={FileVersion}"" type=""text/css"" media=""all"" />
+		<script type=""text/javascript"" src=""{FolderVersion("scripts")}select2.js?v={FileVersion}""></script>
+		<script type=""text/javascript"" src=""{FolderVersion("scripts")}jquery-nicescroll.js?v={FileVersion}""></script>" + vuelibrary;
 
 #else
-            if (lang == "en")
+          if (lang == "en")
             {
-                return @"
-		<link rel=""stylesheet"" href=""" + FolderVersion("compiled") + @"bundel.min.css"" type=""text/css"" media=""all"" />
-        " + styleAddition + @"
-        <script type=""text/javascript"" src=""" + FolderVersion("compiled") + @"bundel.en.min.js""></script>
-		<script type=""text/javascript"" src=""" + FolderVersion("scripts/tinymce") + @"tinymce.min.js""></script>
-        <link rel=""stylesheet"" href=""" + FolderVersion("scripts/dist/css") + @"select2.css"" type=""text/css"" media=""all"" />" + vuelibrary;
+                return $@"
+		<link rel=""stylesheet"" href=""{FolderVersion("compiled")}bundel.min.css?v={FileVersion}"" type=""text/css"" media=""all"" />
+        " + styleAddition + $@"
+        <script type=""text/javascript"" src=""{FolderVersion("compiled")}bundel.en.min.js?v={FileVersion}""></script>
+		<script type=""text/javascript"" src=""{FolderVersion("scripts/tinymce")}tinymce.min.js?v={FileVersion}""></script>
+        <link rel=""stylesheet"" href=""{FolderVersion("scripts/dist/css")}select2.css?v={FileVersion}"" type=""text/css"" media=""all"" />" + vuelibrary;
             }
             else
             {
-                return @"
-		<link rel=""stylesheet"" href=""" + FolderVersion("compiled") + @"bundel.min.css"" type=""text/css"" media=""all"" />
-        " + styleAddition + @"
-        <script type=""text/javascript"" src=""" + FolderVersion("compiled") + @"bundel.nl.min.js""></script>
-		<script type=""text/javascript"" src=""" + FolderVersion("scripts/tinymce") + @"tinymce.min.js""></script>
-        <link rel=""stylesheet"" href=""" + FolderVersion("scripts/dist/css") + @"select2.css"" type=""text/css"" media=""all"" />" + vuelibrary;
+                return $@"
+		<link rel=""stylesheet"" href=""{FolderVersion("compiled")}bundel.min.css?v={FileVersion}"" type=""text/css"" media=""all"" />
+        " + styleAddition + $@"
+        <script type=""text/javascript"" src=""{FolderVersion("compiled")}bundel.nl.min.js?v={FileVersion}""></script>
+		<script type=""text/javascript"" src=""{FolderVersion("scripts/tinymce")}tinymce.min.js?v={FileVersion}""></script>
+        <link rel=""stylesheet"" href=""{FolderVersion("scripts/dist/css")}select2.css?v={FileVersion}"" type=""text/css"" media=""all"" />" + vuelibrary;
             }
-      
+  
 #endif
+
         }
 
-
-
-        string WrapSplashScreen(Beta.GeneratedCms.Console container, string html)
-        {
-            string folderVersion = Utils.Version.ToString();
-            string styleAddition = GetStyleAddition();
-            var url = container.Url;
-
-            string candidate = @"<!DOCTYPE html>
-<html>
-	<head>
-		<meta charset=""UTF-8"" />
-		<title>" + container.CurrentEnvironment.Title + @"</title>
-        <meta http-equiv=""X-UA-Compatible"" content=""IE=Edge"" />
-		<link rel=""stylesheet"" href=""" + FolderVersion("compiled") + @"bundel_login.min.css"" type=""text/css"" media=""all"" />
-        " + styleAddition + @"
-		<script type=""text/javascript"" src=""" + FolderVersion("compiled") + @"bundel_login.min.js""></script>
-		<!--[if IE]>
-			<meta http-equiv=""imagetoolbar"" content=""no""/>
-			<script type=""text/javascript"" src=""" + FolderVersion("scripts") + @"html5.js""></script>
-		<![endif]-->
-	</head>
-<body class=""loginPage"">
-        <form id=""uxForm"" method=""post"" action=""" + url + @""" enctype=""multipart/form-data"">
-        <input type=""hidden"" name=""autopostback"" id=""autopostback"" value="""" />
-		<section id=""bodySection"">
-			<header id=""bodyHeader"">
-				<a><img src=""" + LogoUrl(container) + @""" id=""logo"" /></a>
-			</header>
-            <section id=""loginContent"">" + html + @"
-            </section>
-        </section>
-        </form>
-	</body>
-</html>";
-            return candidate;
-        }
 
         public string LogoUrl(Beta.GeneratedCms.Console container)
         {

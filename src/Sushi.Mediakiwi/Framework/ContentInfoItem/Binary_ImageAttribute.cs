@@ -71,20 +71,9 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
         /// Gets or sets a value indicating whether this instance can only add.
         /// </summary>
         /// <value>
-        /// 	<c>true</c> if this instance can only add; otherwise, <c>false</c>.
-        /// </value>
-        bool _CanOnlyAdd = true;
-        /// <summary>
-        /// Gets or sets a value indicating whether this instance can only add.
-        /// </summary>
-        /// <value>
         /// <c>true</c> if this instance can only add; otherwise, <c>false</c>.
         /// </value>
-        public bool CanOnlyAdd
-        {
-            get { return _CanOnlyAdd; }
-            set { _CanOnlyAdd = value; }
-        }
+        public bool CanOnlyAdd { get; set; }
 
         /// <summary>
         /// Sets the candidate.
@@ -352,13 +341,11 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                 IComponentList documentList = ComponentList.SelectOne(ComponentListType.Documents);
                 lst = documentList.ID.ToString();
 
-                if (CanOnlyAdd || m_Candidate.ID == 0)
+                url = string.Concat("&gallery=", galleryUrlParam, "&item=0", "&isimage=1");
+
+                if (CanOnlyAdd)
                 {
-                    url = string.Concat("&gallery=", galleryUrlParam, "&item=0", "&isimage=1");
-                }
-                else
-                {
-                    url = string.Concat("&gallery=", galleryUrlParam, "&isimage=1");
+                    url += "&onlycreate=1";
                 }
 
                 int? key = null;
@@ -367,7 +354,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                     key = m_Candidate.ID;
                 }
 
-                ApplyItemSelect(build, true, true, titleTag, ID, lst, url, false, isRequired, false, false, LayerSize.Normal, (CanOnlyAdd ? false : true), 450
+                ApplyItemSelect(build, true, true, titleTag, ID, lst, url, false, isRequired, false, false, LayerSize.Normal, (CanOnlyAdd ? false : true), 500
                     , null, new NameItemValue() { Name = ID, ID = key, Value = OutputText }
                     );
             }

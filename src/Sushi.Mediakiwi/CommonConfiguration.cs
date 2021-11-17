@@ -58,7 +58,13 @@ namespace Sushi.Mediakiwi
 
         static string _Domain = "https://sushi-mediakiwi.azureedge.net/";
         static string _FolderVersion;
+
         internal static string CDN_Folder(WimComponentListRoot wim, string subfolder)
+        {
+            return CDN_Folder(wim.Console, subfolder);
+        }
+
+        internal static string CDN_Folder(Beta.GeneratedCms.Console console, string subfolder)
         {
             if (_FolderVersion == null)
             {
@@ -72,15 +78,16 @@ namespace Sushi.Mediakiwi
                     if (LOCAL_FILE_PATH.IndexOf("http", StringComparison.InvariantCultureIgnoreCase) > -1)
                         _FolderVersion = LOCAL_FILE_PATH;
                     else
-                        _FolderVersion = wim.AddApplicationPath(LOCAL_FILE_PATH, true);
+                        _FolderVersion = console.AddApplicationPath(LOCAL_FILE_PATH, true);
                 }
             }
 
             if (!string.IsNullOrWhiteSpace(subfolder))
-                return string.Concat(_FolderVersion, subfolder);
+                return string.Concat(_FolderVersion, subfolder, "/");
 
             return _FolderVersion;
         }
+
         public static string VIEWPORT
         {
             get
@@ -104,6 +111,7 @@ namespace Sushi.Mediakiwi
                 return WimServerConfiguration.Instance.File_Version;
             }
         }
+
         public static string LOGIN_BOXLOGO
         {
             get

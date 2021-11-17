@@ -75,6 +75,9 @@ namespace Sushi.Mediakiwi.Demonstration.Templates.List
 
         [TextLine("Title")]
         public string Title { get; set; }
+        
+        [Binary_Image("Select image")]
+        public int ImageId { get; set; }
 
         [DataList(typeof(DemoList2))]
         public DataList Items2 { get; set; }

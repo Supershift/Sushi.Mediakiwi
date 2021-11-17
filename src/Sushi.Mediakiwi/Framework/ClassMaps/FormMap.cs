@@ -104,6 +104,40 @@ namespace Sushi.Mediakiwi.Framework
             return result;
         }
 
+        public ContentInfo Map(Expression<Func<T, object>> memberExpression)
+        {
+            PropertyInfo property = ReflectionHelper.GetMember(memberExpression.Body);
+            var result = new ContentInfo(property, IsHidden, IsReadOnly, IsCloacked, Elements);
+            return result;
+        }
+
+        public ContentSettings Find<Y>(Expression<Func<Y, object>> memberExpression, Y sender)
+        {
+            PropertyInfo property = ReflectionHelper.GetMember(memberExpression.Body);
+            if (sender is FormMap<T>)
+            {
+                var find = (sender as FormMap<T>).Elements.Where(x => property == x.Property).FirstOrDefault();
+                if (find == null) return null;
+                ContentSettings setting = new ContentSettings(find);
+                return setting;
+            }
+            else 
+            {
+                return null;
+            }
+        }
+
+        public ContentSettings Find(Expression<Func<T, object>> memberExpression)
+        {
+            PropertyInfo property = ReflectionHelper.GetMember(memberExpression.Body);
+
+            var find = Elements.Where(x => property == x.Property).FirstOrDefault();
+
+            if (find == null) return null;
+            ContentSettings setting = new ContentSettings(find);
+            return setting;
+        }
+
         public List<IFormMap> FormMaps { get; set; }
         public WimComponentListRoot wim { get; set; }
 
@@ -203,22 +237,5 @@ namespace Sushi.Mediakiwi.Framework
             result.Section(title);
         }
 
-        public ContentInfo Map(Expression<Func<T, object>> memberExpression)
-        {
-            PropertyInfo property = ReflectionHelper.GetMember(memberExpression.Body);
-            var result = new ContentInfo(property, IsHidden, IsReadOnly, IsCloacked, Elements);
-            return result;
-        }
-
-        public ContentSettings Find(Expression<Func<T, object>> memberExpression)
-        {
-            PropertyInfo property = ReflectionHelper.GetMember(memberExpression.Body);
-
-            var find = Elements.Where(x => property == x.Property).FirstOrDefault();
-
-            if (find == null) return null;
-            ContentSettings setting = new ContentSettings(find);
-            return setting;
-        }
     }
 }
