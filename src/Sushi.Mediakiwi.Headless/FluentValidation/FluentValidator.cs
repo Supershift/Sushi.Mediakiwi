@@ -129,11 +129,11 @@ namespace Sushi.Mediakiwi.Headless.FluentValidation
 
             // Perform object-level validation on request
             CurrentEditContext.OnValidationRequested +=
-                (sender, eventArgs) => ValidateModel((EditContext)sender, messages);
+                (sender, eventArgs) => Utils.RunSync( () => ValidateModel((EditContext)sender, messages));
 
             // Perform per-field validation on each field edit
             CurrentEditContext.OnFieldChanged +=
-                (sender, eventArgs) => ValidateField(CurrentEditContext, messages, eventArgs.FieldIdentifier);
+                (sender, eventArgs) => Utils.RunSync(() => ValidateField(CurrentEditContext, messages, eventArgs.FieldIdentifier));
         }
 
         /// <summary>
