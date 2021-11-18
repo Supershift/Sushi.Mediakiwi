@@ -1440,9 +1440,9 @@ namespace Sushi.Mediakiwi
         /// <param name="assembly">The assembly.</param>
         /// <param name="typeName">Name of the type.</param>
         /// <returns></returns>
-        public static iOption GetInstanceOptions(string assembly, string typeName)
+        public static iOption GetInstanceOptions(string assembly, string typeName, IServiceProvider serviceProvider)
         {
-            return CreateInstance(assembly, typeName) as iOption;
+            return CreateInstance(assembly, typeName, serviceProvider) as iOption;
         }
 
         /// <summary>
@@ -1451,9 +1451,9 @@ namespace Sushi.Mediakiwi
         /// <param name="assemblyName">Name of the assembly.</param>
         /// <param name="className">Name of the class.</param>
         /// <returns></returns>
-        public static object CreateInstance(string assemblyName, string className)
+        public static object CreateInstance(string assemblyName, string className, IServiceProvider serviceProvider)
         {
-            return CreateInstance(assemblyName, className, out Type type);
+            return CreateInstance(assemblyName, className, out Type type, serviceProvider);
         }
 
         /// <summary>
@@ -1461,9 +1461,9 @@ namespace Sushi.Mediakiwi
         /// </summary>
         /// <param name="list">The list.</param>
         /// <returns></returns>
-        public static object CreateInstance(IComponentList list)
+        public static object CreateInstance(IComponentList list, IServiceProvider serviceProvider)
         {
-            return CreateInstance(list.AssemblyName, list.ClassName, out Type type);
+            return CreateInstance(list.AssemblyName, list.ClassName, out Type type, serviceProvider);
         }
 
         /// <summary>
@@ -1473,9 +1473,9 @@ namespace Sushi.Mediakiwi
         /// <param name="className">Name of the class.</param>
         /// <param name="type">The type.</param>
         /// <returns></returns>
-        public static object CreateInstance(string assemblyName, string className, out Type type)
+        public static object CreateInstance(string assemblyName, string className, out Type type, IServiceProvider serviceProvider)
         {
-            return CreateInstance(assemblyName, className, out type, true);
+            return CreateInstance(assemblyName, className, out type, true, serviceProvider);
         }
 
         /// <summary>
@@ -1486,7 +1486,7 @@ namespace Sushi.Mediakiwi
         /// <param name="type">The type.</param>
         /// <param name="onExceptionThrow">if set to <c>true</c> [on exception throw].</param>
         /// <returns></returns>
-        public static object CreateInstance(string assemblyName, string className, out Type type, bool onExceptionThrow)
+        public static object CreateInstance(string assemblyName, string className, out Type type, bool onExceptionThrow, IServiceProvider serviceProvider)
         {
             type = null;
             //if (string.IsNullOrEmpty(assemblyName) || string.IsNullOrEmpty(className))
@@ -1513,7 +1513,9 @@ namespace Sushi.Mediakiwi
                 Assembly assem = Assembly.LoadFrom(nfo.FullName);
                 type = assem.GetType(className);
 
-                return Activator.CreateInstance(type);
+                //return Activator.CreateInstance(type);                
+                var result = Microsoft.Extensions.DependencyInjection.ActivatorUtilities.CreateInstance(serviceProvider, type);
+                return result;
             }
             catch(Exception ex)
             {

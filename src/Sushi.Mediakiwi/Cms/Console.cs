@@ -774,7 +774,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
         /// <param name="className">Name of the class.</param>
         internal void ApplyInstance(string assemblyName, string className)
         {
-            CurrentListInstance = (IComponentListTemplate)Utils.CreateInstance(assemblyName, className);
+            CurrentListInstance = (IComponentListTemplate)Utils.CreateInstance(assemblyName, className, Context.RequestServices);
             if (CurrentListInstance.wim.PassOverClassInstance != null)
             {
                 CurrentListInstance = CurrentListInstance.wim.PassOverClassInstance;

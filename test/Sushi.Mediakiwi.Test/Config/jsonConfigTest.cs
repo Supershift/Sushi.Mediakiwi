@@ -2,7 +2,7 @@
 using Sushi.Mediakiwi.Data.Configuration;
 using System;
 
-namespace Sushi.Mediakiwi.Tests.Config
+namespace Sushi.Mediakiwi.Test.Config
 {
     [TestClass]
     public class jsonConfigTest

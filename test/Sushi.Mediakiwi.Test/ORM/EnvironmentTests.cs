@@ -2,7 +2,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Diagnostics;
 using System.Threading.Tasks;
 
-namespace Sushi.Mediakiwi.Tests.ORM
+namespace Sushi.Mediakiwi.Test.ORM
 {
     [TestClass]
     public class EnvironmentTests : BaseTest

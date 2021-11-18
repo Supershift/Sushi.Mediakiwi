@@ -1,7 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Sushi.Mediakiwi.Data.Configuration;
 
-namespace Sushi.Mediakiwi.Tests.Utility
+namespace Sushi.Mediakiwi.Test.Utility
 {
     [TestClass]
     public class UtilityTest

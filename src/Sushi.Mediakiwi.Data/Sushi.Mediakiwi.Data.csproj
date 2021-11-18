@@ -1,9 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
-    <Version>7.16.1</Version>
-    <Authors>Marc Molenwijk, Mark Rienstra</Authors>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <Version>7.16.2-rc</Version>
+    <Authors>Marc Molenwijk, Mark Rienstra, Mark de Vries</Authors>
     <Company>Supershift</Company>
     <Product>Mediakiwi</Product>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
@@ -11,11 +11,11 @@
     <Description>Data Access Layer for the Mediakiwi Rapid Portal Development Framework.</Description>
     <PackageProjectUrl>https://mediakiwi.atlassian.net/wiki/spaces/CORE/overview</PackageProjectUrl>
     <RepositoryUrl>https://github.com/Supershift/Sushi.Mediakiwi</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
     <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
     <EnableNETAnalyzers>true</EnableNETAnalyzers>
     <RunAnalyzersDuringBuild>false</RunAnalyzersDuringBuild>
-    <AssemblyVersion>7.16.1.0</AssemblyVersion>
-    <FileVersion>7.16.1.0</FileVersion>
+    
   </PropertyGroup>
 
   <ItemGroup>
@@ -31,11 +31,7 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.1.17" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Xml" Version="3.1.17" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="3.1.17" />
-    <PackageReference Include="SonarAnalyzer.CSharp" Version="8.17.0.26580">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="Sushi.MicroORM" Version="1.5.0" />
+    <PackageReference Include="Sushi.MicroORM" Version="1.6.1" />
     <PackageReference Include="System.Configuration.ConfigurationManager" Version="4.7.0" />
   </ItemGroup>
 

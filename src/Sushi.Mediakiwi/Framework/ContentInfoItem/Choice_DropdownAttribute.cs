@@ -207,7 +207,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                         }
                         else if (field.PropertyInfo != null && field.PropertyInfo.OptionListSelect.HasValue)
                         {
-                            iOption options = Utils.GetInstanceOptions("Wim.Module.FormGenerator.dll", "Wim.Module.FormGenerator.Data.FormElementOptionList");
+                            iOption options = Utils.GetInstanceOptions("Wim.Module.FormGenerator.dll", "Wim.Module.FormGenerator.Data.FormElementOptionList", Context.RequestServices);
                             if (options != null)
                             {
                                 m_ListItemCollection = new ListItemCollection();

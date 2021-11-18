@@ -3,7 +3,7 @@ using Sushi.Mediakiwi.AppCentre.UI.Forms;
 using Sushi.Mediakiwi.Data;
 using Sushi.Mediakiwi.Data.Configuration;
 using Sushi.Mediakiwi.Framework;
-using Sushi.Mediakiwi.Persistors;
+using Sushi.Mediakiwi.Persisters;
 using Sushi.Mediakiwi.UI;
 using System.Collections.Generic;
 using System.Data;

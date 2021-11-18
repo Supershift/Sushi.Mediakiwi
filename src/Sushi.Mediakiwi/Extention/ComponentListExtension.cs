@@ -62,7 +62,7 @@ public static class ComponentListExtension
                 inComponentList.Save();
             }
 
-            instance = Utils.CreateInstance(inComponentList.AssemblyName, inComponentList.ClassName, out candidate, false);
+            instance = Utils.CreateInstance(inComponentList.AssemblyName, inComponentList.ClassName, out candidate, false, context.RequestServices);
 
             //  [11 nov 14:MM] Added routing support
             #region Routing support
@@ -130,7 +130,7 @@ public static class ComponentListExtension
                 inComponentList.Save();
             }
 
-            instance = Utils.CreateInstance(inComponentList.AssemblyName, inComponentList.ClassName, out candidate, false);
+            instance = Utils.CreateInstance(inComponentList.AssemblyName, inComponentList.ClassName, out candidate, false, console.Context.RequestServices);
 
             //  [11 nov 14:MM] Added routing support
             #region Routing support

@@ -2,11 +2,11 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <Version>7.16.1</Version>
+    <Version>7.16.2-rc</Version>
     <Product>Mediakiwi</Product>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <Company>Supershift</Company>
-    <Authors>Marc Molenwijk, Jean Paul Kommers, Mark Rienstra</Authors>
+    <Authors>Marc Molenwijk, Jean Paul Kommers, Mark Rienstra, Mark de Vries</Authors>
     <Copyright>2005-2021 Supershift</Copyright>
     <Description>Rapid Portal Development Framework including a Headless Content Management System component build and optimized for Microsoft Azure (cloud)</Description>
     <PackageProjectUrl>https://mediakiwi.atlassian.net/wiki/spaces/CORE/overview</PackageProjectUrl>
@@ -14,9 +14,7 @@
     <UserSecretsId>868170ed-102f-45aa-8ea6-3b1cc32a2b6b</UserSecretsId>
     <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
     <EnableNETAnalyzers>true</EnableNETAnalyzers>
-    <RunAnalyzersDuringBuild>false</RunAnalyzersDuringBuild>
-    <AssemblyVersion>7.16.1.0</AssemblyVersion>
-    <FileVersion>7.16.1.0</FileVersion>
+    <RunAnalyzersDuringBuild>false</RunAnalyzersDuringBuild>    
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
@@ -325,10 +323,6 @@
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="3.1.17" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.1.17" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
-    <PackageReference Include="SonarAnalyzer.CSharp" Version="8.17.0.26580">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
     <PackageReference Include="System.Drawing.Common" Version="5.0.0" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.12.0" />
   </ItemGroup>

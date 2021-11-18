@@ -5,7 +5,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Sushi.Mediakiwi.Tests.ORM
+namespace Sushi.Mediakiwi.Test.ORM
 {
     [TestClass]
     public class CachingTest : BaseTest

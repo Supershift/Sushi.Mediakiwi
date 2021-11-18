@@ -19,7 +19,7 @@ namespace Sushi.Mediakiwi.Demonstration.Controllers
         [HttpGet]
         [Route("api/custom/resource/{id}")]
         public ActionResult GetResource(string id)
-        {
+        {   
             return Ok($"Resource id: {id}");
         }
     }

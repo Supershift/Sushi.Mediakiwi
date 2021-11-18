@@ -581,7 +581,7 @@ namespace Sushi.Mediakiwi.Framework.Templates
                                         }
                                         catch (Exception ex)
                                         {
-                                            Notification.InsertOne(Notification.Tags.InternalWimError, NotificationType.Error, null, ex.Message);
+                                            Notification.InsertOne("Internal Wim error", NotificationType.Error, null, ex.Message);
                                         }
                                         break;
                                 }
@@ -609,7 +609,7 @@ namespace Sushi.Mediakiwi.Framework.Templates
 
         private static void SendNotification( string type, object loadedControl, System.Reflection.PropertyInfo info )
         {
-            Notification.InsertOne(Notification.Tags.InternalWimError, NotificationType.Error, 
+            Notification.InsertOne("Internal Wim error", NotificationType.Error, 
                 string.Format("Wrong type set for {0}<br/>Currently set: {1} for control: {2}", type, info.PropertyType.ToString(), loadedControl.GetType().ToString() ) 
                 );
         }
