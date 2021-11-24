@@ -1390,7 +1390,10 @@ namespace Sushi.Mediakiwi.Data
             if (ID == 0 || role.All_Lists)
                 return true;
 
-            var selection = from item in await SelectAllAccessibleListsAsync(role, RoleRightType.List) where item.ID == ID select item;
+            var selection = from item in await SelectAllAccessibleListsAsync(role, RoleRightType.List)
+                            .ConfigureAwait(false) 
+                            where item.ID == ID select item;
+
             bool xs = selection.Count() == 1;
             return xs;
         }
@@ -1410,6 +1413,7 @@ namespace Sushi.Mediakiwi.Data
             var selection = from item in await SelectAllAccessibleListsAsync(user, RoleRightType.List)
                             .ConfigureAwait(false)
                             where item.ID == ID select item;
+
             bool xs = selection.Count() == 1;
             return xs;
         }

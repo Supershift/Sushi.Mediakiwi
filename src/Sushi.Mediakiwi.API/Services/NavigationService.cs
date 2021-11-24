@@ -78,9 +78,7 @@ namespace Sushi.Mediakiwi.API.Services
 
             switch (entity.TypeID)
             {
-                case 1:
-                    return container.UrlBuild.GetListRequest(Convert.ToInt32(entity.ItemID));
-
+                case 1: return container.UrlBuild.GetListRequest(Convert.ToInt32(entity.ItemID));
                 case 2: querystring = $"?folder={entity.ItemID}"; break;
                 case 3: querystring = $"?page={entity.ItemID}"; break;
                 case 4: querystring = $"?dashboard={entity.ItemID}"; break;
@@ -88,6 +86,7 @@ namespace Sushi.Mediakiwi.API.Services
                 case 6: querystring = $"?top=1"; break;
                 case 7: querystring = $"?top={entity.ItemID}"; break;
                 case 8: querystring = $"?folder={entity.ItemID}"; break;
+                default: querystring = ""; break;
             }
 
             return string.Concat(container.GetWimPagePath(channel), querystring);

@@ -116,8 +116,7 @@ public static class ApplicationUserExtention
         if (string.IsNullOrEmpty(mail_Intro))
             mail_Intro = "Dear [name],<br><br>We have created an account for you to login. Please visit the following URL and apply your password using the credentials as noted below:<br><br>[url]<br><br><b>Your personal credentials</b>:<br><br>[credentials]";
 
-        string url;
-        ResetPassword(inUser, container, out url);
+        string url = ResetPassword(inUser, container);
 
         string body = string.Format(@"Username: {0}<br/>Emailadres: {1}<br/>"
             , inUser.Name
@@ -155,8 +154,7 @@ public static class ApplicationUserExtention
 
         string wimPath = Sushi.Mediakiwi.CommonConfiguration.PORTAL_PATH;
 
-        string url;
-        ResetPassword(inUser, container, out url);
+        string url = ResetPassword(inUser, container);
 
         string body = string.Format(@"Username: {0}<br/>Emailadres: {1}<br/>"
             , inUser.Name
@@ -257,20 +255,19 @@ public static class ApplicationUserExtention
         }
     }
 
-
     /// <summary>
-    /// Creates a reset GUID for the User so that he/she can set a new password
+    /// 
     /// </summary>
     /// <param name="user"></param>
-    /// <param name="resetLink"></param>
-    /// <param name="shouldEncoded"></param>
-    public static void ResetPassword(this IApplicationUser user, Sushi.Mediakiwi.Beta.GeneratedCms.Console container, out string resetLink)
+    /// <param name="container"></param>
+    /// <returns>The reset link URL</returns>
+    public static string ResetPassword(this IApplicationUser user, Sushi.Mediakiwi.Beta.GeneratedCms.Console container)
     {
         user.ResetKey = Guid.NewGuid();
         user.Save();
 
         string wimPath = Sushi.Mediakiwi.CommonConfiguration.PORTAL_PATH;
-        resetLink = container.AddApplicationPath(string.Concat(wimPath, "?reset=", user.ResetKey, $"&u={user.Email}"), true);
+        return container.AddApplicationPath(string.Concat(wimPath, "?reset=", user.ResetKey, $"&u={user.Email}"), true);
     }
 
     /// <summary>
