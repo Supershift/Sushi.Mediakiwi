@@ -15,7 +15,7 @@ namespace Sushi.Mediakiwi.Utilities
         {
             public Payload()
             {
-                this.From = new MailAddress(Environment.Current.DefaultMailAddress, Environment.Current.DisplayName);
+                From = new MailAddress(Environment.Current.DefaultMailAddress, Environment.Current.DisplayName);
             }
 
             public MailAddress From { set; get; }
@@ -31,6 +31,7 @@ namespace Sushi.Mediakiwi.Utilities
             public bool ReplaceFullBody { get; set; }
             public string URL { get; set; }
             public NameValueCollection ReplacementPlaceholders { get; set; }
+            public int TimeOutMilliseconds { get; set; }
         }
 
         #region Stylesheet
@@ -147,6 +148,18 @@ namespace Sushi.Mediakiwi.Utilities
         }
 
         /// <summary>
+        /// Sends the specified to.
+        /// </summary>
+        /// <param name="to">To.</param>
+        /// <param name="subject">The subject.</param>
+        /// <param name="body">The body.</param>
+        /// <param name="timeOutms">The timeout in milliseconds.</param>
+        public static void Send(MailAddress to, string subject, string body, int timeOutms)
+        {
+            Send(to, subject, body, null, timeOutms);
+        }
+
+        /// <summary>
         /// Sends the notification.
         /// </summary>
         /// <param name="to">To.</param>
@@ -161,6 +174,21 @@ namespace Sushi.Mediakiwi.Utilities
         }
 
         /// <summary>
+        /// Sends the notification.
+        /// </summary>
+        /// <param name="to">To.</param>
+        /// <param name="subject">The subject.</param>
+        /// <param name="body">The body.</param>
+        /// <param name="url">The URL.</param>
+        /// <param name="timeOutms">The timeout in milliseconds.</param>
+        public static void Send(MailAddress to, string subject, string body, string url, int timeOutms)
+        {
+            var list = new List<MailAddress>();
+            list.Add(to);
+            Send(list, subject, body, url, timeOutms);
+        }
+
+        /// <summary>
         /// Sends the specified to.
         /// </summary>
         /// <param name="to">To.</param>
@@ -169,38 +197,37 @@ namespace Sushi.Mediakiwi.Utilities
         /// <param name="url">The URL.</param>
         public static void Send(List<MailAddress> to, string subject, string body, string url)
         {
-            Payload p = new Payload();
-            p.To = to;
-            p.Subject = subject;
-            p.Body = body;
-            p.URL = url;
+            Payload p = new Payload()
+            {
+                To = to,
+                Subject = subject,
+                Body = body,
+                URL = url
+            };
+
             Send(p);
         }
 
-        ///// <summary>
-        ///// Sends the notification.
-        ///// </summary>
-        ///// <param name="subject">The subject.</param>
-        ///// <param name="body">The body.</param>
-        ///// <param name="email">The email.</param>
-        //public static void Send(string subject, string body, string[] email)
-        //{
-        //    Send(subject, body, null, null, null, null, email);
-        //}
+        /// <summary>
+        /// Sends the specified to.
+        /// </summary>
+        /// <param name="to">To.</param>
+        /// <param name="subject">The subject.</param>
+        /// <param name="body">The body.</param>
+        /// <param name="url">The URL.</param>
+        public static void Send(List<MailAddress> to, string subject, string body, string url, int timeOutms)
+        {
+            Payload p = new Payload()
+            {
+                To = to,
+                Subject = subject,
+                Body = body,
+                URL = url,
+                TimeOutMilliseconds = timeOutms
+            };
 
-        ///// <summary>
-        ///// Sends the notification.
-        ///// </summary>
-        ///// <param name="subject">The subject.</param>
-        ///// <param name="body">The body.</param>
-        ///// <param name="fieldListTitle">The field list title.</param>
-        ///// <param name="fieldList">The field list.</param>
-        ///// <param name="dataList">The data list.</param>
-        ///// <param name="url">The URL.</param>
-        ///// <param name="emailaddresses">The emailaddresses.</param>
-        //public static void Send(string subject, string body, string fieldListTitle, System.Collections.Specialized.NameValueCollection fieldList, IList dataList, string url, string[] emailaddresses)
-        //{
-        //}
+            Send(p);
+        }
 
         public static void Send(Payload payload)
         {
@@ -210,39 +237,34 @@ namespace Sushi.Mediakiwi.Utilities
             message.From = new MailAddress(environment.DefaultMailAddress, environment.DisplayName);
 
             string fieldForm = null;
-            //if (payload.ReplacementPlaceholders != null)
-            //{
-            //    StringBuilder build = new StringBuilder();
-            //    build.AppendFormat(@"<table class=""form""><thead><tr><th colspan=""2"">{0}</th></tr></thead><tbody>", fieldListTitle);
-            //    build.Append("<tbody>");
-
-            //    foreach (string key in fieldList.Keys)
-            //        build.AppendFormat("<tr><th><label>{0}:</label></th><td>{1}</td></tr>", key, fieldList[key]);
-
-            //    build.Append("</tbody></table>");
-            //    fieldForm = build.ToString();
-            //}
 
             if (payload.To != null)
             {
                 foreach (var item in payload.To)
+                {
                     message.To.Add(item);
+                }
             }
 
             if (payload.BCC != null)
             {
                 foreach (var item in payload.BCC)
+                {
                     message.Bcc.Add(item);
+                }
             }
 
             payload.HideHeader = true;
-
             message.Subject = payload.Subject;
             message.IsBodyHtml = true;
             message.BodyEncoding = Encoding.UTF8;
+
             if (payload.ReplaceFullBody)
+            {
                 message.Body = payload.Body;
+            }
             else
+            {
                 message.Body = string.Format(@"<!DOCTYPE HTML PUBLIC ""-//W3C//DTD HTML 4.01 Transitional//EN"" ""http://www.w3.org/TR/html4/loose.dtd"">
 <html>
 	<head>
@@ -272,8 +294,15 @@ namespace Sushi.Mediakiwi.Utilities
 ", string.Empty//Environment.Current.LogoHrefFull
 , payload.URL)
                 );
+            }
+            
+            var smtpClient = environment.SmtpClient();
+            if (payload.TimeOutMilliseconds > 0)
+            {
+                smtpClient.Timeout = payload.TimeOutMilliseconds;
+            }
 
-            Environment.Current.SmtpClient().Send(message);
+            smtpClient.Send(message);
         }
     }
 }

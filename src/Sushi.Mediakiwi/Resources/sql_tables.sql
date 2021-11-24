@@ -174,6 +174,7 @@
 	    Environment_SmtpUser varchar(250) NULL,
 	    Environment_SmtpPass varchar(250) NULL,
 		Environment_SmtpEnableSSL bit NULL,
+		Environment_ApiKey varchar(250) NULL,
 		);
 	    
     --PK_Environment_Key;

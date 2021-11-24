@@ -505,6 +505,20 @@ namespace Sushi.Mediakiwi.Data
             return connector.FetchSingle(filter);
         }
 
+        public static async Task<Gallery> SelectOneAsync(string relativePath, bool onlyReturnActive = false)
+        {
+            var connector = ConnectorFactory.CreateConnector<Gallery>();
+            var filter = connector.CreateDataFilter();
+
+            filter.Add(x => x.CompletePath, relativePath);
+            if (onlyReturnActive)
+            {
+                filter.Add(x => x.IsActive, true);
+            }
+
+            return await connector.FetchSingleAsync(filter).ConfigureAwait(false);
+        }
+
         /// <summary>
         /// Select a lower level gallery
         /// </summary>
@@ -540,6 +554,63 @@ namespace Sushi.Mediakiwi.Data
             searchPath = searchPath.Replace("//", "/");
 
             return SelectOne(searchPath, true);
+        }
+
+        /// <summary>
+        /// Select a lower level gallery
+        /// </summary>
+        /// <param name="gallery">The gallery.</param>
+        /// <param name="level">The level.</param>
+        /// <returns></returns>
+        public static async Task<Gallery> SelectOneAsync(Gallery gallery, int level)
+        {
+            if (level < 1)
+            {
+                return new Gallery();
+            }
+
+            if (gallery == null || gallery.ID == 0)
+            {
+                return new Gallery();
+            }
+
+            if (gallery.Name == CommonConfiguration.ROOT_FOLDER)
+            {
+                return gallery;
+            }
+
+            //  Exception from folder
+            string[] split = gallery.CompletePath.Split('/');
+            int splitcount = split.Length;
+            //  / = 2
+            //  /level_01/ = 3
+            //  /level_01/level_02/ = 4
+
+            //  Is root
+            if (splitcount == 1)
+            {
+                return new Gallery();
+            }
+            //  Non existant level
+            if ((level - (splitcount - 1)) > 0)
+            {
+                return new Gallery();
+            }
+            //  Same level
+            if ((level - (splitcount - 1)) == 0)
+            {
+                return gallery;
+            }
+
+            string searchPath = $"/{split[level]}";
+            while (level > 1)
+            {
+                level--;
+                searchPath = $"/{split[level]}{searchPath}";
+            }
+            searchPath = searchPath.Replace("//", "/");
+
+            return await SelectOneAsync(searchPath, true).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -901,25 +972,25 @@ namespace Sushi.Mediakiwi.Data
         /// <summary>
         /// Selects all accessible.
         /// </summary>
-        /// <param name="user">The user.</param>
+        /// <param name="role">The user role.</param>
         /// <returns></returns>
-        public static Gallery[] SelectAllAccessible(IApplicationUser user)
+        public static Gallery[] SelectAllAccessible(IApplicationRole role)
         {
             Gallery[] galleries = null;
-            if (!user.Role().All_Galleries)
+            if (!role.All_Galleries)
             {
-                if (user.Role().IsAccessGallery)
+                if (role.IsAccessGallery)
                 {
                     galleries = (
                         from item in SelectAll()
-                        join relation in RoleRight.SelectAll(user.Role().ID, RoleRightType.Gallery) on item.ID equals relation.ItemID
+                        join relation in RoleRight.SelectAll(role.ID, RoleRightType.Gallery) on item.ID equals relation.ItemID
                         select item).ToArray();
                 }
                 else
                 {
                     var acl = (
                         from item in SelectAll()
-                        join relation in RoleRight.SelectAll(user.Role().ID, RoleRightType.Gallery) on item.ID equals relation.ItemID
+                        join relation in RoleRight.SelectAll(role.ID, RoleRightType.Gallery) on item.ID equals relation.ItemID
                         into combination
                         from relation in combination.DefaultIfEmpty()
                         select new { ID = item.ID, HasAccess = relation == null });
@@ -936,43 +1007,88 @@ namespace Sushi.Mediakiwi.Data
             return galleries;
         }
 
-
         /// <summary>
         /// Selects all accessible.
         /// </summary>
         /// <param name="user">The user.</param>
         /// <returns></returns>
-        public static async Task<Gallery[]> SelectAllAccessibleAsync(IApplicationUser user)
+        public static Gallery[] SelectAllAccessible(IApplicationUser user)
         {
-            Gallery[] galleries = null;
-            if (!user.Role().All_Galleries)
+            return SelectAllAccessible(user.Role());
+        }
+
+
+        /// <summary>
+        /// Validates the access right.
+        /// </summary>
+        /// <param name="galleries">The galleries.</param>
+        /// <param name="user">The user.</param>
+        /// <returns></returns>
+        public static async Task<ICollection<Gallery>> ValidateAccessRightAsync(Gallery[] galleries, IApplicationUser user)
+        {
+            return (from item in galleries join relation in await SelectAllAccessibleAsync(user).ConfigureAwait(false) on item.ID equals relation.ID select item).ToList();
+        }
+
+        /// <summary>
+        /// Validates the access right.
+        /// </summary>
+        /// <param name="galleries">The galleries.</param>
+        /// <param name="role">The user role.</param>
+        /// <returns></returns>
+        public static async Task<ICollection<Gallery>> ValidateAccessRightAsync(Gallery[] galleries, IApplicationRole role)
+        {
+            return (from item in galleries join relation in await SelectAllAccessibleAsync(role).ConfigureAwait(false) on item.ID equals relation.ID select item).ToList();
+        }
+
+        /// <summary>
+        /// Selects all accessible.
+        /// </summary>
+        /// <param name="role">The user role.</param>
+        /// <returns></returns>
+        public static async Task<ICollection<Gallery>> SelectAllAccessibleAsync(IApplicationRole role)
+        {
+            List<Gallery> galleries = null;
+            if (!role.All_Galleries)
             {
-                if (user.Role().IsAccessGallery)
+                if (role.IsAccessGallery)
                 {
                     galleries = (
-                        from item in await SelectAllAsync()
-                        join relation in await RoleRight.SelectAllAsync(user.Role().ID, RoleRightType.Gallery) on item.ID equals relation.ItemID
-                        select item).ToArray();
+                        from item in await SelectAllAsync().ConfigureAwait(false)
+                        join relation in await RoleRight.SelectAllAsync(role.ID, RoleRightType.Gallery).ConfigureAwait(false) on item.ID equals relation.ItemID
+                        select item).ToList();
                 }
                 else
                 {
                     var acl = (
-                        from item in await SelectAllAsync()
-                        join relation in await RoleRight.SelectAllAsync(user.Role().ID, RoleRightType.Gallery) on item.ID equals relation.ItemID
+                        from item in await SelectAllAsync().ConfigureAwait(false)
+                        join relation in await RoleRight.SelectAllAsync(role.ID, RoleRightType.Gallery).ConfigureAwait(false) on item.ID equals relation.ItemID
                         into combination
                         from relation in combination.DefaultIfEmpty()
                         select new { ID = item.ID, HasAccess = relation == null });
 
                     galleries = (
                         from item in acl
-                        join relation in await SelectAllAsync() on item.ID equals relation.ID
+                        join relation in await SelectAllAsync().ConfigureAwait(false) on item.ID equals relation.ID
                         where item.HasAccess
-                        select relation).ToArray();
+                        select relation).ToList();
                 }
             }
             else
-                galleries = await SelectAllAsync();
-            return galleries;
+            {
+                galleries = (await SelectAllAsync().ConfigureAwait(false)).ToList();
+            }
+
+            return galleries.ToList();
+        }
+
+        /// <summary>
+        /// Selects all accessible.
+        /// </summary>
+        /// <param name="user">The user.</param>
+        /// <returns></returns>
+        public static async Task<ICollection<Gallery>> SelectAllAccessibleAsync(IApplicationUser user)
+        {
+            return await SelectAllAccessibleAsync(await user.RoleAsync()).ConfigureAwait(false);
         }
 
         /// <summary>

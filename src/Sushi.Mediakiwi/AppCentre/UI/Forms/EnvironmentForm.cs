@@ -24,9 +24,13 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation.Forms
             Map(x => x.ErrorMailAddress).TextField("Error email", 255, true).Expression(OutputExpression.Alternating);
             
             Map(x => x.DefaultSiteID).Dropdown("Default channel", nameof(Sites));
+
+            Map(x => x.Section2, this).Section("API access");
+            Map(x => x.ApiKey).TextField("API Key", 250, false, false, "Is used for allowing remote FrontEnd connections to be made to the internal Mediakiwi API's");
         }
 
         public string Section1 { get; set; }
+        public string Section2 { get; set; }
 
         private ListItemCollection m_AvailableTimeZones;
         /// <summary>

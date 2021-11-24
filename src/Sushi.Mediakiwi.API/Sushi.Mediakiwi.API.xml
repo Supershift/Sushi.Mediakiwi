@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Sushi.Mediakiwi.API</name>
+    </assembly>
+    <members>
+        <member name="M:Sushi.Mediakiwi.API.Controllers.Authentication.Login(Sushi.Mediakiwi.API.Transport.Requests.LoginRequest)">
+            <summary>
+            Logs a user in based on their Email / Password combination. 
+            This method will also set a cookie 'MKAPI' which contains the JWT token.
+            The default Expiration time is 2 hours
+            </summary>
+            <param name="request">The request containing the needed credentials</param>
+            <returns></returns>
+            <response code="200">The user is succesfully authenticated</response>
+            <response code="400">Some needed information is missing from the request</response>
+            <response code="401">The user is not succesfully authenticated</response>
+        </member>
+        <member name="M:Sushi.Mediakiwi.API.Controllers.Authentication.ResetPassword(Sushi.Mediakiwi.API.Transport.Requests.ResetPasswordRequest)">
+            <summary>
+            Sends an email to a user containing information on how to reset his/her password. 
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+            <response code="200">The mail was succesfully sent</response>
+            <response code="400">Some needed information is missing from the request</response>
+            <response code="401">The user is not succesfully authenticated</response>
+            <response code="424">The Send mail dependancy failed to operate</response>
+        </member>
+        <member name="M:Sushi.Mediakiwi.API.Controllers.Authentication.Logout">
+            <summary>
+            Will remove the cookie for an authenticated user.
+            </summary>
+            <returns></returns>
+            <response code="200">The user was succesfully logged out</response>
+            <response code="400">Some needed information is missing from the request</response>
+            <response code="401">The user is not succesfully authenticated</response>
+        </member>
+    </members>
+</doc>

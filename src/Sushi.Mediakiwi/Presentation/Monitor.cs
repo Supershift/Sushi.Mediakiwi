@@ -1204,7 +1204,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation
                     if (!Utility.IsStrongPassword(password))
                     {
                         string resetlink;
-                        container.CurrentApplicationUser.ResetPassword(container, out resetlink, false);
+                        container.CurrentApplicationUser.ResetPassword(container, out resetlink);
                         container.Response.Redirect(resetlink.ToString(), true);
                         return false;
                     }

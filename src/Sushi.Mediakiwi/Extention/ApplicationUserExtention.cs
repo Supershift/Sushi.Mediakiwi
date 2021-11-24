@@ -176,6 +176,52 @@ public static class ApplicationUserExtention
     }
 
     /// <summary>
+    /// Sends the 'I forgot my password' e-mail
+    /// </summary>
+    /// <param name="inUser"></param>
+    /// <returns>TRUE when succeeded, FALSE when exception occurs</returns>
+    public static async Task<bool> SendForgotPasswordAsync(this IApplicationUser inUser, Sushi.Mediakiwi.Beta.GeneratedCms.Console container)
+    {
+        var userData = await ComponentList.SelectOneAsync("Sushi.Mediakiwi.AppCentre.Data.Implementation.User").ConfigureAwait(false);
+        string mail_Title = userData.Settings["Mail_ForgotTitle"].Value;
+        string mail_Intro = userData.Settings["Mail_ForgotIntro"].Value;
+
+        if (string.IsNullOrEmpty(mail_Intro))
+        {
+            mail_Intro = "Dear [name],<br><br>You have requested a password reset through the \"forgotten my password\" page. Please visit the following URL and (re)apply your password:<br><br>[url]";
+        }
+
+        string url = await ResetPasswordAsync(inUser, container).ConfigureAwait(false);
+
+        string body = string.Format(@"Username: {0}<br/>Emailadres: {1}<br/>"
+            , inUser.Name
+            , inUser.Email);
+
+        try
+        {
+            Mail.Send(new System.Net.Mail.MailAddress(inUser.Email, inUser.Displayname),
+            string.IsNullOrEmpty(mail_Title) ? "Forgotten password" : mail_Title,
+            string.IsNullOrEmpty(mail_Intro) ? body
+                : mail_Intro
+                    .Replace("[credentials]", body)
+                    .Replace("[name]", inUser.Displayname)
+                    .Replace("[login]", inUser.Name)
+                    .Replace("[email]", inUser.Email)
+                    .Replace("[url]", string.Format("<a href=\"{0}\">{0}</a>", url))
+                    .Replace("http://url", string.Format("{0}", url)),
+            url, 10000);
+
+            return true;
+        }
+        catch (Exception ex)
+        {
+            await Notification.InsertOneAsync("SendMail", ex.Message).ConfigureAwait(false);
+
+            return false;
+        }
+    }
+
+    /// <summary>
     /// Creates the content for the Login Mail, but DOES NOT send out any email
     /// </summary>
     public static void ExtractLoginMailBody(this IApplicationUser inUser, Sushi.Mediakiwi.Beta.GeneratedCms.Console container, out string subject, out string body, out string url)
@@ -218,7 +264,7 @@ public static class ApplicationUserExtention
     /// <param name="user"></param>
     /// <param name="resetLink"></param>
     /// <param name="shouldEncoded"></param>
-    public static void ResetPassword(this IApplicationUser user, Sushi.Mediakiwi.Beta.GeneratedCms.Console container, out string resetLink, bool shouldEncoded = true)
+    public static void ResetPassword(this IApplicationUser user, Sushi.Mediakiwi.Beta.GeneratedCms.Console container, out string resetLink)
     {
         user.ResetKey = Guid.NewGuid();
         user.Save();
@@ -227,8 +273,23 @@ public static class ApplicationUserExtention
         resetLink = container.AddApplicationPath(string.Concat(wimPath, "?reset=", user.ResetKey, $"&u={user.Email}"), true);
     }
 
+    /// <summary>
+    /// Creates a reset GUID for the User so that he/she can set a new password
+    /// </summary>
+    /// <param name="user"></param>
+    /// <param name="resetLink"></param>
+    /// <param name="shouldEncoded"></param>
+    public static async Task<string> ResetPasswordAsync(this IApplicationUser user, Sushi.Mediakiwi.Beta.GeneratedCms.Console container)
+    {
+        user.ResetKey = Guid.NewGuid();
+        await user.SaveAsync().ConfigureAwait(false);
 
-    internal static bool IsValid(this IApplicationUser user, string password)
+        string wimPath = Sushi.Mediakiwi.CommonConfiguration.PORTAL_PATH;
+        return container.AddApplicationPath(string.Concat(wimPath, "?reset=", user.ResetKey, $"&u={user.Email}"), true);
+    }
+
+
+    public static bool IsValid(this IApplicationUser user, string password)
     {
         if (user.Type == 0)
         {
@@ -242,7 +303,7 @@ public static class ApplicationUserExtention
         else if (user.Type == 1)
         {
             string candidate = Utility.HashStringByMD5(string.Concat(user.Name, password));
-            if (candidate.Equals(user.Password))
+            if (candidate.Equals(user.Password, StringComparison.InvariantCulture))
                 return true;
         }
         return false;
