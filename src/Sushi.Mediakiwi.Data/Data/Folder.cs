@@ -698,17 +698,29 @@ FROM [Wim_ComponentLists] WHERE [ComponentList_Folder_Key] in (SELECT [Folder_Ke
         /// </returns>
         public bool HasRoleAccess(IApplicationUser user)
         {
+            return HasRoleAccess(user.Role());
+        }
+
+        /// <summary>
+        /// Determines whether [has role access] [the specified role id].
+        /// </summary>
+        /// <param name="user">The user.</param>
+        /// <returns>
+        /// 	<c>true</c> if [has role access] [the specified role id]; otherwise, <c>false</c>.
+        /// </returns>
+        public bool HasRoleAccess(IApplicationRole role)
+        {
             if (CompletePath == "/")
             {
                 return true;
             }
 
-            if (ID == 0 || user.Role().All_Folders)
+            if (ID == 0 || role.All_Folders)
             {
                 return true;
             }
 
-            var selection = from item in SelectAllAccessible(user) where item.ID == ID select item;
+            var selection = from item in SelectAllAccessible(role) where item.ID == ID select item;
             bool xs = selection.Count() == 1;
             return xs;
         }
@@ -722,17 +734,29 @@ FROM [Wim_ComponentLists] WHERE [ComponentList_Folder_Key] in (SELECT [Folder_Ke
         /// </returns>
         public async Task<bool> HasRoleAccessAsync(IApplicationUser user)
         {
+            return await HasRoleAccessAsync(await user.RoleAsync().ConfigureAwait(false)).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Determines whether [has role access] [the specified role id].
+        /// </summary>
+        /// <param name="user">The user.</param>
+        /// <returns>
+        /// 	<c>true</c> if [has role access] [the specified role id]; otherwise, <c>false</c>.
+        /// </returns>
+        public async Task<bool> HasRoleAccessAsync(IApplicationRole role)
+        {
             if (CompletePath == "/")
             {
                 return true;
             }
 
-            if (ID == 0 || (await user.RoleAsync().ConfigureAwait(false)).All_Folders)
+            if (ID == 0 || role.All_Folders)
             {
                 return true;
             }
 
-            var selection = from item in (await SelectAllAccessibleAsync(user).ConfigureAwait(false)) where item.ID == ID select item;
+            var selection = from item in (await SelectAllAccessibleAsync(role).ConfigureAwait(false)) where item.ID == ID select item;
             bool xs = selection.Count() == 1;
             return xs;
         }
@@ -744,21 +768,31 @@ FROM [Wim_ComponentLists] WHERE [ComponentList_Folder_Key] in (SELECT [Folder_Ke
         /// <returns></returns>
         public static Folder[] SelectAllAccessible(IApplicationUser user)
         {
+            return SelectAllAccessible(user.Role());
+        }
+
+        /// <summary>
+        /// Selects all accessible.
+        /// </summary>
+        /// <param name="user">The user.</param>
+        /// <returns></returns>
+        public static Folder[] SelectAllAccessible(IApplicationRole role)
+        {
             Folder[] folders = null;
-            if (!user.Role().All_Folders)
+            if (!role.All_Folders)
             {
-                if (user.Role().IsAccessFolder)
+                if (role.IsAccessFolder)
                 {
                     folders = (
                         from item in SelectAll()
-                        join relation in RoleRight.SelectAll(user.Role().ID, RoleRightType.Folder) on item.ID equals relation.ItemID
+                        join relation in RoleRight.SelectAll(role.ID, RoleRightType.Folder) on item.ID equals relation.ItemID
                         select item).ToArray();
                 }
                 else
                 {
                     var acl = (
                         from item in SelectAll()
-                        join relation in RoleRight.SelectAll(user.Role().ID, RoleRightType.Folder) on item.ID equals relation.ItemID
+                        join relation in RoleRight.SelectAll(role.ID, RoleRightType.Folder) on item.ID equals relation.ItemID
                         into combination
                         from relation in combination.DefaultIfEmpty()
                         select new { ID = item.ID, HasAccess = relation == null });
@@ -771,7 +805,10 @@ FROM [Wim_ComponentLists] WHERE [ComponentList_Folder_Key] in (SELECT [Folder_Ke
                 }
             }
             else
+            {
                 folders = SelectAll();
+            }
+
             return folders;
         }
 
@@ -782,21 +819,32 @@ FROM [Wim_ComponentLists] WHERE [ComponentList_Folder_Key] in (SELECT [Folder_Ke
         /// <returns></returns>
         public static async Task<Folder[]> SelectAllAccessibleAsync(IApplicationUser user)
         {
+            return await SelectAllAccessibleAsync(await user.RoleAsync().ConfigureAwait(false)).ConfigureAwait(false);
+        }
+
+
+        /// <summary>
+        /// Selects all accessible.
+        /// </summary>
+        /// <param name="user">The user.</param>
+        /// <returns></returns>
+        public static async Task<Folder[]> SelectAllAccessibleAsync(IApplicationRole role)
+        {
             Folder[] folders = null;
-            if (!user.Role().All_Folders)
+            if (!role.All_Folders)
             {
-                if (user.Role().IsAccessFolder)
+                if (role.IsAccessFolder)
                 {
                     folders = (
                         from item in await SelectAllAsync()
-                        join relation in await RoleRight.SelectAllAsync(user.Role().ID, RoleRightType.Folder) on item.ID equals relation.ItemID
+                        join relation in await RoleRight.SelectAllAsync(role.ID, RoleRightType.Folder) on item.ID equals relation.ItemID
                         select item).ToArray();
                 }
                 else
                 {
                     var acl = (
                         from item in await SelectAllAsync()
-                        join relation in await RoleRight.SelectAllAsync(user.Role().ID, RoleRightType.Folder) on item.ID equals relation.ItemID
+                        join relation in await RoleRight.SelectAllAsync(role.ID, RoleRightType.Folder) on item.ID equals relation.ItemID
                         into combination
                         from relation in combination.DefaultIfEmpty()
                         select new { ID = item.ID, HasAccess = relation == null });
@@ -809,7 +857,9 @@ FROM [Wim_ComponentLists] WHERE [ComponentList_Folder_Key] in (SELECT [Folder_Ke
                 }
             }
             else
+            {
                 folders = await SelectAllAsync();
+            }
             return folders;
         }
 

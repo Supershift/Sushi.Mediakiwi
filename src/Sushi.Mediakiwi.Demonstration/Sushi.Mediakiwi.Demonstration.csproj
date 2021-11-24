@@ -13,6 +13,7 @@
  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Sushi.Mediakiwi.Data.Elastic\Sushi.Mediakiwi.Data.Elastic.csproj" />
+    <ProjectReference Include="..\Sushi.Mediakiwi.API\Sushi.Mediakiwi.API.csproj" />
     <ProjectReference Include="..\Sushi.Mediakiwi.Headless\Sushi.Mediakiwi.Headless.csproj" />
     <ProjectReference Include="..\Sushi.Mediakiwi\Sushi.Mediakiwi.csproj" />
   </ItemGroup>

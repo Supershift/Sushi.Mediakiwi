@@ -59,12 +59,12 @@ namespace Sushi.Mediakiwi
         static string _Domain = "https://sushi-mediakiwi.azureedge.net/";
         static string _FolderVersion;
 
-        internal static string CDN_Folder(WimComponentListRoot wim, string subfolder)
+        public static string CDN_Folder(WimComponentListRoot wim, string subfolder)
         {
             return CDN_Folder(wim.Console, subfolder);
         }
 
-        internal static string CDN_Folder(Beta.GeneratedCms.Console console, string subfolder)
+        public static string CDN_Folder(Beta.GeneratedCms.Console console, string subfolder)
         {
             if (_FolderVersion == null)
             {

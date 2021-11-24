@@ -116,8 +116,7 @@ public static class ApplicationUserExtention
         if (string.IsNullOrEmpty(mail_Intro))
             mail_Intro = "Dear [name],<br><br>We have created an account for you to login. Please visit the following URL and apply your password using the credentials as noted below:<br><br>[url]<br><br><b>Your personal credentials</b>:<br><br>[credentials]";
 
-        string url;
-        ResetPassword(inUser, container, out url);
+        string url = ResetPassword(inUser, container);
 
         string body = string.Format(@"Username: {0}<br/>Emailadres: {1}<br/>"
             , inUser.Name
@@ -155,8 +154,7 @@ public static class ApplicationUserExtention
 
         string wimPath = Sushi.Mediakiwi.CommonConfiguration.PORTAL_PATH;
 
-        string url;
-        ResetPassword(inUser, container, out url);
+        string url = ResetPassword(inUser, container);
 
         string body = string.Format(@"Username: {0}<br/>Emailadres: {1}<br/>"
             , inUser.Name
@@ -173,6 +171,52 @@ public static class ApplicationUserExtention
                     .Replace("[url]", string.Format("<a href=\"{0}\">{0}</a>", url))
                     .Replace("http://url", string.Format("{0}", url)),
             url);
+    }
+
+    /// <summary>
+    /// Sends the 'I forgot my password' e-mail
+    /// </summary>
+    /// <param name="inUser"></param>
+    /// <returns>TRUE when succeeded, FALSE when exception occurs</returns>
+    public static async Task<bool> SendForgotPasswordAsync(this IApplicationUser inUser, Sushi.Mediakiwi.Beta.GeneratedCms.Console container)
+    {
+        var userData = await ComponentList.SelectOneAsync("Sushi.Mediakiwi.AppCentre.Data.Implementation.User").ConfigureAwait(false);
+        string mail_Title = userData.Settings["Mail_ForgotTitle"].Value;
+        string mail_Intro = userData.Settings["Mail_ForgotIntro"].Value;
+
+        if (string.IsNullOrEmpty(mail_Intro))
+        {
+            mail_Intro = "Dear [name],<br><br>You have requested a password reset through the \"forgotten my password\" page. Please visit the following URL and (re)apply your password:<br><br>[url]";
+        }
+
+        string url = await ResetPasswordAsync(inUser, container).ConfigureAwait(false);
+
+        string body = string.Format(@"Username: {0}<br/>Emailadres: {1}<br/>"
+            , inUser.Name
+            , inUser.Email);
+
+        try
+        {
+            Mail.Send(new System.Net.Mail.MailAddress(inUser.Email, inUser.Displayname),
+            string.IsNullOrEmpty(mail_Title) ? "Forgotten password" : mail_Title,
+            string.IsNullOrEmpty(mail_Intro) ? body
+                : mail_Intro
+                    .Replace("[credentials]", body)
+                    .Replace("[name]", inUser.Displayname)
+                    .Replace("[login]", inUser.Name)
+                    .Replace("[email]", inUser.Email)
+                    .Replace("[url]", string.Format("<a href=\"{0}\">{0}</a>", url))
+                    .Replace("http://url", string.Format("{0}", url)),
+            url, 10000);
+
+            return true;
+        }
+        catch (Exception ex)
+        {
+            await Notification.InsertOneAsync("SendMail", ex.Message).ConfigureAwait(false);
+
+            return false;
+        }
     }
 
     /// <summary>
@@ -211,6 +255,20 @@ public static class ApplicationUserExtention
         }
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="user"></param>
+    /// <param name="container"></param>
+    /// <returns>The reset link URL</returns>
+    public static string ResetPassword(this IApplicationUser user, Sushi.Mediakiwi.Beta.GeneratedCms.Console container)
+    {
+        user.ResetKey = Guid.NewGuid();
+        user.Save();
+
+        string wimPath = Sushi.Mediakiwi.CommonConfiguration.PORTAL_PATH;
+        return container.AddApplicationPath(string.Concat(wimPath, "?reset=", user.ResetKey, $"&u={user.Email}"), true);
+    }
 
     /// <summary>
     /// Creates a reset GUID for the User so that he/she can set a new password
@@ -218,17 +276,17 @@ public static class ApplicationUserExtention
     /// <param name="user"></param>
     /// <param name="resetLink"></param>
     /// <param name="shouldEncoded"></param>
-    public static void ResetPassword(this IApplicationUser user, Sushi.Mediakiwi.Beta.GeneratedCms.Console container, out string resetLink, bool shouldEncoded = true)
+    public static async Task<string> ResetPasswordAsync(this IApplicationUser user, Sushi.Mediakiwi.Beta.GeneratedCms.Console container)
     {
         user.ResetKey = Guid.NewGuid();
-        user.Save();
+        await user.SaveAsync().ConfigureAwait(false);
 
         string wimPath = Sushi.Mediakiwi.CommonConfiguration.PORTAL_PATH;
-        resetLink = container.AddApplicationPath(string.Concat(wimPath, "?reset=", user.ResetKey, $"&u={user.Email}"), true);
+        return container.AddApplicationPath(string.Concat(wimPath, "?reset=", user.ResetKey, $"&u={user.Email}"), true);
     }
 
 
-    internal static bool IsValid(this IApplicationUser user, string password)
+    public static bool IsValid(this IApplicationUser user, string password)
     {
         if (user.Type == 0)
         {
@@ -242,7 +300,7 @@ public static class ApplicationUserExtention
         else if (user.Type == 1)
         {
             string candidate = Utility.HashStringByMD5(string.Concat(user.Name, password));
-            if (candidate.Equals(user.Password))
+            if (candidate.Equals(user.Password, StringComparison.InvariantCulture))
                 return true;
         }
         return false;

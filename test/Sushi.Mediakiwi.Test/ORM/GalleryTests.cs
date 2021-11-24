@@ -436,7 +436,7 @@ namespace Sushi.Mediakiwi.Test.ORM
             // Function that we are testing BELOW...
             var galleries = await Gallery.SelectAllAccessibleAsync(user);
 
-            if (galleries?.Length > 0)
+            if (galleries?.Count > 0)
                 Trace.WriteLine($"FOUND Gallery: {galleries.Select(x => x.ID.ToString()).Aggregate((a, b) => a + ", " + b)}");
             else
                 Assert.Fail("Gallery NOT FOUND...");

@@ -72,8 +72,10 @@ namespace Sushi.Mediakiwi.Data
         Task<bool> DeleteAsync();
 
         bool HasRoleAccess(IApplicationUser user);
+        bool HasRoleAccess(IApplicationRole role);
 
         Task<bool> HasRoleAccessAsync(IApplicationUser user);
+        Task<bool> HasRoleAccessAsync(IApplicationRole role);
 
         int Save();
 

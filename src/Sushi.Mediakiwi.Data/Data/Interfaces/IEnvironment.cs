@@ -23,7 +23,7 @@ namespace Sushi.Mediakiwi.Data
         string Timezone { get; set; }
         string Title { get; set; }
         string LogoHrefFull { get; set; }
-
+        string ApiKey { get; set; }
         DateTime UpdateInfo { get; set; }
         decimal Version { get; set; }
         bool Save();

@@ -458,6 +458,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
         {
             _env = env;
             m_Application = application;
+
             Response = m_Application.Response;
             Request = m_Application.Request;
             Context = m_Application;

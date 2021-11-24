@@ -34,6 +34,7 @@ namespace Sushi.Mediakiwi.Data
                 Map(x => x.Created, "Environment_Created");
                 Map(x => x.UpdateInfo, "Environment_Update");
                 Map(x => x.Version, "Environment_Version");
+                Map(x => x.ApiKey, "Environment_ApiKey");
             }
         }
 
@@ -60,20 +61,25 @@ namespace Sushi.Mediakiwi.Data
         }
 
         /// <summary>
-        /// SMTPs the client.
+        /// Returns the SMTP client for the current Environment.
         /// </summary>
         /// <returns></returns>
-        public virtual System.Net.Mail.SmtpClient SmtpClient()
+        public System.Net.Mail.SmtpClient SmtpClient()
         {
             string[] split = SmtpServer.Split(':');
             System.Net.Mail.SmtpClient m_Client = new System.Net.Mail.SmtpClient();
 
             if (split.Length > 1)
+            {
                 m_Client.Port = Convert.ToInt32(split[1]);
+            }
+
             m_Client.Host = split[0];
 
             if (!string.IsNullOrEmpty(SmtpServerUser))
+            {
                 m_Client.Credentials = new System.Net.NetworkCredential(SmtpServerUser, SmtpServerPass);
+            }
 
             m_Client.EnableSsl = SmtpEnableSSL;
 
@@ -93,14 +99,14 @@ namespace Sushi.Mediakiwi.Data
         {
             get { return SelectOne(); }
         }
-        public virtual string LogoHrefFull { get; set; }
-        public virtual int ID { get; set; }
+        public string LogoHrefFull { get; set; }
+        public int ID { get; set; }
 
         /// <summary>
         /// Gets or sets the display name.
         /// </summary>
         /// <value>The display name.</value>
-        public virtual string DisplayName { get; set; }
+        public string DisplayName { get; set; }
 
         /// <summary>
         /// Gets or sets the title.
@@ -108,7 +114,7 @@ namespace Sushi.Mediakiwi.Data
         /// <value>
         /// The title.
         /// </value>
-        public virtual string Title { get; set; }
+        public string Title { get; set; }
 
         /// <summary>
         /// Gets or sets the timezone.
@@ -116,9 +122,9 @@ namespace Sushi.Mediakiwi.Data
         /// <value>
         /// The timezone.
         /// </value>
-        public virtual string Timezone { get; set; }
+        public string Timezone { get; set; }
 
-        public virtual string Secret
+        public string Secret
         {
             get { return "secret"; }
         }
@@ -126,29 +132,29 @@ namespace Sushi.Mediakiwi.Data
         /// <summary>
         /// Main binary repository. Only required in mirroring situations.
         /// </summary>
-        public virtual string Repository { get; set; }
+        public string Repository { get; set; }
 
         /// <summary>
         /// Default repository folder
         /// </summary>
-        public virtual string RepositoryFolder { get; set; }
+        public string RepositoryFolder { get; set; }
 
         /// <summary>
         /// Gets or sets the default site id.
         /// </summary>
         /// <value>The default site id.</value>
-        public virtual int? DefaultSiteID { get; set; }
+        public int? DefaultSiteID { get; set; }
 
         /// <summary>
         /// Gets or sets the password.
         /// </summary>
         /// <value>The password.</value>
-        public virtual string Password { get; set; }
+        public string Password { get; set; }
 
         /// <summary>
         /// SMTP server, default value 127.0.0.1
         /// </summary>
-        public virtual string SmtpServer { get; set; }
+        public string SmtpServer { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether [SMTP enable SSL].
@@ -156,34 +162,34 @@ namespace Sushi.Mediakiwi.Data
         /// <value>
         ///   <c>true</c> if [SMTP enable SSL]; otherwise, <c>false</c>.
         /// </value>
-        public virtual bool SmtpEnableSSL { get; set; }
+        public bool SmtpEnableSSL { get; set; }
 
         /// <summary>
         /// SMTP Server Username
         /// </summary>
-        public virtual string SmtpServerUser { get; set; }
+        public string SmtpServerUser { get; set; }
 
         /// <summary>
         /// SMTP Server Password
         /// </summary>
-        public virtual string SmtpServerPass { get; set; }
+        public string SmtpServerPass { get; set; }
 
         /// <summary>
         /// Errormail from address.
         /// </summary>
-        public virtual string DefaultMailAddress { get; set; }
+        public string DefaultMailAddress { get; set; }
 
         /// <summary>
         /// Errormail to address.
         /// </summary>
-        public virtual string ErrorMailAddress { get; set; }
+        public string ErrorMailAddress { get; set; }
 
         private DateTime m_Created;
 
         /// <summary>
         /// Creation date and time of the environment.
         /// </summary>
-        public virtual DateTime Created
+        public DateTime Created
         {
             get
             {
@@ -200,12 +206,12 @@ namespace Sushi.Mediakiwi.Data
         /// <value>
         /// The update information.
         /// </value>
-        public virtual DateTime UpdateInfo { get; set; }
+        public DateTime UpdateInfo { get; set; }
 
         /// <summary>
         /// Current Wim version.
         /// </summary>
-        public virtual decimal Version { get; set; }
+        public decimal Version { get; set; }
 
         private static TimeZoneInfo m_CurrentTimeZone;
 
@@ -215,7 +221,7 @@ namespace Sushi.Mediakiwi.Data
         /// <value>
         /// The current timezone date time.
         /// </value>
-        public virtual DateTime CurrentTimezoneDateTime
+        public DateTime CurrentTimezoneDateTime
         {
             get
             {
@@ -253,6 +259,8 @@ namespace Sushi.Mediakiwi.Data
                 return TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, m_CurrentTimeZone);
             }
         }
+
+        public string ApiKey { get; set; }
 
         #endregion Properties
 

@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.Security.Claims;
 using System.Text.Json;
 using System.Threading.Tasks;
+using Sushi.Mediakiwi.API.Extensions;
 
 namespace Sushi.Mediakiwi.Demonstration
 {
@@ -32,6 +33,7 @@ namespace Sushi.Mediakiwi.Demonstration
             services.AddHttpContextAccessor();
             services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
             services.AddMediakiwi();
+            services.AddMediakiwiApi();
 
             services.AddControllersWithViews(options =>
             {
@@ -44,13 +46,13 @@ namespace Sushi.Mediakiwi.Demonstration
             });
 
 
-            var elasticSettings = new Nest.ConnectionSettings(new Uri(Configuration["ElasticUrl"]))
-                .BasicAuthentication(Configuration["ElasticUsername"], Configuration["ElasticPassword"])
-                .ThrowExceptions(true);
+            //var elasticSettings = new Nest.ConnectionSettings(new Uri(Configuration["ElasticUrl"]))
+            //    .BasicAuthentication(Configuration["ElasticUsername"], Configuration["ElasticPassword"])
+            //    .ThrowExceptions(true);
                 
-            var elasticClient = new Nest.ElasticClient(elasticSettings);
+            //var elasticClient = new Nest.ElasticClient(elasticSettings);
 
-            services.AddElasticNotifications(elasticClient);
+            //services.AddElasticNotifications(elasticClient);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -66,9 +68,10 @@ namespace Sushi.Mediakiwi.Demonstration
 
             app.UseAuthentication();
             app.UseAuthorization();
-
-            string[] excludePaths = new string[] { "/api/custom", "/myfiles" };
+            string[] excludePaths = new string[] { "/api/custom", "/myfiles", "/mkapi" };
+            
             app.UseMediakiwi(excludePaths);
+            app.UseMediakiwiApi();
 
             app.UseEndpoints(endpoints =>
             {
