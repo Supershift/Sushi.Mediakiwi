@@ -7,7 +7,7 @@ using Microsoft.Extensions.Primitives;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Sushi.Mediakiwi.API.Services;
-using Swashbuckle.Swagger;
+using Swashbuckle.AspNetCore.Swagger;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -80,7 +80,7 @@ namespace Sushi.Mediakiwi.API.Extensions
                 
 
                 options.PreSerializeFilters.Add((swaggerDoc, httpReq) => {
-                    IDictionary<string, PathItem> paths = new Dictionary<string, PathItem>();
+                    IDictionary<string, OpenApiPathItem> paths = new Dictionary<string, OpenApiPathItem>();
                     OpenApiPaths correctedPaths = swaggerDoc.Paths;
 
                     foreach (var item in correctedPaths.Where(x => x.Key.Contains("mkapi/", StringComparison.InvariantCulture) == false))
