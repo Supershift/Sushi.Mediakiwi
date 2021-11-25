@@ -9,7 +9,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Text;
 
-namespace Sushi.Mediakiwi.API
+namespace Sushi.Mediakiwi.API.Filters
 {
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
     public class MediakiwiApiAuthorizeAttribute : Attribute, IAuthorizationFilter
@@ -112,7 +112,14 @@ namespace Sushi.Mediakiwi.API
                     result.IsValid = true;
                     result.User = user;
 
+                    // Set ClaimsPrincipal to jwtUser
                     httpContext.User = jwtUser;
+
+                    // Add application User to context
+                    if (httpContext.Items.ContainsKey(Common.API_USER_CONTEXT) == false)
+                    {
+                        httpContext.Items.Add(Common.API_USER_CONTEXT, user);
+                    }
                 }
                 else
                 {

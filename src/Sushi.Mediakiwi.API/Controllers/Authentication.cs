@@ -6,6 +6,7 @@ using Sushi.Mediakiwi.API.Services;
 using Sushi.Mediakiwi.API.Transport.Requests;
 using Sushi.Mediakiwi.API.Transport.Responses;
 using System;
+using Sushi.Mediakiwi.API.Filters;
 
 namespace Sushi.Mediakiwi.API.Controllers
 {
@@ -13,7 +14,7 @@ namespace Sushi.Mediakiwi.API.Controllers
     [MediakiwiApiAuthorize]
     [Route(Common.MK_CONTROLLERS_PREFIX + "authentication")]
     [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
-    public class Authentication : ControllerBase
+    public class Authentication : BaseMediakiwiApiController
     {
         private readonly IUserService userService;
 
@@ -103,7 +104,7 @@ namespace Sushi.Mediakiwi.API.Controllers
             }
 
             // Check for user existence and create jwtToken if valid.
-            ResetPasswordResponse result = await userService.ResetPassword(request).ConfigureAwait(false);
+            ResetPasswordResponse result = await userService.ResetPassword(request, Console).ConfigureAwait(false);
 
             // When successful, return filled response object
             if (result.StatusCode == System.Net.HttpStatusCode.OK)

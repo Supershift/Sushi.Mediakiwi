@@ -3,13 +3,13 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using Sushi.Mediakiwi.API.Extensions;
 using System.Threading.Tasks;
 
-namespace Sushi.Mediakiwi.API
+namespace Sushi.Mediakiwi.API.Filters
 {
-    public class IMediakiwiConsoleFilter : IAsyncActionFilter
+    public class MediakiwiConsoleFilter : IAsyncActionFilter
     {
         protected IHostingEnvironment environment { get; private set; }
 
-        public IMediakiwiConsoleFilter(IHostingEnvironment _env) 
+        public MediakiwiConsoleFilter(IHostingEnvironment _env) 
         {
             environment = _env;
         }
@@ -18,7 +18,7 @@ namespace Sushi.Mediakiwi.API
         {
             var contextCopy = context.HttpContext.Clone(false);
 
-            if (context.HttpContext.Request.Headers.TryGetValue("original-url", out Microsoft.Extensions.Primitives.StringValues setUrl))
+            if (context.HttpContext.Request.Headers.TryGetValue(Common.API_HEADER_URL, out Microsoft.Extensions.Primitives.StringValues setUrl))
             {
                 // Construct absolute URL from the relative url received
                 string schemeString = context.HttpContext.Request.Scheme;
@@ -27,15 +27,19 @@ namespace Sushi.Mediakiwi.API
                 var pathString = new Microsoft.AspNetCore.Http.PathString(setUrl);
                 var query = setUrl.ToString().Contains("?") ? setUrl.ToString().Split('?')[1] : "";
 
+                // Create an URL resolver
                 UrlResolver resolver = new UrlResolver(context.HttpContext.RequestServices);
+
+                // Resolve the supplied URL 
                 await resolver.ResolveUrlAsync(schemeString, hostString, pathBaseString, pathString, query).ConfigureAwait(false);
 
-                context.HttpContext.Items.Add("MKUrlResolver", resolver);
+                // Add the resolver to the HttpContext
+                context.HttpContext.Items.Add(Common.API_HTTPCONTEXT_URLRESOLVER, resolver);
                 contextCopy.Request.Path = new Microsoft.AspNetCore.Http.PathString(setUrl);
             }
 
             // try to create a Console with the 'fake' path
-            context.HttpContext.Items.Add("MKConsole", new Beta.GeneratedCms.Console(contextCopy, environment));
+            context.HttpContext.Items.Add(Common.API_HTTPCONTEXT_CONSOLE, new Beta.GeneratedCms.Console(contextCopy, environment));
             
             await next.Invoke();
         }

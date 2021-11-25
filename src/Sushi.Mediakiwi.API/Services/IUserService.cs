@@ -10,7 +10,7 @@ namespace Sushi.Mediakiwi.API.Services
     {
         Task<LoginResponse> LoginAsync(LoginRequest request);
         
-        Task<ResetPasswordResponse> ResetPassword(ResetPasswordRequest request);
+        Task<ResetPasswordResponse> ResetPassword(ResetPasswordRequest request, Beta.GeneratedCms.Console console);
 
         Task<IApplicationUser> GetUser(Guid userGuid);
     }

@@ -6,8 +6,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Primitives;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Sushi.Mediakiwi.API.Filters;
 using Sushi.Mediakiwi.API.Services;
-using Swashbuckle.AspNetCore.Swagger;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -77,17 +77,6 @@ namespace Sushi.Mediakiwi.API.Extensions
         {
             app.UseSwagger(options=> {
                 options.RouteTemplate = "mkapi/swagger/{documentname}/swagger.json";
-                
-
-                options.PreSerializeFilters.Add((swaggerDoc, httpReq) => {
-                    IDictionary<string, OpenApiPathItem> paths = new Dictionary<string, OpenApiPathItem>();
-                    OpenApiPaths correctedPaths = swaggerDoc.Paths;
-
-                    foreach (var item in correctedPaths.Where(x => x.Key.Contains("mkapi/", StringComparison.InvariantCulture) == false))
-                    {
-                        swaggerDoc.Paths.Remove(item.Key);
-                    }
-                });
             });
 
             app.UseSwaggerUI(options =>
@@ -105,7 +94,7 @@ namespace Sushi.Mediakiwi.API.Extensions
             services.AddSingleton<INavigationService, NavigationService>();
             services.AddSwaggerGen(options =>
             {
-                var filePath = Path.Combine(AppContext.BaseDirectory, "Sushi.Mediakiwi.API.xml");
+                var filePath = Path.Combine(AppContext.BaseDirectory, $"{Common.API_ASSEMBLY_NAME}.xml");
                 options.IncludeXmlComments(filePath);
                 options.EnableAnnotations(true, true);
                 options.SwaggerDoc("v0.1", new OpenApiInfo
@@ -120,6 +109,11 @@ namespace Sushi.Mediakiwi.API.Extensions
                         Url = new Uri("https://www.supershift.nl")
                     }, 
                 });
+
+                options.OperationFilter<SwaggerUrlHeaderFilter>();
+                options.OperationFilter<SwaggerCookieFilter>();
+                options.DocumentFilter<SwaggerDocumentFilter>();
+                options.SchemaFilter<SwaggerSchemaFilter>();
             });
 
             services.AddAuthentication(option =>

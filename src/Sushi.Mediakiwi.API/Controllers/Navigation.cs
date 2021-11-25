@@ -6,9 +6,8 @@ using Sushi.Mediakiwi.API.Transport.Requests;
 using Sushi.Mediakiwi.API.Transport.Responses;
 using System.Linq;
 using System;
-using Microsoft.AspNetCore.Hosting;
 using Sushi.Mediakiwi.API.Transport;
-using System.Collections.Generic;
+using Sushi.Mediakiwi.API.Filters;
 
 namespace Sushi.Mediakiwi.API.Controllers
 {
@@ -16,8 +15,7 @@ namespace Sushi.Mediakiwi.API.Controllers
     [MediakiwiApiAuthorize]
     [Route(Common.MK_CONTROLLERS_PREFIX + "navigation")]
     [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
-    
-    public class Navigation : BaseMediakiwiController
+    public class Navigation : BaseMediakiwiApiController
     {
         private readonly INavigationService navService;
 
@@ -46,14 +44,11 @@ namespace Sushi.Mediakiwi.API.Controllers
 
             var menus = await Data.Menu.SelectAllAsync().ConfigureAwait(false);
 
-            // Extract roleID from HttpContext User
-            var roleId = Utils.ConvertToInt(User.FindFirst("roleId").Value, 0);
-
             // Get Appropriate role from DB
-            var role = await Data.ApplicationRole.SelectOneAsync(roleId).ConfigureAwait(false);
+            var role = await MediakiwiUser.RoleAsync();
 
             // Get Menu for current site and Role
-            var list = await Data.MenuItemView.SelectAllAsync(request.CurrentSiteID, roleId).ConfigureAwait(false);
+            var list = await Data.MenuItemView.SelectAllAsync(request.CurrentSiteID, role.ID).ConfigureAwait(false);
 
             if (list.Count > 0)
             {
@@ -186,11 +181,8 @@ namespace Sushi.Mediakiwi.API.Controllers
         {
             GetSideNavigationResponse result = new GetSideNavigationResponse();
 
-            // Extract roleID from HttpContext User
-            var roleId = Utils.ConvertToInt(User.FindFirst("roleId").Value, 0);
-
             // Get Appropriate role from DB
-            var role = await Data.ApplicationRole.SelectOneAsync(roleId).ConfigureAwait(false);
+            var role = await MediakiwiUser.RoleAsync();
 
             // title placeholder
             string title = string.Empty;

@@ -15,18 +15,7 @@ namespace Sushi.Mediakiwi.API.Services
 {
     public class UserService : IUserService
     {
-        Beta.GeneratedCms.Console console;
-
-        public UserService(IServiceProvider serviceProvider, IHostingEnvironment env)
-        {
-            var contextAccessor = serviceProvider.GetService<IHttpContextAccessor>();
-            if (contextAccessor != null && env != null)
-            {
-                console = new Beta.GeneratedCms.Console(contextAccessor.HttpContext, env);
-            }
-        }
-
-        public async Task<ResetPasswordResponse> ResetPassword(ResetPasswordRequest request)
+        public async Task<ResetPasswordResponse> ResetPassword(ResetPasswordRequest request, Beta.GeneratedCms.Console console)
         {
             var user = await ApplicationUser.SelectOneByEmailAsync(request.EmailAddress).ConfigureAwait(false);
             
