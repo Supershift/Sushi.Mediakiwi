@@ -17,7 +17,7 @@ namespace Sushi.Mediakiwi.API.Controllers
                 }
                 else
                 {
-                    return default;
+                    return null;
                 }
             }
         }

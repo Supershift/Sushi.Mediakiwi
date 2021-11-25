@@ -45,7 +45,7 @@ namespace Sushi.Mediakiwi.API.Controllers
             var menus = await Data.Menu.SelectAllAsync().ConfigureAwait(false);
 
             // Get Appropriate role from DB
-            var role = await MediakiwiUser.RoleAsync();
+            var role = await MediakiwiUser.SelectRoleAsync().ConfigureAwait(false);
 
             // Get Menu for current site and Role
             var list = await Data.MenuItemView.SelectAllAsync(request.CurrentSiteID, role.ID).ConfigureAwait(false);
@@ -182,7 +182,7 @@ namespace Sushi.Mediakiwi.API.Controllers
             GetSideNavigationResponse result = new GetSideNavigationResponse();
 
             // Get Appropriate role from DB
-            var role = await MediakiwiUser.RoleAsync();
+            var role = await MediakiwiUser.SelectRoleAsync().ConfigureAwait(false);
 
             // title placeholder
             string title = string.Empty;

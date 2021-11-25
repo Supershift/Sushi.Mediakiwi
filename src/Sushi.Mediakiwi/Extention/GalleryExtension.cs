@@ -16,7 +16,7 @@ public static class GalleryExtension
         if (inGallery.CompletePath == "/") 
             return true;
 
-        if (inGallery.ID == 0 || user.Role().All_Galleries)
+        if (inGallery.ID == 0 || user.SelectRole().All_Galleries)
             return true;
 
         var xslist = Gallery.SelectAllAccessible(user);

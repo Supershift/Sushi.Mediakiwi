@@ -968,7 +968,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation
 				<h3>My profile</h3>
 				<img alt=""noName"" src=""" + FolderVersion("images") + @"noName.png"">
 				<strong>" + usernameLink + @"</strong><br/>
-				<span>" + container.CurrentApplicationUser.Role().Name + @"</span>"
+				<span>" + container.CurrentApplicationUser.SelectRole().Name + @"</span>"
                         + (!CommonConfiguration.MY_PROFILE_LIST_ID.HasValue
                             ? string.Empty
                             : string.Format(@"<a href=""?list={0}"" class=""submit left"">My account</a>", CommonConfiguration.MY_PROFILE_LIST_ID.GetValueOrDefault())
