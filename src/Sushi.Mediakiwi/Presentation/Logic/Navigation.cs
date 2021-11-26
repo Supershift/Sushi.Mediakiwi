@@ -785,9 +785,6 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                 //  LEVEL 1 : Folders
                 Gallery[] galleries1 = Gallery.SelectAllByParent(rootID);
 
-                if (!CommonConfiguration.RIGHTS_GALLERY_SUBS_ARE_ALLOWED)
-                    galleries1 = Gallery.ValidateAccessRight(galleries1, container.CurrentApplicationUser);
-
                 foreach (Gallery folder in galleries1)
                 {
                     bool isActive = currentGallery.ID == folder.ID || level1.ID == folder.ID;
@@ -796,6 +793,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                     isFirst = false;
 
                     #region Level 2
+
                     if (isActive && false)
                     {
                         build.AppendFormat(@"<ul>");
@@ -810,6 +808,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                             build.AppendFormat(@"<li><a href=""{0}"" class=""{1}{3}"">{2}</a>", container.UrlBuild.GetGalleryRequest(folder2), "folder", folder2.Name, isActive2 ? " active" : "");
 
                             #region Level 3
+
                             if (isActive2)
                             {
                                 build.AppendFormat(@"<ul>");
@@ -822,12 +821,15 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                                 }
                                 build.AppendFormat(@"</ul>");
                             }
+
                             #endregion
+
                             build.AppendFormat(@"</li>");
                         }
 
                         build.AppendFormat(@"</ul>");
                     }
+
                     #endregion
 
                     build.AppendFormat(@"</li>");

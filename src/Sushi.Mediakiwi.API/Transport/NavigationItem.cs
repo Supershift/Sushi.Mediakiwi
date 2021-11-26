@@ -20,6 +20,9 @@ namespace Sushi.Mediakiwi.API.Transport
         [JsonPropertyName("isBack")]
         public bool IsBack { get; set; }
 
+        [JsonPropertyName("badgeContent")]
+        public string BadgeContent { get; set; }
+
         [JsonPropertyName("items")]
         public ICollection<NavigationItem> Items { get; set; } = new List<NavigationItem>();
 

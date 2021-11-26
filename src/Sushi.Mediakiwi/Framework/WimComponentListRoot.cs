@@ -1203,7 +1203,7 @@ namespace Sushi.Mediakiwi.Framework
         }
 
         public bool ByPassAjaxRequest { set { _origin.ByPassAjaxRequest = value; } get { return _origin.ByPassAjaxRequest; } }
-        internal void DoListLoad(int selectedKey, int componentVersionKey)
+        public void DoListLoad(int selectedKey, int componentVersionKey)
         {
             int previousItemID = Utility.ConvertToInt(Context.Request.Query["pitem"]);
             DoListLoad(selectedKey, componentVersionKey, previousItemID, null);
@@ -1383,7 +1383,7 @@ namespace Sushi.Mediakiwi.Framework
             get { return _origin.HasListDataItemCreated; }
         }
 
-        internal void DoListInit()
+        public void DoListInit()
         {
             _origin.ApplyListSettings();
 
@@ -1391,7 +1391,7 @@ namespace Sushi.Mediakiwi.Framework
             Utils.RunSync(() => _origin.OnListInit());
         }
 
-        internal ComponentDataReportEventArgs DoListDataReport()
+        public ComponentDataReportEventArgs DoListDataReport()
         {
             ComponentDataReportEventArgs e = new ComponentDataReportEventArgs();
             try
@@ -2344,6 +2344,9 @@ namespace Sushi.Mediakiwi.Framework
         
 
         internal List<string> _QueryStringRecording;
+
+        public ICollection<string> GetQueryStringRecording() => _QueryStringRecording;
+        
         /// <summary>
         /// Add querystring items to the tabs
         /// </summary>
@@ -2510,6 +2513,8 @@ namespace Sushi.Mediakiwi.Framework
 
         internal List<Tabular> m_Collection;
 
+        public ICollection<Tabular> GetTabs() => m_Collection;
+
         /// <summary>
         /// Represents a Tabular entity.
         /// </summary>
@@ -2520,7 +2525,7 @@ namespace Sushi.Mediakiwi.Framework
             /// </summary>
             public string Title2;
 
-            internal string TitleValue
+            public string TitleValue
             {
                 get
                 {

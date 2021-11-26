@@ -67,6 +67,14 @@ namespace Sushi.Mediakiwi.Framework
         }
 
         /// <summary>
+        /// 
+        /// </summary>
+        public void Init(Beta.GeneratedCms.Console console)
+        {
+            wim.Init(console.Context);
+        }
+
+        /// <summary>
         /// Gets a value indicating whether this instance is post back.
         /// </summary>
         /// <value>

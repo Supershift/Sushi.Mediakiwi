@@ -1,5 +1,6 @@
 ﻿using Sushi.Mediakiwi.API.Transport;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Sushi.Mediakiwi.API.Services
@@ -122,6 +123,79 @@ namespace Sushi.Mediakiwi.API.Services
             }
 
             return true;
+        }
+
+        public string GetQueryStringRecording(Beta.GeneratedCms.Console container)
+        {
+            string addition = string.Empty;
+            if (container.CurrentListInstance.wim.GetQueryStringRecording().Count > 0)
+            {
+                container.CurrentListInstance.wim.GetQueryStringRecording().ToList().ForEach(x =>
+                {
+                    if (!string.IsNullOrEmpty(container.Request.Query[x]))
+                    {
+                        addition += string.Format("&{0}={1}", x, container.Request.Query[x]);
+                    }
+                });
+            }
+            return addition;
+        }
+
+        public void ApplyTabularUrl(Beta.GeneratedCms.Console container, Framework.WimComponentListRoot.Tabular tab, int levelEntry, int? currentListID)
+        {
+            int listID = container.CurrentList != null ? container.CurrentList.ID : Utils.ConvertToInt(container.Request.Query["list"]);
+
+            string addition = GetQueryStringRecording(container);
+
+            int itemID = Utils.ConvertToInt(container.Request.Query["item"]);
+
+            int? openinframeID = Utils.ConvertToIntNullable(container.Request.Query["openinframe"]);
+
+            int groupID = Utils.ConvertToInt(container.Request.Query["group"]);
+            int groupItemID = Utils.ConvertToInt(container.Request.Query["groupitem"]);
+
+            int group2ID = Utils.ConvertToInt(container.Request.Query["group2"]);
+            int group2ItemID = Utils.ConvertToInt(container.Request.Query["group2item"]);
+
+            int folderID = Utils.ConvertToInt(container.Request.Query["folder"]);
+            string folderInfo = null;
+            if (folderID > 0)
+            {
+                folderInfo = string.Concat("&folder=", folderID);
+            }
+
+            int baseID = Utils.ConvertToInt(container.Request.Query["base"]);
+            string baseInfo = null;
+
+            if (baseID > 0)
+            {
+                baseInfo = string.Concat("&base=", baseID);
+            }
+
+            if (levelEntry == 1)
+            {
+                if (groupID == 0)
+                {
+                    tab.Url = $"{container.UrlBuild.GetListRequest(tab.List, tab.SelectedItem)}&group={listID}{addition}{baseInfo}{folderInfo}&groupitem={itemID}&list={tab.List.ID}";
+                }
+                else
+                {
+                    tab.Url = $"{container.WimPagePath}?group={groupID}{addition}{baseInfo}{folderInfo}&groupitem={groupItemID}&list={tab.List.ID}&item={(group2ID == tab.List.ID ? group2ItemID : tab.SelectedItem)}";
+                }
+            }
+            else if (levelEntry == 2)
+            {
+                tab.Url = $"{container.WimPagePath}?group={groupID}{addition}{baseInfo}{folderInfo}&groupitem={groupItemID}&group2={listID}&group2item={itemID}&list={tab.List.ID}&item={tab.SelectedItem}";
+            }
+            else
+            {
+                tab.Url = $"{container.WimPagePath}?list={listID}{addition}{baseInfo}{folderInfo}&item={tab.SelectedItem}";
+            }
+
+            if (openinframeID.HasValue && tab.Url.Contains("?"))
+            {
+                tab.Url += $"&openinframe={openinframeID.GetValueOrDefault()}";
+            }
         }
 
         public async Task<(bool isCurrent, bool addEmpty)> AddSubSubNavigationAsync(Beta.GeneratedCms.Console container, NavigationItem topnav, Data.IMenuItemView item, string className, Data.IApplicationRole role)

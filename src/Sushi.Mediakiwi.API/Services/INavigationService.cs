@@ -5,6 +5,10 @@ namespace Sushi.Mediakiwi.API.Services
 {
     public interface INavigationService
     {
+        public string GetQueryStringRecording(Beta.GeneratedCms.Console container);
+        
+        public void ApplyTabularUrl(Beta.GeneratedCms.Console container, Framework.WimComponentListRoot.Tabular tab, int levelEntry, int? currentListID);
+
         public string GetLogoURL(Beta.GeneratedCms.Console container);
 
         public string GetHomepageURL(Beta.GeneratedCms.Console container);

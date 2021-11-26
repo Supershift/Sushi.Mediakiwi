@@ -424,7 +424,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
         /// </summary>
         /// <param name="list">The list.</param>
         /// <returns></returns>
-        internal Console ReplicateInstance(IComponentList list)
+        public Console ReplicateInstance(IComponentList list)
         {
             Console candidate = new Console(m_Application, _env);
 

@@ -47,7 +47,7 @@ namespace Sushi.Mediakiwi.API.Controllers
                 }
                 else
                 {
-                    return new UrlResolver(HttpContext.RequestServices);
+                    return new UrlResolver(HttpContext.RequestServices, Console);
                 }
             }
         }

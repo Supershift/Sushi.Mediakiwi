@@ -49,10 +49,11 @@ namespace Sushi.Mediakiwi
                 return WimServerConfiguration.Instance.Authentication.Cookie;
             }
         }
-        public static bool RIGHTS_GALLERY_SUBS_ARE_ALLOWED { get { return true; } }
-        public static string LOGIN_BACKGROUND { 
-            get { 
-                return WimServerConfiguration.Instance.Login_Background_Url; 
+        public static string LOGIN_BACKGROUND
+        {
+            get
+            {
+                return WimServerConfiguration.Instance.Login_Background_Url;
             }
         }
 
