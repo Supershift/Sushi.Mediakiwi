@@ -4,9 +4,6 @@ namespace Sushi.Mediakiwi.API.Transport.Responses
 {
     public class LoginResponse : BasicResponse
     {
-        [JsonIgnore]
-        public string JwtToken { get; set; }
-
         [JsonPropertyName("targetUrl")]
         public string TargetUrl { get; set; }
 

@@ -54,7 +54,7 @@ namespace Sushi.Mediakiwi.API.Controllers
             {
                 string className = "";
 
-                var mainNav = (from item in list where item.Sort == 1 select item);
+                var mainNav = list.Where(item => item.Sort == 1);
                 foreach (var item in mainNav)
                 {
                     bool isSelected = false;
@@ -63,7 +63,8 @@ namespace Sushi.Mediakiwi.API.Controllers
                         continue;
                     }
 
-                    var subnavigation = (from subnav in list where subnav.Sort != 1 && subnav.Position == item.Position select subnav).ToList();
+                    // Get subnav for mainNav item
+                    var subnavigation = list.Where(subNav => subNav.Sort != 1 && subNav.Position == item.Position).ToList();
 
                     // Create nav Item
                     NavigationItem navItem = new NavigationItem()

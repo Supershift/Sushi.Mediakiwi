@@ -16,7 +16,7 @@ namespace Sushi.Mediakiwi.API.Filters
 
         public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
         {
-            var contextCopy = context.HttpContext.Clone(false);
+            var contextCopy = context.HttpContext.Clone();
 
             if (context.HttpContext.Request.Headers.TryGetValue(Common.API_HEADER_URL, out Microsoft.Extensions.Primitives.StringValues setUrl))
             {

@@ -31,7 +31,7 @@
     "IIS": {
       "commandName": "IIS",
       "launchBrowser": true,
-      "launchUrl": "https://localhost/Sushi.Mediakiwi.Demonstration/mediakiwi",
+      "launchUrl": "https://localhost/Sushi.Mediakiwi.Demonstration/mkapi/swagger/index.html",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT ": "Development"
       }
