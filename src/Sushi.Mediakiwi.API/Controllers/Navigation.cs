@@ -6,9 +6,8 @@ using Sushi.Mediakiwi.API.Transport.Requests;
 using Sushi.Mediakiwi.API.Transport.Responses;
 using System.Linq;
 using System;
-using Microsoft.AspNetCore.Hosting;
 using Sushi.Mediakiwi.API.Transport;
-using System.Collections.Generic;
+using Sushi.Mediakiwi.API.Filters;
 
 namespace Sushi.Mediakiwi.API.Controllers
 {
@@ -16,8 +15,7 @@ namespace Sushi.Mediakiwi.API.Controllers
     [MediakiwiApiAuthorize]
     [Route(Common.MK_CONTROLLERS_PREFIX + "navigation")]
     [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
-    
-    public class Navigation : BaseMediakiwiController
+    public class Navigation : BaseMediakiwiApiController
     {
         private readonly INavigationService navService;
 
@@ -46,20 +44,17 @@ namespace Sushi.Mediakiwi.API.Controllers
 
             var menus = await Data.Menu.SelectAllAsync().ConfigureAwait(false);
 
-            // Extract roleID from HttpContext User
-            var roleId = Utils.ConvertToInt(User.FindFirst("roleId").Value, 0);
-
             // Get Appropriate role from DB
-            var role = await Data.ApplicationRole.SelectOneAsync(roleId).ConfigureAwait(false);
+            var role = await MediakiwiUser.SelectRoleAsync().ConfigureAwait(false);
 
             // Get Menu for current site and Role
-            var list = await Data.MenuItemView.SelectAllAsync(request.CurrentSiteID, roleId).ConfigureAwait(false);
+            var list = await Data.MenuItemView.SelectAllAsync(request.CurrentSiteID, role.ID).ConfigureAwait(false);
 
             if (list.Count > 0)
             {
                 string className = "";
 
-                var mainNav = (from item in list where item.Sort == 1 select item);
+                var mainNav = list.Where(item => item.Sort == 1);
                 foreach (var item in mainNav)
                 {
                     bool isSelected = false;
@@ -68,7 +63,8 @@ namespace Sushi.Mediakiwi.API.Controllers
                         continue;
                     }
 
-                    var subnavigation = (from subnav in list where subnav.Sort != 1 && subnav.Position == item.Position select subnav).ToList();
+                    // Get subnav for mainNav item
+                    var subnavigation = list.Where(subNav => subNav.Sort != 1 && subNav.Position == item.Position).ToList();
 
                     // Create nav Item
                     NavigationItem navItem = new NavigationItem()
@@ -186,11 +182,8 @@ namespace Sushi.Mediakiwi.API.Controllers
         {
             GetSideNavigationResponse result = new GetSideNavigationResponse();
 
-            // Extract roleID from HttpContext User
-            var roleId = Utils.ConvertToInt(User.FindFirst("roleId").Value, 0);
-
             // Get Appropriate role from DB
-            var role = await Data.ApplicationRole.SelectOneAsync(roleId).ConfigureAwait(false);
+            var role = await MediakiwiUser.SelectRoleAsync().ConfigureAwait(false);
 
             // title placeholder
             string title = string.Empty;

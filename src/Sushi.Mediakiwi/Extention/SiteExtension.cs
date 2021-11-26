@@ -14,7 +14,7 @@ public static class SiteExtension
     /// </returns>
     public static bool HasRoleAccess(this Site inSite, IApplicationUser user)
     {
-        if (inSite.ID == 0 || user.Role().All_Sites) return true;
+        if (inSite.ID == 0 || user.SelectRole().All_Sites) return true;
         var selection = from item in Site.SelectAllAccessible(user, AccessFilter.RoleAndUser) where item.ID == inSite.ID select item;
         bool xs = selection.Count() == 1;
         return xs;
@@ -29,7 +29,7 @@ public static class SiteExtension
     /// </returns>
     public static async Task<bool> HasRoleAccessAsync(this Site inSite, IApplicationUser user)
     {
-        if (inSite.ID == 0 || (await user.RoleAsync().ConfigureAwait(false)).All_Sites)
+        if (inSite.ID == 0 || (await user.SelectRoleAsync().ConfigureAwait(false)).All_Sites)
         {
             return true;
         }

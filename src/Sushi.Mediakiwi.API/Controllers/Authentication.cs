@@ -6,6 +6,7 @@ using Sushi.Mediakiwi.API.Services;
 using Sushi.Mediakiwi.API.Transport.Requests;
 using Sushi.Mediakiwi.API.Transport.Responses;
 using System;
+using Sushi.Mediakiwi.API.Filters;
 
 namespace Sushi.Mediakiwi.API.Controllers
 {
@@ -13,13 +14,13 @@ namespace Sushi.Mediakiwi.API.Controllers
     [MediakiwiApiAuthorize]
     [Route(Common.MK_CONTROLLERS_PREFIX + "authentication")]
     [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
-    public class Authentication : ControllerBase
+    public class Authentication : BaseMediakiwiApiController
     {
-        private readonly IUserService userService;
+        private readonly IUserService _userService;
 
         public Authentication(IUserService _service)
         {
-            userService = _service;
+            _userService = _service;
         }
 
         /// <summary>
@@ -40,7 +41,7 @@ namespace Sushi.Mediakiwi.API.Controllers
         [HttpPost("Login")]
         public async Task<ActionResult<LoginResponse>> Login([FromBody]LoginRequest request)
         {
-            if (request == null || userService == null || string.IsNullOrWhiteSpace(request.ApiKey) || string.IsNullOrWhiteSpace(request.EmailAddress) || string.IsNullOrWhiteSpace(request.Password))
+            if (request == null || _userService == null || string.IsNullOrWhiteSpace(request.ApiKey) || string.IsNullOrWhiteSpace(request.EmailAddress) || string.IsNullOrWhiteSpace(request.Password))
             {
                 return BadRequest();
             }
@@ -53,25 +54,17 @@ namespace Sushi.Mediakiwi.API.Controllers
             }
 
             // Check for user existence and create jwtToken if valid.
-            LoginResponse result = await userService.LoginAsync(request).ConfigureAwait(false);
+            LoginResponse result = await _userService.LoginAsync(request).ConfigureAwait(false);
 
             // When successful, return filled response object
             if (result.StatusCode == System.Net.HttpStatusCode.OK)
             {
-                var cookieOptions = new CookieOptions
-                {
-                    HttpOnly = true,
-                    Expires = DateTime.UtcNow.AddHours(Common.API_COOKIE_EXPIRATION_HOURS)
-                };
-
-                ControllerContext.HttpContext.Response.Cookies.Append(Common.API_COOKIE_KEY, result.JwtToken, cookieOptions);
-
                 return Ok(result);
             }
             // When unsuccessful, return unauthorized
             else if (result.StatusCode == System.Net.HttpStatusCode.Unauthorized)
             {
-                ControllerContext.HttpContext.Response.Cookies.Delete(Common.API_COOKIE_KEY);
+                await _userService.LogoutAsync().ConfigureAwait(false);
                 return Unauthorized();
             }
 
@@ -97,13 +90,13 @@ namespace Sushi.Mediakiwi.API.Controllers
         [HttpPost("ResetPassword")]
         public async Task<ActionResult<ResetPasswordResponse>> ResetPassword([FromBody] ResetPasswordRequest request)
         {
-            if (request == null || userService == null || string.IsNullOrWhiteSpace(request.EmailAddress))
+            if (request == null || _userService == null || string.IsNullOrWhiteSpace(request.EmailAddress))
             {
                 return BadRequest();
             }
 
             // Check for user existence and create jwtToken if valid.
-            ResetPasswordResponse result = await userService.ResetPassword(request).ConfigureAwait(false);
+            ResetPasswordResponse result = await _userService.ResetPassword(request, Console).ConfigureAwait(false);
 
             // When successful, return filled response object
             if (result.StatusCode == System.Net.HttpStatusCode.OK)
@@ -140,7 +133,7 @@ namespace Sushi.Mediakiwi.API.Controllers
         [HttpPost("Logout")]
         public async Task<ActionResult<LogoutResponse>> Logout()
         {
-            if (userService == null)
+            if (_userService == null)
             {
                 return BadRequest();
             }
@@ -152,10 +145,7 @@ namespace Sushi.Mediakiwi.API.Controllers
             };
 
             // Remove cookie
-            if (ControllerContext.HttpContext.Request.Cookies.ContainsKey(Common.API_COOKIE_KEY))
-            {
-                ControllerContext.HttpContext.Response.Cookies.Delete(Common.API_COOKIE_KEY);
-            }
+            await _userService.LogoutAsync().ConfigureAwait(false);
 
             return Ok(result);
         }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 
 namespace Sushi.Mediakiwi.API
 {
@@ -9,6 +10,11 @@ namespace Sushi.Mediakiwi.API
         public static readonly string API_AUTHENTICATION_AUDIENCE = "MEDIAKIWI-USERS";
         public static readonly string API_AUTHENTICATION_KEY = "vQe0Fom3UZ0V4FnHJFeGMX7T0Onsott6XiajbqjiSHosqaHh4taLX5Vh7e0qrsX";  // TODO: replace with string from settings
         public static readonly string API_COOKIE_KEY = "MKAPI";
+        public static readonly string API_HEADER_URL = "original-url";
+        public static readonly string API_HTTPCONTEXT_URLRESOLVER = "MKUrlResolver";
+        public static readonly string API_HTTPCONTEXT_CONSOLE = "MKConsole";
+        public static readonly string API_ASSEMBLY_NAME = Assembly.GetExecutingAssembly().GetName().Name;
+
         public static readonly int API_COOKIE_EXPIRATION_HOURS = 2;
 
         public const string MK_CONTROLLERS_PREFIX = "mkapi/";

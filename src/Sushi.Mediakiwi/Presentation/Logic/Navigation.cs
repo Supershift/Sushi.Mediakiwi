@@ -770,8 +770,8 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                 Gallery root = Gallery.SelectOneRoot();
 
                 int rootID = root.ID;
-                if (container.CurrentApplicationUser.Role().GalleryRoot.HasValue)
-                    rootID = container.CurrentApplicationUser.Role().GalleryRoot.Value;
+                if (container.CurrentApplicationUser.SelectRole().GalleryRoot.HasValue)
+                    rootID = container.CurrentApplicationUser.SelectRole().GalleryRoot.Value;
 
                 currentName = "Documents";
                 currentLink = container.UrlBuild.GetGalleryRequest(rootID);

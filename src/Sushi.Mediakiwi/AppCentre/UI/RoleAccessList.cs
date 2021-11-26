@@ -64,7 +64,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
 
             ApplicationUser temp = new ApplicationUser();
             temp.RoleID = e.SelectedGroupItemKey;
-            IApplicationRole role = await temp.RoleAsync().ConfigureAwait(false);
+            IApplicationRole role = await temp.SelectRoleAsync().ConfigureAwait(false);
 
             var selection =
                 from item in (await Mediakiwi.Data.ComponentList.SelectAllAsync().ConfigureAwait(false))
@@ -120,7 +120,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
 
             foreach (var item in selection)
             {
-                if (temp.Role().IsAccessList)
+                if (temp.SelectRole().IsAccessList)
                 {
                     if (item.HasAccess)
                     {

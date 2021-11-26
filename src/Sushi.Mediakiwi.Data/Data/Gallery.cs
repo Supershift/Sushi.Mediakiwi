@@ -1014,7 +1014,7 @@ namespace Sushi.Mediakiwi.Data
         /// <returns></returns>
         public static Gallery[] SelectAllAccessible(IApplicationUser user)
         {
-            return SelectAllAccessible(user.Role());
+            return SelectAllAccessible(user.SelectRole());
         }
 
 
@@ -1088,7 +1088,7 @@ namespace Sushi.Mediakiwi.Data
         /// <returns></returns>
         public static async Task<ICollection<Gallery>> SelectAllAccessibleAsync(IApplicationUser user)
         {
-            return await SelectAllAccessibleAsync(await user.RoleAsync()).ConfigureAwait(false);
+            return await SelectAllAccessibleAsync(await user.SelectRoleAsync()).ConfigureAwait(false);
         }
 
         /// <summary>
