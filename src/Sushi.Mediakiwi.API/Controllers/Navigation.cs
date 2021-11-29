@@ -8,6 +8,7 @@ using System.Linq;
 using System;
 using Sushi.Mediakiwi.API.Transport;
 using System.Collections.Generic;
+using System.Globalization;
 
 namespace Sushi.Mediakiwi.API.Controllers
 {
@@ -105,7 +106,7 @@ namespace Sushi.Mediakiwi.API.Controllers
                             {
                                 if (item.TypeID == 8)
                                 {
-                                    firstInLineUrl = _navService.GetUrl(Console, subnavigation[index], request.CurrentSiteID);
+                                    firstInLineUrl = await _navService.GetUrlAsync(Resolver, subnavigation[index], request.CurrentSiteID).ConfigureAwait(false);
                                     linkable = false;
                                 }
                                 className = "first";
@@ -118,7 +119,7 @@ namespace Sushi.Mediakiwi.API.Controllers
                             //  Only for folders
                             if (subnavigation[index].TypeID == 8)
                             {
-                                var addSubResult = await _navService.AddSubSubNavigationAsync(Console, navItem, subnavigation[index], className, role).ConfigureAwait(false);
+                                var addSubResult = await _navService.AddSubSubNavigationAsync(Resolver, navItem, subnavigation[index], className, role).ConfigureAwait(false);
                                 if (addSubResult.isCurrent)
                                 {
                                     isSelected = true;
@@ -126,7 +127,7 @@ namespace Sushi.Mediakiwi.API.Controllers
                             }
                             else
                             {
-                                if (subnavigation[index]?.ItemID == Console?.CurrentList?.ID)
+                                if (subnavigation[index]?.ItemID == Resolver.List?.ID)
                                 {
                                     isSelected = true;
                                 }
@@ -136,7 +137,7 @@ namespace Sushi.Mediakiwi.API.Controllers
                                     IsHighlighted = isSelected,
                                     Text = subnavigation[index].Name,
                                     IconClass = className,
-                                    Href = _navService.GetUrl(Console, subnavigation[index], request.CurrentSiteID),
+                                    Href = await _navService.GetUrlAsync(Resolver, subnavigation[index], request.CurrentSiteID).ConfigureAwait(false),
                                 });
                             }
                         }
@@ -149,13 +150,13 @@ namespace Sushi.Mediakiwi.API.Controllers
 
                     if (linkable)
                     {
-                        navItem.Href = string.IsNullOrEmpty(firstInLineUrl) ? _navService.GetUrl(Console, item, request.CurrentSiteID) : firstInLineUrl;
+                        navItem.Href = string.IsNullOrEmpty(firstInLineUrl) ? await _navService.GetUrlAsync(Resolver, item, request.CurrentSiteID).ConfigureAwait(false) : firstInLineUrl;
                         navItem.IsHighlighted = isSelected;
                         navItem.Text = item.Name;
                     }
                     else
                     {
-                        navItem.Href = string.IsNullOrEmpty(firstInLineUrl) ? _navService.GetUrl(Console, item, request.CurrentSiteID) : firstInLineUrl;
+                        navItem.Href = string.IsNullOrEmpty(firstInLineUrl) ? await _navService.GetUrlAsync(Resolver, item, request.CurrentSiteID).ConfigureAwait(false) : firstInLineUrl;
                         navItem.IsHighlighted = isSelected;
                         navItem.Text = item.Name;
                         navItem.IconClass += "noClick";
@@ -166,10 +167,10 @@ namespace Sushi.Mediakiwi.API.Controllers
             }
 
             // Set Logo URl
-            result.LogoUrl = _navService.GetLogoURL(Console);
+            result.LogoUrl = _navService.GetLogoURL(Resolver);
 
             // Set homepage URL
-            result.HomeUrl = _navService.GetHomepageURL(Console);
+            result.HomeUrl = _navService.GetHomepageURL(Resolver);
 
             return Ok(result);
         }
@@ -192,9 +193,9 @@ namespace Sushi.Mediakiwi.API.Controllers
             
             // Get current selected tab based off the URL
             int selectedTab = 0;
-            if (Console.Request.Query.TryGetValue("tab", out Microsoft.Extensions.Primitives.StringValues currentTab))
+            if (string.IsNullOrWhiteSpace(Resolver.SelectedTab) == false)
             {
-                selectedTab = Utils.ConvertToInt(currentTab, 0);
+                selectedTab = Utils.ConvertToInt(Resolver.SelectedTab, 0);
             }
 
             // title placeholder
@@ -212,7 +213,7 @@ namespace Sushi.Mediakiwi.API.Controllers
             {
                 if (Resolver.List?.Type == Data.ComponentListType.Browsing || isPageProperty)
                 {
-                    title = ""; // TODO: get actual value from :  ResourceManager.GetString("list_browsing", new CultureInfo(Console.CurrentApplicationUser.LanguageCulture));
+                    title = Common.GetLabelFromResource("list_browsing", new CultureInfo(MediakiwiUser.LanguageCulture));
 
                     #region PAGE
 
@@ -239,8 +240,8 @@ namespace Sushi.Mediakiwi.API.Controllers
                             {
                                 result.Items.Add(new NavigationItem()
                                 {
-                                    Href = $"{Console.WimPagePath}?list={pageSettings.ID}&item={Resolver.ItemID.GetValueOrDefault(0)}",
-                                    Text = "Page properties" // TODO: get actual value from : Labels.ResourceManager.GetString("page_properties", new CultureInfo(Console.CurrentApplicationUser.LanguageCulture))
+                                    Href = $"{Resolver.WimPagePath}?list={pageSettings.ID}&item={Resolver.ItemID.GetValueOrDefault(0)}",
+                                    Text = Common.GetLabelFromResource("page_properties", new CultureInfo(MediakiwiUser.LanguageCulture))
                                 });
 
                                 foreach (var section in sections)
@@ -267,7 +268,7 @@ namespace Sushi.Mediakiwi.API.Controllers
 
                                     result.Items.Add(new NavigationItem()
                                     {
-                                        Href = $"{Console.WimPagePath}?page={Resolver.ItemID.GetValueOrDefault(0)}&tab={section}",
+                                        Href = $"{Resolver.WimPagePath}?page={Resolver.ItemID.GetValueOrDefault(0)}&tab={section}",
                                         Text = tabName,
                                         IsHighlighted = isSelected.GetValueOrDefault()
                                     });
@@ -278,8 +279,8 @@ namespace Sushi.Mediakiwi.API.Controllers
                         {
                             result.Items.Add(new NavigationItem()
                             {
-                                Href = $"{Console.WimPagePath}?page={Resolver.ItemID.GetValueOrDefault(0)}",
-                                Text = "Main", //TODO: get actual value from : Labels.ResourceManager.GetString("tab_Content", new CultureInfo(Console.CurrentApplicationUser.LanguageCulture));
+                                Href = $"{Resolver.WimPagePath}?page={Resolver.ItemID.GetValueOrDefault(0)}",
+                                Text = Common.GetLabelFromResource("tab_Content", new CultureInfo(MediakiwiUser.LanguageCulture)),
                                 IsHighlighted = selectedTab == 0
                             });
                         }
@@ -291,189 +292,149 @@ namespace Sushi.Mediakiwi.API.Controllers
                     {
                         result.Items.Add(new NavigationItem()
                         {
-                            Href = Console.WimPagePath,
+                            Href = Resolver.WimPagePath,
                             Text = title,
                             IsHighlighted = true
                         });
                     }
                 }
-            }
 
-            #endregion
+                #region Folder & page
 
-            #region Folder & page
-
-            else if (Resolver.List.Type == Data.ComponentListType.Folders || Resolver.List.Type == Data.ComponentListType.PageProperties)
-            {
-                result.Items.Add(new NavigationItem()
+                else if (Resolver.List.Type == Data.ComponentListType.Folders || Resolver.List.Type == Data.ComponentListType.PageProperties)
                 {
-                    Href = Console.WimPagePath,
-                    Text = title,
-                    IsHighlighted = true
-                });
-            }
-
-            #endregion
-
-            #region Assets
-
-            else if (Resolver.List.Type == Data.ComponentListType.Documents || Resolver.List.Type == Data.ComponentListType.Images)
-            {
-                title = "Browsing";
-
-                int galleryID = Resolver.GalleryID.GetValueOrDefault(0);
-                if (galleryID == 0)
-                {
-                    galleryID = (await Data.Asset.SelectOneAsync(Console.Item.Value).ConfigureAwait(false)).GalleryID;
-                }
-
-                result.Items.Add(new NavigationItem()
-                {
-                    Href= $"{Console.WimPagePath}?gallery={galleryID}",
-                    Text = title
-                });
-
-                result.Items.Add(new NavigationItem()
-                {
-                    Href = $"{Console.WimPagePath}?gallery={galleryID}&gfx={Console.Item.GetValueOrDefault()}",
-                    Text = Resolver.List.SingleItemName,
-                    IsHighlighted = selectedTab == 0
-                }); 
-            }
-
-            #endregion
-
-            #region Custom lists
-
-            else
-            {
-                bool isSingleItemList = (Resolver.List.IsSingleInstance || Resolver.ListInstance.wim.CanContainSingleInstancePerDefinedList);
-
-                //  Show NO tabs
-                if (isSingleItemList)
-                {
-                    return null;
-                }
-
-                if (Resolver.ItemID.HasValue || isSingleItemList)
-                {
-                    var master = Console;
-
-                    int currentListId = Console.Logic;
-                    int currentListItemId = Resolver.ItemID.GetValueOrDefault();
-                    string itemTitle = Resolver.List.SingleItemName;
-
-                    ICollection<Framework.WimComponentListRoot.Tabular> tabularList = null;
-
-                    if (Resolver.GroupID.GetValueOrDefault(0) > 0)
+                    result.Items.Add(new NavigationItem()
                     {
-                        if (Resolver.GroupID.Value != Resolver.List.ID)
+                        Href = Resolver.WimPagePath,
+                        Text = title,
+                        IsHighlighted = true
+                    });
+                }
+
+                #endregion
+
+                #region Assets
+
+                else if (Resolver.List.Type == Data.ComponentListType.Documents || Resolver.List.Type == Data.ComponentListType.Images)
+                {
+                    title = "Browsing";
+
+                    int galleryID = Resolver.GalleryID.GetValueOrDefault(0);
+                    if (galleryID == 0)
+                    {
+                        galleryID = (await Data.Asset.SelectOneAsync(Resolver.ItemID.Value).ConfigureAwait(false)).GalleryID;
+                    }
+
+                    result.Items.Add(new NavigationItem()
+                    {
+                        Href = $"{Resolver.WimPagePath}?gallery={galleryID}",
+                        Text = title
+                    });
+
+                    result.Items.Add(new NavigationItem()
+                    {
+                        Href = $"{Resolver.WimPagePath}?gallery={galleryID}&gfx={Resolver.ItemID.GetValueOrDefault()}",
+                        Text = Resolver.List.SingleItemName,
+                        IsHighlighted = selectedTab == 0
+                    });
+                }
+
+                #endregion
+
+                #region Custom lists
+
+                else
+                {
+                    bool isSingleItemList = (Resolver.List.IsSingleInstance || Resolver.ListInstance.wim.CanContainSingleInstancePerDefinedList);
+
+                    //  Show NO tabs
+                    if (isSingleItemList)
+                    {
+                        return null;
+                    }
+
+                    if (Resolver.ItemID.HasValue || isSingleItemList)
+                    {
+                        var master = Console;
+
+                        int currentListId = Console.Logic;
+                        int currentListItemId = Resolver.ItemID.GetValueOrDefault();
+                        string itemTitle = Resolver.List.SingleItemName;
+
+                        ICollection<Framework.WimComponentListRoot.Tabular> tabularList = null;
+
+                        if (Resolver.GroupID.GetValueOrDefault(0) > 0)
                         {
-                            if (Resolver.List.Type == Data.ComponentListType.ComponentListProperties)
+                            if (Resolver.GroupID.Value != Resolver.List.ID)
                             {
-                                tabularList = Console.CurrentListInstance.wim.GetTabs();
-                            }
-                            else
-                            {
-                                Data.IComponentList innerlist = await Data.ComponentList.SelectOneAsync(Resolver.GroupID.Value).ConfigureAwait(false);
-
-                                //  The current requested list is not the list that is the base of the tabular menu
-                                master = Console.ReplicateInstance(innerlist);
-                                master.CurrentListInstance.wim.Console = master;
-                                master.CurrentListInstance.wim.Console.Item = Resolver.GroupItemID.GetValueOrDefault(0);
-                                master.CurrentListInstance.wim.DoListInit();
-
-                                if (!master.CurrentListInstance.wim.CurrentList.Option_FormAsync)
+                                if (Resolver.List.Type == Data.ComponentListType.ComponentListProperties)
                                 {
-                                    master.CurrentListInstance.wim.DoListLoad(Resolver.GroupItemID.Value, 0);
+                                    tabularList = Resolver.ListInstance.wim.GetTabs();
                                 }
+                                else
+                                {
+                                    Data.IComponentList innerlist = await Data.ComponentList.SelectOneAsync(Resolver.GroupID.Value).ConfigureAwait(false);
 
-                                tabularList = master.CurrentListInstance.wim.GetTabs();
+                                    //  The current requested list is not the list that is the base of the tabular menu
+                                    master = Console.ReplicateInstance(innerlist);
+                                    master.CurrentListInstance.wim.Console = master;
+                                    master.CurrentListInstance.wim.Console.Item = Resolver.GroupItemID.GetValueOrDefault(0);
+                                    master.CurrentListInstance.wim.DoListInit();
 
-                                currentListId = Resolver.GroupID.Value;
-                                currentListItemId = Resolver.GroupItemID.GetValueOrDefault(0);
-                                title = master.CurrentList.Name;
-                                itemTitle = master.CurrentList.SingleItemName;
+                                    if (!master.CurrentListInstance.wim.CurrentList.Option_FormAsync)
+                                    {
+                                        master.CurrentListInstance.wim.DoListLoad(Resolver.GroupItemID.Value, 0);
+                                    }
+
+                                    tabularList = master.CurrentListInstance.wim.GetTabs();
+
+                                    currentListId = Resolver.GroupID.Value;
+                                    currentListItemId = Resolver.GroupItemID.GetValueOrDefault(0);
+                                    title = master.CurrentList.Name;
+                                    itemTitle = master.CurrentList.SingleItemName;
+                                }
                             }
                         }
-                    }
-                    else if (Resolver.ListInstance.wim.GetTabs().Count > 0)
-                    {
-                        tabularList = Resolver.ListInstance.wim.GetTabs();
-                    }
-
-                    if (tabularList.Count > 0)
-                    {
-                        foreach (var tab in tabularList)
+                        else if (Resolver.ListInstance.wim.GetTabs()?.Count > 0)
                         {
-                            if (tab.List.IsNewInstance)
-                            {
-                                continue;
-                            }
+                            tabularList = Resolver.ListInstance.wim.GetTabs();
+                        }
 
-                            _navService.ApplyTabularUrl(Console, tab, 1, null);
-                            result.Items.Add(new NavigationItem() { 
-                                Text = tab.TitleValue,
-                                Href = tab.Url,
-                                IsHighlighted = tab.Selected
-                            });
-
-                            if (tab.Selected)
+                        if (tabularList?.Count > 0)
+                        {
+                            foreach (var tab in tabularList)
                             {
-                                selectedTab = tab.List.ID;
-                            }
-
-                            if (!Console.Group.HasValue)
-                            {
-                                continue;
-                            }
-
-                            if (Resolver.ListInstance.wim.CurrentList.ID == tab.List.ID)
-                            {
-                                if (Resolver.ListInstance.wim.GetTabs().Count > 0)
+                                if (tab.List.IsNewInstance)
                                 {
-                                    foreach (var tab2 in Resolver.ListInstance.wim.GetTabs())
-                                    {
-                                        _navService.ApplyTabularUrl(Console, tab2, 2, null);
-
-                                        result.Items.Add(new NavigationItem()
-                                        {
-                                            Text = tab2.TitleValue,
-                                            Href = tab2.Url,
-                                            IsHighlighted = tab2.Selected
-                                        });
-
-                                        if (tab2.Selected)
-                                        {
-                                            selectedTab = tab2.List.ID;
-                                        }
-                                    }
+                                    continue;
                                 }
-                            }
-                            else
-                            {
-                                Framework.IComponentListTemplate cl = tab.List.GetInstance(Console);
 
-                                if (cl != null)
+                                _navService.ApplyTabularUrl(Resolver, tab, 1, null);
+                                result.Items.Add(new NavigationItem()
                                 {
-                                    cl.wim.Console = master;
+                                    Text = tab.TitleValue,
+                                    Href = tab.Url,
+                                    IsHighlighted = tab.Selected
+                                });
 
-                                    int group2Id = Utils.ConvertToInt(Console.Request.Query["group2"]);
-                                    int group2ElementId = Utils.ConvertToInt(Console.Request.Query["group2item"]);
+                                if (tab.Selected)
+                                {
+                                    selectedTab = tab.List.ID;
+                                }
 
-                                    if (tab.List.ID == group2Id)
-                                    {
-                                        cl.wim.DoListLoad(group2ElementId, 0);
-                                    }
-                                    else
-                                    {
-                                        cl.wim.DoListLoad(Console.Item.Value, 0);
-                                    }
+                                if (!Resolver.GroupID.HasValue)
+                                {
+                                    continue;
+                                }
 
-                                    if (cl.wim.GetTabs().Count > 0)
+                                if (Resolver.ListInstance.wim.CurrentList.ID == tab.List.ID)
+                                {
+                                    if (Resolver.ListInstance.wim.GetTabs()?.Count > 0)
                                     {
-                                        foreach (var tab2 in cl.wim.GetTabs())
+                                        foreach (var tab2 in Resolver.ListInstance.wim.GetTabs())
                                         {
+                                            _navService.ApplyTabularUrl(Resolver, tab2, 2, null);
+
                                             result.Items.Add(new NavigationItem()
                                             {
                                                 Text = tab2.TitleValue,
@@ -488,60 +449,95 @@ namespace Sushi.Mediakiwi.API.Controllers
                                         }
                                     }
                                 }
+                                else
+                                {
+                                    Framework.IComponentListTemplate cl = tab.List.GetInstance(Console);
+
+                                    if (cl != null)
+                                    {
+                                        cl.wim.Console = master;
+
+                                        if (tab.List.ID == Resolver.Group2ID)
+                                        {
+                                            cl.wim.DoListLoad(Resolver.Group2ItemID.Value, 0);
+                                        }
+                                        else
+                                        {
+                                            cl.wim.DoListLoad(Resolver.ItemID.Value, 0);
+                                        }
+
+                                        if (cl.wim.GetTabs()?.Count > 0)
+                                        {
+                                            foreach (var tab2 in cl.wim.GetTabs())
+                                            {
+                                                result.Items.Add(new NavigationItem()
+                                                {
+                                                    Text = tab2.TitleValue,
+                                                    Href = tab2.Url,
+                                                    IsHighlighted = tab2.Selected
+                                                });
+
+                                                if (tab2.Selected)
+                                                {
+                                                    selectedTab = tab2.List.ID;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
                             }
                         }
-                    }
 
 
-                    var tmpTab = new Framework.WimComponentListRoot.Tabular();
-                    tmpTab.SelectedItem = currentListItemId;
-                    _navService.ApplyTabularUrl(Console, tmpTab, 0, currentListId);
+                        var tmpTab = new Framework.WimComponentListRoot.Tabular();
+                        tmpTab.SelectedItem = currentListItemId;
+                        _navService.ApplyTabularUrl(Resolver, tmpTab, 0, currentListId);
 
-                    //  For use in property tabbing.
-                    
-                    if (Resolver.BaseID.GetValueOrDefault(0) > 0)
-                    {
-                        Data.IComponentList list = await Data.ComponentList.SelectOneAsync(Resolver.BaseID.Value).ConfigureAwait(false);
-                        title = list.Name;
-                        currentListId = list.ID;
-                    }
+                        //  For use in property tabbing.
 
-                    if (isSingleItemList)
-                    {
-                        result.Items.Add(new NavigationItem()
+                        if (Resolver.BaseID.GetValueOrDefault(0) > 0)
                         {
-                            Text = itemTitle,
-                            Href = Console.UrlBuild.GetListRequest(currentListId),
-                            IsHighlighted = selectedTab == 0
-                        });
+                            Data.IComponentList list = await Data.ComponentList.SelectOneAsync(Resolver.BaseID.Value).ConfigureAwait(false);
+                            title = list.Name;
+                            currentListId = list.ID;
+                        }
+
+                        if (isSingleItemList)
+                        {
+                            result.Items.Add(new NavigationItem()
+                            {
+                                Text = itemTitle,
+                                Href = Resolver.UrlBuild.GetListRequest(currentListId),
+                                IsHighlighted = selectedTab == 0
+                            });
+                        }
+                        else
+                        {
+                            result.Items.Add(new NavigationItem()
+                            {
+                                Text = itemTitle,
+                                Href = tmpTab.Url,
+                                IsHighlighted = true
+                            });
+                        }
                     }
                     else
                     {
                         result.Items.Add(new NavigationItem()
                         {
-                            Text = itemTitle,
-                            Href = tmpTab.Url,
+                            Text = Resolver.List.Name,
+                            Href = Resolver.WimPagePath,
                             IsHighlighted = true
                         });
+
                     }
                 }
-                else
-                {
-                    result.Items.Add(new NavigationItem()
-                    {
-                        Text = Resolver.List.Name,
-                        Href = Console.WimPagePath,
-                        IsHighlighted = true
-                    });
-    
-                }
+
+                #endregion
+
             }
 
             #endregion
-
-            //string tabs = GetTabularTagNewDesign(Console, Console.CurrentList.Name, 0, false);
-
-            // Check if this needs insertion here
 
             bool isFirstLevelRootnavigation = false;
             bool isFirst = true;
@@ -584,7 +580,7 @@ namespace Sushi.Mediakiwi.API.Controllers
                 }
 
                 currentName = "Documents";
-                currentLink = "##";// TODO: get correct url
+                currentLink = Resolver.UrlBuild.GetGalleryRequest(rootID);
 
                 Data.Gallery currentGallery = await Data.Gallery.SelectOneAsync(currentFolder.ID).ConfigureAwait(false);
 
@@ -607,7 +603,7 @@ namespace Sushi.Mediakiwi.API.Controllers
                     {
                         IconClass = iconClass,
                         Text = folder.Name,
-                        Href = "##" // TODO: get correct url
+                        Href = Resolver.UrlBuild.GetGalleryRequest(folder)
                     };
 
 
@@ -624,7 +620,7 @@ namespace Sushi.Mediakiwi.API.Controllers
                             var level2Item = new NavigationItem()
                             {
                                 Text = folder2.Name,
-                                Href = Console.UrlBuild.GetGalleryRequest(folder2),
+                                Href = Resolver.UrlBuild.GetGalleryRequest(folder2),
                                 IsHighlighted = isActive2,
                             };
 
@@ -639,7 +635,7 @@ namespace Sushi.Mediakiwi.API.Controllers
                                     level2Item.Items.Add(new NavigationItem()
                                     {
                                         Text = folder3.Name,
-                                        Href = Console.UrlBuild.GetGalleryRequest(folder3),
+                                        Href = Resolver.UrlBuild.GetGalleryRequest(folder3),
                                         IsHighlighted = isActive3
                                     });
                                 }
@@ -674,7 +670,7 @@ namespace Sushi.Mediakiwi.API.Controllers
                 result.Items.Add(new NavigationItem()
                 {
                     Text = currentFolderName,
-                    Href = "##",// TODO: get correct url
+                    Href = Resolver.UrlBuild.GetFolderRequest(p.Folder.ID),
                     IsBack = true,
                 });
             }
@@ -689,19 +685,19 @@ namespace Sushi.Mediakiwi.API.Controllers
                         result.Items.Add(new NavigationItem()
                         {
                             Text = "Home",
-                            Href = "##",// TODO: get correct url
+                            Href = await Resolver.UrlBuild.GetHomeRequestAsync().ConfigureAwait(false),
                             IsBack = true,
                         });
                     }
                 }
                 else
                 {
-                    var lists = await Data.ComponentList.SelectOneAsync(currentListID).ConfigureAwait(false);
+                    var list = await Data.ComponentList.SelectOneAsync(currentListID).ConfigureAwait(false);
 
                     result.Items.Add(new NavigationItem()
                     {
-                        Text = lists.Name,
-                        Href = "##",// TODO: get correct url
+                        Text = list.Name,
+                        Href = await Resolver.UrlBuild.GetListRequestAsync(list).ConfigureAwait(false),
                         IsBack = true,
                     });
                 }
@@ -755,7 +751,7 @@ namespace Sushi.Mediakiwi.API.Controllers
                             result.Items.Add(new NavigationItem()
                             {
                                 Text = list.Name,
-                                Href = Console.UrlBuild.GetListRequest(list),
+                                Href = Resolver.UrlBuild.GetListRequest(list),
                                 IsBack = list.ID == currentListID && Resolver.ItemID.HasValue,
                                 IsHighlighted = list.ID == currentListID && Resolver.ItemID.HasValue == false,
                                 IconClass = $"{(isFirst ? "first " : "")}{(string.IsNullOrWhiteSpace(list.Icon) ? null : $" {list.Icon}") }",
@@ -775,7 +771,7 @@ namespace Sushi.Mediakiwi.API.Controllers
                         result.Items.Add(new NavigationItem()
                         {
                             Text = list.Name,
-                            Href = Console.UrlBuild.GetListRequest(list),
+                            Href = Resolver.UrlBuild.GetListRequest(list),
                             IsBack = true,
                             IconClass = string.IsNullOrWhiteSpace(list.Icon) ? null : $" {list.Icon}"
                         });
@@ -801,7 +797,7 @@ namespace Sushi.Mediakiwi.API.Controllers
                     result.Items.Add(new NavigationItem()
                     {
                         Text = currentFolderName,
-                        Href = Console.UrlBuild.GetFolderRequest(currentFolder.ID),
+                        Href = Resolver.UrlBuild.GetFolderRequest(currentFolder.ID),
                         IsBack = true,
                     });
                 }
@@ -825,7 +821,7 @@ namespace Sushi.Mediakiwi.API.Controllers
                         {
                             result.Items.Add(new NavigationItem()
                             {
-                                Href = Console.UrlBuild.GetFolderRequest(item),
+                                Href = Resolver.UrlBuild.GetFolderRequest(item),
                                 Text = item.Name,
                                 IconClass = $"list{(isFirst ? " first" : null)}",
                             });
@@ -834,6 +830,7 @@ namespace Sushi.Mediakiwi.API.Controllers
                     }
                 }
             }
+
             #endregion
 
 
@@ -842,14 +839,60 @@ namespace Sushi.Mediakiwi.API.Controllers
                 result.Items.Add(new NavigationItem()
                 {
                     Text = "Home",
-                    Href = Console.UrlBuild.GetHomeRequest(),
+                    Href = Resolver.UrlBuild.GetHomeRequest(),
                     IconClass = "list"
                 });
             }
+
+            // Reverse items
+            result.Items = result.Items.Reverse().ToList();
+
+            result.StatusCode = System.Net.HttpStatusCode.OK;
 
             return Ok(result);
         }
 
         #endregion Side Navigation
+
+        #region Get Sites
+
+        [Produces("application/json")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [HttpGet("GetSites")]
+        public async Task<ActionResult<GetSitesResponse>> GetSites([FromBody] GetSitesRequest request)
+        {
+            GetSitesResponse result = new GetSitesResponse();
+
+            if (request.CurrentSiteID == 0)
+            {
+                return BadRequest();
+            }
+
+            foreach (var site in await Data.Site.SelectAllAsync().ConfigureAwait(false))
+            {
+                CultureInfo ci = new CultureInfo(site.Culture);
+                int weekStart = (int)ci.DateTimeFormat.FirstDayOfWeek;
+                if (weekStart == 0)
+                {
+                    weekStart = 7;
+                }
+
+                result.Items.Add(new SiteItem()
+                {
+                    Culture = site.Culture,
+                    ID = site.ID,
+                    Title = site.Name,
+                    WeekStart = weekStart
+                });
+            }
+            
+            result.StatusCode = System.Net.HttpStatusCode.OK;
+
+            return Ok(result);
+        }
+
+        #endregion Get Sites
     }
 }

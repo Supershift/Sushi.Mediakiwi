@@ -67,6 +67,13 @@ namespace Sushi.Mediakiwi
 
         public static string CDN_Folder(Beta.GeneratedCms.Console console, string subfolder)
         {
+            return CDN_Folder(console.AddApplicationPath(LOCAL_FILE_PATH, true), subfolder);
+        }
+
+        public static string CDN_Folder(string applicationPath, string subfolder)
+        {
+            string appPath = string.Empty;
+
             if (_FolderVersion == null)
             {
                 // CDN
@@ -77,17 +84,24 @@ namespace Sushi.Mediakiwi
                 else
                 {
                     if (LOCAL_FILE_PATH.IndexOf("http", StringComparison.InvariantCultureIgnoreCase) > -1)
+                    {
                         _FolderVersion = LOCAL_FILE_PATH;
+                    }
                     else
-                        _FolderVersion = console.AddApplicationPath(LOCAL_FILE_PATH, true);
+                    {
+                        _FolderVersion = applicationPath;
+                    }
                 }
             }
 
             if (!string.IsNullOrWhiteSpace(subfolder))
+            {
                 return string.Concat(_FolderVersion, subfolder, "/");
+            }
 
             return _FolderVersion;
         }
+
 
         public static string VIEWPORT
         {

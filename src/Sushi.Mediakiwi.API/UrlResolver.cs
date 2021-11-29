@@ -4,12 +4,23 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
+using System.Text.RegularExpressions;
+using Sushi.Mediakiwi.Beta.GeneratedCms.Source;
 
 namespace Sushi.Mediakiwi.API
 {
     public class UrlResolver
     {
+        #region Properties
+
+        private readonly IServiceProvider _services;
+
+        private readonly Beta.GeneratedCms.Console _console;
+        public UrlBuilder UrlBuild { get; set; }
+
+        private static Regex _CleanFormatting = new Regex(@"\/.", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+        private string Domain { get; set; }
+        private PathString? PathBase { get; set; }
         public int? FolderID { get; set; }
         public int? ItemID { get; set; }
         public int? ListID { get; set; }
@@ -20,13 +31,93 @@ namespace Sushi.Mediakiwi.API
         public int? DashboardID { get; set; }
         public int? GroupID { get; set; }
         public int? GroupItemID { get; set; }
+        public int? Group2ID { get; set; }
+        public int? Group2ItemID { get; set; }
         public int? GalleryID { get; set; }
         public int? BaseID { get; set; }
         public string SelectedTab { get; set; }
+        public int? OpenInFrame { get; set; }
+
+        public string ReferID { get; set; }
 
         public Dictionary<string, Microsoft.Extensions.Primitives.StringValues> Query { get; set; } = new Dictionary<string, Microsoft.Extensions.Primitives.StringValues>();
 
         public RequestItemType ItemType { get; set; } = RequestItemType.Undefined;
+
+        private Framework.IComponentListTemplate m_ListInstance;
+        public Framework.IComponentListTemplate ListInstance
+        {
+            get { return m_ListInstance; }
+            private set { m_ListInstance = value; }
+        }
+
+        #endregion
+
+        #region Calculated Properties
+
+        string m_Channel;
+        internal string Channel
+        {
+            get
+            {
+                if (m_Channel == null)
+                {
+                    if (!Data.Environment.Current.DefaultSiteID.GetValueOrDefault().Equals(SiteID.GetValueOrDefault(0)))
+                    {
+                        m_Channel = Utils.ToUrl(Site.Name);
+                    }
+                    else
+                    {
+                        m_Channel = string.Empty;
+                    }
+                }
+                return m_Channel;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the wim page path.
+        /// </summary>
+        /// <value>The wim page path.</value>
+        public string WimPagePath
+        {
+            get
+            {
+                // set the correct wim page
+                return (Channel != null && Channel.Any())
+                    ? AddApplicationPath(string.Concat(CommonConfiguration.PORTAL_PATH, "/", Channel))
+                    : AddApplicationPath(CommonConfiguration.PORTAL_PATH)
+                    ;
+            }
+        }
+
+        public string GetWimPagePath(int? siteId)
+        {
+            if (siteId.HasValue)
+            {
+                var candidate = Data.Site.SelectOne(siteId.Value);
+                if (candidate != null)
+                {
+                    return AddApplicationPath(string.Concat(CommonConfiguration.PORTAL_PATH, "/", Utils.ToUrl(candidate.Name)), true);
+                }
+            }
+
+            return WimPagePath;
+        }
+
+        public async Task<string> GetWimPagePathAsync(int? siteId)
+        {
+            if (siteId.HasValue)
+            {
+                var candidate = await Data.Site.SelectOneAsync(siteId.Value).ConfigureAwait(false);
+                if (candidate != null)
+                {
+                    return AddApplicationPath(string.Concat(CommonConfiguration.PORTAL_PATH, "/", Utils.ToUrl(candidate.Name)), true);
+                }
+            }
+
+            return WimPagePath;
+        }
 
         private Data.Site m_Site;
         public Data.Site Site
@@ -56,7 +147,7 @@ namespace Sushi.Mediakiwi.API
                 }
                 return m_Folder;
             }
-            private set 
+            private set
             {
                 m_Folder = value;
             }
@@ -73,7 +164,7 @@ namespace Sushi.Mediakiwi.API
                 }
                 return m_Page;
             }
-            private set 
+            private set
             {
                 m_Page = value;
             }
@@ -90,7 +181,7 @@ namespace Sushi.Mediakiwi.API
                 }
                 return m_Asset;
             }
-            private set 
+            private set
             {
                 m_Asset = value;
             }
@@ -107,7 +198,7 @@ namespace Sushi.Mediakiwi.API
                 }
                 return m_List;
             }
-            private set 
+            private set
             {
                 m_List = value;
                 if (value?.ID > 0)
@@ -117,17 +208,10 @@ namespace Sushi.Mediakiwi.API
             }
         }
 
-        private Framework.IComponentListTemplate m_ListInstance;
-        public Framework.IComponentListTemplate ListInstance
-        {
-            get { return m_ListInstance; }
-            private set { m_ListInstance = value; }
-        }
 
+        #endregion Calculated Properties
 
-        private readonly IServiceProvider _services;
-
-        private readonly Beta.GeneratedCms.Console _console;
+        #region CTor
 
         public UrlResolver(IServiceProvider services, Beta.GeneratedCms.Console console)
         {
@@ -136,18 +220,72 @@ namespace Sushi.Mediakiwi.API
             {
                 _console = console;
             }
+
+            UrlBuild = new UrlBuilder(this);
         }
 
         public UrlResolver(IServiceProvider services) : this(services, null)
         {
+            
         }
+
+        #endregion CTor
+
+        #region Add Application Path
+
+        public string AddApplicationPath(string path, bool appendUrl = false)
+        {
+            if (!string.IsNullOrWhiteSpace(path))
+            {
+                if (path.StartsWith("http", StringComparison.CurrentCultureIgnoreCase))
+                {
+                    return path;
+                }
+
+                if (path.StartsWith('~'))
+                {
+                    path = path.Replace("~", PathBase, StringComparison.CurrentCultureIgnoreCase);
+                    if (appendUrl)
+                    {
+                        return string.Concat(Domain, path);
+                    }
+                    return path;
+                }
+                else if (!path.StartsWith('/'))
+                {
+                    // expect a relative path
+                    path = $"/{path}";
+                }
+            }
+
+            var prefix = PathBase.HasValue ? PathBase.Value.ToString() : string.Empty;
+            var url = string.Concat(prefix, path);
+
+            if (url.Contains("//", StringComparison.CurrentCulture))
+            {
+                url = _CleanFormatting.Replace(url, "/");
+            }
+
+            if (appendUrl)
+            {
+                url = $"{Domain}{url}";
+            }
+            return url;
+        }
+
+        #endregion Add Application Path
+
+        #region Resolve URL Async
 
         public async Task ResolveUrlAsync(string uriScheme, HostString uriHost, PathString uriPathBase, PathString uriPath, string query)
         {
+            Domain = $"{uriScheme}://{uriHost.ToUriComponent()}";
+
             // Construct Absolute URL
             string fullUrl = $"{uriScheme}://{uriHost.ToUriComponent()}";
             if (uriPathBase.HasValue) 
             {
+                PathBase = uriPathBase;
                 fullUrl += uriPathBase.ToUriComponent();
             }
 
@@ -338,6 +476,16 @@ namespace Sushi.Mediakiwi.API
                 GroupItemID = Utils.ConvertToInt(Query["groupitem"], 0);
             }
 
+            if (Query.ContainsKey("group2"))
+            {
+                Group2ID = Utils.ConvertToInt(Query["group2"], 0);
+            }
+
+            if (Query.ContainsKey("group2item"))
+            {
+                Group2ItemID = Utils.ConvertToInt(Query["group2item"], 0);
+            }
+
             if (Query.ContainsKey("base"))
             {
                 BaseID = Utils.ConvertToInt(Query["base"], 0);
@@ -346,6 +494,16 @@ namespace Sushi.Mediakiwi.API
             if (Query.ContainsKey("tab"))
             {
                 SelectedTab = Query["tab"];
+            }
+
+            if (Query.ContainsKey("openinframe"))
+            {
+                OpenInFrame = Utils.ConvertToInt(Query["openinframe"]);
+            }
+
+            if (Query.ContainsKey("referid"))
+            {
+                ReferID = Query["referid"];
             }
 
             if (ListID.GetValueOrDefault(0) == 0 && !string.IsNullOrWhiteSpace(targetName))
@@ -389,5 +547,7 @@ namespace Sushi.Mediakiwi.API
                 }
             }
         }
+
+        #endregion Resolve URL Async
     }
 }

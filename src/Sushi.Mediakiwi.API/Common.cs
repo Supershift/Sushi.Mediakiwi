@@ -5,6 +5,12 @@ namespace Sushi.Mediakiwi.API
 {
     public static class Common
     {
+        public static string GetLabelFromResource(string fieldName, System.Globalization.CultureInfo culture)
+        {
+            System.Resources.ResourceManager manager = new System.Resources.ResourceManager("Sushi.Mediakiwi.Labels", typeof(Mediakiwi.CommonConfiguration).Assembly);
+            return manager.GetString(fieldName, culture);
+        }
+
         public static readonly string API_AUTHENTICATION_SCHEME = "MEDIAKIWI-API";
         public static readonly string API_AUTHENTICATION_ISSUER = "MEDIAKIWI";
         public static readonly string API_AUTHENTICATION_AUDIENCE = "MEDIAKIWI-USERS";

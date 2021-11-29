@@ -5,22 +5,22 @@ namespace Sushi.Mediakiwi.API.Services
 {
     public interface INavigationService
     {
-        public string GetQueryStringRecording(Beta.GeneratedCms.Console container);
+        public string GetQueryStringRecording(UrlResolver resolver);
         
-        public void ApplyTabularUrl(Beta.GeneratedCms.Console container, Framework.WimComponentListRoot.Tabular tab, int levelEntry, int? currentListID);
+        public void ApplyTabularUrl(UrlResolver resolver, Framework.WimComponentListRoot.Tabular tab, int levelEntry, int? currentListID);
 
-        public string GetLogoURL(Beta.GeneratedCms.Console container);
+        public string GetLogoURL(UrlResolver resolver);
 
-        public string GetHomepageURL(Beta.GeneratedCms.Console container);
+        public string GetHomepageURL(UrlResolver resolver);
 
         public bool IsRequestPartOfNavigation(Data.IMenuItemView item, UrlResolver urlResolver);
 
-        public string GetUrl(Beta.GeneratedCms.Console container, Data.IMenuItemView entity, int channel);
+        public Task<string> GetUrlAsync(UrlResolver resolver, Data.IMenuItemView entity, int? siteId);
 
         public Task<bool> HasRoleAccessAsync(Data.IMenuItemView item, Data.IApplicationRole role);
 
         public Task<bool> HasRoleAccessAsync(Data.Interfaces.ISearchView item, Data.IApplicationRole role);
 
-        public Task<(bool isCurrent, bool addEmpty)> AddSubSubNavigationAsync(Beta.GeneratedCms.Console container, NavigationItem topnav, Data.IMenuItemView item, string className, Data.IApplicationRole role);
+        public Task<(bool isCurrent, bool addEmpty)> AddSubSubNavigationAsync(UrlResolver resolver, NavigationItem topnav, Data.IMenuItemView item, string className, Data.IApplicationRole role);
     }
 }

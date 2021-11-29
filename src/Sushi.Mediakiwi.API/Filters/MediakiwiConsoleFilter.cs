@@ -25,9 +25,15 @@ namespace Sushi.Mediakiwi.API.Filters
                 string schemeString = context.HttpContext.Request.Scheme;
                 var hostString  = context.HttpContext.Request.Host;
                 var pathBaseString = context.HttpContext.Request.PathBase;
-                var pathString = new Microsoft.AspNetCore.Http.PathString(setUrl);
+                var pathString = new Microsoft.AspNetCore.Http.PathString(setUrl.ToString().Contains("?") ? setUrl.ToString().Split('?')[0] : setUrl.ToString());
                 var query = setUrl.ToString().Contains("?") ? setUrl.ToString().Split('?')[1] : "";
 
+                // Add proxy option
+                if (string.IsNullOrWhiteSpace(context.HttpContext.Request.Headers["X-Forwarded-Host"]) == false)
+                {
+                    hostString = new Microsoft.AspNetCore.Http.HostString(context.HttpContext.Request.Headers["X-Forwarded-Host"]);
+                }
+        
                 // Adjust the url for the context copy
                 contextCopy.Request.Path = new Microsoft.AspNetCore.Http.PathString(setUrl);
 

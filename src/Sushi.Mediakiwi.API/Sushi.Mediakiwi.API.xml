@@ -36,5 +36,169 @@
             <response code="400">Some needed information is missing from the request</response>
             <response code="401">The user is not succesfully authenticated</response>
         </member>
+        <member name="M:Sushi.Mediakiwi.API.UrlBuilder.#ctor(Sushi.Mediakiwi.API.UrlResolver)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Sushi.Mediakiwi.API.UrlBuilder"/> class.
+            </summary>
+            <param name="resolver">The Url builder.</param>
+        </member>
+        <member name="M:Sushi.Mediakiwi.API.UrlBuilder.GetFolderRequest(Sushi.Mediakiwi.Data.Folder)">
+            <summary>
+            Gets the folder request.
+            </summary>
+            <param name="folder">The folder.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Sushi.Mediakiwi.API.UrlBuilder.GetFolderCreateRequest">
+            <summary>
+            Gets the folder create request.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Sushi.Mediakiwi.API.UrlBuilder.GetFolderOptionsRequest">
+            <summary>
+            Gets the folder options request.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Sushi.Mediakiwi.API.UrlBuilder.GetFolderRequest(System.Int32)">
+            <summary>
+            Gets the folder request.
+            </summary>
+            <param name="folderID">The folder ID.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Sushi.Mediakiwi.API.UrlBuilder.GetFolderRequest">
+            <summary>
+            Gets the (current) folder request.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Sushi.Mediakiwi.API.UrlBuilder.GetListNewRecordRequest">
+            <summary>
+            Gets the list new record request.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Sushi.Mediakiwi.API.UrlBuilder.GetListPropertiesRequest">
+            <summary>
+            Gets the list properties request.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Sushi.Mediakiwi.API.UrlBuilder.GetListRequest(System.Int32,System.Nullable{System.Int32})">
+            <summary>
+            Gets the list request.
+            </summary>
+            <param name="list">The list.</param>
+            <param name="itemID">The item ID.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Sushi.Mediakiwi.API.UrlBuilder.GetListRequest(Sushi.Mediakiwi.Data.IComponentList,System.Nullable{System.Int32})">
+            <summary>
+            Gets the list request.
+            </summary>
+        </member>
+        <member name="M:Sushi.Mediakiwi.API.UrlBuilder.GetListRequestAsync(System.Int32,System.Nullable{System.Int32})">
+            <summary>
+            Gets the list request.
+            </summary>
+            <param name="listID">The list ID.</param>
+            <param name="itemID">The item ID.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Sushi.Mediakiwi.API.UrlBuilder.GetListRequestAsync(Sushi.Mediakiwi.Data.IComponentList,System.Nullable{System.Int32})">
+            <summary>
+            Gets the list request.
+            </summary>
+        </member>
+        <member name="M:Sushi.Mediakiwi.API.UrlBuilder.GetHomeRequest(System.Nullable{System.Int32})">
+            <summary>
+            Gets the home request.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Sushi.Mediakiwi.API.UrlBuilder.GetHomeRequestAsync(System.Nullable{System.Int32})">
+            <summary>
+            Gets the home request.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Sushi.Mediakiwi.API.UrlBuilder.GetPageRequest(Sushi.Mediakiwi.Data.Page)">
+            <summary>
+            Gets the page request.
+            </summary>
+            <param name="page">The page.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Sushi.Mediakiwi.API.UrlBuilder.GetSectionRequest(Sushi.Mediakiwi.Data.FolderType)">
+            <summary>
+            Gets the section request.
+            </summary>
+            <param name="type">The type.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Sushi.Mediakiwi.API.UrlBuilder.GetGalleryRequest(Sushi.Mediakiwi.Data.Gallery)">
+            <summary>
+            Gets the gallery request.
+            </summary>
+            <param name="gallery">The gallery.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Sushi.Mediakiwi.API.UrlBuilder.GetGalleryRequest(System.Int32)">
+            <summary>
+            Gets the gallery request.
+            </summary>
+            <param name="galleryID">The gallery ID.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Sushi.Mediakiwi.API.UrlBuilder.GetGalleryNewAssetRequest">
+            <summary>
+            Gets the gallery new asset request.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Sushi.Mediakiwi.API.UrlBuilder.GetGalleryNewAssetRequestInLayer">
+            <summary>
+            Gets the gallery new asset request in layer.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Sushi.Mediakiwi.API.UrlBuilder.GetNewGalleryRequest">
+            <summary>
+            Gets the new gallery request.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Sushi.Mediakiwi.API.UrlBuilder.GetNewPageRequest">
+            <summary>
+            Gets the new page request.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Sushi.Mediakiwi.API.UrlBuilder.GetNewListRequest">
+            <summary>
+            Gets the new list request.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Sushi.Mediakiwi.API.UrlBuilder.GetSubscribeRequest">
+            <summary>
+            Gets the subscribe request.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Sushi.Mediakiwi.API.UrlBuilder.GetPagePropertiesRequest">
+            <summary>
+            Gets the page properties request.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.UrlResolver.WimPagePath">
+            <summary>
+            Gets or sets the wim page path.
+            </summary>
+            <value>The wim page path.</value>
+        </member>
     </members>
 </doc>
