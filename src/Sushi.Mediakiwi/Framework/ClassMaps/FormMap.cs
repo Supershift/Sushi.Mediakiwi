@@ -1,6 +1,7 @@
 ﻿using Sushi.Mediakiwi.Data;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -236,6 +237,5 @@ namespace Sushi.Mediakiwi.Framework
             var result = new ContentInfo(null, IsHidden, IsReadOnly, IsCloacked, Elements);
             result.Section(title);
         }
-
     }
 }

@@ -191,6 +191,8 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
         public Field WriteCandidate(WimControlBuilder build, bool isEditMode, bool isRequired, bool isCloaked)
         {
             SetWriteEnvironment();
+            string formName = GetFormMapClass();
+
             IsCloaked = isCloaked;
             Mandatory = isRequired;
             if (OverrideEditMode)
@@ -309,7 +311,12 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                 PropertyType = (Property == null) ? typeof(DateTime).FullName : Property.PropertyType.FullName,
                 VueType = Api.MediakiwiFormVueType.wimDate,
                 ReadOnly = IsReadOnly,
-                ContentTypeID = ContentTypeSelection
+                ContentTypeID = ContentTypeSelection,
+                IsAutoPostback = AutoPostBack,
+                IsMandatory = Mandatory,
+                MaxLength = MaxValueLength,
+                HelpText = InteractiveHelp,
+                FormSection = formName
             });
 
             return ReadCandidate(m_Candidate.HasValue ? m_Candidate.Value.Ticks.ToString() : null);

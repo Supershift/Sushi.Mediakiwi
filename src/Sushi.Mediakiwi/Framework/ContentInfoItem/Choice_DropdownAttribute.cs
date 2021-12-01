@@ -585,6 +585,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
             SetWriteEnvironment();
             IsCloaked = isCloaked;
             Mandatory = isRequired;
+            string formName = GetFormMapClass();
 
             if (OverrideEditMode)
             {
@@ -876,7 +877,12 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                     VueType = hasoptions ? Api.MediakiwiFormVueType.wimTag : Api.MediakiwiFormVueType.wimTagVue,
                     Options = optionsList,
                     ReadOnly = IsReadOnly,
-                    ContentTypeID = ContentTypeSelection
+                    ContentTypeID = ContentTypeSelection,
+                    IsAutoPostback = AutoPostBack,
+                    IsMandatory = Mandatory,
+                    MaxLength = MaxValueLength,
+                    HelpText = InteractiveHelp,
+                    FormSection = formName
                 });
             }
             else
@@ -892,7 +898,12 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                     PropertyType = (Property == null) ? typeof(string).FullName : Property.PropertyType.FullName,
                     VueType = Api.MediakiwiFormVueType.wimChoiceDropdown,
                     Options = optionsList,
-                    ContentTypeID = ContentTypeSelection
+                    ContentTypeID = ContentTypeSelection,
+                    IsAutoPostback = AutoPostBack,
+                    IsMandatory = Mandatory,
+                    MaxLength = MaxValueLength,
+                    HelpText = InteractiveHelp,
+                    FormSection = formName
                 });
             }
             return ReadCandidate(OutputText);

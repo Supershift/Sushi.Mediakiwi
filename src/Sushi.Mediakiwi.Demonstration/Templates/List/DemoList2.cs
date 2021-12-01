@@ -25,6 +25,15 @@ namespace Sushi.Mediakiwi.Demonstration.Templates.List
 
             return tmp;
         }
+
+        public static DemoObject2 FetchSingle(int id) 
+        {
+            return new DemoObject2() 
+            { 
+                ID = id, 
+                Title = $"Demo2Title {id}" 
+            };
+        }
     }
 
     public class DemoList2 : ComponentListTemplate
@@ -33,6 +42,33 @@ namespace Sushi.Mediakiwi.Demonstration.Templates.List
         {
             ListSearch += DemoList2_ListSearch;
             ListInit += DemoList2_ListInit;
+            ListLoad += DemoList2_ListLoad;
+            ListSave += DemoList2_ListSave;
+            ListDelete += DemoList2_ListDelete;
+        }
+
+        private async Task DemoList2_ListDelete(ComponentListEventArgs arg)
+        {
+        }
+
+        private async Task DemoList2_ListSave(ComponentListEventArgs arg)
+        {
+        }
+
+        public DemoObject2 Implement { get; set; }
+
+        private async Task DemoList2_ListLoad(ComponentListEventArgs e)
+        {
+            if (e.SelectedKey > 0)
+            {
+                Implement = DemoObject2.FetchSingle(e.SelectedKey);
+
+                var map = new Maps.DemoList2Map(Implement);
+                if (FormMaps.List.Contains(map) == false)
+                {
+                    FormMaps.Add(map);
+                }
+            }
         }
 
         private Task DemoList2_ListInit()
@@ -41,7 +77,7 @@ namespace Sushi.Mediakiwi.Demonstration.Templates.List
             return Task.CompletedTask;
         }
 
-        private Task DemoList2_ListSearch(ComponentListSearchEventArgs arg)
+        private async Task DemoList2_ListSearch(ComponentListSearchEventArgs arg)
         {
             wim.ListDataColumns.Add(new ListDataColumn("ID", nameof(DemoObject2.ID), ListDataColumnType.UniqueIdentifier));
             wim.ListDataColumns.Add(new ListDataColumn("Title", nameof(DemoObject2.Title), ListDataColumnType.HighlightPresent));
@@ -57,7 +93,6 @@ namespace Sushi.Mediakiwi.Demonstration.Templates.List
             }
 
             wim.ListDataAdd(allItems);
-            return Task.CompletedTask;
         }
     }
 }

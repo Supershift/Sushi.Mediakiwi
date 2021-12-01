@@ -2,7 +2,7 @@
 
 namespace Sushi.Mediakiwi.API.Transport.Responses
 {
-    public class GetContentResponse
+    public class GetContentResponse : BasicResponse
     {
         [JsonPropertyName("type")]
         public ContentResponseTypeEnum Type { get; set; }

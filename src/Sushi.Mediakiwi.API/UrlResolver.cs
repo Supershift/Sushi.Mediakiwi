@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
 using Sushi.Mediakiwi.Beta.GeneratedCms.Source;
+using Sushi.Mediakiwi.API.Transport.Requests;
 
 namespace Sushi.Mediakiwi.API
 {
@@ -37,7 +38,6 @@ namespace Sushi.Mediakiwi.API
         public int? BaseID { get; set; }
         public string SelectedTab { get; set; }
         public int? OpenInFrame { get; set; }
-
         public string ReferID { get; set; }
 
         public Dictionary<string, Microsoft.Extensions.Primitives.StringValues> Query { get; set; } = new Dictionary<string, Microsoft.Extensions.Primitives.StringValues>();
@@ -535,13 +535,43 @@ namespace Sushi.Mediakiwi.API
                 {
                     if (_console != null)
                     {
+                        // Set itemID to Console
+                        if (ItemID.HasValue)
+                        {
+                            _console.Item = ItemID.Value;
+                        }
+
                         m_instance.Init(_console);
                         m_instance.wim.Console = _console;
+                        m_instance.wim.CurrentList = List;
+                        m_instance.wim.DoListInit();
+                       
+                        // Determine Edit state
+                        if (ItemID.HasValue)
+                        {
+                            var isEditPostBack = false;
+                            var isSavePostBack = false;
+
+                            if (_console.Request.Method == HttpMethods.Post && _console.Request.Headers.ContainsKey("postedField"))
+                            {
+                                isEditPostBack = _console.Request.Headers["postedField"] == "edit";
+                                isSavePostBack = _console.Request.Headers["postedField"] == "save";
+                            }
+
+                            //  Is the form state in editmode?
+                            m_instance.wim.IsEditMode = isEditPostBack
+                                || isSavePostBack
+                                || m_instance.wim.OpenInEditMode
+                                || ItemID.GetValueOrDefault(-1) == 0
+                                || AssetID.GetValueOrDefault(-1) == 0
+                                || (_console.JsonReferrer != null && _console.JsonReferrer.Equals("edit"))
+                                || _console.JsonForm != null;
+                        }
                     }
 
                     m_instance.wim.CurrentList = List;
                     m_instance.wim.CurrentSite = Site;
-
+                    
                     Folder = m_instance.wim.CurrentFolder;
                     ListInstance = m_instance;
                 }

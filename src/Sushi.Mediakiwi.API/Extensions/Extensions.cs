@@ -7,15 +7,22 @@ using Microsoft.OpenApi.Models;
 using Sushi.Mediakiwi.API.Authentication;
 using Sushi.Mediakiwi.API.Filters;
 using Sushi.Mediakiwi.API.Services;
+using Sushi.Mediakiwi.API.Transport;
+using Sushi.Mediakiwi.API.Transport.Responses;
+using Sushi.Mediakiwi.Framework;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
+using System.Threading.Tasks;
 
 namespace Sushi.Mediakiwi.API.Extensions
 {
     public static class Extensions
     {
+    
+
 
         public static HttpContext Clone(this HttpContext httpContext)
         {
@@ -75,8 +82,12 @@ namespace Sushi.Mediakiwi.API.Extensions
 
         public static void AddMediakiwiApi(this IServiceCollection services)
         {
+            // Add API services
             services.AddSingleton<IUserService, UserService>();
             services.AddSingleton<INavigationService, NavigationService>();
+            services.AddSingleton<IContentService, ContentService>();
+
+            // Add swagger
             services.AddSwaggerGen(options =>
             {
                 var filePath = Path.Combine(AppContext.BaseDirectory, $"{Common.API_ASSEMBLY_NAME}.xml");
@@ -101,6 +112,7 @@ namespace Sushi.Mediakiwi.API.Extensions
                 options.SchemaFilter<SwaggerSchemaFilter>();
             });
 
+            // Add Cookie validator and authentication
             services.AddScoped<MediakiwiCookieValidator>();
             services.AddAuthentication(Microsoft.AspNetCore.Authentication.Cookies.CookieAuthenticationDefaults.AuthenticationScheme)
                 .AddCookie(options =>

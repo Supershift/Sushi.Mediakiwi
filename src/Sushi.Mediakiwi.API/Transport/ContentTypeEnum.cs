@@ -21,7 +21,6 @@
         Button = 27,
         ChoiceCheckbox = 28,
         MultiImageSelect = 29,
-        TimeSheetLine = 30,
         TextDate = 31,
         Section = 32,
         DataList = 33,

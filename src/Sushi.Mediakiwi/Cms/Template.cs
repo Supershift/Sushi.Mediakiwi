@@ -250,7 +250,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
 
                             if (container.CurrentList.Type == ComponentListType.ComponentListProperties)
                             {
-                                tabularList = container.CurrentListInstance.wim.m_Collection;
+                                tabularList = container.CurrentListInstance.wim.m_TabCollection;
                             }
                             else
                             {
@@ -262,7 +262,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                                 master.CurrentListInstance.wim.Console.Item = groupElementId;
 
                                 master.CurrentListInstance.wim.DoListLoad(groupElementId, 0);
-                                tabularList = master.CurrentListInstance.wim.m_Collection;
+                                tabularList = master.CurrentListInstance.wim.m_TabCollection;
 
                                 currentListId = groupId;
                                 currentListItemId = groupElementId;
@@ -271,8 +271,8 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                             }
                         }
                     }
-                    else if (container.CurrentListInstance.wim.m_Collection != null)
-                        tabularList = container.CurrentListInstance.wim.m_Collection;
+                    else if (container.CurrentListInstance.wim.m_TabCollection != null)
+                        tabularList = container.CurrentListInstance.wim.m_TabCollection;
 
 
                     StringBuilder tabulars = new StringBuilder();
@@ -301,9 +301,9 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
 
                             if (container.CurrentListInstance.wim.CurrentList.ID == t.List.ID)
                             {
-                                if (container.CurrentListInstance.wim.m_Collection != null)
+                                if (container.CurrentListInstance.wim.m_TabCollection != null)
                                 {
-                                    foreach (Framework.WimComponentListRoot.Tabular t2 in container.CurrentListInstance.wim.m_Collection)
+                                    foreach (Framework.WimComponentListRoot.Tabular t2 in container.CurrentListInstance.wim.m_TabCollection)
                                     {
                                         ApplyTabularUrl(container, t2, 2);
 
@@ -331,9 +331,9 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                                     //else
                                     //    cl.DoListLoad(container.Item.Value, 0);
 
-                                    if (cl.wim.m_Collection != null)
+                                    if (cl.wim.m_TabCollection != null)
                                     {
-                                        foreach (Framework.WimComponentListRoot.Tabular t2 in cl.wim.m_Collection)
+                                        foreach (Framework.WimComponentListRoot.Tabular t2 in cl.wim.m_TabCollection)
                                         {
                                             tabulars.Append($@"<li><a href=""{t2.Url}""{(t2.Selected ? " class=\"active\"" : null)}>{t2.TitleValue}</a></li>");
 
@@ -560,7 +560,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
 
                             if (container.CurrentList.Type == ComponentListType.ComponentListProperties)
                             {
-                                tabularList = container.CurrentListInstance.wim.m_Collection;
+                                tabularList = container.CurrentListInstance.wim.m_TabCollection;
                             }
                             else
                             {
@@ -572,7 +572,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                                 master.CurrentListInstance.wim.Console.Item = groupElementId;
 
                                 master.CurrentListInstance.wim.DoListLoad(groupElementId, 0);
-                                tabularList = master.CurrentListInstance.wim.m_Collection;
+                                tabularList = master.CurrentListInstance.wim.m_TabCollection;
 
                                 currentListId = groupId;
                                 currentListItemId = groupElementId;
@@ -586,8 +586,8 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                     if (container.OpenInFrame > 0 && master.CurrentListInstance.wim.ShowNoTabInLayer)
                         return null;
 
-                    else if (container.CurrentListInstance.wim.m_Collection != null)
-                        tabularList = container.CurrentListInstance.wim.m_Collection;
+                    else if (container.CurrentListInstance.wim.m_TabCollection != null)
+                        tabularList = container.CurrentListInstance.wim.m_TabCollection;
 
 
                     StringBuilder tabulars = new StringBuilder();
@@ -616,9 +616,9 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
 
                             if (container.CurrentListInstance.wim.CurrentList.ID == t.List.ID)
                             {
-                                if (container.CurrentListInstance.wim.m_Collection != null)
+                                if (container.CurrentListInstance.wim.m_TabCollection != null)
                                 {
-                                    foreach (Framework.WimComponentListRoot.Tabular t2 in container.CurrentListInstance.wim.m_Collection)
+                                    foreach (Framework.WimComponentListRoot.Tabular t2 in container.CurrentListInstance.wim.m_TabCollection)
                                     {
                                         ApplyTabularUrl(container, t2, 2);
 
@@ -646,9 +646,9 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                                     //else
                                     //    cl.DoListLoad(container.Item.Value, 0);
 
-                                    if (cl.wim.m_Collection != null)
+                                    if (cl.wim.m_TabCollection != null)
                                     {
-                                        foreach (Framework.WimComponentListRoot.Tabular t2 in cl.wim.m_Collection)
+                                        foreach (Framework.WimComponentListRoot.Tabular t2 in cl.wim.m_TabCollection)
                                         {
                                             tabulars.Append($@"<li><a href=""{t2.Url}""{(t2.Selected ? " class=\"active\"" : null)}><span>{t2.TitleValue}</span></a></li>");
 

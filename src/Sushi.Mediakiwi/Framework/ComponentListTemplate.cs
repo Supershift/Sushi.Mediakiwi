@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Sushi.Mediakiwi.Framework
 {
-    public class FormList 
+    public class FormList
     {
         WimComponentListRoot _wim;
         public FormList(WimComponentListRoot wim)
@@ -24,7 +24,8 @@ namespace Sushi.Mediakiwi.Framework
 
         public int Count
         {
-            get {
+            get
+            {
                 return List.Count;
             }
         }

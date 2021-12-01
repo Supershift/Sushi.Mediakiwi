@@ -30,5 +30,6 @@ namespace Sushi.Mediakiwi.API.Transport
 
         [JsonPropertyName("isAverage")]
         public bool IsAverage { get; set; }
+
     }
 }

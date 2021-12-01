@@ -9,6 +9,7 @@ using System;
 using Sushi.Mediakiwi.API.Transport;
 using System.Collections.Generic;
 using System.Globalization;
+using Sushi.Mediakiwi.API.Filters;
 
 namespace Sushi.Mediakiwi.API.Controllers
 {

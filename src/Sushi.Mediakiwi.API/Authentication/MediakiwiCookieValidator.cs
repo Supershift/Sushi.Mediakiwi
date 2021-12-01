@@ -45,6 +45,7 @@ namespace Sushi.Mediakiwi.API.Authentication
                 if (context.HttpContext.Items.ContainsKey(Common.API_USER_CONTEXT) == false)
                 {
                     context.HttpContext.Items.Add(Common.API_USER_CONTEXT, user);
+                    context.HttpContext.Items.Add("wim.applicationuser", user);
                 }
             }
         }

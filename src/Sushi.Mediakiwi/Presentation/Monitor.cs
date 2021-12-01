@@ -93,16 +93,6 @@ namespace Sushi.Mediakiwi.Framework.Presentation
 
             var url = container.Url;
 
-            string report = string.Empty;
-            if (!string.IsNullOrEmpty(container.CurrentListInstance.wim.Page.TMP_ReportingSection))
-            {
-                report = string.Concat(container.CurrentListInstance.wim.Page.TMP_ReportingSection, @"
-	<article>
- 		<figure data-highcharts-chart=""0"" id=""stockchart_0"" style="" margin: 0 auto""></figure>
-	</article>
-");
-            }
-
             string pageTitle = null;
             string pageHeaderTitle = null;
             var helpButton = string.Empty;
@@ -502,8 +492,8 @@ namespace Sushi.Mediakiwi.Framework.Presentation
                         //<a href=\"#\" class=\"button\">Wijzigen</a>
                         #endregion Breadcrumbs
 
-                        title = string.Format("\n\t\t\t\t\t<header>{0}{1}\n\t\t\t\t\t</header>{2}"
-                            , bread, pageTitle, report
+                        title = string.Format("\n\t\t\t\t\t<header>{0}{1}\n\t\t\t\t\t</header>"
+                            , bread, pageTitle
                         );
 
                         if (!string.IsNullOrEmpty(description))
