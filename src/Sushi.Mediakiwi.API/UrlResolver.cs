@@ -5,8 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
-using Sushi.Mediakiwi.Beta.GeneratedCms.Source;
-using Sushi.Mediakiwi.API.Transport.Requests;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Sushi.Mediakiwi.API
 {
@@ -50,6 +49,8 @@ namespace Sushi.Mediakiwi.API
             get { return m_ListInstance; }
             private set { m_ListInstance = value; }
         }
+
+        public Data.IApplicationUser ApplicationUser { get; internal set; }
 
         #endregion
 
@@ -145,11 +146,38 @@ namespace Sushi.Mediakiwi.API
                 {
                     m_Folder = Data.Folder.SelectOne(FolderID.Value);
                 }
+                //else if (m_Folder == null && GalleryID.GetValueOrDefault(0) > 0)
+                //{
+                //    m_Folder = Data.Folder.SelectOne(GalleryID.Value,);
+                //}
+
                 return m_Folder;
             }
             private set
             {
                 m_Folder = value;
+            }
+        }
+
+        private Data.Gallery m_Gallery;
+        public Data.Gallery Gallery
+        {
+            get
+            {
+                if (m_Gallery == null && GalleryID.GetValueOrDefault(0) > 0)
+                {
+                    m_Gallery = Data.Gallery.SelectOne(GalleryID.Value);
+                }
+                else if (m_Gallery == null && Folder?.Type == Data.FolderType.Gallery)
+                {
+                    m_Gallery = Data.Gallery.SelectOne(Folder.ID);
+                }
+
+                return m_Gallery;
+            }
+            private set
+            {
+                m_Gallery = value;
             }
         }
 
@@ -219,6 +247,16 @@ namespace Sushi.Mediakiwi.API
             if (console != null)
             {
                 _console = console;
+            }
+
+            var accessor = services.GetService<IHttpContextAccessor>();
+            if (accessor != null)
+            {
+                // if we have an ApplicationUser assign it to ApplicationUser property
+                if (accessor?.HttpContext?.Items?.ContainsKey(Common.API_USER_CONTEXT) == true && accessor.HttpContext.Items[Common.API_USER_CONTEXT] is Data.IApplicationUser mkUser)
+                {
+                    ApplicationUser = mkUser;
+                }
             }
 
             UrlBuild = new UrlBuilder(this);
@@ -571,7 +609,7 @@ namespace Sushi.Mediakiwi.API
 
                     m_instance.wim.CurrentList = List;
                     m_instance.wim.CurrentSite = Site;
-                    
+                  
                     Folder = m_instance.wim.CurrentFolder;
                     ListInstance = m_instance;
                 }

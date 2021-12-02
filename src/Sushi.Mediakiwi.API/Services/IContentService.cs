@@ -6,5 +6,7 @@ namespace Sushi.Mediakiwi.API.Services
     public interface IContentService
     {
         public Task<GetListResponse> GetListResponseAsync(UrlResolver resolver);
+
+        public Task<GetExplorerResponse> GetExplorerResponseAsync(UrlResolver resolver);
     }
 }

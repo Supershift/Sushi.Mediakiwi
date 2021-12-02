@@ -36,6 +36,133 @@
             <response code="400">Some needed information is missing from the request</response>
             <response code="401">The user is not succesfully authenticated</response>
         </member>
+        <member name="M:Sushi.Mediakiwi.API.Controllers.Content.GetContent(Sushi.Mediakiwi.API.Transport.Requests.GetContentRequest)">
+            <summary>
+            Returns the CMS content belonging to the URL being viewed.
+            This can be anything from a Page, List, Gallery, Asset or a Folder Explorer
+            </summary>
+            <param name="request">The request containing the needed information</param>
+            <returns></returns>
+            <response code="200">The Content is succesfully retrieved</response>
+            <response code="400">Some needed information is missing from the request</response>
+            <response code="401">The user is not succesfully authenticated</response>
+        </member>
+        <member name="M:Sushi.Mediakiwi.API.Controllers.Content.PostContent(Sushi.Mediakiwi.API.Transport.Requests.PostContentRequest)">
+            <summary>
+            Handles the incoming Post parameters and returns the CMS content belonging to the URL being viewed.
+            This can be anything from a Page, List, Gallery, Asset or a Folder Explorer
+            </summary>
+            <param name="request">The request containing the needed information</param>
+            <returns></returns>
+            <response code="200">The Content is succesfully retrieved</response>
+            <response code="400">Some needed information is missing from the request</response>
+            <response code="401">The user is not succesfully authenticated</response>
+        </member>
+        <member name="M:Sushi.Mediakiwi.API.Controllers.Navigation.GetTopnavigation(Sushi.Mediakiwi.API.Transport.Requests.GetTopNavigationRequest)">
+            <summary>
+            Returns the Top navigation belonging to the URL being viewed.
+            </summary>
+            <param name="request">The request containing the needed information</param>
+            <returns></returns>
+            <response code="200">The Navigation is succesfully retrieved</response>
+            <response code="400">Some needed information is missing from the request</response>
+            <response code="401">The user is not succesfully authenticated</response>
+        </member>
+        <member name="M:Sushi.Mediakiwi.API.Controllers.Navigation.GetSidenavigation(Sushi.Mediakiwi.API.Transport.Requests.GetSideNavigationRequest)">
+            <summary>
+            Returns the Side navigation belonging to the URL being viewed.
+            </summary>
+            <param name="request">The request containing the needed information</param>
+            <returns></returns>
+            <response code="200">The Navigation is succesfully retrieved</response>
+            <response code="400">Some needed information is missing from the request</response>
+            <response code="401">The user is not succesfully authenticated</response>
+        </member>
+        <member name="M:Sushi.Mediakiwi.API.Controllers.Navigation.GetSites(Sushi.Mediakiwi.API.Transport.Requests.GetSitesRequest)">
+            <summary>
+            Returns a list of Sites (Channels) available for this environment.
+            </summary>
+            <param name="request">The request containing the needed information</param>
+            <returns></returns>
+            <response code="200">The Navigation is succesfully retrieved</response>
+            <response code="400">Some needed information is missing from the request</response>
+            <response code="401">The user is not succesfully authenticated</response>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.BreadCrumbItem.Text">
+            <summary>
+            The label for this BreadCrumb item
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.BreadCrumbItem.Href">
+            <summary>
+            The Url for this BreadCrumb item
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.BreadCrumbItem.IsBack">
+            <summary>
+            Is this a Back indicator
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.BrowseFolder.ID">
+            <summary>
+            The unique identifier for this folder
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.BrowseFolder.Title">
+            <summary>
+            The title for this folder
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.BrowseFolder.Description">
+            <summary>
+            The description for this folder
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.BrowseFolder.Href">
+            <summary>
+            The URL for this folder
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.BrowseFolder.IconClasses">
+            <summary>
+            Contains css classes specific for this folder
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.BrowseFolder.Items">
+            <summary>
+            All items belonging to this folder
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.BrowseItem.ID">
+            <summary>
+            The identifier for this item
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.BrowseItem.Title">
+            <summary>
+            The title for this item
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.BrowseItem.Href">
+            <summary>
+            The URL for this item
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.BrowseItem.BadgeContent">
+            <summary>
+            If this item has any kind of badge content (like a counter) it will be available here
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.BrowseItem.IconClasses">
+            <summary>
+            Contains css classes specific for this item
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.Requests.PostContentRequest.PostedField">
+            <summary>
+            The name of the field that caused this post to happen
+            </summary>
+        </member>
         <member name="M:Sushi.Mediakiwi.API.UrlBuilder.#ctor(Sushi.Mediakiwi.API.UrlResolver)">
             <summary>
             Initializes a new instance of the <see cref="T:Sushi.Mediakiwi.API.UrlBuilder"/> class.

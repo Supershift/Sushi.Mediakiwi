@@ -72,8 +72,16 @@ namespace Sushi.Mediakiwi.API.Filters
                 await resolver.ResolveUrlAsync(schemeString, hostString, pathBaseString, pathString, query).ConfigureAwait(false);
 
                 // When the resolver created a list, assign it to the Console
-                console.CurrentList = resolver.List;
-                console.CurrentListInstance = resolver.ListInstance;
+                if (resolver.List != null)
+                {
+                    console.CurrentList = resolver.List;
+                }
+
+                // When the resolver created a list instance, assign it to the Console
+                if (resolver.ListInstance != null)
+                {
+                    console.CurrentListInstance = resolver.ListInstance;
+                }
 
                 // When the resolver created a page, assign it to the Context
                 if (resolver.Page?.ID > 0) 

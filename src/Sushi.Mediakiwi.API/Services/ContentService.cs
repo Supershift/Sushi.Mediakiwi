@@ -303,26 +303,6 @@ namespace Sushi.Mediakiwi.API.Services
 
         #region Get Field
 
-        private ContentField GetField(IContentInfo element)
-        {
-            ContentField newField = new ContentField();
-            newField.ContentType = ConvertEnum(element.ContentTypeSelection);
-            newField.Expression = (int)element.Expression;
-            newField.HelpText = element.InteractiveHelp;
-            newField.IsHidden = element.IsHidden;
-            newField.IsMandatory = element.Mandatory;
-            newField.IsReadOnly = element.IsReadOnly;
-            newField.MaxLength = element.MaxValueLength;
-            newField.PropertyName = element.FieldName;
-            if (element.Property != null)
-            {
-                newField.PropertyType = element.Property.PropertyType.ToString();
-            }
-            newField.Title = element.Title;
-
-            return newField;
-        }
-
         private ContentField GetField(Framework.Api.MediakiwiField field)
         {
             var newField = new ContentField()
@@ -340,7 +320,6 @@ namespace Sushi.Mediakiwi.API.Services
                 IsHidden = field.Hidden.GetValueOrDefault(false),
                 IsMandatory = field.IsMandatory,
                 IsReadOnly = field.ReadOnly,
-                //LayerConfiguration = // TODO: add this
                 MaxLength = field.MaxLength.GetValueOrDefault(0),
                 Prefix = field.Prefix,
                 PropertyName = field.PropertyName,
@@ -410,7 +389,7 @@ namespace Sushi.Mediakiwi.API.Services
                 newButton.ConfirmationRejectLabel = GetAdditionalDataValue<string>(field.AdditionalData, nameof(newButton.ConfirmationRejectLabel));
                 newButton.ConfirmationTitle = GetAdditionalDataValue<string>(field.AdditionalData, nameof(newButton.ConfirmationTitle));
                 newButton.Target = GetAdditionalDataValue<string>(field.AdditionalData, nameof(newButton.Target));
-                
+
                 // Direct set URL
                 var setUrl = GetAdditionalDataValue<string>(field.AdditionalData, "CustomUrl");
 
@@ -642,7 +621,7 @@ namespace Sushi.Mediakiwi.API.Services
                     ContentType = ContentTypeEnum.Button,
                     Event = JSEventEnum.Click,
                     IsPrimary = true,
-                    Title = Common.GetLabelFromResource("edit", new CultureInfo(_resolver.ListInstance.wim.CurrentApplicationUser.LanguageCulture)),
+                    Title = Common.GetLabelFromResource("edit", new CultureInfo(_resolver.ApplicationUser.LanguageCulture)),
                     VueType = VueTypeEnum.FormButton,
                     ClassName = "action",
                     Section = (int)ButtonSection.Bottom,
@@ -659,7 +638,7 @@ namespace Sushi.Mediakiwi.API.Services
                     string saveRecord = _resolver.List.Data["wim_LblSave"].Value;
                     if (string.IsNullOrEmpty(saveRecord))
                     {
-                        saveRecord = Common.GetLabelFromResource("save", new CultureInfo(_resolver.ListInstance.wim.CurrentApplicationUser.LanguageCulture));
+                        saveRecord = Common.GetLabelFromResource("save", new CultureInfo(_resolver.ApplicationUser.LanguageCulture));
                     }
 
                     if (_resolver.ListInstance.wim.HideSaveButtons == false && _resolver.ListInstance.wim.CurrentList.Data["wim_CanSave"].ParseBoolean(true))
@@ -690,7 +669,7 @@ namespace Sushi.Mediakiwi.API.Services
                                 ContentType = ContentTypeEnum.Button,
                                 Event = JSEventEnum.Click,
                                 IsPrimary = true,
-                                Title = Common.GetLabelFromResource("save_and_new", new CultureInfo(_resolver.ListInstance.wim.CurrentApplicationUser.LanguageCulture)),
+                                Title = Common.GetLabelFromResource("save_and_new", new CultureInfo(_resolver.ApplicationUser.LanguageCulture)),
                                 VueType = VueTypeEnum.FormButton,
                                 ClassName = "action right",
                                 Section = (int)ButtonSection.Bottom,
@@ -722,16 +701,16 @@ namespace Sushi.Mediakiwi.API.Services
                         PropertyType = typeof(bool).FullName,
                         ContentType = ContentTypeEnum.Button,
                         Event = JSEventEnum.Click,
-                        Title = Common.GetLabelFromResource("delete", new CultureInfo(_resolver.ListInstance.wim.CurrentApplicationUser.LanguageCulture)),
+                        Title = Common.GetLabelFromResource("delete", new CultureInfo(_resolver.ApplicationUser.LanguageCulture)),
                         VueType = VueTypeEnum.FormButton,
                         ClassName = $"abbr type_confirm flaticon icon-trash-o",
                         Section = (int)section,
                         Url = "#",
                         AskConfirmation = true,
-                        ConfirmationQuestion = Common.GetLabelFromResource("delete_confirm", new CultureInfo(_resolver.ListInstance.wim.CurrentApplicationUser.LanguageCulture)),
-                        ConfirmationTitle = Common.GetLabelFromResource("delete_confirm_title", new CultureInfo(_resolver.ListInstance.wim.CurrentApplicationUser.LanguageCulture)),
-                        ConfirmationAcceptLabel = Common.GetLabelFromResource("yes", new CultureInfo(_resolver.ListInstance.wim.CurrentApplicationUser.LanguageCulture)),
-                        ConfirmationRejectLabel = Common.GetLabelFromResource("no", new CultureInfo(_resolver.ListInstance.wim.CurrentApplicationUser.LanguageCulture)),
+                        ConfirmationQuestion = Common.GetLabelFromResource("delete_confirm", new CultureInfo(_resolver.ApplicationUser.LanguageCulture)),
+                        ConfirmationTitle = Common.GetLabelFromResource("delete_confirm_title", new CultureInfo(_resolver.ApplicationUser.LanguageCulture)),
+                        ConfirmationAcceptLabel = Common.GetLabelFromResource("yes", new CultureInfo(_resolver.ApplicationUser.LanguageCulture)),
+                        ConfirmationRejectLabel = Common.GetLabelFromResource("no", new CultureInfo(_resolver.ApplicationUser.LanguageCulture)),
                     });
 
                 }
@@ -741,6 +720,113 @@ namespace Sushi.Mediakiwi.API.Services
         }
 
         #endregion Get Internal Buttons
+
+        #region Get List Explorer Response Async
+
+        private async Task<GetExplorerResponse> GetListExplorerResponseAsync(Data.Folder[] folders, bool ignoreHeader)
+        {
+            int _columns = 0;
+
+            GetExplorerResponse result = new GetExplorerResponse();
+
+            foreach (Data.Folder entry in folders)
+            {
+                if (entry.IsVisible == false && _resolver.ApplicationUser.ShowHidden == false)
+                {
+                    continue;
+                }
+
+                var all_lists = await Data.ComponentList.SelectAllAsync(entry.ID, _resolver.ApplicationUser, true).ConfigureAwait(false);
+                var allowed_lists = await Data.ComponentList.ValidateAccessRightAsync(all_lists, _resolver.ApplicationUser).ConfigureAwait(false);
+                Data.IComponentList[] selected_lists = null;
+
+                if (_resolver.ApplicationUser.ShowHidden)
+                {
+                    selected_lists = allowed_lists;
+                }
+                else
+                {
+                    selected_lists = (from x in allowed_lists where x.IsVisible select x).ToArray();
+                }
+
+                if (entry.ParentID.HasValue || selected_lists.Length > 0)
+                {
+                    _columns++;
+
+                    BrowseFolder container = new BrowseFolder()
+                    {
+                        ID = entry.ID,
+                        IconClasses = new List<string>() { "listfolder" }
+                    };
+
+                    if (!ignoreHeader && entry.Name != "/")
+                    {
+                        container.Title = entry.Name;
+                        container.Href = $"{_resolver.WimPagePath}?folder={entry.ID}";
+
+                        if (string.IsNullOrWhiteSpace(entry.Description) == false)
+                        {
+                            container.Description = entry.Description;
+                        }
+                    }
+
+                    foreach (var i in selected_lists)
+                    {
+                        ComponentDataReportEventArgs e = null;
+                        if (i.Option_HasDataReport)
+                        {
+                            var instance = i.GetInstance(_resolver.ListInstance.wim.Console);
+                            if (instance != null)
+                            {
+                                e = instance.wim.DoListDataReport();
+                            }
+                        }
+
+                        if (e == null || e.ReportCount.HasValue == false)
+                        {
+                            var url = _resolver.UrlBuild.GetListRequest(i);
+                            container.Items.Add(new BrowseItem()
+                            {
+                                Title = i.Name,
+                                Href = url,
+                                ID = i.ID
+                            });
+                        }
+                        else
+                        {
+                            var count = $"{e.ReportCount.Value}";
+                            if (e.ReportCount.Value > 99)
+                            {
+                                count = "99+";
+                            }
+
+                            var url = _resolver.UrlBuild.GetListRequest(i);
+                            container.Items.Add(new BrowseItem()
+                            {
+                                Href = $"{url}{i.Name}",
+                                Title = i.Name,
+                                BadgeContent = string.IsNullOrWhiteSpace(count) ? count : null,
+                                ID = i.ID
+                            });
+                        }
+                    }
+                    result.Items.Add(container);
+                }
+
+                var arr = await Data.Folder.SelectAllByParentAsync(entry.ID, Data.FolderType.Undefined, _resolver.ApplicationUser.ShowHidden == false).ConfigureAwait(false);
+                var items = await GetListExplorerResponseAsync(arr, false).ConfigureAwait(false);
+                if (items?.Items?.Any() == true)
+                {
+                    result.Items.AddRange(items.Items);
+                }
+            }
+
+            return result;
+        }
+
+        #endregion Get List Explorer Response Async
+
+        #region Get List Response
 
         public async Task<GetListResponse> GetListResponseAsync(UrlResolver resolver)
         {
@@ -756,7 +842,6 @@ namespace Sushi.Mediakiwi.API.Services
             // We are looking at an Item
             if (resolver.ItemID.HasValue)
             {
-                //resolver.ListInstance.wim.DoListLoad(resolver.ItemID.Value, 0);
                 result.FormMaps = await GetFormMapsAsync().ConfigureAwait(false);
             }
             // We are looking at the overview
@@ -770,7 +855,348 @@ namespace Sushi.Mediakiwi.API.Services
             result.Resources = GetResources();
             result.SettingsURL = resolver.UrlBuild.GetListPropertiesRequest();
             result.IsEditMode = resolver.ListInstance.wim.IsEditMode;
-            
+
+            return result;
+        }
+
+        #endregion Get List Response
+
+        #region Get Sort
+
+        Data.PageSortBy GetSort(int? sorderOrderMethod)
+        {
+            return sorderOrderMethod switch
+            {
+                1 => Data.PageSortBy.CustomDate,
+                2 => Data.PageSortBy.CustomDateDown,
+                3 => Data.PageSortBy.LinkText,
+                4 => Data.PageSortBy.Name,
+                _ => Data.PageSortBy.SortOrder,
+            };
+        }
+
+        #endregion Get Sort
+
+        #region Get Page Icon Classes
+
+        private List<string> GetPageIconClasses(Data.Page inPage)
+        {
+            List<string> result = new List<string>();
+
+            // Add the 'Published' icon class
+            if (inPage.IsPublished)
+            {
+                result.Add("published");
+            }
+            // Add the 'Unpublished' icon class
+            else
+            {
+                result.Add("unpublished");
+            }
+
+            // Add the 'Edit state' icon class
+            if (inPage.IsEdited)
+            {
+                result.Add("edited");
+            }
+
+            // Has a master
+            if (inPage.MasterID.HasValue)
+            {
+                if (inPage.InheritContentEdited == false && inPage.InheritContent == false)
+                {
+                    result.Add("inherited");
+                }
+                else if (inPage.InheritContentEdited == false && inPage.InheritContent)
+                {
+                    result.Add("inherited");
+                    result.Add("unpublished");
+                }
+                else if (inPage.InheritContentEdited && inPage.InheritContent == false)
+                {
+                    result.Add("inherited");
+                    result.Add("unpublished");
+                    result.Add("edited");
+                }
+            }
+            return result;
+        }
+
+        #endregion Get Page Icon Classes
+
+        #region Get PageExplorer Response Async
+
+        async Task<GetExplorerResponse> GetPageExplorerResponseAsync(bool isSearchInitiate, string filterTitle)
+        {
+            GetExplorerResponse result = new GetExplorerResponse();
+
+            #region Folder navigation
+
+            Data.Folder[] folders = null;
+
+            bool isRootLevelView = false;
+            if (isSearchInitiate || isRootLevelView)
+            {
+                isRootLevelView = true;
+                folders = await Data.Folder.SelectAllAsync(_resolver.Folder.Type, _resolver.SiteID.GetValueOrDefault(), filterTitle, false).ConfigureAwait(false);
+            }
+            else
+            {
+                folders = await Data.Folder.SelectAllByParentAsync(_resolver.Folder.ID, _resolver.Folder.Type, false).ConfigureAwait(false);
+            }
+
+            //  ACL determination
+            folders = await Data.Folder.ValidateAccessRightAsync(folders, _resolver.ApplicationUser).ConfigureAwait(false);
+
+            if (_resolver.Folder.Level == 0 && folders.Length == 0 && !isRootLevelView && !isSearchInitiate)
+            {
+                isRootLevelView = true;
+                folders = await Data.Folder.SelectAllAsync(_resolver.Folder.Type, _resolver.SiteID.GetValueOrDefault(), filterTitle, false).ConfigureAwait(false);
+                //  ACL determination
+                folders = await Data.Folder.ValidateAccessRightAsync(folders, _resolver.ApplicationUser).ConfigureAwait(false);
+            }
+
+            #endregion Folder navigation
+
+            IEnumerable<Data.Page> pages;
+            if (!isSearchInitiate)
+            {
+                pages = await Data.Page.SelectAllAsync(_resolver.Folder.ID, Data.PageFolderSortType.Folder, Data.PageReturnProperySet.All, GetSort(_resolver.Folder.ID), false).ConfigureAwait(false);
+            }
+            else
+            {
+                pages = await Data.Page.SelectAllAsync(filterTitle, false).ConfigureAwait(false);
+            }
+
+            pages = await Data.Page.ValidateAccessRightAsync(pages, _resolver.ApplicationUser).ConfigureAwait(false);
+
+            if (pages.Any() == false && (folders.Length == 0 || (folders.Length == 1 && folders[0].Name == "/")))
+            {
+                return result;
+            }
+
+
+            if (pages.Any())
+            {
+                var container = new BrowseFolder()
+                {
+                    ID = _resolver.Folder.ID,
+                    Title = _resolver.Folder.Name,
+                    Description = _resolver.Folder.Description,
+                    Href = $"{_resolver.WimPagePath}?folder={_resolver.Folder.ID}",
+                    IconClasses = new List<string>() { "pagefolder" }
+                };
+
+                foreach (var entry in pages)
+                {
+                    container.Items.Add(new BrowseItem()
+                    {
+                        Href = $"{_resolver.WimPagePath}?page={entry.ID}",
+                        Title = entry.Name,
+                        ID = entry.ID,
+                        IconClasses = GetPageIconClasses(entry)
+                    });
+                }
+                result.Items.Add(container);
+            }
+
+            var otherFolders = await GetSubFoldersAsync(folders).ConfigureAwait(false);
+            if (otherFolders?.Any() == true)
+            {
+                result.Items.AddRange(otherFolders);
+            }
+
+            return result;
+        }
+
+        #endregion Get PageExplorer Response Async
+
+        #region Get SubFolders Async
+
+
+        async Task<List<BrowseFolder>> GetSubFoldersAsync(Data.Folder[] folders)
+        {
+            List<BrowseFolder> result = new List<BrowseFolder>();
+
+            foreach (Data.Folder entry in folders)
+            {
+                if ((entry.IsVisible == false && _resolver.ApplicationUser.ShowHidden == false) || (entry.Name == "/"))
+                {
+                    continue;
+                }
+
+                IEnumerable<Data.Page> pages = await Data.Page.SelectAllAsync(entry.ID, Data.PageFolderSortType.Folder, Data.PageReturnProperySet.All, GetSort(entry.SortOrderMethod), false).ConfigureAwait(false);
+                pages = await Data.Page.ValidateAccessRightAsync(pages, _resolver.ApplicationUser).ConfigureAwait(false);
+
+                BrowseFolder container = new BrowseFolder()
+                {
+                    Href = $"{_resolver.WimPagePath}?folder={entry.ID}",
+                    Title = entry.Name,
+                    ID = entry.ID,
+                    Description = entry.Description,
+                    IconClasses = new List<string>() { "pagefolder" }
+                };
+
+                if (pages.Any())
+                {
+                    foreach (var i in pages)
+                    {
+                        container.Items.Add(new BrowseItem()
+                        {
+                            Href = $"{_resolver.WimPagePath}?page={i.ID}",
+                            Title = i.Name,
+                            IconClasses = GetPageIconClasses(i),
+                            ID = i.ID,
+                        });
+                    }
+                }
+
+                result.Add(container);
+
+                var arr = await Data.Folder.SelectAllByParentAsync(entry.ID).ConfigureAwait(false);
+                var results2 = await GetSubFoldersAsync(arr).ConfigureAwait(false);
+
+                if (results2?.Any() == true) 
+                {
+                    result.AddRange(results2);
+                }
+            }
+
+            return result;
+        }
+
+        #endregion Get SubFolders Async
+
+        #region Get Gallery List Async
+
+        async Task<GetExplorerResponse> GetGalleryExplorerAsync(bool isSearchInitiate, string filterTitle)
+        {
+            List<BrowseFolder> folders = new List<BrowseFolder>();
+
+            var isOnlyImages = _resolver.Query.ContainsKey("isimage") && _resolver.Query["isimage"].Equals("1");
+            var role = await _resolver.ApplicationUser.SelectRoleAsync().ConfigureAwait(false);
+            int baseGalleryID = role.GalleryRoot.GetValueOrDefault();
+
+            Data.Gallery[] galleries;
+            Data.Gallery rootGallery = await Data.Gallery.SelectOneAsync(Utils.ConvertToGuid(_resolver.Query.GetValueOrDefault("root"))).ConfigureAwait(false);
+
+            if (string.IsNullOrWhiteSpace(filterTitle))
+            {
+                if (_resolver.Gallery.ParentID.GetValueOrDefault(0) > 0 && _resolver.Gallery.ID != rootGallery.ID && _resolver.Gallery.ID != baseGalleryID)
+                {
+                    BrowseFolder container = new BrowseFolder()
+                    {
+                        ID = _resolver.Gallery.ParentID.Value,
+                        Title = "...",
+                        IconClasses = new List<string>()
+                        {
+                            "back",
+                            "gallery"
+                        },
+                        Href = $"{_resolver.WimPagePath}?gallery={_resolver.Gallery.ParentID.Value}"
+                    };
+
+                    folders.Add(container);
+                }
+
+                galleries = await Data.Gallery.SelectAllByParentAsync(_resolver.Gallery.ID).ConfigureAwait(false);
+            }
+            else
+            {
+                galleries = await Data.Gallery.SelectAllAsync(filterTitle).ConfigureAwait(false);
+            }
+
+            bool isRootLevelView = false;
+            //if (_resolver.GalleryID == .roo..Level == 0 && galleries.Length == 0 && !isSearchInitiate)
+            //{
+            //    isRootLevelView = true;
+            //}
+
+            foreach (Data.Gallery entry in galleries)
+            {
+                BrowseFolder newGalleryItem = new BrowseFolder()
+                {
+                    ID = entry.ID,
+                    Title = isRootLevelView ? entry.CompleteCleanPath() : entry.Name,
+                    IconClasses = new List<string>() { "gallery" },
+                    Href = $"{_resolver.WimPagePath}?gallery={entry.ID}"
+                };
+
+                folders.Add(newGalleryItem);
+            }
+
+            List<Data.Asset> assets;
+
+            if (string.IsNullOrEmpty(filterTitle))
+            {
+                assets = await Data.Asset.SelectAllAsync(_resolver.Gallery.ID, onlyReturnImages: isOnlyImages).ConfigureAwait(false);
+            }
+            else
+            {
+                assets = await Data.Asset.SearchAllAsync(filterTitle, onlyReturnImages: isOnlyImages).ConfigureAwait(false);
+            }
+
+            BrowseFolder rootFolder = new BrowseFolder();
+            if (_resolver.GalleryID.GetValueOrDefault(0) > 0)
+            {
+                rootFolder.ID = _resolver.Gallery.ID;
+                rootFolder.Title = _resolver.Gallery.Name;
+                rootFolder.Href = $"{_resolver.WimPagePath}?gallery={_resolver.Gallery.ID}";
+                rootFolder.IconClasses.Add("gallery");
+            }
+
+            foreach (Data.Asset entry in assets)
+            {
+                BrowseItem item = new BrowseItem()
+                {
+                    ID = entry.ID,
+                    Title = entry.Title,
+                    Href = $"{_resolver.WimPagePath}?asset={entry.ID}"
+                };
+
+                if (entry.IsImage)
+                {
+                    item.IconClasses.Add("image");
+                }
+                else
+                {
+                    item.IconClasses.Add("document");
+                }
+
+                rootFolder.Items.Add(item);
+            }
+
+            folders.Add(rootFolder);
+
+            return new GetExplorerResponse()
+            {
+                Items = folders
+            };
+        }
+
+        #endregion Get Gallery List Async
+
+        public async Task<GetExplorerResponse> GetExplorerResponseAsync(UrlResolver resolver)
+        {
+            _resolver = resolver;
+            GetExplorerResponse result = new GetExplorerResponse();
+
+            // We are browsing lists
+            if (resolver.Folder.Type == Data.FolderType.List || resolver.Folder.Type == Data.FolderType.Administration)
+            {
+                Data.Folder[] arr = new Data.Folder[] { resolver.Folder };
+
+                result = await GetListExplorerResponseAsync(arr, false);
+            }
+            else if (resolver.Folder.Type == Data.FolderType.Page)
+            {
+                result = await GetPageExplorerResponseAsync(false, string.Empty);
+            }
+            else if (resolver.Folder.Type == Data.FolderType.Gallery)
+            {
+                result = await GetGalleryExplorerAsync(false, string.Empty);
+            }
+
             return result;
         }
     }

@@ -2068,11 +2068,26 @@ namespace Sushi.Mediakiwi.Framework
         /// <value>The current environment.</value>
         public IEnvironment CurrentEnvironment { get; set; }
 
+        private IApplicationRole m_CurrentApplicationUserRole;
         /// <summary>
         /// Gets or sets the current user role.
         /// </summary>
         /// <value>The current user role.</value>
-        public IApplicationRole CurrentApplicationUserRole { get; set; }
+        public IApplicationRole CurrentApplicationUserRole
+        {
+            get
+            {
+                if (m_CurrentApplicationUserRole == null && CurrentApplicationUser?.ID > 0)
+                {
+                    m_CurrentApplicationUserRole = CurrentApplicationUser.SelectRole();
+                }
+                return m_CurrentApplicationUserRole;
+            }
+            set
+            {
+                m_CurrentApplicationUserRole = value;
+            }
+        }
 
         /// <summary>
         /// Gets or sets the current visitor.

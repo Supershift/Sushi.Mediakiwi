@@ -6,6 +6,6 @@ namespace Sushi.Mediakiwi.API.Transport.Responses
     public class GetExplorerResponse
     {
         [JsonPropertyName("items")]
-        public ICollection<BrowseFolder> Items { get; set; } = new List<BrowseFolder>();
+        public List<BrowseFolder> Items { get; set; } = new List<BrowseFolder>();
     }
 }

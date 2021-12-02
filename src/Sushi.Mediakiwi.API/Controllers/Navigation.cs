@@ -28,6 +28,14 @@ namespace Sushi.Mediakiwi.API.Controllers
 
         #region Top Navigation
 
+        /// <summary>
+        /// Returns the Top navigation belonging to the URL being viewed.
+        /// </summary>
+        /// <param name="request">The request containing the needed information</param>
+        /// <returns></returns>
+        /// <response code="200">The Navigation is succesfully retrieved</response>
+        /// <response code="400">Some needed information is missing from the request</response>
+        /// <response code="401">The user is not succesfully authenticated</response>
         [Produces("application/json")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -179,7 +187,15 @@ namespace Sushi.Mediakiwi.API.Controllers
         #endregion Top Navigation
 
         #region Side Navigation
-        
+
+        /// <summary>
+        /// Returns the Side navigation belonging to the URL being viewed.
+        /// </summary>
+        /// <param name="request">The request containing the needed information</param>
+        /// <returns></returns>
+        /// <response code="200">The Navigation is succesfully retrieved</response>
+        /// <response code="400">Some needed information is missing from the request</response>
+        /// <response code="401">The user is not succesfully authenticated</response>
         [Produces("application/json")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -857,6 +873,14 @@ namespace Sushi.Mediakiwi.API.Controllers
 
         #region Get Sites
 
+        /// <summary>
+        /// Returns a list of Sites (Channels) available for this environment.
+        /// </summary>
+        /// <param name="request">The request containing the needed information</param>
+        /// <returns></returns>
+        /// <response code="200">The Navigation is succesfully retrieved</response>
+        /// <response code="400">Some needed information is missing from the request</response>
+        /// <response code="401">The user is not succesfully authenticated</response>
         [Produces("application/json")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
