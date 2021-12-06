@@ -444,6 +444,7 @@ namespace Sushi.Mediakiwi.API.Services
                 var openInPopupLayer = GetAdditionalDataValue<bool>(field.AdditionalData, "OpenInPopupLayer");
                 if (openInPopupLayer)
                 {
+                    newLayer = new LayerConfiguration();
                     var popupHeight = GetAdditionalDataValue<string>(field.AdditionalData, "PopupLayerHeight");
                     var popupWidth = GetAdditionalDataValue<string>(field.AdditionalData, "PopupLayerWidth");
                     LayerSize popupSize = GetAdditionalDataValue<LayerSize>(field.AdditionalData, "PopupLayerSize");
