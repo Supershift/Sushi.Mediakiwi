@@ -101,8 +101,8 @@ namespace Sushi.Mediakiwi.API.Extensions
                     options.AddPolicy(name: Common.API_CORS_POLICY,
                                       builder =>
                                       {
+                                          builder.SetIsOriginAllowed(origin => new Uri(origin).Host == "localhost");
                                           builder.AllowCredentials();
-                                          builder.WithOrigins("http://localhost", "https://localhost", "http://localhost:8080");
                                           builder.AllowAnyMethod();
                                       });
                 }
