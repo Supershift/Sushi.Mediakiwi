@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>e7296bc9-9005-40a8-b984-5610e412301c</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Sushi.Mediakiwi.API\Sushi.Mediakiwi.API.csproj" />
+    <ProjectReference Include="..\Sushi.Mediakiwi\Sushi.Mediakiwi.csproj" />
+  </ItemGroup>
+
+</Project>
