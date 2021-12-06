@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc.Filters;
 using Sushi.Mediakiwi.API.Extensions;
 using Sushi.Mediakiwi.API.Transport.Requests;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Sushi.Mediakiwi.API.Filters
@@ -19,10 +20,14 @@ namespace Sushi.Mediakiwi.API.Filters
         {
             var contextCopy = context.HttpContext.Clone();
             contextCopy.Items = context.HttpContext.Items;
-            
+
+            Framework.Api.MediakiwiPostRequest postRequest = new Framework.Api.MediakiwiPostRequest();
+
             // If we are in POST, we should receive the field that caused the postback
+            // as well as all the formmap data
             if (context.HttpContext.Request.Method == Microsoft.AspNetCore.Http.HttpMethods.Post)
             {
+                
                 if (context.ActionArguments?.Count > 0)
                 {
                     foreach (var item in context.ActionArguments)
@@ -32,6 +37,12 @@ namespace Sushi.Mediakiwi.API.Filters
                             if (string.IsNullOrWhiteSpace(postContent.PostedField) == false)
                             {
                                 contextCopy.Request.Headers.Add("postedField", postContent.PostedField);
+                                postRequest = postContent.FormMaps.GetPostRequest();
+
+                                if (postRequest?.FormFields?.ContainsKey("autopostback") == false)
+                                {
+                                    postRequest.FormFields.Add("autopostback", postContent.PostedField);
+                                }
                             }
                         }
                     }
@@ -64,6 +75,12 @@ namespace Sushi.Mediakiwi.API.Filters
 
                 // try to create a Console with the 'fake' path
                 console = new Beta.GeneratedCms.Console(contextCopy, environment);
+
+                // Check if we have post Values assigned 
+                if (postRequest?.FormFields?.Count > 0)
+                {
+                    console.JsonForm = postRequest.FormFields;
+                }
 
                 // Create an URL resolver
                 UrlResolver resolver = new UrlResolver(context.HttpContext.RequestServices, console);

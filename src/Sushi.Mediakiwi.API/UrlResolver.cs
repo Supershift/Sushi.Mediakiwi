@@ -589,14 +589,16 @@ namespace Sushi.Mediakiwi.API
                         {
                             var isEditPostBack = false;
                             var isSavePostBack = false;
+                            var isDeletePostBack = false;
 
                             if (_console.Request.Method == HttpMethods.Post && _console.Request.Headers.ContainsKey("postedField"))
                             {
                                 isEditPostBack = _console.Request.Headers["postedField"] == "edit";
                                 isSavePostBack = _console.Request.Headers["postedField"] == "save";
+                                isDeletePostBack = _console.Request.Headers["postedField"] == "delete";
                             }
 
-                            //  Is the form state in editmode?
+                            //  Is the form in editmode?
                             m_instance.wim.IsEditMode = isEditPostBack
                                 || isSavePostBack
                                 || m_instance.wim.OpenInEditMode
@@ -604,6 +606,13 @@ namespace Sushi.Mediakiwi.API
                                 || AssetID.GetValueOrDefault(-1) == 0
                                 || (_console.JsonReferrer != null && _console.JsonReferrer.Equals("edit"))
                                 || _console.JsonForm != null;
+
+
+                            // Is the form in Save Mode
+                            m_instance.wim.IsSaveMode = isSavePostBack;
+
+                            // Is the form in delete mode
+                            m_instance.wim.IsDeleteMode = isDeletePostBack;
                         }
                     }
 

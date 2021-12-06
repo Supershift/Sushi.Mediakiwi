@@ -17,6 +17,27 @@ namespace Sushi.Mediakiwi.API.Extensions
 {
     public static class Extensions
     {
+
+        public static Framework.Api.MediakiwiPostRequest GetPostRequest(this ICollection<Transport.FormMap> maps)
+        {
+            Framework.Api.MediakiwiPostRequest result = new Framework.Api.MediakiwiPostRequest();
+            Dictionary<string, object> postForm = new Dictionary<string, object>();
+
+            if (maps?.Count > 0)
+            {
+                foreach (var map in maps)
+                {
+                    foreach (var element in map.Fields)
+                    {
+                        postForm.Add(element.PropertyName, element.Value);
+                    }
+                }
+            }
+
+            result.FormFields = postForm;
+            return result;
+        }
+
         public static HttpContext Clone(this HttpContext httpContext)
         {
             var existingRequestFeature = httpContext.Features.Get<IHttpRequestFeature>();

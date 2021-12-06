@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace Sushi.Mediakiwi.API.Transport.Requests
 {
@@ -9,5 +10,8 @@ namespace Sushi.Mediakiwi.API.Transport.Requests
         /// </summary>
         [JsonPropertyName("postedField")]
         public string PostedField { get; set; }
+
+        [JsonPropertyName("forms")]
+        public ICollection<FormMap> FormMaps { get; set; } = new List<FormMap>();
     }
 }

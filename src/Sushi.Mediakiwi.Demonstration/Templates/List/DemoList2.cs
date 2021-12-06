@@ -8,6 +8,16 @@ namespace Sushi.Mediakiwi.Demonstration.Templates.List
 {
     public class DemoObject2
     {
+        public async Task DummySaveAsync()
+        {
+            await Task.Delay(5000);
+        }
+
+        public async Task DummyDelete()
+        {
+            await Task.Delay(5000);
+        }
+
         public int ID { get; set; }
         public string Title { get; set; }
 
@@ -40,6 +50,7 @@ namespace Sushi.Mediakiwi.Demonstration.Templates.List
     {
         public DemoList2()
         {
+            ListAction += DemoList2_ListAction;
             ListSearch += DemoList2_ListSearch;
             ListInit += DemoList2_ListInit;
             ListLoad += DemoList2_ListLoad;
@@ -47,12 +58,25 @@ namespace Sushi.Mediakiwi.Demonstration.Templates.List
             ListDelete += DemoList2_ListDelete;
         }
 
+        private async Task DemoList2_ListAction(ComponentActionEventArgs arg)
+        {
+            Maps.DemoList2Map map = FormMaps.List.First(x => x.GetType() == typeof(Maps.DemoList2Map)) as Maps.DemoList2Map;
+            if (map.Button_Additional)
+            {
+                await Task.Delay(2000);
+            }
+         }
+
         private async Task DemoList2_ListDelete(ComponentListEventArgs arg)
         {
+            await Implement.DummyDelete().ConfigureAwait(false);
         }
 
         private async Task DemoList2_ListSave(ComponentListEventArgs arg)
         {
+            Utils.ReflectProperty(this, Implement);
+
+            await Implement.DummySaveAsync().ConfigureAwait(false);
         }
 
         public DemoObject2 Implement { get; set; }
