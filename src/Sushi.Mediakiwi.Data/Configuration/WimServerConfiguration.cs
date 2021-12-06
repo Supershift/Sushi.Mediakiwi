@@ -71,7 +71,8 @@ namespace Sushi.Mediakiwi.Data.Configuration
         public string Azure_Cdn_Uri { get; set; }
 
         public string Encryption_key { get; set; }
-
+        public string Encryption_Salt { get; set; }
+        
         /// <summary>
         /// Is the environment load balanced? if so caching across nodes needs to be controlled.
         /// </summary>

@@ -309,7 +309,6 @@
     <Compile Include="UI\ListItemCollection.cs" />
     <Compile Include="UI\LiteralControl.cs" />
     <Compile Include="UI\Monitor.cs" />
-    <Compile Include="Utilities\EncryptionByRijndael.cs" />
     <Compile Include="Utilities\PasswordGenerator.cs" />
     <Compile Include="Utilities\Splitlist.cs" />
   </ItemGroup>

@@ -11,7 +11,7 @@
             The default Expiration time is 2 hours
             </summary>
             <param name="request">The request containing the needed credentials</param>
-            <returns></returns>
+            <returns></returns>6
             <response code="200">The user is succesfully authenticated</response>
             <response code="400">Some needed information is missing from the request</response>
             <response code="401">The user is not succesfully authenticated</response>
@@ -158,9 +158,585 @@
             Contains css classes specific for this item
             </summary>
         </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.ButtonField.AskConfirmation">
+            <summary>
+            Do we need to ask confirmation before triggering this button ?
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.ButtonField.ConfirmationQuestion">
+            <summary>
+            The question to ask for confirmation
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.ButtonField.ConfirmationTitle">
+            <summary>
+            The title for the confirmation box
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.ButtonField.ConfirmationRejectLabel">
+            <summary>
+            The Label for rejecting (NO)
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.ButtonField.ConfirmationAcceptLabel">
+            <summary>
+            The Label for accepting (YES)
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.ButtonField.Target">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.ButtonField.Url">
+            <summary>
+            The URL to which this button is linked. 
+            In case of an action button this is probably '#' or empty
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.ButtonField.TriggerSaveEvent">
+            <summary>
+            Does this button trigger a Save event ?
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.ButtonField.IsPrimary">
+            <summary>
+            Is this button a primary button ?
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.Component.Title">
+            <summary>
+            The title of this component
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.Component.CanMove">
+            <summary>
+            Can this component be moved 
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.Component.CanDeactivate">
+            <summary>
+            Can this component be deactivated
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.Component.IsHeader">
+            <summary>
+            Does this component belong to the header
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.Component.IsFooter">
+            <summary>
+            Does this component belong to the footer
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.Component.SortOrder">
+            <summary>
+            What is the sortorder (index) of this component
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.Component.Content">
+            <summary>
+            The actual content for this component
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.Component.TemplateID">
+            <summary>
+            What is the Component Template ID for this component
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.Component.VersionID">
+            <summary>
+            What is the Component Version ID for this component
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.ContentField.ContentType">
+            <summary>
+            What is the type of content this Field represents
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.ContentField.PropertyName">
+            <summary>
+            The name of the property connected to this Field
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.ContentField.PropertyType">
+            <summary>
+            The C# type of the property connected to this Field
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.ContentField.Title">
+            <summary>
+            The title (label) for this Field
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.ContentField.VueType">
+            <summary>
+            What is the type that should be used on the JS clientside 
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.ContentField.Expression">
+            <summary>
+            The Expression of this Field, is it Full width, alternating, left or right
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.ContentField.Value">
+            <summary>
+            The value of this Field
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.ContentField.Options">
+            <summary>
+            The options available for this field (for dropdowns and radios and such)
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.ContentField.ClassName">
+            <summary>
+            The CSS classname for this field
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.ContentField.Event">
+            <summary>
+            The javascript event attached to this field
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.ContentField.Section">
+            <summary>
+            Does this belong to the Top (0) or Bottom (1)
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.ContentField.IsHidden">
+            <summary>
+            Is this a hidden field ?
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.ContentField.Groupname">
+            <summary>
+            What is the groupName for this field (applicable on radios)
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.ContentField.Suffix">
+            <summary>
+            The value suffix for this field
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.ContentField.Prefix">
+            <summary>
+            The value prefix for this field
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.ContentField.FormSection">
+            <summary>
+            To which formmap does this field belong
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.ContentField.CanToggleSection">
+            <summary>
+            Can this field toggle a section
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.ContentField.CanDeleteSection">
+            <summary>
+            Can this field delete a section
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.ContentField.ToggleDefaultClosed">
+            <summary>
+            Can this field toggle the default closed 
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.ContentField.IsReadOnly">
+            <summary>
+            Is this field readonly
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.ContentField.HelpText">
+            <summary>
+            The interactive help for this field
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.ContentField.LayerConfiguration">
+            <summary>
+            The layer configuration for this field (applicable on buttons)
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.ContentField.IsMandatory">
+            <summary>
+            Is this field mandatory ?
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.ContentField.MaxLength">
+            <summary>
+            The maximum value length for this field
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.ContentField.IsAutoPostback">
+            <summary>
+            Does this field trigger a postback
+            </summary>
+        </member>
+        <member name="F:Sushi.Mediakiwi.API.Transport.ContentResponseTypeEnum.Page">
+            <summary>
+            The response type is a Page
+            </summary>
+        </member>
+        <member name="F:Sushi.Mediakiwi.API.Transport.ContentResponseTypeEnum.List">
+            <summary>
+            The response type is a List
+            </summary>
+        </member>
+        <member name="F:Sushi.Mediakiwi.API.Transport.ContentResponseTypeEnum.Folder">
+            <summary>
+            The response type is a Folder (explorer)
+            </summary>
+        </member>
+        <member name="F:Sushi.Mediakiwi.API.Transport.ContentResponseTypeEnum.Gallery">
+            <summary>
+            The response type is a Gallery (explorer)
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.FormMap.ClassName">
+            <summary>
+            The C# classname for this formmap
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.FormMap.Fields">
+            <summary>
+            The fields within this formmap
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.FormMap.Buttons">
+            <summary>
+            The buttons within this formmap
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.FormMap.Title">
+            <summary>
+            The title for this formmap
+            </summary>
+        </member>
+        <member name="F:Sushi.Mediakiwi.API.Transport.JSEventEnum.None">
+            <summary>
+            No JS event
+            </summary>
+        </member>
+        <member name="F:Sushi.Mediakiwi.API.Transport.JSEventEnum.Change">
+            <summary>
+            Fire OnChange
+            </summary>
+        </member>
+        <member name="F:Sushi.Mediakiwi.API.Transport.JSEventEnum.Click">
+            <summary>
+            Fire OnClick
+            </summary>
+        </member>
+        <member name="F:Sushi.Mediakiwi.API.Transport.JSEventEnum.Blur">
+            <summary>
+            Fire OnBlur
+            </summary>
+        </member>
+        <member name="F:Sushi.Mediakiwi.API.Transport.JSEventEnum.KeyUp">
+            <summary>
+            Fire OnKeyUp
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.LayerConfiguration.Width">
+            <summary>
+            The height of the popup
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.LayerConfiguration.Height">
+            <summary>
+            The width of the popup
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.LayerConfiguration.WidthUnitType">
+            <summary>
+            Is the supplied width in Pixels or Percentage ?
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.LayerConfiguration.HeightUnitType">
+            <summary>
+            Is the supplied height in Pixels or Percentage ?
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.LayerConfiguration.Title">
+            <summary>
+            The title of this popup
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.LayerConfiguration.HasScrollbar">
+            <summary>
+            Does this popup has a scrollbar ?
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.ListColumn.Title">
+            <summary>
+            The title of this column
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.ListColumn.Width">
+            <summary>
+            The width of this column (in Pixels)
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.ListColumn.Align">
+            <summary>
+            The alignment for the column (0 = Default, 1 = Left, 2 = Center, 3 = Right)
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.ListColumn.IsHidden">
+            <summary>
+            Is this a hidden column ?
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.ListColumn.Prefix">
+            <summary>
+            The column value Prefix
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.ListColumn.Suffix">
+            <summary>
+            The column value Suffix
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.ListColumn.helpText">
+            <summary>
+            The helptext for this column
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.ListColumn.IsSum">
+            <summary>
+            Does this column represent a Sum ?
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.ListColumn.IsAverage">
+            <summary>
+            Does this column represent an Average ?
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.ListGrid.Title">
+            <summary>
+            The title for this grid
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.ListGrid.LayerConfiguration">
+            <summary>
+            The layer configuration for this grid (if any)
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.ListGrid.Columns">
+            <summary>
+            All the Columns within this grid
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.ListGrid.Rows">
+            <summary>
+            All the Rows within this grid
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.ListGrid.Pagination">
+            <summary>
+            The pagination, keeping current page and total results
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.ListItemCollectionOption.Text">
+            <summary>
+            The text (label) for this option
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.ListItemCollectionOption.Value">
+            <summary>
+            The value for this option
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.ListItemCollectionOption.IsSelected">
+            <summary>
+            Is this option selected ?
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.ListItemCollectionOption.IsEnabled">
+            <summary>
+            Is this option enabled ?
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.ListPagination.ItemsPerPage">
+            <summary>
+            How many items per page are shown
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.ListPagination.CurrentPage">
+            <summary>
+            In which pageset are we currently
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.ListPagination.TotalItems">
+            <summary>
+            The total amount of items available
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.ListRow.Href">
+            <summary>
+            The URL for this List Row
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.ListRow.ID">
+            <summary>
+            The ID for this List Row
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.ListRow.Title">
+            <summary>
+            The Title for this List Row
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.ListRow.Items">
+            <summary>
+            The items within this List Row
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.ListRowItem.Value">
+            <summary>
+            The value for this Row Item 
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.ListRowItem.VueType">
+            <summary>
+            What is the type that should be used on the JS clientside  
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.ListRowItem.CanWrap">
+            <summary>
+            Can this item wrap ?
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.NavigationItem.Text">
+            <summary>
+            The text (label) for this navigation item
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.NavigationItem.Href">
+            <summary>
+            The URL for this navigation item
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.NavigationItem.IconClass">
+            <summary>
+            The CSS class for this navigation item
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.NavigationItem.IsHighlighted">
+            <summary>
+            Is this navigation item highlighted
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.NavigationItem.IsBack">
+            <summary>
+            Is this navigation item a back button
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.NavigationItem.BadgeContent">
+            <summary>
+            If this item has any kind of badge content (like a counter) it will be available here
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.NavigationItem.Items">
+            <summary>
+            All child navigation items for this navigation item
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.NavigationItem.ItemID">
+            <summary>
+            The Item ID for this navigation item
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.Notification.Message">
+            <summary>
+            The notification message
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.Notification.IsError">
+            <summary>
+            Is this notification an error ?
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.Notification.PropertyNames">
+            <summary>
+            The faulty property names 
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.PageSlot.Title">
+            <summary>
+            The title for this page slot
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.PageSlot.SortOrder">
+            <summary>
+            The sortorder (index) for this page slot
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.PageSlot.Components">
+            <summary>
+            All components belonging to this page slot
+            </summary>
+        </member>
         <member name="P:Sushi.Mediakiwi.API.Transport.Requests.PostContentRequest.PostedField">
             <summary>
             The name of the field that caused this post to happen
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.ResourceItem.Type">
+            <summary>
+            The type of resource (JS = 1, CSS = 2, HTML = 3)
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.ResourceItem.Position">
+            <summary>
+            Where should this resource be added (HEADER = 1, BODY_NESTED = 2, BODY_BELOW = 3)
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.ResourceItem.IsSync">
+            <summary>
+            Should this resource be loaded Synchronous
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.ResourceItem.Path">
+            <summary>
+            The path to the resource
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.ResourceItem.SourceCode">
+            <summary>
+            The Source code for this resource
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.SiteItem.ID">
+            <summary>
+            The site (channel) Identifier
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.SiteItem.Title">
+            <summary>
+            The title of this site
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.SiteItem.Culture">
+            <summary>
+            The culture of this site
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.SiteItem.WeekStart">
+            <summary>
+            The weekstart of this site
+            </summary>
+        </member>
+        <member name="F:Sushi.Mediakiwi.API.Transport.UnitTypeEnum.Pixels">
+            <summary>
+            The represented number is in Pixels
+            </summary>
+        </member>
+        <member name="F:Sushi.Mediakiwi.API.Transport.UnitTypeEnum.Percentage">
+            <summary>
+            The represented number is in Percentage
             </summary>
         </member>
         <member name="M:Sushi.Mediakiwi.API.UrlBuilder.#ctor(Sushi.Mediakiwi.API.UrlResolver)">

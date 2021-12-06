@@ -1,19 +1,15 @@
-﻿using Microsoft.OpenApi.Models;
-using Swashbuckle.AspNetCore.SwaggerGen;
+﻿using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using System;
 
 namespace Sushi.Mediakiwi.API.Filters
 {
-    public class SwaggerSchemaFilter : ISchemaFilter
+    public class SwaggerSchemaFilter : IActionModelConvention
     {
-        public void Apply(OpenApiSchema schema, SchemaFilterContext context)
+        public void Apply(ActionModel action)
         {
-            if (schema?.Properties?.Count > 0 // Do we have any properties
-                && context.Type.FullName.Contains(Common.API_ASSEMBLY_NAME, StringComparison.InvariantCultureIgnoreCase) == false // not in the Sushi.Mediakiwi.API namespace
-                && context.Type.FullName.Contains("Sushi.Mediakiwi", StringComparison.InvariantCultureIgnoreCase)) // in the Sushi.Mediakiwi* namespace
+            if (action.Controller.ControllerType.FullName.Contains(Common.API_ASSEMBLY_NAME, StringComparison.InvariantCultureIgnoreCase) == false)
             {
-              //  schema.Properties.Clear();
-              //  context.SchemaRepository.Schemas.Clear();
+                action.ApiExplorer.IsVisible = false;
             }
         }
     }

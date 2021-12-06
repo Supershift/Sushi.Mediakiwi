@@ -343,15 +343,6 @@ namespace Sushi.Mediakiwi
         }
 
         /// <summary>
-        /// Gets the encryption key.
-        /// </summary>
-        /// <value>The encryption key.</value>
-        internal static string EncryptionKey
-        {
-            get { return "wimserver"; }
-        }
-
-        /// <summary>
         /// Gets the folder root.
         /// </summary>
         /// <value>The folder root.</value>
@@ -378,7 +369,7 @@ namespace Sushi.Mediakiwi
             }
             else 
             {
-                returnValue = EncryptionKey;
+                returnValue = WimServerConfiguration.Instance.Encryption_key;
             }
 
             return returnValue;

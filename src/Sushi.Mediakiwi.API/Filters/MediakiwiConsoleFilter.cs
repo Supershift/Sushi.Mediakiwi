@@ -19,7 +19,7 @@ namespace Sushi.Mediakiwi.API.Filters
         {
             var contextCopy = context.HttpContext.Clone();
             contextCopy.Items = context.HttpContext.Items;
-
+            
             // If we are in POST, we should receive the field that caused the postback
             if (context.HttpContext.Request.Method == Microsoft.AspNetCore.Http.HttpMethods.Post)
             {

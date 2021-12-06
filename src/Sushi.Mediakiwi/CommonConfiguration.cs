@@ -40,15 +40,39 @@ namespace Sushi.Mediakiwi
                 return Data.Utility.ConvertToInt(WimServerConfiguration.Instance?.Authentication?.Timeout, 15);
             }
         }
+
         public static string AUTHENTICATION_COOKIE
         {
             get
             {
                 if (string.IsNullOrWhiteSpace(WimServerConfiguration.Instance?.Authentication?.Cookie))
+                {
                     return "mediakiwi";
+                }
                 return WimServerConfiguration.Instance.Authentication.Cookie;
             }
         }
+
+        public static string ENCRYPTION_KEY
+        {
+            get
+            {
+                if (string.IsNullOrWhiteSpace(WimServerConfiguration.Instance?.Encryption_key))
+                    return "52f90af3-fc75-4ec5-aaba-d1ffbb4d021c";
+                return WimServerConfiguration.Instance.Encryption_key;
+            }
+        }
+
+        public static string ENCRYPTION_SALT
+        {
+            get
+            {
+                if (string.IsNullOrWhiteSpace(WimServerConfiguration.Instance?.Encryption_Salt))
+                    return "06e32698-e6c3-461a-9efc-9429c7e3d94e";
+                return WimServerConfiguration.Instance.Encryption_Salt;
+            }
+        }
+
         public static string LOGIN_BACKGROUND
         {
             get

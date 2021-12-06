@@ -10,6 +10,7 @@ using System.Linq;
 using System.Net.Mail;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace Sushi.Mediakiwi.Framework
 {
@@ -4331,6 +4332,11 @@ namespace Sushi.Mediakiwi.Framework
         public void SaveVisit()
         {
             Console.SaveVisit();
+        }
+
+        public async Task SaveVisitAsync()
+        {
+           await Console.SaveVisitAsync();
         }
 
         /// <summary>

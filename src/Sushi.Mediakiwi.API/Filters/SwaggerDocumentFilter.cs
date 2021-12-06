@@ -15,7 +15,6 @@ namespace Sushi.Mediakiwi.API.Filters
 
             foreach (var item in correctedPaths.Where(x => x.Key.Contains("mkapi/", StringComparison.InvariantCulture) == false))
             {
-                
                 swaggerDoc.Paths.Remove(item.Key);
             }
         }

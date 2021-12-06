@@ -29,7 +29,7 @@ namespace Sushi.Mediakiwi.API.Controllers
         /// The default Expiration time is 2 hours
         /// </summary>
         /// <param name="request">The request containing the needed credentials</param>
-        /// <returns></returns>
+        /// <returns></returns>6
         /// <response code="200">The user is succesfully authenticated</response>
         /// <response code="400">Some needed information is missing from the request</response>
         /// <response code="401">The user is not succesfully authenticated</response>

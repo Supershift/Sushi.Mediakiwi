@@ -292,7 +292,7 @@ public static class ApplicationUserExtention
         {
             using (var auth = new AuthenticationLogic())
             {
-                auth.Password = Sushi.Mediakiwi.Common.EncryptionKey;
+                auth.Password = Sushi.Mediakiwi.CommonConfiguration.ENCRYPTION_KEY;
                 if (auth.Encrypt(password) == user.Password)
                     return true;
             }
@@ -314,7 +314,7 @@ public static class ApplicationUserExtention
         {
             using (var auth = new AuthenticationLogic())
             {
-                auth.Password = Sushi.Mediakiwi.Common.EncryptionKey;
+                auth.Password = Sushi.Mediakiwi.CommonConfiguration.ENCRYPTION_KEY;
 
                 if (auth.Encrypt(password) == inUser.Password)
                 {

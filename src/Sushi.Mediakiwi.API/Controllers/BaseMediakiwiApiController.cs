@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Sushi.Mediakiwi.API.Filters;
-using System;
 
 namespace Sushi.Mediakiwi.API.Controllers
 {

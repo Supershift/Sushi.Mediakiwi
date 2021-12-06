@@ -20,6 +20,7 @@ namespace Sushi.Mediakiwi.API
         public static readonly string API_HTTPCONTEXT_URLRESOLVER = "MKUrlResolver";
         public static readonly string API_HTTPCONTEXT_CONSOLE = "MKConsole";
         public static readonly string API_ASSEMBLY_NAME = Assembly.GetExecutingAssembly().GetName().Name;
+        public static readonly string API_CORS_POLICY = "MKCorsPolicy";
 
         public static readonly int API_COOKIE_EXPIRATION_HOURS = 2;
 

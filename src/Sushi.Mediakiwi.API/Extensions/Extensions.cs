@@ -1,29 +1,22 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Primitives;
 using Microsoft.OpenApi.Models;
 using Sushi.Mediakiwi.API.Authentication;
 using Sushi.Mediakiwi.API.Filters;
 using Sushi.Mediakiwi.API.Services;
-using Sushi.Mediakiwi.API.Transport;
-using Sushi.Mediakiwi.API.Transport.Responses;
-using Sushi.Mediakiwi.Framework;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
-using System.Threading.Tasks;
 
 namespace Sushi.Mediakiwi.API.Extensions
 {
     public static class Extensions
     {
-    
-
-
         public static HttpContext Clone(this HttpContext httpContext)
         {
             var existingRequestFeature = httpContext.Features.Get<IHttpRequestFeature>();
@@ -65,7 +58,10 @@ namespace Sushi.Mediakiwi.API.Extensions
 
         public static IApplicationBuilder UseMediakiwiApi(this IApplicationBuilder app)
         {
-            app.UseSwagger(options=> {
+
+            app.UseCors(Common.API_CORS_POLICY);
+
+            app.UseSwagger(options => {
                 options.RouteTemplate = "mkapi/swagger/{documentname}/swagger.json";
             });
 
@@ -75,17 +71,51 @@ namespace Sushi.Mediakiwi.API.Extensions
                 options.RoutePrefix = "mkapi/swagger";
             });
 
-            app.UseCookiePolicy();
+            if (CommonConfiguration.IS_LOCAL_DEVELOPMENT)
+            {
+                app.UseCookiePolicy(new CookiePolicyOptions()
+                {
+                    MinimumSameSitePolicy = SameSiteMode.None
+                });
+            }
 
             return app;
         }
 
         public static void AddMediakiwiApi(this IServiceCollection services)
         {
+            var config = services.BuildServiceProvider().GetService<IConfiguration>();
+            if (config != null)
+            {
+                Data.Configuration.WimServerConfiguration.LoadJsonConfig(config);
+            }
+            else 
+            {
+                Console.WriteLine("No WimServerConfiguration available, was AddMediakiwi added first ?");
+            }
+
+            services.AddCors(options =>
+            {
+                if (CommonConfiguration.IS_LOCAL_DEVELOPMENT)
+                {
+                    options.AddPolicy(name: Common.API_CORS_POLICY,
+                                      builder =>
+                                      {
+                                          builder.AllowCredentials();
+                                          builder.WithOrigins("http://localhost", "https://localhost", "http://localhost:8080");
+                                          builder.AllowAnyMethod();
+                                      });
+                }
+            });
+
             // Add API services
             services.AddSingleton<IUserService, UserService>();
             services.AddSingleton<INavigationService, NavigationService>();
             services.AddSingleton<IContentService, ContentService>();
+            services.AddControllers(o =>
+            {
+                o.Conventions.Add(new SwaggerSchemaFilter());
+            });
 
             // Add swagger
             services.AddSwaggerGen(options =>
@@ -105,11 +135,10 @@ namespace Sushi.Mediakiwi.API.Extensions
                         Url = new Uri("https://www.supershift.nl")
                     }, 
                 });
-
                 options.OperationFilter<SwaggerUrlHeaderFilter>();
                 options.OperationFilter<SwaggerCookieFilter>();
                 options.DocumentFilter<SwaggerDocumentFilter>();
-                options.SchemaFilter<SwaggerSchemaFilter>();
+                //options.SchemaFilter<SwaggerSchemaFilter>();
             });
 
             // Add Cookie validator and authentication
