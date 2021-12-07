@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.Configuration;
@@ -79,6 +80,10 @@ namespace Sushi.Mediakiwi.API.Extensions
 
         public static IApplicationBuilder UseMediakiwiApi(this IApplicationBuilder app)
         {
+            if (CommonConfiguration.IS_LOCAL_DEVELOPMENT)
+            {
+                app.UseMiddleware<Middleware.ApiCorsMiddleware>();
+            }
 
             app.UseCors(Common.API_CORS_POLICY);
 
@@ -91,14 +96,6 @@ namespace Sushi.Mediakiwi.API.Extensions
                 options.SwaggerEndpoint("v0.1/swagger.json", "Mediakiwi API V0.1");
                 options.RoutePrefix = "mkapi/swagger";
             });
-
-            if (CommonConfiguration.IS_LOCAL_DEVELOPMENT)
-            {
-                app.UseCookiePolicy(new CookiePolicyOptions()
-                {
-                    MinimumSameSitePolicy = SameSiteMode.None
-                });
-            }
 
             return app;
         }
@@ -117,16 +114,20 @@ namespace Sushi.Mediakiwi.API.Extensions
 
             services.AddCors(options =>
             {
-                if (CommonConfiguration.IS_LOCAL_DEVELOPMENT)
-                {
-                    options.AddPolicy(name: Common.API_CORS_POLICY,
-                                      builder =>
-                                      {
-                                          builder.SetIsOriginAllowed(origin => new Uri(origin).Host == "localhost");
-                                          builder.AllowCredentials();
-                                          builder.AllowAnyMethod();
-                                      });
-                }
+                options.AddPolicy(name: Common.API_CORS_POLICY,
+                                     builder =>
+                                     {
+                                         builder.AllowCredentials();
+                                         builder.AllowAnyMethod();
+                                         builder.WithExposedHeaders(new string[] { "set-cookie" });
+                                         builder.AllowAnyHeader();
+
+                                         if (CommonConfiguration.IS_LOCAL_DEVELOPMENT)
+                                         {
+                                             builder.SetIsOriginAllowed(origin => new Uri(origin).Host == "localhost");
+                                         }
+                                     });
+
             });
 
             // Add API services
@@ -164,11 +165,16 @@ namespace Sushi.Mediakiwi.API.Extensions
 
             // Add Cookie validator and authentication
             services.AddScoped<MediakiwiCookieValidator>();
-            services.AddAuthentication(Microsoft.AspNetCore.Authentication.Cookies.CookieAuthenticationDefaults.AuthenticationScheme)
+            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                 .AddCookie(options =>
                 {
                     options.Cookie.Name = Common.API_COOKIE_KEY;
                     options.EventsType = typeof(MediakiwiCookieValidator);
+                    options.Cookie.IsEssential = true;
+                    options.Cookie.HttpOnly = false;
+                    options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
+                    options.Cookie.SameSite = SameSiteMode.None;
+                    options.Cookie.Path = "/";
                 });
         }
     }
