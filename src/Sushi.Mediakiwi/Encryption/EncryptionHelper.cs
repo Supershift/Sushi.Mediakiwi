@@ -125,18 +125,18 @@ namespace Sushi.Mediakiwi.Encryption
             return result;
         }
 
-        private static byte[] ReadByteArray(Stream s)
+        private static byte[] ReadByteArray(Stream stream)
         {
             byte[] rawLength = new byte[sizeof(int)];
-            if (s.Read(rawLength, 0, rawLength.Length) != rawLength.Length)
+            if (stream.Read(rawLength, 0, rawLength.Length) != rawLength.Length)
             {
-                throw new SystemException("Stream did not contain properly formatted byte array");
+                throw new ArgumentException("Stream did not contain properly formatted byte array", nameof(stream));
             }
 
             byte[] buffer = new byte[BitConverter.ToInt32(rawLength, 0)];
-            if (s.Read(buffer, 0, buffer.Length) != buffer.Length)
+            if (stream.Read(buffer, 0, buffer.Length) != buffer.Length)
             {
-                throw new SystemException("Did not read byte array properly");
+                throw new InvalidOperationException("Did not read byte array properly");
             }
 
             return buffer;

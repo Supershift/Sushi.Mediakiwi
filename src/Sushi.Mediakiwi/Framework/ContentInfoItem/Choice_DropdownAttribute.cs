@@ -868,7 +868,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
 
                 build.ApiResponse.Fields.Add(new Api.MediakiwiField()
                 {
-                    Event = AutoPostBack ? Api.MediakiwiJSEvent.change : Api.MediakiwiJSEvent.none,
+                    Event = AutoPostBack ? Api.MediakiwiJSEvent.Change : Api.MediakiwiJSEvent.None,
                     Title = MandatoryWrap(Title),
                     Value = _OutputValues != null ? _OutputValues : new List<string>(),
                     Expression = Expression,
@@ -890,7 +890,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
 
                 build.ApiResponse.Fields.Add(new Api.MediakiwiField()
                 {
-                    Event = AutoPostBack ? Api.MediakiwiJSEvent.change : Api.MediakiwiJSEvent.none,
+                    Event = AutoPostBack ? Api.MediakiwiJSEvent.Change : Api.MediakiwiJSEvent.None,
                     Title = MandatoryWrap(Title),
                     Value = OutputText,
                     Expression = Expression,

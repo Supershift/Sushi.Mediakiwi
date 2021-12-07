@@ -23,7 +23,7 @@ namespace Sushi.Mediakiwi.Framework.Api
         [JsonConverter(typeof(ListItemCollectionConverter))]
         public ListItemCollection Options { get; set; }
         public string ClassName { get; set; }
-        [JsonConverter(typeof(StringEnumConverter))]
+        [JsonConverter(typeof(StringEnumConverter), typeof(CamelCaseNamingStrategy))]
         public MediakiwiJSEvent Event { get; set; }
         public string InputPost { get; set; }
         public ButtonSection Section { get; set; }

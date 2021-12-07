@@ -273,7 +273,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
 
             build.ApiResponse.Fields.Add(new Api.MediakiwiField()
             {
-                Event = AutoPostBack ? Api.MediakiwiJSEvent.change : Api.MediakiwiJSEvent.none,
+                Event = AutoPostBack ? Api.MediakiwiJSEvent.Change : Api.MediakiwiJSEvent.None,
                 Title = MandatoryWrap(Title),
                 Value = (m_Candidate ? true : false),
                 Expression = Expression,

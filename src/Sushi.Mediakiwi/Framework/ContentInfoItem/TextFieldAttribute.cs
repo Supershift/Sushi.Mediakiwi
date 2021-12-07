@@ -561,7 +561,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
 
             var fieldata = new Api.MediakiwiField()
             {
-                Event = AutoPostBack ? Api.MediakiwiJSEvent.change : Api.MediakiwiJSEvent.none,
+                Event = AutoPostBack ? Api.MediakiwiJSEvent.Change : Api.MediakiwiJSEvent.None,
                 Title = MandatoryWrap(Title),
                 Value = OutputText,
                 Expression = Expression,

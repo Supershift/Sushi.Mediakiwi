@@ -411,7 +411,7 @@ namespace Sushi.Mediakiwi.Framework.ContentListItem
 
             build.ApiResponse.Fields.Add(new Api.MediakiwiField()
             {
-                Event = Api.MediakiwiJSEvent.click,
+                Event = Api.MediakiwiJSEvent.Click,
                 Title = MandatoryWrap(Title),
                 Value = OutputText,
                 Expression = Expression,

@@ -1093,7 +1093,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                         PropertyType = "bool",
                         ClassName = "action",
                         VueType = MediakiwiFormVueType.wimButton,
-                        Event = MediakiwiJSEvent.click,
+                        Event = MediakiwiJSEvent.Click,
                         Section = ButtonSection.Bottom,
                         ContentTypeID = ContentType.Button
                     });
@@ -1133,7 +1133,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                             Title = saveRecord,
                             PropertyType = "bool",
                             VueType = MediakiwiFormVueType.wimButton,
-                            Event = MediakiwiJSEvent.click,
+                            Event = MediakiwiJSEvent.Click,
                             Section = ButtonSection.Bottom,
                             ClassName = string.Format("{0} right", string.IsNullOrEmpty(container.CurrentListInstance.wim.Page.Body.Form._PrimairyAction) ? " action" : null),
                             ContentTypeID = ContentType.Button
@@ -1593,7 +1593,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                                 Title = string.Empty,
                                 PropertyType = "bool",
                                 VueType = MediakiwiFormVueType.wimButton,
-                                Event = MediakiwiJSEvent.click,
+                                Event = MediakiwiJSEvent.Click,
                                 ClassName = "abbr type_confirm left flaticon icon-trash-o",
                                 Section = ButtonSection.Top,
                                 ContentTypeID = ContentType.Button

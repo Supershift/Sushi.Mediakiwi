@@ -408,7 +408,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
 
             build.ApiResponse.Fields.Add(new Api.MediakiwiField()
             {
-                Event = Api.MediakiwiJSEvent.none,
+                Event = Api.MediakiwiJSEvent.None,
                 Title = MandatoryWrap(Title),
                 Value = OutputText,
                 Expression = OutputExpression.FullWidth,

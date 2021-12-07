@@ -227,11 +227,11 @@ namespace Sushi.Mediakiwi.API.Services
             switch (inType)
             {
                 default:
-                case Framework.Api.MediakiwiJSEvent.none: return JSEventEnum.None;
-                case Framework.Api.MediakiwiJSEvent.change: return JSEventEnum.Change;
-                case Framework.Api.MediakiwiJSEvent.click: return JSEventEnum.Click;
-                case Framework.Api.MediakiwiJSEvent.blur: return JSEventEnum.Blur;
-                case Framework.Api.MediakiwiJSEvent.keyup: return JSEventEnum.KeyUp;
+                case Framework.Api.MediakiwiJSEvent.None: return JSEventEnum.None;
+                case Framework.Api.MediakiwiJSEvent.Change: return JSEventEnum.Change;
+                case Framework.Api.MediakiwiJSEvent.Click: return JSEventEnum.Click;
+                case Framework.Api.MediakiwiJSEvent.Blur: return JSEventEnum.Blur;
+                case Framework.Api.MediakiwiJSEvent.Keyup: return JSEventEnum.KeyUp;
             }
         }
 
