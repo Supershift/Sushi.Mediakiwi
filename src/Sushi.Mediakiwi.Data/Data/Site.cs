@@ -721,11 +721,11 @@ delete from wim_ComponentVersions where ComponentVersion_Page_Key in
             List<Site> sites = null;
             if (accessFilter == AccessFilter.RoleBased)
             {
-                if (!user.Role().All_Sites)
+                if (!user.SelectRole().All_Sites)
                 {
-                    if (user.Role().IsAccessSite)
+                    if (user.SelectRole().IsAccessSite)
                     {
-                        var rolerights = RoleRight.SelectAll(user.Role().ID, RoleRightType.Site);
+                        var rolerights = RoleRight.SelectAll(user.SelectRole().ID, RoleRightType.Site);
 
                         sites = (
                             from item in SelectAll(true)
@@ -734,7 +734,7 @@ delete from wim_ComponentVersions where ComponentVersion_Page_Key in
                     }
                     else
                     {
-                        var rolerights = RoleRight.SelectAll(user.Role().ID, RoleRightType.Site);
+                        var rolerights = RoleRight.SelectAll(user.SelectRole().ID, RoleRightType.Site);
 
                         var acl = (
                             from item in SelectAll()
@@ -822,20 +822,20 @@ delete from wim_ComponentVersions where ComponentVersion_Page_Key in
             List<Site> sites = null;
             if (accessFilter == AccessFilter.RoleBased)
             {
-                if (!user.Role().All_Sites)
+                if (!user.SelectRole().All_Sites)
                 {
-                    if (user.Role().IsAccessSite)
+                    if (user.SelectRole().IsAccessSite)
                     {
                         sites = (
                             from item in await SelectAllAsync()
-                            join relation in await RoleRight.SelectAllAsync(user.Role().ID, RoleRightType.Site) on item.ID equals relation.ItemID
+                            join relation in await RoleRight.SelectAllAsync(user.SelectRole().ID, RoleRightType.Site) on item.ID equals relation.ItemID
                             select item).ToList();
                     }
                     else
                     {
                         var acl = (
                             from item in await SelectAllAsync()
-                            join relation in await RoleRight.SelectAllAsync(user.Role().ID, RoleRightType.Site) on item.ID equals relation.ItemID
+                            join relation in await RoleRight.SelectAllAsync(user.SelectRole().ID, RoleRightType.Site) on item.ID equals relation.ItemID
                             into combination
                             from relation in combination.DefaultIfEmpty()
                             select new { ID = item.ID, HasAccess = relation == null });

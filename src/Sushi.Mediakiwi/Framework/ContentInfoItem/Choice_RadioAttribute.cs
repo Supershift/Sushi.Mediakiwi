@@ -251,6 +251,8 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
         public Field WriteCandidate(WimControlBuilder build, bool isEditMode, bool isRequired, bool isCloaked)
         {
             SetWriteEnvironment();
+            string formName = GetFormMapClass();
+
             IsCloaked = isCloaked;
             Mandatory = isRequired;
             bool _isEditMode = isEditMode;
@@ -410,7 +412,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
 
             build.ApiResponse.Fields.Add(new Api.MediakiwiField()
             {
-                Event = AutoPostBack ? Api.MediakiwiJSEvent.change : Api.MediakiwiJSEvent.none,
+                Event = AutoPostBack ? Api.MediakiwiJSEvent.Change : Api.MediakiwiJSEvent.None,
                 Title = MandatoryWrap(Title),
                 Value = OutputText,
                 Expression = Expression,
@@ -420,7 +422,12 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                 Options = optionsList,
                 GroupName = Groupname,
                 ReadOnly = IsReadOnly,
-                ContentTypeID = ContentTypeSelection
+                ContentTypeID = ContentTypeSelection,
+                IsAutoPostback = AutoPostBack,
+                IsMandatory = Mandatory,
+                MaxLength = MaxValueLength,
+                HelpText = InteractiveHelp,
+                FormSection = formName
             });
 
             return ReadCandidate(OutputText);

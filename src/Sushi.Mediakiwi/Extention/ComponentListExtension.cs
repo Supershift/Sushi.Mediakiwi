@@ -30,7 +30,7 @@ public static class ComponentListExtension
     /// </returns>
     public static bool HasRoleAccess(this IComponentList inComponentList, IApplicationUser user)
     {
-        if (inComponentList == null || inComponentList.ID == 0 || user.Role().All_Lists) 
+        if (inComponentList == null || inComponentList.ID == 0 || user.SelectRole().All_Lists) 
             return true;
 
         var selection = RoleRightAccessItem.Select(user.RoleID, (int)RoleRightType.List, (int)RoleRightType.List);

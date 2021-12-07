@@ -8,6 +8,16 @@ namespace Sushi.Mediakiwi.Demonstration.Templates.List
 {
     public class DemoObject2
     {
+        public async Task DummySaveAsync()
+        {
+            await Task.Delay(5000);
+        }
+
+        public async Task DummyDelete()
+        {
+            await Task.Delay(5000);
+        }
+
         public int ID { get; set; }
         public string Title { get; set; }
 
@@ -25,14 +35,64 @@ namespace Sushi.Mediakiwi.Demonstration.Templates.List
 
             return tmp;
         }
+
+        public static DemoObject2 FetchSingle(int id) 
+        {
+            return new DemoObject2() 
+            { 
+                ID = id, 
+                Title = $"Demo2Title {id}" 
+            };
+        }
     }
 
     public class DemoList2 : ComponentListTemplate
     {
         public DemoList2()
         {
+            ListAction += DemoList2_ListAction;
             ListSearch += DemoList2_ListSearch;
             ListInit += DemoList2_ListInit;
+            ListLoad += DemoList2_ListLoad;
+            ListSave += DemoList2_ListSave;
+            ListDelete += DemoList2_ListDelete;
+        }
+
+        private async Task DemoList2_ListAction(ComponentActionEventArgs arg)
+        {
+            Maps.DemoList2Map map = FormMaps.List.First(x => x.GetType() == typeof(Maps.DemoList2Map)) as Maps.DemoList2Map;
+            if (map.Button_Additional)
+            {
+                await Task.Delay(2000);
+            }
+         }
+
+        private async Task DemoList2_ListDelete(ComponentListEventArgs arg)
+        {
+            await Implement.DummyDelete().ConfigureAwait(false);
+        }
+
+        private async Task DemoList2_ListSave(ComponentListEventArgs arg)
+        {
+            Utils.ReflectProperty(this, Implement);
+
+            await Implement.DummySaveAsync().ConfigureAwait(false);
+        }
+
+        public DemoObject2 Implement { get; set; }
+
+        private async Task DemoList2_ListLoad(ComponentListEventArgs e)
+        {
+            if (e.SelectedKey > 0)
+            {
+                Implement = DemoObject2.FetchSingle(e.SelectedKey);
+
+                var map = new Maps.DemoList2Map(Implement);
+                if (FormMaps.List.Contains(map) == false)
+                {
+                    FormMaps.Add(map);
+                }
+            }
         }
 
         private Task DemoList2_ListInit()
@@ -41,7 +101,7 @@ namespace Sushi.Mediakiwi.Demonstration.Templates.List
             return Task.CompletedTask;
         }
 
-        private Task DemoList2_ListSearch(ComponentListSearchEventArgs arg)
+        private async Task DemoList2_ListSearch(ComponentListSearchEventArgs arg)
         {
             wim.ListDataColumns.Add(new ListDataColumn("ID", nameof(DemoObject2.ID), ListDataColumnType.UniqueIdentifier));
             wim.ListDataColumns.Add(new ListDataColumn("Title", nameof(DemoObject2.Title), ListDataColumnType.HighlightPresent));
@@ -57,7 +117,6 @@ namespace Sushi.Mediakiwi.Demonstration.Templates.List
             }
 
             wim.ListDataAdd(allItems);
-            return Task.CompletedTask;
         }
     }
 }

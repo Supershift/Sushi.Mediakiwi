@@ -205,7 +205,7 @@ namespace Sushi.Mediakiwi.UI
         async Task HandlePageItemRequestAsync(DataGrid grid, Beta.GeneratedCms.Source.Component component, bool isDeleteTriggered)
         {
             _Console.CurrentListInstance.wim.IsEditMode =
-                _Console.CurrentApplicationUser.Role().CanChangePage;
+                _Console.CurrentApplicationUser.SelectRole().CanChangePage;
 
             Page page = null;
             if (_Console.CurrentPage == null)

@@ -10,6 +10,9 @@ namespace Sushi.Mediakiwi.Framework
         object SenderInstance { get; set; }
 
         void Init(HttpContext context);
+
+        void Init(Beta.GeneratedCms.Console console);
+
         string FormState { get; set; }
         FormList FormMaps { get; set; }
         //HttpContext Context { get; }

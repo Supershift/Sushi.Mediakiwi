@@ -134,7 +134,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
 
             if (selectedKey == 0)
             {
-                Implement.AssemblyName = "Sushi.Mediakiwi.Framework.dll";
+                Implement.AssemblyName = "Sushi.Mediakiwi.dll";
                 Implement.ClassName = "Wim.Templates.UI.GenericLinqList";
                 Implement.IsVisible = true;
                 Implement.IsInherited = true;

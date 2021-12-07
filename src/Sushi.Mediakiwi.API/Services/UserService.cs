@@ -1,32 +1,28 @@
-﻿using Microsoft.AspNetCore.Hosting;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
 using Microsoft.IdentityModel.Tokens;
 using Sushi.Mediakiwi.API.Transport.Requests;
 using Sushi.Mediakiwi.API.Transport.Responses;
 using Sushi.Mediakiwi.Data;
 using System;
+using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Sushi.Mediakiwi.API.Services
 {
     public class UserService : IUserService
     {
-        Beta.GeneratedCms.Console console;
-
-        public UserService(IServiceProvider serviceProvider, IHostingEnvironment env)
+        private readonly IHttpContextAccessor _httpAccessor;
+        public UserService(IHttpContextAccessor _accessor)
         {
-            var contextAccessor = serviceProvider.GetService<IHttpContextAccessor>();
-            if (contextAccessor != null && env != null)
-            {
-                console = new Beta.GeneratedCms.Console(contextAccessor.HttpContext, env);
-            }
+            _httpAccessor = _accessor;
         }
 
-        public async Task<ResetPasswordResponse> ResetPassword(ResetPasswordRequest request)
+        public async Task<ResetPasswordResponse> ResetPassword(ResetPasswordRequest request, Beta.GeneratedCms.Console console)
         {
             var user = await ApplicationUser.SelectOneByEmailAsync(request.EmailAddress).ConfigureAwait(false);
             
@@ -64,6 +60,11 @@ namespace Sushi.Mediakiwi.API.Services
             }
         }
 
+        public async Task LogoutAsync() 
+        {
+            await _httpAccessor.HttpContext.SignOutAsync().ConfigureAwait(false);
+        }
+
         public async Task<LoginResponse> LoginAsync(LoginRequest request)
         {
             var user = await ApplicationUser.SelectOneByEmailAsync(request.EmailAddress).ConfigureAwait(false);
@@ -71,18 +72,37 @@ namespace Sushi.Mediakiwi.API.Services
             // return Unauthorized if user not found
             if (user == null || user.ID == 0 || user.IsValid(request.Password) != true)
             {
-                return new LoginResponse() 
-                { 
+                return new LoginResponse()
+                {
                     StatusCode = System.Net.HttpStatusCode.Unauthorized
                 };
             }
 
-            // authentication successful so generate jwt token
-            var jwtToken = GenerateJwtToken(user.Displayname, user.Email, user.GUID, request.ApiKey, user.RoleID);
+            var claims = new List<Claim>
+            {
+                new Claim("id", user.Displayname),
+                new Claim("guid", user.GUID.ToString()),
+                new Claim("email", user.Email),
+                new Claim("apiKey", request.ApiKey),
+                new Claim("roleId", user.RoleID.ToString())
+            };
+
+            var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+
+            var authProperties = new AuthenticationProperties
+            {
+                ExpiresUtc = DateTime.UtcNow.AddHours(Common.API_COOKIE_EXPIRATION_HOURS),
+                IsPersistent = true,
+                IssuedUtc = DateTime.UtcNow,
+            };
+
+            await _httpAccessor.HttpContext.SignInAsync(
+                CookieAuthenticationDefaults.AuthenticationScheme,
+                new ClaimsPrincipal(claimsIdentity),
+                authProperties).ConfigureAwait(false);
 
             return new LoginResponse()
             {
-                JwtToken = jwtToken,
                 Message = "Login succesful",
                 StatusCode = System.Net.HttpStatusCode.OK,
                 UserEmail = user.Email,
@@ -94,29 +114,5 @@ namespace Sushi.Mediakiwi.API.Services
         { 
             return await ApplicationUser.SelectOneAsync(userGuid).ConfigureAwait(false);
         }
-
-        private string GenerateJwtToken(string userName, string email, Guid userGuid, string apiKey, int roleId)
-        {
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes(Common.API_AUTHENTICATION_KEY);
-            var tokenDescriptor = new SecurityTokenDescriptor
-            {
-                Subject = new ClaimsIdentity(new[] 
-                { 
-                    new Claim("id", userName),
-                    new Claim("guid", userGuid.ToString()),
-                    new Claim("email", email),
-                    new Claim("apiKey", apiKey),
-                    new Claim("roleId", roleId.ToString())
-                }),
-                Expires = DateTime.UtcNow.AddHours(Common.API_COOKIE_EXPIRATION_HOURS),
-                Issuer = Common.API_AUTHENTICATION_ISSUER,
-                Audience = Common.API_AUTHENTICATION_AUDIENCE,
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
-            };
-            var token = tokenHandler.CreateToken(tokenDescriptor);
-            return tokenHandler.WriteToken(token);
-        }
-
     }
 }

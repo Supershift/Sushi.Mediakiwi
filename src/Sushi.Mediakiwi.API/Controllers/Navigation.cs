@@ -6,9 +6,10 @@ using Sushi.Mediakiwi.API.Transport.Requests;
 using Sushi.Mediakiwi.API.Transport.Responses;
 using System.Linq;
 using System;
-using Microsoft.AspNetCore.Hosting;
 using Sushi.Mediakiwi.API.Transport;
 using System.Collections.Generic;
+using System.Globalization;
+using Sushi.Mediakiwi.API.Filters;
 
 namespace Sushi.Mediakiwi.API.Controllers
 {
@@ -16,17 +17,25 @@ namespace Sushi.Mediakiwi.API.Controllers
     [MediakiwiApiAuthorize]
     [Route(Common.MK_CONTROLLERS_PREFIX + "navigation")]
     [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
-    
-    public class Navigation : BaseMediakiwiController
+    public class Navigation : BaseMediakiwiApiController
     {
-        private readonly INavigationService navService;
+        private readonly INavigationService _navService;
 
         public Navigation(INavigationService _service)
         {
-            navService = _service;
-        } 
+            _navService = _service;
+        }
 
+        #region Top Navigation
 
+        /// <summary>
+        /// Returns the Top navigation belonging to the URL being viewed.
+        /// </summary>
+        /// <param name="request">The request containing the needed information</param>
+        /// <returns></returns>
+        /// <response code="200">The Navigation is succesfully retrieved</response>
+        /// <response code="400">Some needed information is missing from the request</response>
+        /// <response code="401">The user is not succesfully authenticated</response>
         [Produces("application/json")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -34,7 +43,7 @@ namespace Sushi.Mediakiwi.API.Controllers
         [HttpGet("GetTopnavigation")]
         public async Task<ActionResult<GetTopNavigationResponse>> GetTopnavigation([FromBody] GetTopNavigationRequest request)
         {
-            if (request == null || navService == null || request.CurrentSiteID == 0)
+            if (request == null || _navService == null || request.CurrentSiteID == 0)
             {
                 return BadRequest();
             }
@@ -46,29 +55,27 @@ namespace Sushi.Mediakiwi.API.Controllers
 
             var menus = await Data.Menu.SelectAllAsync().ConfigureAwait(false);
 
-            // Extract roleID from HttpContext User
-            var roleId = Utils.ConvertToInt(User.FindFirst("roleId").Value, 0);
-
             // Get Appropriate role from DB
-            var role = await Data.ApplicationRole.SelectOneAsync(roleId).ConfigureAwait(false);
+            var role = await MediakiwiUser.SelectRoleAsync().ConfigureAwait(false);
 
             // Get Menu for current site and Role
-            var list = await Data.MenuItemView.SelectAllAsync(request.CurrentSiteID, roleId).ConfigureAwait(false);
+            var list = await Data.MenuItemView.SelectAllAsync(request.CurrentSiteID, role.ID).ConfigureAwait(false);
 
             if (list.Count > 0)
             {
                 string className = "";
 
-                var mainNav = (from item in list where item.Sort == 1 select item);
+                var mainNav = list.Where(item => item.Sort == 1);
                 foreach (var item in mainNav)
                 {
                     bool isSelected = false;
-                    if (!await navService.HasRoleAccessAsync(item, role).ConfigureAwait(false))
+                    if (!await _navService.HasRoleAccessAsync(item, role).ConfigureAwait(false))
                     {
                         continue;
                     }
 
-                    var subnavigation = (from subnav in list where subnav.Sort != 1 && subnav.Position == item.Position select subnav).ToList();
+                    // Get subnav for mainNav item
+                    var subnavigation = list.Where(subNav => subNav.Sort != 1 && subNav.Position == item.Position).ToList();
 
                     // Create nav Item
                     NavigationItem navItem = new NavigationItem()
@@ -88,7 +95,7 @@ namespace Sushi.Mediakiwi.API.Controllers
                                 continue;
                             }
 
-                            if (!await navService.HasRoleAccessAsync(subItem, role).ConfigureAwait(false))
+                            if (!await _navService.HasRoleAccessAsync(subItem, role).ConfigureAwait(false))
                             {
                                 continue;
                             }
@@ -108,7 +115,7 @@ namespace Sushi.Mediakiwi.API.Controllers
                             {
                                 if (item.TypeID == 8)
                                 {
-                                    firstInLineUrl = navService.GetUrl(Console, subnavigation[index], request.CurrentSiteID);
+                                    firstInLineUrl = await _navService.GetUrlAsync(Resolver, subnavigation[index], request.CurrentSiteID).ConfigureAwait(false);
                                     linkable = false;
                                 }
                                 className = "first";
@@ -121,7 +128,7 @@ namespace Sushi.Mediakiwi.API.Controllers
                             //  Only for folders
                             if (subnavigation[index].TypeID == 8)
                             {
-                                var addSubResult = await navService.AddSubSubNavigationAsync(Console, navItem, subnavigation[index], className, role).ConfigureAwait(false);
+                                var addSubResult = await _navService.AddSubSubNavigationAsync(Resolver, navItem, subnavigation[index], className, role).ConfigureAwait(false);
                                 if (addSubResult.isCurrent)
                                 {
                                     isSelected = true;
@@ -129,7 +136,7 @@ namespace Sushi.Mediakiwi.API.Controllers
                             }
                             else
                             {
-                                if (subnavigation[index]?.ItemID == Console?.CurrentList?.ID)
+                                if (subnavigation[index]?.ItemID == Resolver.List?.ID)
                                 {
                                     isSelected = true;
                                 }
@@ -139,7 +146,7 @@ namespace Sushi.Mediakiwi.API.Controllers
                                     IsHighlighted = isSelected,
                                     Text = subnavigation[index].Name,
                                     IconClass = className,
-                                    Href = navService.GetUrl(Console, subnavigation[index], request.CurrentSiteID),
+                                    Href = await _navService.GetUrlAsync(Resolver, subnavigation[index], request.CurrentSiteID).ConfigureAwait(false),
                                 });
                             }
                         }
@@ -147,18 +154,18 @@ namespace Sushi.Mediakiwi.API.Controllers
 
                     if (!isSelected)
                     {
-                        isSelected = navService.IsRequestPartOfNavigation(item, Resolver);
+                        isSelected = _navService.IsRequestPartOfNavigation(item, Resolver);
                     }
 
                     if (linkable)
                     {
-                        navItem.Href = string.IsNullOrEmpty(firstInLineUrl) ? navService.GetUrl(Console, item, request.CurrentSiteID) : firstInLineUrl;
+                        navItem.Href = string.IsNullOrEmpty(firstInLineUrl) ? await _navService.GetUrlAsync(Resolver, item, request.CurrentSiteID).ConfigureAwait(false) : firstInLineUrl;
                         navItem.IsHighlighted = isSelected;
                         navItem.Text = item.Name;
                     }
                     else
                     {
-                        navItem.Href = string.IsNullOrEmpty(firstInLineUrl) ? navService.GetUrl(Console, item, request.CurrentSiteID) : firstInLineUrl;
+                        navItem.Href = string.IsNullOrEmpty(firstInLineUrl) ? await _navService.GetUrlAsync(Resolver, item, request.CurrentSiteID).ConfigureAwait(false) : firstInLineUrl;
                         navItem.IsHighlighted = isSelected;
                         navItem.Text = item.Name;
                         navItem.IconClass += "noClick";
@@ -169,14 +176,26 @@ namespace Sushi.Mediakiwi.API.Controllers
             }
 
             // Set Logo URl
-            result.LogoUrl = navService.GetLogoURL(Console);
+            result.LogoUrl = _navService.GetLogoURL(Resolver);
 
             // Set homepage URL
-            result.HomeUrl = navService.GetHomepageURL(Console);
+            result.HomeUrl = _navService.GetHomepageURL(Resolver);
 
             return Ok(result);
         }
 
+        #endregion Top Navigation
+
+        #region Side Navigation
+
+        /// <summary>
+        /// Returns the Side navigation belonging to the URL being viewed.
+        /// </summary>
+        /// <param name="request">The request containing the needed information</param>
+        /// <returns></returns>
+        /// <response code="200">The Navigation is succesfully retrieved</response>
+        /// <response code="400">Some needed information is missing from the request</response>
+        /// <response code="401">The user is not succesfully authenticated</response>
         [Produces("application/json")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -186,11 +205,15 @@ namespace Sushi.Mediakiwi.API.Controllers
         {
             GetSideNavigationResponse result = new GetSideNavigationResponse();
 
-            // Extract roleID from HttpContext User
-            var roleId = Utils.ConvertToInt(User.FindFirst("roleId").Value, 0);
-
             // Get Appropriate role from DB
-            var role = await Data.ApplicationRole.SelectOneAsync(roleId).ConfigureAwait(false);
+            var role = await MediakiwiUser.SelectRoleAsync().ConfigureAwait(false);
+            
+            // Get current selected tab based off the URL
+            int selectedTab = 0;
+            if (string.IsNullOrWhiteSpace(Resolver.SelectedTab) == false)
+            {
+                selectedTab = Utils.ConvertToInt(Resolver.SelectedTab, 0);
+            }
 
             // title placeholder
             string title = string.Empty;
@@ -199,622 +222,702 @@ namespace Sushi.Mediakiwi.API.Controllers
                 title = Resolver.List.Name;
             }
 
-     //       #region Tabs
+            bool isPageProperty = Resolver.List.Type == Data.ComponentListType.PageProperties;
+
+            #region Tabs
 
             if (Resolver.ListInstance?.wim?.Page?.HideTabs != true)
             {
-                return null;
+                if (Resolver.List?.Type == Data.ComponentListType.Browsing || isPageProperty)
+                {
+                    title = Common.GetLabelFromResource("list_browsing", new CultureInfo(MediakiwiUser.LanguageCulture));
+
+                    #region PAGE
+
+                    if (Resolver.ItemType == RequestItemType.Page || isPageProperty)
+                    {
+                        Data.Page currentPage;
+                        if (Resolver.List?.Type == Data.ComponentListType.PageProperties && Resolver.ItemID.HasValue)
+                        {
+                            currentPage = await Data.Page.SelectOneAsync(Resolver.ItemID.Value).ConfigureAwait(false);
+                        }
+                        else
+                        {
+                            currentPage = Resolver.Page;
+                        }
+
+                        if (currentPage?.Template?.GetPageSections()?.Length > 0)
+                        {
+                            var sections = currentPage.Template.GetPageSections();
+                            bool? isSelected = null;
+
+                            Data.IComponentList pageSettings = await Data.ComponentList.SelectOneAsync(new Guid("4E7BCF0F-844B-4877-AB2D-3154BE01BC0F")).ConfigureAwait(false);
+
+                            if (sections.Length > 0)
+                            {
+                                result.Items.Add(new NavigationItem()
+                                {
+                                    Href = $"{Resolver.WimPagePath}?list={pageSettings.ID}&item={Resolver.ItemID.GetValueOrDefault(0)}",
+                                    Text = Common.GetLabelFromResource("page_properties", new CultureInfo(MediakiwiUser.LanguageCulture))
+                                });
+
+                                foreach (var section in sections)
+                                {
+                                    if (string.IsNullOrWhiteSpace(section))
+                                    {
+                                        continue;
+                                    }
+
+                                    if ((!isPageProperty && string.IsNullOrEmpty(Resolver.SelectedTab) && !isSelected.HasValue) || Resolver.SelectedTab == section)
+                                    {
+                                        isSelected = true;
+                                    }
+                                    else
+                                    {
+                                        isSelected = false;
+                                    }
+
+                                    var tabName = currentPage.Template.Data[string.Format("T[{0}]", section)].Value;
+                                    if (string.IsNullOrEmpty(tabName))
+                                    {
+                                        tabName = section;
+                                    }
+
+                                    result.Items.Add(new NavigationItem()
+                                    {
+                                        Href = $"{Resolver.WimPagePath}?page={Resolver.ItemID.GetValueOrDefault(0)}&tab={section}",
+                                        Text = tabName,
+                                        IsHighlighted = isSelected.GetValueOrDefault()
+                                    });
+                                }
+                            }
+                        }
+                        else
+                        {
+                            result.Items.Add(new NavigationItem()
+                            {
+                                Href = $"{Resolver.WimPagePath}?page={Resolver.ItemID.GetValueOrDefault(0)}",
+                                Text = Common.GetLabelFromResource("tab_Content", new CultureInfo(MediakiwiUser.LanguageCulture)),
+                                IsHighlighted = selectedTab == 0
+                            });
+                        }
+                    }
+
+                    #endregion PAGE
+
+                    else
+                    {
+                        result.Items.Add(new NavigationItem()
+                        {
+                            Href = Resolver.WimPagePath,
+                            Text = title,
+                            IsHighlighted = true
+                        });
+                    }
+                }
+
+                #region Folder & page
+
+                else if (Resolver.List.Type == Data.ComponentListType.Folders || Resolver.List.Type == Data.ComponentListType.PageProperties)
+                {
+                    result.Items.Add(new NavigationItem()
+                    {
+                        Href = Resolver.WimPagePath,
+                        Text = title,
+                        IsHighlighted = true
+                    });
+                }
+
+                #endregion
+
+                #region Assets
+
+                else if (Resolver.List.Type == Data.ComponentListType.Documents || Resolver.List.Type == Data.ComponentListType.Images)
+                {
+                    title = "Browsing";
+
+                    int galleryID = Resolver.GalleryID.GetValueOrDefault(0);
+                    if (galleryID == 0)
+                    {
+                        galleryID = (await Data.Asset.SelectOneAsync(Resolver.ItemID.Value).ConfigureAwait(false)).GalleryID;
+                    }
+
+                    result.Items.Add(new NavigationItem()
+                    {
+                        Href = $"{Resolver.WimPagePath}?gallery={galleryID}",
+                        Text = title
+                    });
+
+                    result.Items.Add(new NavigationItem()
+                    {
+                        Href = $"{Resolver.WimPagePath}?gallery={galleryID}&gfx={Resolver.ItemID.GetValueOrDefault()}",
+                        Text = Resolver.List.SingleItemName,
+                        IsHighlighted = selectedTab == 0
+                    });
+                }
+
+                #endregion
+
+                #region Custom lists
+
+                else
+                {
+                    bool isSingleItemList = (Resolver.List.IsSingleInstance || Resolver.ListInstance.wim.CanContainSingleInstancePerDefinedList);
+
+                    //  Show NO tabs
+                    if (isSingleItemList)
+                    {
+                        return null;
+                    }
+
+                    if (Resolver.ItemID.HasValue || isSingleItemList)
+                    {
+                        var master = Console;
+
+                        int currentListId = Console.Logic;
+                        int currentListItemId = Resolver.ItemID.GetValueOrDefault();
+                        string itemTitle = Resolver.List.SingleItemName;
+
+                        ICollection<Framework.WimComponentListRoot.Tabular> tabularList = null;
+
+                        if (Resolver.GroupID.GetValueOrDefault(0) > 0)
+                        {
+                            if (Resolver.GroupID.Value != Resolver.List.ID)
+                            {
+                                if (Resolver.List.Type == Data.ComponentListType.ComponentListProperties)
+                                {
+                                    tabularList = Resolver.ListInstance.wim.GetTabs();
+                                }
+                                else
+                                {
+                                    Data.IComponentList innerlist = await Data.ComponentList.SelectOneAsync(Resolver.GroupID.Value).ConfigureAwait(false);
+
+                                    //  The current requested list is not the list that is the base of the tabular menu
+                                    master = Console.ReplicateInstance(innerlist);
+                                    master.CurrentListInstance.wim.Console = master;
+                                    master.CurrentListInstance.wim.Console.Item = Resolver.GroupItemID.GetValueOrDefault(0);
+                                    master.CurrentListInstance.wim.DoListInit();
+
+                                    if (!master.CurrentListInstance.wim.CurrentList.Option_FormAsync)
+                                    {
+                                        master.CurrentListInstance.wim.DoListLoad(Resolver.GroupItemID.Value, 0);
+                                    }
+
+                                    tabularList = master.CurrentListInstance.wim.GetTabs();
+
+                                    currentListId = Resolver.GroupID.Value;
+                                    currentListItemId = Resolver.GroupItemID.GetValueOrDefault(0);
+                                    title = master.CurrentList.Name;
+                                    itemTitle = master.CurrentList.SingleItemName;
+                                }
+                            }
+                        }
+                        else if (Resolver.ListInstance.wim.GetTabs()?.Count > 0)
+                        {
+                            tabularList = Resolver.ListInstance.wim.GetTabs();
+                        }
+
+                        if (tabularList?.Count > 0)
+                        {
+                            foreach (var tab in tabularList)
+                            {
+                                if (tab.List.IsNewInstance)
+                                {
+                                    continue;
+                                }
+
+                                _navService.ApplyTabularUrl(Resolver, tab, 1, null);
+                                result.Items.Add(new NavigationItem()
+                                {
+                                    Text = tab.TitleValue,
+                                    Href = tab.Url,
+                                    IsHighlighted = tab.Selected
+                                });
+
+                                if (tab.Selected)
+                                {
+                                    selectedTab = tab.List.ID;
+                                }
+
+                                if (!Resolver.GroupID.HasValue)
+                                {
+                                    continue;
+                                }
+
+                                if (Resolver.ListInstance.wim.CurrentList.ID == tab.List.ID)
+                                {
+                                    if (Resolver.ListInstance.wim.GetTabs()?.Count > 0)
+                                    {
+                                        foreach (var tab2 in Resolver.ListInstance.wim.GetTabs())
+                                        {
+                                            _navService.ApplyTabularUrl(Resolver, tab2, 2, null);
+
+                                            result.Items.Add(new NavigationItem()
+                                            {
+                                                Text = tab2.TitleValue,
+                                                Href = tab2.Url,
+                                                IsHighlighted = tab2.Selected
+                                            });
+
+                                            if (tab2.Selected)
+                                            {
+                                                selectedTab = tab2.List.ID;
+                                            }
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    Framework.IComponentListTemplate cl = tab.List.GetInstance(Console);
+
+                                    if (cl != null)
+                                    {
+                                        cl.wim.Console = master;
+
+                                        if (tab.List.ID == Resolver.Group2ID)
+                                        {
+                                            cl.wim.DoListLoad(Resolver.Group2ItemID.Value, 0);
+                                        }
+                                        else
+                                        {
+                                            cl.wim.DoListLoad(Resolver.ItemID.Value, 0);
+                                        }
+
+                                        if (cl.wim.GetTabs()?.Count > 0)
+                                        {
+                                            foreach (var tab2 in cl.wim.GetTabs())
+                                            {
+                                                result.Items.Add(new NavigationItem()
+                                                {
+                                                    Text = tab2.TitleValue,
+                                                    Href = tab2.Url,
+                                                    IsHighlighted = tab2.Selected
+                                                });
+
+                                                if (tab2.Selected)
+                                                {
+                                                    selectedTab = tab2.List.ID;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+
+                        var tmpTab = new Framework.WimComponentListRoot.Tabular();
+                        tmpTab.SelectedItem = currentListItemId;
+                        _navService.ApplyTabularUrl(Resolver, tmpTab, 0, currentListId);
+
+                        //  For use in property tabbing.
+
+                        if (Resolver.BaseID.GetValueOrDefault(0) > 0)
+                        {
+                            Data.IComponentList list = await Data.ComponentList.SelectOneAsync(Resolver.BaseID.Value).ConfigureAwait(false);
+                            title = list.Name;
+                            currentListId = list.ID;
+                        }
+
+                        if (isSingleItemList)
+                        {
+                            result.Items.Add(new NavigationItem()
+                            {
+                                Text = itemTitle,
+                                Href = Resolver.UrlBuild.GetListRequest(currentListId),
+                                IsHighlighted = selectedTab == 0
+                            });
+                        }
+                        else
+                        {
+                            result.Items.Add(new NavigationItem()
+                            {
+                                Text = itemTitle,
+                                Href = tmpTab.Url,
+                                IsHighlighted = true
+                            });
+                        }
+                    }
+                    else
+                    {
+                        result.Items.Add(new NavigationItem()
+                        {
+                            Text = Resolver.List.Name,
+                            Href = Resolver.WimPagePath,
+                            IsHighlighted = true
+                        });
+
+                    }
+                }
+
+                #endregion
+
             }
 
-            string tabTag = null;
-            
-   //         bool isPageProperty = resolver.List.Type == Data.ComponentListType.PageProperties;
-
-   //         if (resolver.List.Type == Data.ComponentListType.Browsing || isPageProperty)
-   //         {
-   //             title = ResourceManager.GetString("list_browsing", new CultureInfo(Console.CurrentApplicationUser.LanguageCulture));
-
-   //             #region PAGE
-
-   //             if (Console.ItemType == RequestItemType.Page || isPageProperty)
-   //             {
-   //                 Page currentPage;
-   //                 if (Console.CurrentList.Type == ComponentListType.PageProperties && Console.Item.HasValue)
-   //                     currentPage = Page.SelectOne(Console.Item.Value);
-   //                 else
-   //                     currentPage = Console.CurrentPage;
-
-   //                 if (currentPage?.Template?.GetPageSections()?.Length > 0)
-   //                 {
-   //                     var sections = currentPage.Template.GetPageSections();
-
-   //                     StringBuilder build = new StringBuilder();
-
-   //                     var selected = Console.Request.Query["tab"];
-   //                     bool? isSelected = null;
-
-   //                     IComponentList pageSettings = ComponentList.SelectOne(new Guid("4E7BCF0F-844B-4877-AB2D-3154BE01BC0F"));
-
-   //                     if (sections.Length > 0)
-   //                     {
-   //                         build.AppendFormat(string.Format(@" <li class=""active""><a href=""{0}"">{1}</a>"
-   //                             , string.Concat(Console.WimPagePath, "?list=", pageSettings.ID, "&item=", Console.Item)//, "&tab=", sections[0])
-   //                             , Labels.ResourceManager.GetString("page_properties", new CultureInfo(Console.CurrentApplicationUser.LanguageCulture))
-   //                         ));
-
-   //                         build.Append("<ul>");
-   //                         foreach (var section in sections)
-   //                         {
-   //                             if (string.IsNullOrEmpty(section))
-   //                                 continue;
-
-   //                             if ((!isPageProperty && string.IsNullOrEmpty(selected) && !isSelected.HasValue) || selected == section)
-   //                                 isSelected = true;
-   //                             else
-   //                                 isSelected = false;
-
-   //                             var tabName = currentPage.Template.Data[string.Format("T[{0}]", section)].Value;
-   //                             if (string.IsNullOrEmpty(tabName))
-   //                                 tabName = section;
-
-   //                             build.AppendFormat(string.Format(@" <li{2}><a href=""{0}"">{1}</a></li>"
-   //                                 , string.Concat(Console.WimPagePath, "?page=", Console.Item, "&tab="
-   //                                 , section
-   //                                     )
-   //                                 , tabName
-   //                                 , isSelected.GetValueOrDefault() ? " class=\"active\"" : null
-   //                             ));
-   //                         }
-   //                         build.Append("</ul>");
-   //                     }
-   //                     build.Append("</li>");
-   //                     build.Append(@"</ul>");
-   //                     tabTag = build.ToString();
-
-   //                 }
-   //                 else
-   //                 {
-   //                     title = Labels.ResourceManager.GetString("tab_Content", new CultureInfo(Console.CurrentApplicationUser.LanguageCulture));
-   //                     //"Content"
-   //                     tabTag = string.Format(@"
-			//                     <li{2}><a href=""{1}"">{0}</a></li>{3}"
-   //                         , title //0
-   //                         , string.Concat(Console.WimPagePath, "?page=", Console.Item) //1
-   //                         , selectedTab == 0 ? " class=\"active\"" : null //2
-   //                         , showServiceUrl ?
-   //                             string.Format("<li><a href=\"{0}\"{1}>{2}</a></li>"
-   //                                 , string.Concat(Console.WimPagePath, "?page=", Console.Item, "&tab=1")//, selectedTab)// == 1 ? "0" : "1")
-   //                                 , selectedTab == 1 ? " class=\"active\"" : null
-   //                                 , Labels.ResourceManager.GetString("tab_ServiceColumn", new CultureInfo(Console.CurrentApplicationUser.LanguageCulture))
-   //                                 ) : string.Empty //3
-
-   //                         );
-   //                 }
-   //             }
-
-   //             #endregion PAGE
-
-   //             else
-   //             {
-   //                 //  Show NO tabs
-   //                 tabTag = string.Format(@"
-			//            <li class=""active""><a href=""{1}"">{0}</a></li>"
-   //                     , title
-   //                     , Console.WimPagePath
-   //                     );
-   //             }
-   //         }
-
-   //         #endregion
-
-   //         #region Folder & page
-
-   //         else if (Console.CurrentList.Type == ComponentListType.Folders || Console.CurrentList.Type == ComponentListType.PageProperties)
-   //         {
-   //             tabTag = string.Format(@"
-			//            <li class=""active""><a href=""{1}"">{0}</a></li>"
-   //                 , title
-   //                 , Console.WimPagePath
-   //                 );
-   //         }
-
-   //         #endregion
-
-   //         #region Assets
-
-   //         else if (Console.CurrentList.Type == ComponentListType.Documents || Console.CurrentList.Type == ComponentListType.Images)
-   //         {
-   //             title = "Browsing";
-
-   //             int galleryID = Utility.ConvertToInt(Console.Request.Query["gallery"]);
-   //             if (galleryID == 0)
-   //             {
-   //                 galleryID = Asset.SelectOne(Console.Item.Value).GalleryID;
-   //             }
-
-   //             tabTag = string.Format(@"
-			//            <li><a href=""{1}"">{0}</a></li>
-   //                     <li{3}><a href=""{2}"">{4}</a></li>"
-   //                 , title
-   //                 , string.Concat(Console.WimPagePath, "?gallery=", galleryID)
-   //                 , string.Concat(Console.WimPagePath, "?gallery=", galleryID, (Console.CurrentList.Type == ComponentListType.Documents ? "&gfx=" : "&gfx=")
-   //                 , Console.Item.GetValueOrDefault())
-   //                 , selectedTab == 0 ? " class=\"active\"" : null
-   //                 , Console.CurrentList.SingleItemName
-   //                 );
-   //         }
-
-   //         #endregion
-
-
-   //         #region Custom lists
-
-   //         else
-   //         {
-   //             bool isSingleItemList = (Console.CurrentList.IsSingleInstance || Console.CurrentListInstance.wim.CanContainSingleInstancePerDefinedList);
-
-   //             //  Show NO tabs
-   //             if (isSingleItemList)
-   //             {
-   //                 return null;
-   //             }
-
-   //             if (Console.Item.HasValue || isSingleItemList)
-   //             {
-   //                 var master = Console;
-
-   //                 int currentListId = Console.Logic;
-   //                 int currentListItemId = Console.Item.GetValueOrDefault();
-   //                 string itemTitle = Console.CurrentList.SingleItemName;
-
-   //                 //  Testcode
-   //                 List<WimComponentListRoot.Tabular> tabularList = null;
-   //                 if (!string.IsNullOrEmpty(Console.Request.Query["group"]))
-   //                 {
-   //                     int groupId = Utility.ConvertToInt(Console.Request.Query["group"]);
-   //                     int groupElementId = Utility.ConvertToInt(Console.Request.Query["groupitem"]);
-   //                     if (groupId != Console.CurrentList.ID)
-   //                     {
-
-   //                         if (Console.CurrentList.Type == ComponentListType.ComponentListProperties)
-   //                         {
-   //                             tabularList = Console.CurrentListInstance.wim.m_Collection;
-   //                         }
-   //                         else
-   //                         {
-   //                             IComponentList innerlist = ComponentList.SelectOne(groupId);
-
-   //                             //  The current requested list is not the list that is the base of the tabular menu
-   //                             master = Console.ReplicateInstance(innerlist);
-   //                             master.CurrentListInstance.wim.Console = master;
-   //                             master.CurrentListInstance.wim.Console.Item = groupElementId;
-
-   //                             master.CurrentListInstance.wim.DoListInit();
-   //                             if (!master.CurrentListInstance.wim.CurrentList.Option_FormAsync)
-   //                                 master.CurrentListInstance.wim.DoListLoad(groupElementId, 0);
-
-   //                             tabularList = master.CurrentListInstance.wim.m_Collection;
-
-   //                             currentListId = groupId;
-   //                             currentListItemId = groupElementId;
-   //                             title = master.CurrentList.Name;
-   //                             itemTitle = master.CurrentList.SingleItemName;
-   //                         }
-   //                     }
-   //                 }
-   //                 else if (Console.CurrentListInstance.wim.m_Collection != null)
-   //                     tabularList = Console.CurrentListInstance.wim.m_Collection;
-
-
-   //                 StringBuilder tabulars = new StringBuilder();
-   //                 if (tabularList != null)
-   //                 {
-   //                     foreach (WimComponentListRoot.Tabular t in tabularList)
-   //                     {
-   //                         if (t.List.IsNewInstance)
-   //                         {
-   //                             continue;
-   //                         }
-
-   //                         ApplyTabularUrl(Console, t, 1);
-
-   //                         tabulars.Append($@"<li{(t.Selected ? " class=\"active\"" : null)}><a href=""{t.Url}"">{t.TitleValue}</a></li>");
-
-   //                         if (t.Selected)
-   //                         {
-   //                             selectedTab = t.List.ID;
-   //                         }
-
-   //                         if (!Console.Group.HasValue)
-   //                         {
-   //                             continue;
-   //                         }
-
-   //                         if (Console.CurrentListInstance.wim.CurrentList.ID == t.List.ID)
-   //                         {
-   //                             if (Console.CurrentListInstance.wim.m_Collection != null)
-   //                             {
-   //                                 foreach (WimComponentListRoot.Tabular t2 in Console.CurrentListInstance.wim.m_Collection)
-   //                                 {
-   //                                     ApplyTabularUrl(Console, t2, 2);
-
-   //                                     tabulars.Append($@"<li{(t2.Selected ? " class=\"active\"" : null)}><a href=""{t2.Url}"">{t2.TitleValue}</a></li>");
-
-   //                                     if (t2.Selected)
-   //                                     {
-   //                                         selectedTab = t2.List.ID;
-   //                                     }
-   //                                 }
-   //                             }
-   //                         }
-   //                         else
-   //                         {
-   //                             IComponentListTemplate cl = t.List.GetInstance(Console.Context);
-   //                             if (cl != null)
-   //                             {
-   //                                 cl.wim.Console = master;
-
-   //                                 int group2Id = Utility.ConvertToInt(Console.Request.Query["group2"]);
-   //                                 int group2ElementId = Utility.ConvertToInt(Console.Request.Query["group2item"]);
-
-   //                                 if (t.List.ID == group2Id)
-   //                                 {
-   //                                     cl.wim.DoListLoad(group2ElementId, 0);
-   //                                 }
-   //                                 else
-   //                                 {
-   //                                     cl.wim.DoListLoad(Console.Item.Value, 0);
-   //                                 }
-
-   //                                 if (cl.wim.m_Collection != null)
-   //                                 {
-   //                                     foreach (WimComponentListRoot.Tabular t2 in cl.wim.m_Collection)
-   //                                     {
-   //                                         tabulars.Append($@"<li><a href=""{t2.Url}""{(t2.Selected ? " class=\"active\"" : null)}>{t2.TitleValue}</a></li>");
-
-   //                                         if (t2.Selected)
-   //                                         {
-   //                                             selectedTab = t2.List.ID;
-   //                                         }
-   //                                     }
-   //                                 }
-   //                             }
-   //                         }
-   //                     }
-   //                 }
-
-
-   //                 WimComponentListRoot.Tabular tmp = new WimComponentListRoot.Tabular();
-   //                 tmp.SelectedItem = currentListItemId;
-   //                 ApplyTabularUrl(Console, tmp, 0, currentListId);
-
-   //                 //  For use in property tabbing.
-   //                 int baseID = Utility.ConvertToInt(Console.Request.Query["base"]);
-   //                 if (baseID > 0)
-   //                 {
-   //                     IComponentList list = ComponentList.SelectOne(baseID);
-   //                     title = list.Name;
-   //                     currentListId = list.ID;
-   //                 }
-
-   //                 if (isSingleItemList)
-   //                 {
-   //                     tabTag = string.Format(@"
-   //                     <li{2}><a href=""{1}"">{3}</a></li>{4}"
-   //                         , title
-   //                         , Console.UrlBuild.GetListRequest(currentListId)
-   //                         , selectedTab == 0 ? " class=\"active\"" : null
-   //                         , itemTitle, tabulars
-   //                         );
-   //                 }
-   //                 else
-   //                 {
-   //                     string addition = GetQueryStringRecording(Console);
-   //                     tabTag = string.Format(@"
-			//            <li class=""active""><a href=""{1}"">{0}</a>{2}
-   //                     </li>
-   //                     "
-   //                         , itemTitle
-   //                         , tmp.Url
-   //                         , tabulars.Length > 0 ? $"<ul>{tabulars}</ul>" : string.Empty
-   //                         );
-   //                 }
-   //             }
-   //             else
-   //             {
-   //                 //  Show NO tabs
-   //                 tabTag = string.Format(@"
-			//            <li class=""active""><a href=""{1}"">{0}</a></li>"
-   //                     , Console.CurrentList.Name
-   //                     , Console.WimPagePath
-   //                     );
-   //             }
-   //         }
-
-   //         #endregion
-
-   //         string tabs = GetTabularTagNewDesign(Console, Console.CurrentList.Name, 0, false);
-
-   //         bool isFirstLevelRootnavigation = false;
-   //         bool isFirst = true;
-
-   //         Data.Folder currentFolder = resolver.Folder;
-
-   //         //  If the request is in a tabular the left navigation should show the navigation of the primary list (group ID)
-   //         if (resolver.Query.ContainsKey("folder") == false && resolver.GroupID.GetValueOrDefault(0) > 0)
-   //         {
-   //             Data.IComponentList folderList = Data.ComponentList.SelectOne(resolver.GroupID.Value);
-   //             if (folderList.FolderID.HasValue)
-   //             {
-   //                 currentFolder = await Data.Folder.SelectOneAsync(folderList.FolderID.Value).ConfigureAwait(false);
-   //                 if (resolver.SiteID.GetValueOrDefault(0) > 0 && currentFolder.SiteID != resolver.SiteID.Value)
-   //                 {
-   //                     if (currentFolder.MasterID.HasValue)
-   //                     {
-   //                         currentFolder = await Data.Folder.SelectOneAsync(currentFolder.MasterID.Value, resolver.SiteID.Value);
-   //                     }
-   //                 }
-   //             }
-   //         }
-
-   //         string currentName = currentFolder.Name;
-   //         string currentLink = "";
-   //         bool isPageProperty = resolver?.List?.Type == Data.ComponentListType.PageProperties;
-
-   //         #region Foldertype: Galleries
-
-   //         if (currentFolder.Type == Data.FolderType.Gallery)
-   //         {
-   //             int currentListID = resolver.GroupID.HasValue ? resolver.GroupID.Value : resolver.ListID.Value;
-
-   //             Data.Gallery root = await Data.Gallery.SelectOneRootAsync().ConfigureAwait(false);
-
-   //             int rootID = root.ID;
-   //             if (role.GalleryRoot.HasValue)
-   //             {
-   //                 rootID = role.GalleryRoot.Value;
-   //             }
-
-   //             currentName = "Documents";
-   //             currentLink = "##";// TODO: get correct url
-
-   //             Data.Gallery currentGallery = await Data.Gallery.SelectOneAsync(currentFolder.ID).ConfigureAwait(false);
-
-   //             Data.Gallery level1 = await Data.Gallery.SelectOneAsync(currentGallery, 1).ConfigureAwait(false);
-   //             Data.Gallery level2 = await Data.Gallery.SelectOneAsync(currentGallery, 2).ConfigureAwait(false);
-   //             Data.Gallery level3 = await Data.Gallery.SelectOneAsync(currentGallery, 3).ConfigureAwait(false);
-
-   //             //  LEVEL 1 : Folders
-   //             Data.Gallery[] galleries1 = await Data.Gallery.SelectAllByParentAsync(rootID).ConfigureAwait(false);
-
-   //             if (!CommonConfiguration.RIGHTS_GALLERY_SUBS_ARE_ALLOWED)
-   //             {
-   //                 galleries1 = (await Data.Gallery.ValidateAccessRightAsync(galleries1, role).ConfigureAwait(false)).ToArray();
-   //             }
-
-   //             foreach (Data.Gallery folder in galleries1)
-   //             {
-   //                 bool isActive = currentGallery.ID == folder.ID || level1.ID == folder.ID;
-                    
-   //                 string iconClass = "folder";
-   //                 iconClass += isActive ? " active" : "";
-   //                 iconClass += isFirst ? " first" : "";
-
-   //                 result.Items.Add(new NavigationItem()
-   //                 { 
-   //                     IconClass = iconClass,
-   //                     Text = folder.Name,
-   //                     Href="##" // TODO: get correct url
-   //                 });
-
-   //                 isFirst = false;
-   //             }
-   //         }
-
-   //         #endregion
-
-   //         #region Foldertype: Lists
-
-   //         if (isPageProperty && resolver.ItemID.HasValue)
-   //         {
-   //             Data.Page p = Data.Page.SelectOne(resolver.ItemID.Value);
-   //             string currentFolderName = p.Folder.Name;
-   //             if (currentFolderName == "/")
-   //             {
-   //                 currentFolderName = p.Folder.Site.Name;
-   //             }
-
-   //             result.Items.Add(new NavigationItem()
-   //             {
-   //                 Text = currentFolderName,
-   //                 Href = "##",// TODO: get correct url
-   //                 IsBack = true,
-   //             });
-
-   //             if (string.IsNullOrWhiteSpace(tabs) == false)
-   //             {
-   //                 build.AppendFormat(tabs);
-   //             }
-   //         }
-   //         else if (currentFolder.Type == Data.FolderType.List || currentFolder.Type == Data.FolderType.Administration)
-   //         {
-   //             int currentListID = resolver.GroupID.HasValue ? resolver.GroupID.Value : resolver.ListID.GetValueOrDefault(0);
-
-   //             if (!resolver.ItemID.HasValue)
-   //             {
-   //                 if (!CommonConfiguration.HIDE_BREADCRUMB)
-   //                 {
-   //                     result.Items.Add(new NavigationItem()
-   //                     {
-   //                         Text = "Home",
-   //                         Href = "##",// TODO: get correct url
-   //                         IsBack = true,
-   //                     });
-   //                 }
-   //             }
-   //             else
-   //             {
-   //                 var lists = await Data.ComponentList.SelectOneAsync(currentListID).ConfigureAwait(false);
-
-   //                 result.Items.Add(new NavigationItem()
-   //                 {
-   //                     Text = lists.Name,
-   //                     Href = "##",// TODO: get correct url
-   //                     IsBack = true,
-   //                 });
-   //             }
-
-   //             if (Console.CurrentList.Type != ComponentListType.Browsing)
-   //             {
-   //                 IComponentList[] lists1 = ComponentList.SelectAll(currentFolder.ID);
-   //                 lists1 = ComponentList.ValidateAccessRight(lists1,
-   //                     Console.CurrentApplicationUser);
-
-   //                 foreach (ComponentList list in lists1)
-   //                 {
-   //                     if (Console.Item.HasValue)
-   //                     {
-   //                         if (Console.Group.HasValue)
-   //                         {
-   //                             if (Console.Group.Value != list.ID)
-   //                                 continue;
-   //                         }
-   //                         else
-   //                         {
-   //                             if (list.ID != Console.CurrentList.ID)
-   //                                 continue;
-   //                         }
-   //                     }
-
-   //                     string dataReport = null;
-   //                     ComponentDataReportEventArgs e = null;
-   //                     if (list.Option_HasDataReport && !(list.ID == currentListID && Console.Item.HasValue))
-   //                     {
-   //                         var instance = list.GetInstance(Console.Context);
-   //                         if (instance != null)
-   //                         {
-   //                             e = instance.wim.DoListDataReport();
-   //                             if (e != null && e.ReportCount.HasValue)
-   //                             {
-   //                                 string count = e.ReportCount.Value.ToString();
-   //                                 if (e.ReportCount.Value > 99)
-   //                                     count = "99+";
-
-   //                                 dataReport = string.Format(" <span class=\"items\">{0}</span>", count);
-   //                             }
-   //                         }
-   //                     }
-
-   //                     if (list.IsVisible)
-   //                     {
-   //                         string x = string.Format(@"<li{3}>{6}<a href=""{0}"" class=""{1}{4}"">{8}{2}{7}</a>{5}</li>"
-   //                             , Console.UrlBuild.GetListRequest(list)
-   //                             , "list"
-   //                             , list.Name
-   //                             , list.ID == currentListID ? (Console.Item.HasValue ? @" class=""back""" : @" class=""active""") : string.Empty
-   //                             , isFirst ? " first" : null
-   //                             //, list.ID == currentListID ? tabs : string.Empty
-   //                             , Console.Item.HasValue ? (list.ID == currentListID ? tabs : string.Empty) : string.Empty
-   //                             , list.ID == currentListID ? (Console.Item.HasValue ? @"<span class=""icon-arrow-left-04""></span>" : string.Empty) : string.Empty
-   //                             , dataReport
-   //                             , string.IsNullOrWhiteSpace(list.Icon) ? null : $"<i class=\"{list.Icon}\"></i> " //8
-   //                             );
-   //                         build.Append(x);
-   //                         isFirst = false;
-   //                     }
-   //                 }
-   //             }
-
-   //             if (isFirst)
-   //             {
-   //                 if (!string.IsNullOrEmpty(Console.Request.Query["base"]))
-   //                 {
-   //                     var list = ComponentList.SelectOne(Convert.ToInt32(Console.Request.Query["base"]));
-   //                     build.AppendFormat(@"<li class=""back""><span class=""icon-arrow-left-04""></span><a href=""{0}"">{2}{1}</a></li>"
-   //                         , Console.UrlBuild.GetListRequest(list)
-   //                         , list.Name
-   //                         , string.IsNullOrWhiteSpace(list.Icon) ? null : $"<i class=\"{list.Icon}\"></i> " //2
-
-   //                         );
-   //                 }
-
-   //                 build.Append(tabs);
-   //             }
-   //         }
-   //         #endregion
-   //         #region Foldertype: Pages
-   //         else if (currentFolder.Type == FolderType.Page)
-   //         {
-   //             if (Console.ItemType == RequestItemType.Page)
-   //             {
-   //                 string currentFolderName = currentFolder.Name;
-   //                 if (currentFolderName == "/")
-   //                     currentFolderName = currentFolder.Site.Name;
-
-   //                 build.AppendFormat(@"<li class=""back""><span class=""icon-arrow-left-04""></span><a href=""{0}"">{1}</a></li>"
-   //                     , Console.UrlBuild.GetFolderRequest(currentFolder.ID), currentFolderName
-   //                     );
-
-   //                 if (string.IsNullOrWhiteSpace(tabs) == false)
-   //                 {
-   //                     build.AppendFormat(tabs);
-   //                 }
-   //             }
-   //             else
-   //             {
-   //                 Folder root;
-   //                 if (isFirstLevelRootnavigation)
-   //                     root = Folder.SelectOne(currentFolder, 1);
-   //                 else
-   //                     root = Folder.SelectOneBySite(Console.CurrentListInstance.wim.CurrentSite.ID, currentFolder.Type);
-
-   //                 var arr = Folder.SelectAllByParent(root.ID);
-
-   //                 foreach (var item in arr)
-   //                 {
-   //                     if (item.IsVisible)
-   //                     {
-   //                         build.AppendFormat(@"<li{3}><a href=""{0}"" class=""{1}{4}"">{2}</a></li>"
-   //                             , Console.UrlBuild.GetFolderRequest(item)
-   //                             , "list"
-   //                             , item.Name
-   //                             , null
-   //                             , isFirst ? " first" : null);
-   //                         isFirst = false;
-   //                     }
-   //                 }
-   //             }
-   //         }
-   //         #endregion
-
-
-   //         if (Console.CurrentList.Type == ComponentListType.InformationMessage)
-   //         {
-   //             build = new StringBuilder();
-   //             build.AppendFormat(@"<li><a href=""{0}"" class=""{1}"">{2}</a></li>", Console.UrlBuild.GetHomeRequest(), "list", "Home");
-   //         }
-
-   //         if (!string.IsNullOrEmpty(currentLink))
-   //             currentName = string.Format("<a href=\"{1}\">{0}</a>", currentName, currentLink);
-
-   //         return string.Format(@"
-   //         <aside id=""homeAside"">
-			//	<section id=""sideNav"">
-	  //              <menu class=""sideNav"">
-		 //               <ul>
-   //                         {2}
-		 //               </ul>
-	  //              </menu>
-   //             </section>
-			//</aside>"
-   //             , Console.WimRepository
-   //             , currentName
-   //             , build
-   //             );
-
+            #endregion
+
+            bool isFirstLevelRootnavigation = false;
+            bool isFirst = true;
+
+            Data.Folder currentFolder = Resolver.Folder;
+
+            //  If the request is in a tabular the left navigation should show the navigation of the primary list (group ID)
+            if (Resolver.Query.ContainsKey("folder") == false && Resolver.GroupID.GetValueOrDefault(0) > 0)
+            {
+                Data.IComponentList folderList = await Data.ComponentList.SelectOneAsync(Resolver.GroupID.Value).ConfigureAwait(false);
+                if (folderList.FolderID.HasValue)
+                {
+                    currentFolder = await Data.Folder.SelectOneAsync(folderList.FolderID.Value).ConfigureAwait(false);
+                    if (Resolver.SiteID.GetValueOrDefault(0) > 0 && currentFolder.SiteID != Resolver.SiteID.Value)
+                    {
+                        if (currentFolder.MasterID.HasValue)
+                        {
+                            currentFolder = await Data.Folder.SelectOneAsync(currentFolder.MasterID.Value, Resolver.SiteID.Value);
+                        }
+                    }
+                }
+            }
+
+            string currentName = currentFolder.Name;
+            string currentLink = "";
+            isPageProperty = Resolver?.List?.Type == Data.ComponentListType.PageProperties;
+
+            #region Foldertype: Galleries
+
+            if (currentFolder.Type == Data.FolderType.Gallery)
+            {
+                int currentListID = Resolver.GroupID.HasValue ? Resolver.GroupID.Value : Resolver.ListID.Value;
+
+                Data.Gallery root = await Data.Gallery.SelectOneRootAsync().ConfigureAwait(false);
+
+                int rootID = root.ID;
+                if (role.GalleryRoot.HasValue)
+                {
+                    rootID = role.GalleryRoot.Value;
+                }
+
+                currentName = "Documents";
+                currentLink = Resolver.UrlBuild.GetGalleryRequest(rootID);
+
+                Data.Gallery currentGallery = await Data.Gallery.SelectOneAsync(currentFolder.ID).ConfigureAwait(false);
+
+                Data.Gallery level1 = await Data.Gallery.SelectOneAsync(currentGallery, 1).ConfigureAwait(false);
+                Data.Gallery level2 = await Data.Gallery.SelectOneAsync(currentGallery, 2).ConfigureAwait(false);
+                Data.Gallery level3 = await Data.Gallery.SelectOneAsync(currentGallery, 3).ConfigureAwait(false);
+
+                //  LEVEL 1 : Folders
+                Data.Gallery[] galleries1 = await Data.Gallery.SelectAllByParentAsync(rootID).ConfigureAwait(false);
+
+                foreach (Data.Gallery folder in galleries1)
+                {
+                    bool isActive = currentGallery.ID == folder.ID || level1.ID == folder.ID;
+
+                    string iconClass = "folder";
+                    iconClass += isActive ? " active" : "";
+                    iconClass += isFirst ? " first" : "";
+
+                    var level1Item = new NavigationItem()
+                    {
+                        IconClass = iconClass,
+                        Text = folder.Name,
+                        Href = Resolver.UrlBuild.GetGalleryRequest(folder)
+                    };
+
+
+                    if (isActive && false)
+                    {
+                        //  LEVEL 2 : Folders
+                        List<Data.Gallery> galleries2 = (await Data.Gallery.SelectAllByParentAsync(folder.ID).ConfigureAwait(false)).ToList();
+                        galleries2 = (await Data.Gallery.ValidateAccessRightAsync(galleries2.ToArray(), MediakiwiUser).ConfigureAwait(false)).ToList();
+
+                        foreach (Data.Gallery folder2 in galleries2)
+                        {
+                            bool isActive2 = (folder2.ID == currentGallery.ID) || level2.ID == folder2.ID;
+
+                            var level2Item = new NavigationItem()
+                            {
+                                Text = folder2.Name,
+                                Href = Resolver.UrlBuild.GetGalleryRequest(folder2),
+                                IsHighlighted = isActive2,
+                            };
+
+                            #region Level 3
+
+                            if (isActive2)
+                            {
+                                //  LEVEL 3 : Folders
+                                foreach (Data.Gallery folder3 in await Data.Gallery.SelectAllByParentAsync(folder2.ID).ConfigureAwait(false))
+                                {
+                                    bool isActive3 = (folder3.ID == currentGallery.ID) || level3.ID == folder3.ID;
+                                    level2Item.Items.Add(new NavigationItem()
+                                    {
+                                        Text = folder3.Name,
+                                        Href = Resolver.UrlBuild.GetGalleryRequest(folder3),
+                                        IsHighlighted = isActive3
+                                    });
+                                }
+                            }
+
+                            #endregion
+
+                            level1Item.Items.Add(level2Item);
+
+                        }
+                    }
+
+                    result.Items.Add(level1Item);
+
+                    isFirst = false;
+                }
+            }
+
+            #endregion
+
+            #region Foldertype: Lists
+
+            if (isPageProperty && Resolver.ItemID.HasValue)
+            {
+                Data.Page p = await Data.Page.SelectOneAsync(Resolver.ItemID.Value).ConfigureAwait(false);
+                string currentFolderName = p.Folder.Name;
+                if (currentFolderName == "/")
+                {
+                    currentFolderName = p.Folder.Site.Name;
+                }
+
+                result.Items.Add(new NavigationItem()
+                {
+                    Text = currentFolderName,
+                    Href = Resolver.UrlBuild.GetFolderRequest(p.Folder.ID),
+                    IsBack = true,
+                });
+            }
+            else if (currentFolder.Type == Data.FolderType.List || currentFolder.Type == Data.FolderType.Administration)
+            {
+                int currentListID = Resolver.GroupID.HasValue ? Resolver.GroupID.Value : Resolver.ListID.GetValueOrDefault(0);
+
+                if (!Resolver.ItemID.HasValue)
+                {
+                    if (!CommonConfiguration.HIDE_BREADCRUMB)
+                    {
+                        result.Items.Add(new NavigationItem()
+                        {
+                            Text = "Home",
+                            Href = await Resolver.UrlBuild.GetHomeRequestAsync().ConfigureAwait(false),
+                            IsBack = true,
+                        });
+                    }
+                }
+                else
+                {
+                    var list = await Data.ComponentList.SelectOneAsync(currentListID).ConfigureAwait(false);
+
+                    result.Items.Add(new NavigationItem()
+                    {
+                        Text = list.Name,
+                        Href = await Resolver.UrlBuild.GetListRequestAsync(list).ConfigureAwait(false),
+                        IsBack = true,
+                    });
+                }
+
+                if (Resolver.List.Type != Data.ComponentListType.Browsing)
+                {
+                    Data.IComponentList[] lists1 = await Data.ComponentList.SelectAllAsync(currentFolder.ID).ConfigureAwait(false);
+                    lists1 = await Data.ComponentList.ValidateAccessRightAsync(lists1, MediakiwiUser).ConfigureAwait(false);
+
+                    foreach (var list in lists1)
+                    {
+                        if (Resolver.ItemID.HasValue)
+                        {
+                            if (Resolver.GroupID.HasValue)
+                            {
+                                if (Resolver.GroupID.Value != list.ID)
+                                {
+                                    continue;
+                                }
+                            }
+                            else
+                            {
+                                if (list.ID != Resolver.List.ID)
+                                {
+                                    continue;
+                                }
+                            }
+                        }
+
+                        string dataReport = null;
+                        Framework.ComponentDataReportEventArgs e = null;
+                        if (list.Option_HasDataReport && !(list.ID == currentListID && Resolver.ItemID.HasValue))
+                        {
+                            var instance = list.GetInstance(Console);
+                            if (instance != null)
+                            {
+                                e = instance.wim.DoListDataReport();
+                                if (e != null && e.ReportCount.HasValue)
+                                {
+                                    dataReport = e.ReportCount.Value.ToString();
+                                    if (e.ReportCount.Value > 99)
+                                    {
+                                        dataReport = "99+";
+                                    }
+                                }
+                            }
+                        }
+
+                        if (list.IsVisible)
+                        {
+                            result.Items.Add(new NavigationItem()
+                            {
+                                Text = list.Name,
+                                Href = Resolver.UrlBuild.GetListRequest(list),
+                                IsBack = list.ID == currentListID && Resolver.ItemID.HasValue,
+                                IsHighlighted = list.ID == currentListID && Resolver.ItemID.HasValue == false,
+                                IconClass = $"{(isFirst ? "first " : "")}{(string.IsNullOrWhiteSpace(list.Icon) ? null : $" {list.Icon}") }",
+                                BadgeContent = dataReport
+                            });
+
+                            isFirst = false;
+                        }
+                    }
+                }
+
+                if (isFirst)
+                {
+                    if (Resolver.BaseID.HasValue)
+                    {
+                        var list = await Data.ComponentList.SelectOneAsync(Resolver.BaseID.Value).ConfigureAwait(false);
+                        result.Items.Add(new NavigationItem()
+                        {
+                            Text = list.Name,
+                            Href = Resolver.UrlBuild.GetListRequest(list),
+                            IsBack = true,
+                            IconClass = string.IsNullOrWhiteSpace(list.Icon) ? null : $" {list.Icon}"
+                        });
+
+                    }
+                }
+            }
+
+            #endregion
+
+            #region Foldertype: Pages
+
+            else if (currentFolder.Type == Data.FolderType.Page)
+            {
+                if (Resolver.ItemType == RequestItemType.Page)
+                {
+                    string currentFolderName = currentFolder.Name;
+                    if (currentFolderName == "/")
+                    {
+                        currentFolderName = currentFolder.Site.Name;
+                    }
+
+                    result.Items.Add(new NavigationItem()
+                    {
+                        Text = currentFolderName,
+                        Href = Resolver.UrlBuild.GetFolderRequest(currentFolder.ID),
+                        IsBack = true,
+                    });
+                }
+                else
+                {
+                    Data.Folder root;
+                    if (isFirstLevelRootnavigation)
+                    {
+                        root = await Data.Folder.SelectOneAsync(currentFolder, 1).ConfigureAwait(false);
+                    }
+                    else
+                    {
+                        root = await Data.Folder.SelectOneBySiteAsync(Resolver.ListInstance.wim.CurrentSite.ID, currentFolder.Type).ConfigureAwait(false);
+                    }
+
+                    var arr = await Data.Folder.SelectAllByParentAsync(root.ID).ConfigureAwait(false);
+
+                    foreach (var item in arr)
+                    {
+                        if (item.IsVisible)
+                        {
+                            result.Items.Add(new NavigationItem()
+                            {
+                                Href = Resolver.UrlBuild.GetFolderRequest(item),
+                                Text = item.Name,
+                                IconClass = $"list{(isFirst ? " first" : null)}",
+                            });
+                            isFirst = false;
+                        }
+                    }
+                }
+            }
+
+            #endregion
+
+
+            if (Resolver.List?.Type == Data.ComponentListType.InformationMessage)
+            {
+                result.Items.Add(new NavigationItem()
+                {
+                    Text = "Home",
+                    Href = Resolver.UrlBuild.GetHomeRequest(),
+                    IconClass = "list"
+                });
+            }
+
+            // Reverse items
+            result.Items = result.Items.Reverse().ToList();
+
+            result.StatusCode = System.Net.HttpStatusCode.OK;
 
             return Ok(result);
         }
 
+        #endregion Side Navigation
+
+        #region Get Sites
+
+        /// <summary>
+        /// Returns a list of Sites (Channels) available for this environment.
+        /// </summary>
+        /// <param name="request">The request containing the needed information</param>
+        /// <returns></returns>
+        /// <response code="200">The Navigation is succesfully retrieved</response>
+        /// <response code="400">Some needed information is missing from the request</response>
+        /// <response code="401">The user is not succesfully authenticated</response>
+        [Produces("application/json")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [HttpGet("GetSites")]
+        public async Task<ActionResult<GetSitesResponse>> GetSites([FromBody] GetSitesRequest request)
+        {
+            GetSitesResponse result = new GetSitesResponse();
+
+            if (request.CurrentSiteID == 0)
+            {
+                return BadRequest();
+            }
+
+            foreach (var site in await Data.Site.SelectAllAsync().ConfigureAwait(false))
+            {
+                CultureInfo ci = new CultureInfo(site.Culture);
+                int weekStart = (int)ci.DateTimeFormat.FirstDayOfWeek;
+                if (weekStart == 0)
+                {
+                    weekStart = 7;
+                }
+
+                result.Items.Add(new SiteItem()
+                {
+                    Culture = site.Culture,
+                    ID = site.ID,
+                    Title = site.Name,
+                    WeekStart = weekStart
+                });
+            }
+            
+            result.StatusCode = System.Net.HttpStatusCode.OK;
+
+            return Ok(result);
+        }
+
+        #endregion Get Sites
     }
 }

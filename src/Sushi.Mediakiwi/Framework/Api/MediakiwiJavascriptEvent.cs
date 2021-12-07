@@ -2,10 +2,10 @@
 {
     public enum MediakiwiJSEvent
     {
-        none = 0,
-        change = 1,
-        click = 1,        
-        blur = 2,
-        keyup = 3,
+        None = 0,
+        Change = 1,
+        Click = 2,        
+        Blur = 3,
+        Keyup = 4,
     }
 }

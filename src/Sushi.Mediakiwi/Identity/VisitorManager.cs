@@ -112,13 +112,12 @@ namespace Sushi.Mediakiwi
             IVisitor visitor = null;
             using (var auth = new AuthenticationLogic(Context))
             {
-                auth.TicketName = CommonConfiguration.AUTHENTICATION_COOKIE;
                 auth.Password = Common.GetPassPhraseFromContext(Context);
 
                 if (Context != null)
                 {
                     var v = auth.GetValue("v");
-                    if (!string.IsNullOrWhiteSpace(v) && Utility.IsGuid(v, out var id))
+                    if (string.IsNullOrWhiteSpace(v) == false && Utils.IsGuid(v, out Guid id))
                     {
                         visitor = Visitor.Select(id);
                     }
@@ -147,7 +146,6 @@ namespace Sushi.Mediakiwi
             IVisitor visitor = null;
             using (var auth = new AuthenticationLogic(Context))
             {
-                auth.TicketName = CommonConfiguration.AUTHENTICATION_COOKIE;
                 auth.Password = Common.GetPassPhraseFromContext(Context);
 
                 if (Context != null)
@@ -240,7 +238,7 @@ namespace Sushi.Mediakiwi
 
             if (shouldSetCookie)
             {
-                SetCookie(entity.GUID, entity.RememberMe);
+                SetCookie(entity.GUID);
             }
 
             return true;
@@ -298,7 +296,7 @@ namespace Sushi.Mediakiwi
 
             if (shouldSetCookie)
             {
-                SetCookie(entity.GUID, entity.RememberMe);
+                SetCookie(entity.GUID);
             }
 
             return true;
@@ -316,28 +314,32 @@ namespace Sushi.Mediakiwi
         /// </summary>
         public virtual void SetCookie(IVisitor entity)
         {
-            SetCookie(entity.GUID, entity.RememberMe);
+            SetCookie(entity.GUID);
         }
 
         /// <summary>
         /// Sets the cookie.
         /// </summary>
         /// <param name="guid">The GUID.</param>
-        /// <param name="profileId">The profile id.</param>
-        /// <param name="shouldRememberProfileForNextVisit">if set to <c>true</c> [should remember profile for next visit].</param>
-        public virtual void SetCookie(Guid guid, bool shouldRememberProfileForNextVisit)
+        public virtual void SetCookie(Guid guid)
         {
-            if (guid == Guid.Empty) return;
-            if (Context == null) return;
+            if (guid == Guid.Empty)
+            {
+                return;
+            }
+
+            if (Context == null)
+            {
+                return;
+            }
+
             using (var auth = new AuthenticationLogic(Context))
             {
                 auth.Password = Common.GetPassPhraseFromContext(Context);
-                auth.TicketName = CommonConfiguration.AUTHENTICATION_COOKIE;
 
                 auth.AddValue(m_Attribute_TimeStamp, DateTime.UtcNow.Ticks.ToString());
                 auth.AddValue(m_Attribute_Id, guid.ToString());
                 auth.AddValue(m_Attribute_IdentityVersion, "3");
-                auth.LifeTime = DateTime.UtcNow.AddMinutes(CommonConfiguration.AUTHENTICATION_TIMEOUT);
 
                 auth.CreateTicket();
             }

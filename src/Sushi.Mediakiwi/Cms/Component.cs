@@ -1545,7 +1545,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
         /// <param name="container">The container.</param>
         /// <param name="openInFrame">The open in frame.</param>
         /// <returns></returns>
-        internal WimControlBuilder CreateList(Console container, int openInFrame, bool isJSONRequest = false)
+        public WimControlBuilder CreateList(Console container, int openInFrame, bool isJSONRequest = false)
         {
             int listId = container.CurrentList.ID;
 
@@ -1892,6 +1892,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
         }
 
         List<ListInfoItem> m_AllListProperties;
+
         int m_PropertyListTypeID;
 
         /// <summary>

@@ -1,25 +1,44 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Primitives;
-using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Sushi.Mediakiwi.API.Authentication;
+using Sushi.Mediakiwi.API.Filters;
 using Sushi.Mediakiwi.API.Services;
-using Swashbuckle.AspNetCore.Swagger;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 
 namespace Sushi.Mediakiwi.API.Extensions
 {
     public static class Extensions
     {
 
-        public static HttpContext Clone(this HttpContext httpContext, bool copyBody)
+        public static Framework.Api.MediakiwiPostRequest GetPostRequest(this ICollection<Transport.FormMap> maps)
+        {
+            Framework.Api.MediakiwiPostRequest result = new Framework.Api.MediakiwiPostRequest();
+            Dictionary<string, object> postForm = new Dictionary<string, object>();
+
+            if (maps?.Count > 0)
+            {
+                foreach (var map in maps)
+                {
+                    foreach (var element in map.Fields)
+                    {
+                        postForm.Add(element.PropertyName, element.Value);
+                    }
+                }
+            }
+
+            result.FormFields = postForm;
+            return result;
+        }
+
+        public static HttpContext Clone(this HttpContext httpContext)
         {
             var existingRequestFeature = httpContext.Features.Get<IHttpRequestFeature>();
 
@@ -41,15 +60,6 @@ namespace Sushi.Mediakiwi.API.Extensions
                 Headers = new HeaderDictionary(requestHeaders),
             };
 
-            if (copyBody)
-            {
-                // We need to buffer first, otherwise the body won't be copied
-                // Won't work if the body stream was accessed already without calling EnableBuffering() first or without leaveOpen
-                httpContext.Request.EnableBuffering();
-                httpContext.Request.Body.Seek(0, SeekOrigin.Begin);
-                requestFeature.Body = existingRequestFeature.Body;
-            }
-
             var features = new FeatureCollection();
             features.Set<IHttpRequestFeature>(requestFeature);
             // Unless we need the response we can ignore it...
@@ -57,12 +67,6 @@ namespace Sushi.Mediakiwi.API.Extensions
             features.Set<IHttpResponseBodyFeature>(new StreamResponseBodyFeature(Stream.Null));
 
             var newContext = new DefaultHttpContext(features);
-
-            if (copyBody)
-            {
-                // Rewind for any future use...
-                httpContext.Request.Body.Seek(0, SeekOrigin.Begin);
-            }
 
             // Can happen if the body was not copied
             if (httpContext.Request.HasFormContentType && httpContext.Request.Form.Count != newContext.Request.Form.Count)
@@ -75,19 +79,11 @@ namespace Sushi.Mediakiwi.API.Extensions
 
         public static IApplicationBuilder UseMediakiwiApi(this IApplicationBuilder app)
         {
-            app.UseSwagger(options=> {
+
+            app.UseCors(Common.API_CORS_POLICY);
+
+            app.UseSwagger(options => {
                 options.RouteTemplate = "mkapi/swagger/{documentname}/swagger.json";
-                
-
-                options.PreSerializeFilters.Add((swaggerDoc, httpReq) => {
-                    IDictionary<string, OpenApiPathItem> paths = new Dictionary<string, OpenApiPathItem>();
-                    OpenApiPaths correctedPaths = swaggerDoc.Paths;
-
-                    foreach (var item in correctedPaths.Where(x => x.Key.Contains("mkapi/", StringComparison.InvariantCulture) == false))
-                    {
-                        swaggerDoc.Paths.Remove(item.Key);
-                    }
-                });
             });
 
             app.UseSwaggerUI(options =>
@@ -96,16 +92,56 @@ namespace Sushi.Mediakiwi.API.Extensions
                 options.RoutePrefix = "mkapi/swagger";
             });
 
+            if (CommonConfiguration.IS_LOCAL_DEVELOPMENT)
+            {
+                app.UseCookiePolicy(new CookiePolicyOptions()
+                {
+                    MinimumSameSitePolicy = SameSiteMode.None
+                });
+            }
+
             return app;
         }
 
         public static void AddMediakiwiApi(this IServiceCollection services)
         {
+            var config = services.BuildServiceProvider().GetService<IConfiguration>();
+            if (config != null)
+            {
+                Data.Configuration.WimServerConfiguration.LoadJsonConfig(config);
+            }
+            else 
+            {
+                Console.WriteLine("No WimServerConfiguration available, was AddMediakiwi added first ?");
+            }
+
+            services.AddCors(options =>
+            {
+                if (CommonConfiguration.IS_LOCAL_DEVELOPMENT)
+                {
+                    options.AddPolicy(name: Common.API_CORS_POLICY,
+                                      builder =>
+                                      {
+                                          builder.SetIsOriginAllowed(origin => new Uri(origin).Host == "localhost");
+                                          builder.AllowCredentials();
+                                          builder.AllowAnyMethod();
+                                      });
+                }
+            });
+
+            // Add API services
             services.AddSingleton<IUserService, UserService>();
             services.AddSingleton<INavigationService, NavigationService>();
+            services.AddSingleton<IContentService, ContentService>();
+            services.AddControllers(o =>
+            {
+                o.Conventions.Add(new SwaggerSchemaFilter());
+            });
+
+            // Add swagger
             services.AddSwaggerGen(options =>
             {
-                var filePath = Path.Combine(AppContext.BaseDirectory, "Sushi.Mediakiwi.API.xml");
+                var filePath = Path.Combine(AppContext.BaseDirectory, $"{Common.API_ASSEMBLY_NAME}.xml");
                 options.IncludeXmlComments(filePath);
                 options.EnableAnnotations(true, true);
                 options.SwaggerDoc("v0.1", new OpenApiInfo
@@ -120,25 +156,20 @@ namespace Sushi.Mediakiwi.API.Extensions
                         Url = new Uri("https://www.supershift.nl")
                     }, 
                 });
+                options.OperationFilter<SwaggerUrlHeaderFilter>();
+                options.OperationFilter<SwaggerCookieFilter>();
+                options.DocumentFilter<SwaggerDocumentFilter>();
+                //options.SchemaFilter<SwaggerSchemaFilter>();
             });
 
-            services.AddAuthentication(option =>
-            {
-                option.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                option.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-
-            }).AddJwtBearer(options =>
-            {
-                options.TokenValidationParameters = new TokenValidationParameters
+            // Add Cookie validator and authentication
+            services.AddScoped<MediakiwiCookieValidator>();
+            services.AddAuthentication(Microsoft.AspNetCore.Authentication.Cookies.CookieAuthenticationDefaults.AuthenticationScheme)
+                .AddCookie(options =>
                 {
-                    ValidateIssuer = true,
-                    ValidateLifetime = false,
-                    ValidateIssuerSigningKey = true,
-                    ValidIssuer = Common.API_AUTHENTICATION_ISSUER,
-                    ValidAudience = Common.API_AUTHENTICATION_AUDIENCE,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Common.API_AUTHENTICATION_KEY))
-                };
-            });
+                    options.Cookie.Name = Common.API_COOKIE_KEY;
+                    options.EventsType = typeof(MediakiwiCookieValidator);
+                });
         }
     }
 }

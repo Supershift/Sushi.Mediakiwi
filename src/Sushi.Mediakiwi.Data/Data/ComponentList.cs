@@ -884,20 +884,20 @@ namespace Sushi.Mediakiwi.Data
         public static IComponentList[] SelectAll(int folderID, IApplicationUser user, bool includeHidden = false)
         {
             IComponentList[] lists = null;
-            if (!user.Role().All_Lists)
+            if (!user.SelectRole().All_Lists)
             {
-                if (user.Role().IsAccessList)
+                if (user.SelectRole().IsAccessList)
                 {
                     lists = (
                         from item in SelectAll(folderID, includeHidden)
-                        join relation in RoleRight.SelectAll(user.Role().ID, RoleRightType.List) on item.ID equals relation.ItemID
+                        join relation in RoleRight.SelectAll(user.SelectRole().ID, RoleRightType.List) on item.ID equals relation.ItemID
                         select item).ToArray();
                 }
                 else
                 {
                     var acl = (
                         from item in SelectAll(folderID, includeHidden)
-                        join relation in RoleRight.SelectAll(user.Role().ID, RoleRightType.List) on item.ID equals relation.ItemID
+                        join relation in RoleRight.SelectAll(user.SelectRole().ID, RoleRightType.List) on item.ID equals relation.ItemID
                         into combination
                         from relation in combination.DefaultIfEmpty()
                         select new { ID = item.ID, HasAccess = relation == null });
@@ -923,13 +923,13 @@ namespace Sushi.Mediakiwi.Data
         public static async Task<IComponentList[]> SelectAllAsync(int folderID, IApplicationUser user, bool includeHidden = false)
         {
             IComponentList[] lists = null;
-            if (!user.Role().All_Lists)
+            if (!user.SelectRole().All_Lists)
             {
-                if (user.Role().IsAccessList)
+                if (user.SelectRole().IsAccessList)
                 {
                     lists = (
                         from item in await SelectAllAsync(folderID, includeHidden).ConfigureAwait(false)
-                        join relation in await RoleRight.SelectAllAsync(user.Role().ID, RoleRightType.List).ConfigureAwait(false) 
+                        join relation in await RoleRight.SelectAllAsync(user.SelectRole().ID, RoleRightType.List).ConfigureAwait(false) 
                         on item.ID equals relation.ItemID
                         select item).ToArray();
                 }
@@ -937,7 +937,7 @@ namespace Sushi.Mediakiwi.Data
                 {
                     var acl = (
                         from item in await SelectAllAsync(folderID, includeHidden).ConfigureAwait(false)
-                        join relation in await RoleRight.SelectAllAsync(user.Role().ID, RoleRightType.List).ConfigureAwait(false)
+                        join relation in await RoleRight.SelectAllAsync(user.SelectRole().ID, RoleRightType.List).ConfigureAwait(false)
                         on item.ID equals relation.ItemID
                         into combination
                         from relation in combination.DefaultIfEmpty()
@@ -965,7 +965,7 @@ namespace Sushi.Mediakiwi.Data
         /// <returns></returns>
         public static IComponentList[] SelectAllAccessibleLists(IApplicationUser user, RoleRightType type)
         {
-            return SelectAllAccessibleLists(user.Role(), type);
+            return SelectAllAccessibleLists(user.SelectRole(), type);
         }
 
         /// <summary>
@@ -1017,7 +1017,7 @@ namespace Sushi.Mediakiwi.Data
         /// <returns></returns>
         public static async Task<IComponentList[]> SelectAllAccessibleListsAsync(IApplicationUser user, RoleRightType type)
         {
-            return await SelectAllAccessibleListsAsync(await user.RoleAsync().ConfigureAwait(false), type).ConfigureAwait(false);
+            return await SelectAllAccessibleListsAsync(await user.SelectRoleAsync().ConfigureAwait(false), type).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -1353,7 +1353,7 @@ namespace Sushi.Mediakiwi.Data
         /// </returns>
         public bool HasRoleAccess(IApplicationUser user)
         {
-            if (ID == 0 || user.Role().All_Lists)
+            if (ID == 0 || user.SelectRole().All_Lists)
                 return true;
 
             var selection = from item in SelectAllAccessibleLists(user, RoleRightType.List) where item.ID == ID select item;
@@ -1407,7 +1407,7 @@ namespace Sushi.Mediakiwi.Data
         /// </returns>
         public async Task<bool> HasRoleAccessAsync(IApplicationUser user)
         {
-            if (ID == 0 || user.Role().All_Lists)
+            if (ID == 0 || user.SelectRole().All_Lists)
                 return true;
 
             var selection = from item in await SelectAllAccessibleListsAsync(user, RoleRightType.List)

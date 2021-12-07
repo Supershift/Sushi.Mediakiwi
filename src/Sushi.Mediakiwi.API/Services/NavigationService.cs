@@ -1,28 +1,31 @@
 ﻿using Sushi.Mediakiwi.API.Transport;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Sushi.Mediakiwi.API.Services
 {
     public class NavigationService : INavigationService
     {
-        public string GetLogoURL(Beta.GeneratedCms.Console container)
+        public string GetLogoURL(UrlResolver resolver)
         {
             if (string.IsNullOrWhiteSpace(CommonConfiguration.LOGO_URL))
             {
-                return CommonConfiguration.CDN_Folder(container, "images") + @"MK_logo.png";
+                var filePath = resolver.AddApplicationPath(CommonConfiguration.LOCAL_FILE_PATH, true);
+                return CommonConfiguration.CDN_Folder(filePath, "images") + @"MK_logo.png";
             }
-            return container.AddApplicationPath(CommonConfiguration.LOGO_URL, true);
+
+            return resolver.AddApplicationPath(CommonConfiguration.LOGO_URL, true);
         }
 
-        public string GetHomepageURL(Beta.GeneratedCms.Console container)
+        public string GetHomepageURL(UrlResolver resolver)
         {
-            return container.UrlBuild.GetHomeRequest();
+            return resolver.UrlBuild.GetHomeRequest();
         }
 
         public bool IsRequestPartOfNavigation(Data.IMenuItemView item, UrlResolver urlResolver)
         {
-         
+
             //  When the topnav is a section
             if (item.TypeID == 7)
             {
@@ -72,13 +75,14 @@ namespace Sushi.Mediakiwi.API.Services
         }
 
 
-        public string GetUrl(Beta.GeneratedCms.Console container, Data.IMenuItemView entity, int channel)
+
+        public async Task<string> GetUrlAsync(UrlResolver resolver, Data.IMenuItemView entity, int? channelId)
         {
             var querystring = string.Empty;
 
             switch (entity.TypeID)
             {
-                case 1: return container.UrlBuild.GetListRequest(Convert.ToInt32(entity.ItemID));
+                case 1: return await resolver.UrlBuild.GetListRequestAsync(Convert.ToInt32(entity.ItemID)).ConfigureAwait(false);
                 case 2: querystring = $"?folder={entity.ItemID}"; break;
                 case 3: querystring = $"?page={entity.ItemID}"; break;
                 case 4: querystring = $"?dashboard={entity.ItemID}"; break;
@@ -89,7 +93,8 @@ namespace Sushi.Mediakiwi.API.Services
                 default: querystring = ""; break;
             }
 
-            return string.Concat(container.GetWimPagePath(channel), querystring);
+            var wimPath = await resolver.GetWimPagePathAsync(channelId).ConfigureAwait(false);
+            return $"{wimPath}{querystring}";
         }
 
         public async Task<bool> HasRoleAccessAsync(Data.IMenuItemView item, Data.IApplicationRole role)
@@ -124,7 +129,68 @@ namespace Sushi.Mediakiwi.API.Services
             return true;
         }
 
-        public async Task<(bool isCurrent, bool addEmpty)> AddSubSubNavigationAsync(Beta.GeneratedCms.Console container, NavigationItem topnav, Data.IMenuItemView item, string className, Data.IApplicationRole role)
+        public string GetQueryStringRecording(UrlResolver resolver)
+        {
+            string addition = string.Empty;
+            if (resolver.ListInstance.wim?.GetQueryStringRecording()?.Any() == true)
+            {
+                resolver.ListInstance.wim.GetQueryStringRecording().ToList().ForEach(x =>
+                {
+                    if (!string.IsNullOrEmpty(resolver.Query[x]))
+                    {
+                        addition += $"&{x}={resolver.Query[x]}";
+                    }
+                });
+            }
+            return addition;
+        }
+
+        public void ApplyTabularUrl(UrlResolver resolver, Framework.WimComponentListRoot.Tabular tab, int levelEntry, int? currentListID)
+        {
+            int listID = resolver.List != null ? resolver.List.ID : Utils.ConvertToInt(resolver.Query["list"]);
+
+            string addition = GetQueryStringRecording(resolver);
+
+            string folderInfo = null;
+            if (resolver.FolderID.GetValueOrDefault(0) > 0)
+            {
+                folderInfo = $"&folderInfo={resolver.FolderID.Value}";
+            }
+
+            string baseInfo = null;
+
+            if (resolver.BaseID.GetValueOrDefault(0) > 0)
+            {
+                baseInfo = $"&base={resolver.BaseID.Value}";
+            }
+
+            if (levelEntry == 1)
+            {
+                if (resolver.GroupID.GetValueOrDefault(0) == 0)
+                {
+                    tab.Url = $"{resolver.UrlBuild.GetListRequest(tab.List, tab.SelectedItem)}&group={listID}{addition}{baseInfo}{folderInfo}&groupitem={resolver.ItemID.GetValueOrDefault(0)}&list={tab.List.ID}";
+                }
+                else
+                {
+                    tab.Url = $"{resolver.WimPagePath}?group={resolver.GroupID.Value}{addition}{baseInfo}{folderInfo}&groupitem={resolver.GroupItemID.GetValueOrDefault(0)}&list={tab.List.ID}&item={(resolver.Group2ID.GetValueOrDefault(0) == tab.List.ID ? resolver.Group2ItemID.GetValueOrDefault(0) : tab.SelectedItem)}";
+                }
+            }
+            else if (levelEntry == 2)
+            {
+                tab.Url = $"{resolver.WimPagePath}?group={resolver.GroupID.GetValueOrDefault(0)}{addition}{baseInfo}{folderInfo}&groupitem={resolver.GroupItemID.GetValueOrDefault(0)}&group2={listID}&group2item={resolver.ItemID.GetValueOrDefault(0)}&list={tab.List.ID}&item={tab.SelectedItem}";
+            }
+            else
+            {
+                tab.Url = $"{resolver.WimPagePath}?list={listID}{addition}{baseInfo}{folderInfo}&item={tab.SelectedItem}";
+            }
+
+            if (resolver.OpenInFrame.HasValue && tab.Url.Contains("?"))
+            {
+                tab.Url += $"&openinframe={resolver.OpenInFrame.GetValueOrDefault()}";
+            }
+        }
+
+        public async Task<(bool isCurrent, bool addEmpty)> AddSubSubNavigationAsync(UrlResolver resolver, NavigationItem topnav, Data.IMenuItemView item, string className, Data.IApplicationRole role)
         {
             bool isCurrent = false;
             bool addEmpty = false;
@@ -151,7 +217,7 @@ namespace Sushi.Mediakiwi.API.Services
                         continue;
                     }
 
-                    if (subItem.ItemID == container.CurrentList.ID)
+                    if (resolver.ListID.HasValue && subItem.ItemID == resolver.ListID.Value)
                     {
                         isCurrent = true;
                     }

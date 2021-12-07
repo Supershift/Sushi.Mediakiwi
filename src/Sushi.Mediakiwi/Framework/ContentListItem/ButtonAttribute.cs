@@ -1,5 +1,6 @@
 using Sushi.Mediakiwi.Data;
 using System;
+using System.Collections.Generic;
 
 namespace Sushi.Mediakiwi.Framework
 {
@@ -382,8 +383,51 @@ namespace Sushi.Mediakiwi.Framework.ContentListItem
         {
             Mandatory = isRequired;
             IsCloaked = isCloaked;
+
+            Dictionary<string, object> dict = new Dictionary<string, object>();
+            string formName = GetFormMapClass();
+
+            dict.Add(nameof(AskConfirmation), AskConfirmation);
+            dict.Add(nameof(ConfirmationQuestion), ConfirmationQuestion);
+            dict.Add(nameof(ConfirmationTitle), ConfirmationTitle);
+            dict.Add(nameof(ConfirmationRejectLabel), ConfirmationRejectLabel);
+            dict.Add(nameof(ConfirmationAcceptLabel), ConfirmationAcceptLabel);
+            dict.Add(nameof(Target), Target);
+            dict.Add(nameof(CustomUrl), CustomUrl);
+            dict.Add(nameof(CustomUrlProperty), CustomUrlProperty);
+            dict.Add(nameof(TriggerSaveEvent), TriggerSaveEvent);
+
+            // Add popuplayer size
+            if (OpenInPopupLayer)
+            {
+                dict.Add(nameof(OpenInPopupLayer), OpenInPopupLayer);
+                dict.Add(nameof(ListInPopupLayer), ListInPopupLayer);
+                dict.Add(nameof(PopupLayerHasScrollBar), PopupLayerHasScrollBar);
+                dict.Add(nameof(PopupLayerHeight), PopupLayerHeight);
+                dict.Add(nameof(PopupLayerSize), PopupLayerSize);
+                dict.Add(nameof(PopupLayerWidth), PopupLayerWidth);
+                dict.Add(nameof(PopupTitle), PopupTitle);
+            }
+
+            build.ApiResponse.Fields.Add(new Api.MediakiwiField()
+            {
+                Event = Api.MediakiwiJSEvent.Click,
+                Title = MandatoryWrap(Title),
+                Value = OutputText,
+                Expression = Expression,
+                PropertyName = ID,
+                PropertyType = (Property == null) ? typeof(bool).FullName : Property.PropertyType.FullName,
+                VueType = Api.MediakiwiFormVueType.wimButton,
+                ContentTypeID = ContentTypeSelection,
+                IsAutoPostback = false,
+                HelpText = InteractiveHelp,
+                AdditionalData = dict,
+                FormSection = formName
+            });
+
+
             //if (!m_IsFormElement)
-                return null;
+            return null;
 
         }
 

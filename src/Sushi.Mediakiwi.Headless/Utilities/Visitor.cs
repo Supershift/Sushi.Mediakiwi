@@ -187,9 +187,12 @@ namespace Sushi.Mediakiwi.Headless.Utilities
         {
             string cookie = string.Empty;
             foreach (var key in CookieSettings.AllKeys)
+            {
                 cookie += $"{(cookie.Length > 0 ? "&" : string.Empty)}{key}={WebUtility.UrlEncode(CookieSettings[key])}";
+            }
 
             string encryption = Encrypt(cookie);
+
             if (m_Context != null && m_Context.Response != null)
             {
                 try

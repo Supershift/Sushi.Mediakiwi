@@ -115,19 +115,26 @@ namespace Sushi.Mediakiwi.Framework.ContentListItem
         /// <returns></returns>
         public Field WriteCandidate(WimControlBuilder build, bool isEditMode, bool isRequired, bool isCloaked)
         {
-            this.Mandatory = isRequired;
-            this.IsCloaked = isCloaked;
+            Mandatory = isRequired;
+            IsCloaked = isCloaked;
+            string formName = GetFormMapClass();
+
             if (!IsCloaked)
             {
                 build.ApiResponse.Fields.Add(new Api.MediakiwiField()
                 {
-                    Title = this.Title,
-                    Value = this.OutputText,
-                    Expression = this.Expression,
-                    PropertyName = this.ID,
+                    Title = Title,
+                    Value = OutputText,
+                    Expression = Expression,
+                    PropertyName = ID,
                     PropertyType = (Property == null) ? typeof(string).FullName : Property.PropertyType.FullName,
                     VueType = Api.MediakiwiFormVueType.wimSection,
-                    ContentTypeID = ContentTypeSelection
+                    ContentTypeID = ContentTypeSelection,
+                    IsAutoPostback = m_AutoPostBack,
+                    IsMandatory = Mandatory,
+                    MaxLength = MaxValueLength,
+                    HelpText = InteractiveHelp,
+                    FormSection = formName
                 });
 
                 build.Append(GetSimpleTextElement(OutputText));

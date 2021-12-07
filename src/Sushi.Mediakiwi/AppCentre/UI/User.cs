@@ -37,7 +37,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                     await tmp.SaveAsync().ConfigureAwait(false);
 
                     wim.CurrentVisitor.ApplicationUserID = m_Implement.ID;
-                    wim.SaveVisit();
+                    await wim.SaveVisitAsync();
 
                     var audit = new AuditTrail()
                     {
@@ -89,7 +89,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
 
             wim.ListDataColumns.Add(new ListDataColumn("ID", nameof(IApplicationUser.ID), ListDataColumnType.UniqueIdentifier));
             wim.ListDataColumns.Add(new ListDataColumn("Name", nameof(IApplicationUser.Displayname), ListDataColumnType.HighlightPresent));
-            wim.ListDataColumns.Add(new ListDataColumn("Email address", nameof(IApplicationUser.Email))); 
+            wim.ListDataColumns.Add(new ListDataColumn("Email address", nameof(IApplicationUser.Email)));
             wim.ListDataColumns.Add(new ListDataColumn("Role", nameof(IApplicationUser.RoleName)));
             wim.ListDataColumns.Add(new ListDataColumn("Last login", nameof(IApplicationUser.LastLoggedVisit)) { ColumnWidth = 110, Alignment = Align.Center });
             wim.ListDataColumns.Add(new ListDataColumn("Active", nameof(IApplicationUser.IsActive)) { ColumnWidth = 30, Alignment = Align.Center });
@@ -110,7 +110,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             {
                 password = m_Implement.Password;
             }
-            else 
+            else
             {
                 m_Implement = new ApplicationUser();
 
@@ -118,7 +118,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                 string newPassword = gen.Generate();
                 Password = newPassword;
             }
-            
+
             Utility.ReflectProperty(this, m_Implement);
 
             m_Implement.Password = password;
@@ -151,7 +151,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
 
             m_Implement.RoleID = RoleID;
             m_Implement.IsActive = IsActive;
-           
+
             await m_Implement.SaveAsync().ConfigureAwait(false);
 
             if (SendCredentials)
@@ -296,7 +296,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// <value><c>true</c> if this instance is active; otherwise, <c>false</c>.</value>
         [Framework.ContentListItem.Choice_Checkbox("Is active", Expression = OutputExpression.Alternating)]
         public bool IsActive { get; set; }
-       
+
         //[Sushi.Mediakiwi.Framework.ContentListItem.Choice_Checkbox("Site navigation", Expression = Sushi.Mediakiwi.Framework.OutputExpression.Alternating)]
         public bool ShowSiteNavigation { get; set; }
 
@@ -340,7 +340,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             {
                 ListItemCollection collection = new ListItemCollection();
                 collection.Add(new ListItem("English", "1") { Selected = true });
-                collection.Add(new ListItem("Nederlands","2"));
+                collection.Add(new ListItem("Nederlands", "2"));
                 return collection;
             }
         }
@@ -354,7 +354,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
 
         [Framework.ContentListItem.Button("", false, ButtonClassName = "flaticon icon-eye-slash", InteractiveHelp = "Impersonate this user")]
         public bool HijackUser { get; set; }
-        
+
         #endregion List attributes
     }
 }

@@ -8,7 +8,7 @@ namespace Sushi.Mediakiwi.Authentication
 {
     public class AuthenticationLogic : IDisposable
 	{
-        private Utilities.EncryptionByRijndael m_Encryption = null;
+        private Encryption.EncryptionHelper _encryptionHelper;
 
         public AuthenticationLogic()
         {
@@ -64,28 +64,10 @@ namespace Sushi.Mediakiwi.Authentication
         {
             set
             {
-                SetEncryption(value);
-            }
-        }
-
-        /// <summary>
-        /// Lifetime of the new custom ticket.
-        /// </summary>
-        public DateTime LifeTime { get; set; }
-
-        /// <summary>
-        /// Name of the ticket.
-        /// </summary>
-        public string TicketName { get; set; } = "Mediakiwi";
-        
-
-        void SetEncryption(string password)
-        {
-            if (m_Encryption == null)
-            {
-                string vector = "@1B2c3D4e5v6g7H8";
-                m_Encryption = new Utilities.EncryptionByRijndael(password, vector, 8, 16);
-                m_Encryption.PasswordIterations = 3;
+                if (_encryptionHelper == null)
+                {
+                    _encryptionHelper = new Encryption.EncryptionHelper(value);
+                }
             }
         }
 
@@ -97,9 +79,9 @@ namespace Sushi.Mediakiwi.Authentication
         /// <returns></returns>
         public string GetValue(string key)
         {
-            if(m_Context != null && m_Context.Request != null)
+            if (m_Context != null && m_Context.Request != null)
             {
-                if (m_Context.Request.Cookies[TicketName] == null)
+                if (m_Context.Request.Cookies[CommonConfiguration.AUTHENTICATION_COOKIE] == null)
                 {
                     return null;
                 }
@@ -109,14 +91,20 @@ namespace Sushi.Mediakiwi.Authentication
                     try
                     {
                         CookieSettings = new NameValueCollection();
-                        var decrypted = Decrypt(m_Context.Request.Cookies[TicketName]);
-
-                        foreach (var nv in decrypted.Split('&'))
+                        var decrypted = Decrypt(m_Context.Request.Cookies[CommonConfiguration.AUTHENTICATION_COOKIE]);
+                        if (string.IsNullOrWhiteSpace(decrypted) == false)
                         {
-                            CookieSettings.Add(nv.Split('=')[0], WebUtility.UrlDecode(nv.Split('=')[1]));
+                            foreach (var nv in decrypted.Split('&'))
+                            {
+                                CookieSettings.Add(nv.Split('=')[0], WebUtility.UrlDecode(nv.Split('=')[1]));
+                            }
+                        }
+                        else
+                        {
+                            return null;
                         }
                     }
-                    catch(Exception)
+                    catch (Exception ex)
                     {
                         return null;
                     }
@@ -124,13 +112,6 @@ namespace Sushi.Mediakiwi.Authentication
                 return CookieSettings[key];
             }
             return null;
-        }
-
-        /// <summary>
-        /// Remove the ticket.
-        /// </summary>
-        public void RemoveCustomTicket()
-        {
         }
 
         /// <summary>
@@ -163,8 +144,6 @@ namespace Sushi.Mediakiwi.Authentication
         /// </summary>
         public void CreateTicket()
         {
-            RemoveCustomTicket();
-
             string cookie = string.Empty;
             foreach (var key in CookieSettings.AllKeys)
             {
@@ -177,10 +156,12 @@ namespace Sushi.Mediakiwi.Authentication
                 try
                 {
                     //To add Headers AFTER everything you need to do this
-                    m_Context.Response.OnStarting(state => {
+                    m_Context.Response.OnStarting(state =>
+                    {
                         var httpContext = (HttpContext)state;
-                        httpContext.Response.Cookies.Append(TicketName, encryption, new CookieOptions() {
-                            Expires = LifeTime,
+                        httpContext.Response.Cookies.Append(CommonConfiguration.AUTHENTICATION_COOKIE, encryption, new CookieOptions()
+                        {
+                            MaxAge = TimeSpan.FromMinutes(CommonConfiguration.AUTHENTICATION_TIMEOUT),
                             Domain = Domain.Split(':')[0],
                             HttpOnly = false,
                             Secure = true,
@@ -190,7 +171,8 @@ namespace Sushi.Mediakiwi.Authentication
                         return Task.CompletedTask;
                     }, m_Context);
                 }
-                catch (Exception ex) {
+                catch (Exception ex)
+                {
                     throw ex;
                 }
             }
@@ -218,7 +200,7 @@ namespace Sushi.Mediakiwi.Authentication
         /// <returns></returns>
         public string Encrypt(string value)
         {
-            return m_Encryption.Encrypt(value);
+            return _encryptionHelper.EncryptString(value);
         }
 
         /// <summary>
@@ -228,7 +210,7 @@ namespace Sushi.Mediakiwi.Authentication
         /// <returns></returns>
         public string Decrypt(string value)
         {
-            return m_Encryption.Decrypt(value);
+            return _encryptionHelper.DecryptString(value);
         }
     }
 }

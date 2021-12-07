@@ -10,6 +10,7 @@ using System.Linq;
 using System.Net.Mail;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace Sushi.Mediakiwi.Framework
 {
@@ -89,11 +90,21 @@ namespace Sushi.Mediakiwi.Framework
             Add(html, false);
         }
 
+        /// <summary>
+        /// Adds the supplied HTML to the page
+        /// </summary>
+        /// <param name="html">The HTML code to add</param>
         public void Add(string html)
         {
             Add(html, false);
         }
 
+
+        /// <summary>
+        /// Adds the supplied HTML to the page
+        /// </summary>
+        /// <param name="html">The HTML code to add</param>
+        /// <param name="clearBaseTemplateBody">Should the existing body HTML be cleared ?</param>
         public void Add(string html, bool clearBaseTemplateBody)
         {
             Add(html, clearBaseTemplateBody, BodyTarget.Below);
@@ -105,13 +116,38 @@ namespace Sushi.Mediakiwi.Framework
             Below
         }
 
+        /// <summary>
+        /// Adds the supplied HTML to the page
+        /// </summary>
+        /// <param name="html">The HTML code to add</param>
+        /// <param name="clearBaseTemplateBody">Should the existing body HTML be cleared ?</param>
+        /// <param name="target">Where to add the HTML Code</param>
         public void Add(string html, bool clearBaseTemplateBody, BodyTarget target)
+        {
+            ResourceLocation loc = ResourceLocation.NONE;
+            switch (target)
+            {
+                default:
+                case BodyTarget.Nested: loc = ResourceLocation.BODY_NESTED; break;
+                case BodyTarget.Below: loc = ResourceLocation.BODY_BELOW; break;
+            }
+
+            _instance.Page.Resources.Add(loc, ResourceType.HTML, html, false, false, clearBaseTemplateBody);
+        }
+
+        /// <summary>
+        /// Will be called by the <c>AdditionalResource</c> class
+        /// </summary>
+        /// <param name="html">The HTML code to add</param>
+        /// <param name="clearBaseTemplateBody">Should the existing body HTML be cleared ?</param>
+        /// <param name="target">Where to add the HTML Code</param>
+        internal void AddResource(string html, bool clearBaseTemplateBody, BodyTarget target)
         {
             if (clearBaseTemplateBody)
             {
                 Clear(clearBaseTemplateBody);
             }
-            
+
             if (_BodyAddition == null)
             {
                 _BodyAddition = new StringBuilder();
@@ -760,15 +796,7 @@ namespace Sushi.Mediakiwi.Framework
         /// <param name="path">relative path to the file</param>
         public void AddScript(string path, bool appendApplicationPath = true)
         {
-            string _path = (appendApplicationPath) ? _root.AddApplicationPath(path) : path;
-
-            if (string.IsNullOrWhiteSpace(CommonConfiguration.FILE_VERSION))
-            {
-                Add($"<script type=\"text/javascript\" src=\"{_path}\"></script>");
-                return;
-            }
-
-            Add($"<script type=\"text/javascript\" src=\"{_path}?v={CommonConfiguration.FILE_VERSION}\"></script>");
+            _instance.Resources.Add(ResourceLocation.HEADER, ResourceType.JAVASCRIPT, path, appendApplicationPath);
         }
 
         /// <summary>
@@ -778,14 +806,7 @@ namespace Sushi.Mediakiwi.Framework
         /// <param name="appendApplicationPath">when false the application path will not be added to the path param</param>
         public void AddStyle(string path, bool appendApplicationPath = true)
         {
-            string _path = (appendApplicationPath) ? _root.AddApplicationPath(path) : path;
-            if (string.IsNullOrWhiteSpace(CommonConfiguration.FILE_VERSION)) 
-            {
-                Add($"<link rel=\"stylesheet\" href=\"{_path}\" type=\"text/css\" media=\"all\" />");
-                return;
-            }
-            
-            Add($"<link rel=\"stylesheet\" href=\"{_path}?v={CommonConfiguration.FILE_VERSION}\" type=\"text/css\" media=\"all\" />");
+            _instance.Resources.Add(ResourceLocation.HEADER, ResourceType.STYLESHEET, path, appendApplicationPath);
         }
 
         /// <summary>
@@ -809,6 +830,15 @@ namespace Sushi.Mediakiwi.Framework
         /// </summary>
         /// <param name="html">The HTML.</param>
         public void Add(string html)
+        {
+            _instance.Resources.Add(ResourceLocation.HEADER, ResourceType.HTML, html);
+        }
+
+        /// <summary>
+        /// Adds the specified HTML.
+        /// </summary>
+        /// <param name="html">The HTML.</param>
+        internal void AddResource(string html)
         {
             if (_HeadAddition == null)
             {
@@ -1203,7 +1233,7 @@ namespace Sushi.Mediakiwi.Framework
         }
 
         public bool ByPassAjaxRequest { set { _origin.ByPassAjaxRequest = value; } get { return _origin.ByPassAjaxRequest; } }
-        internal void DoListLoad(int selectedKey, int componentVersionKey)
+        public void DoListLoad(int selectedKey, int componentVersionKey)
         {
             int previousItemID = Utility.ConvertToInt(Context.Request.Query["pitem"]);
             DoListLoad(selectedKey, componentVersionKey, previousItemID, null);
@@ -1277,7 +1307,7 @@ namespace Sushi.Mediakiwi.Framework
             Utils.RunSync(() => _origin.OnListSave(new ComponentListEventArgs(selectedKey, previousItemID, componentVersionKey, groupID, groupItemID, isValidForm)));
         }
 
-        internal bool HasListSave
+        public bool HasListSave
         {
             get { return _origin.HasListSave; }
         }
@@ -1292,11 +1322,12 @@ namespace Sushi.Mediakiwi.Framework
             Utils.RunSync(() => _origin.OnListDelete(new ComponentListEventArgs(selectedKey, componentVersionKey, 0, groupID, groupItemID, isValidForm)));
         }
 
-        internal bool HasListDelete
+        public bool HasListDelete
         {
             get { return _origin.HasListDelete; }
         }
-        internal void DoListSearch()
+
+        public void DoListSearch()
         {
             _origin.ApplyListSettings();
 
@@ -1311,7 +1342,9 @@ namespace Sushi.Mediakiwi.Framework
                         return;
                 }
                 else
+                {
                     return;
+                }
             }
 
             var itemID = Utility.ConvertToIntNullable(Context.Request.Query["item"], false);
@@ -1383,7 +1416,7 @@ namespace Sushi.Mediakiwi.Framework
             get { return _origin.HasListDataItemCreated; }
         }
 
-        internal void DoListInit()
+        public void DoListInit()
         {
             _origin.ApplyListSettings();
 
@@ -1391,7 +1424,7 @@ namespace Sushi.Mediakiwi.Framework
             Utils.RunSync(() => _origin.OnListInit());
         }
 
-        internal ComponentDataReportEventArgs DoListDataReport()
+         public ComponentDataReportEventArgs DoListDataReport()
         {
             ComponentDataReportEventArgs e = new ComponentDataReportEventArgs();
             try
@@ -2036,11 +2069,26 @@ namespace Sushi.Mediakiwi.Framework
         /// <value>The current environment.</value>
         public IEnvironment CurrentEnvironment { get; set; }
 
+        private IApplicationRole m_CurrentApplicationUserRole;
         /// <summary>
         /// Gets or sets the current user role.
         /// </summary>
         /// <value>The current user role.</value>
-        public IApplicationRole CurrentApplicationUserRole { get; set; }
+        public IApplicationRole CurrentApplicationUserRole
+        {
+            get
+            {
+                if (m_CurrentApplicationUserRole == null && CurrentApplicationUser?.ID > 0)
+                {
+                    m_CurrentApplicationUserRole = CurrentApplicationUser.SelectRole();
+                }
+                return m_CurrentApplicationUserRole;
+            }
+            set
+            {
+                m_CurrentApplicationUserRole = value;
+            }
+        }
 
         /// <summary>
         /// Gets or sets the current visitor.
@@ -2181,17 +2229,22 @@ namespace Sushi.Mediakiwi.Framework
                         }
                         if (Errors == null)
                         {
-                            Errors = new Hashtable();
+                            Errors = new Dictionary<string, string>();
                         }
                         Errors.Add(property, errorMessage);
                     }
                 }
             }
 
-            internal Hashtable Errors;
+            internal IDictionary<string, string> Errors;
             internal List<string> GenericErrors;
             internal List<string> GenericInformation;
             internal List<string> GenericInformationAlert;
+
+            public IDictionary<string, string> GetPropertyErrors => Errors ?? new Dictionary<string, string>();
+            public IReadOnlyCollection<string> GetGenericErrors => GenericErrors ?? new List<string>();
+            public IReadOnlyCollection<string> GetGenericInformation => GenericInformation ?? new List<string>();
+            public IReadOnlyCollection<string> GetGenericInformationAlert => GenericInformationAlert ?? new List<string>();
 
             /// <summary>
             /// Adds the notification alert.
@@ -2344,6 +2397,9 @@ namespace Sushi.Mediakiwi.Framework
         
 
         internal List<string> _QueryStringRecording;
+
+        public ICollection<string> GetQueryStringRecording() => _QueryStringRecording;
+        
         /// <summary>
         /// Add querystring items to the tabs
         /// </summary>
@@ -2494,9 +2550,9 @@ namespace Sushi.Mediakiwi.Framework
                 return;
             }
 
-            if (m_Collection == null)
+            if (m_TabCollection == null)
             {
-                m_Collection = new List<Tabular>();
+                m_TabCollection = new List<Tabular>();
             }
 
             Tabular t = new Tabular();
@@ -2505,10 +2561,12 @@ namespace Sushi.Mediakiwi.Framework
             t.SelectedItem = selectedItem;
             t.Title2 = title;
             t.Count = count;
-            m_Collection.Add(t);
+            m_TabCollection.Add(t);
         }
 
-        internal List<Tabular> m_Collection;
+        internal List<Tabular> m_TabCollection;
+
+        public ICollection<Tabular> GetTabs() => m_TabCollection;
 
         /// <summary>
         /// Represents a Tabular entity.
@@ -2520,7 +2578,7 @@ namespace Sushi.Mediakiwi.Framework
             /// </summary>
             public string Title2;
 
-            internal string TitleValue
+            public string TitleValue
             {
                 get
                 {
@@ -2671,12 +2729,6 @@ namespace Sushi.Mediakiwi.Framework
             set { m_Grid = value; }
         }
 
-        internal StringBuilder XHtmlDataTop;
-        internal StringBuilder XHtmlDataBottom;
-        internal StringBuilder XHtmlDataService;
-        internal StringBuilder XHtmlDataButtons;
-
-        internal string XHtmlDataServiceTitle;
         internal System.Collections.Specialized.NameValueCollection AddedCheckboxPostCollection;
         internal System.Collections.Specialized.NameValueCollection AddedCheckboxStateCollection;
         internal System.Collections.Specialized.NameValueCollection AddedRadioboxPostCollection;
@@ -2745,12 +2797,6 @@ namespace Sushi.Mediakiwi.Framework
                 }
                 m_Root.AddedTextboxPostCollection.Add(string.Concat(propertyName, "_", ID), Utility.ConvertToDecimalString(value));
             }
-
-            [Obsolete("Not part of mediakiwi", false)]
-            public string BackgroundImage_Odd { get; set; }
-
-            [Obsolete("Not part of mediakiwi", false)]
-            public string BackgroundImage_Even { get; set; }
 
             /// <summary>
             /// Adds the radiobox value.
@@ -2884,8 +2930,25 @@ namespace Sushi.Mediakiwi.Framework
         /// 
         /// </summary>
         public class PageData
-        {            
+        {
+            private AdditionalResource m_Resources;
+            /// <summary>
+            /// Contains all added custom resources
+            /// </summary>
+            public AdditionalResource Resources
+            {
+                get 
+                {
+                    if (m_Resources == null)
+                    {
+                        m_Resources = new AdditionalResource(m_Root);
+                    }
+                    return m_Resources;
+                }
+            }
+
             WimComponentListRoot m_Root;
+
             /// <summary>
             /// Initializes a new instance of the <see cref="FormData"/> class.
             /// </summary>
@@ -2906,162 +2969,6 @@ namespace Sushi.Mediakiwi.Framework
                     .Replace("[code]", "<pre>")
                     .Replace("[/code]", "</pre>");
             }
-
-            #region Obsolete methods 
-            /// <summary>
-            /// Adds the XHTML body.
-            /// </summary>
-            /// <param name="data">The data.</param>
-            [Obsolete("Can not be used in Mediakiwi", false)]
-            public void AddXhtmlBody(string data)
-            {
-                if (string.IsNullOrEmpty(data)) return;
-                AddXHtml(string.Format(@"<p>{0}</p>", Convert(data)));
-            }
-
-            /// <summary>
-            /// Adds the XHTML intro.
-            /// </summary>
-            /// <param name="data">The data.</param>
-            [Obsolete("Can not be used in Mediakiwi", false)]
-            public void AddXhtmlIntro(string data)
-            {
-                if (string.IsNullOrEmpty(data)) return;
-                AddXHtml(string.Format(@"<p class=""intro"">{0}</p>", Convert(data)));
-            }
-
-            /// <summary>
-            /// Adds the XHTML intro.
-            /// </summary>
-            /// <param name="data">The data.</param>
-            /// <param name="url">The URL.</param>
-            [Obsolete("Can not be used in Mediakiwi", false)]
-            public void AddXhtmlIntro(string data, string url)
-            {
-                if (string.IsNullOrEmpty(data)) return;
-                AddXHtml(string.Format(@"<p class=""intro""><a class=""more"" href=""{1}"">{0}</a></p>", Convert(data), url));
-            }
-
-            /// <summary>
-            /// Adds the XHTML body.
-            /// </summary>
-            /// <param name="data">The data.</param>
-            /// <param name="url">The URL.</param>
-            [Obsolete("Can not be used in Mediakiwi", false)]
-            public void AddXhtmlBody(string data, string url)
-            {
-                if (string.IsNullOrEmpty(data)) return;
-                AddXHtml(string.Format(@"<p><a class=""more"" href=""{1}"">{0}</a></p>", Convert(data), url));
-            }
-
-            /// <summary>
-            /// Adds the XHTML body.
-            /// </summary>
-            /// <param name="data">The data.</param>
-            /// <param name="url">The URL.</param>
-            /// <param name="added">The added.</param>
-            [Obsolete("Can not be used in Mediakiwi", false)]
-            public void AddXhtmlBody(string data, string url, string added)
-            {
-                if (string.IsNullOrEmpty(data))
-                {
-                    return;
-                }
-                AddXHtml($@"<p><a class=""more"" href=""{url}"">{Convert(data)}</a><br/>{added}</p>");
-            }
-
-            /// <summary>
-            /// Adds the XHTML title.
-            /// </summary>
-            /// <param name="data">The data.</param>
-            /// <param name="url">The URL.</param>
-            [Obsolete("Can not be used in Mediakiwi", false)]
-            public void AddXhtmlTitle(string data, string url)
-            {
-                if (string.IsNullOrEmpty(data))
-                {
-                    return;
-                }
-                AddXHtml($@"<h1><a href=""{url}"">{Convert(data)}</a></h1>");
-            }
-
-            public string TMP_ReportingSection { get; set; }
-
-            /// <summary>
-            /// Adds the XHTML sub title.
-            /// </summary>
-            /// <param name="data">The data.</param>
-            /// <param name="url">The URL.</param>
-            [Obsolete("Can not be used in Mediakiwi", false)]
-            public void AddXhtmlSubTitle(string data, string url)
-            {
-                if (string.IsNullOrEmpty(data))
-                {
-                    return;
-                }
-
-                AddXHtml($@"<a href=""{url}""><h2 class=""sub""><span class=""label"">{Convert(data)}</span></h2></a>");
-            }
-
-            /// <summary>
-            /// Adds the XHTML sub title italic.
-            /// </summary>
-            /// <param name="data">The data.</param>
-            [Obsolete("Can not be used in Mediakiwi", false)]
-            public void AddXhtmlSubTitleItalic(string data)
-            {
-                if (string.IsNullOrEmpty(data))
-                {
-                    return;
-                }
-                AddXHtml($@"<h2 class=""sub""><i class=""right"">{Convert(data)}</i></h2>");
-            }
-
-            /// <summary>
-            /// Adds the XHTML title.
-            /// </summary>
-            /// <param name="data">The data.</param>
-            [Obsolete("Can not be used in Mediakiwi", false)]
-            public void AddXhtmlTitle(string data)
-            {
-                if (string.IsNullOrEmpty(data))
-                {
-                    return;
-                }
-                AddXHtml($@"<h1>{Convert(data)}</h1>");
-            }
-
-            /// <summary>
-            /// Adds the XHTML sub title.
-            /// </summary>
-            /// <param name="data">The data.</param>
-            [Obsolete("Can not be used in Mediakiwi", false)]
-            public void AddXhtmlSubTitle(string data)
-            {
-                if (string.IsNullOrEmpty(data))
-                {
-                    return;
-                }
-
-                AddXHtml($@"<h2 class=""sub""><span class=""label"">{Convert(data)}</span></h2>");
-            }
-
-            /// <summary>
-            /// Adds the XHTML read more.
-            /// </summary>
-            /// <param name="url">The URL.</param>
-            [Obsolete("Can not be used in Mediakiwi", false)]
-            public void AddXhtmlReadMore(string url)
-            {
-                if (string.IsNullOrEmpty(url))
-                {
-                    return;
-                }
-
-                AddXHtml($@"<p class=""toRight""><a class=""more"" href=""{url}"">Lees meer</a></p>");
-            }
-            #endregion Obsolete methods 
-
 
 
             Head _Head;
@@ -3103,117 +3010,7 @@ namespace Sushi.Mediakiwi.Framework
                 }
                 set { _Body = value; }
             }
-
-            /// <summary>
-            /// Adds the X HTML.
-            /// </summary>
-            /// <param name="data">The data.</param>
-            public void AddXHtml(string data)
-            {
-                if (string.IsNullOrEmpty(data))
-                {
-                    return;
-                }
-
-                if (m_Root.XHtmlDataTop == null)
-                {
-                    m_Root.XHtmlDataTop = new StringBuilder();
-                }
-
-                m_Root.XHtmlDataTop.Append(data);
-            }
-
-            /// <summary>
-            /// Adds the X HTML bottom.
-            /// </summary>
-            /// <param name="data">The data.</param>
-            public void AddXHtmlBottom(string data)
-            {
-                if (string.IsNullOrEmpty(data))
-                {
-                    return;
-                }
-
-                if (m_Root.XHtmlDataBottom == null)
-                {
-                    m_Root.XHtmlDataBottom = new StringBuilder();
-                }
-
-                m_Root.XHtmlDataBottom.Append(data);
-            }
-
-            /// <summary>
-            /// Adds the service title.
-            /// </summary>
-            /// <param name="title">The title.</param>
-            public void AddServiceTitle(string title)
-            {
-                m_Root.XHtmlDataServiceTitle = title;
-            }
-
-            /// <summary>
-            /// Adds the service.
-            /// </summary>
-            /// <param name="link">The link.</param>
-            public void AddService(Link link)
-            {
-                if (link == null || link.ID == 0)
-                {
-                    return;
-                }
-
-                if (m_Root.XHtmlDataService == null)
-                {
-                    m_Root.XHtmlDataService = new StringBuilder();
-                }
-
-                string url = link.GetUrl(m_Root.CurrentSite);
-                if (!string.IsNullOrEmpty(url))
-                {
-                    if (link.AssetID.HasValue && !link.Asset.Exists)
-                    {
-                        m_Root.XHtmlDataService.Append($"<li><a href=\"#\" class=\"nof\">{link.Text}</a></li>");
-                    }
-                    else
-                    {
-                        m_Root.XHtmlDataService.Append($"<li><a href=\"{url}\" class=\"{(link.AssetID.HasValue ? link.Asset.ExtentionClassName : "hyperlink")}\">{link.Text}</a></li>");
-                    }
-                }
-            }
-
-            /// <summary>
-            /// Adds the button.
-            /// </summary>
-            /// <param name="property">The property.</param>
-            /// <param name="title">The title.</param>
-            /// <param name="classType">Type of the class.</param>
-            public void AddButton(string property, string title, string classType)
-            {
-                if (m_Root.XHtmlDataButtons == null)
-                {
-                    m_Root.XHtmlDataButtons = new StringBuilder();
-                }
-
-                m_Root.XHtmlDataButtons.Append($"<li><a href=\"#\" id=\"{property}\" class=\"{classType}\">{title}</a></li>");
-            }
-
-            /// <summary>
-            /// Adds the button.
-            /// </summary>
-            /// <param name="property">The property.</param>
-            /// <param name="title">The title.</param>
-            /// <param name="classType">Type of the class.</param>
-            /// <param name="url">The URL.</param>
-            public void AddButton(string property, string title, string classType, string url)
-            {
-                if (m_Root.XHtmlDataButtons == null)
-                {
-                    m_Root.XHtmlDataButtons = new StringBuilder();
-                }
-
-                m_Root.XHtmlDataButtons.Append($"<li><a href=\"{url}\" id=\"{property}\" class=\"{classType}\">{title}</a></li>");
-            }
-
+         
             /// <summary>
             /// Gets or sets a value indicating whether [top icon bar].
             /// </summary>
@@ -4143,27 +3940,6 @@ namespace Sushi.Mediakiwi.Framework
         /// </summary>
         internal DataTable GraphDataTable { get; set; }
 
-        [Obsolete("This is not valid any more in mediakiwi", false)]
-        public string ListDataIsInterlinePropertyValue { get; set; }
-
-        [Obsolete("This is not valid any more in mediakiwi", false)]
-        public string ListDataInterlineTextPropertyValue { get; set; }
-
-        /// <summary>
-        /// Gets or sets the list data highlight property value.
-        /// This (boolean) poperty will be called be ListData record. If true the Table row will get a higlighted state.
-        /// </summary>
-        /// <value>The list data highlight property value.</value>
-        [Obsolete("This is not valid any more in mediakiwi", false)]
-        public string ListDataHighlightPropertyValue { get; set; }
-
-        /// <summary>
-        /// Gets or sets the list data table row className property value.
-        /// </summary>
-        /// <value>The list data highlight property value.</value>
-        [Obsolete("This is not valid any more in mediakiwi", false)]
-        public string ListDataClassNamePropertyValue { get; set; }
-        
         private List<string> m_ResetValueList;
         /// <summary>
         /// These properties will be reset after the initial content has been applied. This can be used for dropdown dependency, et al.
@@ -4556,6 +4332,11 @@ namespace Sushi.Mediakiwi.Framework
         public void SaveVisit()
         {
             Console.SaveVisit();
+        }
+
+        public async Task SaveVisitAsync()
+        {
+           await Console.SaveVisitAsync();
         }
 
         /// <summary>

@@ -2519,10 +2519,9 @@ namespace Sushi.Mediakiwi
             {
                 string testCandidate = candidate.ToString();
 
-                Regex test = new Regex(Utility.GlobalRegularExpression.OnlyGUID);
-                if (test.IsMatch(testCandidate))
-                {
-                    output = new Guid(testCandidate);
+                if (Guid.TryParse(testCandidate, out Guid outputTmp))
+                { 
+                    output = outputTmp;
                     return true;
                 }
             }

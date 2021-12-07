@@ -35,6 +35,7 @@ namespace Sushi.Mediakiwi.Framework
         /// </summary>
         public int? ComponentTemplateID { get; set; }
 
+
         protected (bool isShared, bool isEnabled, bool isHidden, string outputValue) ApplySharedFieldInformation(bool isEnabled, string outputValue)
         {
             bool _isEnabled = isEnabled;
@@ -966,7 +967,7 @@ namespace Sushi.Mediakiwi.Framework
             //  Custom errors
             if (Console.CurrentListInstance.wim.Notification.Errors != null)
             {
-                if (Console.CurrentListInstance.wim.Notification.Errors.Contains(FieldName))
+                if (Console.CurrentListInstance.wim.Notification.Errors.ContainsKey(FieldName))
                 {
                     if (Console.CurrentListInstance.wim.Notification.Errors[FieldName] != null)
                     {
@@ -975,7 +976,7 @@ namespace Sushi.Mediakiwi.Framework
                     return false;
                 }
 
-                if (CustomDataFieldName != null && Console.CurrentListInstance.wim.Notification.Errors.Contains(CustomDataFieldName))
+                if (CustomDataFieldName != null && Console.CurrentListInstance.wim.Notification.Errors.ContainsKey(CustomDataFieldName))
                 {
                     if (Console.CurrentListInstance.wim.Notification.Errors[CustomDataFieldName] != null)
                     {
@@ -1599,6 +1600,19 @@ namespace Sushi.Mediakiwi.Framework
         {
             add { _OnChange += value; }
             remove { _OnChange -= value; }
+        }
+
+        public string GetFormMapClass()
+        {
+            if (SenderInstance is FormMap)
+            {
+                return SenderInstance.GetType().FullName;
+            }
+            else if (SenderSponsorInstance is FormMap)
+            {
+                return SenderSponsorInstance.GetType().FullName;
+            }
+            return string.Empty;
         }
     }
 }

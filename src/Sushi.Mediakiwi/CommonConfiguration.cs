@@ -40,19 +40,44 @@ namespace Sushi.Mediakiwi
                 return Data.Utility.ConvertToInt(WimServerConfiguration.Instance?.Authentication?.Timeout, 15);
             }
         }
+
         public static string AUTHENTICATION_COOKIE
         {
             get
             {
                 if (string.IsNullOrWhiteSpace(WimServerConfiguration.Instance?.Authentication?.Cookie))
+                {
                     return "mediakiwi";
+                }
                 return WimServerConfiguration.Instance.Authentication.Cookie;
             }
         }
-        public static bool RIGHTS_GALLERY_SUBS_ARE_ALLOWED { get { return true; } }
-        public static string LOGIN_BACKGROUND { 
-            get { 
-                return WimServerConfiguration.Instance.Login_Background_Url; 
+
+        public static string ENCRYPTION_KEY
+        {
+            get
+            {
+                if (string.IsNullOrWhiteSpace(WimServerConfiguration.Instance?.Encryption_key))
+                    return "52f90af3-fc75-4ec5-aaba-d1ffbb4d021c";
+                return WimServerConfiguration.Instance.Encryption_key;
+            }
+        }
+
+        public static string ENCRYPTION_SALT
+        {
+            get
+            {
+                if (string.IsNullOrWhiteSpace(WimServerConfiguration.Instance?.Encryption_Salt))
+                    return "06e32698-e6c3-461a-9efc-9429c7e3d94e";
+                return WimServerConfiguration.Instance.Encryption_Salt;
+            }
+        }
+
+        public static string LOGIN_BACKGROUND
+        {
+            get
+            {
+                return WimServerConfiguration.Instance.Login_Background_Url;
             }
         }
 
@@ -66,6 +91,13 @@ namespace Sushi.Mediakiwi
 
         public static string CDN_Folder(Beta.GeneratedCms.Console console, string subfolder)
         {
+            return CDN_Folder(console.AddApplicationPath(LOCAL_FILE_PATH, true), subfolder);
+        }
+
+        public static string CDN_Folder(string applicationPath, string subfolder)
+        {
+            string appPath = string.Empty;
+
             if (_FolderVersion == null)
             {
                 // CDN
@@ -76,17 +108,24 @@ namespace Sushi.Mediakiwi
                 else
                 {
                     if (LOCAL_FILE_PATH.IndexOf("http", StringComparison.InvariantCultureIgnoreCase) > -1)
+                    {
                         _FolderVersion = LOCAL_FILE_PATH;
+                    }
                     else
-                        _FolderVersion = console.AddApplicationPath(LOCAL_FILE_PATH, true);
+                    {
+                        _FolderVersion = applicationPath;
+                    }
                 }
             }
 
             if (!string.IsNullOrWhiteSpace(subfolder))
+            {
                 return string.Concat(_FolderVersion, subfolder, "/");
+            }
 
             return _FolderVersion;
         }
+
 
         public static string VIEWPORT
         {

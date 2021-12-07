@@ -698,7 +698,7 @@ FROM [Wim_ComponentLists] WHERE [ComponentList_Folder_Key] in (SELECT [Folder_Ke
         /// </returns>
         public bool HasRoleAccess(IApplicationUser user)
         {
-            return HasRoleAccess(user.Role());
+            return HasRoleAccess(user.SelectRole());
         }
 
         /// <summary>
@@ -734,7 +734,7 @@ FROM [Wim_ComponentLists] WHERE [ComponentList_Folder_Key] in (SELECT [Folder_Ke
         /// </returns>
         public async Task<bool> HasRoleAccessAsync(IApplicationUser user)
         {
-            return await HasRoleAccessAsync(await user.RoleAsync().ConfigureAwait(false)).ConfigureAwait(false);
+            return await HasRoleAccessAsync(await user.SelectRoleAsync().ConfigureAwait(false)).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -768,7 +768,7 @@ FROM [Wim_ComponentLists] WHERE [ComponentList_Folder_Key] in (SELECT [Folder_Ke
         /// <returns></returns>
         public static Folder[] SelectAllAccessible(IApplicationUser user)
         {
-            return SelectAllAccessible(user.Role());
+            return SelectAllAccessible(user.SelectRole());
         }
 
         /// <summary>
@@ -819,7 +819,7 @@ FROM [Wim_ComponentLists] WHERE [ComponentList_Folder_Key] in (SELECT [Folder_Ke
         /// <returns></returns>
         public static async Task<Folder[]> SelectAllAccessibleAsync(IApplicationUser user)
         {
-            return await SelectAllAccessibleAsync(await user.RoleAsync().ConfigureAwait(false)).ConfigureAwait(false);
+            return await SelectAllAccessibleAsync(await user.SelectRoleAsync().ConfigureAwait(false)).ConfigureAwait(false);
         }
 
 

@@ -500,7 +500,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
 
                             if (container.CurrentList.Type == ComponentListType.ComponentListProperties)
                             {
-                                tabularList = container.CurrentListInstance.wim.m_Collection;
+                                tabularList = container.CurrentListInstance.wim.m_TabCollection;
                             }
                             else
                             {
@@ -515,7 +515,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                                 if (!master.CurrentListInstance.wim.CurrentList.Option_FormAsync)
                                     master.CurrentListInstance.wim.DoListLoad(groupElementId, 0);
 
-                                tabularList = master.CurrentListInstance.wim.m_Collection;
+                                tabularList = master.CurrentListInstance.wim.m_TabCollection;
 
                                 currentListId = groupId;
                                 currentListItemId = groupElementId;
@@ -524,8 +524,8 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                             }
                         }
                     }
-                    else if (container.CurrentListInstance.wim.m_Collection != null)
-                        tabularList = container.CurrentListInstance.wim.m_Collection;
+                    else if (container.CurrentListInstance.wim.m_TabCollection != null)
+                        tabularList = container.CurrentListInstance.wim.m_TabCollection;
 
 
                     StringBuilder tabulars = new StringBuilder();
@@ -554,9 +554,9 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
 
                             if (container.CurrentListInstance.wim.CurrentList.ID == t.List.ID)
                             {
-                                if (container.CurrentListInstance.wim.m_Collection != null)
+                                if (container.CurrentListInstance.wim.m_TabCollection != null)
                                 {
-                                    foreach (WimComponentListRoot.Tabular t2 in container.CurrentListInstance.wim.m_Collection)
+                                    foreach (WimComponentListRoot.Tabular t2 in container.CurrentListInstance.wim.m_TabCollection)
                                     {
                                         ApplyTabularUrl(container, t2, 2);
 
@@ -588,9 +588,9 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                                         cl.wim.DoListLoad(container.Item.Value, 0);
                                     }
 
-                                    if (cl.wim.m_Collection != null)
+                                    if (cl.wim.m_TabCollection != null)
                                     {
-                                        foreach (WimComponentListRoot.Tabular t2 in cl.wim.m_Collection)
+                                        foreach (WimComponentListRoot.Tabular t2 in cl.wim.m_TabCollection)
                                         {
                                             tabulars.Append($@"<li><a href=""{t2.Url}""{(t2.Selected ? " class=\"active\"" : null)}>{t2.TitleValue}</a></li>");
 
@@ -770,8 +770,8 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                 Gallery root = Gallery.SelectOneRoot();
 
                 int rootID = root.ID;
-                if (container.CurrentApplicationUser.Role().GalleryRoot.HasValue)
-                    rootID = container.CurrentApplicationUser.Role().GalleryRoot.Value;
+                if (container.CurrentApplicationUser.SelectRole().GalleryRoot.HasValue)
+                    rootID = container.CurrentApplicationUser.SelectRole().GalleryRoot.Value;
 
                 currentName = "Documents";
                 currentLink = container.UrlBuild.GetGalleryRequest(rootID);
@@ -785,9 +785,6 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                 //  LEVEL 1 : Folders
                 Gallery[] galleries1 = Gallery.SelectAllByParent(rootID);
 
-                if (!CommonConfiguration.RIGHTS_GALLERY_SUBS_ARE_ALLOWED)
-                    galleries1 = Gallery.ValidateAccessRight(galleries1, container.CurrentApplicationUser);
-
                 foreach (Gallery folder in galleries1)
                 {
                     bool isActive = currentGallery.ID == folder.ID || level1.ID == folder.ID;
@@ -796,6 +793,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                     isFirst = false;
 
                     #region Level 2
+
                     if (isActive && false)
                     {
                         build.AppendFormat(@"<ul>");
@@ -810,6 +808,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                             build.AppendFormat(@"<li><a href=""{0}"" class=""{1}{3}"">{2}</a>", container.UrlBuild.GetGalleryRequest(folder2), "folder", folder2.Name, isActive2 ? " active" : "");
 
                             #region Level 3
+
                             if (isActive2)
                             {
                                 build.AppendFormat(@"<ul>");
@@ -822,12 +821,15 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                                 }
                                 build.AppendFormat(@"</ul>");
                             }
+
                             #endregion
+
                             build.AppendFormat(@"</li>");
                         }
 
                         build.AppendFormat(@"</ul>");
                     }
+
                     #endregion
 
                     build.AppendFormat(@"</li>");
@@ -1091,7 +1093,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                         PropertyType = "bool",
                         ClassName = "action",
                         VueType = MediakiwiFormVueType.wimButton,
-                        Event = MediakiwiJSEvent.click,
+                        Event = MediakiwiJSEvent.Click,
                         Section = ButtonSection.Bottom,
                         ContentTypeID = ContentType.Button
                     });
@@ -1131,7 +1133,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                             Title = saveRecord,
                             PropertyType = "bool",
                             VueType = MediakiwiFormVueType.wimButton,
-                            Event = MediakiwiJSEvent.click,
+                            Event = MediakiwiJSEvent.Click,
                             Section = ButtonSection.Bottom,
                             ClassName = string.Format("{0} right", string.IsNullOrEmpty(container.CurrentListInstance.wim.Page.Body.Form._PrimairyAction) ? " action" : null),
                             ContentTypeID = ContentType.Button
@@ -1591,7 +1593,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                                 Title = string.Empty,
                                 PropertyType = "bool",
                                 VueType = MediakiwiFormVueType.wimButton,
-                                Event = MediakiwiJSEvent.click,
+                                Event = MediakiwiJSEvent.Click,
                                 ClassName = "abbr type_confirm left flaticon icon-trash-o",
                                 Section = ButtonSection.Top,
                                 ContentTypeID = ContentType.Button

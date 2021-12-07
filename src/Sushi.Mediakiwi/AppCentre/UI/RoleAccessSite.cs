@@ -194,7 +194,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
 
                 ApplicationUser temp = new ApplicationUser();
                 temp.RoleID = e.SelectedGroupItemKey;
-                IApplicationRole role = await temp.RoleAsync().ConfigureAwait(false);
+                IApplicationRole role = await temp.SelectRoleAsync().ConfigureAwait(false);
 
                 var allowed = await role.SitesAsync(temp).ConfigureAwait(false);
                 var allSites = await Mediakiwi.Data.Site.SelectAllAsync(true).ConfigureAwait(false);

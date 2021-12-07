@@ -125,7 +125,7 @@ namespace Sushi.Mediakiwi.Data
         /// Roles this instance.
         /// </summary>
         /// <returns></returns>
-        public IApplicationRole Role()
+        public IApplicationRole SelectRole()
         {
             return ApplicationRole.SelectOne(RoleID);
         }
@@ -134,7 +134,7 @@ namespace Sushi.Mediakiwi.Data
         /// Roles this instance.
         /// </summary>
         /// <returns></returns>
-        public async Task<IApplicationRole> RoleAsync()
+        public async Task<IApplicationRole> SelectRoleAsync()
         {
             return await ApplicationRole.SelectOneAsync(RoleID).ConfigureAwait(false);
         }
