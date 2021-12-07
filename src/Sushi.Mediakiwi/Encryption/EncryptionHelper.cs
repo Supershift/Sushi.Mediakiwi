@@ -74,7 +74,7 @@ namespace Sushi.Mediakiwi.Encryption
             }
             catch (Exception ex)
             {
-
+                Data.Notification.InsertOne(nameof(EncryptionHelper), ex.Message);
             }
 
             return result;
@@ -119,7 +119,7 @@ namespace Sushi.Mediakiwi.Encryption
             }
             catch (Exception ex)
             {
-
+                Data.Notification.InsertOne(nameof(EncryptionHelper), ex.Message);
             }
 
             return result;
