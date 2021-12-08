@@ -46,13 +46,13 @@ namespace Sushi.Mediakiwi.Demonstration
             });
 
 
-            //var elasticSettings = new Nest.ConnectionSettings(new Uri(Configuration["ElasticUrl"]))
-            //    .BasicAuthentication(Configuration["ElasticUsername"], Configuration["ElasticPassword"])
-            //    .ThrowExceptions(true);
-                
-            //var elasticClient = new Nest.ElasticClient(elasticSettings);
+            var elasticSettings = new Nest.ConnectionSettings(new Uri(Configuration["ElasticUrl"]))
+                .BasicAuthentication(Configuration["ElasticUsername"], Configuration["ElasticPassword"])
+                .ThrowExceptions(true);
 
-            //services.AddElasticNotifications(elasticClient);
+            var elasticClient = new Nest.ElasticClient(elasticSettings);
+
+            services.AddElasticNotifications(elasticClient);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

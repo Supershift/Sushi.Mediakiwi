@@ -98,7 +98,7 @@ namespace Sushi.Mediakiwi.Data.Elastic.UI
             if (FilterSelection > 0)
                 selection = (NotificationType)FilterSelection;
 
-            if (Request.Query.ContainsKey("groupname"))
+            if (Request.Query.ContainsKey("groupName"))
             {
                 wim.ListDataColumns.Add(new ListDataColumn("ID", "ElasticId.Id", ListDataColumnType.Default));
                 wim.ListDataColumns.Add(new ListDataColumn("Index", "ElasticId.Index", ListDataColumnType.Default));
@@ -106,7 +106,7 @@ namespace Sushi.Mediakiwi.Data.Elastic.UI
                 wim.ListDataColumns.Add(new ListDataColumn("Notification", nameof(Notification.Text), ListDataColumnType.HighlightPresent));
                 wim.ListDataColumns.Add(new ListDataColumn("Created", nameof(Notification.Timestamp), ListDataColumnType.Default) { ContentType = ListDataContentType.ItemSelect });
 
-                var results = await _repository.GetAllAsync(selection, Request.Query["groupname"], FilterFrom, FilterTo, wim.CurrentList.Option_Search_MaxResultPerPage, null);
+                var results = await _repository.GetAllAsync(selection, Request.Query["groupName"], FilterFrom, FilterTo, wim.CurrentList.Option_Search_MaxResultPerPage, null);
                 wim.ListDataAdd(results);
 
                 
@@ -123,7 +123,7 @@ namespace Sushi.Mediakiwi.Data.Elastic.UI
 
                 foreach (var result in results)
                 {
-                    result.Deeplink = "?groupName=" + WebUtility.UrlEncode(result.GroupName);
+                    result.Deeplink = "?groupName=" + WebUtility.UrlEncode(result.GroupName) + "&id"; 
                 }
 
                 wim.ListDataAdd(results);
