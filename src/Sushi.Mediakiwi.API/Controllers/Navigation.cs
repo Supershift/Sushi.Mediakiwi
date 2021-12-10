@@ -41,7 +41,7 @@ namespace Sushi.Mediakiwi.API.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [HttpGet("GetTopnavigation")]
-        public async Task<ActionResult<GetTopNavigationResponse>> GetTopnavigation([FromBody] GetTopNavigationRequest request)
+        public async Task<ActionResult<GetTopNavigationResponse>> GetTopnavigation([FromQuery] GetTopNavigationRequest request)
         {
             if (request == null || _navService == null || request.CurrentSiteID == 0)
             {
@@ -201,13 +201,13 @@ namespace Sushi.Mediakiwi.API.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [HttpGet("GetSidenavigation")]
-        public async Task<ActionResult<GetSideNavigationResponse>> GetSidenavigation([FromBody] GetSideNavigationRequest request)
+        public async Task<ActionResult<GetSideNavigationResponse>> GetSidenavigation([FromQuery] GetSideNavigationRequest request)
         {
             GetSideNavigationResponse result = new GetSideNavigationResponse();
 
             // Get Appropriate role from DB
             var role = await MediakiwiUser.SelectRoleAsync().ConfigureAwait(false);
-            
+
             // Get current selected tab based off the URL
             int selectedTab = 0;
             if (string.IsNullOrWhiteSpace(Resolver.SelectedTab) == false)
@@ -886,7 +886,7 @@ namespace Sushi.Mediakiwi.API.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [HttpGet("GetSites")]
-        public async Task<ActionResult<GetSitesResponse>> GetSites([FromBody] GetSitesRequest request)
+        public async Task<ActionResult<GetSitesResponse>> GetSites([FromQuery] GetSitesRequest request)
         {
             GetSitesResponse result = new GetSitesResponse();
 
@@ -912,7 +912,7 @@ namespace Sushi.Mediakiwi.API.Controllers
                     WeekStart = weekStart
                 });
             }
-            
+
             result.StatusCode = System.Net.HttpStatusCode.OK;
 
             return Ok(result);

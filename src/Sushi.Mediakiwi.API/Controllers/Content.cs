@@ -35,7 +35,7 @@ namespace Sushi.Mediakiwi.API.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [HttpGet("GetContent")]
-        public async Task<ActionResult<GetContentResponse>> GetContent([FromBody] GetContentRequest request)
+        public async Task<ActionResult<GetContentResponse>> GetContent([FromQuery] GetContentRequest request)
         {
             GetContentResponse result = new GetContentResponse();
 
