@@ -1,0 +1,104 @@
+#create component templates
+PUT _component_template/notifications
+{
+  "template": {
+    "mappings": {
+      "dynamic": false,
+      "properties": {
+        "@timestamp": {
+          "type": "date"
+        },
+        "selection": {
+          "type": "keyword"
+        },
+        "created": {
+          "type": "date"
+        },
+        "text": {
+          "type": "text"
+        },
+        "pageID": {
+          "type": "keyword"
+        },
+        "userID": {
+          "type": "keyword"
+        },
+        "group": {
+          "type": "keyword"
+        },
+        "visitorID": {
+          "type": "keyword"
+        }
+      }
+    }
+  }
+}
+
+#create index lifecycle policy (ILM)
+PUT _ilm/policy/notifications
+{
+  "policy": {
+    "phases": {
+      "hot": {
+        "min_age": "0ms",
+        "actions": {
+          "rollover": {
+            "max_primary_shard_size": "50gb",
+            "max_age": "10d"
+          },
+          "set_priority": {
+            "priority": 100
+          }
+        }
+      },
+      "warm": {
+        "min_age": "0d",
+        "actions": {
+          "readonly": {},
+          "shrink": {
+            "number_of_shards": 1
+          },
+          "forcemerge": {
+            "max_num_segments": 1
+          },
+          "set_priority": {
+            "priority": 50
+          }
+        }
+      },
+      "delete": {
+        "min_age": "60d",
+        "actions": {
+          "delete": {
+            "delete_searchable_snapshot": true
+          }
+        }
+      }
+    }
+  }
+}
+
+#create index template
+PUT _index_template/notifications
+{
+  "priority": 90,
+  "template": {
+    "settings": {
+      "index": {
+        "lifecycle": {
+          "name": "notifications"
+        }
+      }
+    }
+  },
+  "index_patterns": [
+    "notifications",
+    "notifications*"
+  ],
+  "data_stream": {
+    "hidden": false
+  },
+  "composed_of": [
+    "notifications"
+  ]
+}
