@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29609.76
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31919.166
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sushi.Mediakiwi.Data", "src\Sushi.Mediakiwi.Data\Sushi.Mediakiwi.Data.csproj", "{F0C72A9E-4799-48E7-85B3-C9CE5A3AE81B}"
 EndProject
@@ -13,6 +13,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
 		.gitignore = .gitignore
+		elastic-notifications.txt = elastic-notifications.txt
 		LICENSE = LICENSE
 		README.md = README.md
 	EndProjectSection
@@ -27,7 +28,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sushi.Mediakiwi.Website", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sushi.Mediakiwi.Data.Elastic", "src\Sushi.Mediakiwi.Data.Elastic\Sushi.Mediakiwi.Data.Elastic.csproj", "{B7808C4A-D2AF-449C-A170-2F72FC4C5787}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sushi.Mediakiwi.API", "src\Sushi.Mediakiwi.API\Sushi.Mediakiwi.API.csproj", "{E704A69C-82FE-4CB0-9486-67797B90A898}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sushi.Mediakiwi.API", "src\Sushi.Mediakiwi.API\Sushi.Mediakiwi.API.csproj", "{E704A69C-82FE-4CB0-9486-67797B90A898}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
