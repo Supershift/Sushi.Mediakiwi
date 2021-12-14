@@ -22,7 +22,6 @@
     "Sushi.Mediakiwi.Demonstration": {
       "commandName": "Project",
       "launchBrowser": true,
-      "launchUrl": "https://localhost/Sushi.Mediakiwi.Demonstration",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
