@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
 using Sushi.Mediakiwi.Controllers;
 using Sushi.Mediakiwi.Data.Caching;
 using Sushi.Mediakiwi.Data.Configuration;
@@ -15,12 +16,12 @@ namespace Sushi.Mediakiwi
 {
     public class Portal
     {
-        private readonly IHostingEnvironment _env;
+        private readonly IHostEnvironment _env;
         private readonly RequestDelegate _next;
         private readonly IConfiguration _configuration;
         private readonly IServiceProvider _serviceProvider;
 
-        public Portal(RequestDelegate next, IHostingEnvironment env, IConfiguration configuration, IServiceProvider serviceProvider)
+        public Portal(RequestDelegate next, IHostEnvironment env, IConfiguration configuration, IServiceProvider serviceProvider)
         {
             _env = env;
             _next = next;

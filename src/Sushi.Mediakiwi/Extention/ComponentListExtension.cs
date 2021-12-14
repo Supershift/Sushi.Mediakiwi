@@ -7,18 +7,6 @@ using System.Linq;
 
 public static class ComponentListExtension
 {
-    /// <summary>
-    /// Get the corresponding catalog for a specific portal
-    /// </summary>
-    /// <param name="portal">The portal.</param>
-    /// <returns></returns>
-    //public static Catalog Catalog(this IComponentList inComponentList, WimServerPortal portal = null)
-    //{
-    //    if (inComponentList.CatalogID > 0)
-    //        return Sushi.Mediakiwi.Data.Catalog.SelectOne(inComponentList.CatalogID, portal);
-
-    //    return null;
-    //}
 
     /// <summary>
     /// Determine if the user is allowed to view this componentList
@@ -75,7 +63,11 @@ public static class ComponentListExtension
                 {
                     //  Take first routing and process it
                     var routingAttribute = routingAttributes[0] as ComponentListRouting;
-                    if (routingAttribute != null && routingAttribute.Routing != null)
+                    routingAttribute.Services = context.RequestServices;
+                    
+                    var routeObject = routingAttribute.GetRouteObject();
+
+                    if (routingAttribute != null && routeObject != null)
                     {
                         //  When routing exists, validate this route, when NULL, ignore it.
                         ComponentListRoutingArgs e = null;
@@ -86,13 +78,15 @@ public static class ComponentListExtension
                             {
                                 SelectedKey = Utility.ConvertToIntNullable(context.Request.Query["item"]),
                                 SelectedGroup = Utility.ConvertToIntNullable(context.Request.Query["group"]),
-                                SelectedGroupItem = Utility.ConvertToIntNullable(context.Request.Query["groupitem"])
+                                SelectedGroupItem = Utility.ConvertToIntNullable(context.Request.Query["groupitem"]),
                             };
                         }
 
-                        var instanceCandidate = routingAttribute.Routing.Validate(inComponentList, e);
+                        var instanceCandidate = routeObject.Validate(inComponentList, e);
                         if (instanceCandidate != null)
+                        {
                             instance = instanceCandidate;
+                        }
                     }
                 }
             }
@@ -126,7 +120,7 @@ public static class ComponentListExtension
             {
                 assembly = "Sushi.Mediakiwi.dll";
                 inComponentList.AssemblyName = assembly;
-                inComponentList.ClassName = inComponentList.ClassName.Replace("Wim", "Sushi.Mediakiwi");
+                inComponentList.ClassName = inComponentList.ClassName.Replace("Wim", "Sushi.Mediakiwi", StringComparison.InvariantCultureIgnoreCase);
                 inComponentList.Save();
             }
 
@@ -143,7 +137,9 @@ public static class ComponentListExtension
                 {
                     //  Take first routing and process it
                     var routingAttribute = routingAttributes[0] as ComponentListRouting;
-                    if (routingAttribute != null && routingAttribute.Routing != null)
+                    routingAttribute.Services = console.Context.RequestServices;
+                    var routeObject = routingAttribute.GetRouteObject();
+                    if (routingAttribute != null && routeObject != null)
                     {
                         //  When routing exists, validate this route, when NULL, ignore it.
                         ComponentListRoutingArgs e = null;
@@ -154,11 +150,11 @@ public static class ComponentListExtension
                             {
                                 SelectedKey = Utility.ConvertToIntNullable(console.Context.Request.Query["item"]),
                                 SelectedGroup = Utility.ConvertToIntNullable(console.Context.Request.Query["group"]),
-                                SelectedGroupItem = Utility.ConvertToIntNullable(console.Context.Request.Query["groupitem"])
+                                SelectedGroupItem = Utility.ConvertToIntNullable(console.Context.Request.Query["groupitem"]),
                             };
                         }
 
-                        var instanceCandidate = routingAttribute.Routing.Validate(inComponentList, e);
+                        var instanceCandidate = routeObject.Validate(inComponentList, e);
                         if (instanceCandidate != null)
                             instance = instanceCandidate;
                     }

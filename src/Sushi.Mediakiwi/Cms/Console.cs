@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
 using Sushi.Mediakiwi.Data;
 using Sushi.Mediakiwi.Framework;
@@ -448,13 +449,13 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
             return string.Concat(webRoot, path);
         }
 
-        private IHostingEnvironment _env;
+        private IHostEnvironment _env;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Console"/> class.
         /// </summary>
         /// <param name="application">The application.</param>
-        public Console(HttpContext application, IHostingEnvironment env)
+        public Console(HttpContext application, IHostEnvironment env)
         {
             _env = env;
             m_Application = application;

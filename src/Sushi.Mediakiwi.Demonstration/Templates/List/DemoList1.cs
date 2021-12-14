@@ -62,7 +62,7 @@ namespace Sushi.Mediakiwi.Demonstration.Templates.List
 
         private async Task DemoList1_ListLoad(ComponentListEventArgs e)
         {
-            wim.Page.Resources.Add(ResourceLocation.HEADER, ResourceType.JAVASCRIPT, "/js/dingesHeader1LOAD.js", true, true);
+            await wim.Page.Resources.AddAsync(ResourceLocation.HEADER, ResourceType.JAVASCRIPT, "/js/dingesHeader1LOAD.js", true, true);
 
             Implement = DemoObject1.FetchSingle(e.SelectedKey);
             Utils.ReflectProperty(Implement, this);
@@ -76,12 +76,11 @@ namespace Sushi.Mediakiwi.Demonstration.Templates.List
             var allItems = DemoObject1.FetchAll();
 
             // Resources test
-            wim.Page.Resources.Add(ResourceLocation.HEADER, ResourceType.JAVASCRIPT, "/js/dingesHeader1.js", true, true);
-            wim.Page.Head.AddScript("/js/dingesHeader2.js");
-            wim.Page.Body.Add("<script type=\"text/javascript\">var dingesBody1 = '';</script>", false);
-            wim.Page.Resources.Add(ResourceLocation.BODY_NESTED, ResourceType.HTML, "<script type=\"text/javascript\">var dingesBody2 = '';</script>");
-            wim.Page.Resources.Add(ResourceLocation.BODY_BELOW, ResourceType.STYLESHEET, "/css/dingesFooter1.css", true, true);
-
+            await wim.Page.Resources.AddAsync(ResourceLocation.HEADER, ResourceType.JAVASCRIPT, "/js/dingesHeader1.js", true, true);
+            await wim.Page.Head.AddScriptAsync("/js/dingesHeader2.js");
+            await wim.Page.Body.AddAsync("<script type=\"text/javascript\">var dingesBody1 = '';</script>", false);
+            await wim.Page.Resources.AddAsync(ResourceLocation.BODY_NESTED, ResourceType.HTML, "<script type=\"text/javascript\">var dingesBody2 = '';</script>");
+            await wim.Page.Resources.AddAsync(ResourceLocation.BODY_BELOW, ResourceType.STYLESHEET, "/css/dingesFooter1.css", true, true);
 
             wim.ListDataAdd(allItems);
         }

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Sushi.Mediakiwi.Beta.GeneratedCms.Source;
@@ -28,7 +29,7 @@ namespace Sushi.Mediakiwi.UI
 {
     public class Monitor
     {
-        private IHostingEnvironment _env;
+        private IHostEnvironment _env;
         private HttpContext _Context;
         private Beta.GeneratedCms.Console _Console;
         private iPresentationMonitor _PresentationMonitor;
@@ -41,7 +42,7 @@ namespace Sushi.Mediakiwi.UI
         internal WimControlBuilder GlobalWimControlBuilder;
         private readonly IConfiguration _configuration;
 
-        public Monitor(HttpContext context, IHostingEnvironment env, IConfiguration configuration)
+        public Monitor(HttpContext context, IHostEnvironment env, IConfiguration configuration)
         {
             _env = env;
             _Context = context;
@@ -73,7 +74,7 @@ namespace Sushi.Mediakiwi.UI
             }
         }
 
-        internal static async Task<bool> StartControllerAsync(HttpContext context, IHostingEnvironment env, IConfiguration configuration, IServiceProvider serviceProvider)
+        internal static async Task<bool> StartControllerAsync(HttpContext context, IHostEnvironment env, IConfiguration configuration, IServiceProvider serviceProvider)
         {
             var monitor = new Monitor(context, env, configuration);
 
@@ -152,6 +153,7 @@ namespace Sushi.Mediakiwi.UI
             }
             else
             {
+                // TODO: MR:10-12-2021 Add logging
                 await _Console.Response.WriteAsync("no-access").ConfigureAwait(false);
             }
         }

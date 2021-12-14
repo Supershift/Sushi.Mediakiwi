@@ -5,13 +5,37 @@ namespace Sushi.Mediakiwi.Framework
     [AttributeUsage(AttributeTargets.Class)]
     public class ComponentListRouting : Attribute
     {
-        public IComponentListRouting Routing { get; internal set; }
+        /// <summary>
+        /// Set this Service Provider to incorporate Dependancy Injection when
+        /// creating an instance of the Routing type
+        /// </summary>
+        internal IServiceProvider Services { get; set; }
+
+        private readonly Type setType;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="ComponentListRouting"/> class.
         /// </summary>
         /// <param name="routing">The routing type, this should be an IComponentListRouting interface.</param>
-        public ComponentListRouting(Type routing) {
-            this.Routing = Activator.CreateInstance(routing) as IComponentListRouting;
+        public ComponentListRouting(Type routing) 
+        {
+            setType = routing;
+        }
+
+        /// <summary>
+        /// Creates an instance of the supplied Routing Type, with Dependancy Injection through Service Provider if available.
+        /// </summary>
+        /// <returns></returns>
+        public IComponentListRouting GetRouteObject()
+        {
+            if (Services != null)
+            {
+                return Microsoft.Extensions.DependencyInjection.ActivatorUtilities.CreateInstance(Services, setType) as IComponentListRouting;
+            }
+            else 
+            {
+                return Activator.CreateInstance(setType) as IComponentListRouting;
+            }
         }
     }
 
