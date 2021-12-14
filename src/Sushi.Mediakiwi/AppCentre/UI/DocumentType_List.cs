@@ -258,22 +258,20 @@ namespace Sushi.Mediakiwi.AppCentre.UI
                 //FormMaps.Add(DocumentTypeFormMapImplement);
             }
             // ARTICLE WILL BE REPLACED WITH THE VUE TEMPLATE
-            wim.Page.Body.Add(@"<article id=""app""></article>", false, Body.BodyTarget.Nested);
-
-            wim.Page.Head.AddStyle(CommonConfiguration.CDN_Folder(wim, "styles/documentType.min.css"));
-
-            wim.Page.Head.Add($@"<script> 
+            await wim.Page.Body.AddAsync(@"<article id=""app""></article>", false, Body.BodyTarget.Nested);
+            await wim.Page.Head.AddStyleAsync(CommonConfiguration.CDN_Folder(wim, "styles/documentType.min.css"));
+            await wim.Page.Head.AddAsync($@"<script> 
 var rootPath = {JsonConvert.SerializeObject(wim.AddApplicationPath("", true))};
 var documentTypeID = {e.SelectedKey};
 </script>");
 
             if (CommonConfiguration.IS_LOCAL_DEVELOPMENT)
             {
-                wim.Page.Head.AddScript(CommonConfiguration.CDN_Folder(wim, "app/dist/document-type-app.js"));
+                await wim.Page.Head.AddScriptAsync(CommonConfiguration.CDN_Folder(wim, "app/dist/document-type-app.js"));
             }
             else
             {
-                wim.Page.Head.AddScript(CommonConfiguration.CDN_Folder(wim, "app/dist/document-type-app.min.js"));
+                await wim.Page.Head.AddScriptAsync(CommonConfiguration.CDN_Folder(wim, "app/dist/document-type-app.min.js"));
             }
         }
 

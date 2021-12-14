@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Sushi.Mediakiwi.Framework
 {
@@ -75,11 +76,14 @@ namespace Sushi.Mediakiwi.Framework
 
     public class AdditionalResource
     {
+        private readonly System.Threading.SemaphoreSlim _semaphoreSlim;
+
         private readonly WimComponentListRoot _root;
 
         public AdditionalResource(WimComponentListRoot root)
         {
             _root = root;
+            _semaphoreSlim = new System.Threading.SemaphoreSlim(1, 1);
         }
 
         /// <summary>
@@ -93,9 +97,9 @@ namespace Sushi.Mediakiwi.Framework
         /// <param name="location">Where must the file be added</param>
         /// <param name="type">The type of file being added</param>
         /// <param name="source">The relative path to the file, or the sourceCode when using HTML as type</param>
-        public void Add(ResourceLocation location, ResourceType type, string source)
+        public async Task AddAsync(ResourceLocation location, ResourceType type, string source)
         {
-            Add(location, type, source, false);
+            await AddAsync(location, type, source, false);
         }
 
         /// <summary>
@@ -105,9 +109,9 @@ namespace Sushi.Mediakiwi.Framework
         /// <param name="type">The type of file being added</param>
         /// <param name="source">The relative path to the file, or the sourceCode when using HTML as type</param>
         /// <param name="appendApplicationPath">Do we need to append the application path ? (default: false, only works for JS & CSS)</param>
-        public void Add(ResourceLocation location, ResourceType type, string source, bool appendApplicationPath)
+        public async Task AddAsync(ResourceLocation location, ResourceType type, string source, bool appendApplicationPath)
         {
-            Add(location, type, source, appendApplicationPath, false);
+            await AddAsync(location, type, source, appendApplicationPath, false);
         }
 
 
@@ -118,9 +122,9 @@ namespace Sushi.Mediakiwi.Framework
         /// <param name="source">The relative path to the file, or the sourceCode when using HTML as type</param>
         /// <param name="appendApplicationPath">Do we need to append the application path ? (default false, only works for JS & CSS)</param>
         /// <param name="loadAsync">Should this file be loaded Asynchronous ? (default false, only works for JS & CSS)</param>
-        public void Add(ResourceLocation location, ResourceType type, string source, bool appendApplicationPath, bool loadAsync)
+        public async Task AddAsync(ResourceLocation location, ResourceType type, string source, bool appendApplicationPath, bool loadAsync)
         {
-            Add(location, type, source, appendApplicationPath, loadAsync, false);
+            await AddAsync(location, type, source, appendApplicationPath, loadAsync, false);
         }
 
         /// <summary>
@@ -131,76 +135,87 @@ namespace Sushi.Mediakiwi.Framework
         /// <param name="appendApplicationPath">Do we need to append the application path ? (default false, only works for JS & CSS)</param>
         /// <param name="loadAsync">Should this file be loaded Asynchronous ? (default false, only works for JS & CSS)</param>
         /// <param name="clearBaseTemplateBody">Should the existing body HTML be cleared ? this is the case when completely overwriting the page.</param>
-        public void Add(ResourceLocation location, ResourceType type, string source, bool appendApplicationPath, bool loadAsync, bool clearBaseTemplateBody)
+        public async Task AddAsync(ResourceLocation location, ResourceType type, string source, bool appendApplicationPath, bool loadAsync, bool clearBaseTemplateBody)
         {
-            var newResourceItem = new AdditionalResourceItem()
+            await _semaphoreSlim.WaitAsync();
+            try
             {
-                AppendPath = appendApplicationPath,
-                LoadAsync = loadAsync,
-                Path = source,
-                Location = location,
-                ResourceType = type
-            };
 
-            // Check if we already have this item, if so, return
-            if (Items.Contains(newResourceItem))
-            {
-                return;
-            }
-
-            Items.Add(newResourceItem);
-
-            // Sets the path to the file
-            var totalPath = "";
-            if (type == ResourceType.JAVASCRIPT || type == ResourceType.STYLESHEET)
-            {
-                totalPath = (appendApplicationPath) ? _root.AddApplicationPath(source) : source;
-                if (string.IsNullOrWhiteSpace(CommonConfiguration.FILE_VERSION) == false)
+                var newResourceItem = new AdditionalResourceItem()
                 {
-                    totalPath += $"?v={CommonConfiguration.FILE_VERSION}";
+                    AppendPath = appendApplicationPath,
+                    LoadAsync = loadAsync,
+                    Path = source,
+                    Location = location,
+                    ResourceType = type
+                };
+
+                // Check if we already have this item, if so, return
+                if (Items.Contains(newResourceItem))
+                {
+                    return;
                 }
-            }
 
-            // Sets the HTML output
-            var totalHtml = "";
-            switch (type)
-            {
-                default:
-                case ResourceType.HTML:
-                    {
-                        totalHtml = source;
-                    }
-                    break;
-                case ResourceType.JAVASCRIPT:
-                    {
-                        totalHtml = $"<script type=\"text/javascript\" src=\"{totalPath}\"{(loadAsync ? " async" : "")}></script>";
-                    }
-                    break;
-                case ResourceType.STYLESHEET:
-                    {
-                        totalHtml = $"<link rel=\"stylesheet\" href=\"{totalPath}\" type=\"text/css\" media=\"all\"{(loadAsync ? " async" : "")}/>";
-                    }
-                    break;
-            }
+                Items.Add(newResourceItem);
 
-            switch (location)
+                // Sets the path to the file
+                var totalPath = "";
+                if (type == ResourceType.JAVASCRIPT || type == ResourceType.STYLESHEET)
+                {
+                    totalPath = (appendApplicationPath) ? _root.AddApplicationPath(source) : source;
+                    if (string.IsNullOrWhiteSpace(CommonConfiguration.FILE_VERSION) == false)
+                    {
+                        totalPath += $"?v={CommonConfiguration.FILE_VERSION}";
+                    }
+                }
+
+                // Sets the HTML output
+                var totalHtml = "";
+                switch (type)
+                {
+                    default:
+                    case ResourceType.HTML:
+                        {
+                            totalHtml = source;
+                        }
+                        break;
+                    case ResourceType.JAVASCRIPT:
+                        {
+                            totalHtml = $"<script type=\"text/javascript\" src=\"{totalPath}\"{(loadAsync ? " async" : "")}></script>";
+                        }
+                        break;
+                    case ResourceType.STYLESHEET:
+                        {
+                            totalHtml = $"<link rel=\"stylesheet\" href=\"{totalPath}\" type=\"text/css\" media=\"all\"{(loadAsync ? " async" : "")}/>";
+                        }
+                        break;
+                }
+
+                switch (location)
+                {
+                    default:
+                    case ResourceLocation.BODY_NESTED:
+                        {
+                            _root.Page.Body.AddResource(totalHtml, clearBaseTemplateBody, Body.BodyTarget.Nested);
+                        }
+                        break;
+                    case ResourceLocation.HEADER:
+                        {
+                            _root.Page.Head.AddResource(totalHtml);
+                        }
+                        break;
+                    case ResourceLocation.BODY_BELOW:
+                        {
+                            _root.Page.Body.AddResource(totalHtml, clearBaseTemplateBody, Body.BodyTarget.Below);
+                        }
+                        break;
+                }
+
+            }
+            finally
             {
-                default:
-                case ResourceLocation.BODY_NESTED:
-                    {
-                        _root.Page.Body.AddResource(totalHtml, clearBaseTemplateBody, Body.BodyTarget.Nested);
-                    }
-                    break;
-                case ResourceLocation.HEADER:
-                    {
-                        _root.Page.Head.AddResource(totalHtml);
-                    }
-                    break;
-                case ResourceLocation.BODY_BELOW:
-                    {
-                        _root.Page.Body.AddResource(totalHtml, clearBaseTemplateBody, Body.BodyTarget.Below);
-                    }
-                    break;
+                _semaphoreSlim.Release();
+
             }
         }
     }

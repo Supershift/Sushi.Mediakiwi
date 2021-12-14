@@ -90,9 +90,11 @@ namespace Sushi.Mediakiwi.Framework
         }
 
         /// <summary>
-        /// Gets the request.
+        /// Gets the HTTP Request from the Wim.Console.Context property. 
+        /// Do not use when in ComponentList Routing mode, use a constructor with an IServiceProvider instead.
+        /// And get the IHttpContextAccessor from the Service Provider
         /// </summary>
-        /// <value>The request.</value>
+        /// <value>The HTTP Request object.</value>
         protected HttpRequest Request
         {
             get
@@ -102,9 +104,11 @@ namespace Sushi.Mediakiwi.Framework
         }
 
         /// <summary>
-        /// Gets the context.
+        /// Gets the HTTP Context from the Wim.Console property. 
+        /// Do not use when in ComponentList Routing mode, use a constructor with an IServiceProvider instead.
+        /// And get the IHttpContextAccessor from the Service Provider
         /// </summary>
-        /// <value>The context.</value>
+        /// <value>The HTTP Context object.</value>
         protected HttpContext Context
         {
             get

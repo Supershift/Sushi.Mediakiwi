@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.Extensions.Hosting;
 using Sushi.Mediakiwi.API.Extensions;
 using Sushi.Mediakiwi.API.Transport.Requests;
 using System.Collections.Generic;
@@ -9,9 +10,9 @@ namespace Sushi.Mediakiwi.API.Filters
 {
     public class MediakiwiConsoleFilter : IAsyncActionFilter
     {
-        protected IHostingEnvironment environment { get; private set; }
+        protected IHostEnvironment environment { get; private set; }
 
-        public MediakiwiConsoleFilter(IHostingEnvironment _env) 
+        public MediakiwiConsoleFilter(IHostEnvironment _env) 
         {
             environment = _env;
         }

@@ -170,8 +170,8 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                     select new {
                         item.ID,
                         item.Name,
-                        HasRoleReference = (relation == null ? false : true),
-                        RoleStatus = GetRoleGrantedAccessAsync(user, item.ID),
+                        HasRoleReference = relation != null,
+                        RoleStatus = Task.Run(async () => await GetRoleGrantedAccessAsync(user, item.ID)).Result,
                         AccessType = (relation == null ? Access.Inherit : relation.AccessType)
                     };
 
