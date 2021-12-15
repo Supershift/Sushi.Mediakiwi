@@ -539,6 +539,11 @@
             The pagination, keeping current page and total results
             </summary>
         </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.ListGrid.Buttons">
+            <summary>
+            The buttons belonging to this grid
+            </summary>
+        </member>
         <member name="P:Sushi.Mediakiwi.API.Transport.ListItemCollectionOption.Text">
             <summary>
             The text (label) for this option
