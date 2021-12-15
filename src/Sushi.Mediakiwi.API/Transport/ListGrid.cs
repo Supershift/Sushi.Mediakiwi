@@ -34,5 +34,11 @@ namespace Sushi.Mediakiwi.API.Transport
         /// </summary>
         [JsonPropertyName("pagination")]
         public ListPagination Pagination { get; set; }
+
+        /// <summary>
+        /// The buttons belonging to this grid
+        /// </summary>
+        [JsonPropertyName("buttons")]
+        public ICollection<ButtonField> Buttons { get; set; } = new List<ButtonField>();
     }
 }

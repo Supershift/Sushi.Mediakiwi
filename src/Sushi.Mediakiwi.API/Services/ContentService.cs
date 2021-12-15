@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Reflection;
 
 namespace Sushi.Mediakiwi.API.Services
 {
@@ -15,7 +16,7 @@ namespace Sushi.Mediakiwi.API.Services
 
         #region Get Grids
 
-        private ICollection<ListGrid> GetGrids()
+        private async Task<ICollection<ListGrid>> GetGridsAsync()
         {
             ICollection<ListGrid> result = new List<ListGrid>();
 
@@ -72,8 +73,13 @@ namespace Sushi.Mediakiwi.API.Services
                     var listRowItem = new ListRowItem()
                     {
                         CanWrap = false,
-                        Value = itemType.GetProperty(col.ColumnValuePropertyName).GetValue(tempComp).ToString(),
                     };
+
+                    var objValue = itemType.GetProperty(col.ColumnValuePropertyName).GetValue(tempComp);
+                    if (objValue != null)
+                    {
+                        listRowItem.Value = objValue.ToString();
+                    }
 
                     switch (col.Type)
                     {
@@ -121,6 +127,24 @@ namespace Sushi.Mediakiwi.API.Services
             }
 
             #endregion Pagination
+
+            #region Buttons
+
+            foreach (var item in _resolver.ListInstance.GetType().GetProperties())
+            {
+                var buttonAttribute = item.GetCustomAttribute<Framework.ContentListSearchItem.ButtonAttribute>();
+                if (buttonAttribute != null)
+                { 
+                    var newButton = await GetButtonAsync(buttonAttribute);
+                    newButton.FormSection = grid.Title;
+                    newButton.PropertyName = item.Name;
+                    newButton.PropertyType = item.PropertyType.FullName;
+
+                    grid.Buttons.Add(newButton);
+                }
+            }
+
+            #endregion Buttons
 
             grid.Title = _resolver.ListInstance.wim.CurrentList.Name;
 
@@ -193,9 +217,9 @@ namespace Sushi.Mediakiwi.API.Services
                     switch (resource.Location)
                     {
                         default:
-                        case ResourceLocation.BODY_NESTED: newResourceItem.Position = 2; break;
-                        case ResourceLocation.HEADER: newResourceItem.Position = 1; break;
-                        case ResourceLocation.BODY_BELOW: newResourceItem.Position = 3; break;
+                        case Framework.ResourceLocation.BODY_NESTED: newResourceItem.Position = 2; break;
+                        case Framework.ResourceLocation.HEADER: newResourceItem.Position = 1; break;
+                        case Framework.ResourceLocation.BODY_BELOW: newResourceItem.Position = 3; break;
                     }
 
                     switch (resource.ResourceType)
@@ -430,6 +454,69 @@ namespace Sushi.Mediakiwi.API.Services
             return newButton;
         }
 
+
+        private async Task<ButtonField> GetButtonAsync(Framework.ContentListItem.ButtonAttribute field)
+        {
+            // Result container
+            ButtonField newButton = new ButtonField();
+
+            // Reset expression
+            newButton.Expression = 0;
+
+            newButton.AskConfirmation = field.AskConfirmation;
+            newButton.ConfirmationAcceptLabel = field.ConfirmationAcceptLabel;
+            newButton.ConfirmationQuestion = field.ConfirmationQuestion;
+            newButton.ConfirmationRejectLabel = field.ConfirmationRejectLabel;
+            newButton.ConfirmationTitle = field.ConfirmationTitle;
+            newButton.Target = field.Target;
+            newButton.Title = field.Title;
+            newButton.HelpText = field.InteractiveHelp;
+            newButton.ContentType = ConvertEnum(field.ContentTypeSelection);
+            newButton.Event = JSEventEnum.Click;
+            newButton.IsHidden = field.IsHidden;
+            newButton.IsPrimary = field.IsPrimary;
+            newButton.VueType = VueTypeEnum.FormButton;
+
+            // Direct set URL
+            var setUrl = field.CustomUrl;
+
+            // URL set by PropertyName
+            var setUrlProperty = field.CustomUrlProperty;
+
+            // URL set as layer list
+            var listInLayer = field.ListInPopupLayer;
+
+            // Construct the URL for the button
+            if (string.IsNullOrWhiteSpace(setUrlProperty) == false)
+            {
+                newButton.Url = _resolver.ListInstance.GetType().GetProperty(setUrlProperty).GetValue(_resolver.ListInstance, null) as string;
+            }
+            else if (string.IsNullOrWhiteSpace(listInLayer) == false && Utils.IsGuid(listInLayer, out Guid listGuid))
+            {
+                var list2 = await Data.ComponentList.SelectOneAsync(listGuid).ConfigureAwait(false);
+                if (list2?.ID > 0)
+                {
+                    string prefix = _resolver.UrlBuild.GetListRequest(_resolver.ListID.Value, _resolver.ItemID);
+                    if (prefix.Contains("?"))
+                        newButton.Url = string.Concat(prefix, "&openinframe=1");
+                    else
+                        newButton.Url = string.Concat(prefix, "?openinframe=1");
+                }
+            }
+            else if (string.IsNullOrWhiteSpace(setUrl) == false)
+            {
+                newButton.Url = setUrl;
+            }
+
+            newButton.TriggerSaveEvent = field.TriggerSaveEvent;
+
+
+            // Get layer configuration
+            newButton.LayerConfiguration = GetLayerConfiguration(field);
+
+            return newButton;
+        }
+
         #endregion Get Button
 
         #region Get Layer Configuration
@@ -510,6 +597,83 @@ namespace Sushi.Mediakiwi.API.Services
                                 }
                                 break;
                         }
+                    }
+                }
+            }
+
+            return newLayer;
+        }
+
+        private LayerConfiguration GetLayerConfiguration(Framework.ContentListItem.ButtonAttribute field)
+        {
+            // Result container
+            LayerConfiguration newLayer = null;
+
+            if (field.OpenInPopupLayer)
+            {
+                newLayer = new LayerConfiguration();
+                LayerSize popupSize = field.PopupLayerSize;
+
+                newLayer.Title = field.PopupTitle;
+                newLayer.HasScrollbar = field.PopupLayerScrollBar;
+
+                if (string.IsNullOrWhiteSpace(field.PopupLayerHeight) == false)
+                {
+                    if (field.PopupLayerHeight.Contains("%"))
+                    {
+                        newLayer.HeightUnitType = UnitTypeEnum.Percentage;
+                    }
+                    else
+                    {
+                        newLayer.HeightUnitType = UnitTypeEnum.Pixels;
+                    }
+                    newLayer.Height = Convert.ToInt32(field.PopupLayerHeight.Replace("%", string.Empty).Replace("px", string.Empty));
+                }
+
+                if (string.IsNullOrWhiteSpace(field.PopupLayerWidth) == false)
+                {
+                    if (field.PopupLayerWidth.Contains("%"))
+                    {
+                        newLayer.WidthUnitType = UnitTypeEnum.Percentage;
+                    }
+                    else
+                    {
+                        newLayer.WidthUnitType = UnitTypeEnum.Pixels;
+                    }
+                    newLayer.Width = Convert.ToInt32(field.PopupLayerWidth.Replace("%", string.Empty).Replace("px", string.Empty));
+                }
+
+                // When we received a enum layersize and no additional sizing info
+                if (popupSize != LayerSize.Undefined && newLayer.Width == 0 && newLayer.Height == 0)
+                {
+                    switch (popupSize)
+                    {
+                        default:
+                        case LayerSize.Undefined: break;
+                        case LayerSize.Normal:
+                            {
+                                newLayer.Height = 614;
+                                newLayer.HeightUnitType = UnitTypeEnum.Pixels;
+                                newLayer.Width = 864;
+                                newLayer.WidthUnitType = UnitTypeEnum.Pixels;
+                            }
+                            break;
+                        case LayerSize.Small:
+                            {
+                                newLayer.Height = 414;
+                                newLayer.HeightUnitType = UnitTypeEnum.Pixels;
+                                newLayer.Width = 760;
+                                newLayer.WidthUnitType = UnitTypeEnum.Pixels;
+                            }
+                            break;
+                        case LayerSize.Tiny:
+                            {
+                                newLayer.Height = 314;
+                                newLayer.HeightUnitType = UnitTypeEnum.Pixels;
+                                newLayer.Width = 472;
+                                newLayer.WidthUnitType = UnitTypeEnum.Pixels;
+                            }
+                            break;
                     }
                 }
             }
@@ -849,7 +1013,7 @@ namespace Sushi.Mediakiwi.API.Services
             else if (resolver.ListID.HasValue)
             {
                 resolver.ListInstance.wim.DoListSearch();
-                result.Grids = GetGrids();
+                result.Grids = await GetGridsAsync();
             }
 
             result.Notifications = GetNotifications();
