@@ -112,7 +112,7 @@ namespace Sushi.Mediakiwi
             IVisitor visitor = null;
             using (var auth = new AuthenticationLogic(Context))
             {
-                auth.Password = Common.GetPassPhraseFromContext(Context);
+                auth.Password = GetPassPhraseFromContext(Context);
 
                 if (Context != null)
                 {
@@ -146,7 +146,7 @@ namespace Sushi.Mediakiwi
             IVisitor visitor = null;
             using (var auth = new AuthenticationLogic(Context))
             {
-                auth.Password = Common.GetPassPhraseFromContext(Context);
+                auth.Password = GetPassPhraseFromContext(Context);
 
                 if (Context != null)
                 {
@@ -335,7 +335,7 @@ namespace Sushi.Mediakiwi
 
             using (var auth = new AuthenticationLogic(Context))
             {
-                auth.Password = Common.GetPassPhraseFromContext(Context);
+                auth.Password = GetPassPhraseFromContext(Context);
 
                 auth.AddValue(m_Attribute_TimeStamp, DateTime.UtcNow.Ticks.ToString());
                 auth.AddValue(m_Attribute_Id, guid.ToString());
@@ -369,5 +369,29 @@ namespace Sushi.Mediakiwi
         }
 
         #endregion
+
+        public static string GetPassPhraseFromContext(HttpContext context)
+        {
+            string returnValue = string.Empty;
+
+            if (context?.Request?.Headers?.ContainsKey("User-Agent") == true)
+            {
+                returnValue = context.Request.Headers["User-Agent"];
+            }
+            else if (context?.Request?.Headers?.ContainsKey("Request-Id") == true)
+            {
+                returnValue = context.Request.Headers["Request-Id"];
+            }
+            else if (context?.Request?.Host != null && context?.Request?.Host.HasValue == true)
+            {
+                returnValue = context?.Request?.Host.Value;
+            }
+            else
+            {
+                returnValue = Data.Configuration.WimServerConfiguration.Instance.Encryption_key;
+            }
+
+            return returnValue;
+        }
     }
 }
