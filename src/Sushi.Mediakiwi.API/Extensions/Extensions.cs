@@ -143,7 +143,10 @@ namespace Sushi.Mediakiwi.API.Extensions
             services.AddSwaggerGen(options =>
             {
                 var filePath = Path.Combine(AppContext.BaseDirectory, $"{Common.API_ASSEMBLY_NAME}.xml");
-                options.IncludeXmlComments(filePath);
+                if (System.IO.File.Exists(filePath))
+                {
+                    options.IncludeXmlComments(filePath);
+                }
                 options.EnableAnnotations(true, true);
                 options.SwaggerDoc("v0.1", new OpenApiInfo
                 {

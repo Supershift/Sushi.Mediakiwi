@@ -19,8 +19,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\src\Sushi.Mediakiwi.Data.Elastic\Sushi.Mediakiwi.Data.Elastic.csproj" />
-    <ProjectReference Include="..\src\Sushi.Mediakiwi\Sushi.Mediakiwi.csproj" />
+    <ProjectReference Include="..\Sushi.Mediakiwi.Data.Elastic\Sushi.Mediakiwi.Data.Elastic.csproj" />
+    <ProjectReference Include="..\Sushi.Mediakiwi\Sushi.Mediakiwi.csproj" />
   </ItemGroup>
 
 </Project>
