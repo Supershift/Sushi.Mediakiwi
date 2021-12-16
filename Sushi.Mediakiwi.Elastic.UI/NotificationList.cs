@@ -10,13 +10,13 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Sushi.Mediakiwi.Data.Elastic.UI
+namespace Sushi.Mediakiwi.Elastic.UI
 {
     public class NotificationList : BaseImplementation
     {
-        private readonly Repositories.NotificationRepository _repository;
+        private readonly Data.Elastic.Repositories.NotificationRepository _repository;
 
-        public NotificationList(Repositories.NotificationRepository repository)
+        public NotificationList(Data.Elastic.Repositories.NotificationRepository repository)
         {
             _repository = repository;
 
@@ -94,17 +94,17 @@ namespace Sushi.Mediakiwi.Data.Elastic.UI
             wim.ForceLoad = true;
             wim.SearchViewDashboardMaxLength = 250;
 
-            NotificationType? selection = null;
+            Data.NotificationType? selection = null;
             if (FilterSelection > 0)
-                selection = (NotificationType)FilterSelection;
+                selection = (Data.NotificationType)FilterSelection;
 
             if (Request.Query.ContainsKey("groupName"))
             {
                 wim.ListDataColumns.Add(new ListDataColumn("ID", "ElasticId.Id", ListDataColumnType.Default));
                 wim.ListDataColumns.Add(new ListDataColumn("Index", "ElasticId.Index", ListDataColumnType.Default));
                 
-                wim.ListDataColumns.Add(new ListDataColumn("Notification", nameof(Notification.Text), ListDataColumnType.HighlightPresent));
-                wim.ListDataColumns.Add(new ListDataColumn("Created", nameof(Notification.Timestamp), ListDataColumnType.Default) { ContentType = ListDataContentType.ItemSelect });
+                wim.ListDataColumns.Add(new ListDataColumn("Notification", nameof(Data.Elastic.Notification.Text), ListDataColumnType.HighlightPresent));
+                wim.ListDataColumns.Add(new ListDataColumn("Created", nameof(Data.Elastic.Notification.Timestamp), ListDataColumnType.Default) { ContentType = ListDataContentType.ItemSelect });
 
                 var results = await _repository.GetAllAsync(selection, Request.Query["groupName"], FilterFrom, FilterTo, wim.CurrentList.Option_Search_MaxResultPerPage, null);
                 wim.ListDataAdd(results);
@@ -114,9 +114,9 @@ namespace Sushi.Mediakiwi.Data.Elastic.UI
             else
             {
                 wim.ListDataColumns.Add(new ListDataColumn("ID", "Count", ListDataColumnType.UniqueIdentifier));
-                wim.ListDataColumns.Add(new ListDataColumn("Type", nameof(NotificationGroup.GroupName), ListDataColumnType.HighlightPresent));
-                wim.ListDataColumns.Add(new ListDataColumn("Count", nameof(NotificationGroup.Count)) { ColumnWidth = 50 });
-                wim.ListDataColumns.Add(new ListDataColumn("Last notification", nameof(NotificationGroup.LastTimestamp)) { ColumnWidth = 80, Alignment = Align.Right });
+                wim.ListDataColumns.Add(new ListDataColumn("Type", nameof(Data.Elastic.NotificationGroup.GroupName), ListDataColumnType.HighlightPresent));
+                wim.ListDataColumns.Add(new ListDataColumn("Count", nameof(Data.Elastic.NotificationGroup.Count)) { ColumnWidth = 50 });
+                wim.ListDataColumns.Add(new ListDataColumn("Last notification", nameof(Data.Elastic.NotificationGroup.LastTimestamp)) { ColumnWidth = 80, Alignment = Align.Right });
 
                 var results = await _repository.GetAggregatedGroupsAsync(selection, FilterFrom, FilterTo);
 

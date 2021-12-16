@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
@@ -10,20 +10,17 @@
     <Company>Supershift</Company>
     <Authors>Mark de Vries</Authors>
     <Copyright>2021 Supershift</Copyright>
-    <Description>Adds support for ElasticSearch as datastore for selected data entities.</Description>
+    <Description>Contains specialized UI screens for data entities using Elastic.</Description>
     <PackageProjectUrl>https://mediakiwi.atlassian.net/wiki/spaces/CORE/overview</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/Supershift/Sushi.Mediakiwi/Sushi.Mediakiwi.Data.Elastic</RepositoryUrl>    
+    <RepositoryUrl>https://github.com/Supershift/Sushi.Mediakiwi/Sushi.Mediakiwi.Elastic.UI</RepositoryUrl>
     <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
     <EnableNETAnalyzers>true</EnableNETAnalyzers>
-    <RunAnalyzersDuringBuild>false</RunAnalyzersDuringBuild>    
+    <RunAnalyzersDuringBuild>false</RunAnalyzersDuringBuild>
   </PropertyGroup>
-  <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="6.0.0" />
-    <PackageReference Include="NEST" Version="7.14.0" />
-  </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Sushi.Mediakiwi.Data\Sushi.Mediakiwi.Data.csproj" />    
+    <ProjectReference Include="..\src\Sushi.Mediakiwi.Data.Elastic\Sushi.Mediakiwi.Data.Elastic.csproj" />
+    <ProjectReference Include="..\src\Sushi.Mediakiwi\Sushi.Mediakiwi.csproj" />
   </ItemGroup>
 
 </Project>
