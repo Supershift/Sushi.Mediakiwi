@@ -15,7 +15,7 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile>C:\Code\Sushi.Mediakiwi\src\Sushi.Mediakiwi.API\Sushi.Mediakiwi.API.xml</DocumentationFile>
+    <DocumentationFile></DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
@@ -27,12 +27,6 @@
   <ItemGroup>
     <ProjectReference Include="..\Sushi.Mediakiwi.Data\Sushi.Mediakiwi.Data.csproj" />
     <ProjectReference Include="..\Sushi.Mediakiwi\Sushi.Mediakiwi.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="Sushi.Mediakiwi.API.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
 
 </Project>
