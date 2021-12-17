@@ -1,6 +1,7 @@
 using Sushi.Mediakiwi.Data;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Sushi.Mediakiwi.Framework.ContentListItem
 {
@@ -9,6 +10,29 @@ namespace Sushi.Mediakiwi.Framework.ContentListItem
     /// </summary>
     public class MultiAssetUploadAttribute : ContentSharedAttribute, IContentInfo, IListContentInfo
     {
+        public async Task<Api.MediakiwiField> GetApiFieldAsync()
+        {
+            return new Api.MediakiwiField()
+            {
+                Event = m_AutoPostBack ? Api.MediakiwiJSEvent.Change : Api.MediakiwiJSEvent.None,
+                Title = MandatoryWrap(Title),
+                Value = OutputText,
+                Expression = Expression,
+                PropertyName = ID,
+                PropertyType = (Property == null) ? typeof(string).FullName : Property.PropertyType.FullName,
+                VueType = Api.MediakiwiFormVueType.undefined,
+                ClassName = InputClassName(IsValid(Mandatory)),
+                ReadOnly = IsReadOnly,
+                ContentTypeID = ContentTypeSelection,
+                IsAutoPostback = m_AutoPostBack,
+                IsMandatory = Mandatory,
+                MaxLength = MaxValueLength,
+                HelpText = InteractiveHelp,
+                FormSection = GetFormMapClass(),
+                Hidden = IsCloaked
+            };
+        }
+
         /// <summary>
         ///  Possible return types: Array of ints being the PK of the asset uploaded
         /// </summary>
@@ -157,7 +181,7 @@ namespace Sushi.Mediakiwi.Framework.ContentListItem
         /// <returns></returns>
         public new bool IsValid(bool isRequired)
         {
-            if (Console.CurrentListInstance.wim.IsSaveMode)
+            if (Console?.CurrentListInstance?.wim?.IsSaveMode == true)
             {
                 //  Custom error validation
                 if (!base.IsValid(isRequired))

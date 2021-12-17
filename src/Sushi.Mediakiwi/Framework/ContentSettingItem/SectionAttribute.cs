@@ -1,4 +1,5 @@
 using Sushi.Mediakiwi.Data;
+using System.Threading.Tasks;
 
 namespace Sushi.Mediakiwi.Framework.ContentSettingItem
 {
@@ -7,6 +8,25 @@ namespace Sushi.Mediakiwi.Framework.ContentSettingItem
     /// </summary>
     public class SectionAttribute : ContentSharedAttribute, IContentInfo, IContentSettingInfo
     {
+        public async Task<Api.MediakiwiField> GetApiFieldAsync()
+        {
+            return new Api.MediakiwiField()
+            {
+                Title = Title,
+                Value = OutputText,
+                Expression = Expression,
+                PropertyName = ID,
+                PropertyType = (Property == null) ? typeof(string).FullName : Property.PropertyType.FullName,
+                VueType = Api.MediakiwiFormVueType.wimSection,
+                ContentTypeID = ContentTypeSelection,
+                IsAutoPostback = m_AutoPostBack,
+                IsMandatory = Mandatory,
+                MaxLength = MaxValueLength,
+                HelpText = InteractiveHelp,
+                FormSection = GetFormMapClass()
+            };
+        }
+
         /// <summary>
         /// Possible return types: System.String
         /// </summary>

@@ -1,6 +1,7 @@
 using Sushi.Mediakiwi.Data;
 using Sushi.Mediakiwi.UI;
 using System;
+using System.Threading.Tasks;
 
 namespace Sushi.Mediakiwi.Framework.ContentInfoItem
 {
@@ -9,6 +10,27 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
     /// </summary>
     public class ListItemSelectAttribute : ContentSharedAttribute, IContentInfo
     {
+        public async Task<Api.MediakiwiField> GetApiFieldAsync()
+        {
+            return new Api.MediakiwiField()
+            {
+                Event = m_AutoPostBack ? Api.MediakiwiJSEvent.Change : Api.MediakiwiJSEvent.None,
+                Title = MandatoryWrap(Title),
+                Value = OutputText,
+                Expression = Expression,
+                PropertyName = ID,
+                PropertyType = (Property == null) ? typeof(DateTime).FullName : Property.PropertyType.FullName,
+                VueType = Api.MediakiwiFormVueType.undefined,
+                ReadOnly = IsReadOnly,
+                ContentTypeID = ContentTypeSelection,
+                IsAutoPostback = m_AutoPostBack,
+                IsMandatory = Mandatory,
+                MaxLength = MaxValueLength,
+                HelpText = InteractiveHelp,
+                FormSection = GetFormMapClass()
+            };
+        }
+
         /// <summary>
         /// Possible return types: System.String[], System.Int32[], string (CSV)
         /// </summary>
@@ -112,7 +134,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
         public override bool IsValid(bool isRequired)
         {
             Mandatory = isRequired;
-            if (Console.CurrentListInstance.wim.IsSaveMode)
+            if (Console?.CurrentListInstance?.wim?.IsSaveMode == true)
             {
                 //  Custom error validation
                 if (!base.IsValid(isRequired))

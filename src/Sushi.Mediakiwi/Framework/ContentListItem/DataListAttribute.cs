@@ -2,6 +2,7 @@ using Sushi.Mediakiwi.Data;
 using Sushi.Mediakiwi.UI;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Sushi.Mediakiwi.Data
 {
@@ -55,6 +56,29 @@ namespace Sushi.Mediakiwi.Framework.ContentListItem
     /// </summary>
     public class DataListAttribute : ContentSharedAttribute, IContentInfo, IListContentInfo
     {
+        public async Task<Api.MediakiwiField> GetApiFieldAsync()
+        {
+            return new Api.MediakiwiField()
+            {
+                Event = m_AutoPostBack ? Api.MediakiwiJSEvent.Change : Api.MediakiwiJSEvent.None,
+                Title = MandatoryWrap(Title),
+                Value = OutputText,
+                Expression = Expression,
+                PropertyName = ID,
+                PropertyType = (Property == null) ? typeof(string).FullName : Property.PropertyType.FullName,
+                VueType = Api.MediakiwiFormVueType.undefined,
+                ClassName = InputClassName(IsValid(Mandatory)),
+                ReadOnly = IsReadOnly,
+                ContentTypeID = ContentTypeSelection,
+                IsAutoPostback = m_AutoPostBack,
+                IsMandatory = Mandatory,
+                MaxLength = MaxValueLength,
+                HelpText = InteractiveHelp,
+                FormSection = GetFormMapClass(),
+                Hidden = IsCloaked
+            };
+        }
+
         /// <summary>
         /// Possible return types: Data.DataList. If not list is applied it will take the current list. 
         /// </summary>

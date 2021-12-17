@@ -22,6 +22,7 @@ namespace Sushi.Mediakiwi.API
         private string Domain { get; set; }
         private PathString? PathBase { get; set; }
         public int? FolderID { get; set; }
+        public object ItemObject { get; set; }
         public int? ItemID { get; set; }
         public int? ListID { get; set; }
         public int? PageID { get; set; }
@@ -445,7 +446,7 @@ namespace Sushi.Mediakiwi.API
             //  Verify page request
             if (Query.ContainsKey("page"))
             {
-                PageID = Utils.ConvertToInt(Query["page"], 0);
+                PageID = Utils.ConvertToInt(Query["page"].FirstOrDefault(), 0);
                 if (Page?.FolderID > 0 && FolderID.GetValueOrDefault(0) == 0)
                 {
                     FolderID = Page.FolderID;
@@ -456,7 +457,7 @@ namespace Sushi.Mediakiwi.API
             //  Verify asset request
             if (Query.ContainsKey("asset"))
             {
-                AssetID = Utils.ConvertToInt(Query["asset"], 0);
+                AssetID = Utils.ConvertToInt(Query["asset"].FirstOrDefault(), 0);
                 if (Asset?.GalleryID > 0 && FolderID.GetValueOrDefault(0) == 0)
                 {
                     GalleryID = Asset.GalleryID;
@@ -467,27 +468,31 @@ namespace Sushi.Mediakiwi.API
             //  Verify gallery request
             if (Query.ContainsKey("gallery"))
             {
-                GalleryID = Utils.ConvertToInt(Query["gallery"], 0);
+                GalleryID = Utils.ConvertToInt(Query["gallery"].FirstOrDefault(), 0);
                 ItemType = RequestItemType.Asset;
             }
 
             //  Verify dashboard request
             if (Query.ContainsKey("dashboard"))
             {
-                DashboardID = Utils.ConvertToInt(Query["dashboard"], 0);
+                DashboardID = Utils.ConvertToInt(Query["dashboard"].FirstOrDefault(), 0);
                 ItemType = RequestItemType.Dashboard;
             }
 
             //  Verify list-item request
             if (Query.ContainsKey("item"))
             {
-                ItemID = Utils.ConvertToInt(Query["item"], 0);
+                ItemObject = Query["item"].FirstOrDefault();
+                if (int.TryParse(ItemObject.ToString(), out int itemId))
+                {
+                    ItemID = itemId;
+                }
                 ItemType = RequestItemType.Item;
             }
 
             if (Query.ContainsKey("list"))
             {
-                ListID = Utils.ConvertToInt(Query["list"], 0);
+                ListID = Utils.ConvertToInt(Query["list"].FirstOrDefault(), 0);
                 if (List?.FolderID > 0 && FolderID.GetValueOrDefault(0) == 0)
                 {
                     FolderID = List.FolderID;
@@ -496,52 +501,52 @@ namespace Sushi.Mediakiwi.API
 
             if (Query.ContainsKey("folder") && FolderID.GetValueOrDefault(0) == 0)
             {
-                FolderID = Utils.ConvertToInt(Query["folder"], 0);
+                FolderID = Utils.ConvertToInt(Query["folder"].FirstOrDefault(), 0);
             }
 
             if (Query.ContainsKey("top"))
             {
-                SectionID = Utils.ConvertToInt(Query["top"], 0);
+                SectionID = Utils.ConvertToInt(Query["top"].FirstOrDefault(), 0);
             }
 
             if (Query.ContainsKey("group"))
             {
-                GroupID = Utils.ConvertToInt(Query["group"], 0);
+                GroupID = Utils.ConvertToInt(Query["group"].FirstOrDefault(), 0);
             }
 
             if (Query.ContainsKey("groupitem"))
             {
-                GroupItemID = Utils.ConvertToInt(Query["groupitem"], 0);
+                GroupItemID = Utils.ConvertToInt(Query["groupitem"].FirstOrDefault(), 0);
             }
 
             if (Query.ContainsKey("group2"))
             {
-                Group2ID = Utils.ConvertToInt(Query["group2"], 0);
+                Group2ID = Utils.ConvertToInt(Query["group2"].FirstOrDefault(), 0);
             }
 
             if (Query.ContainsKey("group2item"))
             {
-                Group2ItemID = Utils.ConvertToInt(Query["group2item"], 0);
+                Group2ItemID = Utils.ConvertToInt(Query["group2item"].FirstOrDefault(), 0);
             }
 
             if (Query.ContainsKey("base"))
             {
-                BaseID = Utils.ConvertToInt(Query["base"], 0);
+                BaseID = Utils.ConvertToInt(Query["base"].FirstOrDefault(), 0);
             }
 
             if (Query.ContainsKey("tab"))
             {
-                SelectedTab = Query["tab"];
+                SelectedTab = Query["tab"].FirstOrDefault();
             }
 
             if (Query.ContainsKey("openinframe"))
             {
-                OpenInFrame = Utils.ConvertToInt(Query["openinframe"]);
+                OpenInFrame = Utils.ConvertToInt(Query["openinframe"].FirstOrDefault());
             }
 
             if (Query.ContainsKey("referid"))
             {
-                ReferID = Query["referid"];
+                ReferID = Query["referid"].FirstOrDefault();
             }
 
             if (ListID.GetValueOrDefault(0) == 0 && !string.IsNullOrWhiteSpace(targetName))
@@ -567,7 +572,9 @@ namespace Sushi.Mediakiwi.API
             // Set ListInstance
             if (ListID.GetValueOrDefault(0) > 0)
             {
-                var listinstance = Utils.CreateInstance(List.AssemblyName, List.ClassName, _services);
+                //
+                var listinstance = List.GetInstance(_console);
+                // var listinstance = Utils.CreateInstance(List.AssemblyName, List.ClassName, _services);
 
                 if (listinstance is Framework.IComponentListTemplate m_instance)
                 {
@@ -583,9 +590,9 @@ namespace Sushi.Mediakiwi.API
                         m_instance.wim.Console = _console;
                         m_instance.wim.CurrentList = List;
                         m_instance.wim.DoListInit();
-                       
+
                         // Determine Edit state
-                        if (ItemID.HasValue)
+                        if (ItemID.HasValue || ItemObject != null)
                         {
                             var isEditPostBack = false;
                             var isSavePostBack = false;
@@ -603,6 +610,7 @@ namespace Sushi.Mediakiwi.API
                                 || isSavePostBack
                                 || m_instance.wim.OpenInEditMode
                                 || ItemID.GetValueOrDefault(-1) == 0
+                                || ItemObject != null
                                 || AssetID.GetValueOrDefault(-1) == 0
                                 || (_console.JsonReferrer != null && _console.JsonReferrer.Equals("edit"))
                                 || _console.JsonForm != null;

@@ -12,6 +12,7 @@
     <RepositoryUrl>https://github.com/Supershift/Sushi.Mediakiwi</RepositoryUrl>
     <Version>7.16.7</Version>
 	<ExcludeXmlAssemblyFiles>false</ExcludeXmlAssemblyFiles>
+	<GenerateDocumentationFile>True</GenerateDocumentationFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

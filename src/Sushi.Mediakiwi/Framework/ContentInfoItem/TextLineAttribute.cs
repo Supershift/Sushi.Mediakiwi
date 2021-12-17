@@ -1,14 +1,34 @@
 using Sushi.Mediakiwi.Data;
 using Sushi.Mediakiwi.Logic;
 using System;
+using System.Threading.Tasks;
 
 namespace Sushi.Mediakiwi.Framework.ContentInfoItem
 {
     /// <summary>
     /// Possible return types: System.String
     /// </summary>
-    public class TextLineAttribute : ContentSharedAttribute, IContentInfo 
+    public class TextLineAttribute : ContentSharedAttribute, IContentInfo
     {
+        public async Task<Api.MediakiwiField> GetApiFieldAsync()
+        {
+            return new Api.MediakiwiField()
+            {
+                Title = Title,
+                Value = OutputText,
+                Expression = Expression,
+                PropertyName = ID,
+                PropertyType = (Property == null) ? typeof(string).FullName : Property.PropertyType.FullName,
+                VueType = Api.MediakiwiFormVueType.wimTextline,
+                ContentTypeID = ContentTypeSelection,
+                IsAutoPostback = m_AutoPostBack,
+                IsMandatory = Mandatory,
+                MaxLength = MaxValueLength,
+                HelpText = InteractiveHelp,
+                FormSection = GetFormMapClass()
+            };
+        }
+
         /// <summary>
         /// Possible return types: System.String
         /// </summary>
@@ -169,21 +189,9 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
 
             if (!IsCloaked)
             {
-                build.ApiResponse.Fields.Add(new Api.MediakiwiField()
-                {
-                    Title = Title,
-                    Value = OutputText,
-                    Expression = Expression,
-                    PropertyName = ID,
-                    PropertyType = (Property == null) ? typeof(string).FullName : Property.PropertyType.FullName,
-                    VueType = Api.MediakiwiFormVueType.wimTextline,
-                    ContentTypeID=ContentTypeSelection,
-                    IsAutoPostback = m_AutoPostBack,
-                    IsMandatory = Mandatory,
-                    MaxLength = MaxValueLength,
-                    HelpText = InteractiveHelp,
-                    FormSection = formName
-                });
+                // Get API field and add it to response
+                var apiField = Task.Run(async () => await GetApiFieldAsync()).Result;
+                build.ApiResponse.Fields.Add(apiField);
 
                 build.Append(GetSimpleTextElement(OutputText));
             }

@@ -1,13 +1,36 @@
 using Sushi.Mediakiwi.Data;
 using System;
+using System.Threading.Tasks;
 
 namespace Sushi.Mediakiwi.Framework.ContentInfoItem
 {
     /// <summary>
     /// Possible return types: System.String
     /// </summary>
-    public class HtmlContainerAttribute : ContentSharedAttribute, IContentInfo 
+    public class HtmlContainerAttribute : ContentSharedAttribute, IContentInfo
     {
+        public async Task<Api.MediakiwiField> GetApiFieldAsync()
+        {
+            return new Api.MediakiwiField()
+            {
+                Event = m_AutoPostBack ? Api.MediakiwiJSEvent.Change : Api.MediakiwiJSEvent.None,
+                Title = MandatoryWrap(Title),
+                Value = OutputText,
+                Expression = Expression,
+                PropertyName = ID,
+                PropertyType = (Property == null) ? typeof(DateTime).FullName : Property.PropertyType.FullName,
+                VueType = Api.MediakiwiFormVueType.undefined,
+                ReadOnly = IsReadOnly,
+                ContentTypeID = ContentTypeSelection,
+                IsAutoPostback = m_AutoPostBack,
+                IsMandatory = Mandatory,
+                MaxLength = MaxValueLength,
+                HelpText = InteractiveHelp,
+                FormSection = GetFormMapClass()
+            };
+        }
+
+
         /// <summary>
         /// Initializes a new instance of the <see cref="HtmlContainerAttribute"/> class.
         /// </summary>

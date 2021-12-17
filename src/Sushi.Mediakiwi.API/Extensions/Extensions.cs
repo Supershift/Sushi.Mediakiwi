@@ -18,7 +18,6 @@ namespace Sushi.Mediakiwi.API.Extensions
 {
     public static class Extensions
     {
-
         public static Framework.Api.MediakiwiPostRequest GetPostRequest(this ICollection<Transport.FormMap> maps)
         {
             Framework.Api.MediakiwiPostRequest result = new Framework.Api.MediakiwiPostRequest();

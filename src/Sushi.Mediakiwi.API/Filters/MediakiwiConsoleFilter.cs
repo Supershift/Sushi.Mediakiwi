@@ -73,6 +73,7 @@ namespace Sushi.Mediakiwi.API.Filters
                 {
                     contextCopy.Request.QueryString = new Microsoft.AspNetCore.Http.QueryString($"?{query}");
                 }
+                contextCopy.RequestServices = context.HttpContext.RequestServices;
 
                 // try to create a Console with the 'fake' path
                 console = new Beta.GeneratedCms.Console(contextCopy, environment);

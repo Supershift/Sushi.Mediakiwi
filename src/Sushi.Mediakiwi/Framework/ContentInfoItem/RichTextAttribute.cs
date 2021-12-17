@@ -4,6 +4,7 @@ using System;
 using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace Sushi.Mediakiwi.Framework.ContentInfoItem
 {
@@ -12,6 +13,28 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
     /// </summary>
     public class RichTextAttribute : ContentEditableSharedAttribute, IContentInfo
     {
+        public async Task<Api.MediakiwiField> GetApiFieldAsync()
+        {
+
+            return new Api.MediakiwiField()
+            {
+                Event = Api.MediakiwiJSEvent.None,
+                Title = MandatoryWrap(Title),
+                Value = OutputText,
+                Expression = OutputExpression.FullWidth,
+                PropertyName = ID,
+                PropertyType = (Property == null) ? typeof(string).FullName : Property.PropertyType.FullName,
+                VueType = Api.MediakiwiFormVueType.wimRichText,
+                ReadOnly = IsReadOnly,
+                ContentTypeID = ContentTypeSelection,
+                IsAutoPostback = m_AutoPostBack,
+                IsMandatory = Mandatory,
+                MaxLength = MaxValueLength,
+                HelpText = InteractiveHelp,
+                FormSection = GetFormMapClass()
+            };
+        }
+
         public const string OPTION_ENABLE_TABLE = "table";
 
         public override MetaData GetMetaData(string name, string defaultValue)
@@ -406,23 +429,9 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                 build.Append(GetSimpleTextElement(candidate));
             }
 
-            build.ApiResponse.Fields.Add(new Api.MediakiwiField()
-            {
-                Event = Api.MediakiwiJSEvent.None,
-                Title = MandatoryWrap(Title),
-                Value = OutputText,
-                Expression = OutputExpression.FullWidth,
-                PropertyName = ID,
-                PropertyType = (Property == null) ? typeof(string).FullName : Property.PropertyType.FullName,
-                VueType = Api.MediakiwiFormVueType.wimRichText,
-                ReadOnly = IsReadOnly,
-                ContentTypeID = ContentTypeSelection,
-                IsAutoPostback = m_AutoPostBack,
-                IsMandatory = Mandatory,
-                MaxLength = MaxValueLength,
-                HelpText = InteractiveHelp,
-                FormSection = formName
-            });
+            // Get API field and add it to response
+            var apiField = Task.Run(async () => await GetApiFieldAsync()).Result;
+            build.ApiResponse.Fields.Add(apiField);
 
             return ReadCandidate(OutputText);
         }
@@ -434,7 +443,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
         public override bool IsValid(bool isRequired)
         {
             Mandatory = isRequired;
-            if (Console.CurrentListInstance.wim.IsSaveMode)
+            if (Console?.CurrentListInstance?.wim?.IsSaveMode == true)
             {
                 //  Custom error validation
                 if (!base.IsValid(isRequired))

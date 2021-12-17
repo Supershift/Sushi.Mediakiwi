@@ -113,6 +113,7 @@
     <Compile Include="AppCentre\UI\Site.cs" />
     <Compile Include="AppCentre\UI\User.cs" />
     <Compile Include="AppCentre\UI\ListVersioning.cs" />
+    <Compile Include="AppCentre\UI\WikiList.cs" />
     <Compile Include="Cms\Console.cs" />
     <Compile Include="Cms\Data\Component.cs" />
     <Compile Include="Cms\Template.cs" />
