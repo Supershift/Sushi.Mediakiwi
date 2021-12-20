@@ -1819,7 +1819,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                             {
                                 if (container.Group.HasValue)
                                 {
-                                    container.Redirect(string.Concat(listurl, "?item=0&", folderInfo));
+                                    container.Redirect(string.Concat(listurl, $"?item=0&group={container.Group.Value}&groupitem={container.GroupItem.GetValueOrDefault(0)}&", folderInfo));
                                 }
                                 else
                                 {
