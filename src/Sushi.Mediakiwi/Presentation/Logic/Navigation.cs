@@ -616,28 +616,21 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
 
                     if (isSingleItemList)
                     {
-                        tabTag = string.Format(@"
-                        <li{2}><a href=""{1}"">{3}</a></li>{4}"
-                            , title
-                            , container.UrlBuild.GetListRequest(currentListId)
-                            , selectedTab == 0 ? " class=\"active\"" : null
-                            , itemTitle, tabulars
-                            );
+                        var url = container.UrlBuild.GetListRequest(currentListId);
+                        tabTag = $"<li{(selectedTab == 0 ? " class=\"active\"" : null)}><a href=\"{url}\">{itemTitle}</a></li>{tabulars}";
                     }
                     else
                     {
                         var url = container.UrlBuild.GetListRequest(currentListId, currentListItemId);
-                        tabTag = tabulars.Length > 0 ? $"<li><li class=\"active\"><a href=\"{url}\">{itemTitle}</a><ul>{tabulars}</ul></li>" : string.Empty;
+                        tabTag = tabulars.Length > 0 
+                            ? $"<li class=\"active\"><a href=\"{url}\">{itemTitle}</a><ul>{tabulars}</ul></li>" 
+                            : $"<li class=\"active\"><a href=\"{url}\">{itemTitle}</a></li>";
                     }
                 }
                 else
                 {
                     //  Show NO tabs
-                    tabTag = string.Format(@"
-			            <li class=""active""><a href=""{1}"">{0}</a></li>"
-                        , container.CurrentList.Name
-                        , container.WimPagePath
-                        );
+                    tabTag = $"<li class=\"active\"><a href=\"{container.WimPagePath}\">{container.CurrentList.Name}</a></li>";
                 }
             }
             #endregion
