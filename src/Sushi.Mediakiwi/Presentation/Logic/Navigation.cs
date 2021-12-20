@@ -120,7 +120,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                         continue;
 
                     var subnavigation = (from subnav in list where subnav.Sort != 1 && subnav.Position == item.Position select subnav).ToList();
-                   
+
                     if (item.TypeID == 8)
                     {
                         var subSubnavigation = SearchView.SelectAll(item.ItemID);
@@ -209,7 +209,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                             build.AppendFormat(@"</a></li>");
                     }
 
-             
+
                 }
                 navigation = build.ToString();
             }
@@ -263,7 +263,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                 case 7: querystring = $"?top={entity.ItemID}"; break;
                 case 8: querystring = $"?folder={entity.ItemID}"; break;
             }
-            
+
             return container.UrlBuild.GetUrl();
         }
 
@@ -331,15 +331,15 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
 
             #region Browsing
 
-            bool isPageProperty = container.CurrentList.Type == ComponentListType.PageProperties;            
+            bool isPageProperty = container.CurrentList.Type == ComponentListType.PageProperties;
             if (container.CurrentList.Type == ComponentListType.Browsing || isPageProperty)
             {
                 title = Labels.ResourceManager.GetString("list_browsing", new CultureInfo(container.CurrentApplicationUser.LanguageCulture));
-                
+
                 #region PAGE
 
                 if (container.ItemType == RequestItemType.Page || isPageProperty)
-                {                    
+                {
                     Page currentPage;
                     if (container.CurrentList.Type == ComponentListType.PageProperties && container.Item.HasValue)
                         currentPage = Page.SelectOne(container.Item.Value);
@@ -605,11 +605,6 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                         }
                     }
 
-
-                    WimComponentListRoot.Tabular tmp = new WimComponentListRoot.Tabular();
-                    tmp.SelectedItem = currentListItemId;
-                    ApplyTabularUrl(container, tmp, 0, currentListId);
-
                     //  For use in property tabbing.
                     int baseID = Utility.ConvertToInt(container.Request.Query["base"]);
                     if (baseID > 0)
@@ -631,15 +626,8 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                     }
                     else
                     {
-                        string addition = GetQueryStringRecording(container);
-                        tabTag = string.Format(@"
-			            <li class=""active""><a href=""{1}"">{0}</a>{2}
-                        </li>
-                        "
-                            , itemTitle
-                            , tmp.Url
-                            , tabulars.Length>0 ? $"<ul>{tabulars}</ul>" : string.Empty 
-                            );
+                        var url = container.UrlBuild.GetListRequest(currentListId, currentListItemId);
+                        tabTag = tabulars.Length > 0 ? $"<li><li class=\"active\"><a href=\"{url}\">{itemTitle}</a><ul>{tabulars}</ul></li>" : string.Empty;
                     }
                 }
                 else
@@ -709,7 +697,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                 }
                 else
                 {
-                    t.Url = string.Concat(container.WimPagePath, "?group=", groupID, addition, baseInfo, folderInfo, "&groupitem=", groupItemID, "&list=", t.List.ID, "&item=", group2ID == t.List.ID ? group2ItemID : t.SelectedItem);
+                    t.Url = string.Concat(container.UrlBuild.GetListRequest(t.List, t.SelectedItem), "&group=", groupID, addition, baseInfo, folderInfo, "&groupitem=", groupItemID);
                 }
             }
             else if (levelEntry == 2)
@@ -922,16 +910,16 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                         if (list.IsVisible)
                         {
                             string x = string.Format(@"<li{3}>{6}<a href=""{0}"" class=""{1}{4}"">{8}{2}{7}</a>{5}</li>"
-                                , container.UrlBuild.GetListRequest(list)
-                                , "list"
-                                , list.Name
-                                , list.ID == currentListID ? (container.Item.HasValue ? @" class=""back""" : @" class=""active""") : string.Empty
-                                , isFirst ? " first" : null
-                                //, list.ID == currentListID ? tabs : string.Empty
-                                , container.Item.HasValue ? (list.ID == currentListID ? tabs : string.Empty) : string.Empty
-                                , list.ID == currentListID ? (container.Item.HasValue ? @"<span class=""icon-arrow-left-04""></span>" : string.Empty) : string.Empty
-                                , dataReport
-                                , string.IsNullOrWhiteSpace(list.Icon) ? null : $"<i class=\"{list.Icon}\"></i> " //8
+                                , container.UrlBuild.GetListRequest(list) // {0}
+                                , "list" // {1}
+                                , list.Name // {2}
+                                , list.ID == currentListID ? (container.Item.HasValue ? @" class=""back""" : @" class=""active""") : string.Empty // {3}
+                                , isFirst ? " first" : null // {4}
+                                                            //, list.ID == currentListID ? tabs : string.Empty
+                                , container.Item.HasValue ? (list.ID == currentListID ? tabs : string.Empty) : string.Empty // {5}
+                                , list.ID == currentListID ? (container.Item.HasValue ? @"<span class=""icon-arrow-left-04""></span>" : string.Empty) : string.Empty // {6}
+                                , dataReport  // {7}
+                                , string.IsNullOrWhiteSpace(list.Icon) ? null : $"<i class=\"{list.Icon}\"></i> "  // {8}
                                 );
                             build.Append(x);
                             isFirst = false;
@@ -1001,7 +989,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
             }
             #endregion
 
-           
+
             if (container.CurrentList.Type == ComponentListType.InformationMessage)
             {
                 build = new StringBuilder();
@@ -1010,7 +998,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
 
             if (!string.IsNullOrEmpty(currentLink))
                 currentName = string.Format("<a href=\"{1}\">{0}</a>", currentName, currentLink);
-            
+
             return string.Format(@"
             <aside id=""homeAside"">
 				<section id=""sideNav"">
@@ -1167,16 +1155,16 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                             , button.ID // 1
                             , button.PopupTitle // 2
                             , button.AskConfirmation ? " type_confirm" : null // 3
-                            //, button.OpenInPopupLayer ? string.Concat(" ", button.PopupLayerSize.ToString()) : null //4
+                                                                              //, button.OpenInPopupLayer ? string.Concat(" ", button.PopupLayerSize.ToString()) : null //4
                             , TargetInfo(button, container) // 4
                             , button.OpenUrl ? null : button.AskConfirmation ? null : !string.IsNullOrWhiteSpace(button.CustomUrl) ? null : " postBack" // 5
                             , url == "#" ? string.Empty : string.Format(" data-link=\"{0}\"", url) // 6
                             , button.IconTarget == ButtonTarget.BottomLeft ? " left" : " right" //7
                             , button.IsPrimary ? " action" : null // 8
                             , GetDataLayer(button.PopupLayerSize, button, out layerclass) // 9
-                            //, string.IsNullOrEmpty(button.PopupLayerHeight) ? null : string.Format(" data-height=\"{0}\"", button.PopupLayerHeight)
-                            //, string.IsNullOrEmpty(button.PopupLayerWidth) ? null : string.Format(" data-width=\"{0}\"", button.PopupLayerWidth)
-                            //, button.PopupLayerHasScrollBar.HasValue ? string.Format(" data-scroll=\"{0}\"", button.PopupLayerHasScrollBar.Value.ToString().ToLower()) : null
+                                                                                          //, string.IsNullOrEmpty(button.PopupLayerHeight) ? null : string.Format(" data-height=\"{0}\"", button.PopupLayerHeight)
+                                                                                          //, string.IsNullOrEmpty(button.PopupLayerWidth) ? null : string.Format(" data-width=\"{0}\"", button.PopupLayerWidth)
+                                                                                          //, button.PopupLayerHasScrollBar.HasValue ? string.Format(" data-scroll=\"{0}\"", button.PopupLayerHasScrollBar.Value.ToString().ToLower()) : null
                             , container.CurrentListInstance.wim.Page.Body.Form.IsPrimairyAction(button) ? " action" : null //10
                             , layerclass //11
                             , button.InteractiveHelp //12
@@ -1208,7 +1196,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
 
             build = new StringBuilder();
 
-                build.AppendFormat(@"
+            build.AppendFormat(@"
             <footer>
                 <span class=""""> </span>
 				<div>
@@ -1216,7 +1204,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                 </div>
             </footer>
 			<br class=""clear"" />", build2.ToString());
-            
+
             return build.ToString();
         }
 
@@ -1311,9 +1299,9 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
 
         public string GetDataLayer(LayerSize layersize, ContentListItem.ButtonAttribute button, out string layerclass)
         {
-             layerclass = null;
-             if (!button.OpenInPopupLayer)
-                 return null;
+            layerclass = null;
+            if (!button.OpenInPopupLayer)
+                return null;
 
             Grid.LayerSpecification specification = new Grid.LayerSpecification(layersize);
 
@@ -1330,7 +1318,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                 specification.IsWidthPercentage = button.PopupLayerWidth.Contains("%");
                 specification.Width = Convert.ToInt32(button.PopupLayerWidth.Replace("%", string.Empty).Replace("px", string.Empty));
             }
-           
+
             string result = specification.Parse(true);
             if (result != null)
                 layerclass = " openlayer";
@@ -1354,10 +1342,10 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
 
             string newRecord = container.CurrentList.Data["wim_LblNew"].Value;
             string saveRecord = container.CurrentList.Data["wim_LblSave"].Value;
-            
-            if (string.IsNullOrEmpty(newRecord)) 
+
+            if (string.IsNullOrEmpty(newRecord))
                 newRecord = Labels.ResourceManager.GetString("new_record", new CultureInfo(container.CurrentApplicationUser.LanguageCulture));
-            
+
             if (string.IsNullOrEmpty(saveRecord))
                 saveRecord = Labels.ResourceManager.GetString("save", new CultureInfo(container.CurrentApplicationUser.LanguageCulture));
 
@@ -1387,7 +1375,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                         , button.ID // 1
                         , button.PopupTitle // 2
                         , button.AskConfirmation ? " type_confirm" : null // 3
-                        //, button.OpenInPopupLayer ? string.Concat(" ", button.PopupLayerSize.ToString()) : null //4
+                                                                          //, button.OpenInPopupLayer ? string.Concat(" ", button.PopupLayerSize.ToString()) : null //4
                         , TargetInfo(button, container) // 4
                         , button.OpenUrl ? null : button.AskConfirmation ? null : !string.IsNullOrWhiteSpace(button.CustomUrl) ? null : " postBack" // 5
                         , LayerList(button, container) // 6
@@ -1409,7 +1397,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                         , button.ID // 1
                         , button.PopupTitle // 2
                         , button.AskConfirmation ? " type_confirm" : null // 3
-                        //, button.OpenInPopupLayer ? string.Concat(" ", button.PopupLayerSize.ToString()) : null //4
+                                                                          //, button.OpenInPopupLayer ? string.Concat(" ", button.PopupLayerSize.ToString()) : null //4
                         , TargetInfo(button, container) // 4
                         , button.OpenUrl ? null : button.AskConfirmation ? null : !string.IsNullOrWhiteSpace(button.CustomUrl) ? null : " postBack" // 5
                         , LayerList(button, container) // 6
@@ -1924,8 +1912,8 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
 <section id=""iconBarz"" class=""component iconBar"">
 					<div class=""footer"">
 						<ul>
-							" , (_Build_TopRight == null ? string.Empty : _Build_TopRight.ToString()) , @"
-							" , (_Build_TopLeft == null ? string.Empty : _Build_TopLeft.ToString()) , @"
+							", (_Build_TopRight == null ? string.Empty : _Build_TopRight.ToString()), @"
+							", (_Build_TopLeft == null ? string.Empty : _Build_TopLeft.ToString()), @"
 						</ul>
 					</div>	
 				</section>");
