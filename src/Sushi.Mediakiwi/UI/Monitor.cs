@@ -361,7 +361,7 @@ namespace Sushi.Mediakiwi.UI
                 GlobalWimControlBuilder.Rightnav = _PresentationNavigation.RightSideNavigation(_Console, component.m_ButtonList != null ? component.m_ButtonList.ToArray() : null);
                 GlobalWimControlBuilder.Bottom = _PresentationNavigation.NewBottomNavigation(_Console, component.m_ButtonList != null ? component.m_ButtonList.ToArray() : null, false);
 
-                await AddToResponseAsync(_PresentationMonitor.GetTemplateWrapper(_Console, _Placeholders, _Callbacks, GlobalWimControlBuilder));
+                await AddToResponseAsync(await _PresentationMonitor.GetTemplateWrapperAsync(_Console, _Placeholders, _Callbacks, GlobalWimControlBuilder));
             }
         }
 
@@ -531,7 +531,7 @@ namespace Sushi.Mediakiwi.UI
                 GlobalWimControlBuilder.Tabularnav = Template.GetTabularTagNewDesign(_Console, _Console.CurrentList.Name, 0, false);
                 GlobalWimControlBuilder.Leftnav = _PresentationNavigation.NewLeftNavigation(_Console, component.m_ButtonList != null ? component.m_ButtonList.ToArray() : null);
 
-                await AddToResponseAsync(_PresentationMonitor.GetTemplateWrapper(_Console, _Placeholders, _Callbacks, GlobalWimControlBuilder));
+                await AddToResponseAsync(await _PresentationMonitor.GetTemplateWrapperAsync(_Console, _Placeholders, _Callbacks, GlobalWimControlBuilder));
 
                 return;
             }
@@ -555,7 +555,7 @@ namespace Sushi.Mediakiwi.UI
                 GlobalWimControlBuilder.Bottom = _PresentationNavigation.NewBottomNavigation(_Console, component.m_ButtonList != null ? component.m_ButtonList.ToArray() : null, false);
                 GlobalWimControlBuilder.Tabularnav = Template.GetTabularTagNewDesign(_Console, _Console.CurrentList.Name, 0, false);
 
-                await AddToResponseAsync(_PresentationMonitor.GetTemplateWrapper(_Console, _Placeholders, _Callbacks, GlobalWimControlBuilder)).ConfigureAwait(false);
+                await AddToResponseAsync(await _PresentationMonitor.GetTemplateWrapperAsync(_Console, _Placeholders, _Callbacks, GlobalWimControlBuilder)).ConfigureAwait(false);
             }
         }
 
@@ -703,7 +703,7 @@ namespace Sushi.Mediakiwi.UI
             GlobalWimControlBuilder.Rightnav = _PresentationNavigation.RightSideNavigation(_Console, component.m_ButtonList != null ? component.m_ButtonList.ToArray() : null);
             GlobalWimControlBuilder.Leftnav = _PresentationNavigation.NewLeftNavigation(_Console, component.m_ButtonList != null ? component.m_ButtonList.ToArray() : null);
 
-            await AddToResponseAsync(_PresentationMonitor.GetTemplateWrapper(_Console, _Placeholders, _Callbacks, GlobalWimControlBuilder)).ConfigureAwait(false);
+            await AddToResponseAsync(await _PresentationMonitor.GetTemplateWrapperAsync(_Console, _Placeholders, _Callbacks, GlobalWimControlBuilder)).ConfigureAwait(false);
         }
 
 
@@ -1319,7 +1319,7 @@ namespace Sushi.Mediakiwi.UI
             }
             else
             {
-                string reaction = _PresentationMonitor.GetLoginWrapper(_Console, _Placeholders, _Callbacks);
+                string reaction = await _PresentationMonitor.GetLoginWrapperAsync(_Console, _Placeholders, _Callbacks);
                 if (!string.IsNullOrEmpty(reaction))
                 {
                     await AddToResponseAsync(reaction).ConfigureAwait(false);
@@ -1421,7 +1421,7 @@ namespace Sushi.Mediakiwi.UI
 
                                 await _Console.ApplyListAsync(ComponentListType.Browsing).ConfigureAwait(false);
 
-                                var output = presentation.GetTemplateWrapper(_Console, null, null, null);
+                                var output = await presentation.GetTemplateWrapperAsync(_Console, null, null, null);
                                 await _Console.Response.WriteAsync(output).ConfigureAwait(false);
                             }
                             return;

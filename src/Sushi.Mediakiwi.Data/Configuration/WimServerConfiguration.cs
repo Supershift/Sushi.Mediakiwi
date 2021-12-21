@@ -153,6 +153,8 @@ namespace Sushi.Mediakiwi.Data.Configuration
         public string DefaultPortal { get; set; }
 
         public AuthenticationConfiguration Authentication { get; set; }
+
+        public WikiConfiguration Wiki { get; set; } = new WikiConfiguration();
     }
 
     public class AuthenticationConfiguration
@@ -161,6 +163,12 @@ namespace Sushi.Mediakiwi.Data.Configuration
         public int Timeout { get; set; }
         public ActiveDirectory Aad { get; set; }
         public TokenValidation Token { get; set; }
+    }
+
+    public class WikiConfiguration
+    {
+        public bool EnableHelpOnLists { get; set; }
+        public bool EnableHelpOnPages { get; set; }
     }
 
     public class TokenValidation

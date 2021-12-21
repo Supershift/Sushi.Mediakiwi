@@ -520,10 +520,10 @@ FROM [Wim_ComponentLists] WHERE [ComponentList_Folder_Key] in (SELECT [Folder_Ke
 
                 string shouldBePath = string.Concat(parentPath, folder.Name, "/");
 
-                if (!path.Equals(shouldBePath))
+                if (!path.Equals(shouldBePath, StringComparison.InvariantCulture))
                 {
                     folder.CompletePath = shouldBePath;
-                    await folder.SaveAsync();
+                    await folder.SaveAsync().ConfigureAwait(false);
                 }
             }
         }
@@ -1120,7 +1120,7 @@ FROM [Wim_ComponentLists] WHERE [ComponentList_Folder_Key] in (SELECT [Folder_Ke
             if (current.SiteID == siteID)
                 return current;
 
-            current = await FindSiteFolderAsync(folderID, siteID);
+            current = await FindSiteFolderAsync(folderID, siteID).ConfigureAwait(false);
             if (current == null) return new Folder();
             return current;
         }

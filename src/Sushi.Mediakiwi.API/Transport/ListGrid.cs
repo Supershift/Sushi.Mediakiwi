@@ -39,6 +39,6 @@ namespace Sushi.Mediakiwi.API.Transport
         /// The buttons belonging to this grid
         /// </summary>
         [JsonPropertyName("buttons")]
-        public ICollection<ButtonField> Buttons { get; set; } = new List<ButtonField>();
+        public List<ButtonField> Buttons { get; set; } = new List<ButtonField>();
     }
 }

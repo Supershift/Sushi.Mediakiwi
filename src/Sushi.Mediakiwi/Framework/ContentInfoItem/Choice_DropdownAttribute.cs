@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Sushi.Mediakiwi.Framework.ContentInfoItem
 {
@@ -13,6 +14,92 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
     /// </summary>
     public class Choice_DropdownAttribute : ContentSharedAttribute, IContentInfo
     {
+        public async Task<Api.MediakiwiField> GetApiFieldAsync()
+        {
+            ListItemCollection optionsList = new ListItemCollection();
+
+            // Check if we selected a Datasource List for this dropdown
+            if (m_ListItemCollection == null || m_ListItemCollection?.Count == 0)
+            {
+                m_ListItemCollection = GetCollection(CollectionProperty, Property.Name, SenderInstance);
+            }
+
+            if (m_ListItemCollection != null)
+            {
+                foreach (var li in m_ListItemCollection)
+                {
+                    bool selected = OutputText == li.Value;
+                    if (_OutputValues != null)
+                    {
+                        var find = _OutputValues.Find(x => x == li.Value);
+                        selected = find != null && find.Length > 0;
+                    }
+
+                    optionsList.Add(new ListItem()
+                    {
+                        Text = li.Text,
+                        Value = li.Value,
+                        Enabled = (m_ListItemCollection.Count == 1 && string.IsNullOrEmpty(li.Text)),
+                        Selected = selected,
+                    });
+
+                }
+            }
+
+            if (IsTagging || IsMultiSelect.GetValueOrDefault(false))
+            {
+                bool hasoptions = optionsList.Count > 0;
+                if (!hasoptions && !string.IsNullOrWhiteSpace(OutputText))
+                {
+                    var split = OutputText.Split(',');
+                    _OutputValues = split.ToList();
+                    foreach (var item in _OutputValues)
+                    {
+                        optionsList.Add(item);
+                    }
+                }
+
+                return new Api.MediakiwiField()
+                {
+                    Event = AutoPostBack ? Api.MediakiwiJSEvent.Change : Api.MediakiwiJSEvent.None,
+                    Title = MandatoryWrap(Title),
+                    Value = _OutputValues != null ? _OutputValues : new List<string>(),
+                    Expression = Expression,
+                    PropertyName = ID,
+                    PropertyType = (Property == null) ? typeof(string).FullName : Property.PropertyType.FullName,
+                    VueType = hasoptions ? Api.MediakiwiFormVueType.wimTag : Api.MediakiwiFormVueType.wimTagVue,
+                    Options = optionsList,
+                    ReadOnly = IsReadOnly,
+                    ContentTypeID = ContentTypeSelection,
+                    IsAutoPostback = AutoPostBack,
+                    IsMandatory = Mandatory,
+                    MaxLength = MaxValueLength,
+                    HelpText = InteractiveHelp,
+                    FormSection = GetFormMapClass()
+                };
+            }
+            else
+            {
+                return new Api.MediakiwiField()
+                {
+                    Event = AutoPostBack ? Api.MediakiwiJSEvent.Change : Api.MediakiwiJSEvent.None,
+                    Title = MandatoryWrap(Title),
+                    Value = OutputText,
+                    Expression = Expression,
+                    PropertyName = ID,
+                    PropertyType = (Property == null) ? typeof(string).FullName : Property.PropertyType.FullName,
+                    VueType = Api.MediakiwiFormVueType.wimChoiceDropdown,
+                    Options = optionsList,
+                    ContentTypeID = ContentTypeSelection,
+                    IsAutoPostback = AutoPostBack,
+                    IsMandatory = Mandatory,
+                    MaxLength = MaxValueLength,
+                    HelpText = InteractiveHelp,
+                    FormSection = GetFormMapClass()
+                };
+            }
+        }
+
         public bool IsTagging { get; set; }
 
         public const string OPTION_ENABLE_MULTI = "multi";
@@ -585,7 +672,6 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
             SetWriteEnvironment();
             IsCloaked = isCloaked;
             Mandatory = isRequired;
-            string formName = GetFormMapClass();
 
             if (OverrideEditMode)
             {
@@ -620,8 +706,6 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
             {
                 width = string.Format(" style=\"width: {0}px\"", Width);
             }
-
-            ListItemCollection optionsList = new ListItemCollection();
 
             if (isEditMode || Console.CurrentListInstance.wim.IsEditMode)
             {
@@ -685,14 +769,6 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                             var find = _OutputValues.Find(x => x == li.Value);
                             selected = find != null && find.Length > 0;
                         }
-
-                        optionsList.Add(new ListItem()
-                        {
-                            Text = li.Text,
-                            Value = li.Value,
-                            Enabled = (m_ListItemCollection.Count == 1 && string.IsNullOrEmpty(li.Text)),
-                            Selected = selected,
-                        });
 
                         if (m_ListItemCollection.Count == 1 && string.IsNullOrEmpty(li.Text))
                         {
@@ -853,59 +929,10 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                 build.Append(GetSimpleTextElement(candidate));
             }
 
-            if (IsTagging || IsMultiSelect.GetValueOrDefault(false))
-            {
-                bool hasoptions = optionsList != null && optionsList.Count > 0;
-                if (!hasoptions && !string.IsNullOrWhiteSpace(OutputText))
-                {
-                    var split = OutputText.Split(',');
-                    _OutputValues = split.ToList();
-                    foreach (var item in _OutputValues)
-                    {
-                        optionsList.Add(item);
-                    }
-                }
+            // Get API field and add it to response
+            var apiField = Task.Run(async () => await GetApiFieldAsync().ConfigureAwait(false)).Result;
+            build.ApiResponse.Fields.Add(apiField);
 
-                build.ApiResponse.Fields.Add(new Api.MediakiwiField()
-                {
-                    Event = AutoPostBack ? Api.MediakiwiJSEvent.Change : Api.MediakiwiJSEvent.None,
-                    Title = MandatoryWrap(Title),
-                    Value = _OutputValues != null ? _OutputValues : new List<string>(),
-                    Expression = Expression,
-                    PropertyName = ID,
-                    PropertyType = (Property == null) ? typeof(string).FullName : Property.PropertyType.FullName,
-                    VueType = hasoptions ? Api.MediakiwiFormVueType.wimTag : Api.MediakiwiFormVueType.wimTagVue,
-                    Options = optionsList,
-                    ReadOnly = IsReadOnly,
-                    ContentTypeID = ContentTypeSelection,
-                    IsAutoPostback = AutoPostBack,
-                    IsMandatory = Mandatory,
-                    MaxLength = MaxValueLength,
-                    HelpText = InteractiveHelp,
-                    FormSection = formName
-                });
-            }
-            else
-            {
-
-                build.ApiResponse.Fields.Add(new Api.MediakiwiField()
-                {
-                    Event = AutoPostBack ? Api.MediakiwiJSEvent.Change : Api.MediakiwiJSEvent.None,
-                    Title = MandatoryWrap(Title),
-                    Value = OutputText,
-                    Expression = Expression,
-                    PropertyName = ID,
-                    PropertyType = (Property == null) ? typeof(string).FullName : Property.PropertyType.FullName,
-                    VueType = Api.MediakiwiFormVueType.wimChoiceDropdown,
-                    Options = optionsList,
-                    ContentTypeID = ContentTypeSelection,
-                    IsAutoPostback = AutoPostBack,
-                    IsMandatory = Mandatory,
-                    MaxLength = MaxValueLength,
-                    HelpText = InteractiveHelp,
-                    FormSection = formName
-                });
-            }
             return ReadCandidate(OutputText);
         }
 
@@ -916,7 +943,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
         public override bool IsValid(bool isRequired)
         {
             Mandatory = isRequired;
-            if (Console.CurrentListInstance.wim.IsSaveMode)
+            if (Console?.CurrentListInstance?.wim?.IsSaveMode == true)
             {
                 //  Custom error validation
                 if (!base.IsValid(isRequired))

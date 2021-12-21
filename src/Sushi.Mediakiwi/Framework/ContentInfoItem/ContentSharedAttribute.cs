@@ -926,7 +926,7 @@ namespace Sushi.Mediakiwi.Framework
         /// Gets or sets the console.
         /// </summary>
         /// <value>The console.</value>
-        internal Beta.GeneratedCms.Console Console { get; set; }
+        public Beta.GeneratedCms.Console Console { get; set; }
 
         public bool HasSenderInstance
         {
@@ -965,7 +965,7 @@ namespace Sushi.Mediakiwi.Framework
         {
             Mandatory = isRequired;
             //  Custom errors
-            if (Console.CurrentListInstance.wim.Notification.Errors != null)
+            if (Console?.CurrentListInstance?.wim?.Notification?.Errors != null)
             {
                 if (Console.CurrentListInstance.wim.Notification.Errors.ContainsKey(FieldName))
                 {

@@ -1258,7 +1258,7 @@ namespace Sushi.Mediakiwi.Framework
             Utils.RunSync(() => _origin.OnListLoad(new ComponentListEventArgs(selectedKey, previousSelectedKey, componentVersionKey, groupID, groupItemID, isValidForm)));
         }
 
-        internal bool HasListLoad
+        public bool HasListLoad
         {
             get { return _origin.HasListLoad; }
         }
@@ -3553,6 +3553,7 @@ namespace Sushi.Mediakiwi.Framework
             internal int m_ListDataRecordPageCount;
             internal ListDataColumns m_ListDataColumns;
             internal string m_DataTitle;
+
         }
 
         private ListDataColumns m_ListDataColumnsBackup;
@@ -3727,6 +3728,8 @@ namespace Sushi.Mediakiwi.Framework
                 return _Grids[_GridIndex].m_ListDataRecordPageCount;
             }
         }
+        public int ListDataRecordCount => m_ListDataRecordCount;
+        public int ListDataRecordPageCount => m_ListDataRecordPageCount;
 
         public IList AppliedSearchGridItem { get; set; }
         public IList ChangedSearchGridItem { get; set; }

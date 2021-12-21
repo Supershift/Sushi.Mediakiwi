@@ -1,5 +1,6 @@
 using Sushi.Mediakiwi.Data;
 using System;
+using System.Threading.Tasks;
 
 namespace Sushi.Mediakiwi.Framework.ContentListItem
 {
@@ -8,6 +9,29 @@ namespace Sushi.Mediakiwi.Framework.ContentListItem
     /// </summary>
     public class FileUploadAttribute : ContentSharedAttribute, IContentInfo, IListContentInfo
     {
+        public async Task<Api.MediakiwiField> GetApiFieldAsync()
+        {
+            return new Api.MediakiwiField()
+            {
+                Event = m_AutoPostBack ? Api.MediakiwiJSEvent.Change : Api.MediakiwiJSEvent.None,
+                Title = MandatoryWrap(Title),
+                Value = OutputText,
+                Expression = Expression,
+                PropertyName = ID,
+                PropertyType = (Property == null) ? typeof(string).FullName : Property.PropertyType.FullName,
+                VueType = Api.MediakiwiFormVueType.undefined,
+                ClassName = InputClassName(IsValid(Mandatory)),
+                ReadOnly = IsReadOnly,
+                ContentTypeID = ContentTypeSelection,
+                IsAutoPostback = m_AutoPostBack,
+                IsMandatory = Mandatory,
+                MaxLength = MaxValueLength,
+                HelpText = InteractiveHelp,
+                FormSection = GetFormMapClass(),
+                Hidden = IsCloaked
+            };
+        }
+
         /// <summary>
         ///  Possible return types: System.Web.HttpPostedFile
         /// </summary>
@@ -60,7 +84,7 @@ namespace Sushi.Mediakiwi.Framework.ContentListItem
         public void SetCandidate(Field field, bool isEditMode)
         {
             m_Candidate = null;
-            if (Context.Request.HasFormContentType &&  Context.Request.Form.Files.Count > 0)
+            if (Context.Request.HasFormContentType && Context.Request.Form.Files.Count > 0)
                 m_Candidate = new FileUpload(Context.Request.Form.Files[ID]);
 
             //  Possible return types: System.Web.HttpPostedFile
@@ -132,16 +156,16 @@ namespace Sushi.Mediakiwi.Framework.ContentListItem
         /// <returns></returns>
         public new bool IsValid(bool isRequired)
         {
-                if (Console.CurrentListInstance.wim.IsSaveMode)
-                {
-                    //  Custom error validation
-                    if (!base.IsValid(isRequired))
-                        return false;
+            if (Console?.CurrentListInstance?.wim?.IsSaveMode == true)
+            {
+                //  Custom error validation
+                if (!base.IsValid(isRequired))
+                    return false;
 
-                    if (Mandatory && (m_Candidate == null || m_Candidate.File.Length == 0))
-                        return false;
-                }
-                return true;
+                if (Mandatory && (m_Candidate == null || m_Candidate.File.Length == 0))
+                    return false;
+            }
+            return true;
         }
 
     }

@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <Version>7.16.8</Version>
+    <Version>7.16.9</Version>
     <Product>Mediakiwi</Product>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <Company>Supershift</Company>
@@ -113,6 +113,7 @@
     <Compile Include="AppCentre\UI\Site.cs" />
     <Compile Include="AppCentre\UI\User.cs" />
     <Compile Include="AppCentre\UI\ListVersioning.cs" />
+    <Compile Include="AppCentre\UI\WikiList.cs" />
     <Compile Include="Cms\Console.cs" />
     <Compile Include="Cms\Data\Component.cs" />
     <Compile Include="Cms\Template.cs" />
@@ -147,6 +148,7 @@
     <Compile Include="Logic\OAuth2Logic.cs" />
     <Compile Include="Logic\PageLogic.cs" />
     <Compile Include="Logic\PropertyLogic.cs" />
+    <Compile Include="Logic\WikiTrailExtension.cs" />
     <Compile Include="Presentation\Logic\Navigation.cs" />
     <Compile Include="Presentation\Monitor.cs" />
     <Compile Include="UI\AddPageComponentControl.cs" />

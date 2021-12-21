@@ -2,6 +2,7 @@ using Sushi.Mediakiwi.Data;
 using System;
 using System.Globalization;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Sushi.Mediakiwi.Framework.ContentInfoItem
 {
@@ -10,6 +11,28 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
     /// </summary>
     public class Choice_CheckboxAttribute : ContentSharedAttribute, IContentInfo 
     {
+        public async Task<Api.MediakiwiField> GetApiFieldAsync()
+        {
+            return new Api.MediakiwiField()
+            {
+                Event = AutoPostBack ? Api.MediakiwiJSEvent.Change : Api.MediakiwiJSEvent.None,
+                Title = MandatoryWrap(Title),
+                Value = (m_Candidate ? true : false),
+                Expression = Expression,
+                PropertyName = ID,
+                PropertyType = (Property == null) ? typeof(bool).FullName : Property.PropertyType.FullName,
+                VueType = Api.MediakiwiFormVueType.wimChoiceCheckbox,
+                InputPost = m_InputPostText,
+                ReadOnly = IsReadOnly,
+                ContentTypeID = ContentTypeSelection,
+                IsAutoPostback = AutoPostBack,
+                IsMandatory = Mandatory,
+                MaxLength = MaxValueLength,
+                HelpText = InteractiveHelp,
+                FormSection = GetFormMapClass()
+            };
+        }
+
         /// <summary>
         /// Possible return types: System.Boolean
         /// </summary>
@@ -153,7 +176,6 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
         public Field WriteCandidate(WimControlBuilder build, bool isEditMode, bool isRequired, bool isCloaked)
         {
             SetWriteEnvironment();
-            string formName = GetFormMapClass();
 
             IsCloaked = isCloaked;
             Mandatory = isRequired;
@@ -271,24 +293,9 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                 build.Append(GetSimpleTextElement(OutputText, true));
             }
 
-            build.ApiResponse.Fields.Add(new Api.MediakiwiField()
-            {
-                Event = AutoPostBack ? Api.MediakiwiJSEvent.Change : Api.MediakiwiJSEvent.None,
-                Title = MandatoryWrap(Title),
-                Value = (m_Candidate ? true : false),
-                Expression = Expression,
-                PropertyName = ID,
-                PropertyType = (Property == null) ? typeof(bool).FullName : Property.PropertyType.FullName,
-                VueType = Api.MediakiwiFormVueType.wimChoiceCheckbox,
-                InputPost = m_InputPostText,
-                ReadOnly = IsReadOnly,
-                ContentTypeID = ContentTypeSelection,
-                IsAutoPostback = AutoPostBack,
-                IsMandatory = Mandatory,
-                MaxLength = MaxValueLength,
-                HelpText = InteractiveHelp,
-                FormSection = formName
-            });
+            // Get API field and add it to response
+            var apiField = Task.Run(async () => await GetApiFieldAsync().ConfigureAwait(false)).Result;
+            build.ApiResponse.Fields.Add(apiField);
 
             return ReadCandidate(m_Candidate ? "1" : "0");
         }
@@ -300,7 +307,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
         public override bool IsValid(bool isRequired)
         {
             Mandatory = isRequired;
-            if (Console.CurrentListInstance.wim.IsSaveMode && !base.IsValid(isRequired))
+            if (Console?.CurrentListInstance?.wim?.IsSaveMode == true && !base.IsValid(isRequired))
             {
                 return false;
             }

@@ -1,4 +1,5 @@
 using Sushi.Mediakiwi.Data;
+using System.Threading.Tasks;
 using static Sushi.Mediakiwi.Beta.GeneratedCms.Source.Component;
 
 namespace Sushi.Mediakiwi.Framework
@@ -147,5 +148,7 @@ namespace Sushi.Mediakiwi.Framework
         event ContentInfoEventHandler OnChange;
 
         void Init(WimComponentListRoot wim);
+
+        Task<Api.MediakiwiField> GetApiFieldAsync();
     }
 }

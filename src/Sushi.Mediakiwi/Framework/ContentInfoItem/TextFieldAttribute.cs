@@ -3,6 +3,7 @@ using System;
 using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace Sushi.Mediakiwi.Framework
 {
@@ -21,6 +22,29 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
     /// </summary>
     public class TextFieldAttribute : ContentEditableSharedAttribute, IContentInfo
     {
+        public async Task<Api.MediakiwiField> GetApiFieldAsync()
+        {
+            return new Api.MediakiwiField()
+            {
+                Event = AutoPostBack ? Api.MediakiwiJSEvent.Change : Api.MediakiwiJSEvent.None,
+                Title = MandatoryWrap(Title),
+                Value = OutputText,
+                Expression = Expression,
+                PropertyName = ID,
+                PropertyType = (Property == null) ? typeof(string).FullName : Property.PropertyType.FullName,
+                VueType = Api.MediakiwiFormVueType.wimText,
+                ClassName = InputClassName(IsValid(IsRequired), IsAsync ? $"atext {ClassName}".TrimEnd() : ClassName, false),
+                ReadOnly = IsReadOnly,
+                ContentTypeID = ContentTypeSelection,
+                IsAutoPostback = AutoPostBack,
+                IsMandatory = Mandatory,
+                MaxLength = MaxValueLength,
+                HelpText = InteractiveHelp,
+                FormSection = GetFormMapClass(),
+                Hidden = IsCloaked
+            };
+        }
+
         /// <summary>
         /// Possible return types: System.String, System.Int32, System.Int32[nullable], System.Decimal, System.Decimal[nullable], System.Guid
         /// </summary>
@@ -359,7 +383,6 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
         public Field WriteCandidate(WimControlBuilder build, bool isEditMode, bool isRequired, bool isCloaked)
         {
             SetWriteEnvironment();
-            string formName = GetFormMapClass();
 
             IsCloaked = isCloaked;
             IsRequired = isRequired;
@@ -559,29 +582,9 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                 build.Append(GetSimpleTextElement(output, (isMoneyMode | MaxValueLength < BREAKPOINT), PostInputHtml));
             }
 
-            var fieldata = new Api.MediakiwiField()
-            {
-                Event = AutoPostBack ? Api.MediakiwiJSEvent.Change : Api.MediakiwiJSEvent.None,
-                Title = MandatoryWrap(Title),
-                Value = OutputText,
-                Expression = Expression,
-                PropertyName = ID,
-                PropertyType = (Property == null) ? typeof(string).FullName : Property.PropertyType.FullName,
-                VueType = Api.MediakiwiFormVueType.wimText,
-                ClassName = InputClassName(IsValid(isRequired), IsAsync ? $"atext {ClassName}".TrimEnd() : ClassName, false),
-                ReadOnly = IsReadOnly,
-                ContentTypeID = ContentTypeSelection,
-                IsAutoPostback = AutoPostBack,
-                IsMandatory = Mandatory,
-                MaxLength = MaxValueLength,
-                HelpText = InteractiveHelp,
-                FormSection = formName
-            };
-
-            if (IsCloaked)
-                fieldata.Hidden = true;
-
-            build.ApiResponse.Fields.Add(fieldata);
+            // Get API field and add it to response
+            var apiField = Task.Run(async () => await GetApiFieldAsync().ConfigureAwait(false)).Result;
+            build.ApiResponse.Fields.Add(apiField);
 
             return ReadCandidate(OutputText);
         }
@@ -595,7 +598,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
         public override bool IsValid(bool isRequired)
         {
             Mandatory = isRequired;
-            if (Console.CurrentListInstance.wim.IsSaveMode || Console.CurrentListInstance.wim.ShouldValidate)
+            if (Console?.CurrentListInstance?.wim?.IsSaveMode == true || Console?.CurrentListInstance?.wim?.ShouldValidate == true)
             {
                 //  Custom error validation
                 if (!base.IsValid(isRequired))
