@@ -14,6 +14,8 @@ using System.Security.Claims;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Sushi.Mediakiwi.API.Extensions;
+using System.Reflection;
+using System.IO;
 
 namespace Sushi.Mediakiwi.Demonstration
 {
@@ -32,8 +34,9 @@ namespace Sushi.Mediakiwi.Demonstration
         {
             services.AddHttpContextAccessor();
             services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
-            services.AddMediakiwi();
-            services.AddMediakiwiApi();
+
+            services.AddEndpointsApiExplorer();
+            services.AddSwaggerGen();
 
             services.AddControllersWithViews(options =>
             {
@@ -44,6 +47,9 @@ namespace Sushi.Mediakiwi.Demonstration
                 options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
                 options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
             });
+
+            services.AddMediakiwi();
+            services.AddMediakiwiApi();
 
 
             var elasticSettings = new Nest.ConnectionSettings(new Uri(Configuration["ElasticUrl"]))
@@ -68,6 +74,11 @@ namespace Sushi.Mediakiwi.Demonstration
 
             app.UseAuthentication();
             app.UseAuthorization();
+
+            // swagger
+            app.UseSwagger();
+            app.UseSwaggerUI();
+
             string[] excludePaths = new string[] { "/api/custom", "/myfiles", "/mkapi" };
             
             app.UseMediakiwi(excludePaths);

@@ -4,7 +4,7 @@
     <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <Version>7.16.7</Version>
+    <Version>7.16.8</Version>
     <Product>Mediakiwi</Product>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <Company>Supershift</Company>
@@ -19,8 +19,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\src\Sushi.Mediakiwi.Data.Elastic\Sushi.Mediakiwi.Data.Elastic.csproj" />
-    <ProjectReference Include="..\src\Sushi.Mediakiwi\Sushi.Mediakiwi.csproj" />
+    <ProjectReference Include="..\Sushi.Mediakiwi.Data.Elastic\Sushi.Mediakiwi.Data.Elastic.csproj" />
+    <ProjectReference Include="..\Sushi.Mediakiwi\Sushi.Mediakiwi.csproj" />
   </ItemGroup>
 
 </Project>
