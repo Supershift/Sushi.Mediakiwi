@@ -9,6 +9,12 @@ namespace Sushi.Mediakiwi.Logic
     {
         public async Task<string> RenderExtrasAsync(string propertyButton, Beta.GeneratedCms.Console console)
         {
+            // When both Wiki options are disabled, return initial value
+            if (CommonConfiguration.Wiki_HelpOnPages == false && CommonConfiguration.Wiki_HelpOnLists == false)
+            {
+                return propertyButton;
+            }
+
             var wikiList = await ComponentList.SelectOneAsync(typeof(WikiList));
 
             if (wikiList?.ID > 0)
