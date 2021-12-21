@@ -672,7 +672,6 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
             SetWriteEnvironment();
             IsCloaked = isCloaked;
             Mandatory = isRequired;
-            string formName = GetFormMapClass();
 
             if (OverrideEditMode)
             {
@@ -931,7 +930,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
             }
 
             // Get API field and add it to response
-            var apiField = Task.Run(async () => await GetApiFieldAsync()).Result;
+            var apiField = Task.Run(async () => await GetApiFieldAsync().ConfigureAwait(false)).Result;
             build.ApiResponse.Fields.Add(apiField);
 
             return ReadCandidate(OutputText);

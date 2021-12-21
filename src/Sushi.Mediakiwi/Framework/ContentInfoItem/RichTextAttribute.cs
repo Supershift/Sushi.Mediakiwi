@@ -308,7 +308,6 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
         public Field WriteCandidate(WimControlBuilder build, bool isEditMode, bool isRequired, bool isCloaked)
         {
             SetWriteEnvironment();
-            string formName = GetFormMapClass();
 
             IsCloaked = isCloaked;
             Mandatory = isRequired;
@@ -430,7 +429,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
             }
 
             // Get API field and add it to response
-            var apiField = Task.Run(async () => await GetApiFieldAsync()).Result;
+            var apiField = Task.Run(async () => await GetApiFieldAsync().ConfigureAwait(false)).Result;
             build.ApiResponse.Fields.Add(apiField);
 
             return ReadCandidate(OutputText);

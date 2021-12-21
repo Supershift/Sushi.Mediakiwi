@@ -848,7 +848,7 @@ delete from wim_ComponentVersions where ComponentVersion_Page_Key in
                     }
                 }
                 else
-                    return (await SelectAllAsync()).ToArray();
+                    return (await SelectAllAsync().ConfigureAwait(false)).ToArray();
             }
             else if (accessFilter == AccessFilter.UserBased)
             {

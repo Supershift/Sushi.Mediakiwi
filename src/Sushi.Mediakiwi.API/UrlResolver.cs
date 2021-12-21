@@ -549,7 +549,6 @@ namespace Sushi.Mediakiwi.API
                 ReferID = Query["referid"].FirstOrDefault();
             }
 
-            //if (ListID.GetValueOrDefault(0) == 0 && !string.IsNullOrWhiteSpace(targetName))
             if (string.IsNullOrWhiteSpace(targetName) == false)
             {
                 var urldecrypt = Utils.FromUrl(targetName);

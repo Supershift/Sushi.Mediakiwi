@@ -84,7 +84,7 @@ namespace Sushi.Mediakiwi.AppCentre.UI
 
             if (!wim.IsEditMode)
             {
-                RenderContent();
+                await RenderContentAsync();
             }
         }
 
@@ -117,7 +117,7 @@ namespace Sushi.Mediakiwi.AppCentre.UI
 
         public Article Implement { get; set; }
 
-        async void RenderContent()
+        async Task RenderContentAsync()
         {
             wim.SetPropertyVisibility(nameof(Title), false);
             wim.SetPropertyVisibility(nameof(Data), false);
@@ -146,11 +146,11 @@ namespace Sushi.Mediakiwi.AppCentre.UI
                     if (line.Type == (int)ContentType.RichText)
                     {
                         var c = line.Value.Replace("[code]", "[code]code_section:", StringComparison.InvariantCultureIgnoreCase);
-                        var split = c.Split(new string[] { "[code]", "[/code]" }, StringSplitOptions.RemoveEmptyEntries);
+                        var split = c.Split(new [] { "[code]", "[/code]" }, StringSplitOptions.RemoveEmptyEntries);
                         foreach (var item in split)
                         {
                             string code = Utils.CleanConcurrentBreaks(Utils.CleanLeadingAndTrailingLineFeed(item.Replace("code_section:", string.Empty, StringComparison.InvariantCultureIgnoreCase)), true);
-                            if (item.StartsWith("code_section:"))
+                            if (item.StartsWith("code_section:", StringComparison.InvariantCultureIgnoreCase))
                             {
                                 html.Append($@"<textarea cols=""32"" rows=""8"" class=""long SourceCode"" data-done=""1"">{code}</textarea>");
                             }

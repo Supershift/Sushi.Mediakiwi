@@ -25,7 +25,7 @@ namespace Sushi.Mediakiwi.Logic
                     string mkWikiUrl = null;
                     if (existingArticle.ID > 0)
                     {
-                        mkWikiUrl = console.UrlBuild.GetUrl(new KeyValue[]
+                        mkWikiUrl = console.UrlBuild.GetUrl(new[]
                         {
                             new KeyValue("list", wikiList.ID),
                             new KeyValue("openinframe", "1"),
@@ -34,7 +34,7 @@ namespace Sushi.Mediakiwi.Logic
                     }
                     else if (CommonConfiguration.Wiki_HelpOnPages && console.CurrentPage != null)
                     {
-                        mkWikiUrl = console.UrlBuild.GetUrl(new KeyValue[]
+                        mkWikiUrl = console.UrlBuild.GetUrl(new[]
                         {
                             new KeyValue("list", wikiList.ID),
                             new KeyValue("openinframe", "1"),
@@ -45,14 +45,14 @@ namespace Sushi.Mediakiwi.Logic
                     }
                     else if (CommonConfiguration.Wiki_HelpOnLists && console.CurrentList != null)
                     {
-                        mkWikiUrl = console.UrlBuild.GetUrl(new KeyValue[]
-                           {
+                        mkWikiUrl = console.UrlBuild.GetUrl(new[]
+                        {
                             new KeyValue("list", wikiList.ID),
                             new KeyValue("openinframe", "1"),
                             new KeyValue("item", -1),
                             new KeyValue("forListID", console.CurrentList.ID),
                             new KeyValue("listName", console.CurrentList.Name),
-                           });
+                        });
                     }
 
                     if (mkWikiUrl != null)

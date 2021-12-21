@@ -141,7 +141,7 @@ namespace Sushi.Mediakiwi.Framework.ContentListItem
             if (!IsCloaked)
             {
                 // Get API field and add it to response
-                var apiField = Task.Run(async () => await GetApiFieldAsync()).Result;
+                var apiField = Task.Run(async () => await GetApiFieldAsync().ConfigureAwait(false)).Result;
                 build.ApiResponse.Fields.Add(apiField);
 
                 build.Append(GetSimpleTextElement(OutputText));

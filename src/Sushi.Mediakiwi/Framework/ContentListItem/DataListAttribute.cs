@@ -211,7 +211,7 @@ namespace Sushi.Mediakiwi.Framework.ContentListItem
             }
 
             // Add datalist to API fields output 
-            var apiField = Task.Run(async () => await GetApiFieldAsync()).Result;
+            var apiField = Task.Run(async () => await GetApiFieldAsync().ConfigureAwait(false)).Result;
             build.ApiResponse.Fields.Add(apiField);
 
 
