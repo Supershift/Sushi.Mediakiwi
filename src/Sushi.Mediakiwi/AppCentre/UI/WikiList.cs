@@ -84,7 +84,7 @@ namespace Sushi.Mediakiwi.AppCentre.UI
 
             if (!wim.IsEditMode)
             {
-                await RenderContentAsync();
+                await RenderContentAsync().ConfigureAwait(false);
             }
         }
 
