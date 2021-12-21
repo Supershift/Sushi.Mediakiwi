@@ -549,7 +549,8 @@ namespace Sushi.Mediakiwi.API
                 ReferID = Query["referid"].FirstOrDefault();
             }
 
-            if (ListID.GetValueOrDefault(0) == 0 && !string.IsNullOrWhiteSpace(targetName))
+            //if (ListID.GetValueOrDefault(0) == 0 && !string.IsNullOrWhiteSpace(targetName))
+            if (string.IsNullOrWhiteSpace(targetName) == false)
             {
                 var urldecrypt = Utils.FromUrl(targetName);
                 var list = await Data.ComponentList.SelectOneAsync(urldecrypt, null).ConfigureAwait(false);
@@ -564,17 +565,16 @@ namespace Sushi.Mediakiwi.API
             }
 
             // When nothing is selected, this is probably the landing page
-            if (FolderID.GetValueOrDefault(0) == 0)
+            if (List == null || List.ID == 0 && FolderID.GetValueOrDefault(0) == 0)
             {
                 List = await Data.ComponentList.SelectOneAsync(typeof(AppCentre.Data.Implementation.Browsing)).ConfigureAwait(false);
             }
 
             // Set ListInstance
-            if (ListID.GetValueOrDefault(0) > 0)
+            if (List?.ID > 0)
             {
                 //
                 var listinstance = List.GetInstance(_console);
-                // var listinstance = Utils.CreateInstance(List.AssemblyName, List.ClassName, _services);
 
                 if (listinstance is Framework.IComponentListTemplate m_instance)
                 {
@@ -591,20 +591,20 @@ namespace Sushi.Mediakiwi.API
                         m_instance.wim.CurrentList = List;
                         m_instance.wim.DoListInit();
 
-                        // Determine Edit state
+                        var isEditPostBack = false;
+                        var isSavePostBack = false;
+                        var isDeletePostBack = false;
+
+                        if (_console.Request.Method == HttpMethods.Post && _console.Request.Headers.ContainsKey("postedField"))
+                        {
+                            isEditPostBack = _console.Request.Headers["postedField"] == "edit";
+                            isSavePostBack = _console.Request.Headers["postedField"] == "save";
+                            isDeletePostBack = _console.Request.Headers["postedField"] == "delete";
+                        }
+
+                        // Determine Edit state when we have an explicit Item
                         if (ItemID.HasValue || ItemObject != null)
                         {
-                            var isEditPostBack = false;
-                            var isSavePostBack = false;
-                            var isDeletePostBack = false;
-
-                            if (_console.Request.Method == HttpMethods.Post && _console.Request.Headers.ContainsKey("postedField"))
-                            {
-                                isEditPostBack = _console.Request.Headers["postedField"] == "edit";
-                                isSavePostBack = _console.Request.Headers["postedField"] == "save";
-                                isDeletePostBack = _console.Request.Headers["postedField"] == "delete";
-                            }
-
                             //  Is the form in editmode?
                             m_instance.wim.IsEditMode = isEditPostBack
                                 || isSavePostBack
@@ -615,6 +615,17 @@ namespace Sushi.Mediakiwi.API
                                 || (_console.JsonReferrer != null && _console.JsonReferrer.Equals("edit"))
                                 || _console.JsonForm != null;
 
+
+                            // Is the form in Save Mode
+                            m_instance.wim.IsSaveMode = isSavePostBack;
+
+                            // Is the form in delete mode
+                            m_instance.wim.IsDeleteMode = isDeletePostBack;
+                        }
+                        // Determine Edit state when we don't have an explicit Item
+                        else if (m_instance.wim.OpenInEditMode && m_instance.wim.CanContainSingleInstancePerDefinedList)
+                        {
+                            m_instance.wim.IsEditMode = true;
 
                             // Is the form in Save Mode
                             m_instance.wim.IsSaveMode = isSavePostBack;

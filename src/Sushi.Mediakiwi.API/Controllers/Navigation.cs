@@ -363,6 +363,7 @@ namespace Sushi.Mediakiwi.API.Controllers
                 else
                 {
                     bool isSingleItemList = (Resolver.List.IsSingleInstance || Resolver.ListInstance.wim.CanContainSingleInstancePerDefinedList);
+                    string listIcon = string.Empty;
 
                     //  Show NO tabs
                     if (isSingleItemList)
@@ -377,6 +378,7 @@ namespace Sushi.Mediakiwi.API.Controllers
                         int currentListId = Console.Logic;
                         int currentListItemId = Resolver.ItemID.GetValueOrDefault();
                         string itemTitle = Resolver.List.SingleItemName;
+                        listIcon = Resolver.List.Icon;
 
                         ICollection<Framework.WimComponentListRoot.Tabular> tabularList = null;
 
@@ -409,6 +411,7 @@ namespace Sushi.Mediakiwi.API.Controllers
                                     currentListItemId = Resolver.GroupItemID.GetValueOrDefault(0);
                                     title = master.CurrentList.Name;
                                     itemTitle = master.CurrentList.SingleItemName;
+                                    listIcon = master.CurrentList.Icon;
                                 }
                             }
                         }
@@ -431,7 +434,7 @@ namespace Sushi.Mediakiwi.API.Controllers
                                 {
                                     Text = tab.TitleValue,
                                     Href = tab.Url,
-                                    IsHighlighted = tab.Selected
+                                    IsHighlighted = tab.Selected,
                                 });
 
                                 if (tab.Selected)
@@ -517,6 +520,7 @@ namespace Sushi.Mediakiwi.API.Controllers
                             Data.IComponentList list = await Data.ComponentList.SelectOneAsync(Resolver.BaseID.Value).ConfigureAwait(false);
                             title = list.Name;
                             currentListId = list.ID;
+                            listIcon = list.Icon;
                         }
 
                         if (isSingleItemList)
@@ -525,7 +529,8 @@ namespace Sushi.Mediakiwi.API.Controllers
                             {
                                 Text = itemTitle,
                                 Href = Resolver.UrlBuild.GetListRequest(currentListId),
-                                IsHighlighted = selectedTab == 0
+                                IsHighlighted = selectedTab == 0,
+                                IconClass = listIcon,
                             });
                         }
                         else
@@ -534,7 +539,8 @@ namespace Sushi.Mediakiwi.API.Controllers
                             {
                                 Text = itemTitle,
                                 Href = tmpTab.Url,
-                                IsHighlighted = true
+                                IsHighlighted = true, 
+                                IconClass = listIcon,
                             });
                         }
                     }
@@ -544,7 +550,8 @@ namespace Sushi.Mediakiwi.API.Controllers
                         {
                             Text = Resolver.List.Name,
                             Href = Resolver.WimPagePath,
-                            IsHighlighted = true
+                            IsHighlighted = true,
+                            IconClass = Resolver.List.Icon,
                         });
 
                     }

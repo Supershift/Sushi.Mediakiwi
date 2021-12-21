@@ -264,5 +264,21 @@ namespace Sushi.Mediakiwi
                 return string.Format("{0}{1:00}{2:0000}{3:0000}", version.Major, version.Minor, version.Build, version.Revision);
             }
         }
+
+        public static bool Wiki_HelpOnLists
+        {
+            get
+            {
+                return WimServerConfiguration.Instance.Wiki.EnableHelpOnLists;
+            }
+        }
+
+        public static bool Wiki_HelpOnPages
+        {
+            get
+            {
+                return WimServerConfiguration.Instance.Wiki.EnableHelpOnPages;
+            }
+        }
     }
 }

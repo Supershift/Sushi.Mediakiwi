@@ -50,6 +50,7 @@ namespace Sushi.Mediakiwi
                 .AddScheme<MediaKiwiAuthenticationOptions, MediaKiwiAuthenticationHandler>(AuthenticationDefaults.AuthenticationScheme, null);
             
             services.AddSingleton<IPageModule, ExportPageModule>();
+            services.AddSingleton<Interfaces.ITrailExtension, Logic.WikiTrailExtension>();
         }
     }
 }

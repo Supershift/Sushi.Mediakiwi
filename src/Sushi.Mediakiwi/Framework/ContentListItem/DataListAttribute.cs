@@ -75,7 +75,7 @@ namespace Sushi.Mediakiwi.Framework.ContentListItem
                 MaxLength = MaxValueLength,
                 HelpText = InteractiveHelp,
                 FormSection = GetFormMapClass(),
-                Hidden = IsCloaked
+                Hidden = IsCloaked,
             };
         }
 
@@ -175,8 +175,8 @@ namespace Sushi.Mediakiwi.Framework.ContentListItem
         /// <returns></returns>
         public Field WriteCandidate(WimControlBuilder build, bool isEditMode, bool isRequired, bool isCloaked)
         {
-            this.Mandatory = isRequired;
-            this.IsCloaked = isCloaked;
+            Mandatory = isRequired;
+            IsCloaked = isCloaked;
 
             Beta.GeneratedCms.Source.Component component = new Beta.GeneratedCms.Source.Component();
 
@@ -189,7 +189,7 @@ namespace Sushi.Mediakiwi.Framework.ContentListItem
             if (m_List.ID == Console.CurrentList.ID)
                 tmp = Console;
             else
-                tmp = Console.ReplicateInstance(this.m_List);
+                tmp = Console.ReplicateInstance(m_List);
             
 
             if (m_Candidate != null && m_Candidate.m_Fields != null)
@@ -204,12 +204,21 @@ namespace Sushi.Mediakiwi.Framework.ContentListItem
             }
 
             DataGrid grid = new DataGrid();
-            
+
             if (!IsPartOfForm || BelowButtons)
+            {
                 build.Append("<bottombuttonbar />");
+            }
+
+            // Add datalist to API fields output 
+            var apiField = Task.Run(async () => await GetApiFieldAsync()).Result;
+            build.ApiResponse.Fields.Add(apiField);
+
 
             if (HasThumbnailOption && !tmp.CurrentApplicationUser.ShowDetailView)
+            {
                 build.Append(grid.GetThumbnailGridFromListInstance(tmp.CurrentListInstance.wim, tmp, 0, false));
+            }
             else
             {
                 var table = grid.GetGridFromListInstance(tmp.CurrentListInstance.wim, tmp, 0, false, Console.CurrentListInstance, HidePaging);

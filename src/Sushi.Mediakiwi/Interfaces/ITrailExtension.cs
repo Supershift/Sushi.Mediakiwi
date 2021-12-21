@@ -4,6 +4,6 @@ namespace Sushi.Mediakiwi.Interfaces
 {
     public interface ITrailExtension
     {
-        Task<string> RenderWikiButtonsAsync(string propertyButton, Beta.GeneratedCms.Console console);
+        Task<string> RenderExtrasAsync(string propertyButton, Beta.GeneratedCms.Console console);
     }
 }

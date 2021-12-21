@@ -1,7 +1,6 @@
 ﻿using Sushi.Mediakiwi.Data;
 using Sushi.Mediakiwi.Framework;
 using System;
-using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -9,9 +8,6 @@ namespace Sushi.Mediakiwi.AppCentre.UI
 {
     public class WikiList : ComponentListTemplate
     {
-        public const string REGISTRY_SETTING_HELP_ON_PAGES = "SHOW_WIKI_HELP_ON_PAGES";
-        public const string REGISTRY_SETTING_HELP_ON_LISTS = "SHOW_WIKI_HELP_ON_LISTS";
-        public const string WIKI_LIST_GUID = "08B77637-2B0D-4E13-95F9-40213CB4FFAF";
 
         public WikiList()
         {
@@ -22,7 +18,6 @@ namespace Sushi.Mediakiwi.AppCentre.UI
             ListDelete += WikiList_ListDelete;
 
             ListDataItemCreated += List_ListDataItemCreated;
-
         }
 
         private async Task WikiList_ListInit()

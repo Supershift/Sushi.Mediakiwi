@@ -148,6 +148,7 @@
     <Compile Include="Logic\OAuth2Logic.cs" />
     <Compile Include="Logic\PageLogic.cs" />
     <Compile Include="Logic\PropertyLogic.cs" />
+    <Compile Include="Logic\WikiTrailExtension.cs" />
     <Compile Include="Presentation\Logic\Navigation.cs" />
     <Compile Include="Presentation\Monitor.cs" />
     <Compile Include="UI\AddPageComponentControl.cs" />

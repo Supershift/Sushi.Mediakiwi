@@ -1892,6 +1892,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
         }
 
         List<ListInfoItem> m_AllListProperties;
+        public List<ListInfoItem> AllListProperties => m_AllListProperties;
 
         int m_PropertyListTypeID;
 
@@ -2446,7 +2447,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
             foreach (System.Reflection.PropertyInfo info in infoList)
             {
                 bool isEditable = container.CurrentListInstance.wim.IsEditMode;
-                var contentitems = (GetContentInfo(info, container, senderInstance, ref isEditable, out bool isVisible, out bool isRequired));
+                var contentitems = GetContentInfo(info, container, senderInstance, ref isEditable, out bool isVisible, out bool isRequired);
 
                 foreach (IContentInfo contentAttribute in contentitems)
                 {

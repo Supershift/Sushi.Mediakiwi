@@ -708,10 +708,13 @@ namespace Sushi.Mediakiwi.API.Services
 
             var builder = _resolver.ListInstance.wim.Console.Component.CreateList(_resolver.ListInstance.wim.Console, _resolver.ListInstance.wim.Console.OpenInFrame, true);
 
+
             if (builder?.ApiResponse?.Fields?.Count > 0)
             {
+             
                 foreach (var formSection in builder.ApiResponse.Fields.GroupBy(x => x.FormSection))
-                {
+                {   
+         
                     // Skip the Internal StateForm
                     if (formSection.Key?.Equals("Sushi.Mediakiwi.Framework.StateForm", StringComparison.InvariantCultureIgnoreCase) == true)
                     {
@@ -726,7 +729,19 @@ namespace Sushi.Mediakiwi.API.Services
                     if (formSection.Any() == true)
                     {
                         foreach (var field in formSection)
-                        {
+                        {           
+                            // Apply any Changes in Readonly / Mandatory / Hidden based on attributes
+                            if (_resolver.ListInstance?.wim?.Console?.Component?.AllListProperties.Any() == true)
+                            {
+                                var prop = _resolver.ListInstance.wim.Console.Component.AllListProperties.FirstOrDefault(x => x.Name == field.PropertyName);
+                                if (prop != null)
+                                {
+                                    field.ReadOnly = !prop.IsEditable;
+                                    field.Hidden = !prop.IsVisible;
+                                    field.IsMandatory = prop.IsRequired;
+                                }
+                            }
+
                             if (field.ContentTypeID == Data.ContentType.Button)
                             {
                                 var newButtonField = await GetButtonAsync(field).ConfigureAwait(false);
@@ -742,7 +757,13 @@ namespace Sushi.Mediakiwi.API.Services
                                 }
                                 newFormMap.Buttons.Add(newButtonField);
                             }
-                            else
+                            else if (field.ContentTypeID == Data.ContentType.DataList)
+                            {
+                                // TODO: Add datalist output to somewhere
+                                var newField = GetField(field);
+                                newFormMap.Fields.Add(newField);
+                            }
+                            else 
                             {
                                 var newField = GetField(field);
                                 if (newField == null)
@@ -774,6 +795,7 @@ namespace Sushi.Mediakiwi.API.Services
         {
             var formMap = new Transport.FormMap();
 
+            // First loop through properties on List
             foreach (var prop in _resolver.ListInstance.GetType().GetProperties())
             {
                 foreach (var attr in prop.GetCustomAttributes())
@@ -796,6 +818,27 @@ namespace Sushi.Mediakiwi.API.Services
 
                             formMap.Fields.Add(GetField(apiField));
                         }
+                    }
+                }
+            }
+
+            // Then loop through Formmaps on List
+            if (_resolver.ListInstance?.FormMaps?.Count > 0)
+            {
+                foreach (var map in _resolver.ListInstance.FormMaps.List)
+                {
+                    // Skip internal StateForm
+                    if (map is StateForm)
+                    {
+                        continue;
+                    }
+
+                    foreach (var mapElement in map.Elements)
+                    {
+                        mapElement.SenderInstance = _resolver.ListInstance;
+                        var apiField = await mapElement.GetApiFieldAsync();
+
+                        formMap.Fields.Add(GetField(apiField));
                     }
                 }
             }
@@ -839,7 +882,10 @@ namespace Sushi.Mediakiwi.API.Services
                   && _resolver.ListInstance.wim.HideCreateNew == false
                   && _resolver.ListInstance.wim.HideEditOption == false
                   && _resolver.ListInstance.wim.IsEditMode == false
-                  && _resolver.ListInstance.wim.OpenInEditMode == false)
+                  && _resolver.ListInstance.wim.OpenInEditMode == false
+                  && 
+                  (_resolver.ListInstance.wim.CanContainSingleInstancePerDefinedList 
+                  || _resolver.ItemObject != null))
             {
                 result.Add(new ButtonField()
                 {
@@ -952,7 +998,7 @@ namespace Sushi.Mediakiwi.API.Services
                     newRecord = Common.GetLabelFromResource("new_record", new CultureInfo(_resolver.ApplicationUser.LanguageCulture));
                 }
 
-                if (_resolver.ListInstance.wim.CanAddNewItem && _resolver.ListInstance.wim.HasListLoad)
+                if (_resolver.ListInstance.wim.CanAddNewItem && _resolver.ListInstance.wim.HasListLoad && _resolver.ListInstance.wim.CanContainSingleInstancePerDefinedList == false)
                 {
                     bool hasPrimary = false;
                     if (!hasPrimary && result?.Count > 0)
