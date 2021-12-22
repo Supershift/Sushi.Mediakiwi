@@ -4,6 +4,7 @@ using Microsoft.Extensions.Hosting;
 using Sushi.Mediakiwi.API.Extensions;
 using Sushi.Mediakiwi.API.Transport.Requests;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Sushi.Mediakiwi.API.Filters
@@ -28,7 +29,7 @@ namespace Sushi.Mediakiwi.API.Filters
             // as well as all the formmap data
             if (context.HttpContext.Request.Method == Microsoft.AspNetCore.Http.HttpMethods.Post)
             {
-                
+
                 if (context.ActionArguments?.Count > 0)
                 {
                     foreach (var item in context.ActionArguments)
@@ -74,6 +75,15 @@ namespace Sushi.Mediakiwi.API.Filters
                     contextCopy.Request.QueryString = new Microsoft.AspNetCore.Http.QueryString($"?{query}");
                 }
                 contextCopy.RequestServices = context.HttpContext.RequestServices;
+
+                // Remove internal query CurrentSiteID
+                if (contextCopy.Request.QueryString.HasValue && contextCopy.Request.Query.ContainsKey("currentSiteId"))
+                {
+                    var items = contextCopy.Request.Query.SelectMany(x => x.Value, (col, value) => new KeyValuePair<string, string>(col.Key, value)).ToList();
+                    items.RemoveAll(x => x.Key == "currentSiteId");
+                    var qb = new Microsoft.AspNetCore.Http.Extensions.QueryBuilder(items);
+                    contextCopy.Request.QueryString = qb.ToQueryString();
+                }
 
                 // try to create a Console with the 'fake' path
                 console = new Beta.GeneratedCms.Console(contextCopy, environment);

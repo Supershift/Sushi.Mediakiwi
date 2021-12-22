@@ -142,7 +142,7 @@ namespace Sushi.Mediakiwi.API.Extensions
             services.AddSwaggerGen(options =>
             {
                 var filePath = Path.Combine(AppContext.BaseDirectory, $"{Common.API_ASSEMBLY_NAME}.xml");
-                if (System.IO.File.Exists(filePath))
+                if (File.Exists(filePath))
                 {
                     options.IncludeXmlComments(filePath);
                 }

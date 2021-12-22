@@ -51,7 +51,7 @@ namespace Sushi.Mediakiwi.API.Transport
         /// The options available for this field (for dropdowns and radios and such)
         /// </summary>
         [JsonPropertyName("options")]
-        public ICollection<ListItemCollectionOption> Options { get; set; } = new List<ListItemCollectionOption>();
+        public List<ListItemCollectionOption> Options { get; set; }
 
         /// <summary>
         /// The CSS classname for this field
