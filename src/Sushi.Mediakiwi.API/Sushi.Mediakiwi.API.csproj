@@ -10,7 +10,7 @@
     <PackageProjectUrl>https://mediakiwi.atlassian.net/wiki/spaces/CORE/overview</PackageProjectUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <RepositoryUrl>https://github.com/Supershift/Sushi.Mediakiwi</RepositoryUrl>
-    <Version>7.16.9</Version>
+    <Version>7.16.10</Version>
 	<ExcludeXmlAssemblyFiles>false</ExcludeXmlAssemblyFiles>
 	<GenerateDocumentationFile>True</GenerateDocumentationFile>
   </PropertyGroup>
@@ -23,6 +23,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.1.21" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
     <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="6.2.3" />
+    <PackageReference Include="System.Text.Json" Version="6.0.1" />
   </ItemGroup>
 
   <ItemGroup>

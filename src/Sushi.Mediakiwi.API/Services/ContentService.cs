@@ -15,6 +15,78 @@ namespace Sushi.Mediakiwi.API.Services
     {
         private UrlResolver _resolver { get; set; }
 
+        #region Is Key Column
+
+        /// <summary>
+        /// Determines whether the supplied type is a Key Column
+        /// </summary>
+        bool IsKeyColumn(ListDataColumnType type)
+        {
+            if (type == ListDataColumnType.UniqueHighlightedIdentifier ||
+                type == ListDataColumnType.UniqueHighlightedIdentifierPresent ||
+                type == ListDataColumnType.UniqueIdentifier ||
+                type == ListDataColumnType.UniqueIdentifierPresent)
+                return true;
+            return false;
+        }
+
+        #endregion Is Key Column
+
+        #region Get Row Item URL
+
+        private string GetRowItemUrl(PropertyInfo[] infoCollection, object item)
+        {
+            string passThrough = string.Empty;
+            string uniqueIdentifier = string.Empty;
+
+            // Check for a key column
+            var keyColumn = _resolver.ListInstance.wim.ListDataColumns.List.First(x => IsKeyColumn(x.Type));
+            if (keyColumn != null)
+            {
+                PropertyInfo info = infoCollection.FirstOrDefault(x => x.Name.Equals(keyColumn.ColumnValuePropertyName, StringComparison.InvariantCulture));
+                if (info != null) 
+                {
+                    uniqueIdentifier = info.GetValue(item, null).ToString();
+                }
+            }
+
+            
+            if (string.IsNullOrWhiteSpace(_resolver.ListInstance.wim.SearchResultItemPassthroughParameterProperty) == false)
+            {
+                PropertyInfo info = infoCollection.FirstOrDefault(x => x.Name.Equals(_resolver.ListInstance.wim.SearchResultItemPassthroughParameterProperty, StringComparison.InvariantCulture));
+                if (info != null)
+                {
+                    passThrough = info.GetValue(item, null).ToString();
+                }
+            }
+
+            else if (string.IsNullOrWhiteSpace(_resolver.ListInstance.wim.SearchResultItemPassthroughParameter) == false)
+            {
+                passThrough = _resolver.ListInstance.wim.SearchResultItemPassthroughParameter;
+            }
+
+            if (_resolver.ListInstance.wim.SearchListCanClickThrough && string.IsNullOrWhiteSpace(uniqueIdentifier) == false && (uniqueIdentifier != "0" || string.IsNullOrWhiteSpace(passThrough) == false))
+            {
+                if (passThrough.EndsWith("item=", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    passThrough += uniqueIdentifier;
+                }
+                else if (passThrough.EndsWith("item", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    passThrough += $"={uniqueIdentifier}";
+                }
+
+                if (passThrough.Contains("[KEY]", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    passThrough = passThrough.Replace("[KEY]", uniqueIdentifier);
+                }
+            }
+
+            return passThrough;
+        }
+
+        #endregion Get Row Item URL
+
         #region Get Grids
 
         private async Task<ICollection<ListGrid>> GetGridsAsync()
@@ -50,7 +122,26 @@ namespace Sushi.Mediakiwi.API.Services
 
             #endregion Columns
 
+            #region Layer Configuration
+
+            if (_resolver.ListInstance?.wim?.Page?.Body?.Grid?.LayerConfiguration != null)
+            {
+                var config = _resolver.ListInstance.wim.Page.Body.Grid.LayerConfiguration;
+                grid.LayerConfiguration = new LayerConfiguration()
+                {
+                    HasScrollbar = config.HasScrolling.GetValueOrDefault(false),
+                    Height = config.Height.GetValueOrDefault(),
+                    HeightUnitType = config.IsHeightPercentage ? UnitTypeEnum.Percentage : UnitTypeEnum.Pixels,
+                    Title = config.Title,
+                    Width = config.Width.GetValueOrDefault(),
+                    WidthUnitType = config.IsWidthPercentage ? UnitTypeEnum.Percentage : UnitTypeEnum.Pixels
+                };
+            }
+
+            #endregion Layer Configuration
+
             #region Rows
+
             if (_resolver.ListInstance.wim.AppliedSearchGridItem != null)
             {
                 foreach (var item in _resolver.ListInstance.wim.AppliedSearchGridItem)
@@ -66,12 +157,15 @@ namespace Sushi.Mediakiwi.API.Services
 
                     var listRow = new ListRow()
                     {
-                        Items = new List<ListRowItem>()
+                        Items = new List<ListRowItem>(),
+                        Href = GetRowItemUrl(itemType.GetProperties(), item)
                     };
+
 
                     foreach (var col in _resolver.ListInstance.wim.ListDataColumns.List)
                     {
                         int? rowId = null;
+
                         var listRowItem = new ListRowItem()
                         {
                             CanWrap = false,
@@ -114,6 +208,7 @@ namespace Sushi.Mediakiwi.API.Services
                     grid.Rows.Add(listRow);
                 }
             }
+
             #endregion Rows
 
             #region Pagination
@@ -369,6 +464,8 @@ namespace Sushi.Mediakiwi.API.Services
 
             if (field?.Options?.Count > 0)
             {
+                newField.Options = new List<ListItemCollectionOption>();
+
                 foreach (var item in field.Options)
                 {
                     newField.Options.Add(new ListItemCollectionOption()
@@ -736,6 +833,11 @@ namespace Sushi.Mediakiwi.API.Services
                                 var prop = _resolver.ListInstance.wim.Console.Component.AllListProperties.FirstOrDefault(x => x.Name == field.PropertyName);
                                 if (prop != null)
                                 {
+                                    // Don't show List Search fields
+                                    if (prop.ContentAttribute is IListSearchContentInfo)
+                                    {
+                                        continue;
+                                    }
                                     field.ReadOnly = !prop.IsEditable;
                                     field.Hidden = !prop.IsVisible;
                                     field.IsMandatory = prop.IsRequired;
@@ -990,16 +1092,21 @@ namespace Sushi.Mediakiwi.API.Services
                 }
             }
             else
-            {                
-                // ADD the 'Create new' BUTTON
-                string newRecord = _resolver.List.Data["wim_LblNew"].Value;
+            {
+                // ADD the 'Create new' BUTTON when possible
+                if (_resolver.ListInstance.wim.HideCreateNew == false 
+                    && _resolver.ListInstance.wim.CanAddNewItem 
+                    && _resolver.ListInstance.wim.HasListLoad 
+                    && _resolver.ListInstance.wim.CanContainSingleInstancePerDefinedList == false)
+                {                
+                    
+                    string newRecord = _resolver.List.Data["wim_LblNew"].Value;
 
-                if (string.IsNullOrWhiteSpace(newRecord)) {
-                    newRecord = Common.GetLabelFromResource("new_record", new CultureInfo(_resolver.ApplicationUser.LanguageCulture));
-                }
+                    if (string.IsNullOrWhiteSpace(newRecord))
+                    {
+                        newRecord = Common.GetLabelFromResource("new_record", new CultureInfo(_resolver.ApplicationUser.LanguageCulture));
+                    }
 
-                if (_resolver.ListInstance.wim.CanAddNewItem && _resolver.ListInstance.wim.HasListLoad && _resolver.ListInstance.wim.CanContainSingleInstancePerDefinedList == false)
-                {
                     bool hasPrimary = false;
                     if (!hasPrimary && result?.Count > 0)
                     {
@@ -1155,19 +1262,68 @@ namespace Sushi.Mediakiwi.API.Services
             // We are looking at an Item
             if (resolver.ItemObject != null || resolver.ListInstance.wim.CanContainSingleInstancePerDefinedList)
             {
-                result.FormMaps = await GetFormMapsAsync().ConfigureAwait(false);
+                var formMaps = await GetFormMapsAsync().ConfigureAwait(false);
+                
+                // Only add the formmap to the output when we actually have any
+                if (formMaps?.Count > 0)
+                {
+                    if (result.FormMaps == null)
+                    {
+                        result.FormMaps = new List<Transport.FormMap>();
+                    }
+                    result.FormMaps.AddRange(formMaps);
+                }
             }
 
             // We are looking at the overview
             else if (resolver.ListID.HasValue)
             {
                 resolver.ListInstance.wim.DoListSearch();
-                result.Grids = await GetGridsAsync();
-                result.FormMaps.Add(await GetFormMapListSearchAsync().ConfigureAwait(false));
+
+                // Only add the grids to the output when we actually have any
+                var searchGrids = await GetGridsAsync().ConfigureAwait(false);
+                if (searchGrids?.Count > 0)
+                {
+                    if (result.Grids == null)
+                    {
+                        result.Grids = new List<ListGrid>();
+                    }
+                    result.Grids.AddRange(searchGrids);
+                }
+
+                // Only add the formmap to the output when we actually have fields or buttons
+                var searchFormMap = await GetFormMapListSearchAsync().ConfigureAwait(false);
+                if (searchFormMap?.Buttons?.Count > 0 || searchFormMap?.Fields?.Count > 0)
+                {
+                    if (result.FormMaps == null)
+                    {
+                        result.FormMaps = new List<Transport.FormMap>();
+                    }
+                    result.FormMaps.Add(searchFormMap);
+                }
             }
 
-            result.Notifications = GetNotifications();
-            result.Resources = GetResources();
+            // Only add the notifications to the output when we actually have any
+            var notifications = GetNotifications();
+            if (notifications?.Count > 0)
+            {
+                if (result.Notifications == null)
+                {
+                    result.Notifications = new List<Notification>();
+                }
+                result.Notifications.AddRange(notifications);
+            }
+
+            // Only add the resources to the output when we actually have any
+            var resources = GetResources();
+            if (resources?.Count > 0)
+            {
+                if (result.Resources == null)
+                {
+                    result.Resources = new List<ResourceItem>();
+                }
+                result.Resources.AddRange(resources);
+            }
             result.SettingsURL = resolver.UrlBuild.GetListPropertiesRequest();
             result.IsEditMode = resolver.ListInstance.wim.IsEditMode;
 

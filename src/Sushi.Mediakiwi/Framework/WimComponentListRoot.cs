@@ -737,6 +737,8 @@ namespace Sushi.Mediakiwi.Framework
 
         LayerSpecification _specification;
 
+        public LayerSpecification LayerConfiguration => _specification;
+
         /// <summary>
         /// Clears the specified clear base template header.
         /// </summary>
