@@ -1287,7 +1287,7 @@ namespace Sushi.Mediakiwi.API.Services
                 resolver.ListInstance.wim.DoListSearch();
 
                 // Only add the grids to the output when we actually have any
-                var searchGrids = await GetGridsAsync();
+                var searchGrids = await GetGridsAsync().ConfigureAwait(false);
                 if (searchGrids?.Count > 0)
                 {
                     if (result.Grids == null)
