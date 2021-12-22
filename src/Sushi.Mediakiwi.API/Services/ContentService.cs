@@ -65,12 +65,6 @@ namespace Sushi.Mediakiwi.API.Services
                 passThrough = _resolver.ListInstance.wim.SearchResultItemPassthroughParameter;
             }
 
-            //if (string.IsNullOrWhiteSpace(_resolver.ListInstance.wim.ListDataColumns.ColumnItemUrl) == false)
-            //{
-            //    //  Get URL from list item
-            //    passThrough = "";// GetValue(infoCollection, item, _resolver.ListInstance.wim.ListDataColumns.ColumnItemUrl).ToString();
-            //}
-
             if (_resolver.ListInstance.wim.SearchListCanClickThrough && string.IsNullOrWhiteSpace(uniqueIdentifier) == false && (uniqueIdentifier != "0" || string.IsNullOrWhiteSpace(passThrough) == false))
             {
                 if (passThrough.EndsWith("item=", StringComparison.InvariantCultureIgnoreCase))
