@@ -810,7 +810,6 @@ namespace Sushi.Mediakiwi.API.Services
 
             var builder = _resolver.ListInstance.wim.Console.Component.CreateList(_resolver.ListInstance.wim.Console, _resolver.ListInstance.wim.Console.OpenInFrame, true);
 
-
             if (builder?.ApiResponse?.Fields?.Count > 0)
             {
              
@@ -825,7 +824,8 @@ namespace Sushi.Mediakiwi.API.Services
 
                     Transport.FormMap newFormMap = new Transport.FormMap()
                     {
-                        ClassName = formSection.Key
+                        ClassName = formSection.Key,
+                        Title = _resolver.ListInstance.wim.ListTitle
                     };
 
                     if (formSection.Any() == true)
@@ -893,6 +893,17 @@ namespace Sushi.Mediakiwi.API.Services
                         result.Add(newFormMap);
                     }
                 }
+            }
+            else if (_resolver.ListInstance.wim.Console.Component?.ButtonList?.Count > 0)
+            {
+                Transport.FormMap newFormMap = new Transport.FormMap();
+
+                foreach (var button in _resolver.ListInstance.wim.Console.Component?.ButtonList)
+                {
+                    newFormMap.Buttons.Add(await GetButtonAsync(button));
+                }
+
+                result.Add(newFormMap);
             }
 
             return result;
@@ -1295,7 +1306,8 @@ namespace Sushi.Mediakiwi.API.Services
                     resolver.ListInstance.wim.Console.Component = new Beta.GeneratedCms.Source.Component();
                 }
 
-                resolver.ListInstance.wim.Console.Component.CreateSearchList(resolver.ListInstance.wim.Console, openInFrame);
+                //resolver.ListInstance.wim.Console.Component.CreateSearchList(resolver.ListInstance.wim.Console, openInFrame);
+                resolver.ListInstance.wim.DoListSearch();
 
                 // Only add the grids to the output when we actually have any
                 var searchGrids = await GetGridsAsync().ConfigureAwait(false);
@@ -1343,6 +1355,16 @@ namespace Sushi.Mediakiwi.API.Services
             }
             result.SettingsURL = resolver.UrlBuild.GetListPropertiesRequest();
             result.IsEditMode = resolver.ListInstance.wim.IsEditMode;
+            
+            // The list title could have been changed along the way.
+            if (string.IsNullOrWhiteSpace(resolver?.ListInstance?.wim?.ListTitle) == false)
+            {
+                result.Title = resolver.ListInstance.wim.ListTitle;
+            }
+            if (string.IsNullOrWhiteSpace(resolver?.ListInstance?.wim?.ListDescription) == false)
+            {
+                result.Description = resolver.ListInstance.wim.ListDescription;
+            }
 
             return result;
         }

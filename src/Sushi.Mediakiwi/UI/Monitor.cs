@@ -417,15 +417,13 @@ namespace Sushi.Mediakiwi.UI
                     _PresentationNavigation.RightSideNavigation(_Console, component.m_ButtonList != null ? component.m_ButtonList.ToArray() : null, GlobalWimControlBuilder);
                     _PresentationNavigation.NewBottomNavigation(_Console, component.m_ButtonList != null ? component.m_ButtonList.ToArray() : null, false, GlobalWimControlBuilder);
 
-                    Dictionary<string, string> formFields = null;
-                    if (formFields == null)
-                        formFields = new Dictionary<string, string>();
-
                     GlobalWimControlBuilder.ApiResponse.CurrentSiteID = _Console.ChannelIndentifier;
                     GlobalWimControlBuilder.ApiResponse.ListDescription = _Console.CurrentListInstance.wim.CurrentList.Description;
                     GlobalWimControlBuilder.ApiResponse.RedirectUrl = _Console.RedirectionUrl;
                     if (!string.IsNullOrWhiteSpace(_Console.RedirectionUrl))
+                    {
                         _Console.Response.StatusCode = 302;
+                    }
 
                     GlobalWimControlBuilder.ApiResponse.IsEditMode = _Console.CurrentListInstance.IsEditMode;
                     GlobalWimControlBuilder.ApiResponse.ListTitle = _Console.CurrentListInstance.wim.ListTitle;
