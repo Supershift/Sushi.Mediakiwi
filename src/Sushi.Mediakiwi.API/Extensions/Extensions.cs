@@ -27,7 +27,7 @@ namespace Sushi.Mediakiwi.API.Extensions
             {
                 foreach (var map in maps)
                 {
-                    foreach (var element in map.Fields)
+                    foreach (var element in map.Fields.Where(x => string.IsNullOrWhiteSpace(x?.PropertyName) == false))
                     {
                         postForm.Add(element.PropertyName, element.Value);
                     }
