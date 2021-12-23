@@ -124,6 +124,11 @@ namespace Sushi.Mediakiwi.API.Services
 
             #region Layer Configuration
 
+            if (_resolver?.List?.Option_LayerResult == true && _resolver.ListInstance?.wim?.Page?.Body?.Grid?.LayerConfiguration == null)
+            {
+                _resolver.ListInstance.wim.Page.Body.Grid.SetClickLayer(new Grid.LayerSpecification(LayerSize.Normal));
+            }
+
             if (_resolver.ListInstance?.wim?.Page?.Body?.Grid?.LayerConfiguration != null)
             {
                 var config = _resolver.ListInstance.wim.Page.Body.Grid.LayerConfiguration;
@@ -915,6 +920,7 @@ namespace Sushi.Mediakiwi.API.Services
                         if (ci.ContentTypeSelection != Data.ContentType.Button)
                         {
                             ci.Property = prop;
+                            ci.ID = prop.Name;
                             ci.SenderInstance = _resolver.ListInstance;
                             var apiField = await ci.GetApiFieldAsync();
 
@@ -1278,7 +1284,18 @@ namespace Sushi.Mediakiwi.API.Services
             // We are looking at the overview
             else if (resolver.ListID.HasValue)
             {
-                resolver.ListInstance.wim.DoListSearch();
+                int openInFrame = 0;
+                if (resolver.Query.ContainsKey("openinframe"))
+                {
+                    openInFrame = Utils.ConvertToInt(resolver.Query["openinframe"].First(), 0);
+                }
+
+                if (resolver.ListInstance.wim.Console.Component == null)
+                {
+                    resolver.ListInstance.wim.Console.Component = new Beta.GeneratedCms.Source.Component();
+                }
+
+                resolver.ListInstance.wim.Console.Component.CreateSearchList(resolver.ListInstance.wim.Console, openInFrame);
 
                 // Only add the grids to the output when we actually have any
                 var searchGrids = await GetGridsAsync().ConfigureAwait(false);
