@@ -1306,8 +1306,8 @@ namespace Sushi.Mediakiwi.API.Services
                     resolver.ListInstance.wim.Console.Component = new Beta.GeneratedCms.Source.Component();
                 }
 
-                //resolver.ListInstance.wim.Console.Component.CreateSearchList(resolver.ListInstance.wim.Console, openInFrame);
-                resolver.ListInstance.wim.DoListSearch();
+                resolver.ListInstance.wim.Console.Component.CreateSearchList(resolver.ListInstance.wim.Console, openInFrame);
+                //resolver.ListInstance.wim.DoListSearch();
 
                 // Only add the grids to the output when we actually have any
                 var searchGrids = await GetGridsAsync().ConfigureAwait(false);
