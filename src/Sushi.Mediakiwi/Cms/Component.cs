@@ -1526,6 +1526,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
         }
 
         internal List<ButtonAttribute> m_ButtonList;
+        public List<ButtonAttribute> ButtonList => m_ButtonList;
 
         void SetSavedInfo(Console container)
         {
