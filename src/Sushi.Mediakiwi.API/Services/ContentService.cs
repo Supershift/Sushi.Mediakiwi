@@ -40,16 +40,15 @@ namespace Sushi.Mediakiwi.API.Services
             string uniqueIdentifier = string.Empty;
 
             // Check for a key column
-            var keyColumn = _resolver.ListInstance.wim.ListDataColumns.List.First(x => IsKeyColumn(x.Type));
+            var keyColumn = _resolver.ListInstance.wim.ListDataColumns.List.FirstOrDefault(x => IsKeyColumn(x.Type));
             if (keyColumn != null)
             {
                 PropertyInfo info = infoCollection.FirstOrDefault(x => x.Name.Equals(keyColumn.ColumnValuePropertyName, StringComparison.InvariantCulture));
-                if (info != null) 
+                if (info != null)
                 {
                     uniqueIdentifier = info.GetValue(item, null).ToString();
                 }
             }
-
             
             if (string.IsNullOrWhiteSpace(_resolver.ListInstance.wim.SearchResultItemPassthroughParameterProperty) == false)
             {
@@ -65,20 +64,28 @@ namespace Sushi.Mediakiwi.API.Services
                 passThrough = _resolver.ListInstance.wim.SearchResultItemPassthroughParameter;
             }
 
-            if (_resolver.ListInstance.wim.SearchListCanClickThrough && string.IsNullOrWhiteSpace(uniqueIdentifier) == false && (uniqueIdentifier != "0" || string.IsNullOrWhiteSpace(passThrough) == false))
+            if (_resolver.ListInstance.wim.SearchListCanClickThrough && (uniqueIdentifier != "0" || string.IsNullOrWhiteSpace(passThrough) == false))
             {
-                if (passThrough.EndsWith("item=", StringComparison.InvariantCultureIgnoreCase))
+                if (string.IsNullOrWhiteSpace(uniqueIdentifier) == false)
                 {
-                    passThrough += uniqueIdentifier;
-                }
-                else if (passThrough.EndsWith("item", StringComparison.InvariantCultureIgnoreCase))
-                {
-                    passThrough += $"={uniqueIdentifier}";
-                }
+                    if (passThrough.EndsWith("item=", StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        passThrough += uniqueIdentifier;
+                    }
+                    else if (passThrough.EndsWith("item", StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        passThrough += $"={uniqueIdentifier}";
+                    }
 
-                if (passThrough.Contains("[KEY]", StringComparison.InvariantCultureIgnoreCase))
+                    if (passThrough.Contains("[KEY]", StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        passThrough = passThrough.Replace("[KEY]", uniqueIdentifier);
+                    }
+                }
+                // We don't have a key to extend the URL with, so leave href empty
+                else if (passThrough.EndsWith("item=", StringComparison.InvariantCultureIgnoreCase) || passThrough.EndsWith("item", StringComparison.InvariantCultureIgnoreCase))
                 {
-                    passThrough = passThrough.Replace("[KEY]", uniqueIdentifier);
+                    passThrough = string.Empty;
                 }
             }
 
@@ -466,6 +473,16 @@ namespace Sushi.Mediakiwi.API.Services
                 Value = (field.Value != null) ? field.Value.ToString() : "",
                 VueType = ConvertEnum(field.VueType)
             };
+
+            if (field.Value is ICollection<string> stringCol)
+            {
+                newField.Value = string.Join(',', stringCol);
+            }
+
+            if (field.Value is ICollection<int> intCol)
+            {
+                newField.Value = string.Join(',', intCol);
+            }
 
             if (field?.Options?.Count > 0)
             {

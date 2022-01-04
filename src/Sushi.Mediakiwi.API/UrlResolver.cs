@@ -413,10 +413,6 @@ namespace Sushi.Mediakiwi.API
                         n++;
                         ItemType = RequestItemType.Asset;
                     }
-                    else
-                    {
-                        ItemType = RequestItemType.Item;
-                    }
                 }
 
                 if (split.Length - n - 1 > 0)
@@ -572,7 +568,10 @@ namespace Sushi.Mediakiwi.API
             // Set ListInstance
             if (List?.ID > 0)
             {
-                //
+                // Set resolver ItemType to Console 
+                _console.ItemType = ItemType;
+
+                // Create an instance of the list
                 var listinstance = List.GetInstance(_console);
 
                 if (listinstance is Framework.IComponentListTemplate m_instance)
@@ -636,7 +635,7 @@ namespace Sushi.Mediakiwi.API
 
                     m_instance.wim.CurrentList = List;
                     m_instance.wim.CurrentSite = Site;
-                  
+
                     Folder = m_instance.wim.CurrentFolder;
                     ListInstance = m_instance;
                 }
