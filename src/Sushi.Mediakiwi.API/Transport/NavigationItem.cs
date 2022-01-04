@@ -52,5 +52,11 @@ namespace Sushi.Mediakiwi.API.Transport
         /// </summary>
         [JsonIgnore]
         public int ItemID { get; set; }
+
+        /// <summary>
+        /// Is this navigation item a Tab ?
+        /// </summary>
+        [JsonIgnore]
+        public bool IsTab { get; set; }
     }
 }

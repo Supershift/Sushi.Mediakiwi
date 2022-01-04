@@ -120,7 +120,7 @@ namespace Sushi.Mediakiwi.API.Filters
 
                 // Assign the item ID to the console
                 console.Item = resolver.ItemID;
-
+                
                 // Add the resolver to the HttpContext
                 context.HttpContext.Items.Add(Common.API_HTTPCONTEXT_URLRESOLVER, resolver);
                 
