@@ -1232,7 +1232,14 @@ namespace Sushi.Mediakiwi.Framework.Presentation
                         : m_container.AddApplicationPath(CommonConfiguration.STYLE_INCLUDE)
                         ));
 
-                return custom;
+                if (CommonConfiguration.APPEND_STYLE_INCLUDE)
+                {
+                    style += custom;
+                }
+                else
+                {
+                    return custom;
+                }
             }
             return style;
         }
