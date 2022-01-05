@@ -145,6 +145,8 @@ namespace Sushi.Mediakiwi.API.Extensions
                 if (File.Exists(filePath))
                 {
                     options.IncludeXmlComments(filePath);
+                    options.SchemaFilter<SwaggerEnumFilter>(filePath);
+
                 }
                 options.EnableAnnotations(true, true);
                 options.SwaggerDoc("v0.1", new OpenApiInfo
