@@ -527,6 +527,8 @@ delete from wim_ComponentVersions where ComponentVersion_Page_Key in
         {
             switch (culture)
             {
+                default: return culture;
+                case "en-CB": return "en-029";
                 case "az-AZ-Latn": return "az-Latn-AZ";
                 case "uz-UZ-Latn": return "uz-Latn-UZ";
                 case "sr-SP-Latn": return "sr-Latn-CS";
@@ -539,9 +541,7 @@ delete from wim_ComponentVersions where ComponentVersion_Page_Key in
                 case "bs-BA-Latn": return "bs-Latn-BA";
                 case "iu-CA-Latn": return "iu-Latn-CA";
                 case "div-MV": return "dv-MV";
-                case "en-CB": return "en-029";
             }
-            return culture;
         }
 
         /// <summary>
@@ -827,22 +827,25 @@ delete from wim_ComponentVersions where ComponentVersion_Page_Key in
                     if (user.SelectRole().IsAccessSite)
                     {
                         sites = (
-                            from item in await SelectAllAsync()
-                            join relation in await RoleRight.SelectAllAsync(user.SelectRole().ID, RoleRightType.Site) on item.ID equals relation.ItemID
+                            from item in await SelectAllAsync().ConfigureAwait(false)
+                            join relation in await RoleRight.SelectAllAsync(user.SelectRole().ID, RoleRightType.Site).ConfigureAwait(false)
+                            on item.ID equals relation.ItemID
                             select item).ToList();
                     }
                     else
                     {
                         var acl = (
-                            from item in await SelectAllAsync()
-                            join relation in await RoleRight.SelectAllAsync(user.SelectRole().ID, RoleRightType.Site) on item.ID equals relation.ItemID
+                            from item in await SelectAllAsync().ConfigureAwait(false)
+                            join relation in await RoleRight.SelectAllAsync(user.SelectRole().ID, RoleRightType.Site).ConfigureAwait(false) 
+                            on item.ID equals relation.ItemID
                             into combination
                             from relation in combination.DefaultIfEmpty()
                             select new { ID = item.ID, HasAccess = relation == null });
 
                         sites = (
                             from item in acl
-                            join relation in await SelectAllAsync() on item.ID equals relation.ID
+                            join relation in await SelectAllAsync().ConfigureAwait(false) 
+                            on item.ID equals relation.ID
                             where item.HasAccess
                             select relation).ToList();
                     }
@@ -853,15 +856,17 @@ delete from wim_ComponentVersions where ComponentVersion_Page_Key in
             else if (accessFilter == AccessFilter.UserBased)
             {
                 var acl = (
-                    from item in await SelectAllAsync()
-                    join relation in await RoleRight.SelectAllAsync(user.ID, RoleRightType.SiteByUser) on item.ID equals relation.ItemID
+                    from item in await SelectAllAsync().ConfigureAwait(false)
+                    join relation in await RoleRight.SelectAllAsync(user.ID, RoleRightType.SiteByUser).ConfigureAwait(false) 
+                    on item.ID equals relation.ItemID
                     into combination
                     from relation in combination.DefaultIfEmpty()
                     select new { item.ID, Access = (relation == null ? Access.Inherit : relation.AccessType) });
 
                 sites = (
                     from item in acl
-                    join relation in await SelectAllAsync() on item.ID equals relation.ID
+                    join relation in await SelectAllAsync().ConfigureAwait(false) 
+                    on item.ID equals relation.ID
                     where item.Access == Access.Granted
                     select relation).ToList();
             }
@@ -870,13 +875,14 @@ delete from wim_ComponentVersions where ComponentVersion_Page_Key in
                 //  Get the access list form the user list
                 //  This contains all sites with the Access enum set.
                 var acl = (
-                    from item in await SelectAllAsync()
-                    join relation in await RoleRight.SelectAllAsync(user.ID, RoleRightType.SiteByUser) on item.ID equals relation.ItemID
+                    from item in await SelectAllAsync().ConfigureAwait(false)
+                    join relation in await RoleRight.SelectAllAsync(user.ID, RoleRightType.SiteByUser).ConfigureAwait(false) 
+                    on item.ID equals relation.ItemID
                     into combination
                     from relation in combination.DefaultIfEmpty()
                     select new { item.ID, Access = (relation == null ? Access.Inherit : relation.AccessType) });
                 //  Get the role based site access list
-                var roleBased = await SelectAllAccessibleAsync(user, AccessFilter.RoleBased);
+                var roleBased = await SelectAllAccessibleAsync(user, AccessFilter.RoleBased).ConfigureAwait(false);
                 //  Combine the role and user based access lists.
                 //  Where it says user inherit use the setting from the role (present = granted, not present = denied)
                 var combined = (
@@ -896,7 +902,7 @@ delete from wim_ComponentVersions where ComponentVersion_Page_Key in
                     }).ToArray();
                 //  Remove the denied types from the combined access list.
                 var outcome =
-                    (from item in await SelectAllAsync()
+                    (from item in await SelectAllAsync().ConfigureAwait(false)
                      join relation in combined on item.ID equals relation.ID
                      where relation.Access == Access.Granted
                      select item).ToArray();

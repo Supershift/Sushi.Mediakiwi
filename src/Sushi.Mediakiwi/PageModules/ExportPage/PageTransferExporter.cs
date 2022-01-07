@@ -147,7 +147,7 @@ namespace Sushi.Mediakiwi.PageModules.ExportPage
         private async Task ExportComponentsAsync(int pageID)
         {
             // Copy Components
-            List<Component> pageComponents = (await Component.SelectAllInheritedAsync(pageID, false, false)).ToList();
+            List<Component> pageComponents = (await Component.SelectAllInheritedAsync(pageID, false, false).ConfigureAwait(false)).ToList();
             foreach (var item in pageComponents)
             {
                 // When the component template does not yet exist in the export, 
@@ -185,7 +185,7 @@ namespace Sushi.Mediakiwi.PageModules.ExportPage
                             newField.IsShared = metadata.Where(x => x.Name == field.Property).FirstOrDefault().IsSharedField == "1";
                         }
 
-                        await ApplyExtendedFieldInformationAsync(newField, metadata);
+                        await ApplyExtendedFieldInformationAsync(newField, metadata).ConfigureAwait(false);
                         t.Content.Fields.Add(newField);
                     }
                 }
@@ -204,7 +204,7 @@ namespace Sushi.Mediakiwi.PageModules.ExportPage
         private async Task ExportComponentVersionsAsync(int pageID)
         {
             // Get ComponentVersions
-            foreach (var item in await ComponentVersion.SelectAllOnPageAsync(pageID))
+            foreach (var item in await ComponentVersion.SelectAllOnPageAsync(pageID).ConfigureAwait(false))
             {
                 ExportedComponentVersion tv = new ExportedComponentVersion();
                 Utility.ReflectProperty(item, tv);
@@ -229,7 +229,7 @@ namespace Sushi.Mediakiwi.PageModules.ExportPage
                             newField.IsShared = metadata.Where(x => x.Name == field.Property).FirstOrDefault().IsSharedField == "1";
                         }
 
-                        await ApplyExtendedFieldInformationAsync(newField, metadata);
+                        await ApplyExtendedFieldInformationAsync(newField, metadata).ConfigureAwait(false);
                         tv.Content.Fields.Add(newField);
                     }
                 }
@@ -319,7 +319,7 @@ namespace Sushi.Mediakiwi.PageModules.ExportPage
 
         public async Task<ExportedPageComplete> ExportPageAsync(Page inPage)
         {
-            inPage = await Page.SelectOneAsync(inPage.ID, false);
+            inPage = await Page.SelectOneAsync(inPage.ID, false).ConfigureAwait(false);
 
             // Set site for later, richtext clean
             Site = inPage.Site;
@@ -330,7 +330,7 @@ namespace Sushi.Mediakiwi.PageModules.ExportPage
             Utility.ReflectProperty(inPage, CompleteExport.Page);
 
             // Folders
-            await ExportFoldersAsync(inPage.Folder);
+            await ExportFoldersAsync(inPage.Folder).ConfigureAwait(false);
 
             // Copy PageTemplate Properties
             Utility.ReflectProperty(inPage.Template, CompleteExport.PageTemplate);
@@ -340,16 +340,16 @@ namespace Sushi.Mediakiwi.PageModules.ExportPage
                 CompleteExport.PageTemplate.Data = inPage.Template.Data;
 
             // Export Component Templates
-            await ExportComponentTemplatesAsync(inPage.Template);
+            await ExportComponentTemplatesAsync(inPage.Template).ConfigureAwait(false);
 
             // Export Components
-            await ExportComponentsAsync(inPage.ID);
+            await ExportComponentsAsync(inPage.ID).ConfigureAwait(false);
 
             // Export Component Versions
-            await ExportComponentVersionsAsync(inPage.ID);
+            await ExportComponentVersionsAsync(inPage.ID).ConfigureAwait(false);
 
             // Export galleries
-            await ExportGalleriesAsync();
+            await ExportGalleriesAsync().ConfigureAwait(false);
 
             return CompleteExport;
         }
@@ -626,7 +626,7 @@ namespace Sushi.Mediakiwi.PageModules.ExportPage
                     ef.Property = item.Property;
                     ef.Label = $"{label}.{item.Property}";
 
-                    await ApplyExtendedFieldInformationAsync(ef);
+                    await ApplyExtendedFieldInformationAsync(ef).ConfigureAwait(false);
 
                     tempList.Add(ef);
                 }
@@ -659,38 +659,38 @@ namespace Sushi.Mediakiwi.PageModules.ExportPage
                 case (int)ContentType.DocumentSelect:
                 case (int)ContentType.Binary_Document:
                     {
-                        field.AssetInfo = await GetAssetInfoAsync(field.Value);
+                        field.AssetInfo = await GetAssetInfoAsync(field.Value).ConfigureAwait(false);
                     }
                     break;
                 case (int)ContentType.FolderSelect:
                     {
-                        field.FolderInfo = await GetFolderInfoAsync(field.Value);
+                        field.FolderInfo = await GetFolderInfoAsync(field.Value).ConfigureAwait(false);
                     }
                     break;
                 case (int)ContentType.Hyperlink:
                     {
-                        field.LinkInfo = await GetLinkInfoAsync(field.Value);
+                        field.LinkInfo = await GetLinkInfoAsync(field.Value).ConfigureAwait(false);
                     }
                     break;
                 case (int)ContentType.PageSelect:
                     {
-                        field.GenericInfo = await GetPageInfoAsync(field.Value);
+                        field.GenericInfo = await GetPageInfoAsync(field.Value).ConfigureAwait(false);
                     }
                     break;
                 case (int)ContentType.SubListSelect:
                     {
-                        field.SubListInfo = await GetSublistInfoAsync(field.Value, field.Property, metaData);
+                        field.SubListInfo = await GetSublistInfoAsync(field.Value, field.Property, metaData).ConfigureAwait(false);
                     }
                     break;
                 case (int)ContentType.RichText:
                     {
-                        field.RichTextInfo = await GetRichtextInfoAsync(field.Value);
+                        field.RichTextInfo = await GetRichtextInfoAsync(field.Value).ConfigureAwait(false);
                     }
                     break;
                 case (int)ContentType.MultiField:
                     {
                         field.GenericInfo = new ExportedFieldInfo();
-                        field.MultiFields = await GetMultiFieldsAsync(field.Value, field.GenericInfo, field.Label);
+                        field.MultiFields = await GetMultiFieldsAsync(field.Value, field.GenericInfo, field.Label).ConfigureAwait(false);
                     }
                     break;
                 default:
