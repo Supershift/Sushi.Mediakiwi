@@ -57,12 +57,6 @@ namespace Sushi.Mediakiwi.Data
             switch ((ContentType)inField.Type)
             {
                 default:
-                case ContentType.TextField:
-                case ContentType.RichText:
-                case ContentType.TextArea:
-                case ContentType.Choice_Dropdown:
-                case ContentType.Choice_Checkbox:
-                case ContentType.Sourcecode:
                     {
                         isFilled = true;
                         content.Text = inField.Value;
