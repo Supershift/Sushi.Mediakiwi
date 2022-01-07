@@ -5,7 +5,7 @@ namespace Sushi.Mediakiwi.Headless.FluentValidation
     /// <summary>
     /// Describes an unhandled exception which occurs during validation.
     /// </summary>
-    internal class UnhandledValidationException : Exception
+    public class UnhandledValidationException : Exception
     {
         /// <summary>
         /// Constructs an instance of <see cref="UnhandledValidationException"/>

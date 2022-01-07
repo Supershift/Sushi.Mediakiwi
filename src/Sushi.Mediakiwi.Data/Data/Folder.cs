@@ -507,7 +507,7 @@ FROM [Wim_ComponentLists] WHERE [ComponentList_Folder_Key] in (SELECT [Folder_Ke
         /// </summary>
         public static async Task VerifyCompletePathAsync()
         {
-            var folders = await SelectAllAsync();
+            var folders = await SelectAllAsync().ConfigureAwait(false);
             foreach (var folder in folders)
             {
                 string path = folder.CompletePath;
@@ -836,14 +836,14 @@ FROM [Wim_ComponentLists] WHERE [ComponentList_Folder_Key] in (SELECT [Folder_Ke
                 if (role.IsAccessFolder)
                 {
                     folders = (
-                        from item in await SelectAllAsync()
+                        from item in await SelectAllAsync().ConfigureAwait(false)
                         join relation in await RoleRight.SelectAllAsync(role.ID, RoleRightType.Folder) on item.ID equals relation.ItemID
                         select item).ToArray();
                 }
                 else
                 {
                     var acl = (
-                        from item in await SelectAllAsync()
+                        from item in await SelectAllAsync().ConfigureAwait(false)
                         join relation in await RoleRight.SelectAllAsync(role.ID, RoleRightType.Folder) on item.ID equals relation.ItemID
                         into combination
                         from relation in combination.DefaultIfEmpty()
@@ -851,14 +851,15 @@ FROM [Wim_ComponentLists] WHERE [ComponentList_Folder_Key] in (SELECT [Folder_Ke
 
                     folders = (
                         from item in acl
-                        join relation in await SelectAllAsync() on item.ID equals relation.ID
+                        join relation in await SelectAllAsync().ConfigureAwait(false)
+                        on item.ID equals relation.ID
                         where item.HasAccess
                         select relation).ToArray();
                 }
             }
             else
             {
-                folders = await SelectAllAsync();
+                folders = await SelectAllAsync().ConfigureAwait(false);
             }
             return folders;
         }
@@ -882,7 +883,7 @@ FROM [Wim_ComponentLists] WHERE [ComponentList_Folder_Key] in (SELECT [Folder_Ke
         /// <returns></returns>
         public static async Task<Folder[]> SelectAllAsync(FolderType type, int siteID)
         {
-            return await SelectAllAsync(type, siteID, null, false);
+            return await SelectAllAsync(type, siteID, null, false).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -1163,7 +1164,7 @@ FROM [Wim_ComponentLists] WHERE [ComponentList_Folder_Key] in (SELECT [Folder_Ke
             if (IsNewInstance)
             {
                 string name = Name;
-                Name = await GetPageNameProposalAsync(ParentID.GetValueOrDefault(), Name);
+                Name = await GetPageNameProposalAsync(ParentID.GetValueOrDefault(), Name).ConfigureAwait(false);
                 if (!Name.Equals(name))
                 {
                     CompletePath = $"{CompletePath.Substring(0, CompletePath.Length - name.Length)}{Name}";
@@ -1219,14 +1220,14 @@ FROM [Wim_ComponentLists] WHERE [ComponentList_Folder_Key] in (SELECT [Folder_Ke
 
             string nameProposal = Utility.GlobalRegularExpression.Implement.ReplaceNotAcceptableFilenameCharacter.Replace(folder, string.Empty);
 
-            bool pageExistsInFolder = await IsFolderAlreadyTakenAsync(folderID, folder);
+            bool pageExistsInFolder = await IsFolderAlreadyTakenAsync(folderID, folder).ConfigureAwait(false);
             int nameExtentionCount = 0;
 
             while (pageExistsInFolder)
             {
                 nameExtentionCount++;
-                nameProposal = string.Format("{0}_{1}", folder, nameExtentionCount);
-                pageExistsInFolder = await IsFolderAlreadyTakenAsync(folderID, nameProposal);
+                nameProposal = $"{folder}_{nameExtentionCount}";
+                pageExistsInFolder = await IsFolderAlreadyTakenAsync(folderID, nameProposal).ConfigureAwait(false);
             }
             return nameProposal;
         }
@@ -1306,7 +1307,7 @@ FROM [Wim_ComponentLists] WHERE [ComponentList_Folder_Key] in (SELECT [Folder_Ke
         /// <returns></returns>
         public static async Task<Folder[]> SelectAllByParentAsync(int folderID, FolderType type)
         {
-            return await SelectAllByParentAsync(folderID, type, true);
+            return await SelectAllByParentAsync(folderID, type, true).ConfigureAwait(false);
         }
 
         /// <summary>

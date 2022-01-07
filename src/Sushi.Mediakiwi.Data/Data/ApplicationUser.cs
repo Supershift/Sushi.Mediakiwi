@@ -971,12 +971,12 @@ namespace Sushi.Mediakiwi.Data
                 return false;
             }
 
-            if (await HasUserNameAsync(Name, ID))
+            if (await HasUserNameAsync(Name, ID).ConfigureAwait(false))
             {
                 throw new Exception("The applied username already exists");
             }
 
-            if (await HasEmailAsync(Email, ID))
+            if (await HasEmailAsync(Email, ID).ConfigureAwait(false))
             {
                 throw new Exception("The applied email already exists");
             }

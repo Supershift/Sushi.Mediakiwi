@@ -361,7 +361,7 @@ namespace Sushi.Mediakiwi.UI
                 GlobalWimControlBuilder.Rightnav = _PresentationNavigation.RightSideNavigation(_Console, component.m_ButtonList != null ? component.m_ButtonList.ToArray() : null);
                 GlobalWimControlBuilder.Bottom = _PresentationNavigation.NewBottomNavigation(_Console, component.m_ButtonList != null ? component.m_ButtonList.ToArray() : null, false);
 
-                await AddToResponseAsync(await _PresentationMonitor.GetTemplateWrapperAsync(_Console, _Placeholders, _Callbacks, GlobalWimControlBuilder));
+                await AddToResponseAsync(await _PresentationMonitor.GetTemplateWrapperAsync(_Console, _Placeholders, _Callbacks, GlobalWimControlBuilder)).ConfigureAwait(false);
             }
         }
 
@@ -432,7 +432,7 @@ namespace Sushi.Mediakiwi.UI
                     // [MR:25-05-2021] added for : https://supershift.atlassian.net/browse/FTD-147
                     await GlobalWimControlBuilder.ApiResponse.ApplySharedFieldDataAsync();
 
-                    await AddToResponseAsync(JsonConvert.SerializeObject(GlobalWimControlBuilder.ApiResponse));
+                    await AddToResponseAsync(JsonConvert.SerializeObject(GlobalWimControlBuilder.ApiResponse)).ConfigureAwait(false);
                     return;
                 }
 
@@ -708,8 +708,8 @@ namespace Sushi.Mediakiwi.UI
         async Task<bool> HandleAsyncRequestAsync(Beta.GeneratedCms.Source.Component component)
         {
             if (_Console.CurrentListInstance == null) return false;
-            var async = Utils.GetAsyncQuery(_Console);
-            if (async == null)
+            var asyncResult = Utils.GetAsyncQuery(_Console);
+            if (asyncResult == null)
                 return false;
 
             if (_Console.CurrentListInstance.wim.HasListAsync)
@@ -717,12 +717,12 @@ namespace Sushi.Mediakiwi.UI
                 _Console.HasAsyncEvent = true;
                 ComponentAsyncEventArgs eventArgs = new ComponentAsyncEventArgs(_Console.Item.GetValueOrDefault());
 
-                eventArgs.Query = async.SearchQuery;
-                eventArgs.SearchType = async.SearchType;
-                eventArgs.Property = async.Property;
+                eventArgs.Query = asyncResult.SearchQuery;
+                eventArgs.SearchType = asyncResult.SearchType;
+                eventArgs.Property = asyncResult.Property;
 
                 eventArgs.Data = new ASyncResult();
-                eventArgs.Data.Property = async.Property;
+                eventArgs.Data.Property = asyncResult.Property;
                 eventArgs.ApplyData(component, _Console);
                 eventArgs.SelectedGroupItemKey = _Console.GroupItem.GetValueOrDefault();
                 eventArgs.SelectedGroupKey = _Console.Group.GetValueOrDefault();
@@ -878,6 +878,7 @@ namespace Sushi.Mediakiwi.UI
             bool approved = false;
             switch (_Console.CurrentListInstance.wim.CurrentFolder.Type)
             {
+                default:
                 case FolderType.Undefined:
                     {
                         approved = true; break;

@@ -1312,7 +1312,7 @@ namespace Sushi.Mediakiwi.Framework
             }
         }
 
-        internal static int BREAKPOINT = 10;
+        internal static readonly int BREAKPOINT = 10;
 
         internal protected bool m_AutoPostBack { get; set; }
 

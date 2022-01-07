@@ -56,6 +56,24 @@ namespace Sushi.Mediakiwi.Data
 
             switch ((ContentType)inField.Type)
             {
+                default:
+                case ContentType.TextField:
+                case ContentType.RichText:
+                case ContentType.TextArea:
+                case ContentType.Choice_Dropdown:
+                case ContentType.Choice_Checkbox:
+                case ContentType.Sourcecode:
+                    {
+                        isFilled = true;
+                        content.Text = inField.Value;
+                    }
+                    break;
+                case ContentType.MultiField:
+                    {
+                        isFilled = true;
+                        content.MultiFieldContent = await GetMultiFieldContentAsync(inField.Value, ContentDeliveryPrefix).ConfigureAwait(false);
+                    }
+                    break;
                 case ContentType.PageSelect:
                     {
                         if (inField?.Page?.ID > 0)
@@ -120,23 +138,7 @@ namespace Sushi.Mediakiwi.Data
                         }
                     }
                     break;
-                case ContentType.TextField:
-                case ContentType.RichText:
-                case ContentType.TextArea:
-                case ContentType.Choice_Dropdown:
-                case ContentType.Choice_Checkbox:
-                case ContentType.Sourcecode:
-                    {
-                        isFilled = true;
-                        content.Text = inField.Value;
-                    }
-                    break;
-                case ContentType.MultiField:
-                    {
-                        isFilled = true;
-                        content.MultiFieldContent = await GetMultiFieldContentAsync(inField.Value, ContentDeliveryPrefix).ConfigureAwait(false);
-                    }
-                    break;
+          
             }
 
             return (content, isFilled);
