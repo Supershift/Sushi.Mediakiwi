@@ -10,11 +10,21 @@
     <PackageProjectUrl>https://mediakiwi.atlassian.net/wiki/spaces/CORE/overview</PackageProjectUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <RepositoryUrl>https://github.com/Supershift/Sushi.Mediakiwi</RepositoryUrl>
-    <Version>7.16.13</Version>
+    <Version>7.16.14</Version>
 	<ExcludeXmlAssemblyFiles>false</ExcludeXmlAssemblyFiles>
 	<GenerateDocumentationFile>True</GenerateDocumentationFile>
 	<DocumentationFile></DocumentationFile>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Sushi.Mediakiwi.API.xml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Sushi.Mediakiwi.API.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.1.21" />
@@ -26,12 +36,6 @@
   <ItemGroup>
     <ProjectReference Include="..\Sushi.Mediakiwi.Data\Sushi.Mediakiwi.Data.csproj" />
     <ProjectReference Include="..\Sushi.Mediakiwi\Sushi.Mediakiwi.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="Sushi.Mediakiwi.API.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
 
 </Project>
