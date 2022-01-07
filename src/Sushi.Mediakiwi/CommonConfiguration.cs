@@ -204,6 +204,18 @@ namespace Sushi.Mediakiwi
                 return WimServerConfiguration.Instance.Stylesheet;
             }
         }
+
+        /// <summary>
+        /// Append the STYLE_INCLUDE instead of override
+        /// </summary>
+        public static bool APPEND_STYLE_INCLUDE
+        {
+            get
+            {
+                return WimServerConfiguration.Instance.Append_Stylesheet;
+            }
+        }
+
         public static string LOCAL_FILE_PATH
         {
             get

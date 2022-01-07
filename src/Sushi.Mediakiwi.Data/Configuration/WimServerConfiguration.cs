@@ -101,7 +101,9 @@ namespace Sushi.Mediakiwi.Data.Configuration
         public string Logo_Url { get; set; }
 
         public string Stylesheet { get; set; }
-        
+
+        public bool Append_Stylesheet { get; set; }
+
         public string Local_File_Path { get; set; }
 
         public bool Disable_Caching { get; set; }
