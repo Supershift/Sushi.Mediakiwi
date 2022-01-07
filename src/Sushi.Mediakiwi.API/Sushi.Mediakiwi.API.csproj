@@ -22,7 +22,7 @@
 
   <ItemGroup>
     <Content Include="Sushi.Mediakiwi.API.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
 
