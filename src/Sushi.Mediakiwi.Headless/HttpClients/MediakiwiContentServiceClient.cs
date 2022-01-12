@@ -41,7 +41,7 @@ namespace Sushi.Mediakiwi.Headless.HttpClients
 
         public async Task<string> GetPageNotFoundContent(int? siteId)
         {
-            return await GetPageNotFoundContent(siteId, false);
+            return await GetPageNotFoundContent(siteId, false).ConfigureAwait(false);
         }
 
         public async Task<string> GetPageNotFoundContent(int? siteId, bool clearCache)
@@ -74,7 +74,7 @@ namespace Sushi.Mediakiwi.Headless.HttpClients
 
             if (response.IsSuccessStatusCode == true)
             {
-                return await response.Content.ReadAsStringAsync();
+                return await response.Content.ReadAsStringAsync().ConfigureAwait(false);
             }
             else
             {
@@ -89,27 +89,27 @@ namespace Sushi.Mediakiwi.Headless.HttpClients
 
         public async Task<string> GetPageContentStringAsync(string forUrl)
         {
-            return await GetPageContentStringAsync(forUrl, null);
+            return await GetPageContentStringAsync(forUrl, null).ConfigureAwait(false);
         }
 
         public async Task<string> GetPageContentStringAsync(string forUrl, string basePath)
         {
-            return await GetPageContentStringAsync(forUrl, basePath, false);
+            return await GetPageContentStringAsync(forUrl, basePath, false).ConfigureAwait(false);
         }
 
         public async Task<string> GetPageContentStringAsync(string forUrl, string basePath, bool clearCache)
         {
-            return await GetPageContentStringAsync(forUrl, basePath, clearCache, false);
+            return await GetPageContentStringAsync(forUrl, basePath, clearCache, false).ConfigureAwait(false);
         }
 
         public async Task<string> GetPageContentStringAsync(string forUrl, string basePath, bool clearCache, bool isPreview)
         {
-            return await GetPageContentStringAsync(forUrl, basePath, clearCache, isPreview, null);
+            return await GetPageContentStringAsync(forUrl, basePath, clearCache, isPreview, null).ConfigureAwait(false);
         }
 
         public async Task<string> GetPageContentStringAsync(string forUrl, string basePath, bool clearCache, bool isPreview, int? pageId)
         {
-            return await GetPageContentStringAsync(forUrl, basePath, clearCache, isPreview, null, null);
+            return await GetPageContentStringAsync(forUrl, basePath, clearCache, isPreview, null, null).ConfigureAwait(false);
 
         }
 
@@ -168,7 +168,7 @@ namespace Sushi.Mediakiwi.Headless.HttpClients
 
             if (response.IsSuccessStatusCode)
             {
-                return await response.Content.ReadAsStringAsync();
+                return await response.Content.ReadAsStringAsync().ConfigureAwait(false);
             }
             else
             {

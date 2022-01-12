@@ -1040,7 +1040,8 @@ namespace Sushi.Mediakiwi.API.Services
             }
 
             // Add SAVE & DELETE Buttons when in Edit state
-            if (_resolver.ListInstance.IsEditMode)
+            // But only When in Item Mode
+            if (_resolver.ListInstance.IsEditMode && (_resolver.ItemID.HasValue || _resolver.ItemObject != null || _resolver.ListInstance.wim.CanContainSingleInstancePerDefinedList))
             {
                 // SAVE Buttons
                 if (_resolver.ListInstance.wim.HasListSave && (_resolver.ListInstance.wim.CanAddNewItem || _resolver.ItemID.GetValueOrDefault() > 0 || _resolver.ListInstance.wim.CurrentList.IsSingleInstance))
@@ -1153,7 +1154,8 @@ namespace Sushi.Mediakiwi.API.Services
                             }
                         }
                     }
-                    result.Add(new ButtonField()
+
+                    var addButton = new ButtonField()
                     {
                         Title = newRecord,
                         ClassName = hasPrimary ? null : "action ",
@@ -1164,7 +1166,30 @@ namespace Sushi.Mediakiwi.API.Services
                         PropertyType = typeof(bool).FullName,
                         IsPrimary = !hasPrimary,
                         Url = _resolver.UrlBuild.GetListNewRecordRequest()
-                    });
+
+                    };
+
+                    // Check if our list should open Items in a Layer and what dimensions that Layer has
+                    if (_resolver?.List?.Option_LayerResult == true && _resolver.ListInstance?.wim?.Page?.Body?.Grid?.LayerConfiguration == null)
+                    {
+                        _resolver.ListInstance.wim.Page.Body.Grid.SetClickLayer(new Grid.LayerSpecification(LayerSize.Normal));
+                    }
+
+                    if (_resolver?.List?.Option_LayerResult == true && _resolver.ListInstance?.wim?.Page?.Body?.Grid?.LayerConfiguration != null)
+                    {
+                        var config = _resolver.ListInstance.wim.Page.Body.Grid.LayerConfiguration;
+                        addButton.LayerConfiguration = new LayerConfiguration()
+                        {
+                            HasScrollbar = config.HasScrolling.GetValueOrDefault(false),
+                            Height = config.Height.GetValueOrDefault(),
+                            HeightUnitType = config.IsHeightPercentage ? UnitTypeEnum.Percentage : UnitTypeEnum.Pixels,
+                            Title = config.Title,
+                            Width = config.Width.GetValueOrDefault(),
+                            WidthUnitType = config.IsWidthPercentage ? UnitTypeEnum.Percentage : UnitTypeEnum.Pixels
+                        };
+                    }
+
+                    result.Add(addButton);
                 }
 
 
