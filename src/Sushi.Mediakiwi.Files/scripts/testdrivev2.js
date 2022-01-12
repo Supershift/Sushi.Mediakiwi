@@ -724,7 +724,7 @@ $(document).ready(function () {
 
         var val = idv + '|' + sel;
         if (ref != undefined) {
-            console.log(`Setting value to ${ref}`);
+            console.log('Setting value to ' + ref);
             var put = ref.substring(1, ref.length) + '$' + idv;
             var pnt = '#' + ref;
             var att = par.$(pnt).attr('class');
@@ -790,7 +790,7 @@ $(document).ready(function () {
         }
         else
         {
-            console.log('No reference.');
+            console.log('No reference.'); 
             par.mediakiwi.closeLayer();
         }
     }
