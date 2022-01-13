@@ -661,7 +661,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                     build.Append("</div>");
                 }
 
-                var arr = await Mediakiwi.Data.Folder.SelectAllByParentAsync(entry.ID, FolderType.Undefined, !wim.CurrentApplicationUser.ShowHidden).ConfigureAwait(false);
+                var arr = await Mediakiwi.Data.Folder.SelectAllAccessibleByParentAsync(entry.ID, FolderType.Undefined, !wim.CurrentApplicationUser.ShowHidden, wim.CurrentApplicationUser).ConfigureAwait(false);
                 await FindListAsync(arr, build, false).ConfigureAwait(false);
             }
         }

@@ -21,11 +21,17 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation.Forms
             Map(x => x.Language).Dropdown("Language", nameof(AvailableCulturesCollection)).Expression(OutputExpression.Alternating);
             Map(x => x.Culture).Dropdown("Culture", nameof(AvailableCulturesCollection)).Expression(OutputExpression.Alternating);
             Map(x => x.MasterID).Dropdown("Inherit from", nameof(AvailableSitesCollection));
+            Map(x => x.AutoPublishInherited).Checkbox("Auto-Publish inherited content");
             Map(x => x.Domain).TextField("Domain", 50, interactiveHelp: "https://www.website.com");
+            Map(x => x.Created).TextLine("Created");
 
-            Map(x => x.Section1, this).Section("Settings");
-
+            Map(x => x.Section1, this).Section("Settings");            
             Map(x => x.HomepageID).PageSelect("Homepage").Expression(OutputExpression.FullWidth);
+            Map(x => x.PageNotFoundID).PageSelect("Not found page").Expression(OutputExpression.FullWidth);
+            Map(x => x.ErrorPageID).PageSelect("Error Page").Expression(OutputExpression.FullWidth);
+
+            Map(x => x.DefaultPageTitle).TextField("Default page title", 100).Expression(OutputExpression.Alternating);
+            Map(x => x.DefaultFolder).TextField("Default folder", 50).Expression(OutputExpression.Alternating);
             Map(x => x.HasLists).Checkbox("Lists").Expression(OutputExpression.Alternating);
             Map(x => x.HasPages).Checkbox("Pages").Expression(OutputExpression.Alternating);
         }

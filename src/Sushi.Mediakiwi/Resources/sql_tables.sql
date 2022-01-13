@@ -197,7 +197,9 @@
 	    PageTemplate_HasCustomDate bit NULL,
 	    PageTemplate_LastWriteTimeUtc datetime NULL,
 		PageTemplate_OverwriteSite_Key int null,
-		PageTemplate_OverwritePageTemplate_Key int null
+		PageTemplate_OverwritePageTemplate_Key int null,
+		PageTemplate_IsSourceBased bit null,
+		PageTemplate_Source nvarchar(max) null
 		);
 	    
     --PK_PageTemplate_Key;
