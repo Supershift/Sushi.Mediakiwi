@@ -1,10 +1,12 @@
-﻿using Sushi.Mediakiwi.Beta.GeneratedCms.Source;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Sushi.Mediakiwi.Beta.GeneratedCms.Source;
 using Sushi.Mediakiwi.Data;
 using Sushi.Mediakiwi.Interfaces;
 using Sushi.Mediakiwi.UI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Sushi.Mediakiwi.Framework.Presentation
 {
@@ -79,7 +81,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation
         /// <param name="container">The container.</param>
         /// <param name="builder">The builder.</param>
         /// <returns></returns>
-        public string GetTemplateWrapper(Beta.GeneratedCms.Console container, Dictionary<GlobalPlaceholder, string> placeholders, Dictionary<CallbackTarget, List<ICallback>> callbacks, WimControlBuilder builder)
+        public async Task<string> GetTemplateWrapperAsync(Beta.GeneratedCms.Console container, Dictionary<GlobalPlaceholder, string> placeholders, Dictionary<CallbackTarget, List<ICallback>> callbacks, WimControlBuilder builder)
         {
             m_container = container;
             m_Placeholders = placeholders;
@@ -102,6 +104,16 @@ namespace Sushi.Mediakiwi.Framework.Presentation
             if (container.CurrentListInstance.wim.CurrentApplicationUserRole.CanChangeList)
             {
                 configButton = $@"<a href=""{container.UrlBuild.GetListPropertiesRequest()}"" class=""flaticon icon-gears""></a>";
+            }
+
+            // Get trailExtensino
+            var trailextensions = container.Context.RequestServices.GetServices<ITrailExtension>();
+            if (trailextensions.Any())
+            {
+                foreach (var item in trailextensions)
+                {
+                    configButton = await item.RenderExtrasAsync(configButton, container);
+                }
             }
 
             if (container.CurrentListInstance.wim.m_ListTitle == string.Empty)
@@ -1055,7 +1067,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation
         /// </summary>
         /// <param name="container">The container.</param>
         /// <returns></returns>
-        public string GetLoginWrapper(Beta.GeneratedCms.Console container, Dictionary<GlobalPlaceholder, string> placeholders, Dictionary<CallbackTarget, List<ICallback>> callbacks)
+        public async Task<string> GetLoginWrapperAsync(Beta.GeneratedCms.Console container, Dictionary<GlobalPlaceholder, string> placeholders, Dictionary<CallbackTarget, List<ICallback>> callbacks)
         {
             m_container = container;
             m_Placeholders = placeholders;
@@ -1073,7 +1085,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation
             {
                 if (container.CurrentVisitor.ApplicationUserID.HasValue)
                 {
-                    username2 = ApplicationUser.SelectOne(container.CurrentVisitor.ApplicationUserID.Value).Email;
+                    username2 = (await ApplicationUser.SelectOneAsync(container.CurrentVisitor.ApplicationUserID.Value)).Email;
                 }
             }
 
@@ -1220,7 +1232,14 @@ namespace Sushi.Mediakiwi.Framework.Presentation
                         : m_container.AddApplicationPath(CommonConfiguration.STYLE_INCLUDE)
                         ));
 
-                return custom;
+                if (CommonConfiguration.APPEND_STYLE_INCLUDE)
+                {
+                    style += custom;
+                }
+                else
+                {
+                    return custom;
+                }
             }
             return style;
         }

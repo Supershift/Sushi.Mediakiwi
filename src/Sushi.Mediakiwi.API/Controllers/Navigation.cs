@@ -205,6 +205,9 @@ namespace Sushi.Mediakiwi.API.Controllers
         {
             GetSideNavigationResponse result = new GetSideNavigationResponse();
 
+            // Should we include tabs ?
+            bool showTabs = false;
+
             // Get Appropriate role from DB
             var role = await MediakiwiUser.SelectRoleAsync().ConfigureAwait(false);
 
@@ -223,6 +226,12 @@ namespace Sushi.Mediakiwi.API.Controllers
             }
 
             bool isPageProperty = Resolver.List.Type == Data.ComponentListType.PageProperties;
+
+            // When in List Item mode, perform ListLoad
+            if (Resolver.ItemType == RequestItemType.Item && Resolver.ItemID.HasValue && Resolver?.ListInstance?.wim?.HasListLoad == true)
+            {
+                Resolver.ListInstance.wim.DoListLoad(Resolver.ItemID.Value, 0);
+            }
 
             #region Tabs
 
@@ -258,7 +267,8 @@ namespace Sushi.Mediakiwi.API.Controllers
                                 result.Items.Add(new NavigationItem()
                                 {
                                     Href = $"{Resolver.WimPagePath}?list={pageSettings.ID}&item={Resolver.ItemID.GetValueOrDefault(0)}",
-                                    Text = Common.GetLabelFromResource("page_properties", new CultureInfo(MediakiwiUser.LanguageCulture))
+                                    Text = Common.GetLabelFromResource("page_properties", new CultureInfo(MediakiwiUser.LanguageCulture)),
+                                    IsTab = true
                                 });
 
                                 foreach (var section in sections)
@@ -287,7 +297,8 @@ namespace Sushi.Mediakiwi.API.Controllers
                                     {
                                         Href = $"{Resolver.WimPagePath}?page={Resolver.ItemID.GetValueOrDefault(0)}&tab={section}",
                                         Text = tabName,
-                                        IsHighlighted = isSelected.GetValueOrDefault()
+                                        IsHighlighted = isSelected.GetValueOrDefault(),
+                                        IsTab = true
                                     });
                                 }
                             }
@@ -298,7 +309,8 @@ namespace Sushi.Mediakiwi.API.Controllers
                             {
                                 Href = $"{Resolver.WimPagePath}?page={Resolver.ItemID.GetValueOrDefault(0)}",
                                 Text = Common.GetLabelFromResource("tab_Content", new CultureInfo(MediakiwiUser.LanguageCulture)),
-                                IsHighlighted = selectedTab == 0
+                                IsHighlighted = selectedTab == 0,
+                                IsTab = true
                             });
                         }
                     }
@@ -311,7 +323,8 @@ namespace Sushi.Mediakiwi.API.Controllers
                         {
                             Href = Resolver.WimPagePath,
                             Text = title,
-                            IsHighlighted = true
+                            IsHighlighted = true,
+                            IsTab = true
                         });
                     }
                 }
@@ -324,7 +337,8 @@ namespace Sushi.Mediakiwi.API.Controllers
                     {
                         Href = Resolver.WimPagePath,
                         Text = title,
-                        IsHighlighted = true
+                        IsHighlighted = true,
+                        IsTab = true
                     });
                 }
 
@@ -352,7 +366,8 @@ namespace Sushi.Mediakiwi.API.Controllers
                     {
                         Href = $"{Resolver.WimPagePath}?gallery={galleryID}&gfx={Resolver.ItemID.GetValueOrDefault()}",
                         Text = Resolver.List.SingleItemName,
-                        IsHighlighted = selectedTab == 0
+                        IsHighlighted = selectedTab == 0,
+                        IsTab = true
                     });
                 }
 
@@ -363,20 +378,22 @@ namespace Sushi.Mediakiwi.API.Controllers
                 else
                 {
                     bool isSingleItemList = (Resolver.List.IsSingleInstance || Resolver.ListInstance.wim.CanContainSingleInstancePerDefinedList);
+                    string listIcon = string.Empty;
 
-                    //  Show NO tabs
+                    //Show NO tabs
                     if (isSingleItemList)
                     {
-                        return null;
+                        showTabs = false;
                     }
 
                     if (Resolver.ItemID.HasValue || isSingleItemList)
                     {
                         var master = Console;
 
-                        int currentListId = Console.Logic;
+                        int currentListId = Resolver.ListID.GetValueOrDefault(Console.Logic);
                         int currentListItemId = Resolver.ItemID.GetValueOrDefault();
                         string itemTitle = Resolver.List.SingleItemName;
+                        listIcon = Resolver.List.Icon;
 
                         ICollection<Framework.WimComponentListRoot.Tabular> tabularList = null;
 
@@ -409,10 +426,11 @@ namespace Sushi.Mediakiwi.API.Controllers
                                     currentListItemId = Resolver.GroupItemID.GetValueOrDefault(0);
                                     title = master.CurrentList.Name;
                                     itemTitle = master.CurrentList.SingleItemName;
+                                    listIcon = master.CurrentList.Icon;
                                 }
                             }
                         }
-                        else if (Resolver.ListInstance.wim.GetTabs()?.Count > 0)
+                        else
                         {
                             tabularList = Resolver.ListInstance.wim.GetTabs();
                         }
@@ -431,7 +449,8 @@ namespace Sushi.Mediakiwi.API.Controllers
                                 {
                                     Text = tab.TitleValue,
                                     Href = tab.Url,
-                                    IsHighlighted = tab.Selected
+                                    IsHighlighted = tab.Selected,
+                                    IsTab = true
                                 });
 
                                 if (tab.Selected)
@@ -456,7 +475,8 @@ namespace Sushi.Mediakiwi.API.Controllers
                                             {
                                                 Text = tab2.TitleValue,
                                                 Href = tab2.Url,
-                                                IsHighlighted = tab2.Selected
+                                                IsHighlighted = tab2.Selected,
+                                                IsTab = true
                                             });
 
                                             if (tab2.Selected)
@@ -491,7 +511,8 @@ namespace Sushi.Mediakiwi.API.Controllers
                                                 {
                                                     Text = tab2.TitleValue,
                                                     Href = tab2.Url,
-                                                    IsHighlighted = tab2.Selected
+                                                    IsHighlighted = tab2.Selected,
+                                                    IsTab = true
                                                 });
 
                                                 if (tab2.Selected)
@@ -517,6 +538,7 @@ namespace Sushi.Mediakiwi.API.Controllers
                             Data.IComponentList list = await Data.ComponentList.SelectOneAsync(Resolver.BaseID.Value).ConfigureAwait(false);
                             title = list.Name;
                             currentListId = list.ID;
+                            listIcon = list.Icon;
                         }
 
                         if (isSingleItemList)
@@ -525,7 +547,9 @@ namespace Sushi.Mediakiwi.API.Controllers
                             {
                                 Text = itemTitle,
                                 Href = Resolver.UrlBuild.GetListRequest(currentListId),
-                                IsHighlighted = selectedTab == 0
+                                IsHighlighted = selectedTab == 0,
+                                IconClass = listIcon,
+                                IsTab = true
                             });
                         }
                         else
@@ -533,21 +557,14 @@ namespace Sushi.Mediakiwi.API.Controllers
                             result.Items.Add(new NavigationItem()
                             {
                                 Text = itemTitle,
-                                Href = tmpTab.Url,
-                                IsHighlighted = true
+                                Href = Resolver.UrlBuild.GetListRequest(currentListId, currentListItemId),
+                                IsHighlighted = true, 
+                                IconClass = listIcon,
+                                //IsTab = true
                             });
                         }
                     }
-                    else
-                    {
-                        result.Items.Add(new NavigationItem()
-                        {
-                            Text = Resolver.List.Name,
-                            Href = Resolver.WimPagePath,
-                            IsHighlighted = true
-                        });
-
-                    }
+           
                 }
 
                 #endregion
@@ -559,7 +576,7 @@ namespace Sushi.Mediakiwi.API.Controllers
             bool isFirstLevelRootnavigation = false;
             bool isFirst = true;
 
-            Data.Folder currentFolder = Resolver.Folder;
+            Data.Folder currentFolder = Resolver.ListInstance.wim.CurrentFolder;
 
             //  If the request is in a tabular the left navigation should show the navigation of the primary list (group ID)
             if (Resolver.Query.ContainsKey("folder") == false && Resolver.GroupID.GetValueOrDefault(0) > 0)
@@ -578,15 +595,12 @@ namespace Sushi.Mediakiwi.API.Controllers
                 }
             }
 
-            string currentName = currentFolder.Name;
-            string currentLink = "";
             isPageProperty = Resolver?.List?.Type == Data.ComponentListType.PageProperties;
 
             #region Foldertype: Galleries
 
             if (currentFolder.Type == Data.FolderType.Gallery)
             {
-                int currentListID = Resolver.GroupID.HasValue ? Resolver.GroupID.Value : Resolver.ListID.Value;
 
                 Data.Gallery root = await Data.Gallery.SelectOneRootAsync().ConfigureAwait(false);
 
@@ -596,14 +610,9 @@ namespace Sushi.Mediakiwi.API.Controllers
                     rootID = role.GalleryRoot.Value;
                 }
 
-                currentName = "Documents";
-                currentLink = Resolver.UrlBuild.GetGalleryRequest(rootID);
-
                 Data.Gallery currentGallery = await Data.Gallery.SelectOneAsync(currentFolder.ID).ConfigureAwait(false);
 
                 Data.Gallery level1 = await Data.Gallery.SelectOneAsync(currentGallery, 1).ConfigureAwait(false);
-                Data.Gallery level2 = await Data.Gallery.SelectOneAsync(currentGallery, 2).ConfigureAwait(false);
-                Data.Gallery level3 = await Data.Gallery.SelectOneAsync(currentGallery, 3).ConfigureAwait(false);
 
                 //  LEVEL 1 : Folders
                 Data.Gallery[] galleries1 = await Data.Gallery.SelectAllByParentAsync(rootID).ConfigureAwait(false);
@@ -623,48 +632,6 @@ namespace Sushi.Mediakiwi.API.Controllers
                         Href = Resolver.UrlBuild.GetGalleryRequest(folder)
                     };
 
-
-                    if (isActive && false)
-                    {
-                        //  LEVEL 2 : Folders
-                        List<Data.Gallery> galleries2 = (await Data.Gallery.SelectAllByParentAsync(folder.ID).ConfigureAwait(false)).ToList();
-                        galleries2 = (await Data.Gallery.ValidateAccessRightAsync(galleries2.ToArray(), MediakiwiUser).ConfigureAwait(false)).ToList();
-
-                        foreach (Data.Gallery folder2 in galleries2)
-                        {
-                            bool isActive2 = (folder2.ID == currentGallery.ID) || level2.ID == folder2.ID;
-
-                            var level2Item = new NavigationItem()
-                            {
-                                Text = folder2.Name,
-                                Href = Resolver.UrlBuild.GetGalleryRequest(folder2),
-                                IsHighlighted = isActive2,
-                            };
-
-                            #region Level 3
-
-                            if (isActive2)
-                            {
-                                //  LEVEL 3 : Folders
-                                foreach (Data.Gallery folder3 in await Data.Gallery.SelectAllByParentAsync(folder2.ID).ConfigureAwait(false))
-                                {
-                                    bool isActive3 = (folder3.ID == currentGallery.ID) || level3.ID == folder3.ID;
-                                    level2Item.Items.Add(new NavigationItem()
-                                    {
-                                        Text = folder3.Name,
-                                        Href = Resolver.UrlBuild.GetGalleryRequest(folder3),
-                                        IsHighlighted = isActive3
-                                    });
-                                }
-                            }
-
-                            #endregion
-
-                            level1Item.Items.Add(level2Item);
-
-                        }
-                    }
-
                     result.Items.Add(level1Item);
 
                     isFirst = false;
@@ -677,6 +644,7 @@ namespace Sushi.Mediakiwi.API.Controllers
 
             if (isPageProperty && Resolver.ItemID.HasValue)
             {
+                showTabs = true;
                 Data.Page p = await Data.Page.SelectOneAsync(Resolver.ItemID.Value).ConfigureAwait(false);
                 string currentFolderName = p.Folder.Name;
                 if (currentFolderName == "/")
@@ -715,6 +683,7 @@ namespace Sushi.Mediakiwi.API.Controllers
                     {
                         Text = list.Name,
                         Href = await Resolver.UrlBuild.GetListRequestAsync(list).ConfigureAwait(false),
+                        IconClass = string.IsNullOrWhiteSpace(list.Icon) ? null : list.Icon,
                         IsBack = true,
                     });
                 }
@@ -771,10 +740,11 @@ namespace Sushi.Mediakiwi.API.Controllers
                                 Href = Resolver.UrlBuild.GetListRequest(list),
                                 IsBack = list.ID == currentListID && Resolver.ItemID.HasValue,
                                 IsHighlighted = list.ID == currentListID && Resolver.ItemID.HasValue == false,
-                                IconClass = $"{(isFirst ? "first " : "")}{(string.IsNullOrWhiteSpace(list.Icon) ? null : $" {list.Icon}") }",
+                                IconClass = $"{(isFirst ? "first " : "")}{(string.IsNullOrWhiteSpace(list.Icon) ? null : list.Icon)}",
                                 BadgeContent = dataReport
                             });
 
+                            showTabs = Resolver.ItemID.HasValue && list.ID == currentListID;
                             isFirst = false;
                         }
                     }
@@ -782,6 +752,7 @@ namespace Sushi.Mediakiwi.API.Controllers
 
                 if (isFirst)
                 {
+                    showTabs = true;
                     if (Resolver.BaseID.HasValue)
                     {
                         var list = await Data.ComponentList.SelectOneAsync(Resolver.BaseID.Value).ConfigureAwait(false);
@@ -790,7 +761,7 @@ namespace Sushi.Mediakiwi.API.Controllers
                             Text = list.Name,
                             Href = Resolver.UrlBuild.GetListRequest(list),
                             IsBack = true,
-                            IconClass = string.IsNullOrWhiteSpace(list.Icon) ? null : $" {list.Icon}"
+                            IconClass = string.IsNullOrWhiteSpace(list.Icon) ? null : list.Icon
                         });
 
                     }
@@ -805,6 +776,7 @@ namespace Sushi.Mediakiwi.API.Controllers
             {
                 if (Resolver.ItemType == RequestItemType.Page)
                 {
+                    showTabs = true;
                     string currentFolderName = currentFolder.Name;
                     if (currentFolderName == "/")
                     {
@@ -862,9 +834,39 @@ namespace Sushi.Mediakiwi.API.Controllers
             }
 
             // Reverse items
-            result.Items = result.Items.Reverse().ToList();
-
             result.StatusCode = System.Net.HttpStatusCode.OK;
+
+            // Clean icon name
+            foreach (var item in result.Items)
+            {
+                if (string.IsNullOrWhiteSpace(item.IconClass) == false)
+                {
+                    // Trim leading and trailing spaces
+                    item.IconClass = item.IconClass.Trim();
+
+                    // Clean double spaces
+                    item.IconClass = System.Text.RegularExpressions.Regex.Replace(item.IconClass, @"\s+", " ");
+                }
+            }
+
+            // Remove Tabs if they're not supposed to be shown
+            if (showTabs == false)
+            {
+                var tabItems = result.Items.Where(x => x.IsTab == true);
+                result.Items = result.Items.Except(tabItems).ToList();
+            }
+            // Add tabs below current Item
+            else
+            {
+                var highlightedItem = result.Items.FirstOrDefault(x => x.IsHighlighted);
+                if (highlightedItem != null)
+                {
+                    var tabItems = result.Items.Where(x => x.IsTab == true);
+                    result.Items = result.Items.Except(tabItems).ToList();
+
+                    highlightedItem.Items = tabItems.ToList();
+                }
+            }
 
             return Ok(result);
         }

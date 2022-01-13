@@ -101,7 +101,9 @@ namespace Sushi.Mediakiwi.Data.Configuration
         public string Logo_Url { get; set; }
 
         public string Stylesheet { get; set; }
-        
+
+        public bool Append_Stylesheet { get; set; }
+
         public string Local_File_Path { get; set; }
 
         public bool Disable_Caching { get; set; }
@@ -153,6 +155,8 @@ namespace Sushi.Mediakiwi.Data.Configuration
         public string DefaultPortal { get; set; }
 
         public AuthenticationConfiguration Authentication { get; set; }
+
+        public WikiConfiguration Wiki { get; set; } = new WikiConfiguration();
     }
 
     public class AuthenticationConfiguration
@@ -161,6 +165,12 @@ namespace Sushi.Mediakiwi.Data.Configuration
         public int Timeout { get; set; }
         public ActiveDirectory Aad { get; set; }
         public TokenValidation Token { get; set; }
+    }
+
+    public class WikiConfiguration
+    {
+        public bool EnableHelpOnLists { get; set; }
+        public bool EnableHelpOnPages { get; set; }
     }
 
     public class TokenValidation

@@ -115,7 +115,7 @@ namespace Sushi.Mediakiwi.Headless
                 handlerTasks[i] = ((Func<PageHandlerExecutingContext, EventArgs, Task>)invocationList[i])(context, EventArgs.Empty);
             }
 
-            await Task.WhenAll(handlerTasks);
+            await Task.WhenAll(handlerTasks).ConfigureAwait(false);
         }
 
         public async override Task OnPageHandlerExecutionAsync(PageHandlerExecutingContext context, PageHandlerExecutionDelegate next)
@@ -133,7 +133,7 @@ namespace Sushi.Mediakiwi.Headless
             // We dont have PageContent yet, call the service
             if (contentService != null && PageContent == null)
             {
-                PageContent = await contentService.GetPageContentAsync(context.HttpContext.Request);
+                PageContent = await contentService.GetPageContentAsync(context.HttpContext.Request).ConfigureAwait(false);
             }
 
             // Set PreviewMode
@@ -149,7 +149,7 @@ namespace Sushi.Mediakiwi.Headless
             }
 
             // Check if we have an action to do (Async)
-            await NotifyContentSetAsync(context);
+            await NotifyContentSetAsync(context).ConfigureAwait(false);
 
             // Check if we have an action to do (Sync)
             NotifyContentSet();

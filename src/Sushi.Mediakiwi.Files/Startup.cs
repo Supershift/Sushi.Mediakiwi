@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 
 namespace Sushi.Mediakiwi.Files
@@ -18,11 +19,15 @@ namespace Sushi.Mediakiwi.Files
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IConfiguration configuration)
         {
             //setx ASPNETCORE_ENVIRONMENT "Development"
-            //if (env.IsDevelopment())
-            //{
-            //    app.UseDeveloperExceptionPage();
-            //}
+            if (env.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+            }
             app.UseStaticFiles();
+            app.UseStaticFiles(new StaticFileOptions()
+            {
+                FileProvider = new PhysicalFileProvider(env.ContentRootPath)
+            });
         }
     }
 }

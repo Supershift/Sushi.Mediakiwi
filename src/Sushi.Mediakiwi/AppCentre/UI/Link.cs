@@ -30,16 +30,20 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             wim.OpenInEditMode = true;
             wim.CanContainSingleInstancePerDefinedList = true;
 
-            wim.ListDataDependendProperties.Add(nameof(Mediakiwi.Data.Link.PageID));
-            wim.ListDataDependendProperties.Add(nameof(Mediakiwi.Data.Link.ExternalUrl));
-            wim.HideOpenCloseToggle = true;
-
             ListLoad += Link_ListLoad;
             ListPreRender += Link_ListPreRender;
             ListSave += Link_ListSave;
             ListDelete += Link_ListDelete;
             ListAction += Link_ListAction;
             ListHeadless += Link_ListHeadless;
+            ListInit += Link_ListInit;
+        }
+
+        private async Task Link_ListInit()
+        {
+            wim.ListDataDependendProperties.Add(nameof(Mediakiwi.Data.Link.PageID));
+            wim.ListDataDependendProperties.Add(nameof(Mediakiwi.Data.Link.ExternalUrl));
+            wim.HideOpenCloseToggle = true;
         }
 
         #endregion CTor

@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Sushi.Mediakiwi.Framework
 {
@@ -22,8 +23,29 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
     /// <summary>
     /// Possible return types: System.String
     /// </summary>
-    public class MultiFieldAttribute : ContentSharedAttribute, IContentInfo, IListContentInfo 
+    public class MultiFieldAttribute : ContentSharedAttribute, IContentInfo, IListContentInfo
     {
+        public async Task<Api.MediakiwiField> GetApiFieldAsync()
+        {
+            return new Api.MediakiwiField()
+            {
+                Event = m_AutoPostBack ? Api.MediakiwiJSEvent.Change : Api.MediakiwiJSEvent.None,
+                Title = MandatoryWrap(Title),
+                Value = OutputText,
+                Expression = Expression,
+                PropertyName = ID,
+                PropertyType = (Property == null) ? typeof(DateTime).FullName : Property.PropertyType.FullName,
+                VueType = Api.MediakiwiFormVueType.undefined,
+                ReadOnly = IsReadOnly,
+                ContentTypeID = ContentTypeSelection,
+                IsAutoPostback = m_AutoPostBack,
+                IsMandatory = Mandatory,
+                MaxLength = MaxValueLength,
+                HelpText = InteractiveHelp,
+                FormSection = GetFormMapClass()
+            };
+        }
+
         private ForceContentTypes? _forceContenttype;
         /// <summary>
         /// Forces the selected types to apear in the Multiview attribute; concatenate types by using a pipe. For example

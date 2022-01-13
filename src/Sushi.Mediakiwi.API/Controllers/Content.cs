@@ -92,6 +92,22 @@ namespace Sushi.Mediakiwi.API.Controllers
             // We are looking at a list
             if (Resolver.ListInstance != null)
             {
+                // Whenever a postback hits, set editmode to true, so that 
+                // possible filters can be set
+                Resolver.ListInstance.wim.IsEditMode = true;
+
+                // Set Correct View (Browsing mode / Edit mode)
+                if (Resolver.ItemID.GetValueOrDefault(-1) > -1 || Resolver.ItemObject != null)
+                {
+                    // Edit / Save Mode
+                    Resolver.ListInstance.wim.Console.View = 0; // 0 == ContainerView.ItemSelect
+                }
+                else 
+                {
+                    // Browse Mode
+                    Resolver.ListInstance.wim.Console.View = 2; // 2 == ContainerView.BrowsingRequest
+                }
+
                 result.List = await _contentService.GetListResponseAsync(Resolver).ConfigureAwait(false);
                 result.IsEditMode = result.List.IsEditMode;
                 result.StatusCode = System.Net.HttpStatusCode.OK;

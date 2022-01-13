@@ -7,7 +7,7 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <Company>Supershift</Company>
     <Authors>Marc Molenwijk, Jean Paul Kommers, Mark Rienstra, Mark de Vries</Authors>
-    <Copyright>2005-2021 Supershift</Copyright>
+    <Copyright>2005-2022 Supershift</Copyright>
     <Description>Rapid Portal Development Framework including a Headless Content Management System component build and optimized for Microsoft Azure (cloud)</Description>
     <PackageProjectUrl>https://mediakiwi.atlassian.net/wiki/spaces/CORE/overview</PackageProjectUrl>
     <RepositoryUrl>https://github.com/Supershift/Sushi.Mediakiwi</RepositoryUrl>
@@ -119,6 +119,7 @@
     <Compile Include="AppCentre\UI\Site.cs" />
     <Compile Include="AppCentre\UI\User.cs" />
     <Compile Include="AppCentre\UI\ListVersioning.cs" />
+    <Compile Include="AppCentre\UI\WikiList.cs" />
     <Compile Include="Cms\Console.cs" />
     <Compile Include="Cms\Data\Component.cs" />
     <Compile Include="Cms\Template.cs" />
@@ -153,11 +154,12 @@
     <Compile Include="Logic\OAuth2Logic.cs" />
     <Compile Include="Logic\PageLogic.cs" />
     <Compile Include="Logic\PropertyLogic.cs" />
+    <Compile Include="Logic\WikiTrailExtension.cs" />
     <Compile Include="Presentation\Logic\Navigation.cs" />
     <Compile Include="Presentation\Monitor.cs" />
     <Compile Include="UI\AddPageComponentControl.cs" />
     <Compile Include="UI\DataGridForJSON.cs" />
-    <Compile Include="Utilities\Notification.cs" />
+    <Compile Include="Utilities\Mail.cs" />
     <Compile Include="Cms\Component.cs" />
     <Compile Include="Cms\ContainerView.cs" />
     <Compile Include="Cms\UrlBuilder.cs" />

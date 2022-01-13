@@ -18,7 +18,6 @@ namespace Sushi.Mediakiwi.API.Extensions
 {
     public static class Extensions
     {
-
         public static Framework.Api.MediakiwiPostRequest GetPostRequest(this ICollection<Transport.FormMap> maps)
         {
             Framework.Api.MediakiwiPostRequest result = new Framework.Api.MediakiwiPostRequest();
@@ -28,7 +27,7 @@ namespace Sushi.Mediakiwi.API.Extensions
             {
                 foreach (var map in maps)
                 {
-                    foreach (var element in map.Fields)
+                    foreach (var element in map.Fields.Where(x => string.IsNullOrWhiteSpace(x?.PropertyName) == false))
                     {
                         postForm.Add(element.PropertyName, element.Value);
                     }
@@ -143,9 +142,11 @@ namespace Sushi.Mediakiwi.API.Extensions
             services.AddSwaggerGen(options =>
             {
                 var filePath = Path.Combine(AppContext.BaseDirectory, $"{Common.API_ASSEMBLY_NAME}.xml");
-                if (System.IO.File.Exists(filePath))
+                if (File.Exists(filePath))
                 {
                     options.IncludeXmlComments(filePath);
+                    options.SchemaFilter<SwaggerEnumFilter>(filePath);
+
                 }
                 options.EnableAnnotations(true, true);
                 options.SwaggerDoc("v0.1", new OpenApiInfo

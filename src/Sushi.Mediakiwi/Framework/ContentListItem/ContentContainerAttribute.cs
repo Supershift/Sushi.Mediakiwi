@@ -1,4 +1,5 @@
 using Sushi.Mediakiwi.Data;
+using System.Threading.Tasks;
 
 namespace Sushi.Mediakiwi.Framework.ContentListItem
 {
@@ -7,6 +8,29 @@ namespace Sushi.Mediakiwi.Framework.ContentListItem
     /// </summary>
     public class ContentContainerAttribute : ContentSharedAttribute, IContentInfo, IListContentInfo
     {
+        public async Task<Api.MediakiwiField> GetApiFieldAsync()
+        {
+            return new Api.MediakiwiField()
+            {
+                Event = m_AutoPostBack ? Api.MediakiwiJSEvent.Change : Api.MediakiwiJSEvent.None,
+                Title = MandatoryWrap(Title),
+                Value = OutputText,
+                Expression = Expression,
+                PropertyName = ID,
+                PropertyType = (Property == null) ? typeof(string).FullName : Property.PropertyType.FullName,
+                VueType = Api.MediakiwiFormVueType.undefined,
+                ClassName = InputClassName(IsValid(Mandatory)),
+                ReadOnly = IsReadOnly,
+                ContentTypeID = ContentTypeSelection,
+                IsAutoPostback = m_AutoPostBack,
+                IsMandatory = Mandatory,
+                MaxLength = MaxValueLength,
+                HelpText = InteractiveHelp,
+                FormSection = GetFormMapClass(),
+                Hidden = IsCloaked
+            };
+        }
+
         /// <summary>
         /// Possible return types: Sushi.Mediakiwi.Data.ContentContainer
         /// </summary>

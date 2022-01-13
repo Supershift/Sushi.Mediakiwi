@@ -168,8 +168,8 @@ namespace Sushi.Mediakiwi.Framework
             {
                 return "<tr>";
             }
-
-            if (m_TableRowIndex % 2 == 1)
+            
+            if (System.Math.Abs(m_TableRowIndex % 2) == 1)
             {
                 return $"<tr{TableRowTagEven}>";
             }

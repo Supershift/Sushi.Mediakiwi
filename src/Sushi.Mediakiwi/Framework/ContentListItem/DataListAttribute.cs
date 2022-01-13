@@ -2,6 +2,7 @@ using Sushi.Mediakiwi.Data;
 using Sushi.Mediakiwi.UI;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Sushi.Mediakiwi.Data
 {
@@ -55,6 +56,29 @@ namespace Sushi.Mediakiwi.Framework.ContentListItem
     /// </summary>
     public class DataListAttribute : ContentSharedAttribute, IContentInfo, IListContentInfo
     {
+        public async Task<Api.MediakiwiField> GetApiFieldAsync()
+        {
+            return new Api.MediakiwiField()
+            {
+                Event = m_AutoPostBack ? Api.MediakiwiJSEvent.Change : Api.MediakiwiJSEvent.None,
+                Title = MandatoryWrap(Title),
+                Value = OutputText,
+                Expression = Expression,
+                PropertyName = ID,
+                PropertyType = (Property == null) ? typeof(string).FullName : Property.PropertyType.FullName,
+                VueType = Api.MediakiwiFormVueType.undefined,
+                ClassName = InputClassName(IsValid(Mandatory)),
+                ReadOnly = IsReadOnly,
+                ContentTypeID = ContentTypeSelection,
+                IsAutoPostback = m_AutoPostBack,
+                IsMandatory = Mandatory,
+                MaxLength = MaxValueLength,
+                HelpText = InteractiveHelp,
+                FormSection = GetFormMapClass(),
+                Hidden = IsCloaked,
+            };
+        }
+
         /// <summary>
         /// Possible return types: Data.DataList. If not list is applied it will take the current list. 
         /// </summary>
@@ -151,8 +175,8 @@ namespace Sushi.Mediakiwi.Framework.ContentListItem
         /// <returns></returns>
         public Field WriteCandidate(WimControlBuilder build, bool isEditMode, bool isRequired, bool isCloaked)
         {
-            this.Mandatory = isRequired;
-            this.IsCloaked = isCloaked;
+            Mandatory = isRequired;
+            IsCloaked = isCloaked;
 
             Beta.GeneratedCms.Source.Component component = new Beta.GeneratedCms.Source.Component();
 
@@ -165,7 +189,7 @@ namespace Sushi.Mediakiwi.Framework.ContentListItem
             if (m_List.ID == Console.CurrentList.ID)
                 tmp = Console;
             else
-                tmp = Console.ReplicateInstance(this.m_List);
+                tmp = Console.ReplicateInstance(m_List);
             
 
             if (m_Candidate != null && m_Candidate.m_Fields != null)
@@ -180,12 +204,21 @@ namespace Sushi.Mediakiwi.Framework.ContentListItem
             }
 
             DataGrid grid = new DataGrid();
-            
+
             if (!IsPartOfForm || BelowButtons)
+            {
                 build.Append("<bottombuttonbar />");
+            }
+
+            // Add datalist to API fields output 
+            var apiField = Task.Run(async () => await GetApiFieldAsync().ConfigureAwait(false)).Result;
+            build.ApiResponse.Fields.Add(apiField);
+
 
             if (HasThumbnailOption && !tmp.CurrentApplicationUser.ShowDetailView)
+            {
                 build.Append(grid.GetThumbnailGridFromListInstance(tmp.CurrentListInstance.wim, tmp, 0, false));
+            }
             else
             {
                 var table = grid.GetGridFromListInstance(tmp.CurrentListInstance.wim, tmp, 0, false, Console.CurrentListInstance, HidePaging);

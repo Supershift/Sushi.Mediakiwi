@@ -699,6 +699,8 @@ $(document).ready(function () {
     }
 
     var postToParent = function (event) {
+        console.log('posting to parent');
+
         var idv = $(event).attr('id');
         var sel = $(event).attr('value');
         var multiple = $(event).attr('data-multiple');
@@ -712,8 +714,8 @@ $(document).ready(function () {
         {
             parentLevel = 1;
         }
-
-        for (var i = 0; i <= parentLevel; i++) {
+        
+        for (var i = 0; i < parentLevel; i++) {
             par = par.parent;
         }
 
@@ -722,7 +724,7 @@ $(document).ready(function () {
 
         var val = idv + '|' + sel;
         if (ref != undefined) {
-
+            console.log('Setting value to ' + ref);
             var put = ref.substring(1, ref.length) + '$' + idv;
             var pnt = '#' + ref;
             var att = par.$(pnt).attr('class');
@@ -784,21 +786,28 @@ $(document).ready(function () {
                     }
                 }
             }
+            mediakiwi.closeLayer();
         }
-
-        par.mediakiwi.closeLayer();
+        else
+        {
+            console.log('No reference.'); 
+            par.mediakiwi.closeLayer();
+        }
     }
 
     $('.postparentnow').live('click', function () { postToParent(this) });
 
     $('.postparent').each(function () {
+        console.log('postparent 1');
         postToParent(this);
     });
 
     $('.closeLayer').each(function () {
         mediakiwi.closeLayer();
     });
+
     $('.postParent').each(function () {
+        console.log('postparent 2');
         mediakiwi.closeLayer();
 
         if (parent.$('.async').length)
@@ -812,6 +821,7 @@ $(document).ready(function () {
                 parent.document.location = url;
         }
     });
+
     $('.post').click(function () {
         var tag = $(this).get(0).tagName.toLowerCase();
         var type = $(this).get(0).type.toLowerCase();

@@ -42,16 +42,17 @@ namespace Sushi.Mediakiwi.API.Transport
         public int Expression { get; set; }
 
         /// <summary>
-        /// The value of this Field
+        /// The value of this Field, could be one of :
+        /// Integer, Decimal, Float, Double, String, String[]
         /// </summary>
         [JsonPropertyName("value")]
-        public string Value { get; set; }
+        public object Value { get; set; }
 
         /// <summary>
         /// The options available for this field (for dropdowns and radios and such)
         /// </summary>
         [JsonPropertyName("options")]
-        public ICollection<ListItemCollectionOption> Options { get; set; } = new List<ListItemCollectionOption>();
+        public List<ListItemCollectionOption> Options { get; set; }
 
         /// <summary>
         /// The CSS classname for this field

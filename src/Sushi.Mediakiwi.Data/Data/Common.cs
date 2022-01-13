@@ -168,10 +168,6 @@ namespace Sushi.Mediakiwi.Data
             WimServerConfiguration config = WimServerConfiguration.GetConfig();
             if (config == null || config.GalleryMappings == null) return null;
 
-            //string url = null;
-            //if (System.Web.HttpContext.Current != null)
-            //    url = System.Web.HttpContext.Current.Request.Url.OriginalString.Replace(":80", string.Empty);
-
             foreach (var map in config.GalleryMappings)
             {
                 if (map.Path.EndsWith("*"))

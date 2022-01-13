@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Net.Mail;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Sushi.Mediakiwi.Utilities
 {
@@ -295,7 +296,7 @@ namespace Sushi.Mediakiwi.Utilities
 , payload.URL)
                 );
             }
-            
+
             var smtpClient = environment.SmtpClient();
             if (payload.TimeOutMilliseconds > 0)
             {
@@ -303,6 +304,83 @@ namespace Sushi.Mediakiwi.Utilities
             }
 
             smtpClient.Send(message);
+        }
+
+
+        public static async Task SendAsync(Payload payload)
+        {
+            var environment = Environment.Current;
+
+            MailMessage message = new MailMessage();
+            message.From = new MailAddress(environment.DefaultMailAddress, environment.DisplayName);
+
+            string fieldForm = null;
+
+            if (payload.To != null)
+            {
+                foreach (var item in payload.To)
+                {
+                    message.To.Add(item);
+                }
+            }
+
+            if (payload.BCC != null)
+            {
+                foreach (var item in payload.BCC)
+                {
+                    message.Bcc.Add(item);
+                }
+            }
+
+            payload.HideHeader = true;
+            message.Subject = payload.Subject;
+            message.IsBodyHtml = true;
+            message.BodyEncoding = Encoding.UTF8;
+
+            if (payload.ReplaceFullBody)
+            {
+                message.Body = payload.Body;
+            }
+            else
+            {
+                message.Body = string.Format(@"<!DOCTYPE HTML PUBLIC ""-//W3C//DTD HTML 4.01 Transitional//EN"" ""http://www.w3.org/TR/html4/loose.dtd"">
+<html>
+	<head>
+		<meta http-equiv=""Content-Type"" content=""text/html; charset=utf-8"" />
+	</head>
+	<body marginheight=""4"" marginwidth=""4"" link=""#1a171b"" alink=""#1a171b"" vlink=""#1a171b"">
+		<table cellspacing=""0"" cellpadding=""0"" width=""100%"" border=""0"" style=""font-family: Arial;font-size: 12px;color:#555555;text-align: left; width:100%"">{5}
+			<tr>
+				<td bgcolor=""#ffffff"" colspan=""2"" width=""100%"" style=""padding:20px; margin: 0"">
+					<font size=""4"" color=""1a1a1a""><strong>{1}</strong></font>
+					<br /><br />
+					{2}{4}
+				</td>
+			</tr>
+		</table>
+	</body>
+</html>"
+                , m_Style
+                , string.IsNullOrEmpty(payload.Title) ? payload.Subject : payload.Title
+                , payload.Body
+                , payload.URL
+                , fieldForm
+                , payload.HideHeader ? null : string.Format(@"
+			<tr>
+				<td bgcolor=""#1a1a1a"" width=""100%"" height=""100"" style=""padding:0px 20px 0px 20px""><a href=""{1}""><img border=""0"" src=""{0}"" /></a> <br></td>
+			</tr>
+", string.Empty//Environment.Current.LogoHrefFull
+, payload.URL)
+                );
+            }
+
+            var smtpClient = environment.SmtpClient();
+            if (payload.TimeOutMilliseconds > 0)
+            {
+                smtpClient.Timeout = payload.TimeOutMilliseconds;
+            }
+
+            await smtpClient.SendMailAsync(message);
         }
     }
 }

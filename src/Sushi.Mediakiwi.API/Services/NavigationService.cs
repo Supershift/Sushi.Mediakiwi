@@ -154,7 +154,7 @@ namespace Sushi.Mediakiwi.API.Services
             string folderInfo = null;
             if (resolver.FolderID.GetValueOrDefault(0) > 0)
             {
-                folderInfo = $"&folderInfo={resolver.FolderID.Value}";
+                folderInfo = $"&folder={resolver.FolderID.Value}";
             }
 
             string baseInfo = null;
@@ -172,7 +172,7 @@ namespace Sushi.Mediakiwi.API.Services
                 }
                 else
                 {
-                    tab.Url = $"{resolver.WimPagePath}?group={resolver.GroupID.Value}{addition}{baseInfo}{folderInfo}&groupitem={resolver.GroupItemID.GetValueOrDefault(0)}&list={tab.List.ID}&item={(resolver.Group2ID.GetValueOrDefault(0) == tab.List.ID ? resolver.Group2ItemID.GetValueOrDefault(0) : tab.SelectedItem)}";
+                    tab.Url = $"{resolver.UrlBuild.GetListRequest(tab.List, tab.SelectedItem)}&group={resolver.GroupID.Value}{addition}{baseInfo}{folderInfo}&groupitem={resolver.GroupItemID.GetValueOrDefault(0)}&list={tab.List.ID}&item={(resolver.Group2ID.GetValueOrDefault(0) == tab.List.ID ? resolver.Group2ItemID.GetValueOrDefault(0) : tab.SelectedItem)}";
                 }
             }
             else if (levelEntry == 2)

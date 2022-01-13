@@ -800,10 +800,7 @@ namespace Sushi.Mediakiwi.Data
             /// </summary>
             public const string NotAcceptableFilenameCharacter = @"^[^\|\?\\/:\*""<>]*$";
 
-            /// <summary>
-            ///
-            /// </summary>
-            //public const string ReplaceNotAcceptableFilenameCharacter = @"[\|\?\\/:\*""<>']";
+
             /// <summary>
             ///
             /// </summary>
