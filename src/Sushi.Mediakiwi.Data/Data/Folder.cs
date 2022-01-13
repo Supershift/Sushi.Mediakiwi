@@ -1389,6 +1389,47 @@ FROM [Wim_ComponentLists] WHERE [ComponentList_Folder_Key] in (SELECT [Folder_Ke
             return folders;
         }
 
+
+        /// <summary>
+        /// Select all childfolder in a folder where the users has access to 
+        /// </summary>
+        /// <param name="folderID">The folder ID.</param>
+        /// <param name="type">Type of folder</param>
+        /// <param name="returnOnlyPublishedFolder">Should this method return only published folders?</param>
+        /// <param name="user">the current mediakiwi user</param>
+        /// <returns></returns>
+        public static async Task<Folder[]> SelectAllAccessibleByParentAsync(int folderID, FolderType type, bool returnOnlyPublishedFolder, IApplicationUser user)
+        {
+            Folder[] folders;
+
+            if (returnOnlyPublishedFolder)
+            {
+                folders = (
+                    from item in await SelectAllAccessibleAsync(user)
+                    where
+                        item.IsVisible && item.ParentID.HasValue && item.ParentID.Value == folderID
+                    select item).ToArray();
+            }
+            else
+            {
+                folders = (
+                    from item in await SelectAllAccessibleAsync(user)
+                    where item.ParentID.HasValue && item.ParentID.Value == folderID
+                    select item).ToArray();
+            }
+
+            if (type != FolderType.Undefined)
+            {
+                folders = (
+                    from item in folders
+                    where
+                        item.Type == type
+                    select item).ToArray();
+            }
+
+            return folders;
+        }
+
         private static Folder GetParentFolder(Folder[] folders, int ID)
         {
             foreach (Folder folder in folders)
