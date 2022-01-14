@@ -177,7 +177,7 @@ namespace Sushi.Mediakiwi.Data.Configuration
     {
         public string Exponent { get; set; }
 
-        [Obsolete("Modulus ")]
+        [Obsolete("Use the DiscoveryLogic class to load the modulus ")]
         public string Modulus { get; set; }
 
         public string KeyType { get; set; }
