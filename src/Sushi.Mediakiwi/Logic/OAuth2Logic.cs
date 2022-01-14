@@ -2,7 +2,6 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 using System.Security.Cryptography;
 using System.Security.Claims;
@@ -40,9 +39,10 @@ namespace Sushi.Mediakiwi.Logic
             {
                 try
                 {
-                    var handler = new JwtSecurityTokenHandler();
+                    
+                    var handler = new Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler();
                     var jsonToken = handler.ReadToken(idtoken);
-                    var token = jsonToken as JwtSecurityToken;
+                    var token = jsonToken as Microsoft.IdentityModel.JsonWebTokens.JsonWebToken;
 
                     if (token == null)
                     {

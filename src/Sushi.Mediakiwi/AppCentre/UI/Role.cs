@@ -135,16 +135,13 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             //Dashboard = m_Implement.Dashboard;
 
             if (!m_Implement.All_Sites)
-            {
-                wim.AddTab(new Guid("93D10F58-6A1A-493F-8ADB-E53FC7CEDE19"));
-            }
-
-            //if (!m_Implement.All_Folders)
-            //    wim.AddTab(new Guid("AB58D901-7305-4584-9133-53FB92684A2C"));
-            //if (!m_Implement.All_Galleries)
-            //    wim.AddTab(new Guid("5A7DB5D1-8DCE-4510-8423-47E4925B6C8B"));
-            //if (!m_Implement.All_Lists)
-            //    wim.AddTab(new Guid("B502AA2C-8D85-4D2C-9470-DFC8A388AC72"));
+                wim.AddTab(typeof(RoleAccessSite));
+            if (!m_Implement.All_Folders)
+                wim.AddTab(typeof(RoleAccessFolder));
+            if (!m_Implement.All_Galleries)
+                wim.AddTab(typeof(RoleAccessGallery));
+            if (!m_Implement.All_Lists)
+                wim.AddTab(typeof(RoleAccessList));
 
             //Map<Role>(x => x.AllowedSites, this).SubListSelect("Sites", typeof(Site), false);
             //FormMaps.Add(this);
@@ -335,7 +332,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// </summary>
         /// <value><c>true</c> if [all lists]; otherwise, <c>false</c>.</value>
         [Framework.ContentListItem.Choice_Checkbox("All lists", false, "Access to all list (dependend of choice of accessible sites)", Expression = OutputExpression.Alternating)]
-        public bool AllLists{ get; set; }
+        public bool AllLists { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether [all lists].

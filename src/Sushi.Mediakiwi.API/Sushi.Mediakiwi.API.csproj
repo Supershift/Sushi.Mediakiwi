@@ -1,7 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
+    <Version>8.0.0</Version>
     <Authors>Mark Rienstra</Authors>
     <Company>Supershift</Company>
     <Product>Mediakiwi API</Product>
@@ -9,8 +10,7 @@
     <Copyright>2005-2022 Supershift</Copyright>
     <PackageProjectUrl>https://mediakiwi.atlassian.net/wiki/spaces/CORE/overview</PackageProjectUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <RepositoryUrl>https://github.com/Supershift/Sushi.Mediakiwi</RepositoryUrl>
-    <Version>7.17.0</Version>
+    <RepositoryUrl>https://github.com/Supershift/Sushi.Mediakiwi</RepositoryUrl>    
 	<ExcludeXmlAssemblyFiles>false</ExcludeXmlAssemblyFiles>
 	<GenerateDocumentationFile>True</GenerateDocumentationFile>
 	<DocumentationFile></DocumentationFile>
@@ -27,7 +27,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.1.21" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.1" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
     <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="6.2.3" />
     <PackageReference Include="System.Text.Json" Version="6.0.1" />

@@ -713,7 +713,7 @@
         -webkit-appearance: none;
         /*font-weight: 600;*/
         height: 30px !important; /*!important auto !important;*/
-        line-height: 16px;
+        line-height: 13px;
         border: none;
         /*text-transform: uppercase;*/
         color: #ffffff;
@@ -797,6 +797,14 @@
                 top: 24px;
                 box-shadow: 0 1px 3px 0px #a3a3a3;
             }
+
+                .loginNav li div.channel label {
+                    margin-top: 6px !important;
+                }
+
+                .loginNav li div.channel select {
+                    border: solid 1px #aaa;
+                }
 
             .loginNav li div h3 {
                 text-transform: uppercase;
@@ -3436,10 +3444,10 @@ div.select {
             background: #f2f2f2 !important;
         }
 
-        .error div.select ul.multiple,
-        .error div.select ul.single {
-            border: solid 1px red;
-        }
+.error div.select ul.multiple,
+.error div.select ul.single {
+    border: solid 1px red;
+}
 
 .formTable div.select.indent ul.multiple, .formTable div.select.indent ul.single {
     padding: 0px 0px 0px 26px;
@@ -3507,6 +3515,7 @@ div.select ul li {
     height: 1.8em;
     /*background: #ececec; /* Old browsers */
 }
+
 div.select ul.multiple li {
     border-bottom: 1px solid #ffffff !importa
 }

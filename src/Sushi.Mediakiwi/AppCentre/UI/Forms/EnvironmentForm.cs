@@ -11,7 +11,8 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation.Forms
             Load(implement as Mediakiwi.Data.Environment);
             Map(x => x.Title).TextField("Name", 50, true);
             Map(x => x.DisplayName).TextField("Displayname", 50, true);
-            Map(x => x.Timezone).Dropdown("Dropdown", nameof(AvailableTimeZones), true);
+            Map(x => x.Timezone).Dropdown("Timezone", nameof(AvailableTimeZones), true);
+            Map(x => x.DefaultSiteID).Dropdown("Default channel", nameof(Sites));
             Map(x => x.Version).TextLine("Version");
 
             Map(x => x.Section1, this).Section("SMTP Settings");
@@ -23,7 +24,6 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation.Forms
             Map(x => x.DefaultMailAddress).TextField("From email", 255, true).Expression(OutputExpression.Alternating);
             Map(x => x.ErrorMailAddress).TextField("Error email", 255, true).Expression(OutputExpression.Alternating);
             
-            Map(x => x.DefaultSiteID).Dropdown("Default channel", nameof(Sites));
 
             Map(x => x.Section2, this).Section("API access");
             Map(x => x.ApiKey).TextField("API Key", 250, false, false, "Is used for allowing remote FrontEnd connections to be made to the internal Mediakiwi API's");

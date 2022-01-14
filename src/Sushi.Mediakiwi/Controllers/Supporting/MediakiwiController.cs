@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace Sushi.Mediakiwi.Controllers
 {
+    [ApiExplorerSettings(GroupName = "MediaKiwi")]
     public class MediakiwiController : ControllerBase, IController
     {
         IVisitor _CurrentVisitor;
