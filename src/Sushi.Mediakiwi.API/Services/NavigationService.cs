@@ -18,9 +18,9 @@ namespace Sushi.Mediakiwi.API.Services
             return resolver.AddApplicationPath(CommonConfiguration.LOGO_URL, true);
         }
 
-        public string GetHomepageURL(UrlResolver resolver)
+        public async Task<string> GetHomepageURLAsync(UrlResolver resolver)
         {
-            return resolver.UrlBuild.GetHomeRequest();
+            return await resolver.UrlBuild.GetHomeRequestAsync().ConfigureAwait(false);
         }
 
         public bool IsRequestPartOfNavigation(Data.IMenuItemView item, UrlResolver urlResolver)
@@ -73,8 +73,6 @@ namespace Sushi.Mediakiwi.API.Services
 
             return false;
         }
-
-
 
         public async Task<string> GetUrlAsync(UrlResolver resolver, Data.IMenuItemView entity, int? channelId)
         {
@@ -145,7 +143,7 @@ namespace Sushi.Mediakiwi.API.Services
             return addition;
         }
 
-        public void ApplyTabularUrl(UrlResolver resolver, Framework.WimComponentListRoot.Tabular tab, int levelEntry, int? currentListID)
+        public async Task ApplyTabularUrlAsync(UrlResolver resolver, Framework.WimComponentListRoot.Tabular tab, int levelEntry, int? currentListID)
         {
             int listID = resolver.List != null ? resolver.List.ID : Utils.ConvertToInt(resolver.Query["list"]);
 
@@ -168,11 +166,11 @@ namespace Sushi.Mediakiwi.API.Services
             {
                 if (resolver.GroupID.GetValueOrDefault(0) == 0)
                 {
-                    tab.Url = $"{resolver.UrlBuild.GetListRequest(tab.List, tab.SelectedItem)}&group={listID}{addition}{baseInfo}{folderInfo}&groupitem={resolver.ItemID.GetValueOrDefault(0)}&list={tab.List.ID}";
+                    tab.Url = $"{await resolver.UrlBuild.GetListRequestAsync(tab.List, tab.SelectedItem).ConfigureAwait(false)}&group={listID}{addition}{baseInfo}{folderInfo}&groupitem={resolver.ItemID.GetValueOrDefault(0)}&list={tab.List.ID}";
                 }
                 else
                 {
-                    tab.Url = $"{resolver.UrlBuild.GetListRequest(tab.List, tab.SelectedItem)}&group={resolver.GroupID.Value}{addition}{baseInfo}{folderInfo}&groupitem={resolver.GroupItemID.GetValueOrDefault(0)}&list={tab.List.ID}&item={(resolver.Group2ID.GetValueOrDefault(0) == tab.List.ID ? resolver.Group2ItemID.GetValueOrDefault(0) : tab.SelectedItem)}";
+                    tab.Url = $"{await resolver.UrlBuild.GetListRequestAsync(tab.List, tab.SelectedItem).ConfigureAwait(false)}&group={resolver.GroupID.Value}{addition}{baseInfo}{folderInfo}&groupitem={resolver.GroupItemID.GetValueOrDefault(0)}&list={tab.List.ID}&item={(resolver.Group2ID.GetValueOrDefault(0) == tab.List.ID ? resolver.Group2ItemID.GetValueOrDefault(0) : tab.SelectedItem)}";
                 }
             }
             else if (levelEntry == 2)

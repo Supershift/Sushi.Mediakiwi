@@ -954,7 +954,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation
         <input type=""hidden"" name=""autopostback"" id=""autopostback"" value="""" />
 		<section id=""bodySection"">
 			<header id=""bodyHeader"">
-				<a id=""logo"" href=""" + container.UrlBuild.GetHomeRequest() + @"""><img src=""" + LogoUrl(container) + @""" /></a>
+				<a id=""logo"" href=""" + await container.UrlBuild.GetHomeRequestAsync().ConfigureAwait(false) + @"""><img src=""" + LogoUrl(container) + @""" /></a>
 			</header>" + homeContent + @"
 		    <nav id=""bodyNav"">
 			    " + Get_component_mainMenu(builder.TopNavigation) + @"
@@ -1128,7 +1128,9 @@ namespace Sushi.Mediakiwi.Framework.Presentation
                     username2 = user.Email;
                 }
                 else
+                {
                     user = ApplicationUser.SelectOneByEmail(username2);
+                }
 
                 if (user.ResetKey.Equals(resetKey))
                 {
@@ -1143,19 +1145,32 @@ namespace Sushi.Mediakiwi.Framework.Presentation
                             user.ApplyPassword(password1);
                             user.Save(container.Context, true);
 
-                            if (SetLogin(container, username2, password1, rememberMe, ref hasError))
+                            var setloginStatus = await SetLoginAsync(container, username2, password1, rememberMe);
+                            hasError = setloginStatus.hasError;
+
+                            if (setloginStatus.success)
+                            {
                                 return null;
+                            }
                         }
                         else
+                        {
                             hasError = true;
+                        }
                     }
+
                     return GetResetScreen(container, username2, hasError);
                 }
             }
 
             #region Login
-            if (SetLogin(container, username, password, rememberMe, ref hasError))
+
+            var setLoginStatus = await SetLoginAsync(container, username, password, rememberMe);
+            hasError = setLoginStatus.hasError;
+            if (setLoginStatus.success)
+            {
                 return null;
+            }
 
             #endregion
 
@@ -1165,14 +1180,20 @@ namespace Sushi.Mediakiwi.Framework.Presentation
         bool HasQueryString(Beta.GeneratedCms.Console container, string name)
         {
             if (!container.Request.QueryString.HasValue)
+            {
                 return false;
+            }
+
             return container.Request.QueryString.Value.Substring(1).Equals(name);
         }
 
-        bool SetLogin(Beta.GeneratedCms.Console container, string username, string password, bool rememberMe, ref bool hasError)
+        async Task<(bool success, bool hasError)> SetLoginAsync(Beta.GeneratedCms.Console container, string username, string password, bool rememberMe)
         {
+            bool hasError = false; 
             if (string.IsNullOrWhiteSpace(password) || string.IsNullOrWhiteSpace(username))
-                return false;
+            {
+                return (false, false);
+            }
 
             if (m_Callbacks != null && m_Callbacks.ContainsKey(CallbackTarget.PRE_SIGNIN))
             {
@@ -1180,12 +1201,14 @@ namespace Sushi.Mediakiwi.Framework.Presentation
                 foreach (var parser in parsers)
                 {
                     if (!parser.Run(container))
+                    {
                         break;
+                    }
                 }
             }
 
             // select by email only to verify the user
-            container.CurrentApplicationUser = ApplicationUser.SelectOneByEmail(username);
+            container.CurrentApplicationUser = await ApplicationUser.SelectOneByEmailAsync(username);
 
             if (m_Callbacks != null && m_Callbacks.ContainsKey(CallbackTarget.POST_SIGNIN))
             {
@@ -1193,7 +1216,9 @@ namespace Sushi.Mediakiwi.Framework.Presentation
                 foreach (var parser in parsers)
                 {
                     if (!parser.Run(container))
+                    {
                         break;
+                    }
                 }
             }
 
@@ -1205,19 +1230,28 @@ namespace Sushi.Mediakiwi.Framework.Presentation
                 {
                     if (!Utility.IsStrongPassword(password))
                     {
-                        string resetlink = container.CurrentApplicationUser.ResetPassword(container);
+                        string resetlink = await container.CurrentApplicationUser.ResetPasswordAsync(container);
                         container.Response.Redirect(resetlink, true);
-                        return false;
+                        return (false, false);
                     }
 
                     container.CurrentApplicationUser.Store(container.Context, password, rememberMe);
                     container.CurrentVisitor.ApplicationUserID = container.CurrentApplicationUser.ID;
-                    return true;
+                    var homepage = await container.UrlBuild.GetHomeRequestAsync().ConfigureAwait(false);
+
+                    if (string.IsNullOrWhiteSpace(homepage) == false)
+                    {
+                        container.Response.Redirect(homepage, false);
+                    }
+                    return (true, false);
                 }
             }
             else
+            {
                 hasError = true;
-            return false;
+            }
+
+            return (false, hasError);
         }
 
         string GetStyleAddition()
@@ -1318,8 +1352,10 @@ namespace Sushi.Mediakiwi.Framework.Presentation
 
         public string LogoUrl(Beta.GeneratedCms.Console container)
         {
-            if (string.IsNullOrEmpty(CommonConfiguration.LOGO_URL))
+            if (string.IsNullOrWhiteSpace(CommonConfiguration.LOGO_URL))
+            {
                 return FolderVersion("images") + @"MK_logo.png";
+            }
             return container.AddApplicationPath(CommonConfiguration.LOGO_URL, true);
         }
 
