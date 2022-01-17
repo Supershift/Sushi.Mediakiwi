@@ -176,7 +176,11 @@ namespace Sushi.Mediakiwi.Data.Configuration
     public class TokenValidation
     {
         public string Exponent { get; set; }
+
+        [Obsolete("Use the DiscoveryLogic class to load the modulus ")]
         public string Modulus { get; set; }
+
+        public string KeyType { get; set; }
     }
 
     public class ActiveDirectory
