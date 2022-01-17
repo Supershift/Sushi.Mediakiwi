@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Sushi.Mediakiwi.Framework.Presentation.Logic
 {
@@ -712,7 +713,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
         /// <param name="container">The container.</param>
         /// <param name="buttonList">The button list.</param>
         /// <returns></returns>
-        public string NewLeftNavigation(Beta.GeneratedCms.Console container, ContentListItem.ButtonAttribute[] buttonList)
+        public async Task<string> NewLeftNavigationAsync(Beta.GeneratedCms.Console container, ContentListItem.ButtonAttribute[] buttonList)
         {
             string tabs = GetTabularTagNewDesign(container, container.CurrentList.Name, 0, false);
 
@@ -726,14 +727,16 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
             //  If the request is in a tabular the left navigation should show the navigation of the primary list (group ID)
             if (string.IsNullOrEmpty(container.Request.Query["folder"]) && container.Group.HasValue)
             {
-                IComponentList folderList = ComponentList.SelectOne(container.Group.Value);
+                IComponentList folderList = await ComponentList.SelectOneAsync(container.Group.Value).ConfigureAwait(false);
                 if (folderList.FolderID.HasValue)
                 {
-                    currentFolder = Folder.SelectOne(folderList.FolderID.Value);
+                    currentFolder = await Folder.SelectOneAsync(folderList.FolderID.Value).ConfigureAwait(false);
                     if (currentFolder.SiteID != container.CurrentListInstance.wim.CurrentSite.ID)
                     {
                         if (currentFolder.MasterID.HasValue)
-                            currentFolder = Folder.SelectOne(currentFolder.MasterID.Value, container.CurrentListInstance.wim.CurrentSite.ID);
+                        {
+                            currentFolder = await Folder.SelectOneAsync(currentFolder.MasterID.Value, container.CurrentListInstance.wim.CurrentSite.ID).ConfigureAwait(false);
+                        }
                     }
 
                 }
@@ -748,23 +751,23 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
             {
                 int currentListID = container.Group.HasValue ? container.Group.Value : container.CurrentList.ID;
 
-                Gallery root = Gallery.SelectOneRoot();
+                Gallery root = await Gallery.SelectOneRootAsync().ConfigureAwait(false);
 
                 int rootID = root.ID;
-                if (container.CurrentApplicationUser.SelectRole().GalleryRoot.HasValue)
-                    rootID = container.CurrentApplicationUser.SelectRole().GalleryRoot.Value;
+                if ((await container.CurrentApplicationUser.SelectRoleAsync().ConfigureAwait(false)).GalleryRoot.HasValue)
+                    rootID = (await container.CurrentApplicationUser.SelectRoleAsync().ConfigureAwait(false)).GalleryRoot.Value;
 
                 currentName = "Documents";
                 currentLink = container.UrlBuild.GetGalleryRequest(rootID);
 
-                Gallery currentGallery = Gallery.SelectOne(currentFolder.ID);
+                Gallery currentGallery = await Gallery.SelectOneAsync(currentFolder.ID).ConfigureAwait(false);
 
-                Gallery level1 = Gallery.SelectOne(currentGallery, 1);
-                Gallery level2 = Gallery.SelectOne(currentGallery, 2);
-                Gallery level3 = Gallery.SelectOne(currentGallery, 3);
+                Gallery level1 = await Gallery.SelectOneAsync(currentGallery, 1).ConfigureAwait(false);
+                Gallery level2 = await Gallery.SelectOneAsync(currentGallery, 2).ConfigureAwait(false);
+                Gallery level3 = await Gallery.SelectOneAsync(currentGallery, 3).ConfigureAwait(false);
 
                 //  LEVEL 1 : Folders
-                Gallery[] galleries1 = Gallery.SelectAllByParent(rootID);
+                Gallery[] galleries1 = await Gallery.SelectAllByParentAsync(rootID).ConfigureAwait(false);
 
                 foreach (Gallery folder in galleries1)
                 {
@@ -780,8 +783,8 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                         build.AppendFormat(@"<ul>");
 
                         //  LEVEL 2 : Folders
-                        Gallery[] galleries2 = Gallery.SelectAllByParent(folder.ID);
-                        galleries2 = Gallery.ValidateAccessRight(galleries2, container.CurrentApplicationUser);
+                        Gallery[] galleries2 = await Gallery.SelectAllByParentAsync(folder.ID).ConfigureAwait(false);
+                        galleries2 = (await Gallery.ValidateAccessRightAsync(galleries2, container.CurrentApplicationUser).ConfigureAwait(false)).ToArray();
 
                         foreach (Gallery folder2 in galleries2)
                         {
@@ -794,7 +797,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                             {
                                 build.AppendFormat(@"<ul>");
                                 //  LEVEL 3 : Folders
-                                foreach (Gallery folder3 in Gallery.SelectAllByParent(folder2.ID))
+                                foreach (Gallery folder3 in await Gallery.SelectAllByParentAsync(folder2.ID).ConfigureAwait(false))
                                 {
                                     bool isActive3 = (folder3.ID == currentGallery.ID) || level3.ID == folder3.ID;
                                     build.AppendFormat(@"<li><a href=""{0}"" class=""{1}{3}"">{2}</a>", container.UrlBuild.GetGalleryRequest(folder3), "folder", folder3.Name, isActive3 ? " active" : "");
@@ -819,12 +822,15 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
             #endregion
 
             #region Foldertype: Lists
+
             if (isPageProperty && container.Item.HasValue)
             {
-                Page p = Page.SelectOne(container.Item.Value);
+                Page p = await Page.SelectOneAsync(container.Item.Value);
                 string currentFolderName = p.Folder.Name;
                 if (currentFolderName == "/")
+                {
                     currentFolderName = p.Folder.Site.Name;
+                }
 
                 build.AppendFormat(@"<li class=""back""><span class=""icon-arrow-left-04""></span><a href=""{0}"">{1}</a></li>"
                     , container.UrlBuild.GetFolderRequest(p.Folder.ID), currentFolderName
@@ -851,7 +857,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                 }
                 else
                 {
-                    var lists = ComponentList.SelectOne(currentListID);
+                    var lists = await ComponentList.SelectOneAsync(currentListID).ConfigureAwait(false);
 
                     build.AppendFormat(@"<li class=""back""><span class=""icon-arrow-left-04""></span><a href=""{0}"">{1}</a></li>"
                         , container.UrlBuild.GetListRequest(lists)
@@ -861,9 +867,8 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
 
                 if (container.CurrentList.Type != ComponentListType.Browsing)
                 {
-                    IComponentList[] lists1 = ComponentList.SelectAll(currentFolder.ID);
-                    lists1 = ComponentList.ValidateAccessRight(lists1,
-                        container.CurrentApplicationUser);
+                    IComponentList[] lists1 = await ComponentList.SelectAllAsync(currentFolder.ID).ConfigureAwait(false);
+                    lists1 = await ComponentList.ValidateAccessRightAsync(lists1, container.CurrentApplicationUser).ConfigureAwait(false);
 
                     foreach (ComponentList list in lists1)
                     {
@@ -924,7 +929,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                 {
                     if (!string.IsNullOrEmpty(container.Request.Query["base"]))
                     {
-                        var list = ComponentList.SelectOne(Convert.ToInt32(container.Request.Query["base"]));
+                        var list = await ComponentList.SelectOneAsync(Convert.ToInt32(container.Request.Query["base"])).ConfigureAwait(false);
                         build.AppendFormat(@"<li class=""back""><span class=""icon-arrow-left-04""></span><a href=""{0}"">{2}{1}</a></li>"
                             , container.UrlBuild.GetListRequest(list)
                             , list.Name
@@ -936,8 +941,11 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                     build.Append(tabs);
                 }
             }
+
             #endregion
+
             #region Foldertype: Pages
+
             else if (currentFolder.Type == FolderType.Page)
             {
                 if (container.ItemType == RequestItemType.Page)
@@ -959,11 +967,15 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                 {
                     Folder root;
                     if (isFirstLevelRootnavigation)
-                        root = Folder.SelectOne(currentFolder, 1);
+                    {
+                        root = await Folder.SelectOneAsync(currentFolder, 1).ConfigureAwait(false);
+                    }
                     else
-                        root = Folder.SelectOneBySite(container.CurrentListInstance.wim.CurrentSite.ID, currentFolder.Type);
+                    {
+                        root = await Folder.SelectOneBySiteAsync(container.CurrentListInstance.wim.CurrentSite.ID, currentFolder.Type).ConfigureAwait(false);
+                    }
 
-                    var arr = Folder.SelectAllByParent(root.ID);
+                    var arr = await Folder.SelectAllByParentAsync(root.ID).ConfigureAwait(false);
 
                     foreach (var item in arr)
                     {
@@ -986,7 +998,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
             if (container.CurrentList.Type == ComponentListType.InformationMessage)
             {
                 build = new StringBuilder();
-                build.AppendFormat(@"<li><a href=""{0}"" class=""{1}"">{2}</a></li>", container.UrlBuild.GetHomeRequest(), "list", "Home");
+                build.AppendFormat(@"<li><a href=""{0}"" class=""{1}"">{2}</a></li>", await container.UrlBuild.GetHomeRequestAsync().ConfigureAwait(false), "list", "Home");
             }
 
             if (!string.IsNullOrEmpty(currentLink))

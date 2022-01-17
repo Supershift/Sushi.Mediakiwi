@@ -179,7 +179,7 @@ namespace Sushi.Mediakiwi.API.Controllers
             result.LogoUrl = _navService.GetLogoURL(Resolver);
 
             // Set homepage URL
-            result.HomeUrl = _navService.GetHomepageURL(Resolver);
+            result.HomeUrl = await _navService.GetHomepageURLAsync(Resolver).ConfigureAwait(false);
 
             return Ok(result);
         }
@@ -444,7 +444,7 @@ namespace Sushi.Mediakiwi.API.Controllers
                                     continue;
                                 }
 
-                                _navService.ApplyTabularUrl(Resolver, tab, 1, null);
+                                await _navService.ApplyTabularUrlAsync(Resolver, tab, 1, null).ConfigureAwait(false);
                                 result.Items.Add(new NavigationItem()
                                 {
                                     Text = tab.TitleValue,
@@ -469,7 +469,7 @@ namespace Sushi.Mediakiwi.API.Controllers
                                     {
                                         foreach (var tab2 in Resolver.ListInstance.wim.GetTabs())
                                         {
-                                            _navService.ApplyTabularUrl(Resolver, tab2, 2, null);
+                                            await _navService.ApplyTabularUrlAsync(Resolver, tab2, 2, null).ConfigureAwait(false);
 
                                             result.Items.Add(new NavigationItem()
                                             {
@@ -529,7 +529,7 @@ namespace Sushi.Mediakiwi.API.Controllers
 
                         var tmpTab = new Framework.WimComponentListRoot.Tabular();
                         tmpTab.SelectedItem = currentListItemId;
-                        _navService.ApplyTabularUrl(Resolver, tmpTab, 0, currentListId);
+                        await _navService.ApplyTabularUrlAsync(Resolver, tmpTab, 0, currentListId).ConfigureAwait(false);
 
                         //  For use in property tabbing.
 
@@ -828,7 +828,7 @@ namespace Sushi.Mediakiwi.API.Controllers
                 result.Items.Add(new NavigationItem()
                 {
                     Text = "Home",
-                    Href = Resolver.UrlBuild.GetHomeRequest(),
+                    Href = await Resolver.UrlBuild.GetHomeRequestAsync().ConfigureAwait(false),
                     IconClass = "list"
                 });
             }

@@ -355,7 +355,7 @@ namespace Sushi.Mediakiwi.UI
             {
                 GlobalWimControlBuilder.Canvas.Type = CanvasType.ListItem;
 
-                GlobalWimControlBuilder.Leftnav = _PresentationNavigation.NewLeftNavigation(_Console, component.m_ButtonList != null ? component.m_ButtonList.ToArray() : null);
+                GlobalWimControlBuilder.Leftnav = await _PresentationNavigation.NewLeftNavigationAsync(_Console, component.m_ButtonList != null ? component.m_ButtonList.ToArray() : null).ConfigureAwait(false);
 
                 GlobalWimControlBuilder.TopNavigation = _PresentationNavigation.TopNavigation(_Console);
                 GlobalWimControlBuilder.Rightnav = _PresentationNavigation.RightSideNavigation(_Console, component.m_ButtonList != null ? component.m_ButtonList.ToArray() : null);
@@ -527,7 +527,7 @@ namespace Sushi.Mediakiwi.UI
                 GlobalWimControlBuilder.TopNavigation = _PresentationNavigation.TopNavigation(_Console);
                 GlobalWimControlBuilder.Bottom = _PresentationNavigation.NewBottomNavigation(_Console, component.m_ButtonList != null ? component.m_ButtonList.ToArray() : null, false);
                 GlobalWimControlBuilder.Tabularnav = Template.GetTabularTagNewDesign(_Console, _Console.CurrentList.Name, 0, false);
-                GlobalWimControlBuilder.Leftnav = _PresentationNavigation.NewLeftNavigation(_Console, component.m_ButtonList != null ? component.m_ButtonList.ToArray() : null);
+                GlobalWimControlBuilder.Leftnav = await _PresentationNavigation.NewLeftNavigationAsync(_Console, component.m_ButtonList != null ? component.m_ButtonList.ToArray() : null).ConfigureAwait(false);
 
                 await AddToResponseAsync(await _PresentationMonitor.GetTemplateWrapperAsync(_Console, _Placeholders, _Callbacks, GlobalWimControlBuilder));
 
@@ -549,7 +549,7 @@ namespace Sushi.Mediakiwi.UI
                     //  Do nothing, this is an layer and has no leftnavigation.
                 }
                 else
-                    GlobalWimControlBuilder.Leftnav = _PresentationNavigation.NewLeftNavigation(_Console, component.m_ButtonList != null ? component.m_ButtonList.ToArray() : null);
+                    GlobalWimControlBuilder.Leftnav = await _PresentationNavigation.NewLeftNavigationAsync(_Console, component.m_ButtonList != null ? component.m_ButtonList.ToArray() : null).ConfigureAwait(false);
                 GlobalWimControlBuilder.Bottom = _PresentationNavigation.NewBottomNavigation(_Console, component.m_ButtonList != null ? component.m_ButtonList.ToArray() : null, false);
                 GlobalWimControlBuilder.Tabularnav = Template.GetTabularTagNewDesign(_Console, _Console.CurrentList.Name, 0, false);
 
@@ -699,7 +699,7 @@ namespace Sushi.Mediakiwi.UI
 
             GlobalWimControlBuilder.Tabularnav = Template.GetTabularTagNewDesign(_Console, _Console.CurrentList.Name, 0, false);
             GlobalWimControlBuilder.Rightnav = _PresentationNavigation.RightSideNavigation(_Console, component.m_ButtonList != null ? component.m_ButtonList.ToArray() : null);
-            GlobalWimControlBuilder.Leftnav = _PresentationNavigation.NewLeftNavigation(_Console, component.m_ButtonList != null ? component.m_ButtonList.ToArray() : null);
+            GlobalWimControlBuilder.Leftnav = await _PresentationNavigation.NewLeftNavigationAsync(_Console, component.m_ButtonList != null ? component.m_ButtonList.ToArray() : null).ConfigureAwait(false);
 
             await AddToResponseAsync(await _PresentationMonitor.GetTemplateWrapperAsync(_Console, _Placeholders, _Callbacks, GlobalWimControlBuilder)).ConfigureAwait(false);
         }
@@ -793,19 +793,14 @@ namespace Sushi.Mediakiwi.UI
         /// Redirects to channel home page.
         /// </summary>
         /// <param name="siteID">The site ID.</param>
-        void RedirectToChannelHomePage(int siteID)
+        async Task RedirectToChannelHomePageAsync(int siteID)
         {
-            //string redirect = _Console.GetWimPagePath(siteID);
-
             //  Find the default homepage in the menu section
-            var defaultHome = _Console.UrlBuild.GetHomeRequest(siteID);
-            _Console.Response.Redirect(defaultHome);
-            //MenuItemView.SelectAll(siteID, _Console.CurrentApplicationUser.RoleID, 0);
-            //if (defaultHome != null && defaultHome.Length > 0)
-            //{
-            //    string redirect = _PresentationNavigation.GetUrl(_Console, defaultHome[0], siteID);
-            //    _Console.Response.Redirect(redirect);
-            //}
+            var defaultHome = await _Console.UrlBuild.GetHomeRequestAsync(siteID).ConfigureAwait(false);
+            if (_Console.Request.Path.Equals(defaultHome) == false)
+            {
+                _Console.Response.Redirect(defaultHome);
+            }
         }
 
         async Task<bool> CheckSecurityAsync(bool reStartWithNotificationList)
@@ -828,7 +823,7 @@ namespace Sushi.Mediakiwi.UI
                     var allowed = await _Console.CurrentListInstance.wim.CurrentApplicationUserRole.SitesAsync(_Console.CurrentApplicationUser).ConfigureAwait(false);
                     if (allowed != null && allowed.Length > 0)
                     {
-                        RedirectToChannelHomePage(allowed[0].ID);
+                        await RedirectToChannelHomePageAsync(allowed[0].ID).ConfigureAwait(false);
                         return false;
                     }
                     else
@@ -851,10 +846,11 @@ namespace Sushi.Mediakiwi.UI
                 //  CHECK FOR UserBased exceptions!!!
             }
 
-            //  20-01-13:MM Added dashboard hack
-            if (_Console.CurrentListInstance.wim.CurrentFolder.ID == 0 && string.IsNullOrEmpty(_Console.Request.Query["dashboard"]))
+            if (
+                _Console.CurrentListInstance.wim.CurrentFolder.ID == 0 && 
+                string.IsNullOrEmpty(_Console.Request.Query["dashboard"]))
             {
-                RedirectToChannelHomePage(_Console.ChannelIndentifier);
+                await RedirectToChannelHomePageAsync(_Console.ChannelIndentifier).ConfigureAwait(false);
                 return false;
             }
 

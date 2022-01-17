@@ -7,11 +7,11 @@ namespace Sushi.Mediakiwi.API.Services
     {
         public string GetQueryStringRecording(UrlResolver resolver);
         
-        public void ApplyTabularUrl(UrlResolver resolver, Framework.WimComponentListRoot.Tabular tab, int levelEntry, int? currentListID);
+        public Task ApplyTabularUrlAsync(UrlResolver resolver, Framework.WimComponentListRoot.Tabular tab, int levelEntry, int? currentListID);
 
         public string GetLogoURL(UrlResolver resolver);
 
-        public string GetHomepageURL(UrlResolver resolver);
+        public Task<string> GetHomepageURLAsync(UrlResolver resolver);
 
         public bool IsRequestPartOfNavigation(Data.IMenuItemView item, UrlResolver urlResolver);
 

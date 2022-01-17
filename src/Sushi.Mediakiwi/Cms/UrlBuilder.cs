@@ -3,6 +3,7 @@ using Sushi.Mediakiwi.Data;
 using System;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
 {
@@ -334,27 +335,86 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
 
             if (itemID.HasValue)
             {
-                return string.Concat(Console.WimPagePath, Utils.ToUrl(path), "?item=", itemID);
+                path = string.Concat(Console.WimPagePath, Utils.ToUrl(path), "?item=", itemID);
+            }
+            else
+            {
+                path = string.Concat(Console.WimPagePath, Utils.ToUrl(path));
             }
 
-            return string.Concat(Console.WimPagePath, Utils.ToUrl(path));
+            if (path.StartsWith(@"\\", StringComparison.InvariantCultureIgnoreCase) || path.StartsWith(@"//", StringComparison.InvariantCultureIgnoreCase))
+            {
+                path = path.Replace(@"\\", @"\", StringComparison.InvariantCultureIgnoreCase);
+                path = path.Replace(@"//", @"/", StringComparison.InvariantCultureIgnoreCase);
+            }
+
+            return path;
         }
 
+        private async Task<string> GetHomepageFromMenuAsync(int? channelId = null)
+        {
+             string path = "";
+
+            var roleMenus = await Menu.SelectAllAsync().ConfigureAwait(false);
+            IMenu roleMenu;
+            if (channelId.GetValueOrDefault(0) > 0)
+            {
+                roleMenu = roleMenus.FirstOrDefault(x => x.SiteID == channelId.Value && x.IsActive == true && x.RoleID == Console.CurrentApplicationUser.RoleID);
+            }
+            else 
+            {
+                roleMenu = roleMenus.FirstOrDefault(x => x.IsActive == true && x.RoleID == Console.CurrentApplicationUser.RoleID);
+            }
+
+            if (roleMenu?.ID > 0)
+            {
+                var items = await MenuItem.SelectAllAsync(roleMenu.ID).ConfigureAwait(false);
+                var homepage = items?.FirstOrDefault(x => x.Position == 0);
+                if (homepage?.ID > 0)
+                {
+                    switch (homepage.TypeID)
+                    {
+                        default: { path = Console.WimPagePath; } break;
+                        case 1: { path = GetListRequest(homepage.ItemID); } break;
+                        case 2: { path = GetFolderRequest(homepage.ItemID); } break;
+                        case 3: { path = GetPageRequest(homepage.ItemID); } break;
+                        case 5: { path = GetGalleryRequest(homepage.ItemID); } break;
+                        case 6: 
+                            {
+                                var hpId = (await Site.SelectOneAsync(homepage.ItemID).ConfigureAwait(false)).HomepageID;
+                                if (hpId.GetValueOrDefault(0) > 0)
+                                {
+                                    path = GetPageRequest(hpId.Value);
+                                }
+                            } break;
+                        case 7: 
+                            {
+                                if (Enum.TryParse(homepage.ItemID.ToString(), out FolderType type))
+                                {
+                                    path = GetSectionRequest(type);
+                                }
+                                
+                            } break;
+                        case 8: { path = GetFolderRequest(homepage.ItemID); } break;
+                    }
+                }
+            }
+
+            if (string.IsNullOrWhiteSpace(path))
+            {
+                path = Console.WimPagePath;
+            }
+
+            return path;
+        }
+        
         /// <summary>
         /// Gets the home request.
         /// </summary>
         /// <returns></returns>
-        public string GetHomeRequest(int? channelId = null)
+        public async Task<string> GetHomeRequestAsync(int? channelId = null)
         {
-            if (channelId.HasValue)
-            {
-                var channel = Site.SelectOne(channelId.Value);
-                if (channel != null && channel.ID > 0)
-                {
-                    return Console.AddApplicationPath(string.Concat(CommonConfiguration.PORTAL_PATH, "/", Utils.ToUrl(channel.Name)));
-                }
-            }
-            return string.Concat(Console.WimPagePath);
+            return  await GetHomepageFromMenuAsync(channelId).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -364,7 +424,17 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
         /// <returns></returns>
         public string GetPageRequest(Page page)
         {
-            return string.Concat(Console.WimPagePath, "?page=", page.ID);
+            return GetPageRequest(page.ID);
+        }
+
+        /// <summary>
+        /// Gets the page request.
+        /// </summary>
+        /// <param name="pageId">The page ID.</param>
+        /// <returns></returns>
+        public string GetPageRequest(int pageId)
+        {
+            return string.Concat(Console.WimPagePath, "?page=", pageId);
         }
 
         /// <summary>
