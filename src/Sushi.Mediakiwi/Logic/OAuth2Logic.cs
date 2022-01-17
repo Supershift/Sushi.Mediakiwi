@@ -2,12 +2,12 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 using System.Security.Cryptography;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
+using Microsoft.IdentityModel.JsonWebTokens;
 
 namespace Sushi.Mediakiwi.Logic
 {
@@ -34,21 +34,23 @@ namespace Sushi.Mediakiwi.Logic
         }
 
         private static Regex EmailRegex { get; set; } = new Regex(Data.Utility.GlobalRegularExpression.EmailAddress, RegexOptions.IgnoreCase);
-        public static async Task<string> ExtractUpnAsync(TokenValidation validation, string idtoken)
+        public static async Task<string> ExtractUpnAsync(AuthenticationConfiguration authenticationConfiguration, string idtoken)
         {
-            if (IsValidToken(validation, idtoken))
+            try
             {
-                try
-                {
-                    var handler = new JwtSecurityTokenHandler();
-                    var jsonToken = handler.ReadToken(idtoken);
-                    var token = jsonToken as JwtSecurityToken;
+                var handler = new Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler();
+                var jsonToken = handler.ReadToken(idtoken);
+                var token = jsonToken as Microsoft.IdentityModel.JsonWebTokens.JsonWebToken;
 
-                    if (token == null)
-                    {
-                        await Data.Notification.InsertOneAsync(nameof(ExtractUpnAsync), Data.NotificationType.Error, $"No token encountered: {idtoken}").ConfigureAwait(false);
-                        return null;
-                    }
+                if (token == null)
+                {
+                    await Data.Notification.InsertOneAsync(nameof(ExtractUpnAsync), Data.NotificationType.Error, $"No token encountered: {idtoken}").ConfigureAwait(false);
+                    return null;
+                }
+
+                var isValidToken = await IsValidTokenAsync(authenticationConfiguration, idtoken, token);
+                if (isValidToken)
+                {
 
                     const string DEFAULT_CLAIM_TYPE = "email";
                     List<string> claimtypes = new List<string>();
@@ -108,15 +110,15 @@ namespace Sushi.Mediakiwi.Logic
                     // We could not find a claim. Log the token for examination.
                     await Data.Notification.InsertOneAsync(nameof(ExtractUpnAsync), Data.NotificationType.Error, $"No email claim found: {idtoken}").ConfigureAwait(false);
                 }
-                catch (Exception ex)
+                else
                 {
-                    await Data.Notification.InsertOneAsync(nameof(ExtractUpnAsync), ex).ConfigureAwait(false);
-                    return null;
+                    await Data.Notification.InsertOneAsync(nameof(ExtractUpnAsync), Data.NotificationType.Error, $"Token not valid: {idtoken}").ConfigureAwait(false);
                 }
             }
-            else
+            catch (Exception ex)
             {
-                await Data.Notification.InsertOneAsync(nameof(ExtractUpnAsync), Data.NotificationType.Error, $"Token not valid: {idtoken}").ConfigureAwait(false);
+                await Data.Notification.InsertOneAsync(nameof(ExtractUpnAsync), ex).ConfigureAwait(false);
+                return null;
             }
             return null;
         }
@@ -127,26 +129,28 @@ namespace Sushi.Mediakiwi.Logic
             return email;
         }
 
-        public static bool IsValidToken(TokenValidation validation, string idtoken)
+        public static async Task<bool> IsValidTokenAsync(AuthenticationConfiguration authenticationConfiguration, string idtoken, JsonWebToken token)
         {
             if (string.IsNullOrWhiteSpace(idtoken))
             {
                 throw new ArgumentNullException(nameof(idtoken));
             }
-            if (validation == null)
+            if (authenticationConfiguration == null)
             {
-                throw new ArgumentNullException(nameof(validation));
+                throw new ArgumentNullException(nameof(authenticationConfiguration));
             }
 
-            var exponent = validation.Exponent;
-            var modulus = validation.Modulus;
-            return VerifyToken(idtoken, exponent, modulus);
+            var exponent = authenticationConfiguration.Token.Exponent;
+            return await VerifyTokenAsync(idtoken, exponent, authenticationConfiguration, token);
         }
 
-        private static bool VerifyToken(string idToken, string exponent, string modulus)
+        private static async Task<bool> VerifyTokenAsync(string idToken, string exponent, AuthenticationConfiguration authenticationConfiguration, JsonWebToken token)
         {
             try
             {
+                // Get modulus
+                string modulus = await DiscoveryLogic.GetModulusAsync(authenticationConfiguration.Aad.Tenant, authenticationConfiguration.Token.KeyType, token);
+
                 var parts = idToken.Split('.');
                 var header = parts[0];
                 var payload = parts[1];
@@ -159,10 +163,7 @@ namespace Sushi.Mediakiwi.Logic
                 string keyBase = Convert.ToBase64String(keyBytes);
                 string key = @"<RSAKeyValue> <Modulus>" + keyBase + "</Modulus> <Exponent>" + exponent + "</Exponent> </RSAKeyValue>";
                 bool result = VerifyData(originalMessage, signedSignature, key);
-                if (result)
-                    return true;
-                else
-                    return false;
+                return result;
             }
             catch (Exception) 
             {

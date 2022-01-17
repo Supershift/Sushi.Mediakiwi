@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Http;
 using Sushi.Mediakiwi.AppCentre.UI.Forms;
 using Sushi.Mediakiwi.Data;
 using Sushi.Mediakiwi.Data.Configuration;
@@ -53,15 +52,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
 
         }
 
-        // Handle Context
-        /// <summary>
-        /// Processes the data.
-        /// </summary>
-        /// <param name="context">The context.</param>
-        /// <returns></returns>
-        public void ProcessData(HttpContext context)
-        {
-        }
+        
     }
 
     public class Image : Document
