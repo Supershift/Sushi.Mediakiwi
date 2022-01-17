@@ -179,6 +179,17 @@ namespace Sushi.Mediakiwi.UI
             {
                 return;
             }
+            
+            // Get users's homepage
+            var home = await _Console.UrlBuild.GetHomeRequestAsync(null);
+
+            // If we have a set homepage URL for the user, and we are at the landing page,
+            // without a querystring, redirect the user to its homepage
+            if (string.IsNullOrWhiteSpace(home) == false && _Console.Request.Path.Equals(WimServerConfiguration.Instance.Portal_Path, StringComparison.InvariantCulture) && _Console?.Request?.QueryString.HasValue == false)
+            {
+                _Console.Redirect(home, true);
+                return;
+            }
 
             if (_Console.ItemType == RequestItemType.Item || _Console.ItemType == RequestItemType.Asset || _Console.CurrentListInstance.wim.CanContainSingleInstancePerDefinedList)
             {//  Handles the list item request.
