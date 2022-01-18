@@ -4606,8 +4606,7 @@ namespace Sushi.Mediakiwi.Framework
                             {
                                 if (CurrentSite.ID > 0)
                                 {
-
-                                    int top = Utility.ConvertToInt(Context.Request.Query["top"]);
+                                    int top = Utility.ConvertToInt(Context.Request.Query["top"]); 
 
                                     if (top == 0 && CurrentSite.HasLists)
                                     {

@@ -180,19 +180,16 @@ namespace Sushi.Mediakiwi.UI
                 return;
             }
             
-            // Get users's homepage
-            var home = await _Console.UrlBuild.GetHomeRequestAsync(null);
-
-            // If we have a set homepage URL for the user, and we are at the landing page,
-            // without a querystring, redirect the user to its homepage
-            if (string.IsNullOrWhiteSpace(home) == false && _Console.Request.Path.Equals(WimServerConfiguration.Instance.Portal_Path, StringComparison.InvariantCulture) && _Console?.Request?.QueryString.HasValue == false)
+ 
+            // If we are at the landing page, without a querystring, process as Root request
+            if (_Console.Request.Path.Equals(WimServerConfiguration.Instance.Portal_Path, StringComparison.InvariantCulture) && _Console?.Request?.QueryString.HasValue == false)
             {
-                _Console.Redirect(home, true);
-                return;
+                await HandleRootRequestAsync().ConfigureAwait(false);
             }
 
             if (_Console.ItemType == RequestItemType.Item || _Console.ItemType == RequestItemType.Asset || _Console.CurrentListInstance.wim.CanContainSingleInstancePerDefinedList)
-            {//  Handles the list item request.
+            {
+                //  Handles the list item request.
                 await HandleListItemRequestAsync(grid, component, isDeleteTriggered).ConfigureAwait(false);
             }
             else if (_Console.ItemType == RequestItemType.Page)
@@ -210,6 +207,123 @@ namespace Sushi.Mediakiwi.UI
         }
 
         /// <summary>
+        /// Handles a request to the Root of the CMS, this prepares for loading the setting from the Menu -> Homepage 
+        /// </summary>
+        /// <returns></returns>
+        async Task HandleRootRequestAsync() 
+        {
+            var roleMenus = await Menu.SelectAllAsync().ConfigureAwait(false);
+            if (roleMenus.Any())
+            {
+                IMenu roleMenu = roleMenus.FirstOrDefault(x => x.IsActive == true && x.RoleID == _Console.CurrentApplicationUser.RoleID);
+
+                if (roleMenu?.ID > 0)
+                {
+                    var items = await MenuItem.SelectAllAsync(roleMenu.ID).ConfigureAwait(false);
+                    var homepage = items?.FirstOrDefault(x => x.Position == 0);
+                    if (homepage?.ID > 0)
+                    {
+                        switch (homepage.TypeID)
+                        {
+                            case 1:  // List
+                                {
+                                    IComponentList implement = await ComponentList.SelectOneAsync(homepage.ItemID);
+                                    await _Console.ApplyListAsync(implement);
+                                }
+                                break;
+                            case 2:  // Folder
+                            case 8:  // Container / Folder
+                                {
+                                    var folder = await Folder.SelectOneAsync(homepage.ItemID);
+
+                                    _Console.CurrentListInstance.wim.IsSearchListMode = true;
+                                    _Console.CurrentListInstance.wim.m_CurrentFolder = folder;
+                                }
+                                break;
+                            case 5:  // Gallery
+                                {
+                                    var gallery = await Gallery.SelectOneAsync(homepage.ItemID);
+
+                                    if (!(gallery == null || gallery.ID == 0))
+                                    {
+                                        var folderEntity = new Folder();
+                                        folderEntity.ID = gallery.ID;
+                                        folderEntity.ParentID = gallery.ParentID.GetValueOrDefault(0);
+                                        folderEntity.Name = gallery.Name;
+                                        //  Fix for galleries (add the / at the end for the Level)!
+                                        folderEntity.CompletePath = gallery.CompletePath == "/" ? "/" : string.Concat(gallery.CompletePath, "/");
+                                        folderEntity.Type = FolderType.Gallery;
+
+                                        _Console.CurrentListInstance.wim.IsSearchListMode = true;
+                                        _Console.CurrentListInstance.wim.m_CurrentFolder = folderEntity;
+                                    }
+                                }
+                                break;
+                            case 3:  // Page
+                                {
+                                    _Console.Item = homepage.ItemID;
+                                    _Console.ItemType = RequestItemType.Page;
+                                }
+                                break;
+                            case 6: // Site (homepage)
+                                {
+                                    var hpId = (await Site.SelectOneAsync(homepage.ItemID).ConfigureAwait(false)).HomepageID;
+                                    if (hpId.GetValueOrDefault(0) > 0)
+                                    {
+                                        _Console.Item = hpId;
+                                        _Console.ItemType = RequestItemType.Page;
+                                    }
+                                }
+                                break;
+                            case 7: // Section
+                                {
+                                    var folderEntity = new Folder();
+                                    switch (homepage.ItemID)
+                                    {
+                                        case 0:
+                                            {
+                                                folderEntity = new Folder();
+                                                folderEntity.ID = 0;
+                                                folderEntity.Name = "Dashboard";
+                                                folderEntity.Type = FolderType.Undefined;
+                                            }
+                                            break;
+                                        case 1:
+                                            {
+                                                folderEntity = Folder.SelectOneBySite(_Console.ChannelIndentifier, FolderType.Page);
+                                            }
+                                            break;
+                                        case 2:
+                                            {
+                                                folderEntity = Folder.SelectOneBySite(_Console.ChannelIndentifier, FolderType.List);
+                                            }
+                                            break;
+                                        case 3:
+                                            {
+                                                Gallery gallery = Gallery.SelectOneRoot();
+                                                folderEntity = new Folder();
+                                                folderEntity.ID = gallery.ID;
+                                                folderEntity.Name = gallery.Name;
+                                                folderEntity.Type = FolderType.Gallery;
+                                            }
+                                            break;
+                                        case 4:
+                                            {
+                                                folderEntity = Folder.SelectOneBySite(_Console.ChannelIndentifier, FolderType.Administration);
+                                            }
+                                            break;
+                                    }
+                                    _Console.CurrentListInstance.wim.IsSearchListMode = true;
+                                    _Console.CurrentListInstance.wim.m_CurrentFolder = folderEntity;
+                                }
+                                break;
+                        }
+                    }
+                }
+            }
+        }
+
+        /// <summary>
         /// Handles the page item request.
         /// </summary>
         /// <param name="grid">The grid.</param>
@@ -217,13 +331,12 @@ namespace Sushi.Mediakiwi.UI
         /// <param name="isDeleteTriggered">if set to <c>true</c> [is delete triggered].</param>
         async Task HandlePageItemRequestAsync(DataGrid grid, Beta.GeneratedCms.Source.Component component, bool isDeleteTriggered)
         {
-            _Console.CurrentListInstance.wim.IsEditMode =
-                _Console.CurrentApplicationUser.SelectRole().CanChangePage;
+            _Console.CurrentListInstance.wim.IsEditMode = (await _Console.CurrentApplicationUser.SelectRoleAsync().ConfigureAwait(false)).CanChangePage;
 
             Page page = null;
             if (_Console.CurrentPage == null)
             {
-                page = Page.SelectOne(_Console.Item.Value, false);
+                page = await Page.SelectOneAsync(_Console.Item.Value, false);
                 _Context.Items.Add("Wim.Page", page);
                 _Context.Items.Add("Wim.Site", page.Site);
             }
@@ -285,7 +398,7 @@ namespace Sushi.Mediakiwi.UI
             if (_Console.IsPostBack("page.translate"))
             {
                 _Console.CurrentApplicationUser.ShowTranslationView = true;
-                _Console.CurrentApplicationUser.Save();
+                await _Console.CurrentApplicationUser.SaveAsync().ConfigureAwait(false);
 
                 if (!_Console.CurrentListInstance.IsEditMode)
                     _Console.Response.Redirect(string.Concat(_Console.WimPagePath, "?page=", _Console.Item.Value, redirect));
@@ -301,7 +414,7 @@ namespace Sushi.Mediakiwi.UI
             if (_Console.IsPostBack("page.normal"))
             {
                 _Console.CurrentApplicationUser.ShowTranslationView = false;
-                _Console.CurrentApplicationUser.Save();
+                await _Console.CurrentApplicationUser.SaveAsync().ConfigureAwait(false);
 
                 if (!_Console.CurrentListInstance.IsEditMode)
                     _Console.Response.Redirect(string.Concat(_Console.WimPagePath, "?page=", _Console.Item.Value, redirect));
@@ -331,10 +444,10 @@ namespace Sushi.Mediakiwi.UI
             else if (isDeleteTriggered)
             {
                 //  Save the version
-                var currentversion = ComponentVersion.SelectAllOnPage(page.ID);
+                var currentversion = await ComponentVersion.SelectAllOnPageAsync(page.ID);
                 component.SavePageVersion(page, currentversion, _Console.CurrentApplicationUser, true);
 
-                page.Delete();
+                await page.DeleteAsync().ConfigureAwait(false);
                 //Wim.Framework2.Functions.AuditTrail.Insert(_Console.CurrentApplicationUser, page, Framework2.Functions.Auditing.ActionType.Remove, null);
                 _Console.Response.Redirect(string.Concat(_Console.WimPagePath, "?folder=", _Console.CurrentListInstance.wim.CurrentFolder.ID));
             }
@@ -342,7 +455,7 @@ namespace Sushi.Mediakiwi.UI
             {
                 page.InheritContentEdited = false;
                 page.Updated = Common.DatabaseDateTime;
-                page.Save();
+                await page.SaveAsync().ConfigureAwait(false);
 
                 //Wim.Framework2.Functions.AuditTrail.Insert(_Console.CurrentApplicationUser, page, Framework2.Functions.Auditing.ActionType.Localised, null);
                 _Console.Response.Redirect(string.Concat(_Console.WimPagePath, "?page=", _Console.Item.Value, redirect));
@@ -352,7 +465,7 @@ namespace Sushi.Mediakiwi.UI
             {
                 page.InheritContentEdited = true;
                 page.Updated = Common.DatabaseDateTime;
-                page.Save();
+                await page.SaveAsync().ConfigureAwait(false);
 
                 //Wim.Framework2.Functions.AuditTrail.Insert(_Console.CurrentApplicationUser, page, Framework2.Functions.Auditing.ActionType.Inherited, null);
                 _Console.Response.Redirect(string.Concat(_Console.WimPagePath, "?page=", _Console.Item.Value, redirect));

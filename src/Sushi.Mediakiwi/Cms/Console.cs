@@ -1187,10 +1187,10 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
                 if (Channel != null && Channel.Any())
                 {
                     string temp = string.Concat(CommonConfiguration.PORTAL_PATH, "/", Channel);
-                    if (temp?.StartsWith("//", StringComparison.InvariantCulture) == true) 
-                    {
-                        temp = temp.Replace("//", "/", StringComparison.InvariantCulture);
-                    }
+
+                    // Replace double slashes with single slashes, except for http:// and https://
+                    temp = new Regex(@"(https?:\/\/)|(\/){2,}").Replace(temp, @"$1$2");
+
                     return temp;
                 }
                 else
