@@ -1132,9 +1132,13 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                             ContentTypeID = ContentType.Button
                         });
 
-                        build2.AppendFormat("<input id=\"save\" class=\"submit postBack{1} right\" type=\"submit\" value=\"{0}\">", saveRecord
+                        // see "switch (container.CurrentListInstance.wim.Page.Body.Navigation.Menu.SaveButtonTarget)" for TopLeft and TopRight implementation
+                        if (container.CurrentListInstance.wim.Page.Body.Navigation.Menu.SaveButtonTarget == ButtonTarget.BottomLeft || container.CurrentListInstance.wim.Page.Body.Navigation.Menu.SaveButtonTarget == ButtonTarget.BottomRight)
+                        {
+                            build2.AppendFormat("<input id=\"save\" class=\"submit postBack{1} right\" type=\"submit\" value=\"{0}\">", saveRecord
                             , string.IsNullOrEmpty(container.CurrentListInstance.wim.Page.Body.Form._PrimairyAction) ? " action" : null
                             );
+                        }
 
                         if (section != FolderType.Page && container.CurrentListInstance.wim.CanSaveAndAddNew && !container.CurrentListInstance.wim.CanContainSingleInstancePerDefinedList)
                         {
@@ -1563,6 +1567,23 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
 
                     if (container.CurrentList.Type != ComponentListType.ComponentListProperties || container.CurrentListInstance.wim.CurrentList.Type == ComponentListType.Undefined)
                     {
+                        if (!container.CurrentListInstance.wim.HideSaveButtons && container.CurrentListInstance.wim.CurrentList.Data["wim_CanSave"].ParseBoolean(true))
+                        {
+                            var saveButton = string.Format("<li><input id=\"save\" class=\"submit postBack{1} right\" type=\"submit\" value=\"{0}\"></li>", saveRecord
+                           , string.IsNullOrEmpty(container.CurrentListInstance.wim.Page.Body.Form._PrimairyAction) ? " action" : null
+                           );
+
+                            switch (container.CurrentListInstance.wim.Page.Body.Navigation.Menu.SaveButtonTarget)
+                            {
+                                case ButtonTarget.TopLeft:
+                                    Build_TopLeft.Append(saveButton);
+                                    break;
+                                case ButtonTarget.TopRight:
+                                    Build_TopRight.Append(saveButton);
+                                    break;
+                            }
+                        }
+
                         if (container.CurrentListInstance.wim.HasListDelete && !container.CurrentListInstance.wim.HideDelete && container.Item.GetValueOrDefault() > 0)
                         {
                             if (container.CurrentListInstance.wim.CurrentList.Data["wim_CanDelete"].ParseBoolean(true))
