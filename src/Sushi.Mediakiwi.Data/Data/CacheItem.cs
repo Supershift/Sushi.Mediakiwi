@@ -88,7 +88,7 @@ namespace Sushi.Mediakiwi.Data
         public static ICacheItem[] SelectAll(DateTime dt)
         {
             var connector = Connector;
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.Created, dt, ComparisonOperator.GreaterThan);
             return connector.FetchAll(filter).ToArray();
         }
@@ -111,7 +111,7 @@ namespace Sushi.Mediakiwi.Data
         public static async Task<ICacheItem[]> SelectAllAsync(DateTime dt)
         {
             var connector = Connector;
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.Created, dt, ComparisonOperator.GreaterThan);
             var result = await connector.FetchAllAsync(filter);
             return result.ToArray();

@@ -120,7 +120,7 @@ namespace Sushi.Mediakiwi.Test.ORM
             //run a delete command on the entity 'Page'
             //this will not delete anything in DB, but still will trigger a flush
             var connector = ConnectorFactory.CreateConnector(new Page.PageMap(true));
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.ID, -1);
             connector.Delete(filter);
 
@@ -143,7 +143,7 @@ namespace Sushi.Mediakiwi.Test.ORM
             //run a delete command on the entity 'Page'
             //this will not delete anything in DB, but still will trigger a flush
             var connector = ConnectorFactory.CreateConnector(new Page.PageMap(true));
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.ID, -1);
             await connector.DeleteAsync(filter);
 

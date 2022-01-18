@@ -46,7 +46,7 @@ namespace Sushi.Mediakiwi.Data
         public static List<FolderPath> SelectAll()
         {
             var connector = ConnectorFactory.CreateConnector<FolderPath>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
 
             return connector.FetchAll(filter);
         }
@@ -58,7 +58,7 @@ namespace Sushi.Mediakiwi.Data
         public static async Task<List<FolderPath>> SelectAllAsync()
         {
             var connector = ConnectorFactory.CreateConnector<FolderPath>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
 
             return await connector.FetchAllAsync(filter);
         }

@@ -269,7 +269,7 @@ namespace Sushi.Mediakiwi.Data
         public static ComponentTemplate SelectOne(Guid componentTemplateGUID)
         {
             var connector = ConnectorFactory.CreateConnector<ComponentTemplate>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.GUID, componentTemplateGUID);
             return connector.FetchSingle(filter);
         }
@@ -281,7 +281,7 @@ namespace Sushi.Mediakiwi.Data
         public static async Task<ComponentTemplate> SelectOneAsync(Guid componentTemplateGUID)
         {
             var connector = ConnectorFactory.CreateConnector<ComponentTemplate>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.GUID, componentTemplateGUID);
             return await connector.FetchSingleAsync(filter);
         }
@@ -294,7 +294,7 @@ namespace Sushi.Mediakiwi.Data
         public static ComponentTemplate SelectOneByReference(int referenceId)
         {
             var connector = ConnectorFactory.CreateConnector<ComponentTemplate>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.ReferenceID, referenceId);
             return connector.FetchSingle(filter);
         }
@@ -307,7 +307,7 @@ namespace Sushi.Mediakiwi.Data
         public static async Task<ComponentTemplate> SelectOneByReferenceAsync(int referenceId)
         {
             var connector = ConnectorFactory.CreateConnector<ComponentTemplate>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.ReferenceID, referenceId);
             return await connector.FetchSingleAsync(filter);
         }
@@ -315,7 +315,7 @@ namespace Sushi.Mediakiwi.Data
         public static ComponentTemplate SelectOneBySourceTag(string sourceTag)
         {
             var connector = ConnectorFactory.CreateConnector<ComponentTemplate>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.SourceTag, sourceTag);
             return connector.FetchSingle(filter);
         }
@@ -323,7 +323,7 @@ namespace Sushi.Mediakiwi.Data
         public static async Task<ComponentTemplate> SelectOneBySourceTagAsync(string sourceTag)
         {
             var connector = ConnectorFactory.CreateConnector<ComponentTemplate>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.SourceTag, sourceTag);
             return await connector.FetchSingleAsync(filter);
         }
@@ -334,7 +334,7 @@ namespace Sushi.Mediakiwi.Data
         public static ComponentTemplate SelectOne_BasedOnType(Type type)
         {
             var connector = ConnectorFactory.CreateConnector<ComponentTemplate>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.TypeDefinition, type.ToString());
             return connector.FetchSingle(filter);
         }
@@ -342,7 +342,7 @@ namespace Sushi.Mediakiwi.Data
         public static async Task<ComponentTemplate> SelectOne_BasedOnTypeAsync(Type type)
         {
             var connector = ConnectorFactory.CreateConnector<ComponentTemplate>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.TypeDefinition, type.ToString());
             return await connector.FetchSingleAsync(filter);
         }
@@ -353,7 +353,7 @@ namespace Sushi.Mediakiwi.Data
         public static ComponentTemplate[] SelectAll()
         {
             var connector = ConnectorFactory.CreateConnector<ComponentTemplate>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             return connector.FetchAll(filter).ToArray();
         }
 
@@ -363,7 +363,7 @@ namespace Sushi.Mediakiwi.Data
         public static async Task<ComponentTemplate[]> SelectAllAsync()
         {
             var connector = ConnectorFactory.CreateConnector<ComponentTemplate>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             var result = await connector.FetchAllAsync(filter);
             return result.ToArray();
         }
@@ -387,7 +387,7 @@ namespace Sushi.Mediakiwi.Data
         public static List<ComponentTemplate> SearchAll(string searchText, int? siteId)
         {
             var connector = ConnectorFactory.CreateConnector<ComponentTemplate>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             if (siteId.GetValueOrDefault(0) > 0)
             {
                 filter.Add(x => x.SiteID, siteId.Value);
@@ -419,7 +419,7 @@ namespace Sushi.Mediakiwi.Data
         public static async Task<List<ComponentTemplate>> SearchAllAsync(string searchText, int? siteId)
         {
             var connector = ConnectorFactory.CreateConnector<ComponentTemplate>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             if (siteId.GetValueOrDefault(0) > 0)
             {
                 filter.Add(x => x.SiteID, siteId.Value);
@@ -571,7 +571,7 @@ namespace Sushi.Mediakiwi.Data
         {
             //[MJ:03-01-2020] TEST this method !
             var connector = ConnectorFactory.CreateConnector<ComponentTemplate>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.AddOrder(x => x.Name);
             filter.AddParameter("@pageTemplateID", pageTemplateID);
             filter.AddParameter("@pageID", pageID);
@@ -596,7 +596,7 @@ namespace Sushi.Mediakiwi.Data
         {
             //[MJ:03-01-2020] TEST this method !
             var connector = ConnectorFactory.CreateConnector<ComponentTemplate>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.AddOrder(x => x.Name);
             filter.AddParameter("@pageTemplateID", pageTemplateID);
             filter.AddParameter("@pageID", pageID);
@@ -616,7 +616,7 @@ namespace Sushi.Mediakiwi.Data
         public static ComponentTemplate[] SelectAllShared()
         {
             var connector = ConnectorFactory.CreateConnector<ComponentTemplate>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.IsShared, true);
             return connector.FetchAll(filter).ToArray();
         }
@@ -627,7 +627,7 @@ namespace Sushi.Mediakiwi.Data
         public static async Task<ComponentTemplate[]> SelectAllSharedAsync()
         {
             var connector = ConnectorFactory.CreateConnector<ComponentTemplate>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.IsShared, true);
             var result = await connector.FetchAllAsync(filter);
             return result.ToArray();
@@ -659,7 +659,7 @@ namespace Sushi.Mediakiwi.Data
         public void Delete()
         {
             var connector = ConnectorFactory.CreateConnector<ComponentTemplate>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.AddParameter("@componentTemplateID", this.ID);
             connector.ExecuteNonQuery(
                 @"DELETE FROM [wim_ComponentSearch] WHERE [ComponentSearch_Ref_Key] = @componentTemplateID
@@ -680,7 +680,7 @@ namespace Sushi.Mediakiwi.Data
         public async Task DeleteAsync()
         {
             var connector = ConnectorFactory.CreateConnector<ComponentTemplate>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.AddParameter("@componentTemplateID", this.ID);
             await connector.ExecuteNonQueryAsync(
                 @"DELETE FROM [wim_ComponentSearch] WHERE [ComponentSearch_Ref_Key] = @componentTemplateID

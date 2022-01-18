@@ -51,14 +51,14 @@ namespace Sushi.Mediakiwi.Data
         public static IEnvironmentVersion Select()
         {
             var connector = ConnectorFactory.CreateConnector<EnvironmentVersion>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             return connector.FetchSingle(filter);
         }
 
         public static async Task<IEnvironmentVersion> SelectAsync()
         {
             var connector = ConnectorFactory.CreateConnector<EnvironmentVersion>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             return await connector.FetchSingleAsync(filter);
         }
 
@@ -66,7 +66,7 @@ namespace Sushi.Mediakiwi.Data
         {
             var connector = ConnectorFactory.CreateConnector<EnvironmentVersion>();
             var sql = @"UPDATE wim_Environments SET Environment_Update = @update";
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.AddParameter("@update", DateTime.UtcNow);
             connector.ExecuteNonQuery(sql, filter);
             return true;
@@ -76,7 +76,7 @@ namespace Sushi.Mediakiwi.Data
         {
             var connector = ConnectorFactory.CreateConnector<EnvironmentVersion>();
             var sql = @"UPDATE wim_Environments SET Environment_Update = @update";
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.AddParameter("@update", DateTime.UtcNow);
             await connector.ExecuteNonQueryAsync(sql, filter).ConfigureAwait(false);
             return true;

@@ -109,7 +109,7 @@ namespace Sushi.Mediakiwi.Data
         public static IMenuItemView[] SelectAll(int siteID, int roleID, params int[] items)
         {
             var connector = ConnectorFactory.CreateConnector<MenuItemView>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.AddParameter("Site", SqlDbType.Int, siteID);
             filter.AddParameter("Role", SqlDbType.Int, roleID);
 
@@ -174,7 +174,7 @@ order by
         public static async Task<List<IMenuItemView>> SelectAllAsync(int siteID, int roleID, params int[] items)
         {
             var connector = ConnectorFactory.CreateConnector<MenuItemView>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.AddParameter("Site", SqlDbType.Int, siteID);
             filter.AddParameter("Role", SqlDbType.Int, roleID);
 
@@ -241,7 +241,7 @@ order by
         public static IMenuItemView[] SelectAll_Dashboard(int dashboardID)
         {
             var connector = ConnectorFactory.CreateConnector<MenuItemView>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.AddParameter("Dashboard", SqlDbType.Int, dashboardID);
             
             var result = connector.FetchAll(@"

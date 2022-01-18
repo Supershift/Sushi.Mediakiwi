@@ -130,7 +130,7 @@ namespace Sushi.Mediakiwi.Data
 
             if (shouldSetSortorder)
             {
-                var filter = connector.CreateDataFilter();
+                var filter = connector.CreateQuery();
                 filter.AddParameter("@thisID", ID);
 
                 connector.ExecuteNonQuery("UPDATE [Wim_PropertySearchColumns] SET [PropertySearchColumn_SortOrder] = [PropertySearchColumn_Key] WHERE [PropertySearchColumn_Key] = @thisID", filter);
@@ -155,7 +155,7 @@ namespace Sushi.Mediakiwi.Data
 
             if (shouldSetSortorder)
             {
-                var filter = connector.CreateDataFilter();
+                var filter = connector.CreateQuery();
                 filter.AddParameter("@thisID", ID);
 
                 await connector.ExecuteNonQueryAsync("UPDATE [Wim_PropertySearchColumns] SET [PropertySearchColumn_SortOrder] = [PropertySearchColumn_Key] WHERE [PropertySearchColumn_Key] = @thisID", filter);
@@ -195,7 +195,7 @@ namespace Sushi.Mediakiwi.Data
         public static PropertySearchColumn SelectOneHighlight(int componentlistID)
         {
             var connector = ConnectorFactory.CreateConnector<PropertySearchColumn>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
 
             filter.Add(x => x.ListID, componentlistID);
             filter.Add(x => x.IsHighlight, true);
@@ -210,7 +210,7 @@ namespace Sushi.Mediakiwi.Data
         public static async Task<PropertySearchColumn> SelectOneHighlightAsync(int componentlistID)
         {
             var connector = ConnectorFactory.CreateConnector<PropertySearchColumn>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
 
             filter.Add(x => x.ListID, componentlistID);
             filter.Add(x => x.IsHighlight, true);
@@ -225,7 +225,7 @@ namespace Sushi.Mediakiwi.Data
         public static PropertySearchColumn[] SelectAll(int componentlistID)
         {
             var connector = ConnectorFactory.CreateConnector<PropertySearchColumn>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
 
             filter.Add(x => x.ListID, componentlistID);
             return connector.FetchAll(filter).ToArray();
@@ -239,7 +239,7 @@ namespace Sushi.Mediakiwi.Data
         public static async Task<PropertySearchColumn[]> SelectAllAsync(int componentlistID)
         {
             var connector = ConnectorFactory.CreateConnector<PropertySearchColumn>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
 
             filter.Add(x => x.ListID, componentlistID);
             var result = await connector.FetchAllAsync(filter);

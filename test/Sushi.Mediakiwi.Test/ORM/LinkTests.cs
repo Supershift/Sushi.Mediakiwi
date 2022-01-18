@@ -120,7 +120,7 @@ namespace Sushi.Mediakiwi.Test.ORM
             // Get all test records, we will delete them ALL
             // Link does not contain a SelectAll(), Replace code below when SelectAll() is added.
             var connector = ConnectorFactory.CreateConnector<Link>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             var allAssert = connector.FetchAll(filter).ToArray();
             var ass = allAssert.Where(x => x.Target == _TestObj.Target);
             if (ass.Count() == 0)
@@ -153,7 +153,7 @@ namespace Sushi.Mediakiwi.Test.ORM
             // Get all test records, we will delete them ALL
             // Link does not contain a SelectAllAsync(), Replace code below when SelectAllAsync() is added.
             var connector = ConnectorFactory.CreateConnector<Link>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             var allAssert = await connector.FetchAllAsync(filter);
             var ass = allAssert.ToArray().Where(x => x.Target == _TestObjAsync.Target);
             if (ass.Count() == 0)
@@ -184,7 +184,7 @@ namespace Sushi.Mediakiwi.Test.ORM
         public void F_Reset_AutoIndent()
         {
             var connector = ConnectorFactory.CreateConnector<Link>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
 
             // Query for resetting the autoincrement in the table
             string sql = $"DECLARE @max int;  SELECT @max = ISNULL(MAX([{_key}]), 1) FROM [dbo].[{_table}];  DBCC CHECKIDENT({_table}, RESEED, @max)";
@@ -202,7 +202,7 @@ namespace Sushi.Mediakiwi.Test.ORM
         public async Task F_Reset_AutoIndentAsync()
         {
             var connector = ConnectorFactory.CreateConnector<Link>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
 
             // Query for resetting the autoincrement in the table
             string sql = $"DECLARE @max int;  SELECT @max = ISNULL(MAX([{_key}]), 1) FROM [dbo].[{_table}];  DBCC CHECKIDENT({_table}, RESEED, @max)";

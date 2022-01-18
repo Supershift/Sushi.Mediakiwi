@@ -70,7 +70,7 @@ namespace Sushi.Mediakiwi.Data
         public static new Document SelectOne(int ID)
         {
             var connector = ConnectorFactory.CreateConnector<Document>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.ID, ID);
             var result = connector.FetchSingle(filter);
 
@@ -85,7 +85,7 @@ namespace Sushi.Mediakiwi.Data
         public static Document SelectOne(Guid GUID)
         {
             var connector = ConnectorFactory.CreateConnector<Document>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.GUID, GUID);
 
             return connector.FetchSingle(filter);
@@ -110,7 +110,7 @@ namespace Sushi.Mediakiwi.Data
         public static async Task<Document> SelectOneAsync(Guid GUID)
         {
             var connector = ConnectorFactory.CreateConnector<Document>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.GUID, GUID);
 
             return await connector.FetchSingleAsync(filter);
@@ -124,7 +124,7 @@ namespace Sushi.Mediakiwi.Data
         public static Document[] SelectAll(int galleryID)
         {
             var connector = ConnectorFactory.CreateConnector<Document>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.IsImage, false);
             filter.Add(x => x.ParentID, null);
             filter.Add(x => x.GalleryID, galleryID);
@@ -141,7 +141,7 @@ namespace Sushi.Mediakiwi.Data
         public static async Task<Document[]> SelectAllAsync(int galleryID)
         {
             var connector = ConnectorFactory.CreateConnector<Document>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.IsImage, false);
             filter.Add(x => x.ParentID, null);
             filter.Add(x => x.GalleryID, galleryID);

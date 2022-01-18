@@ -31,7 +31,7 @@ namespace Sushi.Mediakiwi.Data.Sys
         public static async Task<SysView> FetchSingle(string tableName)
         {
             var connector = new Connector<SysView>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
 
             filter.AddParameter("@name", System.Data.SqlDbType.VarChar, tableName);
             var sqlText = "select VIEW_DEFINITION from INFORMATION_SCHEMA.VIEWS WHERE TABLE_NAME = @name";

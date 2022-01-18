@@ -72,7 +72,7 @@ namespace Sushi.Mediakiwi.Data
                 int sortOrder = 0;
                 foreach (SubList.SubListitem item in subList.Items)
                 {
-                    var filter = connector.CreateDataFilter();
+                    var filter = connector.CreateQuery();
 
                     filter.AddParameter("@itemID", item.ID);
                     filter.AddParameter("@folderID", folderID);
@@ -110,7 +110,7 @@ namespace Sushi.Mediakiwi.Data
                 int sortOrder = 0;
                 foreach (SubList.SubListitem item in subList.Items)
                 {
-                    var filter = connector.CreateDataFilter();
+                    var filter = connector.CreateQuery();
 
                     filter.AddParameter("@itemID", item.ID);
                     filter.AddParameter("@folderID", folderID);
@@ -148,7 +148,7 @@ namespace Sushi.Mediakiwi.Data
 
                 foreach (SubList.SubListitem item in subList.Items)
                 {
-                    var filter = connector.CreateDataFilter();
+                    var filter = connector.CreateQuery();
 
                     filter.AddParameter("@itemID", roleID);
                     filter.AddParameter("@folderID", item.ID);
@@ -186,7 +186,7 @@ namespace Sushi.Mediakiwi.Data
 
                 foreach (SubList.SubListitem item in subList.Items)
                 {
-                    var filter = connector.CreateDataFilter();
+                    var filter = connector.CreateQuery();
 
                     filter.AddParameter("@itemID", roleID);
                     filter.AddParameter("@folderID", item.ID);
@@ -222,7 +222,7 @@ namespace Sushi.Mediakiwi.Data
                 int sortOrder = 0;
                 foreach (int item in subList)
                 {
-                    var filter = connector.CreateDataFilter();
+                    var filter = connector.CreateQuery();
 
                     filter.AddParameter("@itemID", roleID);
                     filter.AddParameter("@folderID", item);
@@ -258,7 +258,7 @@ namespace Sushi.Mediakiwi.Data
                 int sortOrder = 0;
                 foreach (int item in subList)
                 {
-                    var filter = connector.CreateDataFilter();
+                    var filter = connector.CreateQuery();
 
                     filter.AddParameter("@itemID", roleID);
                     filter.AddParameter("@folderID", item);
@@ -297,7 +297,7 @@ namespace Sushi.Mediakiwi.Data
                 {
                     if (item.Value == Access.Inherit) continue;
 
-                    var filter = connector.CreateDataFilter();
+                    var filter = connector.CreateQuery();
 
                     filter.AddParameter("@itemID", userOrRoleID);
                     filter.AddParameter("@folderID", item.Key);
@@ -337,7 +337,7 @@ namespace Sushi.Mediakiwi.Data
                 {
                     if (item.Value == Access.Inherit) continue;
 
-                    var filter = connector.CreateDataFilter();
+                    var filter = connector.CreateQuery();
 
                     filter.AddParameter("@itemID", userOrRoleID);
                     filter.AddParameter("@folderID", item.Key);
@@ -365,7 +365,7 @@ namespace Sushi.Mediakiwi.Data
         public static RoleRight[] SelectAll()
         {
             var connector = ConnectorFactory.CreateConnector<RoleRight>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.AddOrder(x => x.ItemID);
             filter.AddOrder(x => x.SortOrder);
             return connector.FetchAll(filter).ToArray();
@@ -378,7 +378,7 @@ namespace Sushi.Mediakiwi.Data
         public static async Task<RoleRight[]> SelectAllAsync()
         {
             var connector = ConnectorFactory.CreateConnector<RoleRight>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.AddOrder(x => x.ItemID);
             filter.AddOrder(x => x.SortOrder);
 
@@ -394,7 +394,7 @@ namespace Sushi.Mediakiwi.Data
         public static RoleRight[] SelectAll(int roleID)
         {
             var connector = ConnectorFactory.CreateConnector<RoleRight>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.RoleID, roleID);
             filter.AddOrder(x => x.ItemID);
             filter.AddOrder(x => x.SortOrder);
@@ -410,7 +410,7 @@ namespace Sushi.Mediakiwi.Data
         public static async Task<RoleRight[]> SelectAllAsync(int roleID)
         {
             var connector = ConnectorFactory.CreateConnector<RoleRight>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.RoleID, roleID);
             filter.AddOrder(x => x.ItemID);
             filter.AddOrder(x => x.SortOrder);
@@ -428,7 +428,7 @@ namespace Sushi.Mediakiwi.Data
         public static RoleRight[] SelectAll(int roleID, RoleRightType type)
         {
             var connector = ConnectorFactory.CreateConnector<RoleRight>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.RoleID, roleID);
             filter.Add(x => x.TypeID, (int)type);
             filter.AddOrder(x => x.ItemID);
@@ -446,7 +446,7 @@ namespace Sushi.Mediakiwi.Data
         public static async Task<RoleRight[]> SelectAllAsync(int roleID, RoleRightType type)
         {
             var connector = ConnectorFactory.CreateConnector<RoleRight>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.RoleID, roleID);
             filter.Add(x => x.TypeID, (int)type);
             filter.AddOrder(x => x.ItemID);
@@ -464,7 +464,7 @@ namespace Sushi.Mediakiwi.Data
         private static void Prepare(RoleRightType type, int roleID)
         {
             var connector = ConnectorFactory.CreateConnector<RoleRight>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.AddParameter("@roleID", roleID);
             filter.AddParameter("@childTypeID", (int)type);
 
@@ -480,7 +480,7 @@ namespace Sushi.Mediakiwi.Data
         private static async Task PrepareAsync(RoleRightType type, int roleID)
         {
             var connector = ConnectorFactory.CreateConnector<RoleRight>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.AddParameter("@roleID", roleID);
             filter.AddParameter("@childTypeID", (int)type);
 
@@ -497,7 +497,7 @@ namespace Sushi.Mediakiwi.Data
             RoleRightType type = RoleRightType.Folder;
 
             var connector = ConnectorFactory.CreateConnector<RoleRight>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.AddParameter("@childID", folderID);
             filter.AddParameter("@childTypeID", (int)type);
 
@@ -514,7 +514,7 @@ namespace Sushi.Mediakiwi.Data
             RoleRightType type = RoleRightType.Folder;
 
             var connector = ConnectorFactory.CreateConnector<RoleRight>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.AddParameter("@childID", folderID);
             filter.AddParameter("@childTypeID", (int)type);
 
@@ -531,7 +531,7 @@ namespace Sushi.Mediakiwi.Data
             RoleRightType type = RoleRightType.Folder;
 
             var connector = ConnectorFactory.CreateConnector<RoleRight>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.AddParameter("@childID", folderID);
             filter.AddParameter("@childTypeID", (int)type);
 
@@ -548,7 +548,7 @@ namespace Sushi.Mediakiwi.Data
             RoleRightType type = RoleRightType.Folder;
 
             var connector = ConnectorFactory.CreateConnector<RoleRight>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.AddParameter("@childID", folderID);
             filter.AddParameter("@childTypeID", (int)type);
 
@@ -564,7 +564,7 @@ namespace Sushi.Mediakiwi.Data
         private static void CleanUp(RoleRightType type, int roleID)
         {
             var connector = ConnectorFactory.CreateConnector<RoleRight>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.AddParameter("@roleID", roleID);
             filter.AddParameter("@childTypeID", (int)type);
 
@@ -580,7 +580,7 @@ namespace Sushi.Mediakiwi.Data
         private static async Task CleanUpAsync(RoleRightType type, int roleID)
         {
             var connector = ConnectorFactory.CreateConnector<RoleRight>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.AddParameter("@roleID", roleID);
             filter.AddParameter("@childTypeID", (int)type);
 

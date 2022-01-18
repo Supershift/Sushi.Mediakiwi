@@ -31,7 +31,7 @@ namespace Sushi.Mediakiwi.Extention
                 // Override the Mapped table (wim_pages to the correct table)
                 connector.Map.Table(template.wim.m_sortOrderSqlTable);
 
-                var filter = connector.CreateDataFilter();
+                var filter = connector.CreateQuery();
 
                 // Query replacements
                 string sqlColumn = $"[{template.wim.m_sortOrderSqlColumn}]";

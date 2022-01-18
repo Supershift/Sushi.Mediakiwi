@@ -81,7 +81,7 @@ namespace Sushi.Mediakiwi.Data
         public static IComponentTarget[] SelectAll(int pageID)
         {
             var connector = ConnectorFactory.CreateConnector<ComponentTarget>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.PageID, pageID);
 
             return connector.FetchAll(filter).ToArray();
@@ -95,7 +95,7 @@ namespace Sushi.Mediakiwi.Data
         public static async Task<IComponentTarget[]> SelectAllAsync(int pageID)
         {
             var connector = ConnectorFactory.CreateConnector<ComponentTarget>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.PageID, pageID);
 
             var result = await connector.FetchAllAsync(filter);
@@ -109,7 +109,7 @@ namespace Sushi.Mediakiwi.Data
         public virtual void DeleteComplete()
         {
             var connector = ConnectorFactory.CreateConnector<ComponentTarget>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.AddParameter("@thisTarget", Target);
             filter.AddParameter("@thisSource", Source);
             filter.AddParameter("@thisPageId", PageID);
@@ -129,7 +129,7 @@ AND NOT [ComponentTarget_Component_Source] = @thisSource", filter);
         public async virtual Task DeleteCompleteAsync()
         {
             var connector = ConnectorFactory.CreateConnector<ComponentTarget>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.AddParameter("@thisTarget", Target);
             filter.AddParameter("@thisSource", Source);
             filter.AddParameter("@thisPageId", PageID);
@@ -150,7 +150,7 @@ AND NOT [ComponentTarget_Component_Source] = @thisSource", filter);
         public static IComponentTarget[] SelectAll(Guid componentGuid)
         {
             var connector = ConnectorFactory.CreateConnector<ComponentTarget>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.Source, componentGuid);
 
             return connector.FetchAll(filter).ToArray();
@@ -164,7 +164,7 @@ AND NOT [ComponentTarget_Component_Source] = @thisSource", filter);
         public static async Task<IComponentTarget[]> SelectAllAsync(Guid componentGuid)
         {
             var connector = ConnectorFactory.CreateConnector<ComponentTarget>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.Source, componentGuid);
 
             var result = await connector.FetchAllAsync(filter);

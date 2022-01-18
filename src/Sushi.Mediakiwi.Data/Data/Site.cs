@@ -354,7 +354,7 @@ namespace Sushi.Mediakiwi.Data
         public void Delete()
         {
             var connector = ConnectorFactory.CreateConnector<Site>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.AddParameter("@siteID", ID);
 
             if (this.HasPages || this.HasLists)
@@ -395,7 +395,7 @@ delete from wim_ComponentVersions where ComponentVersion_Page_Key in
         public async Task DeleteAsync()
         {
             var connector = ConnectorFactory.CreateConnector<Site>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.AddParameter("@siteID", ID);
 
             if (this.HasPages || this.HasLists)
@@ -454,7 +454,7 @@ delete from wim_ComponentVersions where ComponentVersion_Page_Key in
         public static Site SelectOne(Guid guid)
         {
             var connector = ConnectorFactory.CreateConnector<Site>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.GUID, guid);
             return connector.FetchSingle(filter);
         }
@@ -466,7 +466,7 @@ delete from wim_ComponentVersions where ComponentVersion_Page_Key in
         public static async Task<Site> SelectOneAsync(Guid guid)
         {
             var connector = ConnectorFactory.CreateConnector<Site>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.GUID, guid);
             return await connector.FetchSingleAsync(filter);
         }
@@ -552,7 +552,7 @@ delete from wim_ComponentVersions where ComponentVersion_Page_Key in
         public static Site SelectOneByPage(int pageID)
         {
             var connector = ConnectorFactory.CreateConnector<Site>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.AddParameter("@pageID", pageID);
 
             return connector.FetchSingle(@"SELECT TOP 1 *
@@ -571,7 +571,7 @@ delete from wim_ComponentVersions where ComponentVersion_Page_Key in
         public static async Task<Site> SelectOneByPageAsync(int pageID)
         {
             var connector = ConnectorFactory.CreateConnector<Site>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.AddParameter("@pageID", pageID);
 
             return await connector.FetchSingleAsync(@"SELECT TOP 1 *
@@ -589,7 +589,7 @@ delete from wim_ComponentVersions where ComponentVersion_Page_Key in
         public static Site SelectOneByFolder(int folderID)
         {
             var connector = ConnectorFactory.CreateConnector<Site>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.AddParameter("@folderID", folderID);
 
             return connector.FetchSingle(@"SELECT TOP 1 *
@@ -606,7 +606,7 @@ delete from wim_ComponentVersions where ComponentVersion_Page_Key in
         public static async Task<Site> SelectOneByFolderAsync(int folderID)
         {
             var connector = ConnectorFactory.CreateConnector<Site>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.AddParameter("@folderID", folderID);
 
             return await connector.FetchSingleAsync(@"SELECT TOP 1 *
@@ -625,7 +625,7 @@ delete from wim_ComponentVersions where ComponentVersion_Page_Key in
         public static Site SelectOneSiteResolution(string searchPath, bool excludeAdmin = false)
         {
             var connector = ConnectorFactory.CreateConnector<Site>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.AddOrder(x => x.DefaultFolder, SortOrder.DESC);
             filter.AddParameter("@searchPath", $"'{searchPath}%'");
 
@@ -649,7 +649,7 @@ delete from wim_ComponentVersions where ComponentVersion_Page_Key in
         public static async Task<Site> SelectOneSiteResolutionAsync(string searchPath, bool excludeAdmin = false)
         {
             var connector = ConnectorFactory.CreateConnector<Site>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.AddOrder(x => x.DefaultFolder, SortOrder.DESC);
             filter.AddParameter("@searchPath", $"'{searchPath}%'");
 
@@ -671,7 +671,7 @@ delete from wim_ComponentVersions where ComponentVersion_Page_Key in
         public static Site SelectOne(string searchPath)
         {
             var connector = ConnectorFactory.CreateConnector<Site>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.AddOrder(x => x.DefaultFolder, SortOrder.DESC);
 
             if (string.IsNullOrEmpty(searchPath))
@@ -689,7 +689,7 @@ delete from wim_ComponentVersions where ComponentVersion_Page_Key in
         public static async Task<Site> SelectOneAsync(string searchPath)
         {
             var connector = ConnectorFactory.CreateConnector<Site>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.AddOrder(x => x.DefaultFolder, SortOrder.DESC);
 
             if (string.IsNullOrEmpty(searchPath))
@@ -920,7 +920,7 @@ delete from wim_ComponentVersions where ComponentVersion_Page_Key in
         internal static List<Site> SelectAllActive()
         {
             var connector = ConnectorFactory.CreateConnector<Site>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.AddOrder(x => x.Type);
             filter.AddOrder(x => x.Name);
 
@@ -936,7 +936,7 @@ delete from wim_ComponentVersions where ComponentVersion_Page_Key in
         internal static async Task<List<Site>> SelectAllActiveAsync()
         {
             var connector = ConnectorFactory.CreateConnector<Site>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.AddOrder(x => x.Type);
             filter.AddOrder(x => x.Name);
 
@@ -952,7 +952,7 @@ delete from wim_ComponentVersions where ComponentVersion_Page_Key in
         public static List<Site> SelectAll(bool ignoreAdministration = true)
         {
             var connector = ConnectorFactory.CreateConnector<Site>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.AddOrder(x => x.Type);
             filter.AddOrder(x => x.Name);
 
@@ -968,7 +968,7 @@ delete from wim_ComponentVersions where ComponentVersion_Page_Key in
         public static async Task<List<Site>> SelectAllAsync(bool ignoreAdministration = true)
         {
             var connector = ConnectorFactory.CreateConnector<Site>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.AddOrder(x => x.Type);
             filter.AddOrder(x => x.Name);
 
@@ -994,7 +994,7 @@ delete from wim_ComponentVersions where ComponentVersion_Page_Key in
         public static List<Site> SelectAll(string title, FolderType type)
         {
             var connector = ConnectorFactory.CreateConnector<Site>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.AddOrder(x => x.Name);
             filter.AddParameter("@folderTypeID", (int)type);
             filter.AddParameter("@siteDisplayName", title);
@@ -1026,7 +1026,7 @@ delete from wim_ComponentVersions where ComponentVersion_Page_Key in
         public static async Task<List<Site>> SelectAllAsync(string title, FolderType type)
         {
             var connector = ConnectorFactory.CreateConnector<Site>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.AddOrder(x => x.Name);
             filter.AddParameter("@folderTypeID", (int)type);
             filter.AddParameter("@siteDisplayName", title);

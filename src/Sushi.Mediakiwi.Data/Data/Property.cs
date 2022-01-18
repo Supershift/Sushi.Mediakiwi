@@ -365,7 +365,7 @@ namespace Sushi.Mediakiwi.Data
         public static Property SelectOne(int listID, string fieldName, int? listTypeID)
         {
             var connector = ConnectorFactory.CreateConnector<Property>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.ListID, listID);
             if (listTypeID.HasValue)
                 filter.Add(x => x.ContentTypeID, listTypeID.Value);
@@ -377,7 +377,7 @@ namespace Sushi.Mediakiwi.Data
         public static List<Property> SelectAllByTemplate(int templateid)
         {
             var connector = new Connector<Property>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.TemplateID, templateid);
             filter.AddOrder(x => x.SortOrder);
             return connector.FetchAll(filter);
@@ -386,7 +386,7 @@ namespace Sushi.Mediakiwi.Data
         public static async Task<List<Property>> SelectAllByTemplateAsync(int templateid)
         {
             var connector = new Connector<Property>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.TemplateID, templateid);
             filter.AddOrder(x => x.SortOrder);
             return await connector.FetchAllAsync(filter);
@@ -402,7 +402,7 @@ namespace Sushi.Mediakiwi.Data
         public static async Task<Property> SelectOneAsync(int listID, string fieldName, int? listTypeID)
         {
             var connector = ConnectorFactory.CreateConnector<Property>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.ListID, listID);
             if (listTypeID.HasValue)
                 filter.Add(x => x.ContentTypeID, listTypeID.Value);
@@ -418,7 +418,7 @@ namespace Sushi.Mediakiwi.Data
         public static bool HasContentContainer(int listID)
         {
             var connector = ConnectorFactory.CreateConnector<Property>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.ListID, listID);
             filter.Add(x => x.ContentTypeID, ContentType.ContentContainer);
 
@@ -433,7 +433,7 @@ namespace Sushi.Mediakiwi.Data
         public static async Task<bool> HasContentContainerAsync(int listID)
         {
             var connector = ConnectorFactory.CreateConnector<Property>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.ListID, listID);
             filter.Add(x => x.ContentTypeID, ContentType.ContentContainer);
 
@@ -448,7 +448,7 @@ namespace Sushi.Mediakiwi.Data
         public static List<Property> SelectAll()
         {
             var connector = ConnectorFactory.CreateConnector<Property>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             return connector.FetchAll(filter);
         }
 
@@ -459,7 +459,7 @@ namespace Sushi.Mediakiwi.Data
         public static async Task<List<Property>> SelectAllAsync()
         {
             var connector = ConnectorFactory.CreateConnector<Property>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             return await connector.FetchAllAsync(filter);
         }
 
@@ -475,7 +475,7 @@ namespace Sushi.Mediakiwi.Data
         public static List<Property> SelectAllByFieldName(string fieldName)
         {
             var connector = new Connector<Property>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.FieldName, fieldName);
             return connector.FetchAll(filter);
         }
@@ -487,7 +487,7 @@ namespace Sushi.Mediakiwi.Data
         public static async Task<List<Property>> SelectAllByFieldNameAsync(string fieldName)
         {
             var connector = new Connector<Property>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.FieldName, fieldName);
             return await connector.FetchAllAsync(filter);
         }
@@ -500,7 +500,7 @@ namespace Sushi.Mediakiwi.Data
         public static Property[] SelectAll(int[] IDs)
         {
             var connector = ConnectorFactory.CreateConnector<Property>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.ID, IDs, ComparisonOperator.In);
 
             return connector.FetchAll(filter).ToArray();
@@ -518,7 +518,7 @@ namespace Sushi.Mediakiwi.Data
         public static Property[] SelectAll(int listID, int? listTypeID, bool showEmptyTypes, bool onlyReturnFlexibleProperties = false)
         {
             var connector = ConnectorFactory.CreateConnector<Property>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
         
             filter.Add(x => x.ListID, listID);
 
@@ -549,7 +549,7 @@ namespace Sushi.Mediakiwi.Data
         public static Property[] SelectAll(int listID)
         {
             var connector = ConnectorFactory.CreateConnector<Property>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.ListID, listID);
 
             return connector.FetchAll(filter).ToArray();
@@ -563,7 +563,7 @@ namespace Sushi.Mediakiwi.Data
         public static async Task<Property[]> SelectAllAsync(int[] IDs)
         {
             var connector = ConnectorFactory.CreateConnector<Property>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.ID, IDs, ComparisonOperator.In);
 
             var result = await connector.FetchAllAsync(filter);
@@ -585,7 +585,7 @@ namespace Sushi.Mediakiwi.Data
 
             if (shouldSetSortorder)
             {
-                var filter = connector.CreateDataFilter();
+                var filter = connector.CreateQuery();
                 filter.AddParameter("@thisID", ID);
 
                 connector.ExecuteNonQuery("UPDATE [wim_Properties] SET [Property_SortOrder] = [Property_Key] WHERE [Property_Key] = @thisID", filter);
@@ -610,7 +610,7 @@ namespace Sushi.Mediakiwi.Data
 
             if (shouldSetSortorder)
             {
-                var filter = connector.CreateDataFilter();
+                var filter = connector.CreateQuery();
                 filter.AddParameter("@thisID", ID);
 
                 await connector.ExecuteNonQueryAsync("UPDATE [wim_Properties] SET [Property_SortOrder] = [Property_Key] WHERE [Property_Key] = @thisID", filter);

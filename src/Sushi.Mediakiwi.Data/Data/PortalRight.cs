@@ -52,7 +52,7 @@ namespace Sushi.Mediakiwi.Data
         public static IPortalRight SelectOne(int ID)
         {
             var connector = ConnectorFactory.CreateConnector<PortalRight>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.ID, ID);
             return connector.FetchSingle(filter);
         }
@@ -65,7 +65,7 @@ namespace Sushi.Mediakiwi.Data
         public static async Task<IPortalRight> SelectOneAsync(int ID)
         {
             var connector = ConnectorFactory.CreateConnector<PortalRight>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.ID, ID);
             return await connector.FetchSingleAsync(filter);
         }
@@ -78,7 +78,7 @@ namespace Sushi.Mediakiwi.Data
         public static IPortalRight[] SelectAll(int roleID)
         {
             var connector = ConnectorFactory.CreateConnector<PortalRight>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.RoleID, roleID);
             return connector.FetchAll(filter).ToArray();
         }
@@ -91,7 +91,7 @@ namespace Sushi.Mediakiwi.Data
         public static async Task<IPortalRight[]> SelectAllAsync(int roleID)
         {
             var connector = ConnectorFactory.CreateConnector<PortalRight>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.RoleID, roleID);
             var result = await connector.FetchAllAsync(filter);
 

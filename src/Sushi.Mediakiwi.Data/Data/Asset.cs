@@ -370,7 +370,7 @@ namespace Sushi.Mediakiwi.Data
         public static List<Asset> SelectAll_Local()
         {
             var connector = ConnectorFactory.CreateConnector<Asset>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.RemoteLocation, null);
             filter.Add(x => x.ParentID, null);
 
@@ -380,7 +380,7 @@ namespace Sushi.Mediakiwi.Data
         public static List<Asset> SelectAll_Variant(int parentID, string relativeGalleryPath = null)
         {
             var connector = ConnectorFactory.CreateConnector<Asset>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.ParentID, parentID);
 
             return connector.FetchAll(filter);
@@ -389,7 +389,7 @@ namespace Sushi.Mediakiwi.Data
         public static async Task<List<Asset>> SelectAll_VariantAsync(int parentID, string relativeGalleryPath = null)
         {
             var connector = ConnectorFactory.CreateConnector<Asset>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.ParentID, parentID);
 
             return await connector.FetchAllAsync(filter).ConfigureAwait(false);
@@ -399,7 +399,7 @@ namespace Sushi.Mediakiwi.Data
         public static List<Asset> SelectRange(int[] items)
         {
             var connector = ConnectorFactory.CreateConnector<Asset>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
 
             int i = 0;
             var sql_in = new List<string>();
@@ -424,7 +424,7 @@ where
         public static async Task<List<Asset>> SelectRangeAsync(int[] items)
         {
             var connector = ConnectorFactory.CreateConnector<Asset>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
 
             int i = 0;
             var sql_in = new List<string>();
@@ -449,7 +449,7 @@ where
         public static List<Asset> SelectAll(int galleryID, int? assetTypeID = null, bool onlyReturnActiveAssets = false, bool onlyReturnDocuments = false, bool onlyReturnImages = false)
         {
             var connector = ConnectorFactory.CreateConnector<Asset>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.GalleryID, galleryID);
             filter.Add(x => x.ParentID, null);
 
@@ -478,7 +478,7 @@ where
         public static async Task<List<Asset>> SelectAllAsync(int galleryID, int? assetTypeID = null, bool onlyReturnActiveAssets = false, bool onlyReturnDocuments = false, bool onlyReturnImages = false)
         {
             var connector = ConnectorFactory.CreateConnector<Asset>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.GalleryID, galleryID);
             filter.Add(x => x.ParentID, null);
             
@@ -507,7 +507,7 @@ where
         public static List<Asset> SearchAll(string searchCandidate, int? galleryID = null, bool onlyReturnActiveAssets = false)
         {
             var connector = ConnectorFactory.CreateConnector<Asset>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.ParentID, null);
 
             if (!string.IsNullOrWhiteSpace(searchCandidate))
@@ -530,7 +530,7 @@ where
         public static async Task<List<Asset>> SearchAllAsync(string searchCandidate, int? galleryID = null, bool onlyReturnActiveAssets = false, bool onlyReturnDocuments = false, bool onlyReturnImages = false)
         {
             var connector = ConnectorFactory.CreateConnector<Asset>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.ParentID, null);
 
             if (!string.IsNullOrWhiteSpace(searchCandidate))
@@ -566,7 +566,7 @@ where
         public static async Task<List<Asset>> SelectAll_LocalAsync()
         {
             var connector = ConnectorFactory.CreateConnector<Asset>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.RemoteLocation, null);
             filter.Add(x => x.ParentID, null);
 
@@ -588,7 +588,7 @@ where
         public static Asset SelectOne(Guid guid)
         {
             var connector = ConnectorFactory.CreateConnector<Asset>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.GUID, guid);
             return connector.FetchSingle(filter);
         }
@@ -596,7 +596,7 @@ where
         public static async Task<Asset> SelectOneAsync(Guid guid)
         {
             var connector = ConnectorFactory.CreateConnector<Asset>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.GUID, guid);
             return await connector.FetchSingleAsync(filter);
         }
@@ -604,7 +604,7 @@ where
         public static Asset SelectOne(int galleryID, int assetTypeID)
         {
             var connector = ConnectorFactory.CreateConnector<Asset>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.AssetTypeID, assetTypeID);
             filter.Add(x => x.GalleryID, galleryID);
             
@@ -614,7 +614,7 @@ where
         public static async Task<Asset> SelectOneAsync(int galleryID, int assetTypeID)
         {
             var connector = ConnectorFactory.CreateConnector<Asset>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.AssetTypeID, assetTypeID);
             filter.Add(x => x.GalleryID, galleryID);
 
@@ -627,7 +627,7 @@ where
         internal static bool DeleteInactive()
         {
             var connector = ConnectorFactory.CreateConnector<Asset>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.IsActive, false);
             connector.Delete(filter);
             return true;

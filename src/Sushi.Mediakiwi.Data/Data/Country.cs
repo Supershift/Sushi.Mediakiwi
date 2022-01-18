@@ -94,7 +94,7 @@ namespace Sushi.Mediakiwi.Data
         public static ICountry SelectOne(Guid countryGUID)
         {
             var connector = ConnectorFactory.CreateConnector<Country>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.GUID, countryGUID);
             return connector.FetchSingle(filter);
         }
@@ -107,7 +107,7 @@ namespace Sushi.Mediakiwi.Data
         public static async Task<ICountry> SelectOneAsync(Guid countryGUID)
         {
             var connector = ConnectorFactory.CreateConnector<Country>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.GUID, countryGUID);
             return await connector.FetchSingleAsync(filter);
         }
@@ -120,7 +120,7 @@ namespace Sushi.Mediakiwi.Data
         public static ICountry SelectOne(string englishName)
         {
             var connector = ConnectorFactory.CreateConnector<Country>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.Country_EN, englishName);
             return connector.FetchSingle(filter);
         }
@@ -133,7 +133,7 @@ namespace Sushi.Mediakiwi.Data
         public static async Task<ICountry> SelectOneAsync(string englishName)
         {
             var connector = ConnectorFactory.CreateConnector<Country>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.Country_EN, englishName);
             return await connector.FetchSingleAsync(filter);
         }
@@ -144,7 +144,7 @@ namespace Sushi.Mediakiwi.Data
         public static ICountry[] SelectAll()
         {
             var connector = ConnectorFactory.CreateConnector<Country>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             return connector.FetchAll(filter).ToArray();
         }
 
@@ -154,7 +154,7 @@ namespace Sushi.Mediakiwi.Data
         public static async Task<ICountry[]> SelectAllAsync()
         {
             var connector = ConnectorFactory.CreateConnector<Country>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             var aresult = await connector.FetchAllAsync(filter);
             return aresult.ToArray();
         }
@@ -167,7 +167,7 @@ namespace Sushi.Mediakiwi.Data
         public static ICountry[] SelectAll(string languageSortOrder)
         {
             var connector = ConnectorFactory.CreateConnector<Country>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
 
             if (languageSortOrder.Equals("nl", StringComparison.CurrentCultureIgnoreCase))
                 return connector.FetchAll(filter).OrderBy(x => x.Country_NL).ToArray();
@@ -182,7 +182,7 @@ namespace Sushi.Mediakiwi.Data
         public static async Task<ICountry[]> SelectAllAsync(string languageSortOrder)
         {
             var connector = ConnectorFactory.CreateConnector<Country>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
 
             var aresult = await connector.FetchAllAsync(filter);
 
@@ -200,7 +200,7 @@ namespace Sushi.Mediakiwi.Data
         public static ICountry[] SelectAll(bool onlyReturnActiveCountries, string languageSortOrder)
         {
             var connector = ConnectorFactory.CreateConnector<Country>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
 
             if (onlyReturnActiveCountries)
                 filter.Add(x => x.IsActive, true);
@@ -219,7 +219,7 @@ namespace Sushi.Mediakiwi.Data
         public static async Task<ICountry[]> SelectAllAsync(bool onlyReturnActiveCountries, string languageSortOrder)
         {
             var connector = ConnectorFactory.CreateConnector<Country>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
 
             if (onlyReturnActiveCountries)
                 filter.Add(x => x.IsActive, true);

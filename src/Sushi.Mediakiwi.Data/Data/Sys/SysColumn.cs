@@ -39,7 +39,7 @@ namespace Sushi.Mediakiwi.Data.Sys
         public static async Task<List<SysColumn>> SelectAllAsync(string tableName)
         {
             var connector = new Connector<SysColumn>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             
             filter.AddParameter("@table", tableName);
             var sqlText = "select Name, prec, isnullable from syscolumns where id = (select object_id from sys.objects where name = @table) order by colorder";

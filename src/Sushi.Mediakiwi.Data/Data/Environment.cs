@@ -45,7 +45,7 @@ namespace Sushi.Mediakiwi.Data
         public static IEnvironment SelectOne()
         {
             var connector = ConnectorFactory.CreateConnector<Environment>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             return connector.FetchSingle(filter);
         }
 
@@ -56,7 +56,7 @@ namespace Sushi.Mediakiwi.Data
         public static async Task<IEnvironment> SelectOneAsync()
         {
             var connector = ConnectorFactory.CreateConnector<Environment>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             return await connector.FetchSingleAsync(filter).ConfigureAwait(false);
         }
 

@@ -81,7 +81,7 @@ namespace Sushi.Mediakiwi.Data
         public static ISearchView[] SelectAll(int folderID)
         {
             var connector = ConnectorFactory.CreateConnector<SearchView>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.FolderID, folderID);
             filter.AddOrder(x => x.SortOrder);
 
@@ -96,7 +96,7 @@ namespace Sushi.Mediakiwi.Data
         public static async Task<ISearchView[]> SelectAllAsync(int folderID)
         {
             var connector = ConnectorFactory.CreateConnector<SearchView>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.FolderID, folderID);
             filter.AddOrder(x => x.SortOrder);
 
@@ -114,7 +114,7 @@ namespace Sushi.Mediakiwi.Data
         public static ISearchView[] SelectAll(int? siteID, int? filterType, string search)
         {
             var connector = ConnectorFactory.CreateConnector<SearchView>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.AddOrder(x => x.SortOrder);
 
             if (string.IsNullOrEmpty(search) == false)
@@ -143,7 +143,7 @@ namespace Sushi.Mediakiwi.Data
         public static async Task<ISearchView[]> SelectAllAsync(int? siteID, int? filterType, string search)
         {
             var connector = ConnectorFactory.CreateConnector<SearchView>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.AddOrder(x => x.SortOrder);
 
             if (string.IsNullOrEmpty(search) == false)
@@ -174,7 +174,7 @@ namespace Sushi.Mediakiwi.Data
                 return null;
 
             var connector = ConnectorFactory.CreateConnector<SearchView>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.AddOrder(x => x.SortOrder);
             filter.Add(x => x.ID, items, ComparisonOperator.In);
 
@@ -192,7 +192,7 @@ namespace Sushi.Mediakiwi.Data
                 return null;
 
             var connector = ConnectorFactory.CreateConnector<SearchView>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.AddOrder(x => x.SortOrder);
             filter.Add(x => x.ID, items, ComparisonOperator.In);
 

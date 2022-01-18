@@ -112,7 +112,7 @@ namespace Sushi.Mediakiwi.Data
         public static List<ArticleList> SelectList(int listID)
         {
             var connector = ConnectorFactory.CreateConnector<ArticleList>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
 
             filter.AddParameter("@listId", listID);
 
@@ -133,7 +133,7 @@ SELECT [Wiki_Key]
         public static async Task<List<ArticleList>> SelectListAsync(int listID)
         {
             var connector = ConnectorFactory.CreateConnector<ArticleList>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
 
             filter.AddParameter("@listId", listID);
 
@@ -154,7 +154,7 @@ SELECT [Wiki_Key]
             try
             {
                 var connector = ConnectorFactory.CreateConnector<Article>();
-                var filter = connector.CreateDataFilter();
+                var filter = connector.CreateQuery();
 
                 if (wikiList.HasValue) 
                     filter.Add(x => x.BelongsToListID, wikiList.Value);
@@ -177,7 +177,7 @@ SELECT [Wiki_Key]
             try
             {
                 var connector = ConnectorFactory.CreateConnector<Article>();
-                var filter = connector.CreateDataFilter();
+                var filter = connector.CreateQuery();
 
                 if (wikiList.HasValue)
                     filter.Add(x => x.BelongsToListID, wikiList.Value);
@@ -198,7 +198,7 @@ SELECT [Wiki_Key]
         public static Article SelectOneForListOrNew(int forListID, string defaultTitle)
         {
             var connector = ConnectorFactory.CreateConnector<Article>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.BelongsToListID, forListID);
             var item = connector.FetchSingle(filter);
             if (item == null || item.ID < 1)
@@ -211,7 +211,7 @@ SELECT [Wiki_Key]
         public static async Task<Article> SelectOneForListOrNewAsync(int forListID, string defaultTitle)
         {
             var connector = ConnectorFactory.CreateConnector<Article>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.BelongsToListID, forListID);
             var item = await connector.FetchSingleAsync(filter).ConfigureAwait(false);
             if (item == null || item.ID < 1)
@@ -262,7 +262,7 @@ SELECT [Wiki_Key]
         public static Article SelectOneForPageOrNew(int forPageID, string defaultTitle)
         {
             var connector = ConnectorFactory.CreateConnector<Article>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.BelongsToPageID, forPageID);
 
             var item = connector.FetchSingle(filter);
@@ -275,7 +275,7 @@ SELECT [Wiki_Key]
         public static async Task<Article> SelectOneForPageOrNewAsync(int forPageID, string defaultTitle)
         {
             var connector = ConnectorFactory.CreateConnector<Article>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.BelongsToPageID, forPageID);
 
             var item = await connector.FetchSingleAsync(filter).ConfigureAwait(false);

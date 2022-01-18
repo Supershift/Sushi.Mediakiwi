@@ -411,7 +411,7 @@ namespace Sushi.Mediakiwi.Data
         public bool Delete()
         {
             var connector = ConnectorFactory.CreateConnector<PageTemplate>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.AddParameter("@thisId", ID);
             try
             {
@@ -433,7 +433,7 @@ namespace Sushi.Mediakiwi.Data
         public async Task<bool> DeleteAsync()
         {
             var connector = ConnectorFactory.CreateConnector<PageTemplate>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.AddParameter("@thisId", ID);
             try
             {
@@ -456,7 +456,7 @@ namespace Sushi.Mediakiwi.Data
         public static PageTemplate SelectOne(Guid guid)
         {
             var connector = ConnectorFactory.CreateConnector<PageTemplate>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.GUID, guid);
             return connector.FetchSingle(filter);
         }
@@ -469,7 +469,7 @@ namespace Sushi.Mediakiwi.Data
         public static async Task<PageTemplate> SelectOneAsync(Guid guid)
         {
             var connector = ConnectorFactory.CreateConnector<PageTemplate>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.GUID, guid);
             return await connector.FetchSingleAsync(filter);
         }
@@ -483,7 +483,7 @@ namespace Sushi.Mediakiwi.Data
         public static PageTemplate SelectOneOverwrite(int siteID, int pageTemplateID)
         {
             var connector = ConnectorFactory.CreateConnector<PageTemplate>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.OverwriteSiteKey, siteID);
             filter.Add(x => x.OverwriteTemplateKey, pageTemplateID);
 
@@ -499,7 +499,7 @@ namespace Sushi.Mediakiwi.Data
         public static async Task<PageTemplate> SelectOneOverwriteAsync(int siteID, int pageTemplateID)
         {
             var connector = ConnectorFactory.CreateConnector<PageTemplate>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.OverwriteSiteKey, siteID);
             filter.Add(x => x.OverwriteTemplateKey, pageTemplateID);
 
@@ -514,7 +514,7 @@ namespace Sushi.Mediakiwi.Data
         public static PageTemplate SelectOne(string location)
         {
             var connector = ConnectorFactory.CreateConnector<PageTemplate>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.Location, location);
 
             return connector.FetchSingle(filter);
@@ -528,7 +528,7 @@ namespace Sushi.Mediakiwi.Data
         public static async Task<PageTemplate> SelectOneAsync(string location)
         {
             var connector = ConnectorFactory.CreateConnector<PageTemplate>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.Location, location);
 
             return await connector.FetchSingleAsync(filter);
@@ -542,7 +542,7 @@ namespace Sushi.Mediakiwi.Data
         public static PageTemplate SelectOneByReference(int referenceID)
         {
             var connector = ConnectorFactory.CreateConnector<PageTemplate>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.ReferenceID, referenceID);
 
             return connector.FetchSingle(filter);
@@ -556,7 +556,7 @@ namespace Sushi.Mediakiwi.Data
         public static async Task<PageTemplate> SelectOneByReferenceAsync(int referenceID)
         {
             var connector = ConnectorFactory.CreateConnector<PageTemplate>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.ReferenceID, referenceID);
 
             return await connector.FetchSingleAsync(filter);
@@ -569,7 +569,7 @@ namespace Sushi.Mediakiwi.Data
         public static PageTemplate[] SelectAll()
         {
             var connector = ConnectorFactory.CreateConnector<PageTemplate>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.AddOrder(x => x.ReferenceID);
 
             return connector.FetchAll(filter).ToArray();
@@ -582,7 +582,7 @@ namespace Sushi.Mediakiwi.Data
         public static async Task<PageTemplate[]> SelectAllAsync()
         {
             var connector = ConnectorFactory.CreateConnector<PageTemplate>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.AddOrder(x => x.ReferenceID);
 
             var result = await connector.FetchAllAsync(filter);
@@ -596,7 +596,7 @@ namespace Sushi.Mediakiwi.Data
         public static PageTemplate[] SelectAllSortedByName()
         {
             var connector = ConnectorFactory.CreateConnector<PageTemplate>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.AddOrder(x => x.Name);
 
             return connector.FetchAll(filter).ToArray();
@@ -609,7 +609,7 @@ namespace Sushi.Mediakiwi.Data
         public static async Task<PageTemplate[]> SelectAllSortedByNameAsync()
         {
             var connector = ConnectorFactory.CreateConnector<PageTemplate>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.AddOrder(x => x.Name);
 
             var result = await connector.FetchAllAsync(filter);
@@ -625,7 +625,7 @@ namespace Sushi.Mediakiwi.Data
         public static PageTemplate[] SearchAll(int siteID, string name)
         {
             var connector = ConnectorFactory.CreateConnector<PageTemplate>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.AddOrder(x => x.ReferenceID);
 
             if (siteID > 0)
@@ -649,7 +649,7 @@ namespace Sushi.Mediakiwi.Data
         public static async Task<PageTemplate[]> SearchAllAsync(int siteID, string name)
         {
             var connector = ConnectorFactory.CreateConnector<PageTemplate>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.AddOrder(x => x.ReferenceID);
 
             if (siteID > 0)

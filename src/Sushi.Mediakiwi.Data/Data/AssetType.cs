@@ -75,7 +75,7 @@ namespace Sushi.Mediakiwi.Data
         public static IAssetType SelectOne(string Tag)
         {
             var connector = ConnectorFactory.CreateConnector<AssetType>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.Tag, Tag);
             return connector.FetchSingle(filter);
         }
@@ -87,7 +87,7 @@ namespace Sushi.Mediakiwi.Data
         public static async Task<IAssetType> SelectOneAsync(string Tag)
         {
             var connector = ConnectorFactory.CreateConnector<AssetType>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.Tag, Tag);
             return await connector.FetchSingleAsync(filter);
         }
@@ -99,7 +99,7 @@ namespace Sushi.Mediakiwi.Data
         public static IAssetType[] SelectAll(bool onlyReturnVariant = false)
         {
             var connector = ConnectorFactory.CreateConnector<AssetType>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             if (onlyReturnVariant)
                 filter.Add(x => x.IsVariant, true);
             filter.AddOrder(x => x.Name);
@@ -113,7 +113,7 @@ namespace Sushi.Mediakiwi.Data
         public static async Task<IAssetType[]> SelectAllAsync(bool onlyReturnVariant = false)
         {
             var connector = ConnectorFactory.CreateConnector<AssetType>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             if (onlyReturnVariant)
                 filter.Add(x => x.IsVariant, true);
             filter.AddOrder(x => x.Name);

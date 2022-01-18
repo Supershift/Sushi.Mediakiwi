@@ -74,7 +74,7 @@ namespace Sushi.Mediakiwi.Data
         public static IMenu[] SelectAll()
         {
             var connector = ConnectorFactory.CreateConnector<Menu>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             return connector.FetchAll(filter).ToArray();
         }
 
@@ -84,7 +84,7 @@ namespace Sushi.Mediakiwi.Data
         public static async Task<IMenu[]> SelectAllAsync()
         {
             var connector = ConnectorFactory.CreateConnector<Menu>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             var result = await connector.FetchAllAsync(filter);
             return result.ToArray();
         }

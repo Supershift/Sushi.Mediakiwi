@@ -109,7 +109,7 @@ namespace Sushi.Mediakiwi.Data
         public static IInstaller SelectOne(Guid guid)
         {
             var connector = ConnectorFactory.CreateConnector<Installer>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.GUID, guid);
             return connector.FetchSingle(filter);
         }
@@ -122,7 +122,7 @@ namespace Sushi.Mediakiwi.Data
         public static async Task<IInstaller> SelectOneAsync(Guid guid)
         {
             var connector = ConnectorFactory.CreateConnector<Installer>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.GUID, guid);
             return await connector.FetchSingleAsync(filter);
         }
@@ -156,7 +156,7 @@ namespace Sushi.Mediakiwi.Data
         public static IInstaller[] SelectAll()
         {
             var connector = ConnectorFactory.CreateConnector<Installer>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             return connector.FetchAll(filter).ToArray();
         }
 
@@ -167,7 +167,7 @@ namespace Sushi.Mediakiwi.Data
         public static async Task<IInstaller[]> SelectAllAsync()
         {
             var connector = ConnectorFactory.CreateConnector<Installer>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
 
             var result = await connector.FetchAllAsync(filter);
             return result.ToArray();

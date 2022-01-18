@@ -240,7 +240,7 @@ namespace Sushi.Mediakiwi.Data
         public static IVisitor Select(Guid visitorReference)
         {
             var connector = Connector;
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.GUID, visitorReference);
 
             return connector.FetchSingle(filter);
@@ -255,7 +255,7 @@ namespace Sushi.Mediakiwi.Data
         public static async Task<IVisitor> SelectAsync(Guid visitorReference)
         {
             var connector = Connector;
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.GUID, visitorReference);
 
             return await connector.FetchSingleAsync(filter);
@@ -318,7 +318,7 @@ namespace Sushi.Mediakiwi.Data
         public static IVisitor[] SelectAllByProfile(int profileId, int excludeVisitorID)
         {
             var connector = Connector;
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.ProfileID, profileId);
 
             int minutes = Utility.ConvertToInt(CommonConfiguration.EXPIRATION_COOKIE_PROFILE, 0);
@@ -343,7 +343,7 @@ namespace Sushi.Mediakiwi.Data
         public static async Task<IVisitor[]> SelectAllByProfileAsync(int profileId, int excludeVisitorID)
         {
             var connector = Connector;
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.ProfileID, profileId);
 
             int minutes = Utility.ConvertToInt(CommonConfiguration.EXPIRATION_COOKIE_VISITOR, 0);

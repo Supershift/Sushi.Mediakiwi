@@ -144,7 +144,7 @@ namespace Sushi.Mediakiwi.Data
         public static IMenuItem[] SelectAll(int menuID)
         {
             var connector = ConnectorFactory.CreateConnector<MenuItem>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.MenuID, menuID);
             filter.AddOrder(x => x.Position);
             filter.AddOrder(x => x.Sort);
@@ -158,7 +158,7 @@ namespace Sushi.Mediakiwi.Data
         public static async Task<IMenuItem[]> SelectAllAsync(int menuID)
         {
             var connector = ConnectorFactory.CreateConnector<MenuItem>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.MenuID, menuID);
             filter.AddOrder(x => x.Position);
             filter.AddOrder(x => x.Sort);
@@ -173,7 +173,7 @@ namespace Sushi.Mediakiwi.Data
         public static IMenuItem[] SelectAll_Dashboard(int dashboardID)
         {
             var connector = ConnectorFactory.CreateConnector<MenuItem>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.DashboardID, dashboardID);
             filter.AddOrder(x => x.MenuID);
             filter.AddOrder(x => x.Position);
@@ -188,7 +188,7 @@ namespace Sushi.Mediakiwi.Data
         public static async Task<IMenuItem[]> SelectAll_DashboardAsync(int dashboardID)
         {
             var connector = ConnectorFactory.CreateConnector<MenuItem>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.DashboardID, dashboardID);
             filter.AddOrder(x => x.MenuID);
             filter.AddOrder(x => x.Position);

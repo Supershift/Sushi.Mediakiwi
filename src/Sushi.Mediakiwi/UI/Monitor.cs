@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.AspNetCore.Http.Extensions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Sushi.Mediakiwi.Beta.GeneratedCms.Source;
@@ -138,6 +139,12 @@ namespace Sushi.Mediakiwi.UI
 
             await CheckSiteAsync().ConfigureAwait(false);
 
+            // If we are at the landing page, without a querystring, process as Root request
+            if (_Console.Request.Path.Equals(WimServerConfiguration.Instance.Portal_Path, StringComparison.InvariantCulture) && _Console?.Request?.QueryString.HasValue == false)
+            {
+                await HandleRootRequestAsync().ConfigureAwait(false);
+            }
+
             //  Check the role base security
             if (await CheckSecurityAsync(reStartWithNotificationList).ConfigureAwait(false))
             {
@@ -155,6 +162,7 @@ namespace Sushi.Mediakiwi.UI
             {
                 // TODO: MR:10-12-2021 Add logging
                 await _Console.Response.WriteAsync("no-access").ConfigureAwait(false);
+                await _Console.Response.CompleteAsync();
             }
         }
 
@@ -181,12 +189,6 @@ namespace Sushi.Mediakiwi.UI
             }
             
  
-            // If we are at the landing page, without a querystring, process as Root request
-            if (_Console.Request.Path.Equals(WimServerConfiguration.Instance.Portal_Path, StringComparison.InvariantCulture) && _Console?.Request?.QueryString.HasValue == false)
-            {
-                await HandleRootRequestAsync().ConfigureAwait(false);
-            }
-
             if (_Console.ItemType == RequestItemType.Item || _Console.ItemType == RequestItemType.Asset || _Console.CurrentListInstance.wim.CanContainSingleInstancePerDefinedList)
             {
                 //  Handles the list item request.
@@ -919,9 +921,16 @@ namespace Sushi.Mediakiwi.UI
         /// <param name="siteID">The site ID.</param>
         async Task RedirectToChannelHomePageAsync(int siteID)
         {
+            var currentUrl = "";
+            if (_Console.Request.PathBase.HasValue)
+            {
+                currentUrl = _Console.Request.PathBase.ToString();
+            }
+            currentUrl += _Console.Request.Path;
+
             //  Find the default homepage in the menu section
             var defaultHome = await _Console.UrlBuild.GetHomeRequestAsync(siteID).ConfigureAwait(false);
-            if (_Console.Request.Path.Equals(defaultHome) == false)
+            if (currentUrl.Equals(defaultHome, StringComparison.InvariantCultureIgnoreCase) == false)
             {
                 _Console.Response.Redirect(defaultHome);
             }
@@ -929,6 +938,13 @@ namespace Sushi.Mediakiwi.UI
 
         async Task<bool> CheckSecurityAsync(bool reStartWithNotificationList)
         {
+            var currentUrl = "";
+            if (_Console.Request.PathBase.HasValue)
+            {
+                currentUrl = _Console.Request.PathBase.ToString();
+            }
+            currentUrl += _Console.Request.Path;
+
             var sites = await _Console.CurrentListInstance.wim.CurrentApplicationUserRole.SitesAsync(_Console.CurrentApplicationUser).ConfigureAwait(false);
 
             //  ACL: Sites
@@ -955,7 +971,12 @@ namespace Sushi.Mediakiwi.UI
                         if ((await _Console.CurrentListInstance.wim.CurrentApplicationUser.SitesAsync(AccessFilter.RoleAndUser).ConfigureAwait(false))?.Length > 0)
                         {
                             var siteId = (await _Console.CurrentListInstance.wim.CurrentApplicationUser.SitesAsync(AccessFilter.RoleAndUser).ConfigureAwait(false))[0].ID;
-                            _Console.Response.Redirect(_Console.GetWimPagePath(siteId));
+                            var newUrl = _Console.GetWimPagePath(siteId);
+                            if (currentUrl.Equals(newUrl, StringComparison.InvariantCultureIgnoreCase) == false)
+                            {
+                                _Console.Response.Redirect(newUrl);
+                            }
+
                             return false;
                         }
                         else
@@ -988,8 +1009,12 @@ namespace Sushi.Mediakiwi.UI
                     {
                         _Console.Response.Redirect(_Console.UrlBuild.GetFolderRequest(_Console.CurrentListInstance.wim.CurrentFolder.ParentID.Value));
                     }
+                    var newUrl = _Console.WimPagePath;
+                    if (currentUrl.Equals(newUrl, StringComparison.InvariantCultureIgnoreCase) == false)
+                    {
+                        _Console.Response.Redirect(newUrl);
+                    }
 
-                    _Console.Response.Redirect(_Console.WimPagePath);
                     return false;
                 }
             }
@@ -1015,7 +1040,13 @@ namespace Sushi.Mediakiwi.UI
                             approved = _Console.CurrentListInstance.wim.CurrentApplicationUserRole.CanSeeFolder;
                             if (!approved)
                             {
-                                _Console.Response.Redirect(_Console.WimPagePath);
+                                var newUrl = _Console.WimPagePath;
+                                
+                                if (currentUrl.Equals(newUrl, StringComparison.InvariantCultureIgnoreCase) == false)
+                                {
+                                    _Console.Response.Redirect(newUrl);
+                                }
+
                                 return false;
                             }
                         }
@@ -1024,9 +1055,13 @@ namespace Sushi.Mediakiwi.UI
                         {
                             if (!_Console.CurrentListInstance.wim.CurrentList.HasRoleAccess(_Console.CurrentListInstance.wim.CurrentApplicationUser))
                             {
-                                _Console.Response.Redirect(_Console.WimPagePath);
-                                return false;
+                                var newUrl = _Console.WimPagePath;
+                                if (currentUrl.Equals(newUrl, StringComparison.InvariantCultureIgnoreCase) == false)
+                                {
+                                    _Console.Response.Redirect(newUrl);
+                                }
 
+                                return false;
                             }
                         }
                     }
@@ -1044,7 +1079,12 @@ namespace Sushi.Mediakiwi.UI
                                     _Console.Response.Redirect(_Console.UrlBuild.GetGalleryRequest(currentGallery.ParentID.Value));
                                 }
 
-                                _Console.Response.Redirect(_Console.WimPagePath);
+                                var newUrl = _Console.WimPagePath;
+                                if (currentUrl.Equals(newUrl, StringComparison.InvariantCultureIgnoreCase) == false)
+                                {
+                                    _Console.Response.Redirect(newUrl);
+                                }
+
                                 return false;
                             }
                         }
@@ -1063,7 +1103,12 @@ namespace Sushi.Mediakiwi.UI
                     && _Console.CurrentListInstance.wim.CurrentList.Type != ComponentListType.Documents
                     && _Console.CurrentListInstance.wim.CurrentList.Type != ComponentListType.Links)
                 {
-                    _Console.Response.Redirect(_Console.WimPagePath);
+                    var newUrl = _Console.WimPagePath;
+                    if (currentUrl.Equals(newUrl, StringComparison.InvariantCultureIgnoreCase) == false)
+                    {
+                        _Console.Response.Redirect(newUrl);
+                    }
+
                     return false;
                 }
             }

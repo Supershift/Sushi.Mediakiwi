@@ -69,7 +69,7 @@ namespace Sushi.Mediakiwi.Data
 
             if (shouldSetSortorder)
             {
-                var filter = connector.CreateDataFilter();
+                var filter = connector.CreateQuery();
                 filter.AddParameter("@thisID", ID);
 
                 connector.ExecuteNonQuery("UPDATE [wim_PropertyOptions] SET [PropertyOption_SortOrder] = [PropertyOption_Key] WHERE [PropertyOption_Key] = @thisID", filter);
@@ -94,7 +94,7 @@ namespace Sushi.Mediakiwi.Data
 
             if (shouldSetSortorder)
             {
-                var filter = connector.CreateDataFilter();
+                var filter = connector.CreateQuery();
                 filter.AddParameter("@thisID", ID);
 
                 await connector.ExecuteNonQueryAsync("UPDATE [wim_PropertyOptions] SET [PropertyOption_SortOrder] = [PropertyOption_Key] WHERE [PropertyOption_Key] = @thisID", filter);
@@ -139,7 +139,7 @@ namespace Sushi.Mediakiwi.Data
                 return true;
 
             var connector = ConnectorFactory.CreateConnector<PropertyOption>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.AddParameter("@formElementID", formElementID);
 
             connector.ExecuteNonQuery("DELETE FROM [wim_PropertyOptions] WHERE [PropertyOption_Property_Key] = @formElementID", filter);
@@ -159,7 +159,7 @@ namespace Sushi.Mediakiwi.Data
                 return true;
 
             var connector = ConnectorFactory.CreateConnector<PropertyOption>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.AddParameter("@formElementID", formElementID);
 
             await connector.ExecuteNonQueryAsync("DELETE FROM [wim_PropertyOptions] WHERE [PropertyOption_Property_Key] = @formElementID", filter);
@@ -200,7 +200,7 @@ namespace Sushi.Mediakiwi.Data
         public static PropertyOption[] SelectAll(int propertyID)
         {
             var connector = ConnectorFactory.CreateConnector<PropertyOption>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.PropertyID, propertyID);
             filter.AddOrder(x => x.SortOrderID);
 
@@ -215,7 +215,7 @@ namespace Sushi.Mediakiwi.Data
         public static async Task<PropertyOption[]> SelectAllAsync(int propertyID)
         {
             var connector = ConnectorFactory.CreateConnector<PropertyOption>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.PropertyID, propertyID);
             filter.AddOrder(x => x.SortOrderID);
 
@@ -230,7 +230,7 @@ namespace Sushi.Mediakiwi.Data
         public static PropertyOption[] SelectAll()
         {
             var connector = ConnectorFactory.CreateConnector<PropertyOption>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.AddOrder(x => x.SortOrderID);
 
             return connector.FetchAll(filter).ToArray();
@@ -243,7 +243,7 @@ namespace Sushi.Mediakiwi.Data
         public static async Task<PropertyOption[]> SelectAllAsync()
         {
             var connector = ConnectorFactory.CreateConnector<PropertyOption>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.AddOrder(x => x.SortOrderID);
 
             var result = await connector.FetchAllAsync(filter);

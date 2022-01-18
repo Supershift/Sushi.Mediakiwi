@@ -42,7 +42,7 @@ namespace Sushi.Mediakiwi.Data
         public static IRoleRightAccessItem[] Select(int roleID, int typeID, int childTypeID)
         {
             var connector = ConnectorFactory.CreateConnector<RoleRightAccessItem>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.RoleID, roleID);
             filter.Add(x => x.TypeID, typeID);
             filter.Add(x => x.ChildTypeID, childTypeID);
@@ -59,7 +59,7 @@ namespace Sushi.Mediakiwi.Data
         public static async Task<IRoleRightAccessItem[]> SelectAsync(int roleID, int typeID, int childTypeID)
         {
             var connector = ConnectorFactory.CreateConnector<RoleRightAccessItem>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.RoleID, roleID);
             filter.Add(x => x.TypeID, typeID);
             filter.Add(x => x.ChildTypeID, childTypeID);

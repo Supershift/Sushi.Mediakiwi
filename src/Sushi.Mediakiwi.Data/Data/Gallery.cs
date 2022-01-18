@@ -290,7 +290,7 @@ namespace Sushi.Mediakiwi.Data
         public static Gallery SelectOne(int parentID, string gallery)
         {
             var connector = ConnectorFactory.CreateConnector<Gallery>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.Name, gallery);
             filter.Add(x => x.ParentID, parentID);
 
@@ -306,7 +306,7 @@ namespace Sushi.Mediakiwi.Data
         public static async Task<Gallery> SelectOneAsync(int parentID, string gallery)
         {
             var connector = ConnectorFactory.CreateConnector<Gallery>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.Name, gallery);
             filter.Add(x => x.ParentID, parentID);
 
@@ -320,7 +320,7 @@ namespace Sushi.Mediakiwi.Data
         public static Gallery[] SelectAll()
         {
             var connector = ConnectorFactory.CreateConnector<Gallery>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.AddOrder(x => x.CompletePath);
             filter.AddSql("ISNULL([Gallery_IsHidden], 0) = 0");
 
@@ -334,7 +334,7 @@ namespace Sushi.Mediakiwi.Data
         public static async Task<Gallery[]> SelectAllAsync()
         {
             var connector = ConnectorFactory.CreateConnector<Gallery>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.AddOrder(x => x.CompletePath);
             filter.AddSql("ISNULL([Gallery_IsHidden], 0) = 0");
 
@@ -350,7 +350,7 @@ namespace Sushi.Mediakiwi.Data
         public static Gallery[] SelectAll(string searchCandidate)
         {
             var connector = ConnectorFactory.CreateConnector<Gallery>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.AddOrder(x => x.CompletePath);
             filter.Add(x => x.Name, $"%{searchCandidate}%", ComparisonOperator.Like);
             filter.Add(x => x.IsActive, true);
@@ -366,7 +366,7 @@ namespace Sushi.Mediakiwi.Data
         public static async Task<Gallery[]> SelectAllAsync(string searchCandidate)
         {
             var connector = ConnectorFactory.CreateConnector<Gallery>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.AddOrder(x => x.CompletePath);
             filter.Add(x => x.Name, $"%{searchCandidate}%", ComparisonOperator.Like);
             filter.Add(x => x.IsActive, true);
@@ -383,7 +383,7 @@ namespace Sushi.Mediakiwi.Data
         public static Gallery[] SearchAll_ByPath(string searchPath)
         {
             var connector = ConnectorFactory.CreateConnector<Gallery>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.AddOrder(x => x.CompletePath);
             filter.Add(x => x.CompletePath, $"{searchPath}%", ComparisonOperator.Like);
 
@@ -398,7 +398,7 @@ namespace Sushi.Mediakiwi.Data
         public static async Task<Gallery[]> SearchAll_ByPathAsync(string searchPath)
         {
             var connector = ConnectorFactory.CreateConnector<Gallery>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.AddOrder(x => x.CompletePath);
             filter.Add(x => x.CompletePath, $"{searchPath}%", ComparisonOperator.Like);
 
@@ -485,7 +485,7 @@ namespace Sushi.Mediakiwi.Data
                 return new Gallery();
 
             var connector = ConnectorFactory.CreateConnector<Gallery>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
 
             filter.Add(x => x.GUID, galleryGUID);
             filter.Add(x => x.IsActive, true);
@@ -496,7 +496,7 @@ namespace Sushi.Mediakiwi.Data
         public static Gallery SelectOne(string relativePath, bool onlyReturnActive = false)
         {
             var connector = ConnectorFactory.CreateConnector<Gallery>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
 
             filter.Add(x => x.CompletePath, relativePath);
             if (onlyReturnActive)
@@ -508,7 +508,7 @@ namespace Sushi.Mediakiwi.Data
         public static async Task<Gallery> SelectOneAsync(string relativePath, bool onlyReturnActive = false)
         {
             var connector = ConnectorFactory.CreateConnector<Gallery>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
 
             filter.Add(x => x.CompletePath, relativePath);
             if (onlyReturnActive)
@@ -624,7 +624,7 @@ namespace Sushi.Mediakiwi.Data
                 return new Gallery();
 
             var connector = ConnectorFactory.CreateConnector<Gallery>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
 
             filter.Add(x => x.GUID, galleryGUID);
             filter.Add(x => x.IsActive, true);
@@ -639,7 +639,7 @@ namespace Sushi.Mediakiwi.Data
         public static Gallery SelectOneRoot()
         {
             var connector = ConnectorFactory.CreateConnector<Gallery>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.AddOrder(x => x.ID);
             filter.Add(x => x.BaseGalleryID, null);
 
@@ -653,7 +653,7 @@ namespace Sushi.Mediakiwi.Data
         public static async Task<Gallery> SelectOneRootAsync()
         {
             var connector = ConnectorFactory.CreateConnector<Gallery>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.AddOrder(x => x.ID);
             filter.Add(x => x.BaseGalleryID, null);
 
@@ -668,7 +668,7 @@ namespace Sushi.Mediakiwi.Data
         public static Gallery SelectOneRoot(GalleryType type)
         {
             var connector = ConnectorFactory.CreateConnector<Gallery>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.AddOrder(x => x.ID);
             filter.Add(x => x.TypeID, (int)type);
             filter.Add(x => x.IsFixed, true);
@@ -684,7 +684,7 @@ namespace Sushi.Mediakiwi.Data
         public static async Task<Gallery> SelectOneRootAsync(GalleryType type)
         {
             var connector = ConnectorFactory.CreateConnector<Gallery>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.AddOrder(x => x.ID);
             filter.Add(x => x.TypeID, (int)type);
             filter.Add(x => x.IsFixed, true);
@@ -701,7 +701,7 @@ namespace Sushi.Mediakiwi.Data
         public static Gallery[] SelectAll(GalleryType type, bool returnFolder)
         {
             var connector = ConnectorFactory.CreateConnector<Gallery>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
 
             filter.Add(x => x.IsFixed, false);
             filter.Add(x => x.IsActive, true);
@@ -722,7 +722,7 @@ namespace Sushi.Mediakiwi.Data
         public static async Task<Gallery[]> SelectAllAsync(GalleryType type, bool returnFolder)
         {
             var connector = ConnectorFactory.CreateConnector<Gallery>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
 
             filter.Add(x => x.IsFixed, false);
             filter.Add(x => x.IsActive, true);
@@ -744,7 +744,7 @@ namespace Sushi.Mediakiwi.Data
         public static Gallery[] SelectAllByParent(int parentID, bool returnHidden)
         {
             var connector = ConnectorFactory.CreateConnector<Gallery>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.AddOrder(x => x.Name);
             filter.Add(x => x.ParentID, parentID);
             filter.Add(x => x.IsActive, true);
@@ -764,7 +764,7 @@ namespace Sushi.Mediakiwi.Data
         public static async Task<Gallery[]> SelectAllByParentAsync(int parentID, bool returnHidden)
         {
             var connector = ConnectorFactory.CreateConnector<Gallery>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.AddOrder(x => x.Name);
             filter.Add(x => x.ParentID, parentID);
             filter.Add(x => x.IsActive, true);
@@ -806,7 +806,7 @@ namespace Sushi.Mediakiwi.Data
         public static Gallery[] SelectAllByBase(int baseGalleryID)
         {
             var connector = ConnectorFactory.CreateConnector<Gallery>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.AddOrder(x => x.Name);
             filter.Add(x => x.BaseGalleryID, baseGalleryID);
             filter.Add(x => x.IsActive, true);
@@ -822,7 +822,7 @@ namespace Sushi.Mediakiwi.Data
         public static async Task<Gallery[]> SelectAllByBaseAsync(int baseGalleryID)
         {
             var connector = ConnectorFactory.CreateConnector<Gallery>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.AddOrder(x => x.Name);
             filter.Add(x => x.BaseGalleryID, baseGalleryID);
             filter.Add(x => x.IsActive, true);
@@ -906,7 +906,7 @@ namespace Sushi.Mediakiwi.Data
             get
             {
                 var connector = ConnectorFactory.CreateConnector<Gallery>();
-                var filter = connector.CreateDataFilter();
+                var filter = connector.CreateQuery();
                 filter.AddParameter("@thisId", ID);
 
                 return connector.ExecuteScalar<int>("SELECT (SELECT COUNT(*) FROM [wim_Galleries] WHERE [Gallery_Gallery_Key] = @thisId) + COUNT(*) FROM [wim_Assets] WHERE [Asset_Gallery_Key] = @thisId)", filter);
@@ -916,7 +916,7 @@ namespace Sushi.Mediakiwi.Data
         private bool IsGalleryAlreadyTaken(int galleryID, string gallery)
         {
             var connector = ConnectorFactory.CreateConnector<Gallery>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.AddParameter("@galleryId", galleryID);
             filter.AddParameter("@galleryName", gallery);
 
@@ -1135,7 +1135,7 @@ namespace Sushi.Mediakiwi.Data
         public void UpdateCount()
         {
             var connector = ConnectorFactory.CreateConnector<Gallery>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.AddParameter("@thisId", ID);
 
             connector.ExecuteNonQuery($@"
@@ -1153,7 +1153,7 @@ WHERE [Gallery_Key] = @thisId", filter);
         public async Task UpdateCountAsync()
         {
             var connector = ConnectorFactory.CreateConnector<Gallery>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.AddParameter("@thisId", ID);
 
             await connector.ExecuteNonQueryAsync($@"
@@ -1192,7 +1192,7 @@ WHERE [Gallery_Key] = @thisId", filter);
         {
             var connector = ConnectorFactory.CreateConnector<Gallery>();
 
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.AddParameter("@completePath", completePath.Replace("'", ""));
 
             connector.ExecuteNonQuery("UPDATE [dbo].[wim_Galleries] SET [Gallery_IsActive] = 0 WHERE [Gallery_CompletePath] LIKE @completePath + '%'", filter);
@@ -1207,7 +1207,7 @@ WHERE [Gallery_Key] = @thisId", filter);
         public static async Task DeactivateAsync(string completePath)
         {
             var connector = ConnectorFactory.CreateConnector<Gallery>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.AddParameter("@completePath", completePath.Replace("'", ""));
 
             await connector.ExecuteNonQueryAsync("UPDATE [dbo].[wim_Galleries] SET [Gallery_IsActive] = 0 WHERE [Gallery_CompletePath] LIKE @completePath + '%'", filter);
@@ -1223,7 +1223,7 @@ WHERE [Gallery_Key] = @thisId", filter);
         public bool UpdateChildren(string newFolderCompletePath)
         {
             var connector = ConnectorFactory.CreateConnector<Gallery>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.AddParameter("@oldCompletePath", CompletePath.Replace("'", ""));
             filter.AddParameter("@newCompletePath", newFolderCompletePath.Replace("'", ""));
 
@@ -1247,7 +1247,7 @@ WHERE [Gallery_Key] = @thisId", filter);
         public async Task<bool> UpdateChildrenAsync(string newFolderCompletePath)
         {
             var connector = ConnectorFactory.CreateConnector<Gallery>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.AddParameter("@oldCompletePath", CompletePath.Replace("'", "''"));
             filter.AddParameter("@newCompletePath", newFolderCompletePath.Replace("'", "''"));
 
@@ -1271,7 +1271,7 @@ WHERE [Gallery_Key] = @thisId", filter);
         {
 
             var connector = ConnectorFactory.CreateConnector<Gallery>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.AddParameter("@oldCompletePath", CompletePath.Replace("'", ""));         
 
             try

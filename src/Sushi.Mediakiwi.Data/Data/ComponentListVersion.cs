@@ -167,7 +167,7 @@ namespace Sushi.Mediakiwi.Data
                 return new ComponentListVersion();
 
             var connector = ConnectorFactory.CreateConnector<ComponentListVersion>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             
             filter.MaxResults = 1;
             filter.AddOrder(x => x.ID, SortOrder.DESC);
@@ -191,7 +191,7 @@ namespace Sushi.Mediakiwi.Data
                 return new ComponentListVersion();
 
             var connector = ConnectorFactory.CreateConnector<ComponentListVersion>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             
             filter.MaxResults = 1;
             filter.AddOrder(x => x.ID, SortOrder.DESC);
@@ -211,7 +211,7 @@ namespace Sushi.Mediakiwi.Data
         public static ComponentListVersion SelectOne(int siteID, int componentListID, int componentListVersionItemID)
         {
             var connector = ConnectorFactory.CreateConnector<ComponentListVersion>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             
             filter.MaxResults = 1;
             filter.AddOrder(x => x.ID, SortOrder.DESC);
@@ -232,7 +232,7 @@ namespace Sushi.Mediakiwi.Data
         public static async Task<ComponentListVersion> SelectOneAsync(int siteID, int componentListID, int componentListVersionItemID)
         {
             var connector = ConnectorFactory.CreateConnector<ComponentListVersion>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             
             filter.MaxResults = 1;
             filter.AddOrder(x => x.ID, SortOrder.DESC);
@@ -252,7 +252,7 @@ namespace Sushi.Mediakiwi.Data
         public static ComponentListVersion[] SelectAll(int componentListID, int siteID)
         {
             var connector = ConnectorFactory.CreateConnector<ComponentListVersion>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.AddOrder(x => x.ID, SortOrder.DESC);
             filter.AddParameter("@siteId", siteID);
 
@@ -276,7 +276,7 @@ namespace Sushi.Mediakiwi.Data
         public static async Task<ComponentListVersion[]> SelectAllAsync(int componentListID, int siteID)
         {
             var connector = ConnectorFactory.CreateConnector<ComponentListVersion>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.AddOrder(x => x.ID, SortOrder.DESC);
             filter.AddParameter("@siteId", siteID);
 
@@ -300,7 +300,7 @@ namespace Sushi.Mediakiwi.Data
         public static ComponentListVersion SelectOne(Guid componentListVersionGUID, int siteID)      
         {
             var connector = ConnectorFactory.CreateConnector<ComponentListVersion>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.AddSql("EXISTS (SELECT * FROM wim_ComponentLists WHERE ComponentListVersion_ComponentList_Key = ComponentList_Key AND ComponentList_GUID = @componentListGUID)");
             filter.AddParameter("@componentListGUID", componentListVersionGUID);
             filter.Add(x => x.SiteID, siteID);
@@ -317,7 +317,7 @@ namespace Sushi.Mediakiwi.Data
         public static async Task<ComponentListVersion> SelectOneAsync(Guid componentListVersionGUID, int siteID)
         {
             var connector = ConnectorFactory.CreateConnector<ComponentListVersion>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.AddSql("EXISTS (SELECT * FROM wim_ComponentLists WHERE ComponentListVersion_ComponentList_Key = ComponentList_Key AND ComponentList_GUID = @componentListGUID)");
             filter.AddParameter("@componentListGUID", componentListVersionGUID);
             filter.Add(x => x.SiteID, siteID);
@@ -336,7 +336,7 @@ namespace Sushi.Mediakiwi.Data
         public static ComponentListVersion SelectOneByTemplate(int componentTemplateID, int componentListVersionItemID)
         {
             var connector = ConnectorFactory.CreateConnector<ComponentListVersion>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.AddSql("EXISTS (SELECT * FROM wim_ComponentLists WHERE ComponentListVersion_ComponentList_Key = ComponentList_Key AND ComponentList_ComponentTemplate_Key = @componentTemplateID)");
             filter.AddParameter("@componentTemplateID", componentTemplateID);            
             filter.Add(x => x.ComponentListItemID, componentListVersionItemID);
@@ -355,7 +355,7 @@ namespace Sushi.Mediakiwi.Data
         public static async Task<ComponentListVersion> SelectOneByTemplateAsync(int componentTemplateID, int componentListVersionItemID)
         {
             var connector = ConnectorFactory.CreateConnector<ComponentListVersion>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.AddSql("EXISTS (SELECT * FROM wim_ComponentLists WHERE ComponentListVersion_ComponentList_Key = ComponentList_Key AND ComponentList_ComponentTemplate_Key = @componentTemplateID)");
             filter.AddParameter("@componentTemplateID", componentTemplateID);
             filter.Add(x => x.ComponentListItemID, componentListVersionItemID);
@@ -370,7 +370,7 @@ namespace Sushi.Mediakiwi.Data
         public bool Save()
         {
             var connector = ConnectorFactory.CreateConnector<ComponentListVersion>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.AddParameter("@siteId", SiteID);
             filter.AddParameter("@componentListId", ComponentListID);
             filter.AddParameter("@componentListItemId", ComponentListItemID);
@@ -406,7 +406,7 @@ namespace Sushi.Mediakiwi.Data
         public async Task<bool> SaveAsync()
         {
             var connector = ConnectorFactory.CreateConnector<ComponentListVersion>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.AddParameter("@siteId", SiteID);
             filter.AddParameter("@componentListId", ComponentListID);
             filter.AddParameter("@componentListItemId", ComponentListItemID);
