@@ -471,6 +471,15 @@ namespace Sushi.Mediakiwi.Data
         }
 
         /// <summary>
+        /// The label on the save button
+        /// </summary>
+        public string Label_Delete
+        {
+            get { return this.Data["wim_LblDelete"].Value; }
+            set { this.Data.ApplyObject("wim_LblDelete", value); }
+        }
+
+        /// <summary>
         /// The maximum amount of pages shown in the search grid
         /// </summary>
         public int Option_Search_MaxViews

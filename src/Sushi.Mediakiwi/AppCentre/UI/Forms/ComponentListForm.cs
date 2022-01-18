@@ -41,6 +41,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation.Forms
             Map(x => x.Label_Save).TextField("Label 'save'", 50).Expression(OutputExpression.Alternating);
             Map(x => x.Label_Search).TextField("Label 'search'", 50).Expression(OutputExpression.Alternating);
             Map(x => x.Label_Saved).TextField("Label 'saved'", 50).Expression(OutputExpression.Alternating);
+            Map(x => x.Label_Delete).TextField("Label 'delete'", 50).Expression(OutputExpression.Alternating);
 
             Map(x => x.Section3, this).Section("Options");
 

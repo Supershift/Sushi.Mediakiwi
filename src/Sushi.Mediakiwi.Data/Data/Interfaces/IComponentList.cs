@@ -31,6 +31,7 @@ namespace Sushi.Mediakiwi.Data
         string Label_Save { get; set; }
         string Label_Saved { get; set; }
         string Label_Search { get; set; }
+        string Label_Delete { get; set; }
         string Name { get; set; }
         bool Option_AfterSaveListView { get; set; }
         bool Option_CanCreate { get; set; }
