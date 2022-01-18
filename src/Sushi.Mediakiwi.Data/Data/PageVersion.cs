@@ -135,7 +135,7 @@ namespace Sushi.Mediakiwi.Data
         public static List<IPageVersion> SelectAllOfPage(int pageID)
         {
             var connector = Connector;
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.PageID, pageID);
 
             return connector.FetchAll(filter).ToList<IPageVersion>();
@@ -149,7 +149,7 @@ namespace Sushi.Mediakiwi.Data
         public static async Task<List<IPageVersion>> SelectAllOfPageAsync(int pageID)
         {
             var connector = Connector;
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.PageID, pageID);
 
             var result = await connector.FetchAllAsync(filter);

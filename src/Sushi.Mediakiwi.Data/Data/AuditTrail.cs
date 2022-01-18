@@ -114,7 +114,7 @@ namespace Sushi.Mediakiwi.Data
         public static AuditTrail[] SelectAll()
         {
             var connector = ConnectorFactory.CreateConnector<AuditTrail>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.AddOrder(x => x.ID, SortOrder.DESC);
             return connector.FetchAll(filter).ToArray();
         }
@@ -125,7 +125,7 @@ namespace Sushi.Mediakiwi.Data
         public static async Task<AuditTrail[]> SelectAllAsync()
         {
             var connector = ConnectorFactory.CreateConnector<AuditTrail>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.AddOrder(x => x.ID, SortOrder.DESC);
             var result = await connector.FetchAllAsync(filter);
             return result.ToArray();

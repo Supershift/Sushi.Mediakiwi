@@ -46,7 +46,7 @@ namespace Sushi.Mediakiwi.Data.Repositories.Sql
         /// <param name="group">The group.</param>
         public void DeleteAll(string group)
         {   
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.AddParameter("@type", group);
 
             connector.ExecuteNonQuery("DELETE FROM [wim_Notifications] WHERE [Notification_Type] = @TYPE", filter);         
@@ -58,7 +58,7 @@ namespace Sushi.Mediakiwi.Data.Repositories.Sql
         /// <param name="group">The group.</param>
         public async Task DeleteAllAsync(string group)
         {   
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.AddParameter("@type", group);
 
             await connector.ExecuteNonQueryAsync("DELETE FROM [wim_Notifications] WHERE [Notification_Type] = @TYPE", filter).ConfigureAwait(false);
@@ -138,7 +138,7 @@ namespace Sushi.Mediakiwi.Data.Repositories.Sql
         /// <returns></returns>
         public sql.Notification[] SelectAll(string group, int selection, int? maxResult)
         {   
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.AddOrder(x => x.ID);
             if (maxResult.GetValueOrDefault(0) > 0)
                 filter.MaxResults = maxResult.Value;
@@ -161,7 +161,7 @@ namespace Sushi.Mediakiwi.Data.Repositories.Sql
         /// <returns></returns>
         public async Task<sql.Notification[]> SelectAllAsync(string group, int selection, int? maxResult)
         {   
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.AddOrder(x => x.ID);
             filter.Add(x => x.Group, group);
             filter.Add(x => x.Selection, selection);

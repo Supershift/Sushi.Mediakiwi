@@ -108,7 +108,7 @@ namespace Sushi.Mediakiwi.Data
         public static ICollection<SharedField> FetchAll()
         {
             var connector = new Connector<SharedField>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.AddOrder(x => x.FieldName);
             var result = connector.FetchAll(filter);
             return result;
@@ -122,7 +122,7 @@ namespace Sushi.Mediakiwi.Data
         public static async Task<ICollection<SharedField>> FetchAllAsync(string search)
         {
             var connector = new Connector<SharedField>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             if (string.IsNullOrWhiteSpace(search) == false)
             {
                 filter.Add(x => x.FieldName, $"%{search}%", ComparisonOperator.Like);
@@ -150,7 +150,7 @@ namespace Sushi.Mediakiwi.Data
         public static SharedField FetchSingle(string fieldName, ContentType contentType)
         {
             var connector = new Connector<SharedField>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
 
             filter.Add(x => x.FieldName, fieldName);
             filter.Add(x => x.ContentTypeID, contentType);
@@ -162,7 +162,7 @@ namespace Sushi.Mediakiwi.Data
         public static async Task<SharedField> FetchSingleAsync(string fieldName, ContentType contentType)
         {
             var connector = new Connector<SharedField>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
 
             filter.Add(x => x.FieldName, fieldName);
             filter.Add(x => x.ContentTypeID, contentType);
@@ -174,7 +174,7 @@ namespace Sushi.Mediakiwi.Data
         public static SharedField FetchSingleForComponentTemplate(string fieldName, ContentType contentType, int componentTemplateId)
         {
             var connector = new Connector<SharedField>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
 
             var props = Property.SelectAllByTemplate(componentTemplateId);
             var matchingProp = props.FirstOrDefault(x => x.FieldName == fieldName && x.IsSharedField);
@@ -192,7 +192,7 @@ namespace Sushi.Mediakiwi.Data
         public static async Task<SharedField> FetchSingleForComponentTemplateAsync(string fieldName, ContentType contentType, int componentTemplateId)
         {
             var connector = new Connector<SharedField>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
 
             var props = await Property.SelectAllByTemplateAsync(componentTemplateId);
             var matchingProp = props.FirstOrDefault(x => x.FieldName == fieldName && x.IsSharedField);

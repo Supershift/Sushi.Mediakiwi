@@ -119,7 +119,7 @@ namespace Sushi.Mediakiwi.Data
         public static Component[] SelectAll()
         {
             var connector = ConnectorFactory.CreateConnector<Component>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.AddOrder(x => x.SortOrder);
 
             return connector.FetchAll(filter).ToArray();
@@ -131,7 +131,7 @@ namespace Sushi.Mediakiwi.Data
         public static async Task<Component[]> SelectAllAsync()
         {
             var connector = ConnectorFactory.CreateConnector<Component>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.AddOrder(x => x.SortOrder);
 
             var result = await connector.FetchAllAsync(filter).ConfigureAwait(false);
@@ -168,7 +168,7 @@ namespace Sushi.Mediakiwi.Data
         public static Component SelectOne(Guid componentGUID)
         {
             var connector = ConnectorFactory.CreateConnector<Component>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.GUID, componentGUID);
 
             return connector.FetchSingle(filter);
@@ -182,7 +182,7 @@ namespace Sushi.Mediakiwi.Data
         public static async Task<Component> SelectOneAsync(Guid componentGUID)
         {
             var connector = ConnectorFactory.CreateConnector<Component>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.GUID, componentGUID);
 
             return await connector.FetchSingleAsync(filter).ConfigureAwait(false);
@@ -197,7 +197,7 @@ namespace Sushi.Mediakiwi.Data
         public static Component SelectOne(int pageID, string fixedComponentId)
         {
             var connector = ConnectorFactory.CreateConnector<Component>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.FixedId, fixedComponentId);
             filter.Add(x => x.IsFixedOnTemplate, true);
             filter.Add(x => x.PageID, pageID);
@@ -214,7 +214,7 @@ namespace Sushi.Mediakiwi.Data
         public static async Task<Component> SelectOneAsync(int pageID, string componentID)
         {
             var connector = ConnectorFactory.CreateConnector<Component>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.FixedId, componentID);
             filter.Add(x => x.IsFixedOnTemplate, true);
             filter.Add(x => x.PageID, pageID);
@@ -232,7 +232,7 @@ namespace Sushi.Mediakiwi.Data
         {
             //[MR:07-01-2020] CHECK if this query works
             var connector = ConnectorFactory.CreateConnector<Component>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.PageID, pageID);
             filter.Add("[ComponentTemplate_Type]", SqlDbType.NVarChar, type.BaseType.ToString());
 
@@ -249,7 +249,7 @@ namespace Sushi.Mediakiwi.Data
         {
             //[MR:07-01-2020] CHECK if this query works
             var connector = ConnectorFactory.CreateConnector<Component>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.PageID, pageID);
             filter.Add("[ComponentTemplate_Type]", SqlDbType.NVarChar, type.BaseType.ToString());
 
@@ -265,7 +265,7 @@ namespace Sushi.Mediakiwi.Data
         public static Component[] SelectAll(int pageID, int componentTemplateID)
         {
             var connector = ConnectorFactory.CreateConnector<Component>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.AddOrder(x => x.SortOrder);
             filter.Add(x => x.ComponentTemplateID, componentTemplateID);
             filter.Add(x => x.PageID, pageID);
@@ -282,7 +282,7 @@ namespace Sushi.Mediakiwi.Data
         public static async Task<Component[]> SelectAllAsync(int pageID, int componentTemplateID)
         {
             var connector = ConnectorFactory.CreateConnector<Component>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.AddOrder(x => x.SortOrder);
             filter.Add(x => x.ComponentTemplateID, componentTemplateID);
             filter.Add(x => x.PageID, pageID);
@@ -300,7 +300,7 @@ namespace Sushi.Mediakiwi.Data
         public static Component[] SelectAll(int pageID, bool isSecundary)
         {
             var connector = ConnectorFactory.CreateConnector<Component>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.AddOrder(x => x.SortOrder);
 
             if (isSecundary)
@@ -326,7 +326,7 @@ namespace Sushi.Mediakiwi.Data
         public static async Task<Component[]> SelectAllAsync(int pageID, bool isSecundary)
         {
             var connector = ConnectorFactory.CreateConnector<Component>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.AddOrder(x => x.SortOrder);
 
             if (isSecundary)
@@ -471,7 +471,7 @@ namespace Sushi.Mediakiwi.Data
                 pageID = page.MasterID.Value;
             }
 
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.PageID, pageID);
             
             var result = connector.FetchAll(filter);
@@ -498,7 +498,7 @@ namespace Sushi.Mediakiwi.Data
                 pageID = page.MasterID.Value;
             }
             
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.AddParameter("@pageId", pageID);
             filter.AddParameter("@isShared", true);
 
@@ -546,7 +546,7 @@ namespace Sushi.Mediakiwi.Data
                 pageID = page.MasterID.Value;
             }
 
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.PageID, pageID);
             filter.AddOrder(x => x.SortOrder, Sushi.MicroORM.SortOrder.ASC);
 
@@ -574,7 +574,7 @@ namespace Sushi.Mediakiwi.Data
                 pageID = page.MasterID.Value;
             }
 
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.AddParameter("@pageId", pageID);
             filter.AddParameter("@isShared", true);
 

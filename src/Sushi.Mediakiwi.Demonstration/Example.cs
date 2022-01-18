@@ -38,14 +38,14 @@ namespace Sushi.Mediakiwi.Demonstration
         public static async Task<List<ItemData>> SelectAllAsync()
         {
             var connector = ConnectorFactory.CreateConnector<ItemData>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             return await connector.FetchAllAsync(filter).ConfigureAwait(false);
         }
 
         public static List<ItemData> SelectAll()
         {
             var connector = ConnectorFactory.CreateConnector<ItemData>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             return connector.FetchAll(filter);
         }
 

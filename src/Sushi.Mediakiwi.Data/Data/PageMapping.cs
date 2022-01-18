@@ -199,7 +199,7 @@ namespace Sushi.Mediakiwi.Data
         public static IPageMapping SelectOneByPageAndQuery(int pageID, string query)
         {
             var connector = ConnectorFactory.CreateConnector<PageMapping>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.Query, query);
             filter.Add(x => x.PageID, pageID);
 
@@ -215,7 +215,7 @@ namespace Sushi.Mediakiwi.Data
         public static async Task<IPageMapping> SelectOneByPageAndQueryAsync(int pageID, string query)
         {
             var connector = ConnectorFactory.CreateConnector<PageMapping>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.Query, query);
             filter.Add(x => x.PageID, pageID);
 
@@ -235,7 +235,7 @@ namespace Sushi.Mediakiwi.Data
             prefix += "%";
 
             var connector = ConnectorFactory.CreateConnector<PageMapping>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.Path, prefix, ComparisonOperator.Like);
 
             var result = connector.FetchAll(filter);
@@ -255,7 +255,7 @@ namespace Sushi.Mediakiwi.Data
             prefix += "%";
 
             var connector = ConnectorFactory.CreateConnector<PageMapping>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.Path, prefix, ComparisonOperator.Like);
 
             var result = await connector.FetchAllAsync(filter);
@@ -270,7 +270,7 @@ namespace Sushi.Mediakiwi.Data
         public static List<IPageMapping> SelectAllBasedOnPageID(int pageID)
         {
             var connector = ConnectorFactory.CreateConnector<PageMapping>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.PageID, pageID);
 
             var result = connector.FetchAll(filter);
@@ -285,7 +285,7 @@ namespace Sushi.Mediakiwi.Data
         public static async Task<List<IPageMapping>> SelectAllBasedOnPageIDAsync(int pageID)
         {
             var connector = ConnectorFactory.CreateConnector<PageMapping>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.PageID, pageID);
 
             var result = await connector.FetchAllAsync(filter);
@@ -299,7 +299,7 @@ namespace Sushi.Mediakiwi.Data
         public static List<IPageMapping> SelectAll()
         {
             var connector = ConnectorFactory.CreateConnector<PageMapping>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
 
             var result = connector.FetchAll(filter);
             return result.ToList<IPageMapping>();
@@ -312,7 +312,7 @@ namespace Sushi.Mediakiwi.Data
         public static async Task<List<IPageMapping>> SelectAllAsync()
         {
             var connector = ConnectorFactory.CreateConnector<PageMapping>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
 
             var result = await connector.FetchAllAsync(filter);
             return result.ToList<IPageMapping>();
@@ -327,7 +327,7 @@ namespace Sushi.Mediakiwi.Data
         public static List<IPageMapping> SelectAll(int typeId, bool onlyActive)
         {
             var connector = ConnectorFactory.CreateConnector<PageMapping>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
 
             if (typeId > 0)
             {
@@ -358,7 +358,7 @@ namespace Sushi.Mediakiwi.Data
         public static async Task<List<IPageMapping>> SelectAllAsync(int typeId, bool onlyActive)
         {
             var connector = ConnectorFactory.CreateConnector<PageMapping>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
 
             if (typeId > 0)
             {

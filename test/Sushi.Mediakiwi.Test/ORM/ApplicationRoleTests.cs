@@ -413,7 +413,7 @@ namespace Sushi.Mediakiwi.Test.ORM
         public void F_Reset_AutoIndent()
         {
             var connector = ConnectorFactory.CreateConnector<ApplicationRole>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
 
             // Query for resetting the autoincrement in the table
             string sql = $"DECLARE @max int;  SELECT @max = ISNULL(MAX([{_key}]), 1) FROM [dbo].[{_table}];  DBCC CHECKIDENT({_table}, RESEED, @max)";
@@ -431,7 +431,7 @@ namespace Sushi.Mediakiwi.Test.ORM
         public async Task F_Reset_AutoIndentAsync()
         {
             var connector = ConnectorFactory.CreateConnector<ApplicationRole>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
 
             // Query for resetting the autoincrement in the table
             string sql = $"DECLARE @max int;  SELECT @max = ISNULL(MAX([{_key}]), 1) FROM [dbo].[{_table}];  DBCC CHECKIDENT({_table}, RESEED, @max)";

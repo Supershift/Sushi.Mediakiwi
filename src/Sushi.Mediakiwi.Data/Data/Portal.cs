@@ -167,7 +167,7 @@ namespace Sushi.Mediakiwi.Data
         public static IPortal SelectOne(string authenticode)
         {
             var connector = ConnectorFactory.CreateConnector<Portal>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.Authenticode, authenticode);
 
             return connector.FetchSingle(filter);
@@ -181,7 +181,7 @@ namespace Sushi.Mediakiwi.Data
         public static async Task<IPortal> SelectOneAsync(string authenticode)
         {
             var connector = ConnectorFactory.CreateConnector<Portal>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.Authenticode, authenticode);
 
             return await connector.FetchSingleAsync(filter);
@@ -195,7 +195,7 @@ namespace Sushi.Mediakiwi.Data
         public static IPortal SelectOne(Guid guid)
         {
             var connector = ConnectorFactory.CreateConnector<Portal>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.GUID, guid);
 
             return connector.FetchSingle(filter);
@@ -209,7 +209,7 @@ namespace Sushi.Mediakiwi.Data
         public static async Task<IPortal> SelectOneAsync(Guid guid)
         {
             var connector = ConnectorFactory.CreateConnector<Portal>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.GUID, guid);
 
             return await connector.FetchSingleAsync(filter);
@@ -223,7 +223,7 @@ namespace Sushi.Mediakiwi.Data
         public static IPortal[] SelectAll()
         {
             var connector = ConnectorFactory.CreateConnector<Portal>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
 
             return connector.FetchAll(filter).ToArray();
         }
@@ -236,7 +236,7 @@ namespace Sushi.Mediakiwi.Data
         public static async Task<IPortal[]> SelectAllAsync()
         {
             var connector = ConnectorFactory.CreateConnector<Portal>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
 
             var result = await connector.FetchAllAsync(filter);
             return result.ToArray();

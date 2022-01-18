@@ -59,7 +59,7 @@ namespace Sushi.Mediakiwi.Data
         public static List<NotificationOverview> SelectAll(int filterSelection)
         {
             var connector = ConnectorFactory.CreateConnector<NotificationOverview>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.AddParameter("type", filterSelection);
 
             var sql = @"
@@ -92,7 +92,7 @@ namespace Sushi.Mediakiwi.Data
         public static async Task<List<NotificationOverview>> SelectAllAsync(int filterSelection)
         {
             var connector = ConnectorFactory.CreateConnector<NotificationOverview>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.AddParameter("type", filterSelection);
 
             var sql = @"

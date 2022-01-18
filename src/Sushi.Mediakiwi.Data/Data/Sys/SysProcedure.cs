@@ -31,7 +31,7 @@ namespace Sushi.Mediakiwi.Data.Sys
         public static async Task<SysProcedure> FetchSingle(string tableName)
         {
             var connector = new Connector<SysProcedure>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
 
             filter.AddParameter("@name", System.Data.SqlDbType.VarChar, tableName);
             var sqlText = "select ROUTINE_DEFINITION from INFORMATION_SCHEMA.ROUTINES WHERE SPECIFIC_NAME = @name";

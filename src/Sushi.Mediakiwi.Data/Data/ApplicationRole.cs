@@ -266,7 +266,7 @@ namespace Sushi.Mediakiwi.Data
         {
             //[MJ:03-01-2020] TEST this method !
             var connector = ConnectorFactory.CreateConnector<ApplicationRole>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
 
             return connector.FetchAll(filter).ToArray<IApplicationRole>();
         }
@@ -279,7 +279,7 @@ namespace Sushi.Mediakiwi.Data
         {
             //[MJ:03-01-2020] TEST this method !
             var connector = ConnectorFactory.CreateConnector<ApplicationRole>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
 
             var result = await connector.FetchAllAsync(filter).ConfigureAwait(false);
             return result.ToArray<IApplicationRole>();
@@ -294,7 +294,7 @@ namespace Sushi.Mediakiwi.Data
         {
             //[MJ:03-01-2020] TEST this method !
             var connector = ConnectorFactory.CreateConnector<ApplicationRole>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.AddParameter("@folderID", folderID);
 
             return connector.FetchAll(
@@ -313,7 +313,7 @@ namespace Sushi.Mediakiwi.Data
         {
             //[MJ:03-01-2020] TEST this method !
             var connector = ConnectorFactory.CreateConnector<ApplicationRole>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.AddParameter("@folderID", folderID);
 
             var result = await connector.FetchAllAsync(

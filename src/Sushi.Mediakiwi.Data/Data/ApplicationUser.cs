@@ -388,7 +388,7 @@ namespace Sushi.Mediakiwi.Data
         public static async Task<IApplicationUser> SelectOneAsync(int ID, bool onlyReturnActive = false)
         {
             var connector = ConnectorFactory.CreateConnector<ApplicationUser>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
 
             filter.Add(x => x.ID, ID);
             if (onlyReturnActive)
@@ -406,7 +406,7 @@ namespace Sushi.Mediakiwi.Data
         public static IApplicationUser SelectOne(string email, bool onlyReturnActive = false)
         {
             var connector = ConnectorFactory.CreateConnector<ApplicationUser>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
 
             filter.Add(x => x.Email, email);
             if (onlyReturnActive)
@@ -423,7 +423,7 @@ namespace Sushi.Mediakiwi.Data
         public static IApplicationUser SelectOne(int ID, bool onlyReturnActive = false)
         {
             var connector = ConnectorFactory.CreateConnector<ApplicationUser>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
 
             filter.Add(x => x.ID, ID);
             if (onlyReturnActive)
@@ -440,7 +440,7 @@ namespace Sushi.Mediakiwi.Data
         public static IApplicationUser SelectOne(string username)
         {
             var connector = ConnectorFactory.CreateConnector<ApplicationUser>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.Name, username);
             
             return connector.FetchSingle(filter);
@@ -453,7 +453,7 @@ namespace Sushi.Mediakiwi.Data
         public static async Task<IApplicationUser> SelectOneAsync(string username)
         {
             var connector = ConnectorFactory.CreateConnector<ApplicationUser>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.Name, username);
             
             return await connector.FetchSingleAsync(filter).ConfigureAwait(false);
@@ -467,7 +467,7 @@ namespace Sushi.Mediakiwi.Data
         public static IApplicationUser SelectOne(string username, int? ignoreApplicationUserID)
         {
             var connector = ConnectorFactory.CreateConnector<ApplicationUser>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.Name, username);
             if (ignoreApplicationUserID.HasValue)
             {
@@ -484,7 +484,7 @@ namespace Sushi.Mediakiwi.Data
         public static async Task<IApplicationUser> SelectOneAsync(string username, int? ignoreApplicationUserID)
         {
             var connector = ConnectorFactory.CreateConnector<ApplicationUser>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.Name, username);
             if (ignoreApplicationUserID.HasValue)
             {
@@ -500,7 +500,7 @@ namespace Sushi.Mediakiwi.Data
         public static IApplicationUser SelectOneByEmail(string email)
         {
             var connector = ConnectorFactory.CreateConnector<ApplicationUser>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.Email, email);
             
             return connector.FetchSingle(filter);
@@ -513,7 +513,7 @@ namespace Sushi.Mediakiwi.Data
         public static async Task<IApplicationUser> SelectOneByEmailAsync(string email)
         {
             var connector = ConnectorFactory.CreateConnector<ApplicationUser>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.Email, email);
             
             return await connector.FetchSingleAsync(filter).ConfigureAwait(false);
@@ -526,7 +526,7 @@ namespace Sushi.Mediakiwi.Data
         public static IApplicationUser SelectOneByEmail(string email, int? ignoreApplicationUserID)
         {
             var connector = ConnectorFactory.CreateConnector<ApplicationUser>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.Email, email);
             if (ignoreApplicationUserID.HasValue)
             {
@@ -542,7 +542,7 @@ namespace Sushi.Mediakiwi.Data
         public static async Task<IApplicationUser> SelectOneByEmailAsync(string email, int? ignoreApplicationUserID)
         {
             var connector = ConnectorFactory.CreateConnector<ApplicationUser>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.Email, email);
             if (ignoreApplicationUserID.HasValue)
             {
@@ -558,7 +558,7 @@ namespace Sushi.Mediakiwi.Data
         public static IApplicationUser SelectOne(Guid applicationUserGUID)
         {
             var connector = ConnectorFactory.CreateConnector<ApplicationUser>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.GUID, applicationUserGUID);
             
             return connector.FetchSingle(filter);
@@ -571,7 +571,7 @@ namespace Sushi.Mediakiwi.Data
         public static async Task<IApplicationUser> SelectOneAsync(Guid applicationUserGUID)
         {
             var connector = ConnectorFactory.CreateConnector<ApplicationUser>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.GUID, applicationUserGUID);
             
             return await connector.FetchSingleAsync(filter).ConfigureAwait(false);
@@ -589,7 +589,7 @@ namespace Sushi.Mediakiwi.Data
                 return new ApplicationUser();
 
             var connector = ConnectorFactory.CreateConnector<ApplicationUser>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.Name, username);
             filter.Add(x => x.Password, password);
             
@@ -609,7 +609,7 @@ namespace Sushi.Mediakiwi.Data
                 return new ApplicationUser();
             }
             var connector = ConnectorFactory.CreateConnector<ApplicationUser>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.Name, username);
             filter.Add(x => x.Password, password);
             
@@ -622,7 +622,7 @@ namespace Sushi.Mediakiwi.Data
         public static IApplicationUser[] SelectAll()
         {
             var connector = ConnectorFactory.CreateConnector<ApplicationUser>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             
             return connector.FetchAll(filter).ToArray();
         }
@@ -633,7 +633,7 @@ namespace Sushi.Mediakiwi.Data
         public static async Task<IApplicationUser[]> SelectAllAsync()
         {
             var connector = ConnectorFactory.CreateConnector<ApplicationUser>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             var result = await connector.FetchAllAsync(filter).ConfigureAwait(false);
             
             return result.ToArray();
@@ -647,7 +647,7 @@ namespace Sushi.Mediakiwi.Data
         public static IApplicationUser[] SelectAll(string username, int role)
         {
             var connector = ConnectorFactory.CreateConnector<ApplicationUser>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
 
             if (!string.IsNullOrWhiteSpace(username))
             {
@@ -668,7 +668,7 @@ namespace Sushi.Mediakiwi.Data
         public static async Task<IApplicationUser[]> SelectAllAsync(string username, int role)
         {
             var connector = ConnectorFactory.CreateConnector<ApplicationUser>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
 
             if (!string.IsNullOrWhiteSpace(username))
             {
@@ -689,7 +689,7 @@ namespace Sushi.Mediakiwi.Data
         public static IApplicationUser[] SelectAll(int? role)
         {
             var connector = ConnectorFactory.CreateConnector<ApplicationUser>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             if (role.HasValue)
             {
                 filter.Add(x => x.RoleID, role.Value);
@@ -704,7 +704,7 @@ namespace Sushi.Mediakiwi.Data
         public static async Task<IApplicationUser[]> SelectAllAsync(int? role)
         {
             var connector = ConnectorFactory.CreateConnector<ApplicationUser>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             if (role.HasValue)
             {
                 filter.Add(x => x.RoleID, role.Value);
@@ -722,7 +722,7 @@ namespace Sushi.Mediakiwi.Data
         public static IApplicationUser[] SelectAll(int? role, bool onlyReturnActive)
         {
             var connector = ConnectorFactory.CreateConnector<ApplicationUser>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             if (role.HasValue)
             {
                 filter.Add(x => x.RoleID, role.Value);
@@ -743,7 +743,7 @@ namespace Sushi.Mediakiwi.Data
         public static async Task<IApplicationUser[]> SelectAllAsync(int? role, bool onlyReturnActive)
         {
             var connector = ConnectorFactory.CreateConnector<ApplicationUser>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             if (role.HasValue)
             {
                 filter.Add(x => x.RoleID, role.Value);

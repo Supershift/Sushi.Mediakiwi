@@ -108,7 +108,7 @@ namespace Sushi.Mediakiwi.Data
         public static Image SelectOne(Guid guid)
         {
             var connector = ConnectorFactory.CreateConnector<Image>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.GUID, guid);
 
             return connector.FetchSingle(filter);
@@ -122,7 +122,7 @@ namespace Sushi.Mediakiwi.Data
         public static async Task<Image> SelectOneAsync(Guid guid)
         {
             var connector = ConnectorFactory.CreateConnector<Image>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.GUID, guid);
 
             return await connector.FetchSingleAsync(filter);
@@ -156,7 +156,7 @@ namespace Sushi.Mediakiwi.Data
         public static Image[] SelectAll(int galleryID, int? assetTypeID)
         {
             var connector = ConnectorFactory.CreateConnector<Image>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.IsImage, true);
             filter.Add(x => x.IsActive, true);
             filter.Add(x => x.IsArchived, false);
@@ -175,7 +175,7 @@ namespace Sushi.Mediakiwi.Data
         public static async Task<Image[]> SelectAllAsync(int galleryID, int? assetTypeID)
         {
             var connector = ConnectorFactory.CreateConnector<Image>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.IsImage, true);
             filter.Add(x => x.IsActive, true);
             filter.Add(x => x.IsArchived, false);
@@ -194,7 +194,7 @@ namespace Sushi.Mediakiwi.Data
         internal static Image[] SelectAll()
         {
             var connector = ConnectorFactory.CreateConnector<Image>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.IsImage, true);
             filter.Add(x => x.IsArchived, false);
 
@@ -208,7 +208,7 @@ namespace Sushi.Mediakiwi.Data
         internal static async Task<Image[]> SelectAllAsync()
         {
             var connector = ConnectorFactory.CreateConnector<Image>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.IsImage, true);
             filter.Add(x => x.IsArchived, false);
 
@@ -219,7 +219,7 @@ namespace Sushi.Mediakiwi.Data
         public static List<Image> SelectRange(List<int> IDs)
         {
             var connector = ConnectorFactory.CreateConnector<Image>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.IsImage, true);
             filter.Add(x => x.IsArchived, false);
             filter.Add(x => x.ID, IDs, ComparisonOperator.In);
@@ -230,7 +230,7 @@ namespace Sushi.Mediakiwi.Data
         public static async Task<List<Image>> SelectRangeAsync(List<int> IDs)
         {
             var connector = ConnectorFactory.CreateConnector<Image>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.ID, IDs, ComparisonOperator.In);
             filter.Add(x => x.IsImage, true);
             filter.Add(x => x.IsArchived, false);

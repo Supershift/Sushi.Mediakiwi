@@ -30,7 +30,7 @@ namespace Sushi.Mediakiwi.Data
         public static IComponentTargetPage[] SelectAll(int templateID, int siteID)
         {
             var connector = ConnectorFactory.CreateConnector<ComponentTargetPage>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.AddParameter("@templateId", templateID);
             filter.AddParameter("@siteId", siteID);
 
@@ -70,7 +70,7 @@ namespace Sushi.Mediakiwi.Data
         public static async Task<IComponentTargetPage[]> SelectAllAsync(int templateID, int siteID)
         {
             var connector = ConnectorFactory.CreateConnector<ComponentTargetPage>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.AddParameter("@templateId", templateID);
             filter.AddParameter("@siteId", siteID);
 

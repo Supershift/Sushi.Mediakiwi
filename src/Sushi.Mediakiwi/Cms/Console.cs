@@ -690,7 +690,6 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
                     )
                 {
                     m_CurrentApplicationUser = ApplicationUser.SelectOne(CurrentVisitor.ApplicationUserID.Value, true);
-                    return m_CurrentApplicationUser;
                 }
 
                 if (m_CurrentApplicationUser == null && m_CurrentListInstance != null)

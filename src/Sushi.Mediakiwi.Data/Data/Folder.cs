@@ -243,7 +243,7 @@ namespace Sushi.Mediakiwi.Data
             get
             {
                 var connector = ConnectorFactory.CreateConnector<Folder>();
-                var filter = connector.CreateDataFilter();
+                var filter = connector.CreateQuery();
                 filter.AddParameter("@thisId", ID);
 
                 return connector.ExecuteScalar<int>(@"
@@ -266,7 +266,7 @@ FROM [Wim_ComponentLists] WHERE [ComponentList_Folder_Key] in (SELECT [Folder_Ke
         public bool Delete()
         {
             var connector = ConnectorFactory.CreateConnector<Folder>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.AddParameter("@thisId", ID);
             filter.AddSql("([Folder_Key] = @thisId OR [Folder_Master_Key] = @thisId)");
             try
@@ -287,7 +287,7 @@ FROM [Wim_ComponentLists] WHERE [ComponentList_Folder_Key] in (SELECT [Folder_Ke
         public async Task<bool> DeleteAsync()
         {
             var connector = ConnectorFactory.CreateConnector<Folder>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.AddParameter("@thisId", ID);
             filter.AddSql("([Folder_Key] = @thisId OR [Folder_Master_Key] = @thisId)");
             try
@@ -354,7 +354,7 @@ FROM [Wim_ComponentLists] WHERE [ComponentList_Folder_Key] in (SELECT [Folder_Ke
         public static Folder SelectOne(string path, int site)
         {
             var connector = ConnectorFactory.CreateConnector<Folder>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.CompletePath, path);
             filter.Add(x => x.SiteID, site);
 
@@ -369,7 +369,7 @@ FROM [Wim_ComponentLists] WHERE [ComponentList_Folder_Key] in (SELECT [Folder_Ke
         public static async Task<Folder> SelectOneAsync(string path, int site)
         { 
             var connector = ConnectorFactory.CreateConnector<Folder>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.CompletePath, path);
             filter.Add(x => x.SiteID, site);
 
@@ -406,7 +406,7 @@ FROM [Wim_ComponentLists] WHERE [ComponentList_Folder_Key] in (SELECT [Folder_Ke
         public static Folder SelectOne(Guid guid)
         {
             var connector = ConnectorFactory.CreateConnector<Folder>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.GUID, guid);
 
             return connector.FetchSingle(filter);
@@ -420,7 +420,7 @@ FROM [Wim_ComponentLists] WHERE [ComponentList_Folder_Key] in (SELECT [Folder_Ke
         public static async Task<Folder> SelectOneAsync(Guid guid)
         {
             var connector = ConnectorFactory.CreateConnector<Folder>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.GUID, guid);
 
             return await connector.FetchSingleAsync(filter);
@@ -435,7 +435,7 @@ FROM [Wim_ComponentLists] WHERE [ComponentList_Folder_Key] in (SELECT [Folder_Ke
         {
             //[MR:03-01-2020] TEST this method !
             var connector = ConnectorFactory.CreateConnector<Folder>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.AddParameter("@typeId", (int)Type);
             filter.AddParameter("@completePath", CompletePath);
             filter.AddParameter("@newPath", newFolderCompletePath);
@@ -460,7 +460,7 @@ FROM [Wim_ComponentLists] WHERE [ComponentList_Folder_Key] in (SELECT [Folder_Ke
         {
             //[MR:03-01-2020] TEST this method !
             var connector = ConnectorFactory.CreateConnector<Folder>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.AddParameter("@typeId", (int)Type);
             filter.AddParameter("@completePath", CompletePath);
             filter.AddParameter("@newPath", newFolderCompletePath);
@@ -540,7 +540,7 @@ FROM [Wim_ComponentLists] WHERE [ComponentList_Folder_Key] in (SELECT [Folder_Ke
                 siteID = 0;
 
             var connector = ConnectorFactory.CreateConnector<Folder>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
 
             filter.Add(x => x.Type, type);
             if (siteID > 0)
@@ -561,7 +561,7 @@ FROM [Wim_ComponentLists] WHERE [ComponentList_Folder_Key] in (SELECT [Folder_Ke
                 siteID = 0;
 
             var connector = ConnectorFactory.CreateConnector<Folder>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
 
             filter.Add(x => x.Type, type);
             if (siteID > 0)
@@ -579,7 +579,7 @@ FROM [Wim_ComponentLists] WHERE [ComponentList_Folder_Key] in (SELECT [Folder_Ke
         public static Folder SelectOne(int masterFolderID, int siteID)
         {
             var connector = ConnectorFactory.CreateConnector<Folder>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.SiteID, siteID);
             filter.Add(x => x.MasterID, masterFolderID);
 
@@ -595,7 +595,7 @@ FROM [Wim_ComponentLists] WHERE [ComponentList_Folder_Key] in (SELECT [Folder_Ke
         public static async Task<Folder> SelectOneAsync(int masterFolderID, int siteID)
         {
             var connector = ConnectorFactory.CreateConnector<Folder>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.SiteID, siteID);
             filter.Add(x => x.MasterID, masterFolderID);
 
@@ -609,7 +609,7 @@ FROM [Wim_ComponentLists] WHERE [ComponentList_Folder_Key] in (SELECT [Folder_Ke
         public static Folder[] SelectAll()
         {
             var connector = ConnectorFactory.CreateConnector<Folder>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.AddOrder(x => x.MasterID);
             filter.AddOrder(x => x.Name);
             filter.AddOrder(x => x.CompletePath);
@@ -624,7 +624,7 @@ FROM [Wim_ComponentLists] WHERE [ComponentList_Folder_Key] in (SELECT [Folder_Ke
         public static async Task<Folder[]> SelectAllAsync()
         {
             var connector = ConnectorFactory.CreateConnector<Folder>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.AddOrder(x => x.MasterID);
             filter.AddOrder(x => x.Name);
             filter.AddOrder(x => x.CompletePath);
@@ -640,7 +640,7 @@ FROM [Wim_ComponentLists] WHERE [ComponentList_Folder_Key] in (SELECT [Folder_Ke
         public static Folder[] SelectAll(int[] folderIDs)
         {
             var connector = ConnectorFactory.CreateConnector<Folder>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.AddOrder(x => x.MasterID);
             filter.AddOrder(x => x.Name);
             filter.AddOrder(x => x.CompletePath);
@@ -656,7 +656,7 @@ FROM [Wim_ComponentLists] WHERE [ComponentList_Folder_Key] in (SELECT [Folder_Ke
         public static async Task<Folder[]> SelectAllAsync(int[] folderIDs)
         {
             var connector = ConnectorFactory.CreateConnector<Folder>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.AddOrder(x => x.MasterID);
             filter.AddOrder(x => x.Name);
             filter.AddOrder(x => x.CompletePath);
@@ -989,7 +989,7 @@ FROM [Wim_ComponentLists] WHERE [ComponentList_Folder_Key] in (SELECT [Folder_Ke
         internal static Folder[] SelectAllForDeletion(int siteID)
         {
             var connector = ConnectorFactory.CreateConnector<Folder>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
 
             filter.AddOrder(x => x.Name, SortOrder.DESC);
             filter.AddOrder(x => x.CompletePath, SortOrder.DESC);
@@ -1006,7 +1006,7 @@ FROM [Wim_ComponentLists] WHERE [ComponentList_Folder_Key] in (SELECT [Folder_Ke
         internal static async Task<Folder[]> SelectAllForDeletionAsync(int siteID)
         {
             var connector = ConnectorFactory.CreateConnector<Folder>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
 
             filter.AddOrder(x => x.Name, SortOrder.DESC);
             filter.AddOrder(x => x.CompletePath, SortOrder.DESC);
@@ -1025,7 +1025,7 @@ FROM [Wim_ComponentLists] WHERE [ComponentList_Folder_Key] in (SELECT [Folder_Ke
         public static Folder SelectOne(int parentID, string name)
         {
             var connector = ConnectorFactory.CreateConnector<Folder>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.ParentID, parentID);
             filter.Add(x => x.Name, name);
 
@@ -1041,7 +1041,7 @@ FROM [Wim_ComponentLists] WHERE [ComponentList_Folder_Key] in (SELECT [Folder_Ke
         public static async Task<Folder> SelectOneAsync(int parentID, string name)
         {
             var connector = ConnectorFactory.CreateConnector<Folder>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.ParentID, parentID);
             filter.Add(x => x.Name, name);
 
@@ -1240,7 +1240,7 @@ FROM [Wim_ComponentLists] WHERE [ComponentList_Folder_Key] in (SELECT [Folder_Ke
         private bool IsFolderAlreadyTaken(int folderID, string folder)
         {
             var connector = ConnectorFactory.CreateConnector<Folder>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.AddParameter("@folderId", folderID);
             filter.AddParameter("@folderName", folder);
             var count = connector.ExecuteScalar<int>("SELECT COUNT(*) FROM [Wim_folders] WHERE [Folder_Folder_Key] = @folderId AND [Folder_Name] = @folderName", filter);
@@ -1256,7 +1256,7 @@ FROM [Wim_ComponentLists] WHERE [ComponentList_Folder_Key] in (SELECT [Folder_Ke
         private async Task<bool> IsFolderAlreadyTakenAsync(int folderID, string folder)
         {
             var connector = ConnectorFactory.CreateConnector<Folder>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.AddParameter("@folderId", folderID);
             filter.AddParameter("@folderName", folder);
             var count = await connector.ExecuteScalarAsync<int>("SELECT COUNT(*) FROM [Wim_folders] WHERE [Folder_Folder_Key] = @folderId AND [Folder_Name] = @folderName", filter);
@@ -1451,7 +1451,7 @@ FROM [Wim_ComponentLists] WHERE [ComponentList_Folder_Key] in (SELECT [Folder_Ke
             Folder folder = SelectOne(folderID);
 
             var connector = ConnectorFactory.CreateConnector<Folder>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.SiteID, folder.SiteID);
             filter.AddOrder(x => x.ParentID, SortOrder.DESC);
 
@@ -1487,7 +1487,7 @@ FROM [Wim_ComponentLists] WHERE [ComponentList_Folder_Key] in (SELECT [Folder_Ke
             Folder folder = SelectOne(folderID);
 
             var connector = ConnectorFactory.CreateConnector<Folder>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.SiteID, folder.SiteID);
             filter.AddOrder(x => x.ParentID, SortOrder.DESC);
 
@@ -1522,7 +1522,7 @@ FROM [Wim_ComponentLists] WHERE [ComponentList_Folder_Key] in (SELECT [Folder_Ke
         public static Folder[] SelectAllUninherited(int masterID, int siteID, int folderType)
         {
             var connector = ConnectorFactory.CreateConnector<Folder>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.AddParameter("@folderType", folderType);
             filter.AddParameter("@siteId", siteID);
             filter.AddParameter("@masterId", masterID);
@@ -1550,7 +1550,7 @@ FROM [Wim_ComponentLists] WHERE [ComponentList_Folder_Key] in (SELECT [Folder_Ke
         internal static async Task<Folder[]> SelectAllUninheritedAsync(int masterID, int siteID, int folderType)
         {
             var connector = ConnectorFactory.CreateConnector<Folder>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.AddParameter("@folderType", folderType);
             filter.AddParameter("@siteId", siteID);
             filter.AddParameter("@masterId", masterID);

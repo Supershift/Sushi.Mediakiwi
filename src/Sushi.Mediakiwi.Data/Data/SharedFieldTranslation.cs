@@ -282,7 +282,7 @@ namespace Sushi.Mediakiwi.Data
         public static ICollection<SharedFieldTranslation> FetchAll()
         {
             var connector = new Connector<SharedFieldTranslation>(new SharedFieldTranslationMap(false));
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             var result = connector.FetchAll(filter);
             return result;
         }
@@ -294,7 +294,7 @@ namespace Sushi.Mediakiwi.Data
         public static async Task<ICollection<SharedFieldTranslation>> FetchAllAsync()
         {
             var connector = new Connector<SharedFieldTranslation>(new SharedFieldTranslationMap(false));
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             var result = await connector.FetchAllAsync(filter).ConfigureAwait(false);
             return result;
         }
@@ -307,7 +307,7 @@ namespace Sushi.Mediakiwi.Data
         public static ICollection<SharedFieldTranslation> FetchAllForField(int sharedFieldID)
         {
             var connector = new Connector<SharedFieldTranslation>(new SharedFieldTranslationMap(false));
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.FieldID, sharedFieldID);
             var result = connector.FetchAll(filter);
             return result;
@@ -321,7 +321,7 @@ namespace Sushi.Mediakiwi.Data
         public static async Task<ICollection<SharedFieldTranslation>> FetchAllForFieldAsync(int sharedFieldID)
         {
             var connector = new Connector<SharedFieldTranslation>(new SharedFieldTranslationMap(false));
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.FieldID, sharedFieldID);
             var result = await connector.FetchAllAsync(filter).ConfigureAwait(false);
             return result;
@@ -335,7 +335,7 @@ namespace Sushi.Mediakiwi.Data
         public static ICollection<SharedFieldTranslation> FetchAllForSite(int siteId)
         {
             var connector = new Connector<SharedFieldTranslation>(new SharedFieldTranslationMap(false));
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.SiteID, siteId);
             var result = connector.FetchAll(filter);
             return result;
@@ -349,7 +349,7 @@ namespace Sushi.Mediakiwi.Data
         public static async Task<ICollection<SharedFieldTranslation>> FetchAllForSiteAsync(int siteId)
         {
             var connector = new Connector<SharedFieldTranslation>(new SharedFieldTranslationMap(false));
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.SiteID, siteId);
             var result = await connector.FetchAllAsync(filter).ConfigureAwait(false);
             return result;
@@ -363,7 +363,7 @@ namespace Sushi.Mediakiwi.Data
         public static ICollection<SharedFieldTranslation> FetchAllForPage(int pageId)
         {
             var connector = new Connector<SharedFieldTranslation>(new SharedFieldTranslationMap(false));
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.AddParameter("@pageId", pageId);
 
             var result = connector.FetchAll(@"SELECT fields.* FROM [dbo].[wim_SharedFieldView] AS fields
@@ -382,7 +382,7 @@ WHERE props.[Property_IsShared] = 1 AND comps.[Component_Page_Key] = @pageId", f
         public static async Task<ICollection<SharedFieldTranslation>> FetchAllForPageAsync(int pageId)
         {
             var connector = new Connector<SharedFieldTranslation>(new SharedFieldTranslationMap(false));
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.AddParameter("@pageId", pageId);
 
             var result = await connector.FetchAllAsync(@"SELECT fields.* FROM [dbo].[wim_SharedFieldView] AS fields
@@ -414,7 +414,7 @@ WHERE props.[Property_IsShared] = 1 AND comps.[Component_Page_Key] = @pageId", f
         public static SharedFieldTranslation FetchSingleForFieldAndSite(int sharedFieldId, int siteId)
         {
             var connector = new Connector<SharedFieldTranslation>(new SharedFieldTranslationMap(false));
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.SiteID, siteId);
             filter.Add(x => x.FieldID, sharedFieldId);
             var result = connector.FetchSingle(filter);
@@ -430,7 +430,7 @@ WHERE props.[Property_IsShared] = 1 AND comps.[Component_Page_Key] = @pageId", f
         public static async Task<SharedFieldTranslation> FetchSingleForFieldAndSiteAsync(int sharedFieldId, int siteId)
         {
             var connector = new Connector<SharedFieldTranslation>(new SharedFieldTranslationMap(false));
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.SiteID, siteId);
             filter.Add(x => x.FieldID, sharedFieldId);
             var result = await connector.FetchSingleAsync(filter).ConfigureAwait(false);

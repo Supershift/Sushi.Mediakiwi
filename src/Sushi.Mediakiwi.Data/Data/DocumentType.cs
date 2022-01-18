@@ -33,7 +33,7 @@ namespace Sushi.Mediakiwi.Data
         public static async Task<List<DocumentType>> FetchAllAsync()
         {
             var connector = new Connector<DocumentType>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             var result = await connector.FetchAllAsync(filter);
             return result;
         }
@@ -41,7 +41,7 @@ namespace Sushi.Mediakiwi.Data
         public static List<DocumentType> FetchAll()
         {
             var connector = new Connector<DocumentType>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             var result = connector.FetchAll(filter);
             return result;
         }

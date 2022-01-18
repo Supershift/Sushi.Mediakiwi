@@ -616,7 +616,7 @@ namespace Sushi.Mediakiwi.Data
         public static bool UpdateSortOrder(int listID, int sortOrder)
         {
             var connector = ConnectorFactory.CreateConnector<ComponentList>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
 
             filter.AddParameter("@sortOrder", sortOrder);
             filter.AddParameter("@listId", listID);
@@ -635,7 +635,7 @@ namespace Sushi.Mediakiwi.Data
         public static async Task<bool> UpdateSortOrderAsync(int listID, int sortOrder)
         {
             var connector = ConnectorFactory.CreateConnector<ComponentList>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
 
             filter.AddParameter("@sortOrder", sortOrder);
             filter.AddParameter("@listId", listID);
@@ -653,7 +653,7 @@ namespace Sushi.Mediakiwi.Data
         public static IComponentList[] SelectAll()
         {
             var connector = ConnectorFactory.CreateConnector<ComponentList>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.AddOrder(x => x.SortOrder);
             filter.AddOrder(x => x.ReferenceID);
             filter.AddOrder(x => x.Name);
@@ -668,7 +668,7 @@ namespace Sushi.Mediakiwi.Data
         public static async Task<IComponentList[]> SelectAllAsync()
         {
             var connector = ConnectorFactory.CreateConnector<ComponentList>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.AddOrder(x => x.SortOrder);
             filter.AddOrder(x => x.ReferenceID);
             filter.AddOrder(x => x.Name);
@@ -685,7 +685,7 @@ namespace Sushi.Mediakiwi.Data
         public static IComponentList[] SelectAllBySite(int siteID)
         {
             var connector = ConnectorFactory.CreateConnector<ComponentList>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.SiteID, siteID);
             filter.AddOrder(x => x.SortOrder);
             filter.AddOrder(x => x.ReferenceID);
@@ -702,7 +702,7 @@ namespace Sushi.Mediakiwi.Data
         public static async Task<IComponentList[]> SelectAllBySiteAsync(int siteID)
         {
             var connector = ConnectorFactory.CreateConnector<ComponentList>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.SiteID, siteID);
             filter.AddOrder(x => x.SortOrder);
             filter.AddOrder(x => x.ReferenceID);
@@ -721,7 +721,7 @@ namespace Sushi.Mediakiwi.Data
         public static IComponentList[] SelectAll(string text, int? siteID)
         {
             var connector = ConnectorFactory.CreateConnector<ComponentList>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.AddOrder(x => x.SortOrder);
             filter.AddOrder(x => x.ReferenceID);
             filter.AddOrder(x => x.Name);
@@ -752,7 +752,7 @@ namespace Sushi.Mediakiwi.Data
         public static async Task<IComponentList[]> SelectAllAsync(string text, int? siteID)
         {
             var connector = ConnectorFactory.CreateConnector<ComponentList>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.AddOrder(x => x.SortOrder);
             filter.AddOrder(x => x.ReferenceID);
             filter.AddOrder(x => x.Name);
@@ -784,7 +784,7 @@ namespace Sushi.Mediakiwi.Data
         public static IComponentList[] SelectAll(int folderID, bool includeHidden = false)
         {
             var connector = ConnectorFactory.CreateConnector<ComponentList>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.AddOrder(x => x.SortOrder);
             filter.AddOrder(x => x.ReferenceID);
             filter.AddOrder(x => x.Name);
@@ -803,7 +803,7 @@ namespace Sushi.Mediakiwi.Data
                 if (!folder.MasterID.HasValue)
                     break;
 
-                filter = connector.CreateDataFilter();
+                filter = connector.CreateQuery();
                 filter.Add(x => x.FolderID, folder.MasterID.Value);
                 filter.Add(x => x.IsInherited, true);
                 filter.AddOrder(x => x.SortOrder);
@@ -833,7 +833,7 @@ namespace Sushi.Mediakiwi.Data
         public static async Task<IComponentList[]> SelectAllAsync(int folderID, bool includeHidden = false)
         {
             var connector = ConnectorFactory.CreateConnector<ComponentList>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.AddOrder(x => x.SortOrder);
             filter.AddOrder(x => x.ReferenceID);
             filter.AddOrder(x => x.Name);
@@ -853,7 +853,7 @@ namespace Sushi.Mediakiwi.Data
                 if (!folder.MasterID.HasValue)
                     break;
 
-                filter = connector.CreateDataFilter();
+                filter = connector.CreateQuery();
                 filter.Add(x => x.FolderID, folder.MasterID.Value);
                 filter.Add(x => x.IsInherited, true);
                 filter.AddOrder(x => x.SortOrder);
@@ -1120,7 +1120,7 @@ namespace Sushi.Mediakiwi.Data
         public static IComponentList SelectOne(ComponentListType type)
         {
             var connector = ConnectorFactory.CreateConnector<ComponentList>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.Type, type);
 
             return connector.FetchSingle(filter);
@@ -1134,7 +1134,7 @@ namespace Sushi.Mediakiwi.Data
         public static async Task<IComponentList> SelectOneAsync(ComponentListType type)
         {
             var connector = ConnectorFactory.CreateConnector<ComponentList>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.Type, type);
 
             return await connector.FetchSingleAsync(filter).ConfigureAwait(false);
@@ -1148,7 +1148,7 @@ namespace Sushi.Mediakiwi.Data
         public static IComponentList SelectOne(string className)
         {
             var connector = ConnectorFactory.CreateConnector<ComponentList>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.ClassName, className);
 
             return connector.FetchSingle(filter);
@@ -1161,7 +1161,7 @@ namespace Sushi.Mediakiwi.Data
         public static IComponentList SelectOne(string name, int? folder)
         {
             var connector = ConnectorFactory.CreateConnector<ComponentList>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.Name, name);
 
             if (folder.HasValue)
@@ -1179,7 +1179,7 @@ namespace Sushi.Mediakiwi.Data
         public static async Task<IComponentList> SelectOneAsync(string name, int? folder)
         {
             var connector = ConnectorFactory.CreateConnector<ComponentList>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.Name, name);
 
             if (folder.HasValue)
@@ -1198,7 +1198,7 @@ namespace Sushi.Mediakiwi.Data
         public static async Task<IComponentList> SelectOneAsync(string className)
         {
             var connector = ConnectorFactory.CreateConnector<ComponentList>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.ClassName, className);
 
             return await connector.FetchSingleAsync(filter).ConfigureAwait(false);
@@ -1232,7 +1232,7 @@ namespace Sushi.Mediakiwi.Data
         public static IComponentList SelectOneByReference(int referenceID)
         {
             var connector = ConnectorFactory.CreateConnector<ComponentList>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.ReferenceID, referenceID);
 
             return connector.FetchSingle(filter);
@@ -1246,7 +1246,7 @@ namespace Sushi.Mediakiwi.Data
         public static async Task<IComponentList> SelectOneByReferenceAsync(int referenceID)
         {
             var connector = ConnectorFactory.CreateConnector<ComponentList>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.ReferenceID, referenceID);
 
             return await connector.FetchSingleAsync(filter).ConfigureAwait(false);
@@ -1260,7 +1260,7 @@ namespace Sushi.Mediakiwi.Data
         public static IComponentList SelectOne(Guid componentListGUID)
         {
             var connector = ConnectorFactory.CreateConnector<ComponentList>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.GUID, componentListGUID);
 
             return connector.FetchSingle(filter);
@@ -1274,7 +1274,7 @@ namespace Sushi.Mediakiwi.Data
         public static async Task<IComponentList> SelectOneAsync(Guid componentListGUID)
         {
             var connector = ConnectorFactory.CreateConnector<ComponentList>();
-            var filter = connector.CreateDataFilter();
+            var filter = connector.CreateQuery();
             filter.Add(x => x.GUID, componentListGUID);
 
             return await connector.FetchSingleAsync(filter).ConfigureAwait(false);
