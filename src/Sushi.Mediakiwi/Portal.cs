@@ -94,7 +94,9 @@ namespace Sushi.Mediakiwi
             {
                 // Do nothing: this is the controller entree point
             }
-            else if (url.Equals(portal, StringComparison.CurrentCultureIgnoreCase)  || url.StartsWith($"{portal}/", StringComparison.CurrentCultureIgnoreCase))
+            else if (url.Equals(portal, StringComparison.CurrentCultureIgnoreCase) || 
+                url.StartsWith($"{portal}/", StringComparison.CurrentCultureIgnoreCase) ||
+                (portal.Equals("/", StringComparison.CurrentCultureIgnoreCase) && url.StartsWith($"{portal}", StringComparison.CurrentCultureIgnoreCase)))
             {
                 await VerifyDatabaseAsync().ConfigureAwait(false);
                 var monitor = new Monitor(context, _env, _configuration);

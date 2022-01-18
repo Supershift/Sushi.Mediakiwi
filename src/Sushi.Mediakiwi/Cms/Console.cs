@@ -1184,10 +1184,19 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
             get
             {
                 // set the correct wim page
-                return (Channel != null && Channel.Any())
-                    ? AddApplicationPath(string.Concat(CommonConfiguration.PORTAL_PATH, "/", Channel))
-                    : AddApplicationPath(CommonConfiguration.PORTAL_PATH)
-                    ;
+                if (Channel != null && Channel.Any())
+                {
+                    string temp = string.Concat(CommonConfiguration.PORTAL_PATH, "/", Channel);
+                    if (temp?.StartsWith("//", StringComparison.InvariantCulture) == true) 
+                    {
+                        temp = temp.Replace("//", "/", StringComparison.InvariantCulture);
+                    }
+                    return temp;
+                }
+                else
+                {
+                   return AddApplicationPath(CommonConfiguration.PORTAL_PATH);
+                }
             }
         }
 
@@ -1203,10 +1212,15 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
                 var candidate = Site.SelectOne(channel.Value);
                 if (candidate != null)
                 {
-                    return AddApplicationPath(string.Concat(CommonConfiguration.PORTAL_PATH, "/", Utils.ToUrl(candidate.Name)), true);
+                    string temp = string.Concat(CommonConfiguration.PORTAL_PATH, "/", Utils.ToUrl(candidate.Name));
+                    if (temp?.StartsWith("//", StringComparison.InvariantCulture) == true)
+                    {
+                        temp = temp.Replace("//", "/", StringComparison.InvariantCulture);
+                    }
+                    return AddApplicationPath(temp, true);
                 }
             }
-            return AddApplicationPath(string.Concat(CommonConfiguration.PORTAL_PATH), true);
+            return AddApplicationPath(CommonConfiguration.PORTAL_PATH, true);
         }
 
         /// <summary>
