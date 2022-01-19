@@ -151,14 +151,20 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
 
                 if (Implement.DefaultFolder.Length > 0 && Implement.DefaultFolder.ToCharArray()[0] != '/')
                 {
-                    Implement.DefaultFolder = string.Format("/{0}", Implement.DefaultFolder);
+                    Implement.DefaultFolder = $"/{Implement.DefaultFolder}";
                 }
             }
 
             wim.FlushCache();
             await Framework.Functions.FolderPathLogic.UpdateCompletePathAsync().ConfigureAwait(false);
-
+            
             // if a master is connected, created the inheritance tree
+            if (Implement.MasterID.HasValue && Implement.HasPages)
+            {
+                await Framework.Inheritance.Folder.CreateFolderTreeAsync(Implement.MasterID.Value, Implement.ID, FolderType.Page).ConfigureAwait(false);
+                await Framework.Inheritance.Page.CreatePageTreeAsync(Implement.MasterID.Value, Implement.ID).ConfigureAwait(false);
+            }
+
             if (Implement.MasterID.HasValue && Implement.HasLists)
             {
                 await Framework.Inheritance.Folder.CreateFolderTreeAsync(Implement.MasterID.Value, Implement.ID, FolderType.List).ConfigureAwait(false);

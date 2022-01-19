@@ -405,14 +405,17 @@ namespace Sushi.Mediakiwi.UI
                 if (!_Console.CurrentListInstance.IsEditMode)
                     _Console.Response.Redirect(string.Concat(_Console.WimPagePath, "?page=", _Console.Item.Value, redirect));
             }
-            //if (_Console.IsPostBack("page.copy"))
-            //{
-            //    ComponentVersionLogic.CopyFromMaster(_Console.Item.Value);
-            //    _Console.CurrentListInstance.wim.FlushCache(true);
 
-            //    if (!_Console.CurrentListInstance.IsEditMode)
-            //        _Console.Response.Redirect(string.Concat(_Console.WimPagePath, "?page=", _Console.Item.Value, redirect));
-            //}
+            if (_Console.IsPostBack("page.copy"))
+            {
+                await Framework.Inheritance.Page.CopyFromMasterAsync(_Console.Item.Value).ConfigureAwait(false);
+                
+                // Flush all cache
+                await EnvironmentVersion.SetUpdatedAsync().ConfigureAwait(false);
+
+                _Console.Response.Redirect(string.Concat(_Console.WimPagePath, "?page=", _Console.Item.Value, redirect));
+            }
+
             if (_Console.IsPostBack("page.normal"))
             {
                 _Console.CurrentApplicationUser.ShowTranslationView = false;
@@ -455,7 +458,7 @@ namespace Sushi.Mediakiwi.UI
             }
             else if (isPageLocalised)
             {
-                page.InheritContentEdited = false;
+                page.IsLocalized = true;
                 page.Updated = Common.DatabaseDateTime;
                 await page.SaveAsync().ConfigureAwait(false);
 
@@ -465,7 +468,7 @@ namespace Sushi.Mediakiwi.UI
             }
             else if (isPageInherited)
             {
-                page.InheritContentEdited = true;
+                page.IsLocalized = false;
                 page.Updated = Common.DatabaseDateTime;
                 await page.SaveAsync().ConfigureAwait(false);
 
@@ -476,6 +479,21 @@ namespace Sushi.Mediakiwi.UI
             Page pageInstance;
 
             GlobalWimControlBuilder = component.CreateContentList(_Console, 0, selectedTab == 1, out pageInstance, section);
+
+
+            // Check if we have to create / update any inherited Page 
+            if (_Console.IsPostBackSave && pageInstance?.ID > 0)
+            {
+                var hasInheritedPages = await pageInstance.HasInheritedPagesAsync().ConfigureAwait(false);
+                if (_Console.Item.Value == 0 || hasInheritedPages == false)
+                {
+                    await Framework.Inheritance.Page.CreatePageAsync(pageInstance, page.Site).ConfigureAwait(false);
+                }
+                else
+                {
+                    await Framework.Inheritance.Page.MovePageAsync(pageInstance, page.Site).ConfigureAwait(false);
+                }
+            }
 
             if (!_Console.IsAdminFooter)
             {

@@ -1224,6 +1224,7 @@ mediakiwi.pageComponentControl.showOptions = function () {
         $('#addPageComponentControlItems').find('.cmsBlocks a').show();
     });
     $('#addPageComponentControlAdder').hide();
+    return false;
 }
 
 mediakiwi.pageComponentControl.closeOptions = function () {
@@ -1232,7 +1233,7 @@ mediakiwi.pageComponentControl.closeOptions = function () {
         $(this).hide();
         $('#addPageComponentControlAdder').show();
     });
-
+    return false;
 }
 
 mediakiwi.pageComponentControl.addItemToPage = function (elm, itemID, pageID, containerID) {

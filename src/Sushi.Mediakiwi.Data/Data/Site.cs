@@ -41,7 +41,7 @@ namespace Sushi.Mediakiwi.Data
                 Map(x => x.ErrorPageID, "Site_ErrorPage_Key");
                 Map(x => x.GUID, "Site_Guid");
 
-                Map(x => x.ChildCount, "(SELECT COUNT(*) FROM [wim_Sites] sites WHERE sites.[Site_Master_Key] = [Site_Key])").Alias("Site_ChildCount").ReadOnly();
+                Map(x => x.ChildCount, "(SELECT COUNT(*) FROM [wim_Sites] sites WHERE sites.[Site_Master_Key] = [wim_Sites].[Site_Key])").Alias("Site_ChildCount").ReadOnly();
                 Map(x => x.PageCount, "(SELECT COUNT(*) FROM [wim_Pages] JOIN [wim_Folders] ON [Page_Folder_Key] = [Folder_Key] WHERE [Folder_Site_Key] = [Site_Key])").Alias("Site_PageCount").ReadOnly();
                 Map(X => X.ListCount, "(SELECT COUNT(*) FROM [wim_ComponentLists] WHERE [ComponentList_Site_Key] = [Site_Key])").Alias("Site_ListCount").ReadOnly();
                 
