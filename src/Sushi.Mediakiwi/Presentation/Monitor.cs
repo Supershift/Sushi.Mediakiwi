@@ -964,9 +964,9 @@ namespace Sushi.Mediakiwi.Framework.Presentation
 	<ul>
 		" + Get_component_channelNav() + @" 
 		<li>
-			<a class=""side active"" href=""#""><span class=""icon-person""></span></a>
+			<a role=""button"" class=""side active"" href=""javascript:void(0);""><span class=""icon-person""></span></a>
 			<div class=""channel"" style=""display: none;"">
-				<a class=""active"" href=""#""><span class=""icon-person""></span></a>
+				<a class=""active"" href=""javascript:void(0);""><span class=""icon-person""></span></a>
 				<h3>My profile</h3>
 				<img alt=""noName"" src=""" + FolderVersion("images") + @"noName.png"">
 				<strong>" + usernameLink + @"</strong><br/>
@@ -1022,9 +1022,9 @@ namespace Sushi.Mediakiwi.Framework.Presentation
             }
             return @"
 		<li>
-			<a class=""side"" href=""#""><span class=""icon-globe""></span></a>
+			<a class=""side"" href=""javascript:void(0);""><span class=""icon-globe""></span></a>
 			<div class=""channel"" style=""display: none;"">
-				<a class=""active"" href=""#""><span class=""icon-globe""></span></a>
+				<a class=""active"" href=""javascript:void(0);""><span class=""icon-globe""></span></a>
 				<h3>Channel selection</h3>
 				<label for=""channel"">Channel</label>
 				<select name=""channel"" id=""channel"" class=""postBack"">" + channels + @"

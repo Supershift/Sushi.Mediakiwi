@@ -814,7 +814,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                     //  Found it, please apply master relation
                     child.MasterID = match.ID;
                     child.IsActive = match.IsActive;
-
+                    
                     if (applySortOrder)
                     {
                         child.SortOrder = match.SortOrder;
@@ -996,10 +996,8 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                     m_InheritedComponents = ComponentVersion.SelectAll(master.ID);
                 }
 
-                bool shadowCopyComponents = true;
-
                 bool foundChange = false;
-                if (shadowCopyComponents && m_InheritedComponents != null && m_InheritedComponents.Length > 0)
+                if (m_InheritedComponents?.Length > 0)
                 {
                     CreatePageComponentShadowCopy(true, page.ID, ref components, m_InheritedComponents, out foundChange);
                 }
@@ -1092,11 +1090,11 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                     selection.Add(component);
                 }
             }
+
             int c_index = 0;
             foreach (ComponentVersion component in selection)
             {
                 ComponentTemplate template = component.Template;
-
                 MetaData[] metadata = (MetaData[])Utility.GetDeserialized(typeof(MetaData[]), template.MetaData);
 
                 SetComponent(visible,
@@ -1247,10 +1245,14 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                             if (inheritedContent != null)
                             {
                                 field2.InheritedValue = inheritedContent[item.Name] == null ? null : inheritedContent[item.Name].Value;
+                                // Check for has property
+                                ((ContentSharedAttribute)x).IsInheritedField = inheritedContent.con string.IsNullOrEmpty(field2.InheritedValue) == false;
                             }
 
                             // [2014.12.01:MM]  Take inheritance
-                            ((ContentSharedAttribute)x).IsInheritedField = !string.IsNullOrEmpty(item.IsInheritedField);
+                            // [MR:19-01-2022] Inheritance fix, was :
+                            //((ContentSharedAttribute)x).IsInheritedField = !string.IsNullOrEmpty(item.IsInheritedField);
+                            ((ContentSharedAttribute)x).IsInheritedField = string.IsNullOrEmpty(field2.InheritedValue) == false;
                             x.SetCandidate(field2, container.CurrentListInstance.wim.IsEditMode);
                         }
                         else
@@ -1268,7 +1270,9 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                             }
 
                             // [2014.12.01:MM]  Take inheritance
-                            ((ContentSharedAttribute)x).IsInheritedField = !string.IsNullOrEmpty(item.IsInheritedField);
+                            // [MR:19-01-2022] Inheritance fix, was :
+                            //((ContentSharedAttribute)x).IsInheritedField = !string.IsNullOrEmpty(item.IsInheritedField);
+                            ((ContentSharedAttribute)x).IsInheritedField = string.IsNullOrEmpty(field2.InheritedValue) == false;
                             x.SetCandidate(field2, container.CurrentListInstance.wim.IsEditMode);
                         }
 

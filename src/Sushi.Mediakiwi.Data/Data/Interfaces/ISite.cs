@@ -39,5 +39,7 @@ namespace Sushi.Mediakiwi.Data.Interfaces
         bool IsDomain(Uri url);
 
         void Save();
+
+        Task SaveAsync();
     }
 }

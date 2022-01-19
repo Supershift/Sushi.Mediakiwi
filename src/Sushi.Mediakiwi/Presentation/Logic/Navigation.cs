@@ -1827,16 +1827,13 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
 
                         if (page.MasterID.HasValue || page.Site.MasterID.HasValue)
                         {
-                            if (page.InheritContentEdited)
+                            if (page.IsLocalized == false)
                             {
                                 //  Inherits content, so can localize
                                 Build_TopRight.AppendFormat("<li><a href=\"{0}\" id=\"page.localize\" class=\"submit postBack abbr\">{1}</a></li>"
                                     , "#"
                                     , Labels.ResourceManager.GetString("page_localise", new CultureInfo(container.CurrentApplicationUser.LanguageCulture))
                                     );
-
-
-
                             }
                             else
                             {

@@ -1455,16 +1455,16 @@ namespace Sushi.Mediakiwi.API.Services
             // Has a master
             if (inPage.MasterID.HasValue)
             {
-                if (inPage.InheritContentEdited == false && inPage.InheritContent == false)
+                if (inPage.IsLocalized == false && inPage.InheritContent == false)
                 {
                     result.Add("inherited");
                 }
-                else if (inPage.InheritContentEdited == false && inPage.InheritContent)
+                else if (inPage.IsLocalized == false && inPage.InheritContent)
                 {
                     result.Add("inherited");
                     result.Add("unpublished");
                 }
-                else if (inPage.InheritContentEdited && inPage.InheritContent == false)
+                else if (inPage.IsLocalized && inPage.InheritContent == false)
                 {
                     result.Add("inherited");
                     result.Add("unpublished");
