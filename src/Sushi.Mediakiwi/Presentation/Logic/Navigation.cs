@@ -1339,6 +1339,8 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
 
         public string RightSideNavigation(Beta.GeneratedCms.Console container, ContentListItem.ButtonAttribute[] buttonList, WimControlBuilder builder)
         {
+            var culture = new CultureInfo(container.CurrentApplicationUser.LanguageCulture);
+
             StringBuilder build = new StringBuilder();
             StringBuilder build2 = new StringBuilder();
             StringBuilder innerbuild = new StringBuilder();
@@ -1349,10 +1351,10 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
             string saveRecord = container.CurrentList.Data["wim_LblSave"].Value;
 
             if (string.IsNullOrEmpty(newRecord))
-                newRecord = Labels.ResourceManager.GetString("new_record", new CultureInfo(container.CurrentApplicationUser.LanguageCulture));
+                newRecord = Labels.ResourceManager.GetString("new_record", culture);
 
             if (string.IsNullOrEmpty(saveRecord))
-                saveRecord = Labels.ResourceManager.GetString("save", new CultureInfo(container.CurrentApplicationUser.LanguageCulture));
+                saveRecord = Labels.ResourceManager.GetString("save", culture);
 
             FolderType section = container.CurrentListInstance.wim.CurrentFolder.Type;
 
@@ -1369,6 +1371,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
             //  Lists
 
             #region Buttons
+
             if (buttonList != null)
             {
                 var tr = (from item in buttonList where item.IconTarget == ButtonTarget.TopRight select item);
@@ -1416,9 +1419,11 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                         ));
                 }
             }
+
             #endregion Buttons
 
             #region List && Administration
+
             if (section == FolderType.List || section == FolderType.Administration)
             {
                 if (!container.CurrentListInstance.wim.HasListSave)
@@ -1433,45 +1438,38 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                         && !container.CurrentListInstance.wim.IsSubSelectMode
                         )
                     {
-                        Build_TopLeft.AppendFormat(@"<li><abbr title=""{1}""><a href=""{0}"" class=""flaticon icon-file-plus action""></a></abbr></li>"
-                            , container.UrlBuild.GetNewListRequest()
-                            , Labels.ResourceManager.GetString("list_new", new CultureInfo(container.CurrentApplicationUser.LanguageCulture))
-                            );
+                        var labelNew = Labels.ResourceManager.GetString("list_new", culture);
+                        var url = container.UrlBuild.GetNewListRequest();
+
+                        Build_TopLeft.Append(culture, $"<li><abbr title=\"{labelNew}\"><a href=\"{url}\" class=\"flaticon icon-file-plus action\"></a></abbr></li>");
                     }
 
                     className = " left";
 
                     if (container.CurrentListInstance.wim.CurrentApplicationUserRole.CanCreateList && !container.CurrentListInstance.wim.IsSubSelectMode)
                     {
+                        var labelNew = Labels.ResourceManager.GetString("folder_new", culture);
+                        var url = container.UrlBuild.GetFolderCreateRequest();
 
-                        Build_TopRight.AppendFormat(@"<li><abbr title=""{1}""><a href=""{0}"" class=""flaticon icon-folder-plus Small""></a></abbr></li>"
-                            , container.UrlBuild.GetFolderCreateRequest()
-                            , Labels.ResourceManager.GetString("folder_new", new CultureInfo(container.CurrentApplicationUser.LanguageCulture))
-                            );
+                        Build_TopRight.Append(culture, $"<li><abbr title=\"{1}\"><a href=\"{url}\" class=\"flaticon icon-folder-plus Small\"></a></abbr></li>");
 
                         if (container.CurrentListInstance.wim.CurrentApplicationUser.IsDeveloper)
                         {
 
                             if (container.CurrentListInstance.wim.CurrentApplicationUser.ShowHidden)
                             {
-                                Build_TopRight.AppendFormat(@"<li><abbr title=""{0}""><a href=""#"" id=""dev_showvisible"" class=""flaticon icon-eye2 postBack""></a></abbr></li>"
-                                    , "Show only visible"
-                                    );
+                                Build_TopRight.Append(culture, $"<li><abbr title=\"Show only visible\"><a href=\"#\" id=\"dev_showvisible\" class=\"flaticon icon-eye2 postBack\"></a></abbr></li>");
                             }
                             else
                             {
-                                Build_TopRight.AppendFormat(@"<li><abbr title=""{0}""><a href=""#"" id=""dev_showhidden"" class=""flaticon icon-eye-slash postBack""></a></abbr></li>"
-                                 , "Show hidden"
-                                 );
-
+                                Build_TopRight.Append(culture, $"<li><abbr title=\"Show hidden\"><a href=\"#\" id=\"dev_showhidden\" class=\"flaticon icon-eye-slash postBack\"></a></abbr></li>");
                             }
                         }
 
-                        Build_TopRight.AppendFormat(@"<li><abbr title=""{1}""><a href=""{0}&openinframe=1"" class=""flaticon icon-settings-02 Small""></a></abbr></li>"
-                            , container.UrlBuild.GetFolderOptionsRequest()
-                            , Labels.ResourceManager.GetString("folder_properties", new CultureInfo(container.CurrentApplicationUser.LanguageCulture))
-                            );
+                        url = container.UrlBuild.GetFolderOptionsRequest();
+                        var labelProps = Labels.ResourceManager.GetString("folder_properties", culture);
 
+                        Build_TopRight.Append(culture, $"<li><abbr title=\"{labelProps}\"><a href=\"{url}&openinframe=1\" class=\"flaticon icon-settings-02 Small\"></a></abbr></li>");
                     }
 
                 }
@@ -1493,13 +1491,10 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                         }
 
                         if (!container.CurrentListInstance.wim.HideCreateNew)
-                            Build_TopRight.AppendFormat(string.Format("<li><a href=\"{0}\" class=\"{4}submit{2}\"{3} title=\"{1}\">{1}</a></li>"
-                                , container.UrlBuild.GetListNewRecordRequest()
-                                , newRecord
-                                , container.CurrentListInstance.wim.Page.Body.Grid.ClickLayerClass
-                                , container.CurrentListInstance.wim.Page.Body.Grid.ClickLayerTag
-                                , hasPrimary ? null : "action "
-                                ));
+                        {
+                            var url = container.UrlBuild.GetListNewRecordRequest();
+                            Build_TopRight.AppendFormat(culture, $"<li><a href=\"{url}\" class=\"{(hasPrimary ? null : "action ")}submit{container.CurrentListInstance.wim.Page.Body.Grid.ClickLayerClass}\"{container.CurrentListInstance.wim.Page.Body.Grid.ClickLayerTag} title=\"{newRecord}\">{newRecord}</a></li>");
+                        }
                     }
 
 
@@ -1513,24 +1508,25 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                         var v = Component.SelectOne(c.GUID);
 
                         //page.Updated
-                        if (!(v == null || v.ID == 0))
-                            Build_TopRight.AppendFormat("<li><a href=\"{0}\" id=\"pageoffline\" class=\"takeOffline postBack\">{1}</a></li>", "#"
-                            , Labels.ResourceManager.GetString("page_takeoffline", new CultureInfo(container.CurrentApplicationUser.LanguageCulture))
-                            );
-
+                        if (v?.ID > 0)
+                        {
+                            var labelTakeOffline = Labels.ResourceManager.GetString("page_takeoffline", culture);
+                            Build_TopRight.Append(culture, $"<li><a href=\"#\" id=\"pageoffline\" class=\"takeOffline postBack\">{labelTakeOffline}</a></li>");
+                        }
+                        
                         if (c.Updated.Ticks != v.Updated.GetValueOrDefault().Ticks)
-                            Build_TopRight.AppendFormat("<li><a href=\"{0}\" id=\"pagepublish\" class=\"publish postBack\">{1}</a></li>", "#"
-                            , Labels.ResourceManager.GetString("page_publish", new CultureInfo(container.CurrentApplicationUser.LanguageCulture))
-                            );
+                        {
+                            var labelPublish = Labels.ResourceManager.GetString("page_publish", culture);
+                            Build_TopRight.Append(culture, $"<li><a href=\"#\" id=\"pagepublish\" class=\"publish postBack\">{labelPublish}</a></li>");
+                        }
                     }
 
 
                     //  Web content publication
                     if (container.CurrentListInstance.wim.HasPublishOption)
                     {
-                        Build_TopRight.AppendFormat("<li><a id=\"PageContentPublication\" href=\"{0}\" class=\"publish _PostBack\">{1}</a></li>", "#"
-                            , Labels.ResourceManager.GetString("page_publish", new CultureInfo(container.CurrentApplicationUser.LanguageCulture))
-                            );
+                        var labelPublish = Labels.ResourceManager.GetString("page_publish", culture);
+                        Build_TopRight.Append(culture, $"<li><a id=\"PageContentPublication\" href=\"#\" class=\"publish _PostBack\">{labelPublish}</a></li>");
                     }
 
                     if (
@@ -1555,11 +1551,10 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                         && !container.CurrentListInstance.wim.HideCreateNew
                         && container.GroupItem.HasValue
                         )
-
-                        Build_TopLeft.Append(string.Format("<li><a id=\"new\" class=\"submit\" href=\"{0}\">{1}</a></li>", container.UrlBuild.GetListNewRecordRequest(), newRecord
-                       , Labels.ResourceManager.GetString("edit", new CultureInfo(container.CurrentApplicationUser.LanguageCulture))
-
-                       ));
+                    {
+                        var url = container.UrlBuild.GetListNewRecordRequest();
+                        Build_TopLeft.Append(culture, $"<li><a id=\"new\" class=\"submit\" href=\"{url}\">{newRecord}</a></li>");
+                    }
 
                     if (container.CurrentList.Type != ComponentListType.ComponentListProperties || container.CurrentListInstance.wim.CurrentList.Type == ComponentListType.Undefined)
                     {
@@ -1599,50 +1594,48 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
             #endregion
 
             #region Gallery
+
             else if (section == FolderType.Gallery)
             {
                 if (isBrowseMode)
                 {
                     if (container.View == 1)
                     {
-                        Build_TopLeft.AppendFormat(@"<li><abbr title=""{1}""><a href=""{0}"" class=""flaticon icon-file-up action Small""></a></abbr></li>"
-                            , container.UrlBuild.GetGalleryNewAssetRequestInLayer()
-                            , Labels.ResourceManager.GetString("new_asset", new CultureInfo(container.CurrentApplicationUser.LanguageCulture))
-                            );
+                        var url = container.UrlBuild.GetGalleryNewAssetRequestInLayer();
+                        var labelNew = Labels.ResourceManager.GetString("new_asset", culture);
+
+                        Build_TopLeft.Append(culture, $"<li><abbr title=\"{labelNew}\"><a href=\"{url}\" class=\"flaticon icon-file-up action Small\"></a></abbr></li>");
                     }
                     else
                     {
-                        Build_TopLeft.AppendFormat(@"<li><abbr title=""{1}""><a href=""{0}"" class=""flaticon icon-file-up action Small""></a></abbr></li>"
-                            , container.UrlBuild.GetGalleryNewAssetRequestInLayer()
-                            , Labels.ResourceManager.GetString("new_asset", new CultureInfo(container.CurrentApplicationUser.LanguageCulture))
-                            );
+                        var url = container.UrlBuild.GetGalleryNewAssetRequestInLayer();
+                        var labelNew = Labels.ResourceManager.GetString("new_asset", culture);
+
+                        Build_TopLeft.Append(culture, $"<li><abbr title=\"{labelNew}\"><a href=\"{url}\" class=\"flaticon icon-file-up action Small\"></a></abbr></li>");
                     }
 
                     if (container.View != 1 && container.CurrentListInstance.wim.CurrentApplicationUserRole.CanCreateList)
                     {
-                        Build_TopRight.AppendFormat(@"<li><abbr title=""{1}""><a href=""{0}&openinframe=2"" class=""flaticon icon-folder-plus Small""></a></abbr></li>"
-                            , container.UrlBuild.GetNewGalleryRequest()
-                            , Labels.ResourceManager.GetString("folder_new", new CultureInfo(container.CurrentApplicationUser.LanguageCulture))
-                            );
+                        var url = container.UrlBuild.GetNewGalleryRequest();
+                        var labelNew = Labels.ResourceManager.GetString("folder_new", culture);
+
+                        Build_TopRight.Append(culture, $"<li><abbr title=\"{labelNew}\"><a href=\"{url}&openinframe=2\" class=\"flaticon icon-folder-plus Small\"></a></abbr></li>");
                     }
                 }
                 else if (isTextMode)
                 {
                     if (container.CurrentListInstance.wim.HasListSave && !container.CurrentListInstance.wim.HideEditOption)
                     {
-                        build2.AppendFormat("<li><a href=\"#\" id=\"edit\" class=\"postBack submit\">{0}</a></li>",
-                            Labels.ResourceManager.GetString("edit", new CultureInfo(container.CurrentApplicationUser.LanguageCulture))
-                            );
+                        var labelEdit = Labels.ResourceManager.GetString("edit", culture);
+                        build2.Append(culture, $"<li><a href=\"#\" id=\"edit\" class=\"postBack submit\">{labelEdit}</a></li>");
                     }
 
 
                     Asset asset = Asset.SelectOne(container.Item.GetValueOrDefault());
                     if (asset.Exists)
                     {
-                        build2.AppendFormat("<li><a href=\"{1}\" class=\"attachment\">{0}</a></li>"
-                            , Labels.ResourceManager.GetString("download", new CultureInfo(container.CurrentApplicationUser.LanguageCulture))
-                            , asset.DownloadFullUrl
-                            );
+                        var labelDownload = Labels.ResourceManager.GetString("download", culture);
+                        build2.Append(culture, $"<li><a href=\"{asset.DownloadFullUrl}\" class=\"attachment\">{labelDownload}</a></li>");
                     }
 
                     if (buttonList != null)
@@ -1651,16 +1644,16 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                             .ToList()
                             .ForEach(button =>
                             {
-                                build2.AppendFormat("<li><a href=\"#\" id=\"{1}\" title=\"{2}\" class=\"custom postBack{3}\">{0}</a></li>", button.Title, button.ID, button.InteractiveHelp, button.AskConfirmation ? " type_confirm" : null);
+                                build2.Append(culture, $"<li><a href=\"#\" id=\"{button.ID}\" title=\"{button.InteractiveHelp}\" class=\"custom postBack{(button.AskConfirmation ? " type_confirm" : null)}\">{button.Title}</a></li>");
                             });
                     }
 
                     if (container.CurrentListInstance.wim.HasListDelete && container.Item.GetValueOrDefault() > 0)
                     {
-                        build2.AppendFormat("<li class=\"right\"><a href=\"#\" id=\"delete\"{1} class=\"delete postBack type_confirm flaticon icon-trash-o\" title=\"{0}\"></a></li>"
-                            , Labels.ResourceManager.GetString("delete", new CultureInfo(container.CurrentApplicationUser.LanguageCulture))
-                            , ConfirmationQuestion(true, container)
-                            );
+                        var labelDelete = Labels.ResourceManager.GetString("delete", culture);
+                        var confirmQuestion = ConfirmationQuestion(true, container);
+
+                        build2.Append(culture, $"<li class=\"right\"><a href=\"#\" id=\"delete\"{confirmQuestion} class=\"delete postBack type_confirm flaticon icon-trash-o\" title=\"{labelDelete}\"></a></li>");
                     }
                 }
                 else if (isEditMode)
@@ -1690,22 +1683,22 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                 if (isBrowseMode)
                 {
                     if (container.CurrentListInstance.wim.CurrentApplicationUserRole.CanCreatePage)
-                        Build_TopLeft.AppendFormat(string.Format("<li><a href=\"{0}\" class=\"submit\">{1}</a></li>", container.UrlBuild.GetNewPageRequest()
-                            , Labels.ResourceManager.GetString("page_new", new CultureInfo(container.CurrentApplicationUser.LanguageCulture))
-                            )
-                        );
+                    {
+                        var labelNew = Labels.ResourceManager.GetString("page_new", culture);
+                        var url = container.UrlBuild.GetNewPageRequest();
+
+                        Build_TopLeft.Append(culture, $"<li><a href=\"{url}\" class=\"submit\">{labelNew}</a></li>");
+                    }
 
                     if (container.CurrentListInstance.wim.CurrentApplicationUserRole.CanCreateList)
                     {
-                        Build_TopRight.AppendFormat(string.Format("<li><abbr title=\"{1}\"><a href=\"{0}\" class=\"submit flaticon icon-folder-plus Small\"></a></li>", container.UrlBuild.GetFolderCreateRequest()
-                            , Labels.ResourceManager.GetString("folder_new", new CultureInfo(container.CurrentApplicationUser.LanguageCulture))
-                            )
-                        );
+                        var labelNew = Labels.ResourceManager.GetString("folder_new", culture);
+                        var url = container.UrlBuild.GetFolderCreateRequest();
 
-                        Build_TopRight.AppendFormat(@"<li><a href=""{0}&openinframe=1"" class=""flaticon icon-settings-02 Small""></a></li>"
-                            , container.UrlBuild.GetFolderOptionsRequest()
-                            );
+                        Build_TopRight.Append(culture, $"<li><abbr title=\"{labelNew}\"><a href=\"{url}\" class=\"submit flaticon icon-folder-plus Small\"></a></li>");
 
+                        url = container.UrlBuild.GetFolderOptionsRequest();
+                        Build_TopRight.Append(culture, $"<li><a href=\"{url}&openinframe=1\" class=\"flaticon icon-settings-02 Small\"></a></li>");
                     }
                 }
                 else if (isEditMode && container.Item.HasValue)
@@ -1725,16 +1718,16 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
 
                         if (page.IsPublished)
                         {
-                            Build_TopRight.AppendFormat("<li><a href=\"{0}\" target=\"preview\" class=\"abbr submit\">{1}</a></li>"
-                                    , pagePreviewHandler.GetOnlineUrl(page)
-                                    , Labels.ResourceManager.GetString("page_live", new CultureInfo(container.CurrentApplicationUser.LanguageCulture))
-                            );
+                            var url = pagePreviewHandler.GetOnlineUrl(page);
+                            var labelLive = Labels.ResourceManager.GetString("page_live", culture);
+
+                            Build_TopRight.Append( culture, $"<li><a href=\"{url}\" target=\"preview\" class=\"abbr submit\">{labelLive}</a></li>");
                         }
 
-                        Build_TopRight.AppendFormat("<li><a href=\"{0}\" target=\"preview\" class=\"abbr submit\">{1}</a></li>"
-                                , pagePreviewHandler.GetPreviewUrl(page)
-                                , Labels.ResourceManager.GetString("page_preview", new CultureInfo(container.CurrentApplicationUser.LanguageCulture))
-                        );
+                        var previewUrl = pagePreviewHandler.GetPreviewUrl(page);
+                        var labelPreview = Labels.ResourceManager.GetString("page_preview", culture);
+
+                        Build_TopRight.Append(culture, $"<li><a href=\"{previewUrl}\" target=\"preview\" class=\"abbr submit\">{labelPreview}</a></li>");
 
                         // ADd Page Modules (if any)
                         if (pageModules?.Count > 0)
@@ -1758,30 +1751,28 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                                     }
 
                                     if (string.IsNullOrWhiteSpace(iconUrl) == false)
+                                    {
                                         iconUrl = $"<img src=\"{iconUrl}\" width=\"16px\" height=\"16px\" />";
-                                    Build_TopRight.AppendFormat("<li><a href=\"#\" id=\"pagemod_{3}\" class=\"abbr flaticon {1}\" title=\"{0}\"{2}>{4}</a></li>"
-                                        , pmodule.Tooltip
-                                        , iconClass
-                                        , confirmOption
-                                        , pmodule.GetType().Name
-                                        , iconUrl
-                                    );
+                                    }
+
+                                    Build_TopRight.Append(culture, $"<li><a href=\"#\" id=\"pagemod_{pmodule.GetType().Name}\" class=\"abbr flaticon {iconClass}\" title=\"{pmodule.Tooltip}\"{confirmOption}>{iconUrl}</a></li>");
                                 }
                             }
                         }
-                        Build_TopRight.AppendFormat("<li><a href=\"{0}&openinframe=1\" id=\"dev_refreshcode\" class=\"abbr flaticon icon-copy Small\" title=\"{1}\"></a></li>"
-                            , container.UrlBuild.GetPageCopyRequest(container.CurrentPage.ID)
-                            , "Copy page"
-                        );
 
-                        Build_TopRight.AppendFormat("<li><a href=\"{0}&openinframe=1\" id=\"dev_refreshcode\" class=\"abbr flaticon  icon-clipboard Small\" title=\"{1}\"></a></li>"
-                         , container.UrlBuild.GetPageCopyContentRequest(container.CurrentPage.ID)
-                         , Labels.ResourceManager.GetString("copy_page_content", new CultureInfo(container.CurrentApplicationUser.LanguageCulture))
-                         );
-                        Build_TopRight.AppendFormat("<li><a href=\"{0}&openinframe=1\" id=\"dev_refreshcode\" class=\"abbr flaticon  icon-history Small\" title=\"{1}\"></a></li>"
-                         , container.UrlBuild.GetPageHistoryRequest(container.CurrentPage.ID)
-                         , Labels.ResourceManager.GetString("page_history", new CultureInfo(container.CurrentApplicationUser.LanguageCulture))
-                         );
+                        // Copy button
+                        var urlCopy = container.UrlBuild.GetPageCopyRequest(container.CurrentPage.ID);
+                        Build_TopRight.Append(culture, $"<li><a href=\"{urlCopy}&openinframe=1\" id=\"dev_refreshcode\" class=\"abbr flaticon icon-copy Small\" title=\"Copy page\"></a></li>");
+
+                        // Copy content button
+                        var urlCopyContent = container.UrlBuild.GetPageCopyContentRequest(container.CurrentPage.ID);
+                        var labelCopyContent = Labels.ResourceManager.GetString("copy_page_content", culture);
+                        Build_TopRight.Append(culture, $"<li><a href=\"{urlCopyContent}&openinframe=1\" id=\"dev_refreshcode\" class=\"abbr flaticon  icon-clipboard Small\" title=\"{labelCopyContent}\"></a></li>");
+
+                        // History button
+                        var urlHistory = container.UrlBuild.GetPageHistoryRequest(container.CurrentPage.ID);
+                        var labelHistory = Labels.ResourceManager.GetString("page_history", culture);
+                        Build_TopRight.Append(culture, $"<li><a href=\"{urlHistory}&openinframe=1\" id=\"dev_refreshcode\" class=\"abbr flaticon  icon-history Small\" title=\"{labelHistory}\"></a></li>");
 
                         if (!(container.CurrentPage == null || container.CurrentPage.ID == 0))
                         {
@@ -1795,12 +1786,10 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                                 // should not trigger an update.
                                 if (nfo.Length > 120 && (file.Ticks > page.Template.LastWriteTimeUtc.GetValueOrDefault().Ticks))
                                 {
-                                    Build_TopRight.AppendFormat("<li><a href=\"{0}&refreshcode=1\" id=\"dev_refreshcode\" class=\"abbr action flaticon icon-refresh\" title=\"{1}\"></a></li>"
-                                        , container.UrlBuild.GetPageRequest(page)
-                                        , "The page possible has new form elements, click to update!"
-                                    );
-                                }
+                                    var url = container.UrlBuild.GetPageRequest(page);
 
+                                    Build_TopRight.Append(culture, $"<li><a href=\"{url}&refreshcode=1\" id=\"dev_refreshcode\" class=\"abbr action flaticon icon-refresh\" title=\"The page possible has new form elements, click to update!\"></a></li>");
+                                }
                             }
                         }
 
@@ -1808,20 +1797,17 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                         {
                             var list = ComponentList.SelectOne(ComponentListType.PageTemplates);
 
-                            Build_TopRight.AppendFormat("<li><a href=\"?list={0}&item={2}\" id=\"source\" class=\"abbr flaticon icon-code\" title=\"{1}\"></a></li>", list.ID
-                                , "Visit the pagetemplate", container.CurrentPage.Template.ID
-                                );
+                            Build_TopRight.Append(culture, $"<li><a href=\"?list={list.ID}&item={container.CurrentPage.Template.ID}\" id=\"source\" class=\"abbr flaticon icon-code\" title=\"Visit the pagetemplate\"></a></li>");
                         }
 
                         if (!page.IsPublished)
                         {
                             if (container.CurrentListInstance.wim.CurrentApplicationUserRole.CanDeletePage && !page.MasterID.HasValue)
                             {
-                                Build_TopRight.AppendFormat("<li><a href=\"{0}\"{2} id=\"delete\" class=\"abbr type_confirm flaticon icon-trash-o\" title=\"{1}\"></a></li>"
-                                    , "#"
-                                    , Labels.ResourceManager.GetString("delete", new CultureInfo(container.CurrentApplicationUser.LanguageCulture))
-                                    , ConfirmationQuestion(true, container)
-                                    );
+                                var labelDelete = Labels.ResourceManager.GetString("delete", culture);
+                                var confirmQuestion = ConfirmationQuestion(true, container);
+
+                                Build_TopRight.Append(culture, $"<li><a href=\"#\"{confirmQuestion} id=\"delete\" class=\"abbr type_confirm flaticon icon-trash-o\" title=\"{labelDelete}\"></a></li>");
                             }
                         }
 
@@ -1829,27 +1815,20 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                         {
                             if (page.IsLocalized == false)
                             {
+                                var labelLocalize = Labels.ResourceManager.GetString("page_localise", culture);
+
                                 //  Inherits content, so can localize
-                                Build_TopRight.AppendFormat("<li><a href=\"{0}\" id=\"page.localize\" class=\"submit postBack abbr\">{1}</a></li>"
-                                    , "#"
-                                    , Labels.ResourceManager.GetString("page_localise", new CultureInfo(container.CurrentApplicationUser.LanguageCulture))
-                                    );
+                                Build_TopRight.Append(culture, $"<li><a href=\"#\" id=\"page.localize\" class=\"submit postBack abbr\">{labelLocalize}</a></li>");
                             }
                             else
                             {
-
-                                Build_TopRight.AppendFormat("<li><a href=\"{0}\" id=\"page.copy\" class=\"submit type_confirm postBack abbr\" {2}>{1}</a></li>"
-                                    , "#"
-                                    , Labels.ResourceManager.GetString("page_pastemode", new CultureInfo(container.CurrentApplicationUser.LanguageCulture))
-                                    , ConfirmationQuestion(true, container)
-                                    );
+                                var labelPaste = Labels.ResourceManager.GetString("page_pastemode", culture);
+                                var confirmQuestion = ConfirmationQuestion(true, container);
+                                Build_TopRight.Append(culture, $"<li><a href=\"#\" id=\"page.copy\" class=\"submit type_confirm postBack abbr\" {confirmQuestion}>{labelPaste}</a></li>");
 
                                 //  Inherits no content, so can unlocalize
-                                Build_TopRight.AppendFormat("<li><a href=\"{0}\" id=\"page.inherit\" class=\"submit postBack abbr\">{1}</a></li>"
-                                    , "#"
-                                    , Labels.ResourceManager.GetString("page_inherit", new CultureInfo(container.CurrentApplicationUser.LanguageCulture))
-                                    );
-
+                                var labelInherit = Labels.ResourceManager.GetString("page_inherit", culture);
+                                Build_TopRight.Append(culture, $"<li><a href=\"#\" id=\"page.inherit\" class=\"submit postBack abbr\">{labelInherit}</a></li>");
                             }
                         }
 
@@ -1858,29 +1837,27 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                             var pagePublicationHandler = new PagePublication();
                             pagePublicationHandler.ValidateConfirmation(container.CurrentApplicationUser, page);
 
-                            if (pagePublicationHandler.CanTakeOffline(container.CurrentApplicationUser, page))
+                            if (pagePublicationHandler.CanTakeOffline(container.CurrentApplicationUser, page) && page.Published != DateTime.MinValue)
                             {
-                                if (page.Published != DateTime.MinValue)
-                                    Build_TopRight.AppendFormat("<li><a href=\"{0}\" id=\"pageoffline\" class=\"abbr flaticon icon-power-off type_confirm\"{2} title=\"{1}\"></a></li>", "#"
-                                        , Labels.ResourceManager.GetString("page_takeoffline", new CultureInfo(container.CurrentApplicationUser.LanguageCulture))
-                                        , ConfirmationQuestion(true, container)
-                                        );
+                                var labelTakeOffline = Labels.ResourceManager.GetString("page_takeoffline", culture);
+                                var confirmQuestion = ConfirmationQuestion(true, container);
+
+                                Build_TopRight.Append(culture, $"<li><a href=\"#\" id=\"pageoffline\" class=\"abbr flaticon icon-power-off type_confirm\"{confirmQuestion} title=\"{labelTakeOffline}\"></a></li>");
                             }
 
                             if (pagePublicationHandler.CanPublish(container.CurrentApplicationUser, page))
                             {
                                 if (page.Published == DateTime.MinValue || page.Published.GetValueOrDefault().Ticks != page.Updated.Ticks)
                                 {
-                                    Build_TopRight.AppendFormat("<li><a href=\"{0}\" id=\"pagepublish\" class=\"abbr submit {2}\"{3} title=\"{1}\">{1}</a></li>", "#"
-                                        , Labels.ResourceManager.GetString("page_publish", new CultureInfo(container.CurrentApplicationUser.LanguageCulture))
-                                        , pagePublicationHandler.AskConfirmation ? "type_confirm" : "postBack"
-                                        , ConfirmationQuestion(pagePublicationHandler.AskConfirmation, container
+                                    var labelPublish = Labels.ResourceManager.GetString("page_publish", culture);
+                                    var confirmQuestion = ConfirmationQuestion(pagePublicationHandler.AskConfirmation, container
                                             , pagePublicationHandler.ConfirmationQuestion
                                             , pagePublicationHandler.ConfirmationTitle
                                             , pagePublicationHandler.ConfirmationRejectLabel
                                             , pagePublicationHandler.ConfirmationAcceptLabel
-                                            )
-                                        );
+                                            );
+
+                                    Build_TopRight.Append(culture, $"<li><a href=\"#\" id=\"pagepublish\" class=\"abbr submit {(pagePublicationHandler.AskConfirmation ? "type_confirm" : "postBack")}\"{confirmQuestion} title=\"{labelPublish}\">{labelPublish}</a></li>");
                                 }
                             }
                         }

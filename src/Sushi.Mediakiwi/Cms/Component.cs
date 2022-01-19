@@ -1245,14 +1245,12 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                             if (inheritedContent != null)
                             {
                                 field2.InheritedValue = inheritedContent[item.Name] == null ? null : inheritedContent[item.Name].Value;
-                                // Check for has property
-                                ((ContentSharedAttribute)x).IsInheritedField = inheritedContent.con string.IsNullOrEmpty(field2.InheritedValue) == false;
+                                ((ContentSharedAttribute)x).IsInheritedField = inheritedContent.HasProperty(item.Name);
                             }
 
                             // [2014.12.01:MM]  Take inheritance
                             // [MR:19-01-2022] Inheritance fix, was :
                             //((ContentSharedAttribute)x).IsInheritedField = !string.IsNullOrEmpty(item.IsInheritedField);
-                            ((ContentSharedAttribute)x).IsInheritedField = string.IsNullOrEmpty(field2.InheritedValue) == false;
                             x.SetCandidate(field2, container.CurrentListInstance.wim.IsEditMode);
                         }
                         else
@@ -1267,12 +1265,12 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                             if (inheritedContent != null)
                             {
                                 field2.InheritedValue = inheritedContent[item.Name] == null ? null : inheritedContent[item.Name].Value;
+                                ((ContentSharedAttribute)x).IsInheritedField = inheritedContent.HasProperty(item.Name);
                             }
 
                             // [2014.12.01:MM]  Take inheritance
                             // [MR:19-01-2022] Inheritance fix, was :
                             //((ContentSharedAttribute)x).IsInheritedField = !string.IsNullOrEmpty(item.IsInheritedField);
-                            ((ContentSharedAttribute)x).IsInheritedField = string.IsNullOrEmpty(field2.InheritedValue) == false;
                             x.SetCandidate(field2, container.CurrentListInstance.wim.IsEditMode);
                         }
 
