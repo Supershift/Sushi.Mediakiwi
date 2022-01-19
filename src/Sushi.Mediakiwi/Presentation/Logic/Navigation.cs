@@ -623,8 +623,8 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                     else
                     {
                         var url = container.UrlBuild.GetListRequest(currentListId, currentListItemId);
-                        tabTag = tabulars.Length > 0 
-                            ? $"<li class=\"active\"><a href=\"{url}\">{itemTitle}</a><ul>{tabulars}</ul></li>" 
+                        tabTag = tabulars.Length > 0
+                            ? $"<li class=\"active\"><a href=\"{url}\">{itemTitle}</a><ul>{tabulars}</ul></li>"
                             : $"<li class=\"active\"><a href=\"{url}\">{itemTitle}</a></li>";
                     }
                 }
@@ -1043,6 +1043,8 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
             if (string.IsNullOrEmpty(saveRecord))
                 saveRecord = Labels.ResourceManager.GetString("save", new CultureInfo(container.CurrentApplicationUser.LanguageCulture));
 
+            string deleteRecord = container.CurrentList.Data["wim_LblDelete"].Value;
+
             FolderType section = container.CurrentListInstance.wim.CurrentFolder.Type;
 
             //  When in the page section, but on a property list page the actual section = list
@@ -1109,8 +1111,10 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                 {
                     if (container.CurrentListInstance.wim.Page.Body.Navigation.Menu.DeleteButtonTarget == ButtonTarget.BottomLeft || container.CurrentListInstance.wim.Page.Body.Navigation.Menu.DeleteButtonTarget == ButtonTarget.BottomRight)
                     {
+                        string classNames = string.IsNullOrEmpty(deleteRecord) ? "flaticon icon-trash-o" : "submit";
+
                         var target = container.CurrentListInstance.wim.Page.Body.Navigation.Menu.DeleteButtonTarget == ButtonTarget.BottomLeft ? " left" : " right";
-                        var button = $"<li><a href=\"#\" id=\"delete\" class=\"abbr type_confirm left flaticon icon-trash-o{target}\"{ConfirmationQuestion(true, container)} title=\"{Labels.ResourceManager.GetString("delete", new CultureInfo(container.CurrentApplicationUser.LanguageCulture))}\"></a></li>";
+                        var button = $"<li><a href=\"#\" id=\"delete\" class=\"abbr type_confirm left {classNames} {target}\"{ConfirmationQuestion(true, container)} title=\"{Labels.ResourceManager.GetString("delete", new CultureInfo(container.CurrentApplicationUser.LanguageCulture))}\">{deleteRecord}</a></li>";
 
                         build2.Append(button);
                     }
@@ -1132,9 +1136,14 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                             ContentTypeID = ContentType.Button
                         });
 
-                        build2.AppendFormat("<input id=\"save\" class=\"submit postBack{1} right\" type=\"submit\" value=\"{0}\">", saveRecord
+                        // Only Shoy here when SaveButtonTarget is on the bottom (default)
+                        // see "switch (container.CurrentListInstance.wim.Page.Body.Navigation.Menu.SaveButtonTarget)" for TopLeft and TopRight implementation
+                        if (container.CurrentListInstance.wim.Page.Body.Navigation.Menu.SaveButtonTarget == ButtonTarget.BottomLeft || container.CurrentListInstance.wim.Page.Body.Navigation.Menu.SaveButtonTarget == ButtonTarget.BottomRight)
+                        {
+                            build2.AppendFormat("<input id=\"save\" class=\"submit postBack{1} right\" type=\"submit\" value=\"{0}\">", saveRecord
                             , string.IsNullOrEmpty(container.CurrentListInstance.wim.Page.Body.Form._PrimairyAction) ? " action" : null
                             );
+                        }
 
                         if (section != FolderType.Page && container.CurrentListInstance.wim.CanSaveAndAddNew && !container.CurrentListInstance.wim.CanContainSingleInstancePerDefinedList)
                         {
@@ -1347,6 +1356,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
 
             string newRecord = container.CurrentList.Data["wim_LblNew"].Value;
             string saveRecord = container.CurrentList.Data["wim_LblSave"].Value;
+            string deleteRecord = container.CurrentList.Data["wim_LblDelete"].Value;
 
             if (string.IsNullOrEmpty(newRecord))
                 newRecord = Labels.ResourceManager.GetString("new_record", new CultureInfo(container.CurrentApplicationUser.LanguageCulture));
@@ -1563,11 +1573,30 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
 
                     if (container.CurrentList.Type != ComponentListType.ComponentListProperties || container.CurrentListInstance.wim.CurrentList.Type == ComponentListType.Undefined)
                     {
+                        if (!container.CurrentListInstance.wim.HideSaveButtons && container.CurrentListInstance.wim.CurrentList.Data["wim_CanSave"].ParseBoolean(true))
+                        {
+                            var saveButton = string.Format("<li><input id=\"save\" class=\"submit postBack{1} right\" type=\"submit\" value=\"{0}\"></li>", saveRecord
+                           , string.IsNullOrEmpty(container.CurrentListInstance.wim.Page.Body.Form._PrimairyAction) ? " action" : null
+                           );
+
+                            switch (container.CurrentListInstance.wim.Page.Body.Navigation.Menu.SaveButtonTarget)
+                            {
+                                case ButtonTarget.TopLeft:
+                                    Build_TopLeft.Append(saveButton);
+                                    break;
+                                case ButtonTarget.TopRight:
+                                    Build_TopRight.Append(saveButton);
+                                    break;
+                            }
+                        }
+
                         if (container.CurrentListInstance.wim.HasListDelete && !container.CurrentListInstance.wim.HideDelete && container.Item.GetValueOrDefault() > 0)
                         {
                             if (container.CurrentListInstance.wim.CurrentList.Data["wim_CanDelete"].ParseBoolean(true))
                             {
-                                var button = $"<li><a href=\"#\" id=\"delete\" class=\"abbr type_confirm left flaticon icon-trash-o\"{ConfirmationQuestion(true, container)} title=\"{Labels.ResourceManager.GetString("delete", new CultureInfo(container.CurrentApplicationUser.LanguageCulture))}\"></a></li>";
+                                string classNames = string.IsNullOrEmpty(deleteRecord) ? "flaticon icon-trash-o" : "submit";
+
+                                var button = $"<li><a href=\"#\" id=\"delete\" class=\"abbr type_confirm left {classNames}\"{ConfirmationQuestion(true, container)} title=\"{Labels.ResourceManager.GetString("delete", new CultureInfo(container.CurrentApplicationUser.LanguageCulture))}\">{deleteRecord}</a></li>";
 
                                 switch (container.CurrentListInstance.wim.Page.Body.Navigation.Menu.DeleteButtonTarget)
                                 {
@@ -1667,7 +1696,9 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                 {
                     if (container.CurrentListInstance.wim.HasListDelete && container.Item.GetValueOrDefault() > 0)
                     {
-                        var button = $"<li><a href=\"#\" id=\"delete\" class=\"abbr type_confirm left flaticon icon-trash-o\"{ConfirmationQuestion(true, container)} title=\"{Labels.ResourceManager.GetString("delete", new CultureInfo(container.CurrentApplicationUser.LanguageCulture))}\"></a></li>";
+                        string classNames = string.IsNullOrEmpty(deleteRecord) ? "flaticon icon-trash-o" : "submit";
+
+                        var button = $"<li><a href=\"#\" id=\"delete\" class=\"abbr type_confirm left {classNames}\"{ConfirmationQuestion(true, container)} title=\"{Labels.ResourceManager.GetString("delete", new CultureInfo(container.CurrentApplicationUser.LanguageCulture))}\">{deleteRecord}</a></li>";
 
                         switch (container.CurrentListInstance.wim.Page.Body.Navigation.Menu.DeleteButtonTarget)
                         {
@@ -1817,10 +1848,14 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                         {
                             if (container.CurrentListInstance.wim.CurrentApplicationUserRole.CanDeletePage && !page.MasterID.HasValue)
                             {
-                                Build_TopRight.AppendFormat("<li><a href=\"{0}\"{2} id=\"delete\" class=\"abbr type_confirm flaticon icon-trash-o\" title=\"{1}\"></a></li>"
+                                string classNames = string.IsNullOrEmpty(deleteRecord) ? "flaticon icon-trash-o" : "submit";
+
+                                Build_TopRight.AppendFormat("<li><a href=\"{0}\"{2} id=\"delete\" class=\"abbr type_confirm {3}\" title=\"{1}\">{4}</a></li>"
                                     , "#"
                                     , Labels.ResourceManager.GetString("delete", new CultureInfo(container.CurrentApplicationUser.LanguageCulture))
                                     , ConfirmationQuestion(true, container)
+                                    , classNames
+                                    , deleteRecord
                                     );
                             }
                         }

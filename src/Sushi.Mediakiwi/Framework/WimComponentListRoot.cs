@@ -191,6 +191,7 @@ namespace Sushi.Mediakiwi.Framework
     public class ButtonMenu
     {
         public ButtonTarget DeleteButtonTarget = ButtonTarget.TopRight;
+        public ButtonTarget SaveButtonTarget = ButtonTarget.BottomRight;
 
         WimComponentListRoot _instance;
         public ButtonMenu(WimComponentListRoot instance)
