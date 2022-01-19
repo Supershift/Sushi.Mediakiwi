@@ -1112,10 +1112,9 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                     if (container.CurrentListInstance.wim.Page.Body.Navigation.Menu.DeleteButtonTarget == ButtonTarget.BottomLeft || container.CurrentListInstance.wim.Page.Body.Navigation.Menu.DeleteButtonTarget == ButtonTarget.BottomRight)
                     {
                         string classNames = string.IsNullOrEmpty(deleteRecord) ? "flaticon icon-trash-o" : "submit";
-                        string label = string.IsNullOrEmpty(deleteRecord) ? string.Empty : deleteRecord;
 
                         var target = container.CurrentListInstance.wim.Page.Body.Navigation.Menu.DeleteButtonTarget == ButtonTarget.BottomLeft ? " left" : " right";
-                        var button = $"<li><a href=\"#\" id=\"delete\" class=\"abbr type_confirm left {classNames} {target}\"{ConfirmationQuestion(true, container)} title=\"{Labels.ResourceManager.GetString("delete", new CultureInfo(container.CurrentApplicationUser.LanguageCulture))}\">{label}</a></li>";
+                        var button = $"<li><a href=\"#\" id=\"delete\" class=\"abbr type_confirm left {classNames} {target}\"{ConfirmationQuestion(true, container)} title=\"{Labels.ResourceManager.GetString("delete", new CultureInfo(container.CurrentApplicationUser.LanguageCulture))}\">{deleteRecord}</a></li>";
 
                         build2.Append(button);
                     }
@@ -1596,9 +1595,8 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                             if (container.CurrentListInstance.wim.CurrentList.Data["wim_CanDelete"].ParseBoolean(true))
                             {
                                 string classNames = string.IsNullOrEmpty(deleteRecord) ? "flaticon icon-trash-o" : "submit";
-                                string label = string.IsNullOrEmpty(deleteRecord) ? string.Empty : deleteRecord;
 
-                                var button = $"<li><a href=\"#\" id=\"delete\" class=\"abbr type_confirm left {classNames}\"{ConfirmationQuestion(true, container)} title=\"{Labels.ResourceManager.GetString("delete", new CultureInfo(container.CurrentApplicationUser.LanguageCulture))}\">{label}</a></li>";
+                                var button = $"<li><a href=\"#\" id=\"delete\" class=\"abbr type_confirm left {classNames}\"{ConfirmationQuestion(true, container)} title=\"{Labels.ResourceManager.GetString("delete", new CultureInfo(container.CurrentApplicationUser.LanguageCulture))}\">{deleteRecord}</a></li>";
 
                                 switch (container.CurrentListInstance.wim.Page.Body.Navigation.Menu.DeleteButtonTarget)
                                 {
@@ -1699,9 +1697,8 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                     if (container.CurrentListInstance.wim.HasListDelete && container.Item.GetValueOrDefault() > 0)
                     {
                         string classNames = string.IsNullOrEmpty(deleteRecord) ? "flaticon icon-trash-o" : "submit";
-                        string label = string.IsNullOrEmpty(deleteRecord) ? string.Empty : deleteRecord;
 
-                        var button = $"<li><a href=\"#\" id=\"delete\" class=\"abbr type_confirm left {classNames}\"{ConfirmationQuestion(true, container)} title=\"{Labels.ResourceManager.GetString("delete", new CultureInfo(container.CurrentApplicationUser.LanguageCulture))}\">{label}</a></li>";
+                        var button = $"<li><a href=\"#\" id=\"delete\" class=\"abbr type_confirm left {classNames}\"{ConfirmationQuestion(true, container)} title=\"{Labels.ResourceManager.GetString("delete", new CultureInfo(container.CurrentApplicationUser.LanguageCulture))}\">{deleteRecord}</a></li>";
 
                         switch (container.CurrentListInstance.wim.Page.Body.Navigation.Menu.DeleteButtonTarget)
                         {
@@ -1852,14 +1849,13 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                             if (container.CurrentListInstance.wim.CurrentApplicationUserRole.CanDeletePage && !page.MasterID.HasValue)
                             {
                                 string classNames = string.IsNullOrEmpty(deleteRecord) ? "flaticon icon-trash-o" : "submit";
-                                string label = string.IsNullOrEmpty(deleteRecord) ? string.Empty : deleteRecord;
 
                                 Build_TopRight.AppendFormat("<li><a href=\"{0}\"{2} id=\"delete\" class=\"abbr type_confirm {3}\" title=\"{1}\">{4}</a></li>"
                                     , "#"
                                     , Labels.ResourceManager.GetString("delete", new CultureInfo(container.CurrentApplicationUser.LanguageCulture))
                                     , ConfirmationQuestion(true, container)
                                     , classNames
-                                    , label
+                                    , deleteRecord
                                     );
                             }
                         }
