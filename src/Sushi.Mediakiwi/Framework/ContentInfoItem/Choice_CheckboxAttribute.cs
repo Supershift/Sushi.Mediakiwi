@@ -75,7 +75,11 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
         /// <summary>
         /// 
         /// </summary>
-        public bool AutoPostBack { get; set; }
+        public bool AutoPostBack
+        {
+            get { return m_AutoPostBack; }
+            set { m_AutoPostBack = value; }
+        }
 
         /// <summary>
         /// Sets the candidate.
