@@ -47,7 +47,7 @@ namespace Sushi.Mediakiwi.Data
                 Map(x => x.Keywords, "Page_KeyWords").Length(500);
                 Map(x => x.Description, "Page_Description").Length(500);
                 Map(x => x.FolderID, "Page_Folder_Key");
-                Map(x => x.ParentFolderID, "Folder_Folder_Key").ReadOnly();
+                
                 Map(x => x.SubFolderID, "Page_SubFolder_Key");
                 Map(x => x.TemplateID, "Page_Template_Key");
                 Map(x => x.MasterID, "Page_Master_Key");
@@ -55,7 +55,7 @@ namespace Sushi.Mediakiwi.Data
                 Map(x => x.Published, "Page_Published");
                 Map(x => x.Updated, "Page_Updated");
                 Map(x => x.InheritContent, "Page_InheritContent");
-                Map(x => x.InheritContentEdited, "Page_InheritContentEdited");
+                Map(x => x.IsLocalized, "Page_InheritContentEdited");
                 Map(x => x.IsSearchable, "Page_IsSearchable");
                 Map(x => x.IsFixed, "Page_IsFixed");
                 Map(x => x.IsPublished, "Page_IsPublished");
@@ -72,25 +72,45 @@ namespace Sushi.Mediakiwi.Data
                 Map(x => x.InheritPublicationInfo, "Site_AutoPublishInherited").ReadOnly();
                 Map(x => x.SiteID, "Site_Key").ReadOnly();
                 Map(x => x.SitePath, "Site_DefaultFolder").Length(500).ReadOnly();
+
+                // Joins from wim_folder :
+                Map(x => x.FolderSiteID, "Folder_Site_Key").ReadOnly();
+                Map(x => x.ParentFolderID, "Folder_Folder_Key").ReadOnly();
+
             }
         }
 
-        internal static List<Page> SelectAllUninherited(int masterID, int siteID)
+        /// <summary>
+        /// Returns all pages that inherit from this page
+        /// </summary>
+        /// <returns></returns>
+        public async Task<List<Page>> GetInheritedPages()
         {
-            // do with pages!
-            return new List<Page>();
+            var connector = ConnectorFactory.CreateConnector<Page>();
+            var filter = connector.CreateQuery();
+            filter.Add(x => x.MasterID, ID);
+            return await connector.FetchAllAsync(filter);
+        }
 
-            //List<Page> list = new List<Page>();
-            //Page page = new Page();
-            //page.SqlTable = "wim_Pages x";
+        /// <summary>
+        /// Are there any pages that inherited from this page ?
+        /// </summary>
+        /// <returns></returns>
+        public async Task<bool> HasInheritedPagesAsync()
+        {
+            var inheritedPages = await GetInheritedPages().ConfigureAwait(false);
+            return inheritedPages.Any();
+        }
 
-            //List<DatabaseDataValueColumn> where = new List<DatabaseDataValueColumn>();
-            //where.Add(new DatabaseDataValueColumn("Folder_Site_Key", SqlDbType.Int, masterID));
-            //where.Add(new DatabaseDataValueColumn(
-            //    string.Format("(select COUNT(*) from wim_Pages left join wim_Folders on Page_Folder_Key = Folder_Key where Folder_Site_Key = {0} and Page_Master_Key = x.Page_Key) = 0", siteID)));
-
-            //foreach (object o in page._SelectAll(where)) list.Add((Page)o);
-            //return list.ToArray();
+        internal static async Task<List<Page>> SelectAllUninheritedAsync(int masterID, int siteID)
+        {
+            var connector = ConnectorFactory.CreateConnector<Page>();
+            var filter = connector.CreateQuery();
+            filter.AddParameter("@siteId", siteID);
+            filter.Add(x => x.FolderSiteID, masterID);
+            filter.AddSql("(select COUNT(*) from wim_Pages pages left join wim_Folders on pages.Page_Folder_Key = Folder_Key where Folder_Site_Key = @siteId and pages.Page_Master_Key = wim_Pages.Page_Key) = 0");
+            
+            return await connector.FetchAllAsync(filter);
         }
 
         private Regex getWimLinks = new Regex(@"""wim:(.*?)""", RegexOptions.Compiled | RegexOptions.IgnoreCase);
@@ -218,12 +238,12 @@ namespace Sushi.Mediakiwi.Data
         public bool InheritContent { get; set; }
 
         /// <summary>
-        /// Does this page inherit content in edited mode
+        /// Is this inherited page localized, so decoupled from it's parent content
         /// </summary>
         /// <value>
-        /// The inherit content edited.
+        /// When an inherited page is Localized, this is set to <c>true</c>
         /// </value>
-        public bool InheritContentEdited { get; set; }
+        public bool IsLocalized { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether [inherit publication info].
@@ -362,6 +382,8 @@ namespace Sushi.Mediakiwi.Data
         /// <value>The site ID.</value>
         public int SiteID { get; set; }
 
+        public int? FolderSiteID { get; set; }
+
         private Site m_Site;
 
         /// <summary>
@@ -393,7 +415,7 @@ namespace Sushi.Mediakiwi.Data
         /// <summary>
         /// The complete page URL
         /// </summary>
-        /// <value>The H ref full.</value>
+        /// <value>The full Href to this page.</value>
         public string HRefFull
         {
             get
@@ -402,10 +424,32 @@ namespace Sushi.Mediakiwi.Data
                     return null;
 
                 var domain = "https://www.website.com";
-                
+
                 if (Site != null && !string.IsNullOrWhiteSpace(Site.Domain))
                 {
                     domain = Site.Domain;
+                }
+                else
+                {
+                    // Create a parent site collection
+                    Site parentSiteWithDomain = default;
+
+
+                    var site = Site;
+                    while (site.MasterID.GetValueOrDefault(0) > 0)
+                    {
+                        site = site.MasterImplement;
+                        if (site?.ID > 0 && string.IsNullOrWhiteSpace(site.Domain) == false)
+                        {
+                            parentSiteWithDomain = site;
+                            break;
+                        }
+                    }
+
+                    if (parentSiteWithDomain?.ID > 0)
+                    {
+                        domain = parentSiteWithDomain.Domain;
+                    }
                 }
 
                 return $"{domain}{CompletePath}";
@@ -1768,6 +1812,30 @@ namespace Sushi.Mediakiwi.Data
             }
 
             var result = connector.FetchSingle(filter);
+            return result;
+        }
+
+        /// <summary>
+        /// Select a page inherited child
+        /// </summary>
+        /// <param name="pageID">The page ID.</param>
+        /// <param name="siteID">The site ID.</param>
+        /// <param name="returnOnlyPublishedPage">Only return published pages</param>
+        /// <returns></returns>
+        public static async Task<Page> SelectOneChildAsync(int pageID, int siteID, bool returnOnlyPublishedPage)
+        {
+            var connector = ConnectorFactory.CreateConnector<Page>();
+            var filter = connector.CreateQuery();
+            filter.AddSql("Page_Master_Key = @Page OR Page_Key = @Page");
+            filter.AddParameter("Page", pageID);
+            filter.Add(x => x.SiteID, siteID);
+
+            if (returnOnlyPublishedPage)
+            {
+                filter.Add(x => x.IsPublished, true);
+            }
+
+            var result = await connector.FetchSingleAsync(filter);
             return result;
         }
 

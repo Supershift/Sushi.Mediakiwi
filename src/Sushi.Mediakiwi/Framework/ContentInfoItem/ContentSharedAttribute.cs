@@ -399,7 +399,7 @@ namespace Sushi.Mediakiwi.Framework
         public bool IsInheritedField { get; set; }
         internal protected bool IsEnabled(bool isEnabled = true)
         {
-            if (IsInheritedField && isEnabled && Console.CurrentPage != null && Console.CurrentPage.InheritContentEdited)
+            if (IsInheritedField && isEnabled && Console.CurrentPage != null && Console.CurrentPage.IsLocalized == false)
             {
                 return false;
             }

@@ -265,7 +265,7 @@ public static class PageExtension
             inPage.Updated = Common.DatabaseDateTime;
             inPage.Published = inPage.Updated;
             inPage.IsPublished = true;
-            inPage.InheritContent = inPage.InheritContentEdited;
+            inPage.InheritContent = inPage.IsLocalized == false;
 
             await inPage.CopyComponentsAsync().ConfigureAwait(false);
             await inPage.SaveAsync().ConfigureAwait(false);

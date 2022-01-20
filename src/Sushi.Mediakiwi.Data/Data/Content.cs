@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Xml.Serialization;
+using System.Linq;
 
 namespace Sushi.Mediakiwi.Data
 {
@@ -76,6 +77,15 @@ namespace Sushi.Mediakiwi.Data
             {
                 return SearchArray(property);
             }
+        }
+
+        public bool HasProperty(string propertyName)
+        {
+            if (Fields?.Length > 0)
+            {
+                return Fields.Any(x => x.Property.Equals(propertyName, StringComparison.InvariantCultureIgnoreCase));
+            }
+            return false;
         }
 
         /// <summary>
