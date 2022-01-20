@@ -267,16 +267,16 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
         }
 
         readonly string NL_SHORT_DATE = "dd-MM-yy";
-        readonly string EN_SHORT_DATE = "MM-dd-yy";
+        readonly string EN_SHORT_DATE = "dd-MM-yy";
 
         readonly string NL_SHORT_DATETIME = "dd-MM-yy HH:mm";
-        readonly string EN_SHORT_DATETIME = "MM-dd-yy HH:mm";
+        readonly string EN_SHORT_DATETIME = "dd-MM-yy HH:mm";
 
         readonly string NL_DATE = "dd-MM-yyyy";
-        readonly string EN_DATE = "MM-dd-yyyy";
+        readonly string EN_DATE = "dd-MM-yyyy";
 
         readonly string NL_DATETIME = "dd-MM-yyyy HH:mm";
-        readonly string EN_DATETIME = "MM-dd-yyyy HH:mm";
+        readonly string EN_DATETIME = "dd-MM-yyyy HH:mm";
 
         public string DateFormat { get; private set; }
         public string DateTimeFormat { get; private set; }
