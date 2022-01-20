@@ -1094,25 +1094,34 @@ namespace Sushi.Mediakiwi.UI
                                         passthrough = $"{Utils.ToUrl(container.CurrentList.Name)}?item";
                                     }
 
-                                    row_attribute["data-link"] = passthrough;
+                                    // [MR:20-01-2022] added the application path
+                                    // when the portal path is empty or only contains a '/'
+                                    if (string.IsNullOrWhiteSpace(passthrough) == false && CommonConfiguration.PORTAL_PATH.Replace("/", string.Empty).Length == 0)
+                                    {
+                                        row_attribute["data-link"] = root.AddApplicationPath(passthrough, true);
+                                    }
+                                    else
+                                    {
+                                        row_attribute["data-link"] = passthrough;
+                                    }
 
                                     row_attribute.Class = "parent";
-                                 
+
                                     if (root.SearchListCanClickThrough && !string.IsNullOrEmpty(uniqueIdentifier) && (uniqueIdentifier != "0" || !string.IsNullOrEmpty(passthrough)))
                                     {
-                                        row_attribute.ID = string.Format("id_{0}${1}", root.CurrentList.ID, uniqueIdentifier);
+                                        row_attribute.ID = $"id_{root.CurrentList.ID}${uniqueIdentifier}";
                                         row_attribute.Class += " hand";
-                                        }
+                                    }
 
                                     var row_parser = container.CurrentListInstance.wim.DoListDataItemCreated(DataItemType.TableRow, root.ListDataColumns.List.ToArray(), column, item, uniqueIdentifier, null, index, row_attribute, source);
                                     var row_html = row_parser.ToString();
 
-                                    RowHTML.Append(string.Format("\n\t\t\t\t\t\t\t\t\t{0}", row_html));
+                                    RowHTML.Append(row_html);
                                     var cell_parser = container.CurrentListInstance.wim.DoListDataItemCreated(DataItemType.TableCell, root.ListDataColumns.List.ToArray(), column, item, uniqueIdentifier, propertyValue, index, cell_attribute, source);
                                     var cell_html = cell_parser.ToString();
 
                                     column.CalculateLength(cell_html, info);
-                                    RowHTML.Append(string.Format("\n\t\t\t\t\t\t\t\t\t{0}", cell_html));
+                                    RowHTML.Append(cell_html);
                                 }
                                 #endregion Standaard table row functionality
                             }
@@ -1125,7 +1134,7 @@ namespace Sushi.Mediakiwi.UI
                                 var html = parser.ToString();
 
                                 column.CalculateLength(html, info);
-                                RowHTML.Append(string.Format("\n\t\t\t\t\t\t\t\t\t{0}", html));
+                                RowHTML.Append(html);
                             }
 
                             isFirst = false;
@@ -1133,11 +1142,16 @@ namespace Sushi.Mediakiwi.UI
 
 
 
-                        RowHTML.Append("\n\t\t\t\t\t\t\t\t</tr>");
+                        RowHTML.Append("</tr>");
                         if (!string.IsNullOrEmpty(accordionPanelAddition))
-                            RowHTML.Append("\n\t\t\t\t\t\t\t\t"+ accordionPanelAddition);
+                        {
+                            RowHTML.Append(accordionPanelAddition);
+                        }
+
                         if (!shouldSkipRowPresentation)
+                        {
                             build2.Append(RowHTML);
+                        }
                     }
                     #endregion Table cell creation
                 }

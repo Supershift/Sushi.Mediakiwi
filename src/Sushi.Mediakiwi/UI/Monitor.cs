@@ -86,6 +86,23 @@ namespace Sushi.Mediakiwi.UI
             }
             return false;
         }
+
+        bool HasReservedRootQueryString()
+        {
+            List<string> reservedDict = new List<string>() { "list", "folder", "page", "gallery", "asset" };
+            var found = false;
+
+            foreach (var dict in reservedDict)
+            {
+                if (_Console.Request.Query.ContainsKey(dict))
+                {
+                    found = true;
+                    break;
+                }
+            }
+
+            return found;
+        }
         
         internal async Task StartAsync(bool reStartWithNotificationList)
         {
@@ -139,8 +156,8 @@ namespace Sushi.Mediakiwi.UI
 
             await CheckSiteAsync().ConfigureAwait(false);
 
-            // If we are at the landing page, without a querystring, process as Root request
-            if (_Console.Request.Path.Equals(WimServerConfiguration.Instance.Portal_Path, StringComparison.InvariantCulture) && _Console?.Request?.QueryString.HasValue == false)
+            // If we are at the landing page, without any reserved querystring process as Root request
+            if (_Console.Request.Path.Equals(WimServerConfiguration.Instance.Portal_Path, StringComparison.InvariantCulture) && HasReservedRootQueryString() == false)
             {
                 await HandleRootRequestAsync().ConfigureAwait(false);
             }
