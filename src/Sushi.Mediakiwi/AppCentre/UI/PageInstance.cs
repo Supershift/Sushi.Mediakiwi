@@ -200,14 +200,6 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         public int SubFolderID { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether this instance is secure.
-        /// </summary>
-        /// <value><c>true</c> if this instance is secure; otherwise, <c>false</c>.</value>
-        //[Sushi.Mediakiwi.Framework.ContentListItem.Choice_Checkbox("_is_secure", "Is this page secured using SSL (a certificate is required on the server)?")]
-        public bool IsSecure { get; set; } = true;
-
-
-        /// <summary>
         /// Gets or sets the template.
         /// </summary>
         /// <value>The template.</value>
@@ -318,6 +310,14 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// <value>The template.</value>
         [Framework.ContentListItem.Choice_Checkbox("_is_default", "Is dit de standaard pagina in de huidige folder?", Expression = OutputExpression.Alternating)]
         public bool IsFolderDefault { get; set; }
+
+        /// <summary>
+        /// When <c>true</c>, a profile needs to be logged in to view this page.
+        /// </summary>
+        /// <value><c>true</c> if this page is secure; otherwise, <c>false</c>.</value>
+        [Framework.ContentListItem.Choice_Checkbox("_is_secure", "A profile needs to be logged in to view this page", Expression = OutputExpression.Alternating)]
+        public bool IsSecure { get; set; }
+
 
         #endregion UI Properties
     }

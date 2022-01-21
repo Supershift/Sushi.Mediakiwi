@@ -302,9 +302,9 @@ namespace Sushi.Mediakiwi.Data
         public bool IsFolderDefault { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether this instance is secure.
+        /// When <c>true</c>, a profile needs to be logged in to view this page.
         /// </summary>
-        /// <value><c>true</c> if this instance is secure; otherwise, <c>false</c>.</value>
+        /// <value><c>true</c> if this page is secure; otherwise, <c>false</c>.</value>
         public bool IsSecure { get; set; }
 
         /// <summary>
