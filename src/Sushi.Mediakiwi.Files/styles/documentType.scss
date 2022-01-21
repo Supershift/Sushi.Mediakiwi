@@ -4,7 +4,7 @@
     font-weight: 600 !important;
 }
 
-#homeContent {    
+#homeContent {
     display: flex;
     flex-direction: row;
 }
@@ -85,13 +85,13 @@
         overflow: auto;
         /*max-width: 50%;
         min-width: 0;*/
-}
+    }
 }
 
 .selections {
     span {
         div.field {
-            padding: 10px 25px 5px 20px;
+            padding: 10px 0 5px 20px;
             border-bottom: 1px solid #e3e3e3;
             display: flex;
             align-items: center;
@@ -125,7 +125,10 @@
 
                     i {
                         display: inline-block;
-                        margin: 5px 5px 0px;
+                        margin: 0 7px 0;
+                        width: 12px;
+                        height: 16px;
+                        font-size: 16px;
 
                         &.edit {
                             color: #f93;
@@ -133,6 +136,7 @@
 
                         &.delete {
                             color: rgb(169, 169, 169);
+                            cursor: pointer;
                         }
 
                         &.sort {
