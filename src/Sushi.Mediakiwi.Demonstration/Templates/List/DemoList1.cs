@@ -8,51 +8,28 @@ using System.Threading.Tasks;
 
 namespace Sushi.Mediakiwi.Demonstration.Templates.List
 {
-    public class DemoObject1
-    {
-        public int ID { get; set; }
-        public string Title { get; set; }
-
-        public static List<DemoObject1> FetchAll()
-        {
-            List<DemoObject1> tmp = new List<DemoObject1>();
-            for (int i = 1; i < 200; i++)
-            {
-                tmp.Add(new DemoObject1()
-                {
-                    ID = i,
-                    Title = $"Demo1Title {i}"
-                });
-            }
-
-            return tmp;
-        }
-
-
-        public static DemoObject1 FetchSingle(int id)
-        {
-            return new DemoObject1()
-            {
-                ID = id,
-                Title = $"Demo1Title {id}"
-            };
-        }
-    }
 
     public class DemoList1 : ComponentListTemplate
     {
-        DemoObject1 Implement;
+        Data.DemoObject1 Implement;
         public DemoList1()
         {
             ListSearch += DemoList1_ListSearch;
             ListLoad += DemoList1_ListLoad;
             ListInit += DemoList1_ListInit;
             ListSave += DemoList1_ListSave;
+            ListDelete += DemoList1_ListDelete;
+        }
+
+        private async Task DemoList1_ListDelete(ComponentListEventArgs arg)
+        {
+            await Implement.DeleteAsync();
         }
 
         private async Task DemoList1_ListSave(ComponentListEventArgs arg)
         {
-
+            Utils.ReflectProperty(this, Implement);
+            await Implement.SaveAsync();
         }
 
         private async Task DemoList1_ListInit()
@@ -64,16 +41,33 @@ namespace Sushi.Mediakiwi.Demonstration.Templates.List
         {
             await wim.Page.Resources.AddAsync(ResourceLocation.HEADER, ResourceType.JAVASCRIPT, "/js/dingesHeader1LOAD.js", true, true);
 
-            Implement = DemoObject1.FetchSingle(e.SelectedKey);
+            Implement = await Data.DemoObject1.FetchOneAsync(e.SelectedKey);
             Utils.ReflectProperty(Implement, this);
         }
 
         private async Task DemoList1_ListSearch(ComponentListSearchEventArgs arg)
         {
-            wim.ListDataColumns.Add(new ListDataColumn("ID", nameof(DemoObject1.ID), ListDataColumnType.UniqueIdentifier));
-            wim.ListDataColumns.Add(new ListDataColumn("Title", nameof(DemoObject1.Title), ListDataColumnType.HighlightPresent));
+            wim.ListDataColumns.Add(new ListDataColumn("ID", nameof(Data.DemoObject1.ID), ListDataColumnType.UniqueIdentifier));
+            wim.ListDataColumns.Add(new ListDataColumn("Title", nameof(Data.DemoObject1.Title), ListDataColumnType.HighlightPresent));
+            wim.ListDataColumns.Add(new ListDataColumn("Datetime", nameof(Data.DemoObject1.Created), ListDataColumnType.Default));
 
-            var allItems = DemoObject1.FetchAll();
+            var allItems = await Data.DemoObject1.FetchAllAsync();
+
+            // Insert a bunch of items when we got none
+            if (allItems.Count == 0)
+            {
+                for (int i = 0; i < 50; i++)
+                {
+                    var newObject = new Data.DemoObject1 
+                    { 
+                        Created =  DateTime.UtcNow,
+                        Title = $"DemoObject nr.{i}"
+                    };
+                    await newObject.SaveAsync();
+
+                    allItems.Add(newObject);
+                }
+            }
 
             // Resources test
             await wim.Page.Resources.AddAsync(ResourceLocation.HEADER, ResourceType.JAVASCRIPT, "/js/dingesHeader1.js", true, true);
@@ -85,11 +79,11 @@ namespace Sushi.Mediakiwi.Demonstration.Templates.List
             wim.ListDataAdd(allItems);
         }
 
-        [TextLine("Title")]
+        [TextField("Title", 100, true)]
         public string Title { get; set; }
-        
-        [Binary_Image("Select image")]
-        public int ImageId { get; set; }
+
+        [DateTime("Custom datetime", true)]
+        public DateTime Created { get; set; }
 
         [DataList(typeof(DemoList2))]
         public DataList Items2 { get; set; }

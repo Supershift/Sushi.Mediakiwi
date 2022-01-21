@@ -35,7 +35,7 @@ namespace Sushi.Mediakiwi.Data
         /// Registry: Is the environment load balanced? if so caching across nodes needs to be controlled
         /// </summary>
         public static string SPACE_REPLACEMENT
-        {   
+        {
             get
             {
                 if (string.IsNullOrEmpty(WimServerConfiguration.Instance.Space_Replacement))
@@ -48,7 +48,7 @@ namespace Sushi.Mediakiwi.Data
         }
 
         public static int EXPIRATION_COOKIE_PROFILE
-        {   
+        {
             get
             {
                 return 60;
@@ -72,6 +72,22 @@ namespace Sushi.Mediakiwi.Data
             get
             {
                 return WimServerConfiguration.Instance.Is_Local_Development;
+            }
+        }
+
+
+        /// <summary>
+        /// Set the datepicker format, options 'nl' (EU) or 'en' (GB)
+        /// </summary>
+        public static string FORM_DATEPICKER
+        {
+            get
+            {
+                if (string.IsNullOrWhiteSpace(WimServerConfiguration.Instance.Datepicker_Language))
+                {
+                    return "EN";
+                }
+                return WimServerConfiguration.Instance.Datepicker_Language;
             }
         }
     }

@@ -301,6 +301,8 @@ namespace Sushi.Mediakiwi.Data
             if (propertyContainerFrom == null || propertyContainerTo == null)
                 return;
 
+            var dateInfo = Mediakiwi.Common.GetDateInformation();
+
             System.Reflection.PropertyInfo[] propertiesFrom = propertyContainerFrom.GetType().GetProperties();
             System.Reflection.PropertyInfo[] propertiesTo = propertyContainerTo.GetType().GetProperties();
 
@@ -355,7 +357,7 @@ namespace Sushi.Mediakiwi.Data
                             {
                                 //  Datetime --> String
                                 DateTime dt = (DateTime)fromPropertyValue;
-                                to.SetValue(propertyContainerTo, dt.ToString("dd/MM/yyyy"), null);
+                                to.SetValue(propertyContainerTo, dt.ToString(dateInfo.dateFormat, dateInfo.culture), null);
                             }
                             else if (from.PropertyType == typeof(decimal))
                             {
