@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Http;
 using Sushi.Mediakiwi.Data;
 using System;
 using System.Threading.Tasks;
@@ -85,7 +86,9 @@ namespace Sushi.Mediakiwi.Framework.ContentListItem
         {
             m_Candidate = null;
             if (Context.Request.HasFormContentType && Context.Request.Form.Files.Count > 0)
+            {
                 m_Candidate = new FileUpload(Context.Request.Form.Files[ID]);
+            }
 
             //  Possible return types: System.Web.HttpPostedFile
 
@@ -160,10 +163,14 @@ namespace Sushi.Mediakiwi.Framework.ContentListItem
             {
                 //  Custom error validation
                 if (!base.IsValid(isRequired))
+                {
                     return false;
+                }
 
                 if (Mandatory && (m_Candidate == null || m_Candidate.File.Length == 0))
+                {
                     return false;
+                }
             }
             return true;
         }
