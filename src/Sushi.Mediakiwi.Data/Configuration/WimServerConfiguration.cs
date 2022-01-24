@@ -61,6 +61,9 @@ namespace Sushi.Mediakiwi.Data.Configuration
         }
         public string Portal_Path { get; set; }
 
+        /// <summary>
+        /// Can be set to NL or EN, any invalid option will default to EN
+        /// </summary>
         public string Datepicker_Language { get; set; }
 
         public bool Sql_Install_Enabled { get; set; }
