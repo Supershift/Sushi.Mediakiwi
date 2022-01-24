@@ -50,14 +50,14 @@
                                 </div>
                                 <div class="status">
                                     <transition name="fade">
-                                        <i class="fas fa-pen edit" title="Edited" v-if="field.status === fieldStatus.edited"></i>
-                                        <i class="fas fa-spinner-third spin" title="Saving" v-if="field.status === fieldStatus.saving"></i>
-                                        <i class="fas fa-check-circle check" title="Saved" v-if="field.status === fieldStatus.saved"></i>
-                                        <i class="far fa-exclamation-triangle warning" title="Warning" v-if="field.status === fieldStatus.invalid"></i>
+                                        <i class="flaticon icon-pen edit" title="Edited" v-if="field.status === fieldStatus.edited"></i>
+                                        <i class="flaticon icon-spinner spin" title="Saving" v-if="field.status === fieldStatus.saving"></i>
+                                        <i class="flaticon icon-check-circle check" title="Saved" v-if="field.status === fieldStatus.saved"></i>
+                                        <i class="flaticon icon-exclamation-circle warning" title="Warning" v-if="field.status === fieldStatus.invalid"></i>
                                     </transition>
-                                    <i class="fas fa-retweet sharedField" title="Shared field" v-if="field.isSharedField"></i>
-                                    <i class="fas fa-trash delete" title="Delete" @click.stop="deleteField(field.id)"></i>
-                                    <i class="fas fa-bars sort" title="Move"></i>
+                                    <i class="flaticon icon-retweet sharedField" title="Shared field" v-if="field.isSharedField"></i>
+                                    <i class="flaticon icon-trash-o delete" title="Delete" @click.stop="deleteField(field.id)"></i>
+                                    <i class="flaticon icon-sort sort" title="Move"></i>
                                 </div>
                             </div>
                         </transition-group>
