@@ -88,7 +88,7 @@ namespace Sushi.Mediakiwi.Data
                         try
                         {
                             DateTime dt;
-                            if (DateTime.TryParse(Value, dateInfo.culture, System.Globalization.DateTimeStyles.None, out dt))
+                            if (DateTime.TryParseExact(Value, dateInfo.dateTimeFormat, dateInfo.culture, System.Globalization.DateTimeStyles.None, out dt))
                             {
                                 return dt;
                             }

@@ -1468,7 +1468,7 @@ namespace Sushi.Mediakiwi.UI
             if (!string.IsNullOrWhiteSpace(name))
             {
                 var urldecrypt = Utils.FromUrl(name);
-                var list = await ComponentList.SelectOneAsync(urldecrypt, null).ConfigureAwait(false);
+                var list = await ComponentList.SelectOneAsync(urldecrypt, folderId).ConfigureAwait(false);
                 if (list != null && !list.IsNewInstance)
                 {
                     return await _Console.ApplyListAsync(list).ConfigureAwait(false);

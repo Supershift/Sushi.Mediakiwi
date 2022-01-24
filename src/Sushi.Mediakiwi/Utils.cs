@@ -1962,12 +1962,14 @@ namespace Sushi.Mediakiwi
 		/// <returns></returns>
 		public static DateTime ConvertWimDateTime(object candidate)
 		{
+            var dateInfo = Common.GetDateInformation();
+
 			if (candidate == null || candidate.ToString().Length == 0)
 			{
 				return DateTime.MinValue;
 			}
 
-			if (DateTime.TryParse(candidate.ToString(), WimCultureInfo, DateTimeStyles.None, out DateTime dt))
+			if (DateTime.TryParseExact(candidate.ToString(), dateInfo.dateTimeFormat, dateInfo.culture, DateTimeStyles.None, out DateTime dt))
 			{
 				return dt;
 			}

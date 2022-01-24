@@ -129,7 +129,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                         {
                             //  Previous WIM versions
                             DateTime tmp;
-                            if (DateTime.TryParse(field.Value, dateInfo.culture, DateTimeStyles.None, out tmp))
+                            if (DateTime.TryParseExact(field.Value, dateInfo.dateTimeFormat, dateInfo.culture, DateTimeStyles.None, out tmp))
                             {
                                 m_Candidate = tmp;
                             }
@@ -170,7 +170,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                     {
                         string candidate = Console.Form(ID);
                         DateTime tmp;
-                        if (DateTime.TryParse(candidate, dateInfo.culture, DateTimeStyles.None, out tmp))
+                        if (DateTime.TryParseExact(candidate, dateInfo.dateFormat, dateInfo.culture, DateTimeStyles.None, out tmp))
                         {
                             if (!string.IsNullOrEmpty(Console.Form(ID + "T")))
                             {
@@ -226,7 +226,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                 {
                     //  Previous WIM versions
                     DateTime tmp;
-                    if (DateTime.TryParse(field.InheritedValue, dateInfo.culture, DateTimeStyles.None, out tmp))
+                    if (DateTime.TryParseExact(field.InheritedValue, dateInfo.dateTimeFormat, dateInfo.culture, DateTimeStyles.None, out tmp))
                     {
                         InhertitedOutputText = tmp.ToString(dateInfo.dateTimeFormat, dateInfo.culture);
                     }
