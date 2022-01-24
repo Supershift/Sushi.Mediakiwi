@@ -160,6 +160,15 @@ namespace Sushi.Mediakiwi.Data.Configuration
         public AuthenticationConfiguration Authentication { get; set; }
 
         public WikiConfiguration Wiki { get; set; } = new WikiConfiguration();
+
+        [ConfigurationKeyName("create-thumbnails")]
+        public bool CreateThumbnails { get; set; }
+
+        [ConfigurationKeyName("max-thumbnail-width")]
+        public int MaxThumbnailWidth { get; set; } = 320;
+
+        [ConfigurationKeyName("max-thumbnail-height")]
+        public int MaxThumbnailHeight { get; set; } = 240;
     }
 
     public class AuthenticationConfiguration

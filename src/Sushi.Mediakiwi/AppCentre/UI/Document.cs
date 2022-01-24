@@ -6,6 +6,7 @@ using Sushi.Mediakiwi.Persisters;
 using Sushi.Mediakiwi.UI;
 using System.Collections.Generic;
 using System.Data;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -64,6 +65,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
     /// </summary>
     public class Document : BaseImplementation
     {
+
         ListItemCollection m_AssetTypes;
         public ListItemCollection AssetTypes
         {
@@ -180,6 +182,36 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             get { return new BlobPersister(); }
         }
 
+        private System.Drawing.Image CreateThumbnailImage(System.Drawing.Image input)
+        {
+            try
+            {
+                var imageHeight = input.Height;
+                var imageWidth = input.Width;
+
+                var maxThumbWidth = System.Math.Max(64, WimServerConfiguration.Instance.MaxThumbnailWidth);
+                var maxThumbHeight = System.Math.Max(48, WimServerConfiguration.Instance.MaxThumbnailHeight);
+
+                if (imageHeight > imageWidth)
+                {
+                    imageWidth = (int)(((float)imageWidth / (float)imageHeight) * maxThumbWidth);
+                    imageHeight = maxThumbHeight;
+                }
+                else
+                {
+                    imageHeight = (int)(((float)imageHeight / (float)imageWidth) * maxThumbHeight);
+                    imageWidth = maxThumbWidth;
+                }
+
+                return input.GetThumbnailImage(imageWidth, imageHeight, () => false, System.IntPtr.Zero);
+
+            }
+            catch (System.Exception ex)
+            {
+                return null;
+            }
+        }
+
         /// <summary>
         /// Handles the ListSave event of the Document control.
         /// </summary>
@@ -214,6 +246,44 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                     {
                         m_Implement.Width = image.Width;
                         m_Implement.Height = image.Height;
+
+                        // Create a thumbnail
+                        if (WimServerConfiguration.Instance.CreateThumbnails)
+                        {
+                            try
+                            {
+
+                                using (var thumb = CreateThumbnailImage(image))
+                                {
+                                    if (thumb != null)
+                                    {
+                                        var extension = _Form.File.File.FileName.Substring(_Form.File.File.FileName.LastIndexOf('.') + 1);
+                                        var name = _Form.File.File.FileName.Substring(0, _Form.File.File.FileName.LastIndexOf('.'));
+                                        var thumbName = $"{name}_thumb.{extension}";
+
+                                        using (MemoryStream ms = new MemoryStream())
+                                        {
+                                            thumb.Save(ms, image.RawFormat);
+                                            ms.Position = 0;
+
+                                            var thumbUpload = await GetPersistor.UploadAsync(ms, Azure_Image_Container, thumbName, _Form.File.File.ContentType).ConfigureAwait(false);
+                                            if (string.IsNullOrWhiteSpace(Azure_Cdn_Uri))
+                                            {
+                                                m_Implement.RemoteLocation_Thumb = $"{thumbUpload.Uri}";
+                                            }
+                                            else
+                                            {
+                                                m_Implement.RemoteLocation_Thumb = $"{Azure_Cdn_Uri}{thumbUpload.Uri.PathAndQuery}";
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            catch (System.Exception ex)
+                            {
+                                wim.Notification.AddNotification($"Could not create thumbnail: {ex.Message}");
+                            }
+                        }
                     }
                 }
 
