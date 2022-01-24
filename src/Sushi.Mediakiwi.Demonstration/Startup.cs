@@ -50,7 +50,7 @@ namespace Sushi.Mediakiwi.Demonstration
 
             services.AddMediakiwi();
             services.AddMediakiwiApi();
-
+            services.AddMediakiwiProfileManager();
 
             var elasticSettings = new Nest.ConnectionSettings(new Uri(Configuration["ElasticUrl"]))
                 .BasicAuthentication(Configuration["ElasticUsername"], Configuration["ElasticPassword"])

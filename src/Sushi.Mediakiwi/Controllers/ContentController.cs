@@ -38,14 +38,13 @@ namespace Sushi.Mediakiwi.Controllers
 
         [Produces("application/json")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [HttpGet]
         [Route("ping")]
         public async Task<ActionResult<string>> Ping()
         {
-            return Ok("Hello");
+            return Ok("Hello from content service");
         }
 
         static DateTime Last_Flush { get; set; } = DateTime.UtcNow;
@@ -690,6 +689,14 @@ namespace Sushi.Mediakiwi.Controllers
             response.PageInternalPath = ConvertUrl(page.InternalPath);
             response.PageLocation = page.Template.Location;
             response.StatusCode = status;
+
+            // When the requested page is secured and no profile is logged in.
+            if (page.IsSecure && HttpContext?.User?.Identity?.IsAuthenticated != true)
+            {
+                response = new PageContentResponse();
+                response.StatusCode = HttpStatusCode.Unauthorized;
+                return response;
+            }
 
             // If we have a pagemap and a redirect, return here
             if (pageMap != null && (response.StatusCode == HttpStatusCode.Redirect || response.StatusCode == HttpStatusCode.MovedPermanently))

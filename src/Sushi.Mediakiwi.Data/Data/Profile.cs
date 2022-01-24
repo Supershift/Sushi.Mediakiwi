@@ -4,6 +4,7 @@ using Sushi.MicroORM;
 using Sushi.MicroORM.Mapping;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Sushi.Mediakiwi.Data.Utilities;
 
 namespace Sushi.Mediakiwi.Data
 {
@@ -109,6 +110,30 @@ namespace Sushi.Mediakiwi.Data
         {
             var connector = new Connector<Profile>();
             await connector.DeleteAsync(this);
+        }
+
+        public async Task SetPasswordAsync(string cleartextPassword)
+        {
+            PasswordHasher<Profile> hasher = new PasswordHasher<Profile>();
+            Password = await Task.Run(() => hasher.HashPassword(this, cleartextPassword));
+        }
+
+        public async Task<bool> CheckPasswordAsync(string cleartextPassword)
+        {
+            PasswordHasher<Profile> hasher = new PasswordHasher<Profile>();
+            var checkResult = await Task.Run(() => hasher.VerifyHashedPassword(this, Password, cleartextPassword));
+            switch (checkResult)
+            {
+                default:
+                case Microsoft.AspNetCore.Identity.PasswordVerificationResult.Failed: return false;
+                case Microsoft.AspNetCore.Identity.PasswordVerificationResult.Success: return true;
+                case Microsoft.AspNetCore.Identity.PasswordVerificationResult.SuccessRehashNeeded:
+                    {
+                        await SetPasswordAsync(cleartextPassword);
+                        await SaveAsync();
+                        return true;
+                    }
+            }
         }
 
 
