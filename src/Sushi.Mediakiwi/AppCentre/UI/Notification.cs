@@ -65,7 +65,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             }
 
             Mediakiwi.Data.Notification _implement = await _repository.SelectOneAsync(e.SelectedKey).ConfigureAwait(false);
-            Date = _implement.Created.ToString("dd-MM-yy hh:mm tt");
+            Date = _implement.Created.ToString("dd-MM-yy HH:mm tt");
             Note = _implement.Text;
             Type = _implement.Group;
 

@@ -2969,17 +2969,13 @@ namespace Sushi.Mediakiwi.UI
                 }
 
                 DateTime tmp = ((DateTime)candidate);
-                // [MR:20-03-2019] Converts UTC (database) time to local timezone for display
-                // 19-10-20 turned off core.
-                //if (container.CurrentList.Option_ConvertUTCToLocalTime && tmp.Kind != DateTimeKind.Local)
-                //    tmp = AppCentre.Data.Supporting.LocalDateTime.GetDate(tmp, container.CurrentListInstance.wim.CurrentSite, true);
 
                 if (tmp.Hour == 0 && tmp.Minute == 0 && tmp.Second == 0 && tmp.Millisecond == 0)
                 {
-                    return tmp.ToString(container.DateFormatShort);
+                    return tmp.ToString(container.DateFormatShort, container.DateCulture);
                 }
 
-                return tmp.ToString(container.DateTimeFormatShort);
+                return tmp.ToString(container.DateTimeFormatShort, container.DateCulture);
             }
             else if (candidate is DateTime?)
             {
@@ -2990,17 +2986,12 @@ namespace Sushi.Mediakiwi.UI
 
                 DateTime tmp = ((DateTime?)candidate).Value;
 
-                // [MR:20-03-2019] Converts UTC (database) time to local timezone for display
-                // 19-10-20 turned off core.
-                //if (container.CurrentList.Option_ConvertUTCToLocalTime && tmp.Kind != DateTimeKind.Local)
-                //    tmp = AppCentre.Data.Supporting.LocalDateTime.GetDate(tmp, container.CurrentListInstance.wim.CurrentSite, true);
-
                 if (tmp.Hour == 0 && tmp.Minute == 0 && tmp.Second == 0 && tmp.Millisecond == 0)
                 {
-                    return tmp.ToString(container.DateFormatShort);
+                    return tmp.ToString(container.DateFormatShort, container.DateCulture);
                 }
 
-                return tmp.ToString(container.DateTimeFormatShort);
+                return tmp.ToString(container.DateTimeFormatShort, container.DateCulture);
             }
             else if (candidate is bool)
             {

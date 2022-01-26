@@ -406,6 +406,8 @@ namespace Sushi.Mediakiwi
 		/// <param name="reflectNull">if set to <c>true</c> [reflect null].</param>
 		public static void ReflectProperty(object propertyContainerFrom, object propertyContainerTo, bool reflectNull)
 		{
+            var dateInfo = Common.GetDateInformation();
+
 			if (propertyContainerFrom == null || propertyContainerTo == null) 
 				return;
 
@@ -475,7 +477,7 @@ namespace Sushi.Mediakiwi
 							{
 								//  Datetime --> String
 								DateTime dt = (DateTime)fromPropertyValue;
-								to.SetValue(propertyContainerTo, dt.ToString("dd/MM/yyyy"), null);
+								to.SetValue(propertyContainerTo, dt.ToString(dateInfo.dateFormat, dateInfo.culture), null);
 							}
 							else if (from.PropertyType == typeof(decimal))
 							{
@@ -1960,12 +1962,14 @@ namespace Sushi.Mediakiwi
 		/// <returns></returns>
 		public static DateTime ConvertWimDateTime(object candidate)
 		{
+            var dateInfo = Common.GetDateInformation();
+
 			if (candidate == null || candidate.ToString().Length == 0)
 			{
 				return DateTime.MinValue;
 			}
 
-			if (DateTime.TryParse(candidate.ToString(), WimCultureInfo, DateTimeStyles.None, out DateTime dt))
+			if (DateTime.TryParseExact(candidate.ToString(), dateInfo.dateTimeFormat, dateInfo.culture, DateTimeStyles.None, out DateTime dt))
 			{
 				return dt;
 			}

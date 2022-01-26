@@ -301,6 +301,8 @@ namespace Sushi.Mediakiwi.Data
             if (propertyContainerFrom == null || propertyContainerTo == null)
                 return;
 
+            var dateInfo = Mediakiwi.Common.GetDateInformation();
+
             System.Reflection.PropertyInfo[] propertiesFrom = propertyContainerFrom.GetType().GetProperties();
             System.Reflection.PropertyInfo[] propertiesTo = propertyContainerTo.GetType().GetProperties();
 
@@ -355,7 +357,7 @@ namespace Sushi.Mediakiwi.Data
                             {
                                 //  Datetime --> String
                                 DateTime dt = (DateTime)fromPropertyValue;
-                                to.SetValue(propertyContainerTo, dt.ToString("dd/MM/yyyy"), null);
+                                to.SetValue(propertyContainerTo, dt.ToString(dateInfo.dateFormat, dateInfo.culture), null);
                             }
                             else if (from.PropertyType == typeof(decimal))
                             {
@@ -1117,12 +1119,14 @@ namespace Sushi.Mediakiwi.Data
         /// <returns></returns>
         public static DateTime ConvertWimDateTime(object candidate)
         {
+            var dateInfo = Mediakiwi.Common.GetDateInformation();
+
             if (candidate == null || candidate.ToString().Length == 0)
             {
                 return DateTime.MinValue;
             }
 
-            if (DateTime.TryParse(candidate.ToString(), WimCultureInfo, DateTimeStyles.None, out DateTime dt))
+            if (DateTime.TryParseExact(candidate.ToString(), dateInfo.dateTimeFormat, dateInfo.culture, DateTimeStyles.None, out DateTime dt))
             {
                 return dt;
             }

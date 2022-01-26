@@ -136,7 +136,7 @@
     <value>Date</value>
   </data>
   <data name="DateFormat" xml:space="preserve">
-    <value>MM-dd-yyyy HH:mm</value>
+    <value>MM/dd/yyyy HH:mm</value>
   </data>
   <data name="delete" xml:space="preserve">
     <value>Delete</value>
