@@ -4390,23 +4390,7 @@ namespace Sushi.Mediakiwi.Framework
         public string SearchResultItemPassthroughParameter
         {
             set { m_SearchResultItemPassthroughParameter = value; }
-            get
-            {
-                if (string.IsNullOrEmpty(m_SearchResultItemPassthroughParameter))
-                {
-                    m_SearchResultItemPassthroughParameter = GetUrl(new KeyValue() { Key = "item", RemoveKey = true });
-                    if (m_SearchResultItemPassthroughParameter.Contains('?'))
-                    {
-                        m_SearchResultItemPassthroughParameter += "&item";
-                    }
-                    else
-                    {
-                        m_SearchResultItemPassthroughParameter += "?item";
-                    }
-                }
-
-                return m_SearchResultItemPassthroughParameter;
-            }
+            get { return m_SearchResultItemPassthroughParameter; }
         }
 
         /// <summary>
