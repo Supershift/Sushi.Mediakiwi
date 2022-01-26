@@ -376,6 +376,7 @@ namespace Sushi.Mediakiwi.Framework
                 Add(element);
                 return new SublistSettings(element);
             }
+  
             return null;
         }
 
