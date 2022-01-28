@@ -189,8 +189,8 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                 var imageHeight = input.Height;
                 var imageWidth = input.Width;
 
-                var maxThumbWidth = System.Math.Max(64, WimServerConfiguration.Instance.MaxThumbnailWidth);
-                var maxThumbHeight = System.Math.Max(48, WimServerConfiguration.Instance.MaxThumbnailHeight);
+                var maxThumbWidth = System.Math.Max(64, WimServerConfiguration.Instance.Thumbnails.CreateThumbnailWidth);
+                var maxThumbHeight = System.Math.Max(48, WimServerConfiguration.Instance.Thumbnails.CreateThumbnailHeight);
 
                 if (imageHeight > imageWidth)
                 {
@@ -248,7 +248,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                         m_Implement.Height = image.Height;
 
                         // Create a thumbnail
-                        if (WimServerConfiguration.Instance.CreateThumbnails)
+                        if (WimServerConfiguration.Instance.Thumbnails.CreateThumbnails)
                         {
                             try
                             {

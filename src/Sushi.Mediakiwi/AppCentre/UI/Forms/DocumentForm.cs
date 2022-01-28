@@ -60,7 +60,7 @@ namespace Sushi.Mediakiwi.AppCentre.UI.Forms
 
             Map(x => x.GalleryID).FolderSelect(Labels.ResourceManager.GetString("_folder", new CultureInfo(wim.CurrentApplicationUser.LanguageCulture)), true, FolderType.Gallery);
             Map(x => x.RemoteLocation).TextLine("Url");
-            if ((IsImage || Instance.IsImage) && Mediakiwi.Data.Configuration.WimServerConfiguration.Instance.CreateThumbnails && string.IsNullOrWhiteSpace(Instance.RemoteLocation_Thumb) == false)
+            if ((IsImage || Instance.IsImage) && Mediakiwi.Data.Configuration.WimServerConfiguration.Instance.Thumbnails.CreateThumbnails && string.IsNullOrWhiteSpace(Instance.RemoteLocation_Thumb) == false)
             {
                 ThumbnailImage = $"<img src=\"{Instance.RemoteLocation_Thumb}\" />";
                 Map(x => x.ThumbnailImage, this).TextLine("Thumbnail");

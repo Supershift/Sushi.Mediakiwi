@@ -518,7 +518,17 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                 item.PassThrough = "?asset";
                 if (entry.IsImage)
                 {
-                    item.Icon = "<figure class=\"icon-picture icon\"></figure>";
+                    if (Mediakiwi.Data.Configuration.WimServerConfiguration.Instance.Thumbnails.ShowThumbnailsInGallery && string.IsNullOrWhiteSpace(entry?.RemoteLocation_Thumb) == false)
+                    {
+                        int width = Math.Max(32, Mediakiwi.Data.Configuration.WimServerConfiguration.Instance.Thumbnails.GalleryThumbnailWidth);
+                        int height = Math.Max(24, Mediakiwi.Data.Configuration.WimServerConfiguration.Instance.Thumbnails.CreateThumbnailHeight);
+
+                        item.Icon = $"<figure><img src=\"{entry.RemoteLocation_Thumb}\" style=\"max-width:{width}px; max-height:{height}px;\" /></figure>";
+                    }
+                    else
+                    {
+                        item.Icon = "<figure class=\"icon-picture icon\"></figure>";
+                    }
                 }
                 else
                 {

@@ -194,7 +194,7 @@ namespace Sushi.Mediakiwi
         {   //
             get
             {
-                return WimServerConfiguration.Instance.Html_Encode_Textarea_iInput;
+                return WimServerConfiguration.Instance.Html_Encode_Textarea_Input;
             }
         }
         public static string STYLE_INCLUDE
