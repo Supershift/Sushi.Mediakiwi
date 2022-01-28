@@ -308,7 +308,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
                 url = string.Concat(prefix, path);
             }
 
-            if (url.Contains("//", StringComparison.CurrentCulture))
+            if (url?.Contains("//", StringComparison.CurrentCulture) == true)
             {
                 url = _CleanFormatting.Replace(url, "/");
             }
