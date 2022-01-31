@@ -300,7 +300,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
             string url = path;
 
             // Do we have a pathbase ?
-            var prefix = Request.PathBase.HasValue ? Request.PathBase.Value : string.Empty;
+            var prefix = (Request.PathBase.HasValue == true) ? Request.PathBase.Value : string.Empty;
 
             // Is the pathbase not yet added
             if (string.IsNullOrWhiteSpace(prefix) == false && ((string.IsNullOrWhiteSpace(url) == false && url?.StartsWith(prefix, StringComparison.InvariantCultureIgnoreCase) == false) || string.IsNullOrWhiteSpace(url)))
@@ -315,7 +315,14 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
 
             if (appendUrl)
             {
-                url = $"{CurrentDomain}{url}";
+                if (string.IsNullOrWhiteSpace(url))
+                {
+                    url = CurrentDomain;
+                }
+                else
+                {
+                    url = $"{CurrentDomain}{url}";
+                }
             }
             return url;
         }
