@@ -300,7 +300,7 @@ namespace Sushi.Mediakiwi.API
             var prefix = PathBase.HasValue ? PathBase.Value.ToString() : string.Empty;
             var url = string.Concat(prefix, path);
 
-            if (url.Contains("//", StringComparison.CurrentCulture))
+            if (url?.Contains("//", StringComparison.CurrentCulture) == true)
             {
                 url = _CleanFormatting.Replace(url, "/");
             }
