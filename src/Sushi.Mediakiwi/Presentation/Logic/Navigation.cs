@@ -1350,6 +1350,25 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
         {
             var culture = new CultureInfo(container.CurrentApplicationUser.LanguageCulture);
 
+            // Get the label for the back button
+            string backButton = Labels.ResourceManager.GetString("save", new CultureInfo(container.CurrentApplicationUser.LanguageCulture));
+
+            // Get the label for the Cancel button
+            string cancelButton = Labels.ResourceManager.GetString("cancel", new CultureInfo(container.CurrentApplicationUser.LanguageCulture));
+
+            if (container?.CurrentList?.ID > 0)
+            {
+                var newButtonList = (buttonList != null) ? buttonList.ToList() : new List<ContentListItem.ButtonAttribute>();
+                newButtonList.Add(new ContentListItem.ButtonAttribute(backButton)
+                {
+                    ButtonClassName = "icon-arrow-left-04",
+                    ID = "Button_Back",
+                    CustomUrl = container.UrlBuild.GetListRequest(container.CurrentList)
+                });
+
+                buttonList = newButtonList.ToArray();
+            }
+
             StringBuilder build = new StringBuilder();
             StringBuilder build2 = new StringBuilder();
             StringBuilder innerbuild = new StringBuilder();
