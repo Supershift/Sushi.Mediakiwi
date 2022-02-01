@@ -16,13 +16,14 @@ namespace Sushi.Mediakiwi.Demonstration.Data
                 Id(x => x.ID, "DemoObject1_Key").Identity().ReadOnly();
                 Map(x => x.Title, "DemoObject1_Title").Length(100);
                 Map(x => x.Created, "DemoObject1_Created");
+                Map(x => x.Updated, "DemoObject1_Updated");
             }
         }
 
         public int ID { get; set; }
         public string Title { get; set; }
         public DateTime Created { get; set; }
-
+        public DateTime? Updated { get; set; }
 
         public static async Task<List<DemoObject1>> FetchAllAsync()
         {

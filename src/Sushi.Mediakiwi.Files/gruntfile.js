@@ -96,6 +96,28 @@ module.exports = function (grunt) {
                             'compiled/easyauth.min.js',
                             'compiled/jquery-1-7-1.min.js',
                             'compiled/jquery-ui-1-10-3-custom.min.js',
+                            'compiled/jquery-ui-datepicker-gb.min.js',
+                            'compiled/jquery-shorten.min.js',
+                            'compiled/jquery-tipTip.min.js',
+                            'compiled/jquery-slimscroll.min.js',
+                            'compiled/jquery-numeric.min.js',
+                            'compiled/jquery-formalize.min.js',
+                            'compiled//jquery-colorbox.min.js',
+                            'compiled/jquery-ui-timepicker-addon.min.js',
+                            'compiled/jquery-hoverIntent.min.js',
+                            'compiled/jquery-curtainMenu.min.js',
+                            'compiled/jquery-ambiance.min.js',
+                            'compiled/fixedBar.min.js',
+                            'compiled/jquery-nicescroll.min.js',
+                            'compiled/testdrivev2.min.js',
+                            'compiled/select2.min.js'
+                        ], dest: 'compiled/bundel.gb.min.js'
+                    },
+                    {
+                        src: [
+                            'compiled/easyauth.min.js',
+                            'compiled/jquery-1-7-1.min.js',
+                            'compiled/jquery-ui-1-10-3-custom.min.js',
                             'compiled/jquery-shorten.min.js',
                             'compiled/jquery-tipTip.min.js',
                             'compiled/jquery-slimscroll.min.js',

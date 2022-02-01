@@ -117,10 +117,10 @@ namespace Sushi.Mediakiwi.AppCentre.UI.Forms
 
         public SharedFieldFormMap(WimComponentListRoot wim, SharedField implement, SharedFieldTranslation implementTranslation, int componentTemplateId)
         {
-            var dateInfo = Common.GetDateInformation();
-            dateCulture = dateInfo.culture;
-            dateFormat = dateInfo.dateFormat;
-            dateTimeFormat = dateInfo.dateTimeFormat;
+            var dateInfo = Common.GetDateInformation(wim.CurrentSite);
+            dateCulture = dateInfo.Culture;
+            dateFormat = dateInfo.DateFormatShort;
+            dateTimeFormat = dateInfo.DateTimeFormatShort;
 
             ImplementTranslation = implementTranslation;
             Implement = implement;

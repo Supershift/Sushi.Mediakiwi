@@ -114,11 +114,11 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                             }
                             else if (tmp.Hour == 0 && tmp.Minute == 0 && tmp.Second == 0 && tmp.Millisecond == 0)
                             {
-                                candidate = tmp.ToString(Console.DateFormat, Console.DateCulture);
+                                candidate = tmp.ToString(Console.DateFormatSettings.DateFormatShort, Console.DateFormatSettings.Culture);
                             }
                             else
                             {
-                                candidate = tmp.ToString(string.Concat(Console.DateFormat, " HH:mm"), Console.DateCulture);
+                                candidate = tmp.ToString(string.Concat(Console.DateFormatSettings.DateFormatShort, " HH:mm"), Console.DateFormatSettings.Culture);
                             }
                         }
                     }
@@ -143,11 +143,11 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                             }
                             else if (tmp.Hour == 0 && tmp.Minute == 0 && tmp.Second == 0 && tmp.Millisecond == 0)
                             {
-                                candidate = tmp.ToString(Console.DateFormat, Console.DateCulture);
+                                candidate = tmp.ToString(Console.DateFormatSettings.DateFormatShort, Console.DateFormatSettings.Culture);
                             }
                             else
                             {
-                                candidate = tmp.ToString(string.Concat(Console.DateFormat, " HH:mm"), Console.DateCulture);
+                                candidate = tmp.ToString(string.Concat(Console.DateFormatSettings.DateFormatShort, " HH:mm"), Console.DateFormatSettings.Culture);
                             }
                         }
                         else
