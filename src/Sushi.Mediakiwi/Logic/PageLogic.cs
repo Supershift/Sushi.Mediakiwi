@@ -466,6 +466,7 @@ namespace Sushi.Mediakiwi.Logic
             }
 
             // validation parse url?
+            response.ChannelID = page.SiteID;
             response.PageID = page.ID;
             response.PageInternalPath = ConvertUrl(page.InternalPath);
             response.PageLocation = page.Template.Location;

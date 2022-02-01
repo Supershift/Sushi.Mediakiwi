@@ -306,7 +306,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
             string url = path;
 
             // Do we have a pathbase ?
-            var prefix = Request.PathBase.HasValue ? Request.PathBase.Value : string.Empty;
+            var prefix = (Request.PathBase.HasValue == true) ? Request.PathBase.Value : string.Empty;
 
             // Is the pathbase not yet added
             if (string.IsNullOrWhiteSpace(prefix) == false && ((string.IsNullOrWhiteSpace(url) == false && url?.StartsWith(prefix, StringComparison.InvariantCultureIgnoreCase) == false) || string.IsNullOrWhiteSpace(url)))
@@ -314,14 +314,21 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
                 url = string.Concat(prefix, path);
             }
 
-            if (url.Contains("//", StringComparison.CurrentCulture))
+            if (url?.Contains("//", StringComparison.CurrentCulture) == true)
             {
                 url = _CleanFormatting.Replace(url, "/");
             }
 
             if (appendUrl)
             {
-                url = $"{CurrentDomain}{url}";
+                if (string.IsNullOrWhiteSpace(url))
+                {
+                    url = CurrentDomain;
+                }
+                else
+                {
+                    url = $"{CurrentDomain}{url}";
+                }
             }
             return url;
         }
@@ -440,6 +447,22 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
         }
 
         private IHostEnvironment _env;
+
+        /// <summary>
+        /// Is our Hosting EnvironmentName set to 'DEVELOPMENT' ?
+        /// </summary>
+        /// <returns><c>true</c> when we are in Developer mode.<c>false when we're not in Developer mode.</c></returns>
+        public bool IsDevelopment()
+        {
+            if (_env != null)
+            {
+                return _env.IsDevelopment();
+            }
+            else 
+            {
+                return false;
+            }
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Console"/> class.
