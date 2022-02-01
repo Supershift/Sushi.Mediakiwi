@@ -69,10 +69,36 @@ namespace Sushi.Mediakiwi.UI
                 }
                 catch (Exception ex)
                 {
-                    await Notification.InsertOneAsync("Uncaught exception", ex).ConfigureAwait(false);
-                    throw;
+                    try
+                    {
+                        var notification = await Notification.InsertOneAsync("Uncaught exception", ex).ConfigureAwait(false);
+                        if (notification != null)
+                        {
+                            await HandleExceptionAsync(_Context, ex, notification);
+                        }
+                    }
+                    catch
+                    {
+                        await HandleExceptionAsync(_Context, ex, null);
+                    }
                 }
             }
+        }
+
+        private async Task HandleExceptionAsync(HttpContext context, Exception exception, Notification notification)
+        {
+            context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+            var output = Utils.GetHtmlFormattedLastServerError(exception);
+            if (notification != null)
+            {
+                output += $"<br/><br/><b>Detailed notification:</b><br/> Created on: {notification.Created:dd-MM-yyyy HH:mm}<br/>Group: {notification.Group}<br/>Identifier: {notification.GetIdMessage()}";
+            }
+            else
+            {
+                output += "<br/><br/><b>A detailed notification item could not be created</b>";
+            }
+
+            await context.Response.WriteAsync(output);
         }
 
         internal static async Task<bool> StartControllerAsync(HttpContext context, IHostEnvironment env, IConfiguration configuration, IServiceProvider serviceProvider)
@@ -165,9 +191,6 @@ namespace Sushi.Mediakiwi.UI
             //  Check the role base security
             if (await CheckSecurityAsync(reStartWithNotificationList).ConfigureAwait(false))
             {
-                //  Is the request opened in a frame? 0 = no, 1 = yes, list mode, 2 = yes, form mode
-                int openInFrame = Utility.ConvertToInt(_Console.Request.Query["openinframe"]);
-
                 //  Create new instances
                 DataGrid grid = new DataGrid();
                 var component = new Beta.GeneratedCms.Source.Component();

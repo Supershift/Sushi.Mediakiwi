@@ -443,6 +443,22 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
         private IHostEnvironment _env;
 
         /// <summary>
+        /// Is our Hosting EnvironmentName set to 'DEVELOPMENT' ?
+        /// </summary>
+        /// <returns><c>true</c> when we are in Developer mode.<c>false when we're not in Developer mode.</c></returns>
+        public bool IsDevelopment()
+        {
+            if (_env != null)
+            {
+                return _env.IsDevelopment();
+            }
+            else 
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="Console"/> class.
         /// </summary>
         /// <param name="application">The application.</param>
