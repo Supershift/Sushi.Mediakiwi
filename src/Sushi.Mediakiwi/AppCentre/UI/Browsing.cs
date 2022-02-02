@@ -115,7 +115,12 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             ListSearch += Browsing_ListSearch;
             ListLoad += Browsing_ListLoad;
             ListSave += Browsing_ListSave;
+            ListInit += Browsing_ListInit;
         }
+
+        #endregion CTor
+        
+        #region List ItemCreated
 
         private void Browsing_ListDataItemCreated(object sender, ListDataItemCreatedEventArgs e)
         {
@@ -142,18 +147,34 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                 }
             }
         }
+        #endregion List ItemCreated
+
+        #region List Init
+
+        private async Task Browsing_ListInit()
+        {
+            wim.HasOwnSearchListCache = true;
+        }
+
+        #endregion List Init
+
+        #region List Save
 
         private Task Browsing_ListSave(ComponentListEventArgs arg)
         {
             return Task.CompletedTask;
         }
 
+        #endregion List Save
+
+        #region List Load
+
         private Task Browsing_ListLoad(ComponentListEventArgs arg)
         {
             return Task.CompletedTask;
         }
 
-        #endregion CTor
+        #endregion List Load
 
         #region List Search
 

@@ -1546,8 +1546,8 @@ namespace Sushi.Mediakiwi
 
 				Assembly assem = Assembly.LoadFrom(nfo.FullName);
 				type = assem.GetType(className);
-
-				var result = Microsoft.Extensions.DependencyInjection.ActivatorUtilities.CreateInstance(serviceProvider, type);
+                
+                var result = Microsoft.Extensions.DependencyInjection.ActivatorUtilities.CreateInstance(serviceProvider, type);
 				return result;
 			}
 			catch(Exception ex)

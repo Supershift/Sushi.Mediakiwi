@@ -1,6 +1,7 @@
 using Sushi.Mediakiwi.Beta.GeneratedCms.Source;
 using System;
 using System.Collections;
+using System.Threading.Tasks;
 
 namespace Sushi.Mediakiwi.Framework
 {
@@ -434,9 +435,9 @@ namespace Sushi.Mediakiwi.Framework
         /// <summary>
         /// Loads the post data; this will trigger the Load and possible PreRender events which will generate a performance hit.
         /// </summary>
-        public void LoadPostData()
+        public async Task LoadPostDataAsync()
         {
-            _component.CreateList(_container, _container.OpenInFrame);
+            await _component.CreateListAsync(_container, _container.OpenInFrame);
         }
 
         private int m_PreviousSelectedKey;
