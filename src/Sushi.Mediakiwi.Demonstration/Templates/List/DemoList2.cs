@@ -49,7 +49,7 @@ namespace Sushi.Mediakiwi.Demonstration.Templates.List
 
     public class DemoList2 : ComponentListTemplate
     {
-        [Sushi.Mediakiwi.Framework.ContentListSearchItem.Date("Till date", Expression = OutputExpression.Right)]
+        [Framework.ContentListSearchItem.Date("Till date", Expression = OutputExpression.Right)]
         public DateTime Filter_DateTill { get; set; }
 
         public DemoList2()

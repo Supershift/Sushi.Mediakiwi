@@ -196,11 +196,11 @@ namespace Sushi.Mediakiwi.Framework.ContentListItem
             {
                 Content content = new Content();
                 content.Fields = m_Candidate.m_Fields.ToArray();
-                component.CreateSearchList(tmp, 0, content, true);
+                Task.Run(async () => await component.CreateSearchListAsync(tmp, 0, content, true));
             }
             else
             {
-                component.CreateSearchList(tmp, 0, null, true);
+                Task.Run(async () => await component.CreateSearchListAsync(tmp, 0, null, true));
             }
 
             DataGrid grid = new DataGrid();

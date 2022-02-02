@@ -558,7 +558,7 @@ namespace Sushi.Mediakiwi.UI
                 else
                 {
                     _Console.CurrentListInstance.wim.DoListInit();
-                    GlobalWimControlBuilder = component.CreateList(_Console, _Console.OpenInFrame, IsFormatRequest_JSON);
+                    GlobalWimControlBuilder = await component.CreateListAsync(_Console, _Console.OpenInFrame, IsFormatRequest_JSON);
                     if (GlobalWimControlBuilder.IsTerminated)
                     {
                         return;
@@ -728,7 +728,7 @@ namespace Sushi.Mediakiwi.UI
 
                 _Console.CurrentListInstance.wim.IsExportMode_XLS = true;
 
-                component.CreateSearchList(_Console, 0);
+                await component.CreateSearchListAsync(_Console, 0);
                 var url = grid.GetGridFromListInstanceForXLS(_Console, _Console.CurrentListInstance, 0);
                 if (_Console.Request.Query["xp"] == "1")
                 {
@@ -779,7 +779,7 @@ namespace Sushi.Mediakiwi.UI
 
             _Console.AddTrace("Monitor", "CreateSearchList(..)");
 
-            GlobalWimControlBuilder = component.CreateSearchList(_Console, 0);
+            GlobalWimControlBuilder = await component.CreateSearchListAsync(_Console, 0);
             GlobalWimControlBuilder.Canvas.Type = _Console.OpenInFrame > 0 ? CanvasType.ListInLayer : CanvasType.List;
 
             if (_Console.OpenInFrame > 0)

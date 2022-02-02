@@ -1350,19 +1350,24 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
         {
             var culture = new CultureInfo(container.CurrentApplicationUser.LanguageCulture);
 
-            // Get the label for the back button
-            string backButton = Labels.ResourceManager.GetString("save", new CultureInfo(container.CurrentApplicationUser.LanguageCulture));
-
-            // Get the label for the Cancel button
-            string cancelButton = Labels.ResourceManager.GetString("cancel", new CultureInfo(container.CurrentApplicationUser.LanguageCulture));
-
-            if (container?.CurrentList?.ID > 0)
+            // Determine the need for a Back- or cancel button
+            // When we have item = 0 we assume it's a new item and show the Cancel label,
+            // When we have item != 0 we assume it's an existing item and show the Back label
+            if (container.CurrentListInstance != null
+                && container?.CurrentList?.ID > 0
+                && container.CurrentListInstance.wim.CanContainSingleInstancePerDefinedList == false
+                && container.CurrentListInstance.wim.CurrentFolder.Type == FolderType.List
+                && container.Item.GetValueOrDefault(-1) > -1
+                )
             {
+                var isNew = container.Item.GetValueOrDefault(0) == 0;
+                var backButtonLabel = Labels.ResourceManager.GetString(isNew ? "cancel" : "back", new CultureInfo(container.CurrentApplicationUser.LanguageCulture));
                 var newButtonList = (buttonList != null) ? buttonList.ToList() : new List<ContentListItem.ButtonAttribute>();
-                newButtonList.Add(new ContentListItem.ButtonAttribute(backButton)
+                newButtonList.Add(new ContentListItem.ButtonAttribute(backButtonLabel)
                 {
-                    ButtonClassName = "icon-arrow-left-04",
+                    ButtonClassName = "submit",
                     ID = "Button_Back",
+                    IconTarget = ButtonTarget.TopLeft,
                     CustomUrl = container.UrlBuild.GetListRequest(container.CurrentList)
                 });
 

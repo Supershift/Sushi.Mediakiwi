@@ -1388,20 +1388,20 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
         /// <param name="container">The container.</param>
         /// <param name="openInFrame">The open in frame.</param>
         /// <returns></returns>
-        public WimControlBuilder CreateSearchList(Console container, int openInFrame)
+        public async Task<WimControlBuilder> CreateSearchListAsync(Console container, int openInFrame)
         {
             if (container.CurrentListInstance.wim.Page.Body.Filter.DisableDefaultSetup)
             {
-                return CreateSearchList(container, openInFrame, null);
+                return await CreateSearchListAsync(container, openInFrame, null);
             }
             // [CB; 14-11-2016] change with aknowledgement from Mark de vries. This helps developers to assign a local cache for the filter options
             if (container.CurrentListInstance.wim.HasOwnSearchListCache)
             {
-                return CreateSearchList(container, openInFrame, container.CurrentListInstance.wim.CurrentVisitor.Data["wim_FilterInfo_" + container.CurrentListInstance.wim.CurrentList.GUID].Value);
+                return await CreateSearchListAsync(container, openInFrame, container.CurrentListInstance.wim.CurrentVisitor.Data["wim_FilterInfo_" + container.CurrentListInstance.wim.CurrentList.GUID].Value);
             }
             else
             {
-                return CreateSearchList(container, openInFrame, container.CurrentListInstance.wim.CurrentVisitor.Data["wim_FilterInfo"].Value);
+                return await CreateSearchListAsync(container, openInFrame, container.CurrentListInstance.wim.CurrentVisitor.Data["wim_FilterInfo"].Value);
             }
         }
 
@@ -1412,7 +1412,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
         /// <param name="openInFrame">The open in frame.</param>
         /// <param name="serialized">The serialized.</param>
         /// <returns></returns>
-        internal WimControlBuilder CreateSearchList(Console container, int openInFrame, string serialized)
+        internal async Task<WimControlBuilder> CreateSearchListAsync(Console container, int openInFrame, string serialized)
         {
             m_AllListProperties = null;
 
@@ -1421,7 +1421,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                 m_Content = Content.GetDeserialized(serialized);
             }
 
-            return CreateSearchList(container, openInFrame, m_Content, false);
+            return await CreateSearchListAsync(container, openInFrame, m_Content, false);
         }
 
         bool m_IgnoreDataList;
@@ -1434,7 +1434,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
         /// <param name="content">The content.</param>
         /// <param name="ignoreDataList">if set to <c>true</c> [ignore data list].</param>
         /// <returns></returns>
-        internal WimControlBuilder CreateSearchList(Console container, int openInFrame, Content content, bool ignoreDataList)
+        internal async Task<WimControlBuilder> CreateSearchListAsync(Console container, int openInFrame, Content content, bool ignoreDataList)
         {
             m_ShowSearchButton = true;
             m_IgnoreDataList = ignoreDataList;
@@ -1464,7 +1464,8 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                 }
             }
 
-            SetSavedInfo(container);
+            
+            await SetSavedInfoAsync(container);
 
             List<Field> list = new List<Field>();
 
@@ -1511,7 +1512,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                 m_Content.Fields = list.ToArray();
 
                 //  Remember search parameters
-                if (!container.CurrentListInstance.wim.IsClearingListCache)
+                if (container.CurrentListInstance.wim.IsClearingListCache == false)
                 {
                     if (container.CurrentListInstance.wim.HasOwnSearchListCache)
                     {
@@ -1521,6 +1522,8 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                     {
                         container.CurrentListInstance.wim.CurrentVisitor.Data.Apply("wim_FilterInfo", Content.GetSerialized(m_Content));
                     }
+
+                    await container.CurrentListInstance.wim.CurrentVisitor.SaveAsync();
                 }
             }
 
@@ -1530,13 +1533,13 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
         internal List<ButtonAttribute> m_ButtonList;
         public List<ButtonAttribute> ButtonList => m_ButtonList;
 
-        void SetSavedInfo(Console container)
+        async Task SetSavedInfoAsync(Console container)
         {
             if (!container.CurrentListInstance.wim.CurrentVisitor.Data["wim.note"].IsNull)
             {
                 string note = container.CurrentListInstance.wim.CurrentVisitor.Data["wim.note"].Value;
                 container.CurrentListInstance.wim.CurrentVisitor.Data.Apply("wim.note", null);
-                container.CurrentListInstance.wim.CurrentVisitor.Save();
+                await container.CurrentListInstance.wim.CurrentVisitor.SaveAsync();
                 container.CurrentListInstance.wim.Notification.AddNotificationAlert(note);
             }
         }
@@ -1548,7 +1551,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
         /// <param name="container">The container.</param>
         /// <param name="openInFrame">The open in frame.</param>
         /// <returns></returns>
-        public WimControlBuilder CreateList(Console container, int openInFrame, bool isJSONRequest = false)
+        public async Task<WimControlBuilder> CreateListAsync(Console container, int openInFrame, bool isJSONRequest = false)
         {
             int listId = container.CurrentList.ID;
 
@@ -1563,7 +1566,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                 container.CurrentListInstance.ListLoad += CurrentListInstance_ListLoad;
             }
 
-            SetSavedInfo(container);
+            await SetSavedInfoAsync(container);
 
             //  Obtain the current list version used for versioning
             ComponentListVersion currentVersion;
@@ -1575,7 +1578,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
             {
                 if (container.Item.HasValue || container.CurrentListInstance.wim.CanContainSingleInstancePerDefinedList)
                 {
-                    currentVersion = ComponentListVersion.SelectOne(listId, container.Item.GetValueOrDefault(0));
+                    currentVersion = await ComponentListVersion.SelectOneAsync(listId, container.Item.GetValueOrDefault(0));
                 }
                 else
                 {
@@ -1723,7 +1726,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                         version.ComponentListItemID = container.Item.GetValueOrDefault(0);
                         version.Serialized_XML = serialized;
                         version.TypeID = isIntroduction ? 0 : 1;
-                        version.Save();
+                        await version.SaveAsync();
                     }
 
                     // when a redirect is set, return with null.
@@ -1761,7 +1764,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                         }
 
                         container.CurrentListInstance.wim.CurrentVisitor.Data.Apply("wim.note", savedMessage);
-                        container.CurrentListInstance.wim.CurrentVisitor.Save();
+                        await container.CurrentListInstance.wim.CurrentVisitor.SaveAsync();
                     }
                     // [MR:27-07-2021] moved here from row 1778
 
