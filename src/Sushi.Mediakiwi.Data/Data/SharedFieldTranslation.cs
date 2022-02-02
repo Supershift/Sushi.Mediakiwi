@@ -116,11 +116,13 @@ namespace Sushi.Mediakiwi.Data
 
         private string GetValue(string _value, bool optimizeForDisplay, int? maxChars)
         {
-            // Get dateInformation from 
-            var dateInfo = Mediakiwi.Common.GetDateInformation();
+            var site = Site.SelectOne(SiteID);
 
-            string dateFormat = dateInfo.dateFormat;
-            string dateTimeFormat = dateInfo.dateTimeFormat;
+            // Get dateInformation from 
+            var dateInfo = Mediakiwi.Common.GetDateInformation(site);
+
+            string dateFormat = dateInfo.DateFormatShort;
+            string dateTimeFormat = dateInfo.DateTimeFormatShort;
 
 
             string returnValue = "";
@@ -177,17 +179,17 @@ namespace Sushi.Mediakiwi.Data
                     break;
                 case ContentType.Date:
                     {
-                        if (DateTime.TryParseExact(_value, dateFormat, dateInfo.culture, System.Globalization.DateTimeStyles.None, out DateTime result))
+                        if (DateTime.TryParseExact(_value, dateFormat, dateInfo.Culture, System.Globalization.DateTimeStyles.None, out DateTime result))
                         {
-                            returnValue = result.ToString(dateFormat, dateInfo.culture);
+                            returnValue = result.ToString(dateFormat, dateInfo.Culture);
                         }
                     }
                     break;
                 case ContentType.DateTime:
                     {
-                        if (DateTime.TryParseExact(_value, dateTimeFormat, dateInfo.culture, System.Globalization.DateTimeStyles.None, out DateTime result))
+                        if (DateTime.TryParseExact(_value, dateTimeFormat, dateInfo.Culture, System.Globalization.DateTimeStyles.None, out DateTime result))
                         {
-                            returnValue = result.ToString(dateTimeFormat, dateInfo.culture);
+                            returnValue = result.ToString(dateTimeFormat, dateInfo.Culture);
                         }
                     }
                     break;

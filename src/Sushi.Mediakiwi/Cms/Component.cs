@@ -1535,7 +1535,8 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
 
         async Task SetSavedInfoAsync(Console container)
         {
-            if (!container.CurrentListInstance.wim.CurrentVisitor.Data["wim.note"].IsNull)
+            // Do not attempt to render a Saved message when in a DataList
+            if (!container.CurrentListInstance.wim.CurrentVisitor.Data["wim.note"].IsNull && m_IgnoreDataList == false)
             {
                 string note = container.CurrentListInstance.wim.CurrentVisitor.Data["wim.note"].Value;
                 container.CurrentListInstance.wim.CurrentVisitor.Data.Apply("wim.note", null);

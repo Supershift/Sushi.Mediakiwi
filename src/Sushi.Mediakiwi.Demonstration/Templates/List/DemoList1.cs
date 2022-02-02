@@ -1,4 +1,5 @@
 ﻿using Sushi.Mediakiwi.Data;
+using Sushi.Mediakiwi.Extention;
 using Sushi.Mediakiwi.Framework;
 using Sushi.Mediakiwi.Framework.ContentListItem;
 using Sushi.Mediakiwi.UI;
@@ -110,6 +111,11 @@ namespace Sushi.Mediakiwi.Demonstration.Templates.List
         private async Task DemoList1_ListSave(ComponentListEventArgs arg)
         {
             Utils.ReflectProperty(this, Implement);
+            if (Implement.Updated == DateTime.MinValue)
+            {
+                Implement.Updated = null;
+            }
+
             await Implement.SaveAsync();
         }
 
@@ -193,6 +199,9 @@ namespace Sushi.Mediakiwi.Demonstration.Templates.List
 
         [DateTime("Created datetime", true)]
         public DateTime Created { get; set; }
+
+        [Date("Updated date", false)]
+        public DateTime Updated { get; set; }
 
         [DataList(typeof(DemoList2))]
         public DataList Items2 { get; set; }

@@ -132,7 +132,7 @@ namespace Sushi.Mediakiwi.Framework.Templates
         /// <returns></returns>
         public bool SetValue(Site site, object loadedControl, Content content, Component component, Page callingPage)
         {
-            var dateInfo = Common.GetDateInformation();
+            var dateInfo = Common.GetDateInformation(site);
 
             bool isInheritedContent = false;
             if ( callingPage != null && callingPage.InheritContent )
@@ -316,7 +316,7 @@ namespace Sushi.Mediakiwi.Framework.Templates
                                         }
                                         else
                                         {
-                                            if (DateTime.TryParseExact(itemValue.ToString(), dateInfo.dateTimeFormat, dateInfo.culture, System.Globalization.DateTimeStyles.None, out dtResult))
+                                            if (DateTime.TryParseExact(itemValue.ToString(), dateInfo.DateTimeFormatShort, dateInfo.Culture, System.Globalization.DateTimeStyles.None, out dtResult))
                                             {
                                                 dtResult = ConvertDateTimeToLocal(loadedControl, dtResult);
                                                 info.SetValue(loadedControl, dtResult, null);

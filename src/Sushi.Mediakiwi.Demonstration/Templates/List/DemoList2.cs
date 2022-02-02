@@ -112,6 +112,10 @@ namespace Sushi.Mediakiwi.Demonstration.Templates.List
 
             var allItems = DemoObject2.FetchAll();
 
+            // Intentionally Cause an exception here
+            //ComponentList item = null;
+            //wim.Notification.AddNotification(item.AssemblyName);
+
             if (!wim.IsListItemCollectionMode)
             {
                 var list = ComponentList.SelectOne(typeof(DemoList1));
