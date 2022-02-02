@@ -526,6 +526,15 @@ namespace Sushi.Mediakiwi.Data
             set { this.Data.ApplyObject("wim_GenericBySite", value); }
         }
 
+        /// <summary>
+        /// Hide the standard back button
+        /// </summary>
+        public bool Option_HideBackButton
+        {
+            get { return Data["wim_HideBackButton"].ParseBoolean(false); }
+            set { Data.ApplyObject("wim_HideBackButton", value); }
+        }
+
         public DateTime? Updated
         {
             get { return null; }

@@ -1424,7 +1424,12 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
             return await CreateSearchListAsync(container, openInFrame, m_Content, false);
         }
 
-        bool m_IgnoreDataList;
+        bool m_IsDataList;
+
+        /// <summary>
+        /// Are we looking at a Datalist ?
+        /// </summary>
+        public bool IsDataList => m_IsDataList;
 
         /// <summary>
         /// Creates the search list.
@@ -1432,12 +1437,12 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
         /// <param name="container">The container.</param>
         /// <param name="openInFrame">The open in frame.</param>
         /// <param name="content">The content.</param>
-        /// <param name="ignoreDataList">if set to <c>true</c> [ignore data list].</param>
+        /// <param name="isDataList">if set to <c>true</c> we are looking at a DataList Searchlist.</param>
         /// <returns></returns>
-        internal async Task<WimControlBuilder> CreateSearchListAsync(Console container, int openInFrame, Content content, bool ignoreDataList)
+        internal async Task<WimControlBuilder> CreateSearchListAsync(Console container, int openInFrame, Content content, bool isDataList)
         {
             m_ShowSearchButton = true;
-            m_IgnoreDataList = ignoreDataList;
+            m_IsDataList = isDataList;
 
             WimControlBuilder build = new WimControlBuilder();
             bool isValidInput = true;
@@ -1472,7 +1477,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
             System.Diagnostics.Trace.WriteLine("Scanning component list (reading)");
 
             ScanClass(container, build, false, false, ref isValidInput, list);
-            if (m_IgnoreDataList)
+            if (m_IsDataList)
             {
                 return null;
             }
@@ -1536,7 +1541,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
         async Task SetSavedInfoAsync(Console container)
         {
             // Do not attempt to render a Saved message when in a DataList
-            if (!container.CurrentListInstance.wim.CurrentVisitor.Data["wim.note"].IsNull && m_IgnoreDataList == false)
+            if (!container.CurrentListInstance.wim.CurrentVisitor.Data["wim.note"].IsNull && m_IsDataList == false)
             {
                 string note = container.CurrentListInstance.wim.CurrentVisitor.Data["wim.note"].Value;
                 container.CurrentListInstance.wim.CurrentVisitor.Data.Apply("wim.note", null);
@@ -1849,7 +1854,32 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                                 }
                                 else if (!container.IsJson)
                                 {
-                                    container.Redirect(string.Concat(container.CurrentListInstance.wim.SearchResultItemPassthroughParameter, "=", container.Item), true);
+                                    var temp = container.CurrentListInstance.wim.SearchResultItemPassthroughParameter;
+                                    if (string.IsNullOrWhiteSpace(temp) == false)
+                                    {
+                                        if (temp.Contains("[key]", StringComparison.InvariantCultureIgnoreCase))
+                                        {
+                                            temp = temp.Replace("[key]", $"{container.Item.GetValueOrDefault(0)}", StringComparison.InvariantCultureIgnoreCase);
+                                        }
+
+                                        if (temp.EndsWith("="))
+                                        {
+                                            temp += $"{container.Item.GetValueOrDefault(0)}";
+                                        }
+
+                                        if (temp.Contains("item=", StringComparison.OrdinalIgnoreCase) == false)
+                                        {
+                                            temp += temp.Contains("?") ? "&" : "?";
+                                            temp += $"item={container.Item.GetValueOrDefault(0)}";
+                                        }
+
+                                        container.Redirect(temp, true);
+                                    }
+                                    else 
+                                    {
+                                        temp = container.UrlBuild.GetListRequest(container.CurrentListInstance.wim.CurrentList, container.Item);
+                                        container.Redirect(temp, true);
+                                    }
                                 }
                             }
                         }
@@ -2193,7 +2223,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                     continue;
                 }
 
-                if (m_IgnoreDataList && infoItem.ContentAttribute.ContentTypeSelection == ContentType.DataList)
+                if (m_IsDataList && infoItem.ContentAttribute.ContentTypeSelection == ContentType.DataList)
                 {
                     continue;
                 }

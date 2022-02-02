@@ -1358,18 +1358,59 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                 && container.CurrentListInstance.wim.CanContainSingleInstancePerDefinedList == false
                 && container.CurrentListInstance.wim.CurrentFolder.Type == FolderType.List
                 && container.Item.GetValueOrDefault(-1) > -1
+                && container?.Component?.IsDataList != true
+                && container?.CurrentList?.Option_HideBackButton != true
                 )
             {
-                var isNew = container.Item.GetValueOrDefault(0) == 0;
-                var backButtonLabel = Labels.ResourceManager.GetString(isNew ? "cancel" : "back", new CultureInfo(container.CurrentApplicationUser.LanguageCulture));
+                // When in a Tabbed instance, act on that.
+                var isTabbed = (container.Request?.Query?.ContainsKey("group") == true || container?.Request?.Query?.ContainsKey("groupitem") == true || container?.Request?.Query?.ContainsKey("base") == true);
                 var newButtonList = (buttonList != null) ? buttonList.ToList() : new List<ContentListItem.ButtonAttribute>();
-                newButtonList.Add(new ContentListItem.ButtonAttribute(backButtonLabel)
+                var isNew = container.Item.GetValueOrDefault(0) == 0;
+
+                if (isTabbed)
                 {
-                    ButtonClassName = "submit",
-                    ID = "Button_Back",
-                    IconTarget = ButtonTarget.TopLeft,
-                    CustomUrl = container.UrlBuild.GetListRequest(container.CurrentList)
-                });
+                    int parentListId = 0;
+                    int? parentItem = null;
+
+                    if (int.TryParse(container.Request.Query["base"], out int tempBase))
+                    {
+                        parentListId = tempBase;
+                    }
+                    else if (int.TryParse(container.Request.Query["group"], out int tempGroup))
+                    {
+                        parentListId = tempGroup;
+                    }
+
+                    if (int.TryParse(container.Request.Query["groupitem"], out int tempGroupitem))
+                    {
+                        parentItem = tempGroupitem;
+                    }
+
+                    if (parentListId > 0)
+                    {
+                        var backButtonLabel = Labels.ResourceManager.GetString("back", new CultureInfo(container.CurrentApplicationUser.LanguageCulture));
+                        newButtonList.Add(new ContentListItem.ButtonAttribute(backButtonLabel)
+                        {
+                            ButtonClassName = "submit",
+                            ID = "Button_Back",
+                            IconTarget = ButtonTarget.TopLeft,
+                            CustomUrl = container.UrlBuild.GetListRequest(parentListId, parentItem),
+                            NoPostBack = true,
+                        });
+                    }
+                }
+                else
+                {
+                    var backButtonLabel = Labels.ResourceManager.GetString(isNew ? "cancel" : "back", new CultureInfo(container.CurrentApplicationUser.LanguageCulture));
+                    newButtonList.Add(new ContentListItem.ButtonAttribute(backButtonLabel)
+                    {
+                        ButtonClassName = "submit",
+                        ID = "Button_Back",
+                        IconTarget = ButtonTarget.TopLeft,
+                        CustomUrl = container.UrlBuild.GetListRequest(container.CurrentList),
+                        NoPostBack = true,
+                    });
+                }
 
                 buttonList = newButtonList.ToArray();
             }
@@ -1485,7 +1526,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                         var labelNew = Labels.ResourceManager.GetString("folder_new", culture);
                         var url = container.UrlBuild.GetFolderCreateRequest();
 
-                        Build_TopRight.Append(culture, $"<li><abbr title=\"{1}\"><a href=\"{url}\" class=\"flaticon icon-folder-plus Small\"></a></abbr></li>");
+                        Build_TopRight.Append(culture, $"<li><abbr title=\"{labelNew}\"><a href=\"{url}\" class=\"flaticon icon-folder-plus Small\"></a></abbr></li>");
 
                         if (container.CurrentListInstance.wim.CurrentApplicationUser.IsDeveloper)
                         {
