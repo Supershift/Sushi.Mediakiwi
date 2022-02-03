@@ -1855,6 +1855,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                                 else if (!container.IsJson)
                                 {
                                     var temp = container.CurrentListInstance.wim.SearchResultItemPassthroughParameter;
+
                                     if (string.IsNullOrWhiteSpace(temp) == false)
                                     {
                                         if (temp.Contains("[key]", StringComparison.InvariantCultureIgnoreCase))
@@ -1875,9 +1876,24 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
 
                                         container.Redirect(temp, true);
                                     }
-                                    else 
+                                    else
                                     {
-                                        temp = container.UrlBuild.GetListRequest(container.CurrentListInstance.wim.CurrentList, container.Item);
+                                        List<KeyValue> dict = new List<KeyValue>();
+                                        if (container?.Request?.QueryString.HasValue == true)
+                                        {
+                                            foreach (var queryItem in container.Request.Query)
+                                            {
+                                                dict.Add(new KeyValue(queryItem.Key, queryItem.Value.FirstOrDefault()));
+                                            }
+                                        }
+
+                                        // Check if we already got item in our collection, if not, add it
+                                        if (dict.Any(x => x.Key.Equals("item", StringComparison.InvariantCultureIgnoreCase)) == false)
+                                        {
+                                            dict.Add(new KeyValue("item", container.Item.GetValueOrDefault()));
+                                        }
+
+                                        temp = container.UrlBuild.GetUrl(container.CurrentListInstance.wim.CurrentList, dict.ToArray());
                                         container.Redirect(temp, true);
                                     }
                                 }
