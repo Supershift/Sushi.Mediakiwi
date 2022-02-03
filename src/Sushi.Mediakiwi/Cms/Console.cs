@@ -245,23 +245,29 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
         public Dictionary<string, object> JsonForm { get; set; }
 
 
-        internal void SetDateFormat()
+        internal async Task SetDateFormatAsync()
         {
-            var dateInfo = Common.GetDateInformation();
+            DateFormatSettings = new Data.Globalization.DateFormatSettings();
 
-            DateCulture = dateInfo.culture;
-            DateFormat = dateInfo.dateFormat;
-            DateTimeFormat = dateInfo.dateTimeFormat;
-            DateFormatShort = dateInfo.dateFormatShort;
-            DateTimeFormatShort = dateInfo.dateTimeFormatShort;
+            // Do we have a list with a site connected ?
+            if (CurrentList?.SiteID.GetValueOrDefault(0) > 0)
+            {
+                DateFormatSettings = Common.GetDateInformation(await Site.SelectOneAsync(CurrentList.SiteID.Value));
+            }
+            // Or a page with a site connected ?
+            else if (CurrentPage?.Site?.ID > 0)
+            {
+                DateFormatSettings = Common.GetDateInformation(CurrentPage.Site);
+            }
+            // Or a default site set up in environment ?
+            else if (CurrentEnvironment?.DefaultSiteID.GetValueOrDefault(0) > 0)
+            {
+                DateFormatSettings = Common.GetDateInformation(await Site.SelectOneAsync(CurrentEnvironment.DefaultSiteID.Value));
+            }
         }
 
-        public string DateFormat { get; private set; }
-        public string DateTimeFormat { get; private set; }
-        public string DateFormatShort { get; private set; }
-        public string DateTimeFormatShort { get; private set; }
-        public CultureInfo DateCulture { get; private set; }
-
+        public Data.Globalization.DateFormatSettings DateFormatSettings { get; private set; }
+ 
         /// <summary>
         /// Adds the trace.
         /// </summary>
@@ -297,18 +303,32 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
                 }
             }
 
-            var prefix = Request.PathBase.HasValue ? Request.PathBase.Value : string.Empty;
+            string url = path;
 
-            var url = string.Concat(prefix, path);
+            // Do we have a pathbase ?
+            var prefix = (Request.PathBase.HasValue == true) ? Request.PathBase.Value : string.Empty;
 
-            if (url.Contains("//", StringComparison.CurrentCulture))
+            // Is the pathbase not yet added
+            if (string.IsNullOrWhiteSpace(prefix) == false && ((string.IsNullOrWhiteSpace(url) == false && url?.StartsWith(prefix, StringComparison.InvariantCultureIgnoreCase) == false) || string.IsNullOrWhiteSpace(url)))
+            {
+                url = string.Concat(prefix, path);
+            }
+
+            if (url?.Contains("//", StringComparison.CurrentCulture) == true)
             {
                 url = _CleanFormatting.Replace(url, "/");
             }
 
             if (appendUrl)
             {
-                url = $"{CurrentDomain}{url}";
+                if (string.IsNullOrWhiteSpace(url))
+                {
+                    url = CurrentDomain;
+                }
+                else
+                {
+                    url = $"{CurrentDomain}{url}";
+                }
             }
             return url;
         }
@@ -427,6 +447,22 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
         }
 
         private IHostEnvironment _env;
+
+        /// <summary>
+        /// Is our Hosting EnvironmentName set to 'DEVELOPMENT' ?
+        /// </summary>
+        /// <returns><c>true</c> when we are in Developer mode.<c>false when we're not in Developer mode.</c></returns>
+        public bool IsDevelopment()
+        {
+            if (_env != null)
+            {
+                return _env.IsDevelopment();
+            }
+            else 
+            {
+                return false;
+            }
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Console"/> class.

@@ -62,6 +62,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation.Forms
             Map(x => x.Option_LayerResult).Checkbox("Open in layer").Expression(OutputExpression.Alternating);
             Map(x => x.Option_HideBreadCrumbs).Checkbox("Hide breadcrumbs").Expression(OutputExpression.Alternating);
             Map(x => x.Option_HideNavigation).Checkbox("Hide navigation").Expression(OutputExpression.Alternating);
+            Map(x => x.Option_HideBackButton).Checkbox("Hide backbutton").Expression(OutputExpression.Alternating);
             Map(x => x.Option_HasDataReport).Checkbox("Has datareport").Expression(OutputExpression.Alternating);
         }
 

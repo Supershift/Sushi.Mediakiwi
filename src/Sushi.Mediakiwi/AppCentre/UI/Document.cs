@@ -194,12 +194,14 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
 
                 if (imageHeight > imageWidth)
                 {
-                    imageWidth = (int)(((float)imageWidth / (float)imageHeight) * maxThumbWidth);
+                    var factor = ((float)maxThumbHeight / (float)imageHeight);
+                    imageWidth = (int)(factor * imageWidth);
                     imageHeight = maxThumbHeight;
                 }
                 else
                 {
-                    imageHeight = (int)(((float)imageHeight / (float)imageWidth) * maxThumbHeight);
+                    var factor = ((float)maxThumbWidth / (float)imageWidth);
+                    imageHeight = (int)(factor * imageHeight);
                     imageWidth = maxThumbWidth;
                 }
 

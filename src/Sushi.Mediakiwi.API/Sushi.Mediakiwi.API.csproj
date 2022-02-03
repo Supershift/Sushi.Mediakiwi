@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
-    <Version>8.1.9</Version>
+    <Version>8.1.14</Version>
     <Authors>Mark Rienstra</Authors>
     <Company>Supershift</Company>
     <Product>Mediakiwi API</Product>
@@ -13,18 +13,8 @@
     <RepositoryUrl>https://github.com/Supershift/Sushi.Mediakiwi</RepositoryUrl>    
 	<ExcludeXmlAssemblyFiles>false</ExcludeXmlAssemblyFiles>
 	<GenerateDocumentationFile>True</GenerateDocumentationFile>
-	<DocumentationFile></DocumentationFile>
+	<DocumentationFile>Sushi.Mediakiwi.API.xml</DocumentationFile>
   </PropertyGroup>
-
-  <ItemGroup>
-    <None Remove="Sushi.Mediakiwi.API.xml" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="Sushi.Mediakiwi.API.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.1" />

@@ -69,10 +69,36 @@ namespace Sushi.Mediakiwi.UI
                 }
                 catch (Exception ex)
                 {
-                    await Notification.InsertOneAsync("Uncaught exception", ex).ConfigureAwait(false);
-                    throw;
+                    try
+                    {
+                        var notification = await Notification.InsertOneAsync("Uncaught exception", ex).ConfigureAwait(false);
+                        if (notification != null)
+                        {
+                            await HandleExceptionAsync(_Context, ex, notification);
+                        }
+                    }
+                    catch
+                    {
+                        await HandleExceptionAsync(_Context, ex, null);
+                    }
                 }
             }
+        }
+
+        private async Task HandleExceptionAsync(HttpContext context, Exception exception, Notification notification)
+        {
+            context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+            var output = Utils.GetHtmlFormattedLastServerError(exception);
+            if (notification != null)
+            {
+                output += $"<br/><br/><b>Detailed notification:</b><br/> Created on: {notification.Created:dd-MM-yyyy HH:mm}<br/>Group: {notification.Group}<br/>Identifier: {notification.GetIdMessage()}";
+            }
+            else
+            {
+                output += "<br/><br/><b>A detailed notification item could not be created</b>";
+            }
+
+            await context.Response.WriteAsync(output);
         }
 
         internal static async Task<bool> StartControllerAsync(HttpContext context, IHostEnvironment env, IConfiguration configuration, IServiceProvider serviceProvider)
@@ -121,7 +147,7 @@ namespace Sushi.Mediakiwi.UI
                 return;
             }
 
-            _Console.SetDateFormat();
+            await _Console.SetDateFormatAsync();
 
             bool forcelogin = 
                 //_Console.Request.Path.Equals($"{Data.Environment.Current.RelativePath}/login", StringComparison.CurrentCultureIgnoreCase)
@@ -165,9 +191,6 @@ namespace Sushi.Mediakiwi.UI
             //  Check the role base security
             if (await CheckSecurityAsync(reStartWithNotificationList).ConfigureAwait(false))
             {
-                //  Is the request opened in a frame? 0 = no, 1 = yes, list mode, 2 = yes, form mode
-                int openInFrame = Utility.ConvertToInt(_Console.Request.Query["openinframe"]);
-
                 //  Create new instances
                 DataGrid grid = new DataGrid();
                 var component = new Beta.GeneratedCms.Source.Component();
@@ -558,7 +581,7 @@ namespace Sushi.Mediakiwi.UI
                 else
                 {
                     _Console.CurrentListInstance.wim.DoListInit();
-                    GlobalWimControlBuilder = component.CreateList(_Console, _Console.OpenInFrame, IsFormatRequest_JSON);
+                    GlobalWimControlBuilder = await component.CreateListAsync(_Console, _Console.OpenInFrame, IsFormatRequest_JSON);
                     if (GlobalWimControlBuilder.IsTerminated)
                     {
                         return;
@@ -728,7 +751,7 @@ namespace Sushi.Mediakiwi.UI
 
                 _Console.CurrentListInstance.wim.IsExportMode_XLS = true;
 
-                component.CreateSearchList(_Console, 0);
+                await component.CreateSearchListAsync(_Console, 0);
                 var url = grid.GetGridFromListInstanceForXLS(_Console, _Console.CurrentListInstance, 0);
                 if (_Console.Request.Query["xp"] == "1")
                 {
@@ -779,7 +802,7 @@ namespace Sushi.Mediakiwi.UI
 
             _Console.AddTrace("Monitor", "CreateSearchList(..)");
 
-            GlobalWimControlBuilder = component.CreateSearchList(_Console, 0);
+            GlobalWimControlBuilder = await component.CreateSearchListAsync(_Console, 0);
             GlobalWimControlBuilder.Canvas.Type = _Console.OpenInFrame > 0 ? CanvasType.ListInLayer : CanvasType.List;
 
             if (_Console.OpenInFrame > 0)
@@ -1468,7 +1491,7 @@ namespace Sushi.Mediakiwi.UI
             if (!string.IsNullOrWhiteSpace(name))
             {
                 var urldecrypt = Utils.FromUrl(name);
-                var list = await ComponentList.SelectOneAsync(urldecrypt, null).ConfigureAwait(false);
+                var list = await ComponentList.SelectOneAsync(urldecrypt, folderId).ConfigureAwait(false);
                 if (list != null && !list.IsNewInstance)
                 {
                     return await _Console.ApplyListAsync(list).ConfigureAwait(false);

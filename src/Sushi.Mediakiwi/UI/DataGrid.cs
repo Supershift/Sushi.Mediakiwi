@@ -1091,7 +1091,7 @@ namespace Sushi.Mediakiwi.UI
 
                                     if (string.IsNullOrWhiteSpace(passthrough) && caller != null && !caller.wim.CurrentList.ID.Equals(container.CurrentList.ID))
                                     {
-                                        passthrough = $"{Utils.ToUrl(container.CurrentList.Name)}?item";
+                                        passthrough = $"{Utils.ToUrl(container.CurrentList.Name)}?item=";
                                     }
 
                                     // [MR:20-01-2022] added the application path
@@ -2972,10 +2972,10 @@ namespace Sushi.Mediakiwi.UI
 
                 if (tmp.Hour == 0 && tmp.Minute == 0 && tmp.Second == 0 && tmp.Millisecond == 0)
                 {
-                    return tmp.ToString(container.DateFormatShort, container.DateCulture);
+                    return tmp.ToString(container.DateFormatSettings.DateFormatShort, container.DateFormatSettings.Culture);
                 }
 
-                return tmp.ToString(container.DateTimeFormatShort, container.DateCulture);
+                return tmp.ToString(container.DateFormatSettings.DateTimeFormatShort, container.DateFormatSettings.Culture);
             }
             else if (candidate is DateTime?)
             {
@@ -2988,10 +2988,10 @@ namespace Sushi.Mediakiwi.UI
 
                 if (tmp.Hour == 0 && tmp.Minute == 0 && tmp.Second == 0 && tmp.Millisecond == 0)
                 {
-                    return tmp.ToString(container.DateFormatShort, container.DateCulture);
+                    return tmp.ToString(container.DateFormatSettings.DateFormatShort, container.DateFormatSettings.Culture);
                 }
 
-                return tmp.ToString(container.DateTimeFormatShort, container.DateCulture);
+                return tmp.ToString(container.DateFormatSettings.DateTimeFormatShort, container.DateFormatSettings.Culture);
             }
             else if (candidate is bool)
             {

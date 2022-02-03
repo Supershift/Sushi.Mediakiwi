@@ -687,6 +687,7 @@ namespace Sushi.Mediakiwi.Controllers
 
             // validation parse url?
             response.PageID = page.ID;
+            response.ChannelID = page.SiteID;
             response.PageInternalPath = ConvertUrl(page.InternalPath);
             response.PageLocation = page.Template.Location;
             response.StatusCode = status;

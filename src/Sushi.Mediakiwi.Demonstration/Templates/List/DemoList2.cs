@@ -49,7 +49,7 @@ namespace Sushi.Mediakiwi.Demonstration.Templates.List
 
     public class DemoList2 : ComponentListTemplate
     {
-        [Sushi.Mediakiwi.Framework.ContentListSearchItem.Date("Till date", Expression = OutputExpression.Right)]
+        [Framework.ContentListSearchItem.Date("Till date", Expression = OutputExpression.Right)]
         public DateTime Filter_DateTill { get; set; }
 
         public DemoList2()
@@ -111,6 +111,10 @@ namespace Sushi.Mediakiwi.Demonstration.Templates.List
             wim.ListDataColumns.Add(new ListDataColumn("Title", nameof(DemoObject2.Title), ListDataColumnType.HighlightPresent));
 
             var allItems = DemoObject2.FetchAll();
+
+            // Intentionally Cause an exception here
+            //ComponentList item = null;
+            //wim.Notification.AddNotification(item.AssemblyName);
 
             if (!wim.IsListItemCollectionMode)
             {

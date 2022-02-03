@@ -139,9 +139,11 @@ namespace Sushi.Mediakiwi.Data.Repositories.Sql
         public sql.Notification[] SelectAll(string group, int selection, int? maxResult)
         {   
             var filter = connector.CreateQuery();
-            filter.AddOrder(x => x.ID);
+            filter.AddOrder(x => x.ID, Sushi.MicroORM.SortOrder.DESC);
             if (maxResult.GetValueOrDefault(0) > 0)
+            {
                 filter.MaxResults = maxResult.Value;
+            }
 
             filter.Add(x => x.Group, group);
             filter.Add(x => x.Selection, selection);
@@ -162,11 +164,13 @@ namespace Sushi.Mediakiwi.Data.Repositories.Sql
         public async Task<sql.Notification[]> SelectAllAsync(string group, int selection, int? maxResult)
         {   
             var filter = connector.CreateQuery();
-            filter.AddOrder(x => x.ID);
+            filter.AddOrder(x => x.ID, Sushi.MicroORM.SortOrder.DESC);
             filter.Add(x => x.Group, group);
             filter.Add(x => x.Selection, selection);
             if (maxResult.GetValueOrDefault(0) > 0)
+            {
                 filter.MaxResults = maxResult.Value;
+            }
 
             var result = await connector.FetchAllAsync(filter).ConfigureAwait(false);
             return result.ToArray();

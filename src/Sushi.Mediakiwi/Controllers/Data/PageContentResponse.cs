@@ -19,10 +19,16 @@ namespace Sushi.Mediakiwi.Controllers.Data
         }
 
         /// <summary>
-        /// The PadeID from mediakiwi
+        /// The PageID from mediakiwi
         /// </summary>
         [DataMember(Name = "pageId")]
         public int PageID { get; set; }
+
+        /// <summary>
+        /// The ChannelID (SiteID) from mediakiwi
+        /// </summary>
+        [DataMember(Name = "channelId")]
+        public int ChannelID { get; set; }
 
         /// <summary>
         /// The Page Location (path) to the Page template

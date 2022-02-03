@@ -1473,9 +1473,9 @@ namespace Sushi.Mediakiwi.Framework
         public bool HasOwnSearchListCache { get; set; }
         public bool IsClearingListCache { get; set; }
         /// <summary>
-        /// When HasOwnSearchListCache=true, this method will clear the specific cache
+        /// When <c>HasOwnSearchListCache</c> is <c>true</c>, this method will clear the specific cache
         /// </summary>
-        /// <returns>True when clear has been done, false if the cache was not possible to clear</returns>
+        /// <returns><c>true</c> when clear has been done, <c>false</c> if the cache was not possible to clear</returns>
         public bool ClearOwnListSearchCache()
         {
             if (HasOwnSearchListCache)
@@ -3104,7 +3104,7 @@ namespace Sushi.Mediakiwi.Framework
             /// </summary>
             /// <param name="property">The property.</param>
             /// <param name="value">The value.</param>
-            public void ApplyFilterField(string property, object value)
+            public async Task ApplyFilterFieldAsync(string property, object value)
             {
                 if (m_Content == null)
                 {
@@ -3136,12 +3136,15 @@ namespace Sushi.Mediakiwi.Framework
                     m_Content[property].Property = property;
                     m_Content[property].Value = value == null ? null : value.ToString();
                 }
+
                 m_Root.CurrentVisitor.Data.Apply("wim_FilterInfo", Content.GetSerialized(m_Content));
+                await m_Root.CurrentVisitor.SaveAsync();
             }
 
-            public void ClearFilter()
+            public async Task ClearFilterAsync()
             {
                 m_Root.CurrentVisitor.Data.Apply("wim_FilterInfo", null);
+                await m_Root.CurrentVisitor.SaveAsync();
             }
 
             /// <summary>
@@ -4390,23 +4393,7 @@ namespace Sushi.Mediakiwi.Framework
         public string SearchResultItemPassthroughParameter
         {
             set { m_SearchResultItemPassthroughParameter = value; }
-            get
-            {
-                if (string.IsNullOrEmpty(m_SearchResultItemPassthroughParameter))
-                {
-                    m_SearchResultItemPassthroughParameter = GetUrl(new KeyValue() { Key = "item", RemoveKey = true });
-                    if (m_SearchResultItemPassthroughParameter.Contains('?'))
-                    {
-                        m_SearchResultItemPassthroughParameter += "&item";
-                    }
-                    else
-                    {
-                        m_SearchResultItemPassthroughParameter += "?item";
-                    }
-                }
-
-                return m_SearchResultItemPassthroughParameter;
-            }
+            get { return m_SearchResultItemPassthroughParameter; }
         }
 
         /// <summary>

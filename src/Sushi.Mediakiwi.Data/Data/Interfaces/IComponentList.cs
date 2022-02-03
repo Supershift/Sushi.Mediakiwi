@@ -54,6 +54,7 @@ namespace Sushi.Mediakiwi.Data
         int Option_Search_MaxResultPerPage { get; set; }
         int Option_Search_MaxViews { get; set; }
         bool Option_SearchAsync { get; set; }
+        bool Option_HideBackButton { get; set; }
         int ReferenceID { get; set; }
         int? SenseInterval { get; set; }
         DateTime? SenseScheduled { get; set; }

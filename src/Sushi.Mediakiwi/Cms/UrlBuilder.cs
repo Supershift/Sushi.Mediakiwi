@@ -249,30 +249,43 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
         /// <returns></returns>
         public string GetListNewRecordRequest()
         {
-            string newItemRequest = string.Concat(Console.CurrentListInstance.wim.SearchResultItemPassthroughParameter, "=0");
-            if (!newItemRequest.Contains("?item=0") && !newItemRequest.Contains("&item=0"))
+            string newItemRequest = Console.CurrentListInstance.wim.SearchResultItemPassthroughParameter;
+            if (newItemRequest == null)
+            { 
+                newItemRequest = string.Empty;
+            }
+
+            if (newItemRequest?.Contains("[key]", StringComparison.InvariantCultureIgnoreCase) == true)
             {
-                if (newItemRequest.Contains("?"))
+                newItemRequest = newItemRequest.Replace("[key]", "0", StringComparison.InvariantCultureIgnoreCase);
+            }
+
+            if (newItemRequest?.Contains("item=", StringComparison.InvariantCultureIgnoreCase) == false)
+            {
+                if (newItemRequest?.Contains("?") == true)
                 {
-                    return string.Concat(newItemRequest, "&item=0");
+                    newItemRequest = string.Concat(newItemRequest, "&item=0");
                 }
                 else
                 {
-                    return string.Concat(newItemRequest, "?item=0");
+                    newItemRequest = string.Concat(newItemRequest, "?item=0");
                 }
             }
 
-            if (!string.IsNullOrEmpty(Console.Request.Query["openinframe"]) && !newItemRequest.Contains("openinframe"))
+            if (newItemRequest?.Contains("openinframe", StringComparison.InvariantCultureIgnoreCase) == false)
             {
-                newItemRequest += string.Concat("&openinframe=", Console.Request.Query["openinframe"]);
+                if (Console?.Request?.Query?.ContainsKey("openinframe") == true)
+                {
+                    newItemRequest += string.Concat("&openinframe=", Console.Request.Query["openinframe"]);
+                }
+                else if (Console.CurrentList.Option_LayerResult)
+                {
+                    newItemRequest += "&openinframe=2";
+                }
             }
 
-            if (Console.CurrentList.Option_LayerResult && !newItemRequest.Contains("openinframe"))
-            {
-                newItemRequest += "&openinframe=2";
-            }
 
-            if (!string.IsNullOrEmpty(Console.Request.Query["referid"]) && !newItemRequest.Contains("referid"))
+            if (newItemRequest?.Contains("referid", StringComparison.InvariantCultureIgnoreCase) == false && Console?.Request?.Query?.ContainsKey("referid") == true)
             {
                 newItemRequest += string.Concat("&referid=", Console.Request.Query["referid"]);
             }

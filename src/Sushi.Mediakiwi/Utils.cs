@@ -388,262 +388,294 @@ namespace Sushi.Mediakiwi
 			return p[0].ToString().ToUpper() + p.Substring(1);
 		}
 
-		/// <summary>
-		/// Copy get; set; properties with reflected Name and PropertyType.
-		/// </summary>
-		/// <param name="propertyContainerFrom">The property container from.</param>
-		/// <param name="propertyContainerTo">The property container to.</param>
-		public static void ReflectProperty(object propertyContainerFrom, object propertyContainerTo)
-		{
-			ReflectProperty(propertyContainerFrom, propertyContainerTo, false);
-		}
+        /// <summary>
+        /// Copy get; set; properties with reflected Name and PropertyType.
+        /// </summary>
+        /// <param name="propertyContainerFrom">The property container from.</param>
+        /// <param name="propertyContainerTo">The property container to.</param>
+        public static void ReflectProperty(object propertyContainerFrom, object propertyContainerTo)
+        {
+            ReflectProperty(propertyContainerFrom, propertyContainerTo, false);
+        }
 
-		/// <summary>
-		/// Copy get; set; properties with reflected Name and PropertyType.
-		/// </summary>
-		/// <param name="propertyContainerFrom">The property container from.</param>
-		/// <param name="propertyContainerTo">The property container to.</param>
-		/// <param name="reflectNull">if set to <c>true</c> [reflect null].</param>
-		public static void ReflectProperty(object propertyContainerFrom, object propertyContainerTo, bool reflectNull)
-		{
-            var dateInfo = Common.GetDateInformation();
+        /// <summary>
+        /// Copy get; set; properties with reflected Name and PropertyType.
+        /// </summary>
+        /// <param name="propertyContainerFrom">The property container from.</param>
+        /// <param name="propertyContainerTo">The property container to.</param>
+        /// <param name="reflectNull">If set to <c>true</c> the target will receive NULL values. If set to <c>false</c>, source values that are NULL are skipped.</param>
+        public static void ReflectProperty(object propertyContainerFrom, object propertyContainerTo, bool reflectNull)
+        {
+            ReflectProperty(propertyContainerFrom, propertyContainerTo, reflectNull, string.Empty, string.Empty);
+        }
 
-			if (propertyContainerFrom == null || propertyContainerTo == null) 
-				return;
+        /// <summary>
+        /// Copy get; set; properties with reflected Name and PropertyType.
+        /// </summary>
+        /// <param name="propertyContainerFrom">The property container from.</param>
+        /// <param name="propertyContainerTo">The property container to.</param>
+        /// <param name="reflectNull">If set to <c>true</c> the target will receive NULL values. If set to <c>false</c>, source values that are NULL are skipped.</param>
+        /// <param name="dateCultureFrom">The source dateformat culture (for converting from String -> DateTime)</param>
+        /// <param name="dateCultureTo">The target dateformat culture (for converting from DateTime -> String)</param>
+        public static void ReflectProperty(object propertyContainerFrom, object propertyContainerTo, bool reflectNull, string dateCultureFrom, string dateCultureTo)
+        {
+            var dateInfoTo = Mediakiwi.Common.GetDateInformation(dateCultureTo);
 
-			PropertyInfo[] propertiesFrom = propertyContainerFrom.GetType().GetProperties();
-			PropertyInfo[] propertiesTo = propertyContainerTo.GetType().GetProperties();
+            if (propertyContainerFrom == null || propertyContainerTo == null)
+            {
+                return;
+            }
 
-			foreach (PropertyInfo from in propertiesFrom)
-			{
-				if (!from.CanRead)
-				{
-					continue;
-				}
+            System.Reflection.PropertyInfo[] propertiesFrom = propertyContainerFrom.GetType().GetProperties();
+            System.Reflection.PropertyInfo[] propertiesTo = propertyContainerTo.GetType().GetProperties();
 
-				foreach (PropertyInfo to in propertiesTo)
-				{
-					if (from.Name == to.Name)
-					{
-						if (!to.CanWrite)
-						{
-							break;
-						}
+            foreach (System.Reflection.PropertyInfo from in propertiesFrom)
+            {
+                if (!from.CanRead)
+                {
+                    continue;
+                }
 
-						object fromPropertyValue = from.GetValue(propertyContainerFrom, null);
+                foreach (System.Reflection.PropertyInfo to in propertiesTo)
+                {
+                    if (from.Name == to.Name)
+                    {
+                        if (!to.CanWrite)
+                        {
+                            break;
+                        }
 
-						if (fromPropertyValue == null)
-						{
-							if (reflectNull)
-							{
-								to.SetValue(propertyContainerTo, null, null);
-							}
+                        object fromPropertyValue = from.GetValue(propertyContainerFrom, null);
 
-							continue;
-						}
+                        if (fromPropertyValue == null && reflectNull)
+                        {
+                            to.SetValue(propertyContainerTo, null, null);
+                            continue;
+                        }
 
-						#region ? --> String
+                        #region ? --> String
 
-						else if (from.PropertyType != typeof(string) && to.PropertyType == typeof(string))
-						{
-							if (from.PropertyType == typeof(string[]))
-							{
-								//  String[] --> String
-								to.SetValue(propertyContainerTo, Utility.ConvertToCsvString((string[])fromPropertyValue), null);
-							}
-							if (from.PropertyType == typeof(int[]))
-							{
-								//  int[] --> String
-								to.SetValue(propertyContainerTo, Utility.ConvertToCsvString((int[])fromPropertyValue), null);
-							}
+                        else if (from.PropertyType != typeof(string) && to.PropertyType == typeof(string))
+                        {
+                            if (from.PropertyType == typeof(string[]))
+                            {
+                                //  String[] --> String
+                                to.SetValue(propertyContainerTo, ConvertToCsvString((string[])fromPropertyValue), null);
+                            }
+                            if (from.PropertyType == typeof(int[]))
+                            {
+                                //  int[] --> String
+                                to.SetValue(propertyContainerTo, ConvertToCsvString((int[])fromPropertyValue), null);
+                            }
 
-							if (from.PropertyType == typeof(SubList))
-							{
-								if (fromPropertyValue == null)
-								{
-									to.SetValue(propertyContainerTo, null, null);
-								}
-								else
-								{
-									//  Sublist --> String
-									SubList candidate = (SubList)fromPropertyValue;
-									if (candidate?.Items?.Length > 0)
-									{
-										to.SetValue(propertyContainerTo, candidate.Serialized, null);
-									}
-								}
-							}
-							if (from.PropertyType == typeof(DateTime))
-							{
-								//  Datetime --> String
-								DateTime dt = (DateTime)fromPropertyValue;
-								to.SetValue(propertyContainerTo, dt.ToString(dateInfo.dateFormat, dateInfo.culture), null);
-							}
-							else if (from.PropertyType == typeof(decimal))
-							{
-								//  Decimal --> String
-								if (IsDecimal(fromPropertyValue, out decimal tmp))
-								{
-									CultureInfo info = new CultureInfo("en-US");
-									to.SetValue(propertyContainerTo, tmp.ToString(info), null);
-								}
-							}
-							else if (from.PropertyType == typeof(bool))
-							{
-								//  Boolean --> String
-								bool tmp = Convert.ToBoolean(fromPropertyValue);
-								if (tmp)
-								{
-									to.SetValue(propertyContainerTo, "1", null);
-								}
-								else
-								{
-									to.SetValue(propertyContainerTo, "0", null);
-								}
-							}
-							else if (from.PropertyType == typeof(int) || from.PropertyType == typeof(Guid))
-							{
-								to.SetValue(propertyContainerTo, fromPropertyValue.ToString(), null);
-							}
-						}
+                            if (from.PropertyType == typeof(SubList))
+                            {
+                                if (fromPropertyValue == null)
+                                    to.SetValue(propertyContainerTo, null, null);
+                                else
+                                {
+                                    //  Sublist --> String
+                                    SubList candidate = (SubList)fromPropertyValue;
+                                    if (candidate != null && candidate.Items != null && candidate.Items.Length > 0)
+                                    {
+                                        to.SetValue(propertyContainerTo, candidate.Serialized, null);
+                                    }
+                                }
+                            }
+                            if (from.PropertyType == typeof(DateTime))
+                            {
+                                //  Datetime --> String
+                                DateTime dt = (DateTime)fromPropertyValue;
+                                to.SetValue(propertyContainerTo, dt.ToString(dateInfoTo.DateFormatShort, dateInfoTo.Culture), null);
+                            }
+                            else if (from.PropertyType == typeof(decimal))
+                            {
+                                //  Decimal --> String
+                                if (IsDecimal(fromPropertyValue, out decimal tmp))
+                                {
+                                    CultureInfo info = new CultureInfo("en-US");
+                                    to.SetValue(propertyContainerTo, tmp.ToString(info), null);
+                                }
+                            }
+                            else if (from.PropertyType == typeof(bool))
+                            {
+                                //  Boolean --> String
+                                bool tmp = Convert.ToBoolean(fromPropertyValue);
+                                if (tmp)
+                                {
+                                    to.SetValue(propertyContainerTo, "1", null);
+                                }
+                                else
+                                {
+                                    to.SetValue(propertyContainerTo, "0", null);
+                                }
+                            }
+                            else if (from.PropertyType == typeof(int) || from.PropertyType == typeof(Guid))
+                            {
+                                to.SetValue(propertyContainerTo, fromPropertyValue.ToString(), null);
+                            }
+                        }
 
-						#endregion
+                        #endregion ? --> String
 
-						#region String --> ?
+                        #region String --> ?
 
-						else if (from.PropertyType == typeof(string) && to.PropertyType != typeof(string))
-						{
-							if (to.PropertyType == typeof(string[]))
-							{
-								//  String[] --> String[]
+                        else if (from.PropertyType == typeof(string) && to.PropertyType != typeof(string))
+                        {
+                            if (to.PropertyType == typeof(string[]))
+                            {
+                                //  String[] --> String[]
 
-								if (fromPropertyValue == null)
-								{
-									to.SetValue(propertyContainerTo, null, null);
-								}
-								else
-								{
-									to.SetValue(propertyContainerTo, fromPropertyValue.ToString().Split(','), null);
-								}
-							}
+                                if (fromPropertyValue == null)
+                                {
+                                    to.SetValue(propertyContainerTo, null, null);
+                                }
+                                else
+                                {
+                                    to.SetValue(propertyContainerTo, fromPropertyValue.ToString().Split(','), null);
+                                }
+                            }
+                            if (to.PropertyType == typeof(int[]))
+                            {
+                                //  String -- > int[]
+                                to.SetValue(propertyContainerTo, ConvertToIntArray(fromPropertyValue.ToString().Split(',')), null);
+                            }
 
-							if (to.PropertyType == typeof(int[]))
-							{
-								//  String -- > int[]
-								to.SetValue(propertyContainerTo, Utility.ConvertToIntArray(fromPropertyValue.ToString().Split(',')), null);
-							}
+                            if (to.PropertyType == typeof(SubList))
+                            {
+                                //  String -- > Sublist
+                                if (fromPropertyValue != null && !string.IsNullOrEmpty(fromPropertyValue.ToString()))
+                                {
+                                    SubList candidate = SubList.GetDeserialized(fromPropertyValue.ToString());
+                                    to.SetValue(propertyContainerTo, candidate, null);
+                                }
+                            }
+                            if (to.PropertyType == typeof(DateTime))
+                            {
+                                //  String --> Datetime
+                                to.SetValue(propertyContainerTo, ConvertWimDateTime(fromPropertyValue, dateCultureFrom), null);
+                            }
+                            else if (to.PropertyType == typeof(decimal))
+                            {
+                                //  String --> Decimal
+                                if (IsDecimal(fromPropertyValue, out decimal tmp))
+                                {
+                                    to.SetValue(propertyContainerTo, tmp, null);
+                                }
+                            }
+                            else if (to.PropertyType == typeof(bool))
+                            {
+                                //  String --> Boolean
 
-							if (to.PropertyType == typeof(SubList) && fromPropertyValue != null && !string.IsNullOrEmpty(fromPropertyValue.ToString()))
-							{
-								//  String -- > Sublist
-								SubList candidate = SubList.GetDeserialized(fromPropertyValue.ToString());
-								to.SetValue(propertyContainerTo, candidate, null);
-							}
+                                string tmp1 = fromPropertyValue.ToString();
+                                if (!string.IsNullOrEmpty(tmp1))
+                                {
+                                    bool tmp;
+                                    switch (tmp1)
+                                    {
+                                        default:
+                                            {
+                                                tmp = Convert.ToBoolean(fromPropertyValue);
+                                            }
+                                            break;
+                                        case "1":
+                                            {
+                                                tmp = true;
+                                            }
+                                            break;
+                                        case "0":
+                                            {
+                                                tmp = false;
+                                            }
+                                            break;
+                                    }
 
-							if (to.PropertyType == typeof(DateTime))
-							{
-								//  String --> Datetime
-								to.SetValue(propertyContainerTo, ConvertWimDateTime(fromPropertyValue), null);
-							}
-							else if (to.PropertyType == typeof(decimal))
-							{
-								//  String --> Decimal
-								if (IsDecimal(fromPropertyValue, out decimal tmp))
-								{
-									to.SetValue(propertyContainerTo, tmp, null);
-								}
-							}
-							else if (to.PropertyType == typeof(bool))
-							{
-								//  String --> Boolean
+                                    to.SetValue(propertyContainerTo, tmp, null);
+                                }
+                            }
+                            else if (to.PropertyType == typeof(int))
+                            {
+                                //  String --> Int
+                                to.SetValue(propertyContainerTo, ConvertToInt(fromPropertyValue), null);
+                            }
+                            else if (from.PropertyType == typeof(Guid))
+                            {
+                                //  String --> Guid
+                                if (IsGuid(fromPropertyValue, out Guid guid))
+                                {
+                                    to.SetValue(propertyContainerTo, guid, null);
+                                }
+                            }
+                        }
 
-								string tmp1 = fromPropertyValue.ToString();
-								if (!string.IsNullOrEmpty(tmp1))
-								{
-									bool tmp;
-									if (tmp1 == "1")
-									{
-										tmp = true;
-									}
-									else if (tmp1 == "0")
-									{
-										tmp = false;
-									}
-									else
-									{
-										tmp = Convert.ToBoolean(fromPropertyValue);
-									}
+                        #endregion String --> ?
 
-									to.SetValue(propertyContainerTo, tmp, null);
-								}
-							}
-							else if (to.PropertyType == typeof(int))
-							{
-								//  String --> Int
-								to.SetValue(propertyContainerTo, ConvertToInt(fromPropertyValue), null);
-							}
-							else if (from.PropertyType == typeof(Guid) && IsGuid(fromPropertyValue, out Guid guid))
-							{
-								//  String --> Guid
-								to.SetValue(propertyContainerTo, guid, null);
-							}
-						}
+                        #region nullable
 
-						#endregion
+                        else if (from.PropertyType == typeof(decimal?) && to.PropertyType == typeof(decimal))
+                        {
+                            if (fromPropertyValue != null)
+                            {
+                                to.SetValue(propertyContainerTo, ((decimal?)fromPropertyValue).Value, null);
+                            }
+                        }
+                        else if (from.PropertyType == typeof(decimal) && to.PropertyType == typeof(decimal?))
+                        {
+                            to.SetValue(propertyContainerTo, fromPropertyValue, null);
+                        }
+                        else if (from.PropertyType == typeof(int?) && to.PropertyType == typeof(int))
+                        {
+                            if (fromPropertyValue != null)
+                            {
+                                to.SetValue(propertyContainerTo, ((int?)fromPropertyValue).Value, null);
+                            }
+                        }
+                        else if (from.PropertyType == typeof(int) && to.PropertyType == typeof(int?))
+                        {
+                            to.SetValue(propertyContainerTo, fromPropertyValue, null);
+                        }
+                        else if (from.PropertyType == typeof(long?) && to.PropertyType == typeof(long))
+                        {
+                            if (fromPropertyValue != null)
+                            {
+                                to.SetValue(propertyContainerTo, ((long?)fromPropertyValue).Value, null);
+                            }
+                        }
+                        else if (from.PropertyType == typeof(long) && to.PropertyType == typeof(long?))
+                        {
+                            to.SetValue(propertyContainerTo, fromPropertyValue, null);
+                        }
+                        else if (from.PropertyType == typeof(DateTime?) && to.PropertyType == typeof(DateTime))
+                        {
+                            if (fromPropertyValue != null)
+                            {
+                                to.SetValue(propertyContainerTo, ((DateTime?)fromPropertyValue).Value, null);
+                            }
+                        }
+                        else if (from.PropertyType == typeof(DateTime) && to.PropertyType == typeof(DateTime?))
+                        {
+                            to.SetValue(propertyContainerTo, fromPropertyValue, null);
+                        }
 
-						#region nullable
+                        #endregion nullable
 
-						else if (from.PropertyType == typeof(decimal?) && to.PropertyType == typeof(decimal))
-						{
-							to.SetValue(propertyContainerTo, ((decimal?)fromPropertyValue).Value, null);
-						}
-						else if (from.PropertyType == typeof(decimal) && to.PropertyType == typeof(decimal?))
-						{
-							to.SetValue(propertyContainerTo, fromPropertyValue, null);
-						}
-						else if (from.PropertyType == typeof(int?) && to.PropertyType == typeof(int))
-						{
-							to.SetValue(propertyContainerTo, ((int?)fromPropertyValue).Value, null);
-						}
-						else if (from.PropertyType == typeof(int) && to.PropertyType == typeof(int?))
-						{
-							to.SetValue(propertyContainerTo, fromPropertyValue, null);
-						}
-						else if (from.PropertyType == typeof(long?) && to.PropertyType == typeof(long))
-						{
-							to.SetValue(propertyContainerTo, ((long?)fromPropertyValue).Value, null);
-						}
-						else if (from.PropertyType == typeof(long) && to.PropertyType == typeof(long?))
-						{
-							to.SetValue(propertyContainerTo, fromPropertyValue, null);
-						}
-						else if (from.PropertyType == typeof(DateTime?) && to.PropertyType == typeof(DateTime))
-						{
-							to.SetValue(propertyContainerTo, ((DateTime?)fromPropertyValue).Value, null);
-						}
-						else if (from.PropertyType == typeof(DateTime) && to.PropertyType == typeof(DateTime?))
-						{
-							to.SetValue(propertyContainerTo, fromPropertyValue, null);
-						}
+                        else if (from.PropertyType == to.PropertyType)
+                        {
+                            to.SetValue(propertyContainerTo, from.GetValue(propertyContainerFrom, null), null);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
 
-						#endregion
 
-						else if (from.PropertyType == to.PropertyType)
-						{
-							to.SetValue(propertyContainerTo, from.GetValue(propertyContainerFrom, null), null);
-							break;
-						}
-					}
-				}
-			}
-		}
-
-		/// <summary>
-		/// Switch between line feed and &lt;br/&gt;
-		/// </summary>
-		/// <param name="text"></param>
-		/// <returns></returns>
-		public static string CleanLineFeed(string text)
+        /// <summary>
+        /// Switch between line feed and &lt;br/&gt;
+        /// </summary>
+        /// <param name="text"></param>
+        /// <returns></returns>
+        public static string CleanLineFeed(string text)
 		{
 			return CleanLineFeed(text, true);
 		}
@@ -1514,8 +1546,8 @@ namespace Sushi.Mediakiwi
 
 				Assembly assem = Assembly.LoadFrom(nfo.FullName);
 				type = assem.GetType(className);
-
-				var result = Microsoft.Extensions.DependencyInjection.ActivatorUtilities.CreateInstance(serviceProvider, type);
+                
+                var result = Microsoft.Extensions.DependencyInjection.ActivatorUtilities.CreateInstance(serviceProvider, type);
 				return result;
 			}
 			catch(Exception ex)
@@ -1955,27 +1987,39 @@ namespace Sushi.Mediakiwi
 			return Convert.ToBase64String(byteHash);
 		}
 
-		/// <summary>
-		/// Convert a Wim DateTime which is based on the nl-NL culture.
-		/// </summary>
-		/// <param name="candidate"></param>
-		/// <returns></returns>
-		public static DateTime ConvertWimDateTime(object candidate)
-		{
-			if (candidate == null || candidate.ToString().Length == 0)
-			{
-				return DateTime.MinValue;
-			}
+        /// <summary>
+        /// Convert an object containing DateTime information base on the <c>Datepicker_Culture</c> culture.
+        /// </summary>
+        /// <param name="candidate">The object to convert to a valid DateTime</param>
+        public static DateTime ConvertWimDateTime(object candidate)
+        {
+            return ConvertWimDateTime(candidate, string.Empty);
+        }
 
-			if (DateTime.TryParse(candidate.ToString(), WimCultureInfo, DateTimeStyles.None, out DateTime dt))
-			{
-				return dt;
-			}
+        /// <summary>
+        /// Convert an object containing DateTime information base on the supplied culture.
+        /// </summary>
+        /// <param name="candidate">The object to convert to a valid DateTime</param>
+        /// <param name="dateFormatCulture">The Culture to use as DateFormat. Falls back to the setting from <c>Datepicker_Culture</c> when left empty</param>
+        /// <returns></returns>
+        public static DateTime ConvertWimDateTime(object candidate, string dateFormatCulture)
+        {
+            var dateInfo = Mediakiwi.Common.GetDateInformation(dateFormatCulture);
 
-			return DateTime.MinValue;
-		}
+            if (candidate == null || candidate.ToString().Length == 0)
+            {
+                return DateTime.MinValue;
+            }
 
-		static CultureInfo WimCultureInfo
+            if (DateTime.TryParseExact(candidate.ToString(), dateInfo.DateTimeFormatShort, dateInfo.Culture, DateTimeStyles.None, out DateTime dt))
+            {
+                return dt;
+            }
+
+            return DateTime.MinValue;
+        }
+
+        static CultureInfo WimCultureInfo
 		{
 			get
 			{

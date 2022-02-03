@@ -1350,6 +1350,71 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
         {
             var culture = new CultureInfo(container.CurrentApplicationUser.LanguageCulture);
 
+            // Determine the need for a Back- or cancel button
+            // When we have item = 0 we assume it's a new item and show the Cancel label,
+            // When we have item != 0 we assume it's an existing item and show the Back label
+            if (container.CurrentListInstance != null
+                && container?.CurrentList?.ID > 0
+                && container.CurrentListInstance.wim.CanContainSingleInstancePerDefinedList == false
+                && container.CurrentListInstance.wim.CurrentFolder.Type == FolderType.List
+                && container.Item.GetValueOrDefault(-1) > -1
+                && container?.Component?.IsDataList != true
+                && container?.CurrentList?.Option_HideBackButton != true
+                )
+            {
+                // When in a Tabbed instance, act on that.
+                var isTabbed = (container.Request?.Query?.ContainsKey("group") == true || container?.Request?.Query?.ContainsKey("groupitem") == true || container?.Request?.Query?.ContainsKey("base") == true);
+                var newButtonList = (buttonList != null) ? buttonList.ToList() : new List<ContentListItem.ButtonAttribute>();
+                var isNew = container.Item.GetValueOrDefault(0) == 0;
+
+                if (isTabbed)
+                {
+                    int parentListId = 0;
+                    int? parentItem = null;
+
+                    if (int.TryParse(container.Request.Query["base"], out int tempBase))
+                    {
+                        parentListId = tempBase;
+                    }
+                    else if (int.TryParse(container.Request.Query["group"], out int tempGroup))
+                    {
+                        parentListId = tempGroup;
+                    }
+
+                    if (int.TryParse(container.Request.Query["groupitem"], out int tempGroupitem))
+                    {
+                        parentItem = tempGroupitem;
+                    }
+
+                    if (parentListId > 0)
+                    {
+                        var backButtonLabel = Labels.ResourceManager.GetString("back", new CultureInfo(container.CurrentApplicationUser.LanguageCulture));
+                        newButtonList.Add(new ContentListItem.ButtonAttribute(backButtonLabel)
+                        {
+                            ButtonClassName = "submit",
+                            ID = "Button_Back",
+                            IconTarget = ButtonTarget.TopLeft,
+                            CustomUrl = container.UrlBuild.GetListRequest(parentListId, parentItem),
+                            NoPostBack = true,
+                        });
+                    }
+                }
+                else
+                {
+                    var backButtonLabel = Labels.ResourceManager.GetString(isNew ? "cancel" : "back", new CultureInfo(container.CurrentApplicationUser.LanguageCulture));
+                    newButtonList.Add(new ContentListItem.ButtonAttribute(backButtonLabel)
+                    {
+                        ButtonClassName = "submit",
+                        ID = "Button_Back",
+                        IconTarget = ButtonTarget.TopLeft,
+                        CustomUrl = container.UrlBuild.GetListRequest(container.CurrentList),
+                        NoPostBack = true,
+                    });
+                }
+
+                buttonList = newButtonList.ToArray();
+            }
+
             StringBuilder build = new StringBuilder();
             StringBuilder build2 = new StringBuilder();
             StringBuilder innerbuild = new StringBuilder();
@@ -1461,7 +1526,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                         var labelNew = Labels.ResourceManager.GetString("folder_new", culture);
                         var url = container.UrlBuild.GetFolderCreateRequest();
 
-                        Build_TopRight.Append(culture, $"<li><abbr title=\"{1}\"><a href=\"{url}\" class=\"flaticon icon-folder-plus Small\"></a></abbr></li>");
+                        Build_TopRight.Append(culture, $"<li><abbr title=\"{labelNew}\"><a href=\"{url}\" class=\"flaticon icon-folder-plus Small\"></a></abbr></li>");
 
                         if (container.CurrentListInstance.wim.CurrentApplicationUser.IsDeveloper)
                         {

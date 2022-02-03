@@ -110,13 +110,13 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
         /// </summary>
         public void SetCandidate(Field field, bool isEditMode)
         {
+            // Get formatting information for dates
+            var dateInfo = Common.GetDateInformation();
+
             if (Property != null && Property.PropertyType == typeof(CustomData))
             {
                 SetContentContainer(field);
             }
-            
-            // Get formatting information for dates
-            var dateInfo = Common.GetDateInformation();
 
             m_Candidate = null;
             if (IsInitialLoad || !isEditMode)
@@ -129,7 +129,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                         {
                             //  Previous WIM versions
                             DateTime tmp;
-                            if (DateTime.TryParse(field.Value, dateInfo.culture, DateTimeStyles.None, out tmp))
+                            if (DateTime.TryParseExact(field.Value, dateInfo.DateTimeFormatShort, dateInfo.Culture, DateTimeStyles.None, out tmp))
                             {
                                 m_Candidate = tmp;
                             }
@@ -170,7 +170,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                     {
                         string candidate = Console.Form(ID);
                         DateTime tmp;
-                        if (DateTime.TryParse(candidate, dateInfo.culture, DateTimeStyles.None, out tmp))
+                        if (DateTime.TryParseExact(candidate, dateInfo.DateFormatShort, dateInfo.Culture, DateTimeStyles.None, out tmp))
                         {
                             if (!string.IsNullOrEmpty(Console.Form(ID + "T")))
                             {
@@ -216,7 +216,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
             OutputText = null;
             if (m_Candidate.HasValue)
             {
-                OutputText = m_Candidate.Value.ToString(dateInfo.dateTimeFormat, dateInfo.culture);
+                OutputText = m_Candidate.Value.ToString(dateInfo.DateTimeFormatShort, dateInfo.Culture);
             }
 
             //  Inherited content section
@@ -226,14 +226,14 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                 {
                     //  Previous WIM versions
                     DateTime tmp;
-                    if (DateTime.TryParse(field.InheritedValue, dateInfo.culture, DateTimeStyles.None, out tmp))
+                    if (DateTime.TryParseExact(field.InheritedValue, dateInfo.DateTimeFormatShort, dateInfo.Culture, DateTimeStyles.None, out tmp))
                     {
-                        InhertitedOutputText = tmp.ToString(dateInfo.dateTimeFormat, dateInfo.culture);
+                        InhertitedOutputText = tmp.ToString(dateInfo.DateTimeFormatShort, dateInfo.Culture);
                     }
                 }
                 else
                 {
-                    InhertitedOutputText = new DateTime(long.Parse(field.InheritedValue)).ToString(dateInfo.dateTimeFormat, dateInfo.culture);
+                    InhertitedOutputText = new DateTime(long.Parse(field.InheritedValue)).ToString(dateInfo.DateTimeFormatShort, dateInfo.Culture);
                 }
             }
         }
@@ -298,8 +298,8 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
 
                 element.AppendFormat("<input class=\"date datepicker{3}\" name=\"{0}\" type=\"text\" id=\"{0}\" maxlength=\"10\" value=\"{1}\" placeholder=\"{2}\"/>"
                     , ID
-                    , m_Candidate.HasValue ? m_Candidate.Value.ToString(dateInfo.dateFormat, dateInfo.culture) : string.Empty
-                    , dateInfo.dateFormat.ToLower()
+                    , m_Candidate.HasValue ? m_Candidate.Value.ToString(dateInfo.DateFormatShort, dateInfo.Culture) : string.Empty
+                    , dateInfo.DateFormatShort.ToLower()
                      , IsCloaked ? " hidden" : null
                     );
 
