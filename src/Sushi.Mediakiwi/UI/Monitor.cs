@@ -25,6 +25,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using Sushi.Mediakiwi.Framework.Interfaces;
 
 namespace Sushi.Mediakiwi.UI
 {
@@ -418,11 +419,6 @@ namespace Sushi.Mediakiwi.UI
                         {
                             _Console.CurrentListInstance.wim.Notification.AddError(moduleResult.WimNotificationOutput);
                         }
-
-                        //if (page?.ID > 0)
-                        //{
-                        //    Framework2.Functions.AuditTrail.Insert(_Console.CurrentApplicationUser, page, Framework2.Functions.Auditing.ActionType.PageModuleExecution, null);
-                        //}
                     }
                 }
             }
@@ -630,6 +626,34 @@ namespace Sushi.Mediakiwi.UI
                 else
                     //  Needed to NULLafy it as it was required for AJAX call
                     GlobalWimControlBuilder.SearchGrid = null;
+            }
+
+            string pBack = string.Empty;
+            if (_Console.PostBackStartsWith("listmod_", out pBack))
+            {
+                pBack = pBack.Replace("listmod_", "");
+                ICollection<IListModule> listModules = default(List<IListModule>);
+
+                if (_Console.Context?.RequestServices?.GetServices<IListModule>().Any() == true)
+                {
+                    listModules = _Console.Context.RequestServices.GetServices<IListModule>().ToList();
+                }
+
+                foreach (var pmodule in listModules)
+                {
+                    if (pmodule.GetType().Name == pBack)
+                    {
+                        var moduleResult = await pmodule.ExecuteAsync(_Console.CurrentListInstance, _Console.CurrentApplicationUser, _Context);
+                        if (moduleResult.IsSuccess && string.IsNullOrWhiteSpace(moduleResult.WimNotificationOutput) == false)
+                        {
+                            _Console.CurrentListInstance.wim.Notification.AddNotification(moduleResult.WimNotificationOutput);
+                        }
+                        else if (string.IsNullOrWhiteSpace(moduleResult.WimNotificationOutput) == false)
+                        {
+                            _Console.CurrentListInstance.wim.Notification.AddError(moduleResult.WimNotificationOutput);
+                        }
+                    }
+                }
             }
 
             bool isCopyTriggered = _Console.Form("copyparent") == "1";

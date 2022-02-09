@@ -2,6 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Sushi.Mediakiwi.Data;
 using Sushi.Mediakiwi.Data.Interfaces;
 using Sushi.Mediakiwi.Framework.Api;
+using Sushi.Mediakiwi.Framework.Interfaces;
 using Sushi.Mediakiwi.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -1501,6 +1502,13 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
 
             if (section == FolderType.List || section == FolderType.Administration)
             {
+                ICollection<IListModule> listModules = default(List<IListModule>);
+
+                if (container?.Context?.RequestServices?.GetServices<IListModule>().Any() == true)
+                {
+                    listModules = container.Context.RequestServices.GetServices<IListModule>().ToList();
+                }
+
                 if (!container.CurrentListInstance.wim.HasListSave)
                 {
                     isEditMode = false;
@@ -1572,6 +1580,36 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                         }
                     }
 
+                    // Add List Modules to search mode (if any)
+                    if (listModules?.Count > 0)
+                    {
+                        foreach (var listModule in listModules.Where(x => x.ShowInSearchMode))
+                        {
+                            if (listModule.ShowOnList(container.CurrentListInstance, container.CurrentApplicationUser))
+                            {
+                                string confirmOption = "";
+                                string iconClass = (string.IsNullOrWhiteSpace(listModule.IconURL)) ? listModule.IconClass : "";
+                                string iconUrl = listModule.IconURL;
+
+                                if (listModule.ConfirmationNeeded)
+                                {
+                                    iconClass += " type_confirm";
+                                    confirmOption = ConfirmationQuestion(true, container, listModule.ConfirmationQuestion, listModule.ConfirmationTitle);
+                                }
+                                else
+                                {
+                                    iconClass += " postBack";
+                                }
+
+                                if (string.IsNullOrWhiteSpace(iconUrl) == false)
+                                {
+                                    iconUrl = $"<img src=\"{iconUrl}\" width=\"16px\" height=\"16px\" />";
+                                }
+
+                                Build_TopRight.Append(culture, $"<li><a href=\"#\" id=\"listmod_{listModule.GetType().Name}\" class=\"abbr flaticon {iconClass}\" title=\"{listModule.Tooltip}\"{confirmOption}>{iconUrl}</a></li>");
+                            }
+                        }
+                    }
 
                 }
                 else if (isTextMode)
@@ -1680,6 +1718,38 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                                 Section = ButtonSection.Top,
                                 ContentTypeID = ContentType.Button
                             });
+                        }
+
+
+                        // Add List Modules to search mode (if any)
+                        if (listModules?.Count > 0)
+                        {
+                            foreach (var listModule in listModules.Where(x => x.ShowInEditMode))
+                            {
+                                if (listModule.ShowOnList(container.CurrentListInstance, container.CurrentApplicationUser))
+                                {
+                                    string confirmOption = "";
+                                    string iconClass = (string.IsNullOrWhiteSpace(listModule.IconURL)) ? listModule.IconClass : "";
+                                    string iconUrl = listModule.IconURL;
+
+                                    if (listModule.ConfirmationNeeded)
+                                    {
+                                        iconClass += " type_confirm";
+                                        confirmOption = ConfirmationQuestion(true, container, listModule.ConfirmationQuestion, listModule.ConfirmationTitle);
+                                    }
+                                    else
+                                    {
+                                        iconClass += " postBack";
+                                    }
+
+                                    if (string.IsNullOrWhiteSpace(iconUrl) == false)
+                                    {
+                                        iconUrl = $"<img src=\"{iconUrl}\" width=\"16px\" height=\"16px\" />";
+                                    }
+
+                                    Build_TopRight.Append(culture, $"<li><a href=\"#\" id=\"listmod_{listModule.GetType().Name}\" class=\"abbr flaticon {iconClass}\" title=\"{listModule.Tooltip}\"{confirmOption}>{iconUrl}</a></li>");
+                                }
+                            }
                         }
                     }
 
