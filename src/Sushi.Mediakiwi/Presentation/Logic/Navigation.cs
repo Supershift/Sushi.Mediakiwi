@@ -1386,9 +1386,23 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                         parentItem = tempGroupitem;
                     }
 
+                    // Check for custom back button URL existence
+                    string buttonUrl = container.UrlBuild.GetListRequest(parentListId, parentItem);
+                    if (string.IsNullOrWhiteSpace(container?.CurrentListInstance?.wim?.BackButtonURL) == false)
+                    {
+                        buttonUrl = container.CurrentListInstance.wim.BackButtonURL;
+                    }
+              
                     if (parentListId > 0)
                     {
                         var backButtonLabel = Labels.ResourceManager.GetString("back", new CultureInfo(container.CurrentApplicationUser.LanguageCulture));
+                        
+                        // Check for custom Back button Label existence
+                        if (string.IsNullOrWhiteSpace(container?.CurrentListInstance?.wim?.BackButtonLabel) == false)
+                        {
+                            backButtonLabel = container.CurrentListInstance.wim.BackButtonLabel;
+                        }
+
                         newButtonList.Add(new ContentListItem.ButtonAttribute(backButtonLabel)
                         {
                             ButtonClassName = "submit",
@@ -1401,13 +1415,26 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                 }
                 else
                 {
+                    string buttonUrl = container.UrlBuild.GetListRequest(container.CurrentList);
+                    if (string.IsNullOrWhiteSpace(container?.CurrentListInstance?.wim?.BackButtonURL) == false)
+                    {
+                        buttonUrl = container.CurrentListInstance.wim.BackButtonURL;
+                    }
+
                     var backButtonLabel = Labels.ResourceManager.GetString(isNew ? "cancel" : "back", new CultureInfo(container.CurrentApplicationUser.LanguageCulture));
+
+                    // Check for custom Back button Label existence
+                    if (isNew == false && string.IsNullOrWhiteSpace(container?.CurrentListInstance?.wim?.BackButtonLabel) == false)
+                    {
+                        backButtonLabel = container.CurrentListInstance.wim.BackButtonLabel;
+                    }
+
                     newButtonList.Add(new ContentListItem.ButtonAttribute(backButtonLabel)
                     {
                         ButtonClassName = "submit",
                         ID = "Button_Back",
                         IconTarget = ButtonTarget.TopLeft,
-                        CustomUrl = container.UrlBuild.GetListRequest(container.CurrentList),
+                        CustomUrl = buttonUrl,
                         NoPostBack = true,
                     });
                 }

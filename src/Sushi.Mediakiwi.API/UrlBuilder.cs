@@ -238,32 +238,45 @@ namespace Sushi.Mediakiwi.API
         /// <returns></returns>
         public string GetListNewRecordRequest()
         {
-            string newItemRequest = string.Concat(Resolver.ListInstance.wim.SearchResultItemPassthroughParameter, "=0");
-            if (!newItemRequest.Contains("?item=0") && !newItemRequest.Contains("&item=0"))
+            string newItemRequest = Resolver.ListInstance.wim.SearchResultItemPassthroughParameter;
+            if (newItemRequest == null)
             {
-                if (newItemRequest.Contains("?"))
+                newItemRequest = string.Empty;
+            }
+
+            if (newItemRequest?.Contains("[key]", StringComparison.InvariantCultureIgnoreCase) == true)
+            {
+                newItemRequest = newItemRequest.Replace("[key]", "0", StringComparison.InvariantCultureIgnoreCase);
+            }
+
+            if (newItemRequest?.Contains("item=", StringComparison.InvariantCultureIgnoreCase) == false)
+            {
+                if (newItemRequest?.Contains("?") == true)
                 {
-                    return string.Concat(newItemRequest, "&item=0");
+                    newItemRequest = string.Concat(newItemRequest, "&item=0");
                 }
                 else
                 {
-                    return string.Concat(newItemRequest, "?item=0");
+                    newItemRequest = string.Concat(newItemRequest, "?item=0");
                 }
             }
 
-            if (Resolver.OpenInFrame.GetValueOrDefault(0) > 0 && !newItemRequest.Contains("openinframe"))
+            if (newItemRequest?.Contains("openinframe", StringComparison.InvariantCultureIgnoreCase) == false)
             {
-                newItemRequest += string.Concat("&openinframe=", Resolver.OpenInFrame.Value);
+                if (Resolver?.Query?.ContainsKey("openinframe") == true)
+                {
+                    newItemRequest += string.Concat("&openinframe=", Resolver.Query["openinframe"]);
+                }
+                else if (Resolver.List.Option_LayerResult)
+                {
+                    newItemRequest += "&openinframe=2";
+                }
             }
 
-            if (Resolver.List.Option_LayerResult && !newItemRequest.Contains("openinframe"))
-            {
-                newItemRequest += "&openinframe=2";
-            }
 
-            if (string.IsNullOrWhiteSpace(Resolver.ReferID) == false && !newItemRequest.Contains("referid"))
+            if (newItemRequest?.Contains("referid", StringComparison.InvariantCultureIgnoreCase) == false && Resolver?.Query?.ContainsKey("referid") == true)
             {
-                newItemRequest += string.Concat("&referid=", Resolver.ReferID);
+                newItemRequest += string.Concat("&referid=", Resolver.Query["referid"]);
             }
 
             return newItemRequest;

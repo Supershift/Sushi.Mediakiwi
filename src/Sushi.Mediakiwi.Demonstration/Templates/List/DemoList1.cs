@@ -126,6 +126,7 @@ namespace Sushi.Mediakiwi.Demonstration.Templates.List
 
         private async Task DemoList1_ListLoad(ComponentListEventArgs e)
         {
+            wim.BackButtonLabel = "asdf";
             await wim.Page.Resources.AddAsync(ResourceLocation.HEADER, ResourceType.JAVASCRIPT, "/js/dingesHeader1LOAD.js", true, true);
 
             Implement = await Data.DemoObject1.FetchOneAsync(e.SelectedKey);

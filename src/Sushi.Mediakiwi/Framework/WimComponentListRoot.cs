@@ -4937,5 +4937,15 @@ namespace Sushi.Mediakiwi.Framework
                 Caching.FlushIndexOfCache(item);
             }
         }
+
+        /// <summary>
+        /// Override the default back button URL (Set in ListLoad)
+        /// </summary>
+        public string BackButtonURL { get; set; }
+
+        /// <summary>
+        /// Override the default back button Label (Set in ListLoad)
+        /// </summary>
+        public string BackButtonLabel { get; set; }
     }
 }

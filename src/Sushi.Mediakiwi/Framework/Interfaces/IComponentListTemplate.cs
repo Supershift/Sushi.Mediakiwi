@@ -19,10 +19,7 @@ namespace Sushi.Mediakiwi.Framework
         bool IsEditMode { get; }
         bool IsPostBack { get; }
         bool IsTextMode { get; }
-        //Sushi.Mediakiwi.UI.Page Page { get; set; }
-        //HttpRequest Request { get; }
-        //HttpResponse Response { get; }
-        //HttpServerUtility Server { get; }
+
         WimComponentListRoot wim { get; set; }
 
         event Func<ComponentActionEventArgs, Task> ListAction;

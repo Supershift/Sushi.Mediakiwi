@@ -677,7 +677,7 @@ namespace Sushi.Mediakiwi.UI
                     else if (_Console.CurrentList.Type == ComponentListType.Folders)
                         _Console.Response.Redirect(string.Concat(_Console.WimPagePath, "?folder=", _Console.CurrentListInstance.wim.CurrentFolder.ParentID));
                     else if (_Console.Group.HasValue)
-                        _Console.Response.Redirect(string.Concat(_Console.CurrentListInstance.wim.SearchResultItemPassthroughParameter, "=0"), true);
+                        _Console.Response.Redirect(string.Concat(_Console.CurrentListInstance.wim.SearchResultItemPassthroughParameter), true);
                     else if (_Console.CurrentList.Type == ComponentListType.ComponentListProperties)
                         _Console.Response.Redirect(string.Concat(_Console.WimPagePath, "?folder=", _Console.CurrentListInstance.wim.CurrentFolder.ID));
                     else
