@@ -53,13 +53,11 @@ namespace Sushi.Mediakiwi.API.Controllers
                 StatusCode = System.Net.HttpStatusCode.OK
             };
 
-            var menus = await Data.Menu.SelectAllAsync().ConfigureAwait(false);
-
             // Get Appropriate role from DB
             var role = await MediakiwiUser.SelectRoleAsync().ConfigureAwait(false);
 
             // Get Menu for current site and Role
-            var list = await Data.MenuItemView.SelectAllAsync(request.CurrentSiteID, role.ID).ConfigureAwait(false);
+            var list = await Data.MenuItemView.SelectAllAsync(request.CurrentSiteID, role.ID, request.GroupTag).ConfigureAwait(false);
 
             if (list.Count > 0)
             {

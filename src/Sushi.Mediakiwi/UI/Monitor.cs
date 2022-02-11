@@ -258,7 +258,7 @@ namespace Sushi.Mediakiwi.UI
             var roleMenus = await Menu.SelectAllAsync().ConfigureAwait(false);
             if (roleMenus.Any())
             {
-                IMenu roleMenu = roleMenus.FirstOrDefault(x => x.IsActive == true && x.RoleID == _Console.CurrentApplicationUser.RoleID);
+                IMenu roleMenu = roleMenus.FirstOrDefault(x => x.GroupID == null && x.IsActive == true && x.RoleID == _Console.CurrentApplicationUser.RoleID);
 
                 if (roleMenu?.ID > 0)
                 {

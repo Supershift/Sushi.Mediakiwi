@@ -455,3 +455,7 @@
 	-- SharedFieldList
 	IF: select count(*) from wim_ComponentLists where ComponentList_GUID = '937C843E-C586-4CAE-A923-7305685242C4';
     THEN: INSERT INTO wim_ComponentLists(ComponentList_Folder_Key, ComponentList_Assembly, ComponentList_ClassName, ComponentList_TargetType, ComponentList_Name, ComponentList_SingleItemName, ComponentList_Description,ComponentList_Type, ComponentList_GUID, ComponentList_IsVisible, ComponentList_ContainsOneChild, ComponentList_IsInherited) VALUES(4, 'Sushi.Mediakiwi.dll', 'Sushi.Mediakiwi.AppCentre.Data.Implementation.SharedFieldList', 2, 'Shared Fields', 'Shared Field', null, 47, '937C843E-C586-4CAE-A923-7305685242C4', 1, 1, 0);
+
+    -- Menu Groups;
+    IF: select count(*) from wim_ComponentLists where ComponentList_GUID = 'C39F3CBB-A35E-4A3C-BC49-ED12E640D59C';
+    THEN: INSERT INTO wim_ComponentLists(ComponentList_Folder_Key, ComponentList_Assembly, ComponentList_ClassName, ComponentList_TargetType, ComponentList_Name, ComponentList_SingleItemName, ComponentList_Description,ComponentList_Type, ComponentList_GUID, ComponentList_ContainsOneChild, ComponentList_IsVisible, ComponentList_IsInherited) VALUES(4, 'Sushi.Mediakiwi.dll', 'Sushi.Mediakiwi.AppCentre.Data.MenuGroupList', 2, 'Menu Groups', 'Menu Group', null, null, 'C39F3CBB-A35E-4A3C-BC49-ED12E640D59C', 1, 1, 0);

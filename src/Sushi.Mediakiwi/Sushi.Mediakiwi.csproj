@@ -76,6 +76,7 @@
 
   <ItemGroup>
     <Compile Include="AppCentre\UI\ComponentTemplate.cs" />
+    <Compile Include="AppCentre\UI\MenuGroupList.cs" />
     <Compile Include="AppCentre\UI\PageList.cs" />
     <Compile Include="AppCentre\UI\RoleAccessFolder.cs" />
     <Compile Include="AppCentre\UI\RoleAccessGallery.cs" />
