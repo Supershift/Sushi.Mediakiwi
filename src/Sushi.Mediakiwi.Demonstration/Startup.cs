@@ -1,23 +1,13 @@
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Sushi.Mediakiwi.Data;
 using Sushi.Mediakiwi.Data.Elastic;
 using System;
-using System.Collections.Generic;
-using System.Security.Claims;
 using System.Text.Json;
-using System.Threading.Tasks;
 using Sushi.Mediakiwi.API.Extensions;
-using System.Reflection;
-using System.IO;
-using Sushi.Mediakiwi.Framework.Interfaces;
-using Sushi.Mediakiwi.ListModules.GoogleSheets;
 
 namespace Sushi.Mediakiwi.Demonstration
 {
