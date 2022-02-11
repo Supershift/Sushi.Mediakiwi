@@ -5,7 +5,12 @@ using System.Threading.Tasks;
 namespace Sushi.Mediakiwi.Framework.Interfaces
 {
     public interface IListModule
-    { 
+    {
+        /// <summary>
+        /// The title of this module, exposed to the CMS
+        /// </summary>
+        public string ModuleTitle { get; }
+
         /// <summary>
         /// Determines if this module should show up on the supplied list for the supplied user
         /// </summary>

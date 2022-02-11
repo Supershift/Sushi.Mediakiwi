@@ -1606,7 +1606,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                                     iconUrl = $"<img src=\"{iconUrl}\" width=\"16px\" height=\"16px\" />";
                                 }
 
-                                Build_TopRight.Append(culture, $"<li><a href=\"#\" id=\"listmod_{listModule.GetType().Name}\" class=\"abbr flaticon {iconClass}\" title=\"{listModule.Tooltip}\"{confirmOption}>{iconUrl}</a></li>");
+                                Build_TopRight.Append(culture, $"<li><a href=\"javascript:void(0);return false;\" id=\"listmod_{listModule.GetType().Name}\" class=\"abbr flaticon {iconClass}\" title=\"{listModule.Tooltip}\"{confirmOption}>{iconUrl}</a></li>");
                             }
                         }
                     }
@@ -1747,7 +1747,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                                         iconUrl = $"<img src=\"{iconUrl}\" width=\"16px\" height=\"16px\" />";
                                     }
 
-                                    Build_TopRight.Append(culture, $"<li><a href=\"#\" id=\"listmod_{listModule.GetType().Name}\" class=\"abbr flaticon {iconClass}\" title=\"{listModule.Tooltip}\"{confirmOption}>{iconUrl}</a></li>");
+                                    Build_TopRight.Append(culture, $"<li><a href=\"javascript:void(0);return false;\" id=\"listmod_{listModule.GetType().Name}\" class=\"abbr flaticon {iconClass}\" title=\"{listModule.Tooltip}\"{confirmOption}>{iconUrl}</a></li>");
                                 }
                             }
                         }

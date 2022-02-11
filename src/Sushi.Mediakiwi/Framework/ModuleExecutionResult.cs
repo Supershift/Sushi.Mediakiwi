@@ -14,5 +14,10 @@
         /// </summary>
         public string WimNotificationOutput { get; set; }
 
+        /// <summary>
+        /// When the result was successful, we can use this url to redirect to
+        /// </summary>
+        public string RedirectUrl { get; set; }
+
     }
 }
