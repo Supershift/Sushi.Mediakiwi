@@ -54,9 +54,6 @@ namespace Sushi.Mediakiwi.Demonstration
             services.AddMediakiwiApi();
             //services.AddMediakiwiGlobalListSetting<string>("googleSheetsUrl", "Google sheets URL", "The URL of the Google sheets doc representing this list");
             
-            // Add google Sheets List Module
-            services.AddSingleton<IListModule, GoogleSheetListModule>();
-
             var elasticSettings = new Nest.ConnectionSettings(new Uri(Configuration["ElasticUrl"]))
                 .BasicAuthentication(Configuration["ElasticUsername"], Configuration["ElasticPassword"])
                 .ThrowExceptions(true);
