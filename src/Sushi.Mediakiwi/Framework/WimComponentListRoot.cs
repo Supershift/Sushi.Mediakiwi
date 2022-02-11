@@ -3736,6 +3736,7 @@ namespace Sushi.Mediakiwi.Framework
         }
         public int ListDataRecordCount => m_ListDataRecordCount;
         public int ListDataRecordPageCount => m_ListDataRecordPageCount;
+        public IList ListDataCollection => ListData;
 
         public IList AppliedSearchGridItem { get; set; }
         public IList ChangedSearchGridItem { get; set; }

@@ -9,3 +9,5 @@
 **/.vs
 *.suo
 *.csproj.user
+/src/Sushi.Mediakiwi.Demonstration/sheetsCredentials.json
+/src/Sushi.Mediakiwi.Demonstration/sheetsClientSecret.json

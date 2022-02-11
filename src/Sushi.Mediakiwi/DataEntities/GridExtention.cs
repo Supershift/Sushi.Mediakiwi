@@ -53,8 +53,10 @@ namespace Sushi.Mediakiwi.DataEntities
             m_currentPage = Utility.ConvertToInt(set, 1) - 1;
 
             if (root.Console.Context.Request.Query["set"] == "all")
+            {
                 m_currentPage = -1;
-            
+            }
+
             // Whenever XLS export mode is active, show every result.
             if (root.IsExportMode_XLS)
             {
@@ -73,19 +75,37 @@ namespace Sushi.Mediakiwi.DataEntities
         /// <summary>
         /// Gets the current page (when [-1] it should show all records).
         /// </summary>
-        private int m_currentPage = 0;
-        public int CurrentPage { get { return m_currentPage; } set { } }
+        private int m_currentPage;
+        public int CurrentPage
+        {
+            get { return m_currentPage; }
+            set { m_currentPage = value; }
+        }
+
         /// <summary>
         /// Gets a value indicating whether [show all].
         /// </summary>
         /// <value>
         ///   <c>true</c> if [show all]; otherwise, <c>false</c>.
         /// </value>
+        private bool? m_ShowAll;
+
         public bool ShowAll
         {
-            get { return CurrentPage == -1; }
-            set {}
+            get
+            {
+                if (m_ShowAll.HasValue == false)
+                {
+                    return CurrentPage == -1;
+                }
+                else
+                {
+                    return m_ShowAll.Value;
+                }
+            }
+            set { m_ShowAll = value; }
         }
+
         /// <summary>
         /// Gets the size of the page.
         /// </summary>

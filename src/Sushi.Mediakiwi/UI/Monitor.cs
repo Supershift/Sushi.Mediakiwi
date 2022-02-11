@@ -25,6 +25,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using Sushi.Mediakiwi.Framework.Interfaces;
 
 namespace Sushi.Mediakiwi.UI
 {
@@ -418,11 +419,6 @@ namespace Sushi.Mediakiwi.UI
                         {
                             _Console.CurrentListInstance.wim.Notification.AddError(moduleResult.WimNotificationOutput);
                         }
-
-                        //if (page?.ID > 0)
-                        //{
-                        //    Framework2.Functions.AuditTrail.Insert(_Console.CurrentApplicationUser, page, Framework2.Functions.Auditing.ActionType.PageModuleExecution, null);
-                        //}
                     }
                 }
             }
@@ -566,6 +562,8 @@ namespace Sushi.Mediakiwi.UI
             if (await GetExportOptionUrlAsync(grid, component).ConfigureAwait(false))
                 return;
 
+            await HandleListModuleActionAsync(component, true);
+
             //  Create the form
             _Console.CurrentListInstance.wim.HideTopSectionTag = true;
 
@@ -575,8 +573,6 @@ namespace Sushi.Mediakiwi.UI
                 {
                     _Console.CurrentListInstance.wim.DoListInit();
                     GlobalWimControlBuilder = new WimControlBuilder();
-              
-
                 }
                 else
                 {
@@ -632,6 +628,8 @@ namespace Sushi.Mediakiwi.UI
                     GlobalWimControlBuilder.SearchGrid = null;
             }
 
+            // <------ was here
+ 
             bool isCopyTriggered = _Console.Form("copyparent") == "1";
 
             if (isCopyTriggered)
@@ -767,12 +765,45 @@ namespace Sushi.Mediakiwi.UI
             return false;
         }
 
+        async Task<ModuleExecutionResult> HandleListModuleActionAsync(Beta.GeneratedCms.Source.Component component, bool isItemRequest = false)
+        {
+            var result = new ModuleExecutionResult() { IsSuccess = false };
+            if (_Console.PostBackStartsWith("listmod_", out string pBack))
+            {
+                pBack = pBack.Replace("listmod_", "", StringComparison.InvariantCultureIgnoreCase);
 
-        bool IsFormatRequest_AJAX { 
-            get { 
-                return !string.IsNullOrEmpty(_Console.Form(Constants.AJAX_PARAM)); 
-            } 
+                ICollection<IListModule> listModules = default(List<IListModule>);
+
+                if (_Console.Context?.RequestServices?.GetServices<IListModule>().Any() == true)
+                {
+                    listModules = _Console.Context.RequestServices.GetServices<IListModule>().ToList();
+                }
+
+                foreach (var pmodule in listModules)
+                {
+                    if (pmodule.GetType().Name == pBack)
+                    {
+                        result = await pmodule.ExecuteAsync(_Console.CurrentListInstance, _Console.CurrentApplicationUser, _Context);
+                    }
+                }
+
+                if (string.IsNullOrWhiteSpace(result.WimNotificationOutput) == false)
+                {
+                    _Console.CurrentListInstance.wim.Notification.AddNotification(result.WimNotificationOutput, result.IsSuccess ? "Success" : "Error", true);
+                }
+            }
+
+            return result;
         }
+
+        bool IsFormatRequest_AJAX
+        {
+            get
+            {
+                return !string.IsNullOrEmpty(_Console.Form(Constants.AJAX_PARAM));
+            }
+        }
+
         bool IsFormatRequest_JSON
         {
             get
@@ -799,6 +830,17 @@ namespace Sushi.Mediakiwi.UI
             _Console.AddTrace("Monitor", "GetExportOptionUrl(..)");
             if (await GetExportOptionUrlAsync(grid, component))
                 return;
+
+
+            // Execute module
+            var executeModule = await HandleListModuleActionAsync(component, false);
+            if (executeModule.IsSuccess)
+            {
+                if (string.IsNullOrWhiteSpace(executeModule.RedirectUrl) == false)
+                { 
+                    _Console.Redirect(executeModule.RedirectUrl, true);
+                }
+            }
 
             _Console.AddTrace("Monitor", "CreateSearchList(..)");
 
@@ -868,6 +910,8 @@ namespace Sushi.Mediakiwi.UI
             {
                 _Console.CurrentListInstance.wim.DoListAction(_Console.Item.GetValueOrDefault(0), 0, component.m_ClickedButton, null);
             }
+
+            // <------ was here
 
             _Console.AddTrace("Monitor", "AddToResponse(..)");
 

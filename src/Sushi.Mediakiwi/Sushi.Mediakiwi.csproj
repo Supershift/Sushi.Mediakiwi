@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
-    <Version>8.1.14</Version>    
+    <Version>8.1.15</Version>    
     <Product>Mediakiwi</Product>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <Company>Supershift</Company>
@@ -144,6 +144,7 @@
     <Compile Include="Framework\Functions\FolderPath.cs" />
     <Compile Include="Framework\Inheritance\Folder.cs" />
     <Compile Include="Framework\Inheritance\Page.cs" />
+    <Compile Include="Framework\Interfaces\IListModule.cs" />
     <Compile Include="Framework\Interfaces\IPageModule.cs" />
     <Compile Include="Framework\ModuleExecutionResult.cs" />
     <Compile Include="Framework\Option.cs" />
