@@ -1377,9 +1377,9 @@ namespace Sushi.Mediakiwi.UI
                 if (split.Length - n - 1 > 0)
                 {
                     var completepath = string.Concat("/", string.Join("/", split.Skip(n).Take(split.Length - n - 1)), "/");
-                    _Console.CurrentFolder = await Folder.SelectOneAsync(completepath, _Console.ChannelIndentifier).ConfigureAwait(false);
+                    _Console.CurrentFolder = await Folder.SelectOneAsync(Utils.FromUrl(completepath), _Console.ChannelIndentifier).ConfigureAwait(false);
 
-                    if (_Console.CurrentFolder != null)
+                    if (_Console.CurrentFolder?.ID > 0)
                     {
                         folderId = _Console.CurrentFolder.ID;
                     }
@@ -1536,7 +1536,7 @@ namespace Sushi.Mediakiwi.UI
             {
                 var urldecrypt = Utils.FromUrl(name);
                 var list = await ComponentList.SelectOneAsync(urldecrypt, folderId).ConfigureAwait(false);
-                if (list != null && !list.IsNewInstance)
+                if (list?.ID > 0)
                 {
                     return await _Console.ApplyListAsync(list).ConfigureAwait(false);
                 }
