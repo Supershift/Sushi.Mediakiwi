@@ -101,7 +101,7 @@ namespace Sushi.Mediakiwi.Data
 
         public static async Task<List<IMenuItemView>> SelectAllAsync(int siteID, int roleID)
         {
-            return await SelectAllAsync(siteID, roleID, "");
+            return await SelectAllAsync(siteID, roleID, "").ConfigureAwait(false);
         }
 
         public static async Task<List<IMenuItemView>> SelectAllAsync(int siteID, int roleID, string groupTag)
