@@ -29,14 +29,35 @@ public static class AssetExtension
 
     internal static async Task<bool> CloudDeleteAsync(this Asset inAsset)
     {
+        var success = false;
+        var successThumb = false;
         BlobPersister persister = new BlobPersister();
         var blobRef = await persister.GetBlockBlobReferenceAsync(inAsset.FileName).ConfigureAwait(false);
         if (blobRef != null)
         {
-            return await blobRef.DeleteIfExistsAsync().ConfigureAwait(false);
+            success = await blobRef.DeleteIfExistsAsync().ConfigureAwait(false);
         }
 
-        return false;
+        if (string.IsNullOrWhiteSpace(inAsset.RemoteLocation_Thumb) == false)
+        {
+            try
+            {
+                System.Uri thumbUri = new System.Uri(inAsset.RemoteLocation_Thumb);
+                string thumbFileName = thumbUri?.Segments?.GetValue(thumbUri.Segments.Length - 1).ToString();
+
+                var blobRefThumb = await persister.GetBlockBlobReferenceAsync(thumbFileName).ConfigureAwait(false);
+                if (blobRefThumb != null)
+                {
+                    successThumb = await blobRefThumb.DeleteIfExistsAsync().ConfigureAwait(false);
+                }
+            }
+            catch (System.Exception ex)
+            {
+                await Notification.InsertOneAsync("Thumb Delete", ex);
+            }
+        }
+
+        return success && successThumb;
     }
 
 }
