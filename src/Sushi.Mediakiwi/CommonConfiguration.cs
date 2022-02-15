@@ -25,11 +25,11 @@ namespace Sushi.Mediakiwi
         {
             get
             {
-                if (string.IsNullOrWhiteSpace(WimServerConfiguration.Instance.Datepicker_Culture))
+                if (string.IsNullOrWhiteSpace(WimServerConfiguration.Instance?.Datepicker_Culture) == false)
                 {
-                    return "en-GB";
+                    return WimServerConfiguration.Instance.Datepicker_Culture;
                 }
-                return WimServerConfiguration.Instance.Datepicker_Culture;
+                return "en-GB";
             }
         }
 
