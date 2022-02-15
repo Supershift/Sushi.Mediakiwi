@@ -360,7 +360,7 @@ namespace Sushi.Mediakiwi
         {
             var culture = "en-GB";
 
-            if (string.IsNullOrWhiteSpace(WimServerConfiguration.Instance.Datepicker_Culture) == false)
+            if (string.IsNullOrWhiteSpace(WimServerConfiguration.Instance?.Datepicker_Culture) == false)
             {
                 culture = WimServerConfiguration.Instance.Datepicker_Culture;
             }
@@ -381,7 +381,7 @@ namespace Sushi.Mediakiwi
             {
                 culture = site.Culture;
             }
-            else if (string.IsNullOrWhiteSpace(WimServerConfiguration.Instance.Datepicker_Culture) == false)
+            else if (string.IsNullOrWhiteSpace(WimServerConfiguration.Instance?.Datepicker_Culture) == false)
             {
                 culture = WimServerConfiguration.Instance.Datepicker_Culture;
             }
@@ -403,7 +403,7 @@ namespace Sushi.Mediakiwi
             {
                 culture = new System.Globalization.CultureInfo(cultureCode);
             }
-            else if (string.IsNullOrWhiteSpace(WimServerConfiguration.Instance.Datepicker_Culture) == false)
+            else if (string.IsNullOrWhiteSpace(WimServerConfiguration.Instance?.Datepicker_Culture) == false)
             {
                 culture = new System.Globalization.CultureInfo(WimServerConfiguration.Instance.Datepicker_Culture);
             }
