@@ -8,6 +8,10 @@ using Sushi.Mediakiwi.Data.Elastic;
 using System;
 using System.Text.Json;
 using Sushi.Mediakiwi.API.Extensions;
+using System.IO;
+using Sushi.Mediakiwi.Data.Configuration;
+using Sushi.Mediakiwi.Module.GoogleSheetsSync;
+using System.Linq;
 
 namespace Sushi.Mediakiwi.Demonstration
 {
@@ -43,7 +47,38 @@ namespace Sushi.Mediakiwi.Demonstration
             services.AddMediakiwi();
             services.AddMediakiwiApi();
             //services.AddMediakiwiGlobalListSetting<string>("googleSheetsUrl", "Google sheets URL", "The URL of the Google sheets doc representing this list");
-            
+
+            #region Add Google Sheets Module
+
+            // Get credential Files for Google Sheets
+            string serviceAccountCredentials = "";
+            string clientSecretCredentials = "";
+
+            // Check if ServiceAccount Credentials file exist
+            if (File.Exists(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "sheetsCredentials.json"))) 
+            {
+                serviceAccountCredentials = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "sheetsCredentials.json");
+            }
+
+            // Check if OAuth Credentials file exist
+            if (File.Exists(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "sheetsClientSecret.json")))
+            {
+                clientSecretCredentials = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "sheetsClientSecret.json");
+            }
+
+            // With the ServiceAccount file present, we can add the module
+            if (string.IsNullOrWhiteSpace(serviceAccountCredentials) == false)
+            {
+                // Set default connection string
+                var config = WimServerConfiguration.Instance;
+                var connString = config.Portals.FirstOrDefault(x => x.Name.Equals(config.Connection)).Connection;
+                MicroORM.DatabaseConfiguration.SetDefaultConnectionString(connString);
+
+                services.AddGoogleSheetsModules(serviceAccountCredentials, clientSecretCredentials, true, true);
+            }
+
+            #endregion Add Google Sheets Module
+
             var elasticSettings = new Nest.ConnectionSettings(new Uri(Configuration["ElasticUrl"]))
                 .BasicAuthentication(Configuration["ElasticUsername"], Configuration["ElasticPassword"])
                 .ThrowExceptions(true);
