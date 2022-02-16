@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
-    <Version>8.1.17</Version>    
+    <Version>8.1.18</Version>    
     <Product>Mediakiwi</Product>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <Company>Supershift</Company>
@@ -140,6 +140,7 @@
     <Compile Include="Framework\ASyncQuery.cs" />
     <Compile Include="Framework\CacheManager.cs" />
     <Compile Include="Framework\ErrorCode.cs" />
+    <Compile Include="Framework\EventArguments\ComponentListDataReceived.cs" />
     <Compile Include="Framework\FileUpload.cs" />
     <Compile Include="Framework\Functions\DatabaseCompare.cs" />
     <Compile Include="Framework\Functions\FolderPath.cs" />

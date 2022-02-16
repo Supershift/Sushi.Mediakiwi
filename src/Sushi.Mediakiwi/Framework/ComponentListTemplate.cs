@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Http;
 using Sushi.Mediakiwi.Data;
+using Sushi.Mediakiwi.Framework.EventArguments;
 using Sushi.Mediakiwi.UI;
 using System;
 using System.Collections.Generic;
@@ -217,6 +218,7 @@ namespace Sushi.Mediakiwi.Framework
         public event Func<ComponentListSearchEventArgs, Task> ListSearch;
         public event Func<ComponentListEventArgs, Task> ListLoad;
         public event Func<Task> ListConfigure;
+        public event Func<ComponentListDataReceived, Task> ListDataReceived;
 
         internal async Task OnListConfigure()
         {
@@ -499,7 +501,31 @@ namespace Sushi.Mediakiwi.Framework
                 item.Apply(this);
         }
 
-  
+
+        public async Task OnListDataReceived(ComponentListDataReceived e)
+        {
+            Func<ComponentListDataReceived, Task> handler = ListDataReceived;
+
+            if (handler == null)
+            {
+                return;
+            }
+
+            Delegate[] invocationList = handler.GetInvocationList();
+            Task[] handlerTasks = new Task[invocationList.Length];
+
+            for (int i = 0; i < invocationList.Length; i++)
+            {
+                handlerTasks[i] = ((Func<ComponentListDataReceived, Task>)invocationList[i])(e);
+            }
+
+            await Task.WhenAll(handlerTasks);
+        }
+
+        public bool HasListDataReceived
+        {
+            get { return (ListDataReceived == null) ? false : true; }
+        }
 
     }
 }
