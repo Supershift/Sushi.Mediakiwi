@@ -140,6 +140,7 @@
     <Compile Include="Framework\ASyncQuery.cs" />
     <Compile Include="Framework\CacheManager.cs" />
     <Compile Include="Framework\ErrorCode.cs" />
+    <Compile Include="Framework\EventArguments\ComponentListDataReceived.cs" />
     <Compile Include="Framework\FileUpload.cs" />
     <Compile Include="Framework\Functions\DatabaseCompare.cs" />
     <Compile Include="Framework\Functions\FolderPath.cs" />

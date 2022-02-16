@@ -1,9 +1,9 @@
 ﻿using Sushi.Mediakiwi.Data;
-using Sushi.Mediakiwi.Extention;
 using Sushi.Mediakiwi.Framework;
 using Sushi.Mediakiwi.Framework.ContentListItem;
 using Sushi.Mediakiwi.UI;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Sushi.Mediakiwi.Demonstration.Templates.List
@@ -27,8 +27,40 @@ namespace Sushi.Mediakiwi.Demonstration.Templates.List
             ListInit += DemoList1_ListInit;
             ListSave += DemoList1_ListSave;
             ListDelete += DemoList1_ListDelete;
+            ListDataReceived += DemoList1_ListDataReceived;
         }
 
+ 
+        private async Task DemoList1_ListDataReceived(Framework.EventArguments.ComponentListDataReceived arg)
+        {
+            List<Data.DemoObject1> receivedObjects = new List<Data.DemoObject1>(); 
+
+            if (string.IsNullOrWhiteSpace(arg.FullTypeName) == false)
+            {
+                var targetObjectType = Type.GetType(arg.FullTypeName);
+                if (targetObjectType != null)
+                {
+                    foreach (var record in arg.ReceivedProperties)
+                    {
+                        var newObject = Activator.CreateInstance(targetObjectType);
+
+                        foreach (var item in record)
+                        {
+                            var propertyToSet = targetObjectType.GetProperty(item.Key);
+                            if (propertyToSet?.CanWrite == true)
+                            {
+                                propertyToSet.SetValue(newObject, item.Value, null);
+                            }
+                        }
+
+                        if (newObject is Data.DemoObject1 demoObject)
+                        {
+                            receivedObjects.Add(demoObject);
+                        }
+                    }
+                }
+            }
+        }
 
         private ListItemCollection m_GroupOptions;
 

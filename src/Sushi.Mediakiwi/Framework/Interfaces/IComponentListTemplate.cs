@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Sushi.Mediakiwi.Data;
+using Sushi.Mediakiwi.Framework.EventArguments;
 using System;
 using System.Threading.Tasks;
 
@@ -34,7 +35,8 @@ namespace Sushi.Mediakiwi.Framework
         event Func<ComponentListEventArgs, Task> ListSave;
         event Func<ComponentListSearchEventArgs, Task> ListSearch;
         event Func<ComponentListEventArgs, Task> ListLoad;
-
+        event Func<ComponentListDataReceived, Task> ListDataReceived;
+        
         bool ApplyContent(Guid componentlistGUID, Site site);
         bool ApplyContent(Guid componentlistGUID, Site site, bool exceptionAvoided);
         void ApplyListSettings(IComponentList list);
