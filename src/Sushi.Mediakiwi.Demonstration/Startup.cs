@@ -48,17 +48,6 @@ namespace Sushi.Mediakiwi.Demonstration
             services.AddMediakiwiApi();
             //services.AddMediakiwiGlobalListSetting<string>("googleSheetsUrl", "Google sheets URL", "The URL of the Google sheets doc representing this list");
 
-            #region Add Google Sheets Module
-
-            // Set default connection string
-            var config = WimServerConfiguration.Instance;
-            var connString = config.Portals.FirstOrDefault(x => x.Name.Equals(config.Connection)).Connection;
-            MicroORM.DatabaseConfiguration.SetDefaultConnectionString(connString);
-
-            services.AddGoogleSheetsModules(true, true, true);
-            
-
-            #endregion Add Google Sheets Module
 
             var elasticSettings = new Nest.ConnectionSettings(new Uri(Configuration["ElasticUrl"]))
                 .BasicAuthentication(Configuration["ElasticUsername"], Configuration["ElasticPassword"])
@@ -83,8 +72,6 @@ namespace Sushi.Mediakiwi.Demonstration
 
             app.UseAuthentication();
             app.UseAuthorization();
-
-            app.UseGoogleOpenID();
 
             // swagger
             app.UseSwagger();
