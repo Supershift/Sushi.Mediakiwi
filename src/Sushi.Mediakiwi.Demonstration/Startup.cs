@@ -8,6 +8,10 @@ using Sushi.Mediakiwi.Data.Elastic;
 using System;
 using System.Text.Json;
 using Sushi.Mediakiwi.API.Extensions;
+using System.IO;
+using Sushi.Mediakiwi.Data.Configuration;
+using Sushi.Mediakiwi.Module.GoogleSheetsSync;
+using System.Linq;
 
 namespace Sushi.Mediakiwi.Demonstration
 {
@@ -43,7 +47,8 @@ namespace Sushi.Mediakiwi.Demonstration
             services.AddMediakiwi();
             services.AddMediakiwiApi();
             //services.AddMediakiwiGlobalListSetting<string>("googleSheetsUrl", "Google sheets URL", "The URL of the Google sheets doc representing this list");
-            
+
+
             var elasticSettings = new Nest.ConnectionSettings(new Uri(Configuration["ElasticUrl"]))
                 .BasicAuthentication(Configuration["ElasticUsername"], Configuration["ElasticPassword"])
                 .ThrowExceptions(true);
@@ -56,6 +61,7 @@ namespace Sushi.Mediakiwi.Demonstration
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.UseHttpsRedirection();
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
