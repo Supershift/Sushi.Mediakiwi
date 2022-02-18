@@ -4,6 +4,7 @@ using Sushi.Mediakiwi.Framework.ContentListItem;
 using Sushi.Mediakiwi.UI;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Sushi.Mediakiwi.Demonstration.Templates.List
@@ -33,18 +34,17 @@ namespace Sushi.Mediakiwi.Demonstration.Templates.List
  
         private async Task DemoList1_ListDataReceived(Framework.EventArguments.ComponentListDataReceived arg)
         {
-            List<Data.DemoObject1> receivedObjects = new List<Data.DemoObject1>(); 
-
             if (string.IsNullOrWhiteSpace(arg.FullTypeName) == false)
             {
                 var targetObjectType = Type.GetType(arg.FullTypeName);
                 if (targetObjectType != null)
                 {
-                    foreach (var record in arg.ReceivedProperties)
+                    // Only save new items
+                    foreach (var record in arg.ReceivedProperties.Where(x=>x.ItemType == Framework.EventArguments.ReceivedItemTypeEnum.NEW))
                     {
                         var newObject = Activator.CreateInstance(targetObjectType);
 
-                        foreach (var item in record)
+                        foreach (var item in record.PropertyValues)
                         {
                             var propertyToSet = targetObjectType.GetProperty(item.Key);
                             if (propertyToSet?.CanWrite == true)
@@ -55,7 +55,7 @@ namespace Sushi.Mediakiwi.Demonstration.Templates.List
 
                         if (newObject is Data.DemoObject1 demoObject)
                         {
-                            receivedObjects.Add(demoObject);
+                            await demoObject.SaveAsync();
                         }
                     }
                 }
@@ -173,6 +173,7 @@ namespace Sushi.Mediakiwi.Demonstration.Templates.List
             wim.ListDataColumns.Add(new ListDataColumn("Created", nameof(Data.DemoObject1.Created), ListDataColumnType.Default) { ColumnWidth = 90 });
             wim.ListDataColumns.Add(new ListDataColumn("Updated", nameof(Data.DemoObject1.Updated), ListDataColumnType.Default) { ColumnWidth = 90 });
 
+            
             var filteredItems = await Data.DemoObject1.FetchAllAsync(Filter_Group, Filter_DateFrom, Filter_DateTill);
 
             // Insert a bunch of items when we got none
