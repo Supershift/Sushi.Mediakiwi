@@ -8,10 +8,6 @@ using Sushi.Mediakiwi.Data.Elastic;
 using System;
 using System.Text.Json;
 using Sushi.Mediakiwi.API.Extensions;
-using System.IO;
-using Sushi.Mediakiwi.Data.Configuration;
-using Sushi.Mediakiwi.Module.GoogleSheetsSync;
-using System.Linq;
 
 namespace Sushi.Mediakiwi.Demonstration
 {
