@@ -176,6 +176,7 @@ namespace Sushi.Mediakiwi.Data
                                                 ISNULL(Menu_Site_key, @Site) = @Site
                                                 and ISNULL(Menu_Role_Key, @Role) = @Role
                                                 and Menu_IsActive = 1
+                                                and ISNULL(Menu_Group_Key, 0) = 0
                                                 and MenuItem_Position in (" + string.Join(",", sql_in) + @")
                                             order by
                                                 MenuItem_Position asc, MenuItem_Order asc 
@@ -222,6 +223,7 @@ namespace Sushi.Mediakiwi.Data
                                                 ISNULL(Menu_Site_key, @Site) = @Site
                                                 and ISNULL(Menu_Role_Key, @Role) = @Role
                                                 and Menu_IsActive = 1
+                                                and ISNULL(Menu_Group_Key, 0) = 0
                                             order by
                                                 MenuItem_Position asc, MenuItem_Order asc 
                                             ", filter);
@@ -297,6 +299,7 @@ namespace Sushi.Mediakiwi.Data
                                                 ISNULL(Menu_Site_key, @Site) = @Site
                                                 and ISNULL(Menu_Role_Key, @Role) = @Role
                                                 and Menu_IsActive = 1
+                                                and ISNULL(Menu_Group_Key, 0) = 0
                                                 and MenuItem_Position in (" + string.Join(",", sql_in) + @")
                                             order by
                                                 MenuItem_Position asc, MenuItem_Order asc 
@@ -343,6 +346,7 @@ namespace Sushi.Mediakiwi.Data
                                                 ISNULL(Menu_Site_key, @Site) = @Site
                                                 and ISNULL(Menu_Role_Key, @Role) = @Role
                                                 and Menu_IsActive = 1
+                                                and ISNULL(Menu_Group_Key, 0) = 0
                                             order by
                                                 MenuItem_Position asc, MenuItem_Order asc 
                                             ", filter);

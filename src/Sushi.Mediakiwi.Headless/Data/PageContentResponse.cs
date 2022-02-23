@@ -86,5 +86,12 @@ namespace Sushi.Mediakiwi.Headless.Data
                 return temp ?? new List<ContentComponent>();
             }
         }
+
+
+        /// <summary>
+        /// Contains all instances of this page in other channels
+        /// </summary>
+        [DataMember(Name = "inheritedPages")]
+        public List<InheritedPage> InheritedPages { get; set; } = new List<InheritedPage>();
     }
 }

@@ -72,5 +72,12 @@ namespace Sushi.Mediakiwi.Controllers.Data
         /// </summary>
         [DataMember(Name = "internalInfo")]
         public InternalInformation InternalInfo { get; set; } = new InternalInformation();
+
+        /// <summary>
+        /// Contains all instances of this page in other channels
+        /// </summary>
+        [DataMember(Name = "inheritedPages")]
+        public List<InheritedPage> InheritedPages { get; set; } = new List<InheritedPage>();
     }
 }
+
