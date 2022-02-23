@@ -73,7 +73,7 @@ namespace Sushi.Mediakiwi.Demonstration
             app.UseSwagger();
             app.UseSwaggerUI();
 
-            string[] excludePaths = new string[] { "/api/custom", "/myfiles", "/mkapi" };
+            string[] excludePaths = new string[] { "/api/custom", "/myfiles", "/mkapi", "/api" };
             
             app.UseMediakiwi(excludePaths);
             app.UseMediakiwiApi();

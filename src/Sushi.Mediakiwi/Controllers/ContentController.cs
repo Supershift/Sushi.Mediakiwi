@@ -622,7 +622,7 @@ namespace Sushi.Mediakiwi.Controllers
             return (content, isFilled);
         }
 
-       private static string ConvertUrl(string path)
+        private static string ConvertUrl(string path)
         {
             if (string.IsNullOrWhiteSpace(path))
             {
@@ -916,7 +916,47 @@ namespace Sushi.Mediakiwi.Controllers
                 response.Components.Add(mapped);
             }
 
+            // Check for inherited pages
+            if (page.MasterID.GetValueOrDefault(0) > 0)
+            {
+                var masterPage = await Page.SelectOneAsync(page.MasterID.Value);
+                if (masterPage?.ID > 0)
+                {
+                    response.InheritedPages.Add(GetInheritedPage(masterPage));
+
+                    foreach (var inheritedPage in await masterPage.GetInheritedPages())
+                    {
+                        response.InheritedPages.Add(GetInheritedPage(inheritedPage));
+                    }
+                }
+            }
+            else
+            {
+                var inheritedPages = await page.GetInheritedPages();
+                if (inheritedPages?.Count > 0)
+                {
+                    response.InheritedPages.Add(GetInheritedPage(page));
+
+                    foreach (var inheritedPage in inheritedPages)
+                    {
+                        response.InheritedPages.Add(GetInheritedPage(inheritedPage));
+                    }
+                }
+            }
+
             return response;
+        }
+
+        private InheritedPage GetInheritedPage(Page inPage)
+        {
+            return new InheritedPage()
+            {
+                ChannelCulture = (string.IsNullOrWhiteSpace(inPage?.Site?.Culture) == false) ? inPage.Site.Culture : string.Empty,
+                ChannelLanguage = (string.IsNullOrWhiteSpace(inPage?.Site?.Language) == false) ? inPage.Site.Language : string.Empty,
+                ChannelID = inPage.SiteID,
+                Href = inPage.InternalPath,
+                PageID = inPage.ID,
+            };
         }
     }
 }
