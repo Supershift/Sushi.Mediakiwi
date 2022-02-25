@@ -6,6 +6,7 @@ namespace Sushi.Mediakiwi.Data
     public interface IVisitor
     {
         int? ApplicationUserID { get; set; }
+        string Jwt { get; set; }
         string CookieParserLog { get; set; }
         int? CountryID { get; set; }
         DateTime Created { get; set; }

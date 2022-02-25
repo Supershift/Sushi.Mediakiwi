@@ -1469,11 +1469,11 @@ namespace Sushi.Mediakiwi.UI
                 //  Check if logout request is performed
                 if (_Console.IsPostBack("logout") || _Console.Request.Query.ContainsKey("logout"))
                 {
-                    await LogoutViaSingleSignOnAsyc().ConfigureAwait(false);
+                    await LogoutViaSingleSignOnAsync().ConfigureAwait(false);
                 }
             }
 
-            await AuthenticateViaSingleSignOnAsyc(true).ConfigureAwait(false);
+            await AuthenticateViaSingleSignOnAsync(true).ConfigureAwait(false);
 
             //  Check roaming profile
             if (!showLogin && _Console.CurrentApplicationUser != null)
@@ -1531,9 +1531,10 @@ namespace Sushi.Mediakiwi.UI
             }
         }
 
-        async Task LogoutViaSingleSignOnAsyc()
+        async Task LogoutViaSingleSignOnAsync()
         {
             _Console.CurrentVisitor.ApplicationUserID = null;
+            _Console.CurrentVisitor.Jwt = null;
             await _Console.CurrentVisitor.SaveAsync().ConfigureAwait(false);
 
             if (_configuration.GetValue<bool>("mediakiwi:authentication"))
@@ -1546,13 +1547,14 @@ namespace Sushi.Mediakiwi.UI
             }
         }
 
-        internal async Task AuthenticateViaSingleSignOnAsyc(bool redirectOnAnonymous, bool outputRedirectPage = false)
+        internal async Task AuthenticateViaSingleSignOnAsync(bool redirectOnAnonymous, bool outputRedirectPage = false)
         {
             if (WimServerConfiguration.Instance.Authentication != null && WimServerConfiguration.Instance.Authentication.Aad != null && WimServerConfiguration.Instance.Authentication.Aad.Enabled && _Console.CurrentApplicationUser == null)
             {
-                if (!string.IsNullOrEmpty(_Console.GetSafePost("id_token")))
+                var jwt = _Console.GetSafePost("id_token");
+                if (!string.IsNullOrEmpty(jwt))
                 {
-                    string email = await OAuth2Logic.ExtractUpnAsync(WimServerConfiguration.Instance.Authentication, _Console.GetSafePost("id_token")).ConfigureAwait(false);
+                    string email = await OAuth2Logic.ExtractUpnAsync(WimServerConfiguration.Instance.Authentication, jwt).ConfigureAwait(false);
                 
                     if (!string.IsNullOrEmpty(email))
                     {
@@ -1572,7 +1574,7 @@ namespace Sushi.Mediakiwi.UI
                                 Created = now
                             }.InsertAsync().ConfigureAwait(false);
 
-                            _Console.CurrentVisitor.ApplicationUserID = _Console.CurrentApplicationUser.ID;
+                            _Console.CurrentVisitor.Jwt = jwt;
                             _Console.CurrentApplicationUser.LastLoggedVisit = now;
                             await _Console.CurrentApplicationUser.SaveAsync().ConfigureAwait(false);
 
@@ -1595,6 +1597,7 @@ namespace Sushi.Mediakiwi.UI
 
                 if (redirectOnAnonymous)
                 {
+                    await _Console.LoadCurrentApplicationUserAsync();
                     if (_Console.CurrentApplicationUser != null && _Console.CurrentApplicationUser.IsActive)
                     {
                         // do nothing, user is logged in.

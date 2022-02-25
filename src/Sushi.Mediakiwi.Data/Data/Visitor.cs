@@ -70,6 +70,32 @@ namespace Sushi.Mediakiwi.Data
             }
         }
 
+        const string JWT_DATA_KEY = "wim_appuser_jwt";
+        /// <summary>
+        /// Gets or sets the applicaion user JWT
+        /// </summary>
+        public string Jwt
+        {
+            get
+            {
+                return this.Data[JWT_DATA_KEY].Value;
+            }
+            set
+            {
+                if (Jwt != value)
+                {
+                    if (string.IsNullOrWhiteSpace(value))
+                    {
+                        this.Data.Apply(JWT_DATA_KEY, null);
+                    }
+                    else
+                    {
+                        this.Data.Apply(JWT_DATA_KEY, value);
+                    }
+                }
+            }
+        }
+
         /// <summary>
         /// Gets or sets the application user update.
         /// </summary>
