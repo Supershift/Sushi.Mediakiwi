@@ -4,8 +4,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
 using Sushi.Mediakiwi.Data;
+using Sushi.Mediakiwi.Data.Configuration;
 using Sushi.Mediakiwi.Framework;
 using Sushi.Mediakiwi.Framework.Api;
+using Sushi.Mediakiwi.Logic;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -695,24 +697,47 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
         {
             get
             {
-                //  [20090411:MM] Patch
-                if (m_CurrentApplicationUser == null
-                    && CurrentVisitor != null
-                    && CurrentVisitor.ApplicationUserID.HasValue
-                    && CurrentVisitor.ApplicationUserID.Value > 0
-                    )
-                {
-                    m_CurrentApplicationUser = ApplicationUser.SelectOne(CurrentVisitor.ApplicationUserID.Value, true);
-                }
-
-                if (m_CurrentApplicationUser == null && m_CurrentListInstance != null)
-                {
-                    m_CurrentApplicationUser = m_CurrentListInstance.wim.CurrentApplicationUser;
-                }
-
                 return m_CurrentApplicationUser;
             }
-            set { m_CurrentApplicationUser = value; }
+            set
+            {
+                m_CurrentApplicationUser = value;
+            }
+        }
+
+        public async Task LoadCurrentApplicationUserAsync()
+        {
+            if (m_CurrentApplicationUser == null)
+            {
+                if (WimServerConfiguration.Instance?.Authentication?.Aad?.Enabled == true)
+                {
+                    if (!string.IsNullOrWhiteSpace(CurrentVisitor?.Jwt))
+                    {
+                        // Validate the JWT
+                        string email = await OAuth2Logic.ExtractUpnAsync(WimServerConfiguration.Instance.Authentication, CurrentVisitor.Jwt);
+                        if (!string.IsNullOrWhiteSpace(email))
+                        {
+                            m_CurrentApplicationUser = await ApplicationUser.SelectOneByEmailAsync(email, true);
+                        }
+                    }
+                }
+                else
+                {
+                    //  [20090411:MM] Patch
+                    if (CurrentVisitor != null
+                        && CurrentVisitor.ApplicationUserID.HasValue
+                        && CurrentVisitor.ApplicationUserID.Value > 0
+                        )
+                    {
+                        m_CurrentApplicationUser = ApplicationUser.SelectOne(CurrentVisitor.ApplicationUserID.Value, true);
+                    }
+
+                    if (m_CurrentApplicationUser == null && m_CurrentListInstance != null)
+                    {
+                        m_CurrentApplicationUser = m_CurrentListInstance.wim.CurrentApplicationUser;
+                    }
+                }
+            }
         }
 
         public void SaveVisit(bool shouldRememberVisitorForNextVisit = true)

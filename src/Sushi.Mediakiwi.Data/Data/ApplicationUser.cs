@@ -510,12 +510,16 @@ namespace Sushi.Mediakiwi.Data
         /// Select a Application User based on the email
         /// </summary>
         /// <param name="email">The email.</param>
-        public static async Task<IApplicationUser> SelectOneByEmailAsync(string email)
+        public static async Task<IApplicationUser> SelectOneByEmailAsync(string email, bool onlyReturnActive = false)
         {
             var connector = ConnectorFactory.CreateConnector<ApplicationUser>();
             var filter = connector.CreateQuery();
             filter.Add(x => x.Email, email);
-            
+            if (onlyReturnActive)
+            {
+                filter.Add(x => x.IsActive, true);
+            }
+
             return await connector.FetchSingleAsync(filter).ConfigureAwait(false);
         }
 
