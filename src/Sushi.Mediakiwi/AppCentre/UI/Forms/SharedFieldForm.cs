@@ -11,6 +11,7 @@ namespace Sushi.Mediakiwi.AppCentre.UI.Forms
 {
     public class SharedFieldFormMap : FormMap<SharedFieldFormMap>
     {
+        private int SiteID { get; set; }
         public SharedFieldTranslation ImplementTranslation { get; set; }
         public SharedField Implement { get; set; }
         public ComponentTemplate Template { get; set; }
@@ -115,13 +116,22 @@ namespace Sushi.Mediakiwi.AppCentre.UI.Forms
 
         #region Load - Dependent on ContentType
 
-        public SharedFieldFormMap(WimComponentListRoot wim, SharedField implement, SharedFieldTranslation implementTranslation, int componentTemplateId)
+        public SharedFieldFormMap(WimComponentListRoot wim, SharedField implement, SharedFieldTranslation implementTranslation, int componentTemplateId, int? siteId = null)
         {
-            var dateInfo = Common.GetDateInformation(wim.CurrentSite);
+            if (siteId.GetValueOrDefault(0) > 0)
+            {
+                SiteID = siteId.Value;
+            }
+            else
+            {
+                SiteID = wim.CurrentSite.ID;
+            }
+
+            var dateInfo = Common.GetDateInformation(Site.SelectOne(SiteID));
             dateCulture = dateInfo.Culture;
             dateFormat = dateInfo.DateFormatShort;
             dateTimeFormat = dateInfo.DateTimeFormatShort;
-
+        
             ImplementTranslation = implementTranslation;
             Implement = implement;
             if (componentTemplateId > 0)
@@ -412,7 +422,7 @@ namespace Sushi.Mediakiwi.AppCentre.UI.Forms
                 {
                     allComponentTemplates.Add(ComponentTemplate.SelectOne(prop.TemplateID));
                     var cVersions = ComponentVersion.SelectAllForTemplate(prop.TemplateID);
-                    var pages = Page.SelectAll(cVersions.Select(x => x.PageID.GetValueOrDefault(0)).ToArray());
+                    var pages = Page.SelectAll(cVersions.Select(x => x.PageID.GetValueOrDefault(0)).ToArray(), SiteID);
                     allPages.AddRange(pages);
                 }
             }

@@ -776,7 +776,7 @@ namespace Sushi.Mediakiwi.Controllers
             }
 
             // Store all SharedFieldTranslations
-            var allSharedFieldTranslations = await SharedFieldTranslation.FetchAllForPageAsync(page.ID).ConfigureAwait(false);
+            var allSharedFieldTranslations = await SharedFieldTranslation.FetchAllForPageAsync(page.ID, page.SiteID).ConfigureAwait(false);
 
             int sort = 0;
             foreach (var component in components)
@@ -838,13 +838,18 @@ namespace Sushi.Mediakiwi.Controllers
                         // Is this property marked as shared field and do we have any shared field translations at all
                         if (wimProp?.IsSharedField == true && allSharedFieldTranslations?.Count > 0)
                         {
-                            var sharedFieldValue = allSharedFieldTranslations.FirstOrDefault(x => x.ContentTypeID == wimProp.ContentTypeID && x.FieldName == wimProp.FieldName);
+                            // Get the Value for this shared field for this site.
+                            var sharedFieldValue = allSharedFieldTranslations.FirstOrDefault(x => x.ContentTypeID == wimProp.ContentTypeID && x.FieldName == wimProp.FieldName && x.SiteID == page.SiteID);
 
                             // Do we have a sharedFieldValue ?
                             // If so, apply its content to the fieldItem
                             if (sharedFieldValue?.ID > 0)
                             {
                                 fieldItem = fieldItem.ApplySharedValue(sharedFieldValue, ispreview);
+                            }
+                            else
+                            {
+                                fieldItem.Value = "";
                             }
                         }
 

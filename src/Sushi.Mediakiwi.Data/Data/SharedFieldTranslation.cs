@@ -369,17 +369,19 @@ namespace Sushi.Mediakiwi.Data
         /// </summary>
         /// <param name="pageId">The MediaKiwi Page ID</param>
         /// <returns></returns>
-        public static ICollection<SharedFieldTranslation> FetchAllForPage(int pageId)
+        public static ICollection<SharedFieldTranslation> FetchAllForPage(int pageId, int siteId)
         {
             var connector = new Connector<SharedFieldTranslation>(new SharedFieldTranslationMap(false));
             var filter = connector.CreateQuery();
             filter.AddParameter("@pageId", pageId);
+            filter.AddParameter("@siteId", siteId);
 
             var result = connector.FetchAll(@"SELECT fields.* FROM [dbo].[wim_SharedFieldView] AS fields
 LEFT JOIN [dbo].[wim_Properties] AS props ON props.[Property_FieldName] = fields.[SharedField_FieldName]
 AND props.[Property_Type] = fields.[SharedField_ContentTypeID]
 LEFT JOIN [dbo].[wim_Components] AS comps ON comps.[Component_ComponentTemplate_Key] = props.[Property_Template_Key]
-WHERE props.[Property_IsShared] = 1 AND comps.[Component_Page_Key] = @pageId", filter);
+WHERE props.[Property_IsShared] = 1 AND comps.[Component_Page_Key] = @pageId
+AND [SharedFieldTranslation_Site_Key] = @siteId", filter);
             return result;
         }
 
@@ -388,17 +390,19 @@ WHERE props.[Property_IsShared] = 1 AND comps.[Component_Page_Key] = @pageId", f
         /// </summary>
         /// <param name="pageId">The MediaKiwi Page ID</param>
         /// <returns></returns>
-        public static async Task<ICollection<SharedFieldTranslation>> FetchAllForPageAsync(int pageId)
+        public static async Task<ICollection<SharedFieldTranslation>> FetchAllForPageAsync(int pageId, int siteId)
         {
             var connector = new Connector<SharedFieldTranslation>(new SharedFieldTranslationMap(false));
             var filter = connector.CreateQuery();
             filter.AddParameter("@pageId", pageId);
+            filter.AddParameter("@siteId", siteId);
 
             var result = await connector.FetchAllAsync(@"SELECT fields.* FROM [dbo].[wim_SharedFieldView] AS fields
 LEFT JOIN [dbo].[wim_Properties] AS props ON props.[Property_FieldName] = fields.[SharedField_FieldName]
 AND props.[Property_Type] = fields.[SharedField_ContentTypeID]
 LEFT JOIN [dbo].[wim_Components] AS comps ON comps.[Component_ComponentTemplate_Key] = props.[Property_Template_Key]
-WHERE props.[Property_IsShared] = 1 AND comps.[Component_Page_Key] = @pageId", filter).ConfigureAwait(false);
+WHERE props.[Property_IsShared] = 1 AND comps.[Component_Page_Key] = @pageId 
+AND [SharedFieldTranslation_Site_Key] = @siteId", filter).ConfigureAwait(false);
             return result;
         }
 

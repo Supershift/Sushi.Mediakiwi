@@ -1677,15 +1677,20 @@ namespace Sushi.Mediakiwi.Data
         }
 
         /// <summary>
-        /// Selects all.
+        /// Selects all within the array of keys supplied.
         /// </summary>
         /// <param name="keylist">The keylist.</param>
+        /// <param name="siteId">The site for which to retrieve the pages.</param>
         /// <returns></returns>
-        public static Page[] SelectAll(int[] keylist)
+        public static Page[] SelectAll(int[] keylist, int? siteId = null)
         {
             var connector = ConnectorFactory.CreateConnector<Page>();
             var filter = connector.CreateQuery();
             filter.Add(x => x.ID, keylist, ComparisonOperator.In);
+            if (siteId.GetValueOrDefault(0) > 0)
+            {
+                filter.Add(x => x.SiteID, siteId);
+            }
 
             return connector.FetchAll(filter).ToArray();
         }
@@ -1702,6 +1707,24 @@ namespace Sushi.Mediakiwi.Data
             var filter = connector.CreateQuery();
             filter.Add(x => x.ID, keylist, ComparisonOperator.In);
 
+            var result = await connector.FetchAllAsync(filter);
+            return result.ToArray();
+        }
+
+        /// <summary>
+        /// Selects all.
+        /// </summary>
+        /// <param name="keylist">The keylist.</param>
+        /// <returns></returns>
+        public static async Task<Page[]> SelectAllAsync(int[] keylist, int? siteId)
+        {
+            var connector = ConnectorFactory.CreateConnector<Page>();
+            var filter = connector.CreateQuery();
+            filter.Add(x => x.ID, keylist, ComparisonOperator.In);
+            if (siteId.GetValueOrDefault(0) > 0)
+            {
+                filter.Add(x => x.SiteID, siteId);
+            }
             var result = await connector.FetchAllAsync(filter);
             return result.ToArray();
         }
