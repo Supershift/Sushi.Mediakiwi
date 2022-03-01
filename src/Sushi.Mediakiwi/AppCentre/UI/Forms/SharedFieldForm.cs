@@ -16,6 +16,8 @@ namespace Sushi.Mediakiwi.AppCentre.UI.Forms
         public ComponentTemplate Template { get; set; }
 
         private System.Globalization.CultureInfo dateCulture = new System.Globalization.CultureInfo("nl-NL");
+        string dateFormat = "";
+        string dateTimeFormat = "";
 
         #region Save - Dependent on ContentType
 
@@ -41,12 +43,12 @@ namespace Sushi.Mediakiwi.AppCentre.UI.Forms
                     break;
                 case ContentType.Date:
                     {
-                        ImplementTranslation.EditValue = EditValueDateTime.ToString("dd-MM-yyyy");
+                        ImplementTranslation.EditValue = EditValueDateTime.ToString(dateFormat, dateCulture);
                     }
                     break;
                 case ContentType.DateTime:
                     {
-                        ImplementTranslation.EditValue = EditValueDateTime.ToString("dd-MM-yyyy HH:mm:ss");
+                        ImplementTranslation.EditValue = EditValueDateTime.ToString(dateTimeFormat, dateCulture);
                     }
                     break;
                 case ContentType.MultiField:
@@ -115,6 +117,11 @@ namespace Sushi.Mediakiwi.AppCentre.UI.Forms
 
         public SharedFieldFormMap(WimComponentListRoot wim, SharedField implement, SharedFieldTranslation implementTranslation, int componentTemplateId)
         {
+            var dateInfo = Common.GetDateInformation(wim.CurrentSite);
+            dateCulture = dateInfo.Culture;
+            dateFormat = dateInfo.DateFormatShort;
+            dateTimeFormat = dateInfo.DateTimeFormatShort;
+
             ImplementTranslation = implementTranslation;
             Implement = implement;
             if (componentTemplateId > 0)
@@ -131,12 +138,7 @@ namespace Sushi.Mediakiwi.AppCentre.UI.Forms
             bool canRevert = false;
             if (string.IsNullOrWhiteSpace(implementTranslation.EditValue) == false && string.IsNullOrWhiteSpace(implementTranslation.Value) == false)
             {
-                canRevert = !(implementTranslation.EditValue.Equals(implementTranslation.Value));
-            }
-
-            if (CommonConfiguration.FORM_DATEPICKER.ToUpperInvariant() == "EN")
-            {
-                dateCulture = new System.Globalization.CultureInfo("en-US");
+                canRevert = implementTranslation.EditValue.Equals(implementTranslation.Value) == false;
             }
 
             Map(x => x.FieldName).TextLine("Field name").Expression(OutputExpression.FullWidth);
@@ -173,7 +175,7 @@ namespace Sushi.Mediakiwi.AppCentre.UI.Forms
                     break;
                 case ContentType.Date:
                     {
-                        if (DateTime.TryParseExact(ImplementTranslation.EditValue, "dd-MM-yyyy", dateCulture, System.Globalization.DateTimeStyles.None, out DateTime resultEdit))
+                        if (DateTime.TryParseExact(ImplementTranslation.EditValue, dateFormat, dateCulture, System.Globalization.DateTimeStyles.None, out DateTime resultEdit))
                         {
                             EditValueDateTime = resultEdit;
                         }
@@ -184,7 +186,7 @@ namespace Sushi.Mediakiwi.AppCentre.UI.Forms
                     break;
                 case ContentType.DateTime:
                     {
-                        if (DateTime.TryParseExact(ImplementTranslation.EditValue, "dd-MM-yyyy HH:mm:ss", dateCulture, System.Globalization.DateTimeStyles.None, out DateTime resultEdit))
+                        if (DateTime.TryParseExact(ImplementTranslation.EditValue, dateTimeFormat, dateCulture, System.Globalization.DateTimeStyles.None, out DateTime resultEdit))
                         {
                             EditValueDateTime = resultEdit;
                         }

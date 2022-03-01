@@ -484,7 +484,8 @@
 		Menu_Name nvarchar(50) NOT NULL,
 		Menu_Role_Key int NULL,
 		Menu_Site_key int NULL,
-		Menu_IsActive bit NOT NULL);
+		Menu_IsActive bit NOT NULL,
+		Menu_Group_Key int NULL);
 	    
     --PK_Menu_Key;
 	IF:select COUNT(*) from sys.indexes where name = 'PK_Menu_Key';    
@@ -784,5 +785,15 @@
 	ALTER TABLE wim_SharedFieldTranslations WITH NOCHECK ADD CONSTRAINT PK_Wim_SharedFieldTranslations PRIMARY KEY CLUSTERED (SharedFieldTranslation_Key);	  
 
 	 
-	
-	
+	-- Add wim_MenuGroups
+	CREATE TABLE wim_MenuGroups(
+		MenuGroup_Key int IDENTITY(1,1) NOT NULL,
+		MenuGroup_Title nvarchar(50) NOT NULL,
+		MenuGroup_Description nvarchar(500) NOT NULL,
+		MenuGroup_Tag nvarchar(20) NOT NULL);
+		
+	--PK_wim_MenuGroups
+	ALTER TABLE wim_MenuGroups WITH NOCHECK ADD CONSTRAINT PK_wim_MenuGroups PRIMARY KEY CLUSTERED (MenuGroup_Key);	  	
+
+	--FK_wim_Menus_wim_MenuGroups
+	ALTER TABLE wim_Menus ADD CONSTRAINT FK_wim_Menus_wim_MenuGroups FOREIGN KEY (Menu_Group_Key) REFERENCES wim_MenuGroups (MenuGroup_Key);

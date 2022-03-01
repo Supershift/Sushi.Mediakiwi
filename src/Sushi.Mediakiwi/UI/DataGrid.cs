@@ -1091,28 +1091,37 @@ namespace Sushi.Mediakiwi.UI
 
                                     if (string.IsNullOrWhiteSpace(passthrough) && caller != null && !caller.wim.CurrentList.ID.Equals(container.CurrentList.ID))
                                     {
-                                        passthrough = $"{Utils.ToUrl(container.CurrentList.Name)}?item";
+                                        passthrough = $"{Utils.ToUrl(container.CurrentList.Name)}?item=";
                                     }
 
-                                    row_attribute["data-link"] = passthrough;
+                                    // [MR:20-01-2022] added the application path
+                                    // when the portal path is empty or only contains a '/'
+                                    if (string.IsNullOrWhiteSpace(passthrough) == false && CommonConfiguration.PORTAL_PATH.Replace("/", string.Empty).Length == 0)
+                                    {
+                                        row_attribute["data-link"] = root.AddApplicationPath(passthrough, true);
+                                    }
+                                    else
+                                    {
+                                        row_attribute["data-link"] = passthrough;
+                                    }
 
                                     row_attribute.Class = "parent";
-                                 
+
                                     if (root.SearchListCanClickThrough && !string.IsNullOrEmpty(uniqueIdentifier) && (uniqueIdentifier != "0" || !string.IsNullOrEmpty(passthrough)))
                                     {
-                                        row_attribute.ID = string.Format("id_{0}${1}", root.CurrentList.ID, uniqueIdentifier);
+                                        row_attribute.ID = $"id_{root.CurrentList.ID}${uniqueIdentifier}";
                                         row_attribute.Class += " hand";
-                                        }
+                                    }
 
                                     var row_parser = container.CurrentListInstance.wim.DoListDataItemCreated(DataItemType.TableRow, root.ListDataColumns.List.ToArray(), column, item, uniqueIdentifier, null, index, row_attribute, source);
                                     var row_html = row_parser.ToString();
 
-                                    RowHTML.Append(string.Format("\n\t\t\t\t\t\t\t\t\t{0}", row_html));
+                                    RowHTML.Append(row_html);
                                     var cell_parser = container.CurrentListInstance.wim.DoListDataItemCreated(DataItemType.TableCell, root.ListDataColumns.List.ToArray(), column, item, uniqueIdentifier, propertyValue, index, cell_attribute, source);
                                     var cell_html = cell_parser.ToString();
 
                                     column.CalculateLength(cell_html, info);
-                                    RowHTML.Append(string.Format("\n\t\t\t\t\t\t\t\t\t{0}", cell_html));
+                                    RowHTML.Append(cell_html);
                                 }
                                 #endregion Standaard table row functionality
                             }
@@ -1125,7 +1134,7 @@ namespace Sushi.Mediakiwi.UI
                                 var html = parser.ToString();
 
                                 column.CalculateLength(html, info);
-                                RowHTML.Append(string.Format("\n\t\t\t\t\t\t\t\t\t{0}", html));
+                                RowHTML.Append(html);
                             }
 
                             isFirst = false;
@@ -1133,11 +1142,16 @@ namespace Sushi.Mediakiwi.UI
 
 
 
-                        RowHTML.Append("\n\t\t\t\t\t\t\t\t</tr>");
+                        RowHTML.Append("</tr>");
                         if (!string.IsNullOrEmpty(accordionPanelAddition))
-                            RowHTML.Append("\n\t\t\t\t\t\t\t\t"+ accordionPanelAddition);
+                        {
+                            RowHTML.Append(accordionPanelAddition);
+                        }
+
                         if (!shouldSkipRowPresentation)
+                        {
                             build2.Append(RowHTML);
+                        }
                     }
                     #endregion Table cell creation
                 }
@@ -2955,17 +2969,13 @@ namespace Sushi.Mediakiwi.UI
                 }
 
                 DateTime tmp = ((DateTime)candidate);
-                // [MR:20-03-2019] Converts UTC (database) time to local timezone for display
-                // 19-10-20 turned off core.
-                //if (container.CurrentList.Option_ConvertUTCToLocalTime && tmp.Kind != DateTimeKind.Local)
-                //    tmp = AppCentre.Data.Supporting.LocalDateTime.GetDate(tmp, container.CurrentListInstance.wim.CurrentSite, true);
 
                 if (tmp.Hour == 0 && tmp.Minute == 0 && tmp.Second == 0 && tmp.Millisecond == 0)
                 {
-                    return tmp.ToString(container.DateFormatShort);
+                    return tmp.ToString(container.DateFormatSettings.DateFormatShort, container.DateFormatSettings.Culture);
                 }
 
-                return tmp.ToString(container.DateTimeFormatShort);
+                return tmp.ToString(container.DateFormatSettings.DateTimeFormatShort, container.DateFormatSettings.Culture);
             }
             else if (candidate is DateTime?)
             {
@@ -2976,17 +2986,12 @@ namespace Sushi.Mediakiwi.UI
 
                 DateTime tmp = ((DateTime?)candidate).Value;
 
-                // [MR:20-03-2019] Converts UTC (database) time to local timezone for display
-                // 19-10-20 turned off core.
-                //if (container.CurrentList.Option_ConvertUTCToLocalTime && tmp.Kind != DateTimeKind.Local)
-                //    tmp = AppCentre.Data.Supporting.LocalDateTime.GetDate(tmp, container.CurrentListInstance.wim.CurrentSite, true);
-
                 if (tmp.Hour == 0 && tmp.Minute == 0 && tmp.Second == 0 && tmp.Millisecond == 0)
                 {
-                    return tmp.ToString(container.DateFormatShort);
+                    return tmp.ToString(container.DateFormatSettings.DateFormatShort, container.DateFormatSettings.Culture);
                 }
 
-                return tmp.ToString(container.DateTimeFormatShort);
+                return tmp.ToString(container.DateFormatSettings.DateTimeFormatShort, container.DateFormatSettings.Culture);
             }
             else if (candidate is bool)
             {

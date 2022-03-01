@@ -31,6 +31,14 @@ namespace Sushi.Mediakiwi.AppCentre.Data
             Implement.Name = Name;
             Implement.RoleID = RoleID;
             Implement.SiteID = SiteID;
+            if (GroupID.GetValueOrDefault(0) == 0)
+            {
+                Implement.GroupID = null;
+            }
+            else 
+            {
+                Implement.GroupID = GroupID;
+            }
             Implement.IsActive = Active;
 
             await Implement.SaveAsync().ConfigureAwait(false);
@@ -98,6 +106,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data
             RoleID = Implement.RoleID;
             SiteID = Implement.SiteID;
             Active = Implement.IsActive;
+            GroupID = Implement.GroupID;
 
             Items = await MenuItem.SelectAllAsync(Implement.ID).ConfigureAwait(false);
             MenuItem0 = new SubList();
@@ -145,7 +154,8 @@ namespace Sushi.Mediakiwi.AppCentre.Data
         {
             wim.CanAddNewItem = true;
             wim.ListDataColumns.Add(new ListDataColumn("ID", nameof(Menu.ID), ListDataColumnType.UniqueIdentifier));
-            wim.ListDataColumns.Add(new ListDataColumn("Name", nameof(Menu.Name), ListDataColumnType.HighlightPresent));
+            wim.ListDataColumns.Add(new ListDataColumn("Name", nameof(Menu.Name), ListDataColumnType.HighlightPresent) { ColumnWidth = 200 });
+            wim.ListDataColumns.Add(new ListDataColumn("Group", nameof(Menu.GroupTitle), ListDataColumnType.Default) { ColumnWidth = 150 });
             wim.ListDataColumns.Add(new ListDataColumn("", nameof(Menu.IsActive)) { ColumnWidth = 30 });
 
             var results = await Menu.SelectAllAsync().ConfigureAwait(false);
@@ -163,6 +173,9 @@ namespace Sushi.Mediakiwi.AppCentre.Data
 
         [Framework.ContentListItem.Choice_Dropdown("Site", nameof(AvailableSites), false, false, Expression = OutputExpression.Alternating)]
         public int? SiteID { get; set; }
+
+        [Framework.ContentListItem.Choice_Dropdown("Group", nameof(AvailableGroups), false, false, Expression = OutputExpression.Alternating, InteractiveHelp = "Allows for a custom menu to be created. Choose Default for the normal (top) navigation.")]
+        public int? GroupID { get; set; }
 
         [Framework.ContentListItem.SubListSelect("Home", "1a1fe050-219c-4f63-a697-7e2e8e790521", true, "", CanContainOneItem = true)]
         public SubList MenuItem0 { get; set; }
@@ -233,6 +246,28 @@ namespace Sushi.Mediakiwi.AppCentre.Data
                     }
                 }
                 return _AvailableSites;
+            }
+        }
+
+        ListItemCollection _AvailableGroups;
+        /// <summary>
+        /// Gets the available Menu Groups.
+        /// </summary>
+        /// <value>The available sites.</value>
+        public ListItemCollection AvailableGroups
+        {
+            get
+            {
+                if (_AvailableGroups == null)
+                {
+                    _AvailableGroups = new ListItemCollection();
+                    _AvailableGroups.Add(new ListItem("Default", "0"));
+                    foreach (MenuGroup group in MenuGroup.FetchAll())
+                    {
+                        _AvailableGroups.Add(new ListItem(group.Title, $"{group.ID}"));
+                    }
+                }
+                return _AvailableGroups;
             }
         }
     }

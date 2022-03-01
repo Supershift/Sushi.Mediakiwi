@@ -814,7 +814,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                     //  Found it, please apply master relation
                     child.MasterID = match.ID;
                     child.IsActive = match.IsActive;
-
+                    
                     if (applySortOrder)
                     {
                         child.SortOrder = match.SortOrder;
@@ -996,10 +996,8 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                     m_InheritedComponents = ComponentVersion.SelectAll(master.ID);
                 }
 
-                bool shadowCopyComponents = true;
-
                 bool foundChange = false;
-                if (shadowCopyComponents && m_InheritedComponents != null && m_InheritedComponents.Length > 0)
+                if (m_InheritedComponents?.Length > 0)
                 {
                     CreatePageComponentShadowCopy(true, page.ID, ref components, m_InheritedComponents, out foundChange);
                 }
@@ -1092,11 +1090,11 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                     selection.Add(component);
                 }
             }
+
             int c_index = 0;
             foreach (ComponentVersion component in selection)
             {
                 ComponentTemplate template = component.Template;
-
                 MetaData[] metadata = (MetaData[])Utility.GetDeserialized(typeof(MetaData[]), template.MetaData);
 
                 SetComponent(visible,
@@ -1247,10 +1245,12 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                             if (inheritedContent != null)
                             {
                                 field2.InheritedValue = inheritedContent[item.Name] == null ? null : inheritedContent[item.Name].Value;
+                                ((ContentSharedAttribute)x).IsInheritedField = inheritedContent.HasProperty(item.Name);
                             }
 
                             // [2014.12.01:MM]  Take inheritance
-                            ((ContentSharedAttribute)x).IsInheritedField = !string.IsNullOrEmpty(item.IsInheritedField);
+                            // [MR:19-01-2022] Inheritance fix, was :
+                            //((ContentSharedAttribute)x).IsInheritedField = !string.IsNullOrEmpty(item.IsInheritedField);
                             x.SetCandidate(field2, container.CurrentListInstance.wim.IsEditMode);
                         }
                         else
@@ -1265,10 +1265,12 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                             if (inheritedContent != null)
                             {
                                 field2.InheritedValue = inheritedContent[item.Name] == null ? null : inheritedContent[item.Name].Value;
+                                ((ContentSharedAttribute)x).IsInheritedField = inheritedContent.HasProperty(item.Name);
                             }
 
                             // [2014.12.01:MM]  Take inheritance
-                            ((ContentSharedAttribute)x).IsInheritedField = !string.IsNullOrEmpty(item.IsInheritedField);
+                            // [MR:19-01-2022] Inheritance fix, was :
+                            //((ContentSharedAttribute)x).IsInheritedField = !string.IsNullOrEmpty(item.IsInheritedField);
                             x.SetCandidate(field2, container.CurrentListInstance.wim.IsEditMode);
                         }
 
@@ -1386,20 +1388,20 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
         /// <param name="container">The container.</param>
         /// <param name="openInFrame">The open in frame.</param>
         /// <returns></returns>
-        public WimControlBuilder CreateSearchList(Console container, int openInFrame)
+        public async Task<WimControlBuilder> CreateSearchListAsync(Console container, int openInFrame)
         {
             if (container.CurrentListInstance.wim.Page.Body.Filter.DisableDefaultSetup)
             {
-                return CreateSearchList(container, openInFrame, null);
+                return await CreateSearchListAsync(container, openInFrame, null);
             }
             // [CB; 14-11-2016] change with aknowledgement from Mark de vries. This helps developers to assign a local cache for the filter options
             if (container.CurrentListInstance.wim.HasOwnSearchListCache)
             {
-                return CreateSearchList(container, openInFrame, container.CurrentListInstance.wim.CurrentVisitor.Data["wim_FilterInfo_" + container.CurrentListInstance.wim.CurrentList.GUID].Value);
+                return await CreateSearchListAsync(container, openInFrame, container.CurrentListInstance.wim.CurrentVisitor.Data["wim_FilterInfo_" + container.CurrentListInstance.wim.CurrentList.GUID].Value);
             }
             else
             {
-                return CreateSearchList(container, openInFrame, container.CurrentListInstance.wim.CurrentVisitor.Data["wim_FilterInfo"].Value);
+                return await CreateSearchListAsync(container, openInFrame, container.CurrentListInstance.wim.CurrentVisitor.Data["wim_FilterInfo"].Value);
             }
         }
 
@@ -1410,7 +1412,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
         /// <param name="openInFrame">The open in frame.</param>
         /// <param name="serialized">The serialized.</param>
         /// <returns></returns>
-        internal WimControlBuilder CreateSearchList(Console container, int openInFrame, string serialized)
+        internal async Task<WimControlBuilder> CreateSearchListAsync(Console container, int openInFrame, string serialized)
         {
             m_AllListProperties = null;
 
@@ -1419,10 +1421,15 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                 m_Content = Content.GetDeserialized(serialized);
             }
 
-            return CreateSearchList(container, openInFrame, m_Content, false);
+            return await CreateSearchListAsync(container, openInFrame, m_Content, false);
         }
 
-        bool m_IgnoreDataList;
+        bool m_IsDataList;
+
+        /// <summary>
+        /// Are we looking at a Datalist ?
+        /// </summary>
+        public bool IsDataList => m_IsDataList;
 
         /// <summary>
         /// Creates the search list.
@@ -1430,12 +1437,12 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
         /// <param name="container">The container.</param>
         /// <param name="openInFrame">The open in frame.</param>
         /// <param name="content">The content.</param>
-        /// <param name="ignoreDataList">if set to <c>true</c> [ignore data list].</param>
+        /// <param name="isDataList">if set to <c>true</c> we are looking at a DataList Searchlist.</param>
         /// <returns></returns>
-        internal WimControlBuilder CreateSearchList(Console container, int openInFrame, Content content, bool ignoreDataList)
+        internal async Task<WimControlBuilder> CreateSearchListAsync(Console container, int openInFrame, Content content, bool isDataList)
         {
             m_ShowSearchButton = true;
-            m_IgnoreDataList = ignoreDataList;
+            m_IsDataList = isDataList;
 
             WimControlBuilder build = new WimControlBuilder();
             bool isValidInput = true;
@@ -1462,14 +1469,15 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                 }
             }
 
-            SetSavedInfo(container);
+            
+            await SetSavedInfoAsync(container);
 
             List<Field> list = new List<Field>();
 
             System.Diagnostics.Trace.WriteLine("Scanning component list (reading)");
 
             ScanClass(container, build, false, false, ref isValidInput, list);
-            if (m_IgnoreDataList)
+            if (m_IsDataList)
             {
                 return null;
             }
@@ -1509,7 +1517,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                 m_Content.Fields = list.ToArray();
 
                 //  Remember search parameters
-                if (!container.CurrentListInstance.wim.IsClearingListCache)
+                if (container.CurrentListInstance.wim.IsClearingListCache == false)
                 {
                     if (container.CurrentListInstance.wim.HasOwnSearchListCache)
                     {
@@ -1519,6 +1527,8 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                     {
                         container.CurrentListInstance.wim.CurrentVisitor.Data.Apply("wim_FilterInfo", Content.GetSerialized(m_Content));
                     }
+
+                    await container.CurrentListInstance.wim.CurrentVisitor.SaveAsync();
                 }
             }
 
@@ -1528,13 +1538,14 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
         internal List<ButtonAttribute> m_ButtonList;
         public List<ButtonAttribute> ButtonList => m_ButtonList;
 
-        void SetSavedInfo(Console container)
+        async Task SetSavedInfoAsync(Console container)
         {
-            if (!container.CurrentListInstance.wim.CurrentVisitor.Data["wim.note"].IsNull)
+            // Do not attempt to render a Saved message when in a DataList
+            if (!container.CurrentListInstance.wim.CurrentVisitor.Data["wim.note"].IsNull && m_IsDataList == false)
             {
                 string note = container.CurrentListInstance.wim.CurrentVisitor.Data["wim.note"].Value;
                 container.CurrentListInstance.wim.CurrentVisitor.Data.Apply("wim.note", null);
-                container.CurrentListInstance.wim.CurrentVisitor.Save();
+                await container.CurrentListInstance.wim.CurrentVisitor.SaveAsync();
                 container.CurrentListInstance.wim.Notification.AddNotificationAlert(note);
             }
         }
@@ -1546,7 +1557,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
         /// <param name="container">The container.</param>
         /// <param name="openInFrame">The open in frame.</param>
         /// <returns></returns>
-        public WimControlBuilder CreateList(Console container, int openInFrame, bool isJSONRequest = false)
+        public async Task<WimControlBuilder> CreateListAsync(Console container, int openInFrame, bool isJSONRequest = false)
         {
             int listId = container.CurrentList.ID;
 
@@ -1561,7 +1572,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                 container.CurrentListInstance.ListLoad += CurrentListInstance_ListLoad;
             }
 
-            SetSavedInfo(container);
+            await SetSavedInfoAsync(container);
 
             //  Obtain the current list version used for versioning
             ComponentListVersion currentVersion;
@@ -1573,7 +1584,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
             {
                 if (container.Item.HasValue || container.CurrentListInstance.wim.CanContainSingleInstancePerDefinedList)
                 {
-                    currentVersion = ComponentListVersion.SelectOne(listId, container.Item.GetValueOrDefault(0));
+                    currentVersion = await ComponentListVersion.SelectOneAsync(listId, container.Item.GetValueOrDefault(0));
                 }
                 else
                 {
@@ -1721,7 +1732,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                         version.ComponentListItemID = container.Item.GetValueOrDefault(0);
                         version.Serialized_XML = serialized;
                         version.TypeID = isIntroduction ? 0 : 1;
-                        version.Save();
+                        await version.SaveAsync();
                     }
 
                     // when a redirect is set, return with null.
@@ -1759,7 +1770,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                         }
 
                         container.CurrentListInstance.wim.CurrentVisitor.Data.Apply("wim.note", savedMessage);
-                        container.CurrentListInstance.wim.CurrentVisitor.Save();
+                        await container.CurrentListInstance.wim.CurrentVisitor.SaveAsync();
                     }
                     // [MR:27-07-2021] moved here from row 1778
 
@@ -1843,7 +1854,48 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                                 }
                                 else if (!container.IsJson)
                                 {
-                                    container.Redirect(string.Concat(container.CurrentListInstance.wim.SearchResultItemPassthroughParameter, "=", container.Item), true);
+                                    var temp = container.CurrentListInstance.wim.SearchResultItemPassthroughParameter;
+
+                                    if (string.IsNullOrWhiteSpace(temp) == false)
+                                    {
+                                        if (temp.Contains("[key]", StringComparison.InvariantCultureIgnoreCase))
+                                        {
+                                            temp = temp.Replace("[key]", $"{container.Item.GetValueOrDefault(0)}", StringComparison.InvariantCultureIgnoreCase);
+                                        }
+
+                                        if (temp.EndsWith("="))
+                                        {
+                                            temp += $"{container.Item.GetValueOrDefault(0)}";
+                                        }
+
+                                        if (temp.Contains("item=", StringComparison.OrdinalIgnoreCase) == false)
+                                        {
+                                            temp += temp.Contains("?") ? "&" : "?";
+                                            temp += $"item={container.Item.GetValueOrDefault(0)}";
+                                        }
+
+                                        container.Redirect(temp, true);
+                                    }
+                                    else
+                                    {
+                                        List<KeyValue> dict = new List<KeyValue>();
+                                        if (container?.Request?.QueryString.HasValue == true)
+                                        {
+                                            foreach (var queryItem in container.Request.Query)
+                                            {
+                                                dict.Add(new KeyValue(queryItem.Key, queryItem.Value.FirstOrDefault()));
+                                            }
+                                        }
+
+                                        // Check if we already got item in our collection, if not, add it
+                                        if (dict.Any(x => x.Key.Equals("item", StringComparison.InvariantCultureIgnoreCase)) == false)
+                                        {
+                                            dict.Add(new KeyValue("item", container.Item.GetValueOrDefault()));
+                                        }
+
+                                        temp = container.UrlBuild.GetUrl(container.CurrentListInstance.wim.CurrentList, dict.ToArray());
+                                        container.Redirect(temp, true);
+                                    }
                                 }
                             }
                         }
@@ -2187,7 +2239,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                     continue;
                 }
 
-                if (m_IgnoreDataList && infoItem.ContentAttribute.ContentTypeSelection == ContentType.DataList)
+                if (m_IsDataList && infoItem.ContentAttribute.ContentTypeSelection == ContentType.DataList)
                 {
                     continue;
                 }

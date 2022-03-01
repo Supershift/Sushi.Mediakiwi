@@ -825,7 +825,7 @@ namespace Sushi.Mediakiwi.API.Services
                 _resolver.ListInstance.wim.Console.Component = new Beta.GeneratedCms.Source.Component();
             }
 
-            var builder = _resolver.ListInstance.wim.Console.Component.CreateList(_resolver.ListInstance.wim.Console, _resolver.ListInstance.wim.Console.OpenInFrame, true);
+            var builder = await _resolver.ListInstance.wim.Console.Component.CreateListAsync(_resolver.ListInstance.wim.Console, _resolver.ListInstance.wim.Console.OpenInFrame, true);
 
             if (builder?.ApiResponse?.Fields?.Count > 0)
             {
@@ -1348,7 +1348,7 @@ namespace Sushi.Mediakiwi.API.Services
                     resolver.ListInstance.wim.Console.Component = new Beta.GeneratedCms.Source.Component();
                 }
 
-                resolver.ListInstance.wim.Console.Component.CreateSearchList(resolver.ListInstance.wim.Console, openInFrame);
+                await resolver.ListInstance.wim.Console.Component.CreateSearchListAsync(resolver.ListInstance.wim.Console, openInFrame);
                 //resolver.ListInstance.wim.DoListSearch();
 
                 // Only add the grids to the output when we actually have any
@@ -1455,16 +1455,16 @@ namespace Sushi.Mediakiwi.API.Services
             // Has a master
             if (inPage.MasterID.HasValue)
             {
-                if (inPage.InheritContentEdited == false && inPage.InheritContent == false)
+                if (inPage.IsLocalized == false && inPage.InheritContent == false)
                 {
                     result.Add("inherited");
                 }
-                else if (inPage.InheritContentEdited == false && inPage.InheritContent)
+                else if (inPage.IsLocalized == false && inPage.InheritContent)
                 {
                     result.Add("inherited");
                     result.Add("unpublished");
                 }
-                else if (inPage.InheritContentEdited && inPage.InheritContent == false)
+                else if (inPage.IsLocalized && inPage.InheritContent == false)
                 {
                     result.Add("inherited");
                     result.Add("unpublished");

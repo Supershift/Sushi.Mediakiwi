@@ -115,7 +115,12 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             ListSearch += Browsing_ListSearch;
             ListLoad += Browsing_ListLoad;
             ListSave += Browsing_ListSave;
+            ListInit += Browsing_ListInit;
         }
+
+        #endregion CTor
+        
+        #region List ItemCreated
 
         private void Browsing_ListDataItemCreated(object sender, ListDataItemCreatedEventArgs e)
         {
@@ -142,18 +147,34 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                 }
             }
         }
+        #endregion List ItemCreated
+
+        #region List Init
+
+        private async Task Browsing_ListInit()
+        {
+            wim.HasOwnSearchListCache = true;
+        }
+
+        #endregion List Init
+
+        #region List Save
 
         private Task Browsing_ListSave(ComponentListEventArgs arg)
         {
             return Task.CompletedTask;
         }
 
+        #endregion List Save
+
+        #region List Load
+
         private Task Browsing_ListLoad(ComponentListEventArgs arg)
         {
             return Task.CompletedTask;
         }
 
-        #endregion CTor
+        #endregion List Load
 
         #region List Search
 
@@ -226,7 +247,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
 
         #region Get Status
 
-        string GetStatus(bool isEdited, bool isPublished, bool isSearchable, bool hasMaster, bool isLocalisedEditMode, bool isLocalisedPublicationMode)
+        string GetStatus(bool isEdited, bool isPublished, bool isSearchable, bool hasMaster, bool isLocalised, bool isInherited)
         {
             string status = string.Empty;
 
@@ -237,15 +258,15 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
 
             if (hasMaster)
             {
-                if (!isLocalisedEditMode && !isLocalisedPublicationMode)
+                if (!isLocalised && !isInherited)
                 {
                     status += "<span class=\"icon-download-01 abbr right\" title=\"Inherited page\"></span>";
                 }
-                else if (!isLocalisedEditMode && isLocalisedPublicationMode)
+                else if (!isLocalised && isInherited)
                 {
                     status += "<span class=\"icon-download-01 abbr right inactive\" title=\"Inherited page (only edit)\"></span>";
                 }
-                else if (isLocalisedEditMode && !isLocalisedPublicationMode)
+                else if (isLocalised && !isInherited)
                 {
                     status += "<span class=\"icon-download-01 abbr right inactive\" title=\"Inherited page (only publication)\"></span>";
                 }
@@ -343,7 +364,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                 foreach (var entry in pages)
                 {
                     var url = wim.Console.WimPagePath;
-                    var status = GetStatus(entry.IsEdited, entry.IsPublished, entry.IsSearchable, entry.MasterID.HasValue, entry.InheritContentEdited, entry.InheritContent);
+                    var status = GetStatus(entry.IsEdited, entry.IsPublished, entry.IsSearchable, entry.MasterID.HasValue, entry.IsLocalized, entry.InheritContent);
                     var published = (entry.IsPublished ? string.Empty : " class=\"inactive\"");
 
                     build.Append($"<a href=\"{url}?page={entry.ID}\"{published}>{entry.Name}{status}</a>");
@@ -401,7 +422,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                     foreach (var i in pages)
                     {
                         var url = wim.Console.WimPagePath;
-                        var status = GetStatus(i.IsEdited, i.IsPublished, i.IsSearchable, i.MasterID.HasValue, i.InheritContentEdited, i.InheritContent);
+                        var status = GetStatus(i.IsEdited, i.IsPublished, i.IsSearchable, i.MasterID.HasValue, i.IsLocalized, i.InheritContent);
                         var published = (i.IsPublished ? string.Empty : " class=\"inactive\"");
 
                         build.Append($"<a href=\"{url}?page={i.ID}\"{published}>{i.Name}{status}</a>");
@@ -518,7 +539,17 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                 item.PassThrough = "?asset";
                 if (entry.IsImage)
                 {
-                    item.Icon = "<figure class=\"icon-picture icon\"></figure>";
+                    if (Mediakiwi.Data.Configuration.WimServerConfiguration.Instance.Thumbnails.ShowThumbnailsInGallery && string.IsNullOrWhiteSpace(entry?.RemoteLocation_Thumb) == false)
+                    {
+                        int width = Math.Max(32, Mediakiwi.Data.Configuration.WimServerConfiguration.Instance.Thumbnails.GalleryThumbnailWidth);
+                        int height = Math.Max(24, Mediakiwi.Data.Configuration.WimServerConfiguration.Instance.Thumbnails.CreateThumbnailHeight);
+
+                        item.Icon = $"<figure><img src=\"{entry.RemoteLocation_Thumb}\" style=\"max-width:{width}px; max-height:{height}px;\" /></figure>";
+                    }
+                    else
+                    {
+                        item.Icon = "<figure class=\"icon-picture icon\"></figure>";
+                    }
                 }
                 else
                 {

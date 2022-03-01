@@ -1,4 +1,5 @@
 ﻿using Sushi.Mediakiwi.Data.Configuration;
+using Sushi.Mediakiwi.Data.Globalization;
 using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
@@ -7,6 +8,7 @@ namespace Sushi.Mediakiwi
 {
     public static class Common
     {
+     
         private static Dictionary<string, string> _WimServerUrlMappings;
         /// <summary>
         /// Gets the wim server URL mappings.
@@ -350,7 +352,109 @@ namespace Sushi.Mediakiwi
             get { return "/"; }
         }
 
+        /// <summary>
+        /// Returns all information regarding formatting and displaying dates. Will get the culture code (ie 'en-GB') from <c>Datepicker_Culture</c>
+        /// </summary>
+        /// <returns></returns>
+        public static DateFormatSettings GetDateInformation()
+        {
+            var culture = "en-GB";
+
+            if (string.IsNullOrWhiteSpace(WimServerConfiguration.Instance?.Datepicker_Culture) == false)
+            {
+                culture = WimServerConfiguration.Instance.Datepicker_Culture;
+            }
+
+            return GetDateInformation(culture);
+        }
+
+        /// <summary>
+        /// Returns all information regarding formatting and displaying dates
+        /// </summary>
+        /// <param name="site">The site settings determine the dateformatting. Falls back to the setting from <c>Datepicker_Culture</c> when not available</param>
+        /// <returns></returns>
+        public static DateFormatSettings GetDateInformation(Data.Site site)
+        {
+            var culture = "en-GB";
+       
+            if (string.IsNullOrWhiteSpace(site?.Culture) == false)
+            {
+                culture = site.Culture;
+            }
+            else if (string.IsNullOrWhiteSpace(WimServerConfiguration.Instance?.Datepicker_Culture) == false)
+            {
+                culture = WimServerConfiguration.Instance.Datepicker_Culture;
+            }
+
+            return GetDateInformation(culture);
+        }
+
+        /// <summary>
+        /// Returns all information regarding formatting and displaying dates
+        /// </summary>
+        /// <param name="cultureCode">The culture code (ie 'en-GB') for which to get the date- and timeformatting. Falls back to the setting from <c>Datepicker_Culture</c> when left empty</param>
+        /// <returns></returns>
+        public static DateFormatSettings GetDateInformation(string cultureCode)
+        {
+            var culture = new System.Globalization.CultureInfo("en-GB");
+
         
+            if (string.IsNullOrWhiteSpace(cultureCode) == false)
+            {
+                culture = new System.Globalization.CultureInfo(cultureCode);
+            }
+            else if (string.IsNullOrWhiteSpace(WimServerConfiguration.Instance?.Datepicker_Culture) == false)
+            {
+                culture = new System.Globalization.CultureInfo(WimServerConfiguration.Instance.Datepicker_Culture);
+            }
+
+            return new DateFormatSettings()
+            {
+                Culture = culture,
+                DateFormatShort = culture.DateTimeFormat.ShortDatePattern,
+                DateTimeFormatShort = $"{culture.DateTimeFormat.ShortDatePattern} {culture.DateTimeFormat.ShortTimePattern}",
+            };
+        }
+
+        /// <summary>
+        /// Standard short Date representation for NL
+        /// </summary>
+        public static readonly string NL_SHORT_DATE = "dd-MM-yy";
+
+        /// <summary>
+        /// Standard short Date representation for EN
+        /// </summary>
+        public static readonly string EN_SHORT_DATE = "MM/dd/yy";
+
+        /// <summary>
+        /// Standard short DateTime representation for NL
+        /// </summary>
+        public static readonly string NL_SHORT_DATETIME = "dd-MM-yy HH:mm";
+
+        /// <summary>
+        /// Standard short DateTime representation for EN
+        /// </summary>
+        public static readonly string EN_SHORT_DATETIME = "MM/dd/yy HH:mm";
+
+        /// <summary>
+        /// Standard Date representation for NL
+        /// </summary>
+        public static readonly string NL_DATE = "dd-MM-yyyy";
+
+        /// <summary>
+        /// Standard Date representation for EN
+        /// </summary>
+        public static readonly string EN_DATE = "MM/dd/yyyy";
+
+        /// <summary>
+        /// Standard DateTime representation for NL
+        /// </summary>
+        public static readonly string NL_DATETIME = "dd-MM-yyyy HH:mm";
+
+        /// <summary>
+        /// Standard DateTime representation for EN
+        /// </summary>
+        public static readonly string EN_DATETIME = "MM/dd/yyyy HH:mm";
 
     }
 }

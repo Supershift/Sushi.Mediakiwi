@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
-    <Version>8.1.7</Version>    
+    <Version>8.1.21</Version>    
     <Product>Mediakiwi</Product>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <Company>Supershift</Company>
@@ -76,6 +76,7 @@
 
   <ItemGroup>
     <Compile Include="AppCentre\UI\ComponentTemplate.cs" />
+    <Compile Include="AppCentre\UI\MenuGroupList.cs" />
     <Compile Include="AppCentre\UI\PageList.cs" />
     <Compile Include="AppCentre\UI\RoleAccessFolder.cs" />
     <Compile Include="AppCentre\UI\RoleAccessGallery.cs" />
@@ -139,11 +140,13 @@
     <Compile Include="Framework\ASyncQuery.cs" />
     <Compile Include="Framework\CacheManager.cs" />
     <Compile Include="Framework\ErrorCode.cs" />
+    <Compile Include="Framework\EventArguments\ComponentListDataReceived.cs" />
     <Compile Include="Framework\FileUpload.cs" />
     <Compile Include="Framework\Functions\DatabaseCompare.cs" />
     <Compile Include="Framework\Functions\FolderPath.cs" />
     <Compile Include="Framework\Inheritance\Folder.cs" />
     <Compile Include="Framework\Inheritance\Page.cs" />
+    <Compile Include="Framework\Interfaces\IListModule.cs" />
     <Compile Include="Framework\Interfaces\IPageModule.cs" />
     <Compile Include="Framework\ModuleExecutionResult.cs" />
     <Compile Include="Framework\Option.cs" />

@@ -18,9 +18,12 @@ namespace Sushi.Mediakiwi.Data
                 Map(x => x.SiteID, "Menu_Site_key").SqlType(SqlDbType.Int);
                 Map(x => x.RoleID, "Menu_Role_Key").SqlType(SqlDbType.Int);
                 Map(x => x.IsActive, "Menu_IsActive").SqlType(SqlDbType.Bit);
+                Map(x => x.GroupID, "Menu_Group_Key").SqlType(SqlDbType.Int);
             }
         }
+
         #region properties
+
         /// <summary>
         /// Uniqe identifier of the Menu
         /// </summary>
@@ -40,6 +43,41 @@ namespace Sushi.Mediakiwi.Data
         /// Role of the Menu
         /// </summary>
         public int? RoleID { get; set; }
+
+        /// <summary>
+        /// To which group is this menu connected
+        /// </summary>
+        public int? GroupID { get; set; }
+
+        private string m_GroupTitle;
+        public string GroupTitle
+        {
+            get
+            {
+                if (string.IsNullOrWhiteSpace(m_GroupTitle))
+                {
+                    if (GroupID.GetValueOrDefault(0) > 0)
+                    {
+                        var grp = MenuGroup.FetchSingle(GroupID.Value);
+                        if (grp?.ID > 0)
+                        {
+                            m_GroupTitle = grp.Title;
+                        }
+                        else
+                        {
+                            m_GroupTitle = "Default";
+                        }
+                    }
+                    else
+                    {
+                        m_GroupTitle = "Default";
+                    }
+                }
+
+                return m_GroupTitle;
+            }
+            set { m_GroupTitle = value; }
+        }
 
         /// <summary>
         /// Is this menu active (visible)?

@@ -10,66 +10,6 @@ namespace Sushi.Mediakiwi.Framework.Inheritance
     /// </summary>
     public class Folder
     {
-        public static void CopyFolder(int folderToCopy, int copyTargetFolder)
-        {
-            var source = Data.Folder.SelectOne(folderToCopy);
-            var target = Data.Folder.SelectOne(copyTargetFolder);
-
-            var query = source.CompletePath;
-            //  Connect the base page folder
-            var folders = Data.Folder.SelectAll(source.Type, source.SiteID, query, true);
-            var pages = Data.Page.SelectAll(query, true);
-
-            //if (!webFolder.MasterID.HasValue)
-            //{
-            //    Sushi.Mediakiwi.Data.Folder masterFolder = Sushi.Mediakiwi.Data.Folder.SelectOneBySite(masterSiteID, type);
-            //    webFolder.MasterID = masterFolder.ID;
-            //    webFolder.Save();
-            //}
-
-            //Sushi.Mediakiwi.Data.Folder[] masterFolders = Sushi.Mediakiwi.Data.Folder.SelectAllUninherited(masterSiteID, siteID, (int)type);
-
-            //foreach (Sushi.Mediakiwi.Data.Folder folder in masterFolders)
-            //{
-            //    SetChildFolder(folder, siteInfo, siteID);
-            //}
-        }
-
-        /// <summary>
-        /// Creates the folder tree.
-        /// </summary>
-        /// <param name="masterSiteID">The master site ID.</param>
-        /// <param name="siteID">The site ID.</param>
-        /// <param name="type">The type.</param>
-        /// <param name="isCopy">if set to <c>true</c> [is copy].</param>
-        public static void CreateFolderTree(int masterSiteID, int siteID, FolderType type)
-        {
-            if (siteID == 0)
-                return;
-
-            Site siteInfo = Site.SelectOne(siteID);
-
-            //  Connect the base page folder
-            Data.Folder webFolder = Data.Folder.SelectOneBySite(siteID, type);
-
-            if (webFolder == null || webFolder.IsNewInstance)
-                return;
-
-            if (!webFolder.MasterID.HasValue)
-            {
-                Data.Folder masterFolder = Data.Folder.SelectOneBySite(masterSiteID, type);
-                webFolder.MasterID = masterFolder.ID;
-                webFolder.Save();
-            }
-
-            Data.Folder[] masterFolders = Data.Folder.SelectAllUninherited(masterSiteID, siteID, (int)type);
-
-            foreach (Data.Folder folder in masterFolders)
-            {
-                SetChildFolder(folder, siteInfo, siteID);
-            }
-        }
-
         /// <summary>
         /// Creates the folder tree.
         /// </summary>

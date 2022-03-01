@@ -19,17 +19,17 @@ namespace Sushi.Mediakiwi
         }
 
         /// <summary>
-        /// Set the datepicker format, options 'nl' (EU) or 'en' (US)
+        /// Get the datepicker culture code (ie 'en-GB')
         /// </summary>
-        public static string FORM_DATEPICKER
+        public static string DATEPICKER_CULTURE
         {
             get
             {
-                if (string.IsNullOrWhiteSpace(WimServerConfiguration.Instance.Datepicker_Language))
+                if (string.IsNullOrWhiteSpace(WimServerConfiguration.Instance?.Datepicker_Culture) == false)
                 {
-                    return "EN";
+                    return WimServerConfiguration.Instance.Datepicker_Culture;
                 }
-                return WimServerConfiguration.Instance.Datepicker_Language;
+                return "en-GB";
             }
         }
 
@@ -194,7 +194,7 @@ namespace Sushi.Mediakiwi
         {   //
             get
             {
-                return WimServerConfiguration.Instance.Html_Encode_Textarea_iInput;
+                return WimServerConfiguration.Instance.Html_Encode_Textarea_Input;
             }
         }
         public static string STYLE_INCLUDE

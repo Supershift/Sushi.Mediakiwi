@@ -1,21 +1,13 @@
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Sushi.Mediakiwi.Data;
 using Sushi.Mediakiwi.Data.Elastic;
 using System;
-using System.Collections.Generic;
-using System.Security.Claims;
 using System.Text.Json;
-using System.Threading.Tasks;
 using Sushi.Mediakiwi.API.Extensions;
-using System.Reflection;
-using System.IO;
 
 namespace Sushi.Mediakiwi.Demonstration
 {
@@ -50,6 +42,7 @@ namespace Sushi.Mediakiwi.Demonstration
 
             services.AddMediakiwi();
             services.AddMediakiwiApi();
+            //services.AddMediakiwiGlobalListSetting<string>("googleSheetsUrl", "Google sheets URL", "The URL of the Google sheets doc representing this list");
 
 
             var elasticSettings = new Nest.ConnectionSettings(new Uri(Configuration["ElasticUrl"]))
@@ -64,6 +57,7 @@ namespace Sushi.Mediakiwi.Demonstration
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.UseHttpsRedirection();
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -79,7 +73,7 @@ namespace Sushi.Mediakiwi.Demonstration
             app.UseSwagger();
             app.UseSwaggerUI();
 
-            string[] excludePaths = new string[] { "/api/custom", "/myfiles", "/mkapi" };
+            string[] excludePaths = new string[] { "/api/custom", "/myfiles", "/mkapi", "/api" };
             
             app.UseMediakiwi(excludePaths);
             app.UseMediakiwiApi();

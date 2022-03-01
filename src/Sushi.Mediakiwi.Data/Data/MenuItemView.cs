@@ -89,14 +89,24 @@ namespace Sushi.Mediakiwi.Data
 
         #endregion properties
 
-        public static IMenuItemView[] SelectAll(int siteID, int roleID)
+        public static IMenuItemView[] SelectAll(int siteID, int roleID) 
+        { 
+            return SelectAll(siteID, roleID, "");
+        }
+
+        public static IMenuItemView[] SelectAll(int siteID, int roleID, string groupTag)
         {
-            return SelectAll(siteID, roleID, 1, 2, 3, 4, 5, 6, 7, 8);
+            return SelectAll(siteID, roleID, groupTag, 1, 2, 3, 4, 5, 6, 7, 8);
         }
 
         public static async Task<List<IMenuItemView>> SelectAllAsync(int siteID, int roleID)
         {
-            return await SelectAllAsync(siteID, roleID, 1, 2, 3, 4, 5, 6, 7, 8).ConfigureAwait(false);
+            return await SelectAllAsync(siteID, roleID, "").ConfigureAwait(false);
+        }
+
+        public static async Task<List<IMenuItemView>> SelectAllAsync(int siteID, int roleID, string groupTag)
+        {
+            return await SelectAllAsync(siteID, roleID, groupTag,  1, 2, 3, 4, 5, 6, 7, 8).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -104,9 +114,10 @@ namespace Sushi.Mediakiwi.Data
         /// </summary>
         /// <param name="siteID">The site ID.</param>
         /// <param name="roleID">The role ID.</param>
+        /// <param name="groupTag">The group tag.</param>
         /// <param name="items">The positions.</param>
         /// <returns></returns>
-        public static IMenuItemView[] SelectAll(int siteID, int roleID, params int[] items)
+        public static IMenuItemView[] SelectAll(int siteID, int roleID, string groupTag, params int[] items)
         {
             var connector = ConnectorFactory.CreateConnector<MenuItemView>();
             var filter = connector.CreateQuery();
@@ -124,42 +135,99 @@ namespace Sushi.Mediakiwi.Data
                     filter.AddParameter($"p{i}", SqlDbType.Int, item);
                     sql_in.Add($"@p{i}");
                 }
-                result = connector.FetchAll(@"
-select 
-    wim_MenuItems.*
-,   SearchView_Title
-,   SearchView_Site_Key 
-from 
-    wim_Menus
-    join wim_MenuItems on Menu_Key = MenuItem_Menu_Key
-	join wim_SearchView on SearchView_Type = MenuItem_Type_Key and MenuItem_Item_Key = SearchView_Item_Key
-where
-    ISNULL(Menu_Site_key, @Site) = @Site
-    and ISNULL(Menu_Role_Key, @Role) = @Role
-    and Menu_IsActive = 1
-    and MenuItem_Position in (" + string.Join(",", sql_in) + @")
-order by
-    MenuItem_Position asc, MenuItem_Order asc 
-", filter);
+
+                // Include groupTag
+                if (string.IsNullOrWhiteSpace(groupTag) == false)
+                {
+                    filter.AddParameter("@groupTag", SqlDbType.NVarChar, groupTag.ToUpperInvariant());
+
+                    result = connector.FetchAll(@"
+                                            select 
+                                                wim_MenuItems.*
+                                            ,   SearchView_Title
+                                            ,   SearchView_Site_Key 
+                                            from 
+                                                wim_Menus
+                                                join wim_MenuItems on Menu_Key = MenuItem_Menu_Key
+	                                            join wim_SearchView on SearchView_Type = MenuItem_Type_Key and MenuItem_Item_Key = SearchView_Item_Key
+                                                join wim_MenuGroups on Menu_Group_Key = MenuGroup_Key
+                                            where
+                                                ISNULL(Menu_Site_key, @Site) = @Site
+                                                and ISNULL(Menu_Role_Key, @Role) = @Role
+                                                and Menu_IsActive = 1
+                                                and MenuGroup_Tag = @groupTag
+                                                and MenuItem_Position in (" + string.Join(",", sql_in) + @")
+                                            order by
+                                                MenuItem_Position asc, MenuItem_Order asc 
+                                            ", filter);
+                }
+                else
+                {
+                    result = connector.FetchAll(@"
+                                            select 
+                                                wim_MenuItems.*
+                                            ,   SearchView_Title
+                                            ,   SearchView_Site_Key 
+                                            from 
+                                                wim_Menus
+                                                join wim_MenuItems on Menu_Key = MenuItem_Menu_Key
+	                                            join wim_SearchView on SearchView_Type = MenuItem_Type_Key and MenuItem_Item_Key = SearchView_Item_Key
+                                            where
+                                                ISNULL(Menu_Site_key, @Site) = @Site
+                                                and ISNULL(Menu_Role_Key, @Role) = @Role
+                                                and Menu_IsActive = 1
+                                                and ISNULL(Menu_Group_Key, 0) = 0
+                                                and MenuItem_Position in (" + string.Join(",", sql_in) + @")
+                                            order by
+                                                MenuItem_Position asc, MenuItem_Order asc 
+                                            ", filter);
+                }
             }
             else
             {
-                result = connector.FetchAll(@"
-select 
-    wim_MenuItems.*
-,   SearchView_Title
-,   SearchView_Site_Key 
-from 
-    wim_Menus
-    join wim_MenuItems on Menu_Key = MenuItem_Menu_Key
-	join wim_SearchView on SearchView_Type = MenuItem_Type_Key and MenuItem_Item_Key = SearchView_Item_Key
-where
-    ISNULL(Menu_Site_key, @Site) = @Site
-    and ISNULL(Menu_Role_Key, @Role) = @Role
-    and Menu_IsActive = 1
-order by
-    MenuItem_Position asc, MenuItem_Order asc 
-", filter);
+                // Include groupTag
+                if (string.IsNullOrWhiteSpace(groupTag) == false)
+                {
+                    filter.AddParameter("@groupTag", SqlDbType.NVarChar, groupTag.ToUpperInvariant());
+                    result = connector.FetchAll(@"
+                                            select 
+                                                wim_MenuItems.*
+                                            ,   SearchView_Title
+                                            ,   SearchView_Site_Key 
+                                            from 
+                                                wim_Menus
+                                                join wim_MenuItems on Menu_Key = MenuItem_Menu_Key
+	                                            join wim_SearchView on SearchView_Type = MenuItem_Type_Key and MenuItem_Item_Key = SearchView_Item_Key
+                                                join wim_MenuGroups on Menu_Group_Key = MenuGroup_Key
+                                            where
+                                                ISNULL(Menu_Site_key, @Site) = @Site
+                                                and ISNULL(Menu_Role_Key, @Role) = @Role
+                                                and Menu_IsActive = 1
+                                                and MenuGroup_Tag = @groupTag
+                                            order by
+                                                MenuItem_Position asc, MenuItem_Order asc 
+                                            ", filter);
+                }
+                else
+                {
+                    result = connector.FetchAll(@"
+                                            select 
+                                                wim_MenuItems.*
+                                            ,   SearchView_Title
+                                            ,   SearchView_Site_Key 
+                                            from 
+                                                wim_Menus
+                                                join wim_MenuItems on Menu_Key = MenuItem_Menu_Key
+	                                            join wim_SearchView on SearchView_Type = MenuItem_Type_Key and MenuItem_Item_Key = SearchView_Item_Key
+                                            where
+                                                ISNULL(Menu_Site_key, @Site) = @Site
+                                                and ISNULL(Menu_Role_Key, @Role) = @Role
+                                                and Menu_IsActive = 1
+                                                and ISNULL(Menu_Group_Key, 0) = 0
+                                            order by
+                                                MenuItem_Position asc, MenuItem_Order asc 
+                                            ", filter);
+                }
             }
             return result.ToArray();
         }
@@ -169,9 +237,10 @@ order by
         /// </summary>
         /// <param name="siteID">The site ID.</param>
         /// <param name="roleID">The role ID.</param>
+        /// <param name="groupTag">The group tag.</param>
         /// <param name="items">The positions.</param>
         /// <returns></returns>
-        public static async Task<List<IMenuItemView>> SelectAllAsync(int siteID, int roleID, params int[] items)
+        public static async Task<List<IMenuItemView>> SelectAllAsync(int siteID, int roleID, string groupTag, params int[] items)
         {
             var connector = ConnectorFactory.CreateConnector<MenuItemView>();
             var filter = connector.CreateQuery();
@@ -183,7 +252,6 @@ order by
             {
                 int i = 0;
                 var sql_in = new List<string>();
-
                 foreach (var item in items)
                 {
                     i++;
@@ -191,47 +259,103 @@ order by
                     sql_in.Add($"@p{i}");
                 }
 
-                result = await connector.FetchAllAsync(@"
-select 
-    wim_MenuItems.*
-,   SearchView_Title
-,   SearchView_Site_Key 
-from 
-    wim_Menus
-    join wim_MenuItems on Menu_Key = MenuItem_Menu_Key
-	join wim_SearchView on SearchView_Type = MenuItem_Type_Key and MenuItem_Item_Key = SearchView_Item_Key
-where
-    ISNULL(Menu_Site_key, @Site) = @Site
-    and ISNULL(Menu_Role_Key, @Role) = @Role
-    and Menu_IsActive = 1
-    and MenuItem_Position in (" + string.Join(",", sql_in) + @")
-order by
-    MenuItem_Position asc, MenuItem_Order asc 
-", filter).ConfigureAwait(false);
+                // Include groupTag
+                if (string.IsNullOrWhiteSpace(groupTag) == false)
+                {
+                    filter.AddParameter("@groupTag", SqlDbType.NVarChar, groupTag.ToUpperInvariant());
 
+                    result = await connector.FetchAllAsync(@"
+                                            select 
+                                                wim_MenuItems.*
+                                            ,   SearchView_Title
+                                            ,   SearchView_Site_Key 
+                                            from 
+                                                wim_Menus
+                                                join wim_MenuItems on Menu_Key = MenuItem_Menu_Key
+	                                            join wim_SearchView on SearchView_Type = MenuItem_Type_Key and MenuItem_Item_Key = SearchView_Item_Key
+                                                join wim_MenuGroups on Menu_Group_Key = MenuGroup_Key
+                                            where
+                                                ISNULL(Menu_Site_key, @Site) = @Site
+                                                and ISNULL(Menu_Role_Key, @Role) = @Role
+                                                and Menu_IsActive = 1
+                                                and MenuGroup_Tag = @groupTag
+                                                and MenuItem_Position in (" + string.Join(",", sql_in) + @")
+                                            order by
+                                                MenuItem_Position asc, MenuItem_Order asc 
+                                            ", filter);
+                }
+                else
+                {
+                    result = await connector.FetchAllAsync(@"
+                                            select 
+                                                wim_MenuItems.*
+                                            ,   SearchView_Title
+                                            ,   SearchView_Site_Key 
+                                            from 
+                                                wim_Menus
+                                                join wim_MenuItems on Menu_Key = MenuItem_Menu_Key
+	                                            join wim_SearchView on SearchView_Type = MenuItem_Type_Key and MenuItem_Item_Key = SearchView_Item_Key
+                                            where
+                                                ISNULL(Menu_Site_key, @Site) = @Site
+                                                and ISNULL(Menu_Role_Key, @Role) = @Role
+                                                and Menu_IsActive = 1
+                                                and ISNULL(Menu_Group_Key, 0) = 0
+                                                and MenuItem_Position in (" + string.Join(",", sql_in) + @")
+                                            order by
+                                                MenuItem_Position asc, MenuItem_Order asc 
+                                            ", filter);
+                }
             }
             else
             {
-                result = await connector.FetchAllAsync(@"
-select 
-    wim_MenuItems.*
-,   SearchView_Title
-,   SearchView_Site_Key 
-from 
-    wim_Menus
-    join wim_MenuItems on Menu_Key = MenuItem_Menu_Key
-	join wim_SearchView on SearchView_Type = MenuItem_Type_Key and MenuItem_Item_Key = SearchView_Item_Key
-where
-    ISNULL(Menu_Site_key, @Site) = @Site
-    and ISNULL(Menu_Role_Key, @Role) = @Role
-    and Menu_IsActive = 1
-order by
-    MenuItem_Position asc, MenuItem_Order asc 
-", filter).ConfigureAwait(false);
+                // Include groupTag
+                if (string.IsNullOrWhiteSpace(groupTag) == false)
+                {
+                    filter.AddParameter("@groupTag", SqlDbType.NVarChar, groupTag.ToUpperInvariant());
+                    result = await connector.FetchAllAsync(@"
+                                            select 
+                                                wim_MenuItems.*
+                                            ,   SearchView_Title
+                                            ,   SearchView_Site_Key 
+                                            from 
+                                                wim_Menus
+                                                join wim_MenuItems on Menu_Key = MenuItem_Menu_Key
+	                                            join wim_SearchView on SearchView_Type = MenuItem_Type_Key and MenuItem_Item_Key = SearchView_Item_Key
+                                                join wim_MenuGroups on Menu_Group_Key = MenuGroup_Key
+                                            where
+                                                ISNULL(Menu_Site_key, @Site) = @Site
+                                                and ISNULL(Menu_Role_Key, @Role) = @Role
+                                                and Menu_IsActive = 1
+                                                and MenuGroup_Tag = @groupTag
+                                            order by
+                                                MenuItem_Position asc, MenuItem_Order asc 
+                                            ", filter);
+                }
+                else
+                {
+                    result = await connector.FetchAllAsync(@"
+                                            select 
+                                                wim_MenuItems.*
+                                            ,   SearchView_Title
+                                            ,   SearchView_Site_Key 
+                                            from 
+                                                wim_Menus
+                                                join wim_MenuItems on Menu_Key = MenuItem_Menu_Key
+	                                            join wim_SearchView on SearchView_Type = MenuItem_Type_Key and MenuItem_Item_Key = SearchView_Item_Key
+                                            where
+                                                ISNULL(Menu_Site_key, @Site) = @Site
+                                                and ISNULL(Menu_Role_Key, @Role) = @Role
+                                                and Menu_IsActive = 1
+                                                and ISNULL(Menu_Group_Key, 0) = 0
+                                            order by
+                                                MenuItem_Position asc, MenuItem_Order asc 
+                                            ", filter);
+                }
             }
 
             return result.ToList<IMenuItemView>();
         }
+
 
         /// <summary>
         /// Selects al menu items for use on the dashboard

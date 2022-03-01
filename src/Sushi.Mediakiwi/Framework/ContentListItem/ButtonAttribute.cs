@@ -291,7 +291,6 @@ namespace Sushi.Mediakiwi.Framework.ContentListItem
             set { m_OpenInPopupLayer = value; m_OpenInPopupLayerIsSet = true; }
         }
         public string CustomUrl { get; set; }
-        [Obsolete("Obsolete, please use CustomUrl", false)]
         public string CustomUrlProperty { get; set; }
         public string ListInPopupLayer { get; set; }
         public bool AskConfirmation { get; set; }

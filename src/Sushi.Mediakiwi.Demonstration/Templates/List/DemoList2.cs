@@ -1,4 +1,5 @@
-﻿using Sushi.Mediakiwi.Framework;
+﻿using Sushi.Mediakiwi.Data;
+using Sushi.Mediakiwi.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -48,6 +49,9 @@ namespace Sushi.Mediakiwi.Demonstration.Templates.List
 
     public class DemoList2 : ComponentListTemplate
     {
+        [Framework.ContentListSearchItem.Date("Till date", Expression = OutputExpression.Right)]
+        public DateTime Filter_DateTill { get; set; }
+
         public DemoList2()
         {
             ListAction += DemoList2_ListAction;
@@ -108,9 +112,13 @@ namespace Sushi.Mediakiwi.Demonstration.Templates.List
 
             var allItems = DemoObject2.FetchAll();
 
+            // Intentionally Cause an exception here
+            //ComponentList item = null;
+            //wim.Notification.AddNotification(item.AssemblyName);
+
             if (!wim.IsListItemCollectionMode)
             {
-                var list = Data.ComponentList.SelectOne(typeof(DemoList1));
+                var list = ComponentList.SelectOne(typeof(DemoList1));
 
                 var result = Utils.GetListCollection(wim, list);
                 Console.WriteLine(result.Count);

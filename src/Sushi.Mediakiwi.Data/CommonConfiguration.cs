@@ -35,7 +35,7 @@ namespace Sushi.Mediakiwi.Data
         /// Registry: Is the environment load balanced? if so caching across nodes needs to be controlled
         /// </summary>
         public static string SPACE_REPLACEMENT
-        {   
+        {
             get
             {
                 if (string.IsNullOrEmpty(WimServerConfiguration.Instance.Space_Replacement))
@@ -48,7 +48,7 @@ namespace Sushi.Mediakiwi.Data
         }
 
         public static int EXPIRATION_COOKIE_PROFILE
-        {   
+        {
             get
             {
                 return 60;

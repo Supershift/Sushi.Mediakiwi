@@ -116,8 +116,17 @@ namespace Sushi.Mediakiwi.Data
 
         private string GetValue(string _value, bool optimizeForDisplay, int? maxChars)
         {
+            var site = Site.SelectOne(SiteID);
+
+            // Get dateInformation from 
+            var dateInfo = Mediakiwi.Common.GetDateInformation(site);
+
+            string dateFormat = dateInfo.DateFormatShort;
+            string dateTimeFormat = dateInfo.DateTimeFormatShort;
+
+
             string returnValue = "";
-            System.Globalization.CultureInfo dateCulture = new System.Globalization.CultureInfo("nl-NL");
+            
 
             switch (ContentTypeID)
             {
@@ -170,17 +179,17 @@ namespace Sushi.Mediakiwi.Data
                     break;
                 case ContentType.Date:
                     {
-                        if (DateTime.TryParseExact(_value, "dd-MM-yyyy", dateCulture, System.Globalization.DateTimeStyles.None, out DateTime result))
+                        if (DateTime.TryParseExact(_value, dateFormat, dateInfo.Culture, System.Globalization.DateTimeStyles.None, out DateTime result))
                         {
-                            returnValue = result.ToString("dd-MM-yyyy");
+                            returnValue = result.ToString(dateFormat, dateInfo.Culture);
                         }
                     }
                     break;
                 case ContentType.DateTime:
                     {
-                        if (DateTime.TryParseExact(_value, "dd-MM-yyyy HH:mm:ss", dateCulture, System.Globalization.DateTimeStyles.None, out DateTime result))
+                        if (DateTime.TryParseExact(_value, dateTimeFormat, dateInfo.Culture, System.Globalization.DateTimeStyles.None, out DateTime result))
                         {
-                            returnValue = result.ToString("dd-MM-yyyy HH:mm:ss");
+                            returnValue = result.ToString(dateTimeFormat, dateInfo.Culture);
                         }
                     }
                     break;

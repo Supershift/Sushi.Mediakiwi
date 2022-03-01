@@ -29,11 +29,11 @@ namespace Sushi.Mediakiwi.UI
         }
         private const string HTML_CONTAINER = @"<section id=""cms"" ><div class=""controls""   id=""addPageComponentControlItems"" style=""margin:0px auto;{1}"">
                                 <div class=""cmsBlocks"" >
-                                    <a href=""#1"" class=""closer icon-x"" onclick=""mediakiwi.pageComponentControl.closeOptions()""></a>  
+                                    <a href=""#"" class=""closer icon-x"" onclick=""mediakiwi.pageComponentControl.closeOptions(); return false;""></a>  
                                     {0}
                                 </div> 
                             </div><br class=""clear""/><footer id=""addPageComponentControlAdder"" style=""{2}"">
-                                <a href=""#1"" class=""plusBtn icon-plus"" onclick=""mediakiwi.pageComponentControl.showOptions()""></a>
+                                <a href=""#"" class=""plusBtn icon-plus"" onclick=""mediakiwi.pageComponentControl.showOptions(); return false;""></a>
                             </footer></section><script type=""text/javascript"">
                                 {3}
                             </script>";

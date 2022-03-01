@@ -1,5 +1,6 @@
 using Sushi.Mediakiwi.Data;
 using System;
+using System.Globalization;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -78,6 +79,9 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
         /// <param name="isEditMode">if set to <c>true</c> [is edit mode].</param>
         public void SetCandidate(Field field, bool isEditMode)
         {
+            // Get formatting information for dates
+            var dateInfo = Common.GetDateInformation();
+
             if (Property != null && Property.PropertyType == typeof(CustomData))
             {
                 SetContentContainer(field);
@@ -94,7 +98,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                         {
                             //  Previous WIM versions
                             DateTime tmp;
-                            if (DateTime.TryParse(field.Value, new System.Globalization.CultureInfo("NL-nl"), System.Globalization.DateTimeStyles.None, out tmp))
+                            if (DateTime.TryParseExact(field.Value, dateInfo.DateFormatShort, dateInfo.Culture, DateTimeStyles.None, out tmp))
                             {
                                 m_Candidate = tmp;
                             }
@@ -133,7 +137,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                     {
                         string candidate = Console.Form(ID);
                         DateTime tmp;
-                        if (DateTime.TryParse(candidate, new System.Globalization.CultureInfo(Console.GlobalisationCulture), System.Globalization.DateTimeStyles.None, out tmp))
+                        if (DateTime.TryParseExact(candidate, dateInfo.DateFormatShort, dateInfo.Culture, DateTimeStyles.None, out tmp))
                         {
                             m_Candidate = tmp;
                         }
@@ -173,7 +177,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                 //if (Console.CurrentList.Option_ConvertUTCToLocalTime && m_Candidate.Value.Kind != DateTimeKind.Local)
                 //    m_Candidate = AppCentre.Data.Supporting.LocalDateTime.GetDate(m_Candidate.Value, Console.CurrentListInstance.wim.CurrentSite, true);
 
-                OutputText = m_Candidate.Value.ToString(Console.DateFormat);
+                OutputText = m_Candidate.Value.ToString(dateInfo.DateFormatShort, dateInfo.Culture);
             }
 
             //  Inherited content section
@@ -183,14 +187,14 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                 {
                     //  Previous WIM versions
                     DateTime tmp;
-                    if (DateTime.TryParse(field.InheritedValue, new System.Globalization.CultureInfo("NL-nl"), System.Globalization.DateTimeStyles.None, out tmp))
+                    if (DateTime.TryParseExact(field.InheritedValue, dateInfo.DateFormatShort, dateInfo.Culture, DateTimeStyles.None, out tmp))
                     {
-                        InhertitedOutputText = tmp.ToString(Console.DateFormat);
+                        InhertitedOutputText = tmp.ToString(dateInfo.DateFormatShort, dateInfo.Culture);
                     }
                 }
                 else
                 {
-                    InhertitedOutputText = new DateTime(long.Parse(field.InheritedValue)).ToString(Console.DateFormat);
+                    InhertitedOutputText = new DateTime(long.Parse(field.InheritedValue)).ToString(dateInfo.DateFormatShort, dateInfo.Culture);
                 }
             }
         }
@@ -211,7 +215,10 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
         /// <param name="isRequired">if set to <c>true</c> [is required].</param>
         /// <returns></returns>
         public Field WriteCandidate(WimControlBuilder build, bool isEditMode, bool isRequired, bool isCloaked)
-        {
+        {         
+            // Get formatting information for dates
+            var dateInfo = Common.GetDateInformation();
+
             SetWriteEnvironment();
 
             IsCloaked = isCloaked;
@@ -250,16 +257,14 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                 #region Element creation
 
                 StringBuilder element = new StringBuilder();
+                var format = m_Candidate.HasValue ? m_Candidate.Value.ToString(dateInfo.DateFormatShort, dateInfo.Culture) : string.Empty;
+                var validClass = IsValid(isRequired) ? string.Empty : " error";
+                var postbackClass = AutoPostBack ? " postBack" : string.Empty;
+                var dateFormat = dateInfo.DateFormatShort.ToLowerInvariant();
+                var hiddenClass = IsCloaked ? " hidden" : null;
+                var setValue = (IsCloaked ? "" : InputPostText);
 
-                element.AppendFormat("<input class=\"date datepicker{3}{4}{6}\" name=\"{0}\"  type=\"text\" id=\"{0}\" maxlength=\"10\" value=\"{1}\" placeholder=\"{5}\"/>{2}"
-                   , ID
-                   , m_Candidate.HasValue ? m_Candidate.Value.ToString(Console.DateFormat) : string.Empty
-                   , IsCloaked ? "" : InputPostText
-                   , IsValid(isRequired) ? string.Empty : " error"
-                   , AutoPostBack ? " postBack" : string.Empty // 4
-                   , Console.DateFormat.ToLower()
-                   , IsCloaked ? " hidden" : null
-                   );
+                element.Append(dateInfo.Culture, $"<input class=\"date datepicker{validClass}{postbackClass}{hiddenClass}\" name=\"{ID}\"  type=\"text\" id=\"{ID}\" maxlength=\"10\" value=\"{format}\" placeholder=\"{dateFormat}\"/>{setValue}");
 
                 #endregion Element creation
 

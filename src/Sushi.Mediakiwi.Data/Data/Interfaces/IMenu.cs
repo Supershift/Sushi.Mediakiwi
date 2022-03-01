@@ -9,7 +9,9 @@ namespace Sushi.Mediakiwi.Data
         string Name { get; set; }
         int? RoleID { get; set; }
         int? SiteID { get; set; }
+        int? GroupID { get; set; }
 
+        public string GroupTitle { get; set; }
         void Save();
 
         Task SaveAsync();

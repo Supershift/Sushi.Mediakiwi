@@ -94,28 +94,32 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                 if (Property.PropertyType == typeof(CustomData))
                 {
                     candidate = m_ContentContainer[field.Property].Value;
-                    object ob = PropertyLogic.ConvertPropertyValue(field.Property, candidate, this.Console.CurrentList.ID, null);
+                    object ob = PropertyLogic.ConvertPropertyValue(field.Property, candidate, Console.CurrentList.ID, null);
                     Type type = typeof(string);
                     if (ob != null) type = ob.GetType();
 
                     if (candidate != null)
                     {
                         if (type == typeof(decimal))
-                            candidate = Utility.ConvertToDecimalString(((decimal)ob));
+                        {
+                            candidate = Utility.ConvertToDecimalString((decimal)ob);
+                        }
                         else if (type == typeof(DateTime) || type == typeof(DateTime?))
                         {
                             DateTime tmp = ((DateTime)ob);
 
-                            // [MR:20-03-2019] Converts UTC (database) time to local timezone for display
-                            //if (Console.CurrentList.Option_ConvertUTCToLocalTime && tmp.Kind != DateTimeKind.Local)
-                            //    tmp = AppCentre.Data.Supporting.LocalDateTime.GetDate(tmp, Console.CurrentListInstance.wim.CurrentSite, true);
-
                             if (tmp == DateTime.MinValue)
+                            {
                                 candidate = null;
+                            }
                             else if (tmp.Hour == 0 && tmp.Minute == 0 && tmp.Second == 0 && tmp.Millisecond == 0)
-                                candidate = tmp.ToString(Console.DateFormat);
+                            {
+                                candidate = tmp.ToString(Console.DateFormatSettings.DateFormatShort, Console.DateFormatSettings.Culture);
+                            }
                             else
-                                candidate = tmp.ToString(string.Concat(Console.DateFormat, " HH:mm"));
+                            {
+                                candidate = tmp.ToString(string.Concat(Console.DateFormatSettings.DateFormatShort, " HH:mm"), Console.DateFormatSettings.Culture);
+                            }
                         }
                     }
 
@@ -125,25 +129,31 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                     object value = Property.GetValue(SenderInstance, null);
                     if (value != null)
                     {
-                        if (this.Property.PropertyType == typeof(decimal))
-                            candidate = Utility.ConvertToDecimalString(((decimal)value));
-                        else if (this.Property.PropertyType == typeof(DateTime) || this.Property.PropertyType == typeof(DateTime?))
+                        if (Property.PropertyType == typeof(decimal))
+                        {
+                            candidate = Utility.ConvertToDecimalString((decimal)value);
+                        }
+                        else if (Property.PropertyType == typeof(DateTime) || Property.PropertyType == typeof(DateTime?))
                         {
                             DateTime tmp = ((DateTime)value);
 
-                            // [MR:20-03-2019] Converts UTC (database) time to local timezone for display
-                            //if (Console.CurrentList.Option_ConvertUTCToLocalTime && tmp.Kind != DateTimeKind.Local)
-                            //    tmp = AppCentre.Data.Supporting.LocalDateTime.GetDate(tmp, Console.CurrentListInstance.wim.CurrentSite, true);
-
                             if (tmp == DateTime.MinValue)
+                            {
                                 candidate = null;
+                            }
                             else if (tmp.Hour == 0 && tmp.Minute == 0 && tmp.Second == 0 && tmp.Millisecond == 0)
-                                candidate = tmp.ToString(Console.DateFormat);
+                            {
+                                candidate = tmp.ToString(Console.DateFormatSettings.DateFormatShort, Console.DateFormatSettings.Culture);
+                            }
                             else
-                                candidate = tmp.ToString(string.Concat(Console.DateFormat, " HH:mm"));
+                            {
+                                candidate = tmp.ToString(string.Concat(Console.DateFormatSettings.DateFormatShort, " HH:mm"), Console.DateFormatSettings.Culture);
+                            }
                         }
                         else
+                        {
                             candidate = value.ToString();
+                        }
                     }
                 }
             }

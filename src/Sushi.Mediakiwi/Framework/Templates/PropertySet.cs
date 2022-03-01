@@ -132,6 +132,8 @@ namespace Sushi.Mediakiwi.Framework.Templates
         /// <returns></returns>
         public bool SetValue(Site site, object loadedControl, Content content, Component component, Page callingPage)
         {
+            var dateInfo = Common.GetDateInformation(site);
+
             bool isInheritedContent = false;
             if ( callingPage != null && callingPage.InheritContent )
                 isInheritedContent = true;
@@ -146,9 +148,8 @@ namespace Sushi.Mediakiwi.Framework.Templates
                 return true;
             }
 
-            System.Globalization.CultureInfo cultureInfo =
-                new System.Globalization.CultureInfo("nl-NL");
-
+            System.Globalization.CultureInfo cultureInfo = new System.Globalization.CultureInfo("nl-NL");
+            
             RichLink rlink = new RichLink(site);
 
             // 18-10-2020:MM
@@ -315,7 +316,7 @@ namespace Sushi.Mediakiwi.Framework.Templates
                                         }
                                         else
                                         {
-                                            if (DateTime.TryParse(itemValue.ToString(), cultureInfo, System.Globalization.DateTimeStyles.None, out dtResult))
+                                            if (DateTime.TryParseExact(itemValue.ToString(), dateInfo.DateTimeFormatShort, dateInfo.Culture, System.Globalization.DateTimeStyles.None, out dtResult))
                                             {
                                                 dtResult = ConvertDateTimeToLocal(loadedControl, dtResult);
                                                 info.SetValue(loadedControl, dtResult, null);
