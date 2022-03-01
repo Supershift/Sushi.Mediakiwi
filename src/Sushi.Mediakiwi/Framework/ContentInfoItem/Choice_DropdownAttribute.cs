@@ -46,6 +46,11 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                 }
             }
 
+            if (Property?.PropertyType != null)
+            {
+                IsMultiSelect = typeof(System.Collections.IEnumerable).IsAssignableFrom(Property.PropertyType);
+            }
+
             if (IsTagging || IsMultiSelect.GetValueOrDefault(false))
             {
                 bool hasoptions = optionsList.Count > 0;
