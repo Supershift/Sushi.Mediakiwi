@@ -1,5 +1,6 @@
 ﻿using Sushi.Mediakiwi.Data;
 using Sushi.Mediakiwi.Framework;
+using Sushi.Mediakiwi.UI;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -17,12 +18,33 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         SharedFieldTranslation Implement;
         UI.Forms.SharedFieldFormMap FormMap;
 
+        private ListItemCollection m_mkSiteOptions;
+        public ListItemCollection mkSiteOptions
+        {
+            get 
+            {
+                if (m_mkSiteOptions == null) 
+                {
+                    m_mkSiteOptions = new ListItemCollection();
+                    foreach (var site in Mediakiwi.Data.Site.SelectAll().OrderBy(x => x.Name))
+                    {
+                        m_mkSiteOptions.Add(new ListItem(site.Name, site.ID.ToString()));
+                    }
+                }
+                return m_mkSiteOptions; 
+            }
+        }
+
         #endregion Properties
 
         #region FE UI Search Elements
 
         [Framework.ContentListSearchItem.TextField("Search", 50, false)]
         public string Filter_Search { get; set; }
+
+        [Framework.ContentListSearchItem.Choice_Dropdown("Site", nameof(mkSiteOptions), false, AutoPostBack = true)]
+        public int Filter_SiteID { get; set; }
+
 
         #endregion FE UI Search Elements
 
@@ -85,7 +107,13 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
 
         private async Task SharedFieldList_ListLoad(ComponentListEventArgs arg)
         {
-            Implement = await SharedFieldTranslation.FetchSingleForFieldAndSiteAsync(arg.SelectedKey, wim.CurrentSite.ID).ConfigureAwait(false);
+            int siteId = wim.CurrentSite.ID;
+            if (Request?.Query?.ContainsKey("siteid") == true)
+            {
+                siteId = Utility.ConvertToInt(Request.Query["siteid"], wim.CurrentSite.ID);
+            }
+
+            Implement = await SharedFieldTranslation.FetchSingleForFieldAndSiteAsync(arg.SelectedKey, siteId).ConfigureAwait(false);
             SharedField field = await SharedField.FetchSingleAsync(arg.SelectedKey).ConfigureAwait(false);
             var componentTemplateID = Utility.ConvertToInt(Request.Query["ctemplateid"], 0);
 
@@ -95,12 +123,12 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                 {
                     ContentTypeID = field.ContentTypeID,
                     FieldID = field.ID,
-                    SiteID = wim.CurrentSite.ID,
+                    SiteID = siteId,
                     FieldName = field.FieldName
                 };
             }
 
-            FormMap = new UI.Forms.SharedFieldFormMap(wim, field, Implement, componentTemplateID);
+            FormMap = new UI.Forms.SharedFieldFormMap(wim, field, Implement, componentTemplateID, siteId);
             FormMaps.Add(FormMap);
         }
 
@@ -121,7 +149,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             var allFields = await SharedField.FetchAllAsync().ConfigureAwait(false);
             foreach (var field in allFields)
             {
-                var fieldData = await SharedFieldTranslation.FetchSingleForFieldAndSiteAsync(field.ID, wim.CurrentSite.ID).ConfigureAwait(false);
+                var fieldData = await SharedFieldTranslation.FetchSingleForFieldAndSiteAsync(field.ID, Filter_SiteID).ConfigureAwait(false);
                 
                 // We don't have any data yet
                 if (fieldData == null || fieldData?.ID == 0)
@@ -132,7 +160,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                         EditValue = "",
                         FieldID = field.ID,
                         FieldName = field.FieldName,
-                        SiteID = wim.CurrentSite.ID,
+                        SiteID = Filter_SiteID,
                         Value = ""
                     };
                 }
@@ -142,7 +170,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                     foreach (var prop in matchingProps.Where(x => x.TemplateID > 0))
                     {
                         var cVersions = ComponentVersion.SelectAllForTemplate(prop.TemplateID);
-                        var pages = Page.SelectAll(cVersions.Select(x => x.PageID.GetValueOrDefault(0)).ToArray());
+                        var pages = Page.SelectAll(cVersions.Select(x => x.PageID.GetValueOrDefault(0)).ToArray(), Filter_SiteID);
                         field.List_PageCount = pages.Length;
                     }
                 }
@@ -167,6 +195,12 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                 Height = LAYER_HEIGHT,
                 Width = LAYER_WIDTH,
                 Title = "Shared field"
+            });
+
+            wim.SearchResultItemPassthroughParameter = wim.GetUrl(new KeyValue[]
+            {
+                new KeyValue("siteid", Filter_SiteID),
+                new KeyValue("item", "[KEY]")
             });
         }
 
