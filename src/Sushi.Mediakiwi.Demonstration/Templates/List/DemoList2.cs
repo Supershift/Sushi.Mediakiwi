@@ -1,5 +1,7 @@
 ﻿using Sushi.Mediakiwi.Data;
 using Sushi.Mediakiwi.Framework;
+using Sushi.Mediakiwi.Framework.ContentListSearchItem;
+using Sushi.Mediakiwi.UI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +11,7 @@ namespace Sushi.Mediakiwi.Demonstration.Templates.List
 {
     public class DemoObject2
     {
+
         public async Task DummySaveAsync()
         {
             await Task.Delay(5000);
@@ -18,7 +21,7 @@ namespace Sushi.Mediakiwi.Demonstration.Templates.List
         {
             await Task.Delay(5000);
         }
-
+        
         public int ID { get; set; }
         public string Title { get; set; }
 
@@ -49,7 +52,32 @@ namespace Sushi.Mediakiwi.Demonstration.Templates.List
 
     public class DemoList2 : ComponentListTemplate
     {
-        [Framework.ContentListSearchItem.Date("Till date", Expression = OutputExpression.Right)]
+        private ListItemCollection _MultiOptions;
+
+        public ListItemCollection MultiOptions
+        {
+            get
+            {
+                if (_MultiOptions == null)
+                {
+                    _MultiOptions = new ListItemCollection();
+                    for (int i = 1; i <= 10; i++)
+                    {
+                        _MultiOptions.Items.Add(new ListItem($"Item {i}", i.ToString()));
+                    }
+                }
+                return _MultiOptions;
+            }
+        }
+
+
+        [Choice_Dropdown("Multi select", nameof(MultiOptions))]//, false, false, IsTagging = true)]
+        public int[] FilterMultiSelect { get; set; }
+
+        [Choice_Radio("Single radio", nameof(MultiOptions), "uxFilterGroupSingleRadio")]
+        public int FilterSingleRadio { get; set; }
+
+        [Date("Till date", Expression = OutputExpression.Right)]
         public DateTime Filter_DateTill { get; set; }
 
         public DemoList2()
