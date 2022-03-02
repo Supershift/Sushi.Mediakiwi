@@ -13,6 +13,31 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
     {
         public async Task<Api.MediakiwiField> GetApiFieldAsync()
         {
+            ListItemCollection optionsList = new ListItemCollection();
+
+            // Check if we selected a Datasource List for this dropdown
+            if (m_ListItemCollection == null || m_ListItemCollection?.Count == 0)
+            {
+                m_ListItemCollection = GetCollection(CollectionProperty, Property.Name, SenderInstance);
+            }
+
+            if (m_ListItemCollection != null)
+            {
+                foreach (var li in m_ListItemCollection)
+                {
+                    bool selected = OutputText == li.Value;
+
+                    optionsList.Add(new ListItem()
+                    {
+                        Text = li.Text,
+                        Value = li.Value,
+                        Enabled = (m_ListItemCollection.Count == 1 && string.IsNullOrEmpty(li.Text)),
+                        Selected = selected,
+                    });
+
+                }
+            }
+
             return new Api.MediakiwiField()
             {
                 Event = m_AutoPostBack ? Api.MediakiwiJSEvent.Change : Api.MediakiwiJSEvent.None,
@@ -30,7 +55,8 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                 MaxLength = MaxValueLength,
                 HelpText = InteractiveHelp,
                 FormSection = GetFormMapClass(),
-                Hidden = IsCloaked
+                Hidden = IsCloaked,
+                Options = optionsList
             };
         }
 

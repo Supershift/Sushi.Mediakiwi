@@ -46,9 +46,15 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                 }
             }
 
-            if (Property?.PropertyType != null)
+
+            if (Property?.PropertyType != null && !IsMultiSelect.HasValue)
             {
-                IsMultiSelect = typeof(System.Collections.IEnumerable).IsAssignableFrom(Property.PropertyType);
+                IsMultiSelect = (Property.PropertyType == typeof(List<int>))
+                    || (Property.PropertyType == typeof(int[]))
+                    || (Property.PropertyType == typeof(List<string>))
+                    || (Property.PropertyType == typeof(string[]))
+                    || (Property.PropertyType == typeof(Option[]))
+                    || (Property.PropertyType == typeof(List<Option>));
             }
 
             if (IsTagging || IsMultiSelect.GetValueOrDefault(false))
