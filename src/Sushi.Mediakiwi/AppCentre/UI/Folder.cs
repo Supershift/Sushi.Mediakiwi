@@ -55,18 +55,18 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             Response.Redirect(url);
         }
 
-        Task Folder_ListPreRender(ComponentListEventArgs e)
+        async Task Folder_ListPreRender(ComponentListEventArgs e)
         {
             if (Implement == null || Implement?.ID == 0 || Implement.Parent == null)
             {
-                return Task.CompletedTask;
+                return;
             }
 
-            if (Implement.Type == FolderType.List && Implement.ParentID.GetValueOrDefault() == ParentFolder)
+            // When we try to assign the parent folder to ourself, throw error
+            if (Implement.Type == FolderType.List && ParentFolder == Implement.ID)
             {
                 wim.Notification.AddError(nameof(ParentFolder), "Can not assigned to self!");
             }
-            return Task.CompletedTask;
         }
 
         /// <summary>

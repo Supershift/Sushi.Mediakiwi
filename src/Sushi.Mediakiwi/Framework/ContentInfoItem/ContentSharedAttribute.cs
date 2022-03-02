@@ -63,8 +63,18 @@ namespace Sushi.Mediakiwi.Framework
                     {
                         _outputValue = sharedValue.GetPublishedValue();
                     }
+                    else
+                    {
+                        _outputValue = null;
+                    }
 
-                    InteractiveHelp += " [This is a Shared Field, click to edit]";
+                    // There were situations where this label was added multiple times.
+                    if (InteractiveHelp.Contains("[This is a Shared Field, click to edit]", StringComparison.InvariantCultureIgnoreCase) == false)
+                    {
+                        InteractiveHelp += " [This is a Shared Field, click to edit]";
+                    }
+
+
                     var editSharedFieldUrl = Console.CurrentListInstance.wim.GetUrl(new KeyValue[]
                     {
                         new KeyValue()

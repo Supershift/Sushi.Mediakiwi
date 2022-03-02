@@ -21,7 +21,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                 Expression = Expression,
                 PropertyName = ID,
                 PropertyType = (Property == null) ? typeof(string).FullName : Property.PropertyType.FullName,
-                VueType = Api.MediakiwiFormVueType.undefined,
+                VueType = Api.MediakiwiFormVueType.wimChoiceRadio,
                 ClassName = InputClassName(IsValid(Mandatory)),
                 ReadOnly = IsReadOnly,
                 ContentTypeID = ContentTypeSelection,
