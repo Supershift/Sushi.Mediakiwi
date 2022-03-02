@@ -1575,6 +1575,10 @@ namespace Sushi.Mediakiwi.UI
                 }
             }
 
+            // Load the current application user
+            await _Console.LoadCurrentApplicationUserAsync();
+
+            // Authenticate via Azure Active Directory
             await AuthenticateViaSingleSignOnAsync(true).ConfigureAwait(false);
 
             //  Check roaming profile
@@ -1699,7 +1703,6 @@ namespace Sushi.Mediakiwi.UI
 
                 if (redirectOnAnonymous)
                 {
-                    await _Console.LoadCurrentApplicationUserAsync();
                     if (_Console.CurrentApplicationUser != null && _Console.CurrentApplicationUser.IsActive)
                     {
                         // do nothing, user is logged in.
