@@ -697,6 +697,12 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
         {
             get
             {
+
+                if (m_CurrentApplicationUser == null && m_CurrentListInstance?.wim?.CurrentApplicationUser != null)
+                {
+                    m_CurrentApplicationUser = m_CurrentListInstance.wim.CurrentApplicationUser;
+                }
+
                 return m_CurrentApplicationUser;
             }
             set
@@ -729,12 +735,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
                         && CurrentVisitor.ApplicationUserID.Value > 0
                         )
                     {
-                        m_CurrentApplicationUser = ApplicationUser.SelectOne(CurrentVisitor.ApplicationUserID.Value, true);
-                    }
-
-                    if (m_CurrentApplicationUser == null && m_CurrentListInstance != null)
-                    {
-                        m_CurrentApplicationUser = m_CurrentListInstance.wim.CurrentApplicationUser;
+                        m_CurrentApplicationUser = await ApplicationUser.SelectOneAsync(CurrentVisitor.ApplicationUserID.Value, true);
                     }
                 }
             }

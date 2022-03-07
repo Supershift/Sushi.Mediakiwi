@@ -44,7 +44,7 @@ namespace Sushi.Mediakiwi.API.Authentication
 
             if (Utils.IsGuid(userGuidString, out userGuid))
             {
-                var user = ApplicationUser.SelectOne(userGuid);
+                var user = await ApplicationUser.SelectOneAsync(userGuid);
 
                 // When no user was found, or user is inactive
                 if (user?.IsActive != true)
@@ -53,7 +53,7 @@ namespace Sushi.Mediakiwi.API.Authentication
                     await context.HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme).ConfigureAwait(false);
                 }
 
-                var env = Data.Environment.SelectOne();
+                var env = await Data.Environment.SelectOneAsync();
                 if (env.ApiKey.Equals(apiKeyString, StringComparison.InvariantCulture) == false)
                 {
                     context.RejectPrincipal();
