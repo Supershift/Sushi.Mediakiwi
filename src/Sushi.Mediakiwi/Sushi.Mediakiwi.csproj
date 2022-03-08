@@ -153,7 +153,6 @@
     <Compile Include="Framework\PagePreview.cs" />
     <Compile Include="Framework\TopListPosition.cs" />
     <Compile Include="Logic\ApplicationUserLogic.cs" />
-    <Compile Include="Logic\DiscoveryLogic.cs" />
     <Compile Include="Logic\FolderLogic.cs" />
     <Compile Include="Logic\OAuth2Logic.cs" />
     <Compile Include="Logic\PageLogic.cs" />
