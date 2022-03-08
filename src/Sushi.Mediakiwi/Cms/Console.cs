@@ -714,7 +714,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
                     if (!string.IsNullOrWhiteSpace(CurrentVisitor?.Jwt))
                     {
                         // Validate the JWT
-                        string email = await OAuth2Logic.ExtractUpnAsync(WimServerConfiguration.Instance.Authentication, CurrentVisitor.Jwt);
+                        string email = await OAuth2Logic.ExtractUpnAsync(WimServerConfiguration.Instance.Authentication, CurrentVisitor.Jwt, Context);
                         if (!string.IsNullOrWhiteSpace(email))
                         {
                             m_CurrentApplicationUser = await ApplicationUser.SelectOneByEmailAsync(email, true);

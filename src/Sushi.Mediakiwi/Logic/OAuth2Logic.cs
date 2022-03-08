@@ -8,6 +8,11 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
 using Microsoft.IdentityModel.JsonWebTokens;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+using Microsoft.IdentityModel.Protocols;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.Http;
 
 namespace Sushi.Mediakiwi.Logic
 {
@@ -34,22 +39,41 @@ namespace Sushi.Mediakiwi.Logic
         }
 
         private static Regex EmailRegex { get; set; } = new Regex(Data.Utility.GlobalRegularExpression.EmailAddress, RegexOptions.IgnoreCase);
-        public static async Task<string> ExtractUpnAsync(AuthenticationConfiguration authenticationConfiguration, string idtoken)
+        public static async Task<string> ExtractUpnAsync(AuthenticationConfiguration authenticationConfiguration, string idtoken, HttpContext context)
         {
             try
             {
-                var handler = new Microsoft.IdentityModel.JsonWebTokens.JsonWebTokenHandler();
+                var handler = new JsonWebTokenHandler();                
                 var jsonToken = handler.ReadToken(idtoken);
-                var token = jsonToken as Microsoft.IdentityModel.JsonWebTokens.JsonWebToken;
-
+                var token = jsonToken as JsonWebToken;
+                
                 if (token == null)
                 {
                     await Data.Notification.InsertOneAsync(nameof(ExtractUpnAsync), Data.NotificationType.Error, $"No token encountered: {idtoken}").ConfigureAwait(false);
                     return null;
                 }
 
-                var isValidToken = await IsValidTokenAsync(authenticationConfiguration, idtoken, token);
-                if (isValidToken)
+                // todo: make this an instance method and provide configurationmanager through DI                
+                var openIdConfigurationManager = context.RequestServices.GetRequiredService<ConfigurationManager<OpenIdConnectConfiguration>>();
+                var openIdConnectConfigData = await openIdConfigurationManager.GetConfigurationAsync();
+                
+                var validationParameters = new TokenValidationParameters
+                {
+                    ValidateAudience = true,
+                    ValidateIssuer = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidateLifetime = true,
+                    RequireSignedTokens = true,
+                    ClockSkew = TimeSpan.Zero,
+                    ValidAudience = authenticationConfiguration.Aad.Client,
+                    IssuerSigningKeys = openIdConnectConfigData.SigningKeys,
+                    ValidIssuer = openIdConnectConfigData.Issuer,
+                };
+
+
+                var isValidToken = handler.ValidateToken(idtoken, validationParameters);
+                
+                if (isValidToken.IsValid)
                 {
 
                     const string DEFAULT_CLAIM_TYPE = "email";
@@ -112,7 +136,7 @@ namespace Sushi.Mediakiwi.Logic
                 }
                 else
                 {
-                    await Data.Notification.InsertOneAsync(nameof(ExtractUpnAsync), Data.NotificationType.Error, $"Token not valid: {idtoken}").ConfigureAwait(false);
+                    await Data.Notification.InsertOneAsync(nameof(ExtractUpnAsync), Data.NotificationType.Error, $"Token not valid: {idtoken}, {isValidToken.Exception}").ConfigureAwait(false);
                 }
             }
             catch (Exception ex)
@@ -127,104 +151,6 @@ namespace Sushi.Mediakiwi.Logic
         {
             await Data.Notification.InsertOneAsync(nameof(ExtractUpnAsync), Data.NotificationType.Information, $"Extracted: {email}").ConfigureAwait(false);
             return email;
-        }
-
-        public static async Task<bool> IsValidTokenAsync(AuthenticationConfiguration authenticationConfiguration, string idtoken, JsonWebToken token)
-        {
-            if (string.IsNullOrWhiteSpace(idtoken))
-            {
-                throw new ArgumentNullException(nameof(idtoken));
-            }
-            if (authenticationConfiguration == null)
-            {
-                throw new ArgumentNullException(nameof(authenticationConfiguration));
-            }
-
-            var exponent = authenticationConfiguration.Token.Exponent;
-            return await VerifyTokenAsync(idtoken, exponent, authenticationConfiguration, token);
-        }
-
-        private static async Task<bool> VerifyTokenAsync(string idToken, string exponent, AuthenticationConfiguration authenticationConfiguration, JsonWebToken token)
-        {
-            try
-            {
-                // Get modulus
-                string modulus = await DiscoveryLogic.GetModulusAsync(authenticationConfiguration.Aad.Tenant, authenticationConfiguration.Token.KeyType, token);
-
-                var parts = idToken.Split('.');
-                var header = parts[0];
-                var payload = parts[1];
-                string signedSignature = parts[2];
-                //Extract user info from payload   
-                string userInfo = Encoding.UTF8.GetString(Base64UrlDecode(payload));
-                //Which will be Verified
-                string originalMessage = string.Concat(header, ".", payload);
-                byte[] keyBytes = Base64UrlDecode(modulus);
-                string keyBase = Convert.ToBase64String(keyBytes);
-                string key = @"<RSAKeyValue> <Modulus>" + keyBase + "</Modulus> <Exponent>" + exponent + "</Exponent> </RSAKeyValue>";
-                bool result = VerifyData(originalMessage, signedSignature, key);
-                return result;
-            }
-            catch (Exception) 
-            {
-                // to assure no exception being thrown
-            }
-            return false;
-        }
-
-        /// <summary>  
-        /// Verifies encrypted signed message with public key encrypted original message.  
-        /// </summary>  
-        /// <param name="originalMessage">Original message as string. (Encrypted form)</param>  
-        /// <param name="signedMessage">Signed message as string. (Encrypted form)</param>  
-        /// <param name="publicKey">Public key as XML string.</param>  
-        /// <returns>Boolean True if successful otherwise return false.</returns>  
-        private static bool VerifyData(string originalMessage, string signedMessage, string publicKey)
-        {
-            bool success = false;
-            using (var rsa = new RSACryptoServiceProvider())
-            {
-                var encoder = new UTF8Encoding();
-                byte[] bytesToVerify = encoder.GetBytes(originalMessage);
-                byte[] signedBytes = Base64UrlDecode(signedMessage);
-                try
-                {
-
-                    rsa.FromXmlString(publicKey);
-                    SHA256Managed Hash = new SHA256Managed();
-                    byte[] hashedData = Hash.ComputeHash(signedBytes);
-                    // Summary:
-                    //     Verifies that a digital signature is valid by determining the hash value in the
-                    //     signature using the provided public key and comparing it to the hash value of
-                    //     the provided data.
-                    success = rsa.VerifyData(bytesToVerify, CryptoConfig.MapNameToOID("SHA256"), signedBytes);
-                }
-                catch (CryptographicException e)
-                {
-                    success = false;
-                }
-                finally
-                {
-                    rsa.PersistKeyInCsp = false;
-                }
-            }
-            return success;
-        }
-
-        private static byte[] Base64UrlDecode(string input)
-        {
-            var output = input;
-            output = output.Replace('-', '+'); // 62nd char of encoding  
-            output = output.Replace('_', '/'); // 63rd char of encoding  
-            switch (output.Length % 4) // Pad with trailing '='s  
-            {
-                case 0: break; // No pad chars in this case  
-                case 2: output += "=="; break; // Two pad chars  
-                case 3: output += "="; break; // One pad char  
-                default: throw new System.Exception("Illegal base64url string!");
-            }
-            var converted = Convert.FromBase64String(output); // Standard base64 decoder  
-            return converted;
         }
     }
 }

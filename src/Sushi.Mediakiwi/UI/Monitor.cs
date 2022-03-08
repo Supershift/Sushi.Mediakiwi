@@ -1660,7 +1660,7 @@ namespace Sushi.Mediakiwi.UI
                 var jwt = _Console.GetSafePost("id_token");
                 if (!string.IsNullOrEmpty(jwt))
                 {
-                    string email = await OAuth2Logic.ExtractUpnAsync(WimServerConfiguration.Instance.Authentication, jwt).ConfigureAwait(false);
+                    string email = await OAuth2Logic.ExtractUpnAsync(WimServerConfiguration.Instance.Authentication, jwt, _Context).ConfigureAwait(false);
                 
                     if (!string.IsNullOrEmpty(email))
                     {
