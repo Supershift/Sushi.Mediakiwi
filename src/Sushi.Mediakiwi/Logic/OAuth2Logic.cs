@@ -49,7 +49,10 @@ namespace Sushi.Mediakiwi.Logic
                 
                 if (token == null)
                 {
-                    await Data.Notification.InsertOneAsync(nameof(ExtractUpnAsync), Data.NotificationType.Error, $"No token encountered: {idtoken}").ConfigureAwait(false);
+                    if (authenticationConfiguration.Aad?.LogUpnExtractionErrors == true)
+                    {
+                        await Data.Notification.InsertOneAsync(nameof(ExtractUpnAsync), Data.NotificationType.Error, $"No token encountered: {idtoken}").ConfigureAwait(false);
+                    }
                     return null;
                 }
 
@@ -72,7 +75,7 @@ namespace Sushi.Mediakiwi.Logic
 
 
                 var isValidToken = handler.ValidateToken(idtoken, validationParameters);
-                
+
                 if (isValidToken.IsValid)
                 {
 
@@ -88,7 +91,10 @@ namespace Sushi.Mediakiwi.Logic
                     }
                     catch (Exception ex)
                     {
-                        await Data.Notification.InsertOneAsync(nameof(ExtractUpnAsync), ex).ConfigureAwait(false);
+                        if (authenticationConfiguration.Aad?.LogUpnExtractionErrors == true)
+                        {
+                            await Data.Notification.InsertOneAsync(nameof(ExtractUpnAsync), ex).ConfigureAwait(false);
+                        }
                     }
 
                     // BD 2021-08-05: Loop through all the claims and look for the email
@@ -99,7 +105,7 @@ namespace Sushi.Mediakiwi.Logic
                         if (claimtypes.Any(x => x.Equals(claim.Type, StringComparison.CurrentCultureIgnoreCase)))
                         {
                             // If we find the claim with the configured type, return it immediately
-                            return await LogAndReturnAsync(claim.Value).ConfigureAwait(false);
+                            return await LogAndReturnAsync(authenticationConfiguration, claim.Value).ConfigureAwait(false);
                         }
                         else if (claim.Type.Equals(DEFAULT_CLAIM_TYPE, StringComparison.CurrentCultureIgnoreCase))
                         {
@@ -116,40 +122,49 @@ namespace Sushi.Mediakiwi.Logic
                     // If we have not found the claim of the configured type, return the claim of the default type if we found it
                     if (claimOfDefaultType != null)
                     {
-                        return await LogAndReturnAsync(claimOfDefaultType.Value).ConfigureAwait(false);
+                        return await LogAndReturnAsync(authenticationConfiguration, claimOfDefaultType.Value).ConfigureAwait(false);
                     }
 
                     // Otherwise, if we found a claim that has the form of an email address, return that
                     if (claimWithEmailValue != null)
                     {
-                        return await LogAndReturnAsync(claimWithEmailValue.Value).ConfigureAwait(false);
+                        return await LogAndReturnAsync(authenticationConfiguration, claimWithEmailValue.Value).ConfigureAwait(false);
                     }
 
                     // If we could not find a claim of an expected type, but we only have one claim, return that
                     if (token.Claims.Count() == 1)
                     {
-                        return await LogAndReturnAsync(token.Claims.First().Value).ConfigureAwait(false);
+                        return await LogAndReturnAsync(authenticationConfiguration, token.Claims.First().Value).ConfigureAwait(false);
                     }
 
                     // We could not find a claim. Log the token for examination.
-                    await Data.Notification.InsertOneAsync(nameof(ExtractUpnAsync), Data.NotificationType.Error, $"No email claim found: {idtoken}").ConfigureAwait(false);
+                    if (authenticationConfiguration.Aad?.LogUpnExtractionErrors == true)
+                    {
+                        await Data.Notification.InsertOneAsync(nameof(ExtractUpnAsync), Data.NotificationType.Error, $"No email claim found: {idtoken}").ConfigureAwait(false);
+                    }
                 }
-                else
+                else if (authenticationConfiguration.Aad?.LogUpnExtractionErrors == true)
                 {
                     await Data.Notification.InsertOneAsync(nameof(ExtractUpnAsync), Data.NotificationType.Error, $"Token not valid: {idtoken}, {isValidToken.Exception}").ConfigureAwait(false);
                 }
             }
             catch (Exception ex)
             {
-                await Data.Notification.InsertOneAsync(nameof(ExtractUpnAsync), ex).ConfigureAwait(false);
+                if (authenticationConfiguration.Aad?.LogUpnExtractionErrors == true)
+                {
+                    await Data.Notification.InsertOneAsync(nameof(ExtractUpnAsync), ex).ConfigureAwait(false);
+                }
                 return null;
             }
             return null;
         }
 
-        private static async Task<string> LogAndReturnAsync(string email)
+        private static async Task<string> LogAndReturnAsync(AuthenticationConfiguration authenticationConfiguration, string email)
         {
-            await Data.Notification.InsertOneAsync(nameof(ExtractUpnAsync), Data.NotificationType.Information, $"Extracted: {email}").ConfigureAwait(false);
+            if (authenticationConfiguration.Aad?.LogUpnExtraction == true)
+            {
+                await Data.Notification.InsertOneAsync(nameof(ExtractUpnAsync), Data.NotificationType.Information, $"Extracted: {email}").ConfigureAwait(false);
+            }
             return email;
         }
     }
