@@ -348,5 +348,15 @@ namespace Sushi.Mediakiwi.Data.Configuration
         /// The E-mail claim for this AAD
         /// </summary>
         public string EmailClaim { get; set; }
+
+        /// <summary>
+        /// If set to true, every time a UPN extraction error occurs, a notification will be inserted
+        /// </summary>
+        public bool? LogUpnExtractionErrors { get; set; }
+
+        /// <summary>
+        /// If set to true, every time a UPN is extracted, a notification will be inserted
+        /// </summary>
+        public bool? LogUpnExtraction { get; set; }
     }
 }
