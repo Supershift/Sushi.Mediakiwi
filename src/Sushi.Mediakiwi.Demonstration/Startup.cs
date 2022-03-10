@@ -8,6 +8,7 @@ using Sushi.Mediakiwi.Data.Elastic;
 using System;
 using System.Text.Json;
 using Sushi.Mediakiwi.API.Extensions;
+using Sushi.MailTemplate.SendGrid;
 
 namespace Sushi.Mediakiwi.Demonstration
 {
@@ -82,6 +83,28 @@ namespace Sushi.Mediakiwi.Demonstration
             {
                 endpoints.MapControllers();
             });
+
+            // Set Azure Storage account for storing mail queues
+            var emailStorageAccount = Configuration["EmailStorageAccount"];
+            
+            // Set Azure storage account container for storing mail queues
+            var emailBlobContainer = Configuration["EmailBlobContainer"];
+
+            // Set Azure storage queue name for mail
+            var emailQueueName = Configuration["EmailQueueName"];
+
+            // Set Sendgrid API key for sending e-mails
+            var sendGridApiKey = Configuration["SendGridAPIKey"];
+
+            // Hook up the Mailer 
+            if (
+                string.IsNullOrWhiteSpace(emailStorageAccount) == false
+                && string.IsNullOrWhiteSpace(emailBlobContainer) == false
+                && string.IsNullOrWhiteSpace(emailQueueName) == false
+                && string.IsNullOrWhiteSpace(sendGridApiKey) == false)
+            {
+                _ = new Mailer(emailStorageAccount, emailBlobContainer, emailQueueName, sendGridApiKey);
+            }
         }
     }
 }

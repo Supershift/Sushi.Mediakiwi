@@ -124,6 +124,8 @@ namespace Sushi.Mediakiwi.Demonstration.Templates.List
                 {
                     FormMaps.Add(map);
                 }
+
+                wim.AddTab(typeof(DemoList1), -1);
             }
         }
 

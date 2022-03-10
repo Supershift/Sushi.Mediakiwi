@@ -142,10 +142,20 @@ namespace Sushi.Mediakiwi.Demonstration.Templates.List
 
         private async Task DemoList1_ListSave(ComponentListEventArgs arg)
         {
+            if (Implement == null)
+            {
+                Implement = new Data.DemoObject1();
+            }
             Utils.ReflectProperty(this, Implement);
+
             if (Implement.Updated == DateTime.MinValue)
             {
                 Implement.Updated = null;
+            }
+
+            if (Implement.Created == DateTime.MinValue)
+            {
+                Implement.Created = DateTime.UtcNow;
             }
 
             await Implement.SaveAsync();

@@ -65,6 +65,9 @@
     <Folder Include="wwwroot\Images\" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Sushi.MailTemplate" Version="2.0.0" />
+    <PackageReference Include="Sushi.MailTemplate.MediaKiwi.UI" Version="2.0.0" />
+    <PackageReference Include="Sushi.MailTemplate.SendGrid" Version="2.0.0" />
     <PackageReference Include="Sushi.MicroORM" Version="2.0.0" />
   </ItemGroup>
   <ItemGroup>

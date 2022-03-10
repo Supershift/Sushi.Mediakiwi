@@ -14,6 +14,52 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
     {
         public async Task<Api.MediakiwiField> GetApiFieldAsync()
         {
+            ListItemCollection optionsList = new ListItemCollection();
+
+            if (m_ListItemCollection == null || m_ListItemCollection?.Count == 0)
+            {
+                if (m_FolderType == FolderType.Gallery)
+                {
+                    var galleries = Gallery.SelectAllAccessible(Console.CurrentApplicationUser);
+                    foreach (var item in galleries)
+                    {
+                        m_ListItemCollection.Add(new ListItem(item.CompletePath, item.ID.ToString()));
+                    }
+                }
+                else
+                {
+                    Folder[] folders = Folder.SelectAll(m_FolderType, Console.CurrentListInstance.wim.CurrentSite.ID);
+                    folders = Folder.ValidateAccessRight(folders, Console.CurrentApplicationUser);
+                    foreach (Folder item in folders)
+                    {
+                        m_ListItemCollection.Add(new ListItem(item.CompletePath, item.ID.ToString()));
+                    }
+                }
+            }
+
+            if (m_ListItemCollection != null)
+            {
+                foreach (var li in m_ListItemCollection)
+                {
+                    if (string.IsNullOrWhiteSpace(li.Value))
+                    {
+                        continue;
+                    }
+
+
+                    bool selected = OutputText == li.Value;
+
+                    optionsList.Add(new ListItem()
+                    {
+                        Text = li.Text,
+                        Value = li.Value,
+                        Enabled = (m_ListItemCollection.Count == 1 && string.IsNullOrEmpty(li.Text)),
+                        Selected = selected,
+                    });
+
+                }
+            }
+
             return new Api.MediakiwiField()
             {
                 Event = m_AutoPostBack ? Api.MediakiwiJSEvent.Change : Api.MediakiwiJSEvent.None,
@@ -22,10 +68,11 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                 Expression = Expression,
                 PropertyName = ID,
                 PropertyType = (Property == null) ? typeof(DateTime).FullName : Property.PropertyType.FullName,
-                VueType = Api.MediakiwiFormVueType.undefined,
+                VueType = Api.MediakiwiFormVueType.wimChoiceDropdown,
                 ReadOnly = IsReadOnly,
                 ContentTypeID = ContentTypeSelection,
                 IsAutoPostback = m_AutoPostBack,
+                Options = optionsList,
                 IsMandatory = Mandatory,
                 MaxLength = MaxValueLength,
                 HelpText = InteractiveHelp,
@@ -410,6 +457,11 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
 
                 build.Append(GetSimpleTextElement(candidate));
             }
+
+            // Get API field and add it to response
+            var apiField = Task.Run(async () => await GetApiFieldAsync().ConfigureAwait(false)).Result;
+            build.ApiResponse.Fields.Add(apiField);
+
             return ReadCandidate(OutputText);
         }
 

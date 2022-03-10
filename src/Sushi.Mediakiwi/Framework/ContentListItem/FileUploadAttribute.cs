@@ -12,7 +12,7 @@ namespace Sushi.Mediakiwi.Framework.ContentListItem
     {
         public async Task<Api.MediakiwiField> GetApiFieldAsync()
         {
-            return new Api.MediakiwiField()
+            var result = new Api.MediakiwiField()
             {
                 Event = m_AutoPostBack ? Api.MediakiwiJSEvent.Change : Api.MediakiwiJSEvent.None,
                 Title = MandatoryWrap(Title),
@@ -29,8 +29,15 @@ namespace Sushi.Mediakiwi.Framework.ContentListItem
                 MaxLength = MaxValueLength,
                 HelpText = InteractiveHelp,
                 FormSection = GetFormMapClass(),
-                Hidden = IsCloaked
+                Hidden = IsCloaked,
             };
+            
+            if (string.IsNullOrWhiteSpace(Accept) == false)
+            {
+                result.AdditionalData.Add("setting_accept", Accept);
+            }
+
+            return result;
         }
 
         /// <summary>
@@ -148,6 +155,10 @@ namespace Sushi.Mediakiwi.Framework.ContentListItem
                   )
               );//<br class=""clear"">
 
+
+            // Get API field and add it to response
+            var apiField = Task.Run(async () => await GetApiFieldAsync().ConfigureAwait(false)).Result;
+            build.ApiResponse.Fields.Add(apiField);
 
             return null;
         }

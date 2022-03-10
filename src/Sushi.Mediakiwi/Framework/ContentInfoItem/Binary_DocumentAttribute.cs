@@ -378,6 +378,12 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                 }
                 build.Append(GetSimpleTextElement(OutputText));
             }
+
+            // Get API field and add it to response
+            var apiField = Task.Run(async () => await GetApiFieldAsync().ConfigureAwait(false)).Result;
+            build.ApiResponse.Fields.Add(apiField);
+
+
             return ReadCandidate(m_Candidate.ID);
         }
 

@@ -500,6 +500,19 @@ namespace Sushi.Mediakiwi.API.Services
                 }
             }
 
+            // Check if the field has additional setings assigned to it
+            if (field.AdditionalData?.Count > 0)
+            {
+                foreach (var setting in field.AdditionalData.Where(x => x.Key.StartsWith("setting_", StringComparison.InvariantCultureIgnoreCase)))
+                {
+                    if (newField.Settings == null)
+                    {
+                        newField.Settings = new Dictionary<string, string>();
+                    }
+
+                    newField.Settings.Add(setting.Key.Replace("setting_", "", StringComparison.InvariantCultureIgnoreCase), setting.Value.ToString());
+                }
+            }
             return newField;
         }
 
@@ -565,9 +578,13 @@ namespace Sushi.Mediakiwi.API.Services
                     {
                         string prefix = _resolver.UrlBuild.GetListRequest(_resolver.ListID.Value, _resolver.ItemID);
                         if (prefix.Contains("?"))
+                        {
                             newButton.Url = string.Concat(prefix, "&openinframe=1");
+                        }
                         else
+                        {
                             newButton.Url = string.Concat(prefix, "?openinframe=1");
+                        }
                     }
                 }
                 else if (string.IsNullOrWhiteSpace(setUrl) == false)

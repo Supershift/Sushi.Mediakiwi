@@ -155,5 +155,11 @@ namespace Sushi.Mediakiwi.API.Transport
         /// </summary>
         [JsonPropertyName("isAutoPostback")]
         public bool IsAutoPostback { get; set; }
+
+        /// <summary>
+        /// Any additional settings that apply for this field.
+        /// </summary>
+        [JsonPropertyName("settings")]
+        public Dictionary<string, string> Settings { get; internal set; }
     }
 }
