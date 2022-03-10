@@ -669,17 +669,36 @@ namespace Sushi.Mediakiwi.UI
                 {
                     //  Redirect to the containing folder
                     if (_Console.CurrentList.Type == ComponentListType.Documents)
+                    {
                         _Console.Response.Redirect(string.Concat(_Console.WimPagePath, "?gallery=", _Console.CurrentListInstance.wim.CurrentFolder.ID));
+                    }
                     else if (_Console.CurrentListInstance.wim.CurrentFolder.Type == FolderType.Gallery)
+                    {
                         _Console.Response.Redirect(string.Concat(_Console.WimPagePath, "?gallery=", _Console.CurrentListInstance.wim.CurrentFolder.ParentID));
+                    }
                     else if (_Console.CurrentList.Type == ComponentListType.Folders)
+                    {
                         _Console.Response.Redirect(string.Concat(_Console.WimPagePath, "?folder=", _Console.CurrentListInstance.wim.CurrentFolder.ParentID));
+                    }
                     else if (_Console.Group.HasValue)
-                        _Console.Response.Redirect(string.Concat(_Console.CurrentListInstance.wim.SearchResultItemPassthroughParameter, "=0"), true);
+                    {
+                        if (string.IsNullOrWhiteSpace(_Console.CurrentListInstance.wim.SearchResultItemPassthroughParameter) == false)
+                        {
+                            _Console.Response.Redirect(_Console.CurrentListInstance.wim.SearchResultItemPassthroughParameter, true);
+                        }
+                        else 
+                        {
+                            _Console.Response.Redirect(_Console.UrlBuild.GetListRequest(_Console.Group.Value, _Console.GroupItem), true);
+                        }
+                    }
                     else if (_Console.CurrentList.Type == ComponentListType.ComponentListProperties)
+                    {
                         _Console.Response.Redirect(string.Concat(_Console.WimPagePath, "?folder=", _Console.CurrentListInstance.wim.CurrentFolder.ID));
+                    }
                     else
+                    {
                         _Console.Response.Redirect(_Console.CurrentListInstance.wim.GetUrl(new KeyValue[] { new KeyValue("item", true) }));
+                    }
                 }
             }
 

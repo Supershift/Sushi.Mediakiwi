@@ -1831,17 +1831,17 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                             {
                                 if (container.Group.HasValue)
                                 {
-                                    container.Redirect(string.Concat(listurl, $"?item=0&group={container.Group.Value}&groupitem={container.GroupItem.GetValueOrDefault(0)}&", folderInfo));
+                                    container.Redirect(string.Concat(listurl, $"?item=0&group={container.Group.Value}&groupitem={container.GroupItem.GetValueOrDefault(0)}", string.IsNullOrWhiteSpace(folderInfo) ? "" : $"&{folderInfo}"));
                                 }
                                 else
                                 {
-                                    if (folderInfo == null)
+                                    if (string.IsNullOrWhiteSpace(folderInfo))
                                     {
                                         container.Redirect(listurl);
                                     }
                                     else
                                     {
-                                        container.Redirect(string.Concat(listurl, "?", folderInfo));
+                                        container.Redirect(string.Concat(listurl, $"?{folderInfo}"));
                                     }
                                 }
                             }
@@ -1850,7 +1850,18 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                                 //  Redirect to list view
                                 if (container.CurrentListInstance.wim.CurrentList.Data["wim_AfterSaveListView"].ParseBoolean())
                                 {
-                                    container.Redirect(listurl, true);
+                                    if (string.IsNullOrWhiteSpace(container?.CurrentListInstance?.wim?.SearchResultItemPassthroughParameter) == false)
+                                    {
+                                        container.Redirect(container.CurrentListInstance.wim.SearchResultItemPassthroughParameter);
+                                    }
+                                    else if (container.Group.HasValue)
+                                    {
+                                        container.Redirect(container.UrlBuild.GetListRequest(container.Group.Value, container.GroupItem), true);
+                                    }
+                                    else
+                                    {
+                                        container.Redirect(listurl, true);
+                                    }
                                 }
                                 else if (!container.IsJson)
                                 {

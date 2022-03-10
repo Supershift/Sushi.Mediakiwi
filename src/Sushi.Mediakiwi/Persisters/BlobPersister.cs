@@ -62,7 +62,7 @@ namespace Sushi.Mediakiwi.Persisters
                 return null;
             }
         }
-            
+
         public async Task<BlobClient> GetBlockBlobReferenceAsync(string containerName, string blobName)
         {
             var storageAccount = new BlobContainerClient(ConnectionString, containerName);
@@ -85,11 +85,11 @@ namespace Sushi.Mediakiwi.Persisters
             return blob;
         }
 
-        public string GetSasTokenLink(string containerName, string blobName)
+        public string GetSasTokenLink(string containerName)
         {
             var storageAccount = new BlobContainerClient(ConnectionString, containerName);
 
-            var uri = storageAccount.GenerateSasUri( BlobContainerSasPermissions.Read, DateTimeOffset.UtcNow.AddHours(1));
+            var uri = storageAccount.GenerateSasUri(BlobContainerSasPermissions.Read, DateTimeOffset.UtcNow.AddHours(1));
             return uri.ToString();
         }
 
