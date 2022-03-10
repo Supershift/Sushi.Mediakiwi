@@ -1381,10 +1381,11 @@ namespace Sushi.Mediakiwi.UI
         {
             if (WimServerConfiguration.Instance.Authentication != null && WimServerConfiguration.Instance.Authentication.Aad != null && WimServerConfiguration.Instance.Authentication.Aad.Enabled && _Console.CurrentApplicationUser == null)
             {
-                if (!string.IsNullOrEmpty(_Console.GetSafePost("id_token")))
+                var jwt = _Console.GetSafePost("id_token");
+                if (!string.IsNullOrEmpty(jwt))
                 {
-                    string email = await OAuth2Logic.ExtractUpnAsync(WimServerConfiguration.Instance.Authentication, _Console.GetSafePost("id_token")).ConfigureAwait(false);
-                
+                    string email = await OAuth2Logic.ExtractUpnAsync(WimServerConfiguration.Instance.Authentication, jwt, _Context).ConfigureAwait(false);
+
                     if (!string.IsNullOrEmpty(email))
                     {
                         // do login
