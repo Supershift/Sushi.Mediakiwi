@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Protocols;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Sushi.Mediakiwi.Authentication;
 using Sushi.Mediakiwi.Framework;
 using Sushi.Mediakiwi.PageModules.ExportPage;
@@ -50,6 +52,16 @@ namespace Sushi.Mediakiwi
                 .AddScheme<MediaKiwiAuthenticationOptions, MediaKiwiAuthenticationHandler>(AuthenticationDefaults.AuthenticationScheme, null);
             
             services.AddSingleton<IPageModule, ExportPageModule>();
+
+            services.AddSingleton(s =>
+            {
+                // todo: inject config using options pattern
+                string tenant = Data.Configuration.WimServerConfiguration.Instance?.Authentication?.Aad?.Tenant;
+                var stsDiscoveryEndpoint = $@"https://login.microsoftonline.com/{tenant}/.well-known/openid-configuration";
+                var result = new ConfigurationManager<OpenIdConnectConfiguration>(stsDiscoveryEndpoint, new OpenIdConnectConfigurationRetriever());
+                result.AutomaticRefreshInterval = System.TimeSpan.FromHours(1);
+                return result;
+            });
         }
     }
 }

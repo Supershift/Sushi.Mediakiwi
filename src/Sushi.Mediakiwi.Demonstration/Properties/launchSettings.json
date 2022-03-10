@@ -7,14 +7,14 @@
       "sslPort": 0
     },
     "iisExpress": {
-      "applicationUrl": "http://localhost:20371",
+      "applicationUrl": "https://localhost:44367",
       "sslPort": 44367
     }
   },
   "profiles": {
     "IIS Express": {
       "commandName": "IISExpress",
-      "launchUrl": "https://localhost:44367/mediakiwi/default_application?top=3",
+      "launchUrl": "https://localhost:44367/mediakiwi",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
