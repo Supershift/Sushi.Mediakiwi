@@ -175,5 +175,7 @@ namespace Sushi.Mediakiwi.Data.Configuration
         public string Client { get; set; }
         public string Tenant { get; set; }
         public string EmailClaim { get; set; }
+        public bool? LogUpnExtraction { get; set; }
+        public bool? LogUpnExtractionErrors { get; set; }
     }
 }
