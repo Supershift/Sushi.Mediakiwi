@@ -380,6 +380,11 @@
             Does this field trigger a postback
             </summary>
         </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.ContentField.Settings">
+            <summary>
+            Any additional settings that apply for this field.
+            </summary>
+        </member>
         <member name="F:Sushi.Mediakiwi.API.Transport.ContentResponseTypeEnum.Page">
             <summary>
             The response type is a Page
