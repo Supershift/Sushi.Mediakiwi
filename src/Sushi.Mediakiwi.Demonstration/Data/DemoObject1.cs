@@ -2,6 +2,7 @@
 using Sushi.MicroORM.Mapping;
 using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace Sushi.Mediakiwi.Demonstration.Data
@@ -27,6 +28,16 @@ namespace Sushi.Mediakiwi.Demonstration.Data
         public string Group { get; set; }
         public DateTime Created { get; set; }
         public DateTime? Updated { get; set; }
+
+
+        [JsonIgnore]
+        public string JSON
+        {
+            get
+            {
+                return System.Text.Json.JsonSerializer.Serialize(this);
+            }
+        }
         
         public static async Task<List<DemoObject1>> FetchAllAsync()
         {

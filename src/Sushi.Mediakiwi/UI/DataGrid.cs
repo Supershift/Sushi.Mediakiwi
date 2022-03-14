@@ -803,7 +803,8 @@ namespace Sushi.Mediakiwi.UI
                             col.Type == ListDataColumnType.ExportOnly 
                             || col.Type == ListDataColumnType.Highlight 
                             || col.Type == ListDataColumnType.UniqueIdentifier 
-                            || col.Type == ListDataColumnType.UniqueHighlightedIdentifier);
+                            || col.Type == ListDataColumnType.UniqueHighlightedIdentifier
+                            || col.Type == ListDataColumnType.APIOnly);
 
                         if (col.ColumnWidth == 0 && !isHidden)
                             throw new Exception(string.Format("When applying scrolling all columns should have a fixed with. This is not set for '{0}'", col.ColumnValuePropertyName));
@@ -2876,7 +2877,8 @@ namespace Sushi.Mediakiwi.UI
             if (type == ListDataColumnType.ExportOnly ||
                 type == ListDataColumnType.Highlight ||
                 type == ListDataColumnType.UniqueHighlightedIdentifier ||
-                type == ListDataColumnType.UniqueIdentifier)
+                type == ListDataColumnType.UniqueIdentifier ||
+                type == ListDataColumnType.APIOnly)
                 return false;
 
             return true;

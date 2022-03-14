@@ -29,9 +29,20 @@ namespace Sushi.Mediakiwi.Demonstration.Templates.List
             ListSave += DemoList1_ListSave;
             ListDelete += DemoList1_ListDelete;
             ListDataReceived += DemoList1_ListDataReceived;
+            ListDataItemCreated += DemoList1_ListDataItemCreated;
         }
 
- 
+        private void DemoList1_ListDataItemCreated(object sender, ListDataItemCreatedEventArgs e)
+        {
+            if (e.Item is Data.DemoObject1 item && e.Type == DataItemType.TableCell)
+            {
+                if (e.ColumnProperty == nameof(Data.DemoObject1.ID))
+                {
+                    e.Attribute.Add("Something", $"dinges_{item.ID}");
+                }
+            }
+        }
+
         private async Task DemoList1_ListDataReceived(Framework.EventArguments.ComponentListDataReceived arg)
         {
             if (string.IsNullOrWhiteSpace(arg.FullTypeName) == false)
@@ -179,6 +190,7 @@ namespace Sushi.Mediakiwi.Demonstration.Templates.List
             
             wim.ListDataColumns.Add(new ListDataColumn("ID", nameof(Data.DemoObject1.ID), ListDataColumnType.UniqueIdentifier));
             wim.ListDataColumns.Add(new ListDataColumn("Title", nameof(Data.DemoObject1.Title), ListDataColumnType.HighlightPresent));
+            wim.ListDataColumns.Add(new ListDataColumn("JSON", nameof(Data.DemoObject1.JSON), ListDataColumnType.APIOnly));
             wim.ListDataColumns.Add(new ListDataColumn("Group", nameof(Data.DemoObject1.Group), ListDataColumnType.Default));
             wim.ListDataColumns.Add(new ListDataColumn("Created", nameof(Data.DemoObject1.Created), ListDataColumnType.Default) { ColumnWidth = 90 });
             wim.ListDataColumns.Add(new ListDataColumn("Updated", nameof(Data.DemoObject1.Updated), ListDataColumnType.Default) { ColumnWidth = 90 });
