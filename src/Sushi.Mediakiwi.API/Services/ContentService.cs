@@ -112,7 +112,7 @@ namespace Sushi.Mediakiwi.API.Services
 
             #region Columns
 
-            foreach (var col in _resolver.ListInstance.wim.ListDataColumns.List)
+            foreach (var col in _resolver.ListInstance.wim.ListDataColumns.List.Where(x => x.Type != ListDataColumnType.APIExcluded))
             {
                 grid.Columns.Add(new ListColumn()
                 {
@@ -175,7 +175,7 @@ namespace Sushi.Mediakiwi.API.Services
                     };
 
 
-                    foreach (var col in _resolver.ListInstance.wim.ListDataColumns.List)
+                    foreach (var col in _resolver.ListInstance.wim.ListDataColumns.List.Where(x => x.Type != ListDataColumnType.APIExcluded))
                     {
                         int? rowId = null;
 

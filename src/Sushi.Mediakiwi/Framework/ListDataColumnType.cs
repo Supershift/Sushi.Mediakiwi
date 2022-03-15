@@ -70,6 +70,11 @@
         /// Will only be rendered to the API output.
         /// The column doesn't show in the presented list.
         /// </summary>
-        APIOnly = 11
+        APIOnly = 11,
+
+        /// <summary>
+        /// Will not be rendered to the API output.
+        /// </summary>
+        APIExcluded = 12
     }
 }
