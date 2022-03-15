@@ -106,7 +106,8 @@ namespace Sushi.Mediakiwi.API.Services
             {
                 ListDataColumnType.Highlight,
                 ListDataColumnType.UniqueHighlightedIdentifier,
-                ListDataColumnType.UniqueIdentifier
+                ListDataColumnType.UniqueIdentifier,
+                ListDataColumnType.APIOnly
             };
 
             #region Columns
