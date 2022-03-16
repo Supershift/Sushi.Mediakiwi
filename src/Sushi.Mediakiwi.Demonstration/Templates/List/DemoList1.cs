@@ -191,6 +191,7 @@ namespace Sushi.Mediakiwi.Demonstration.Templates.List
             wim.ListDataColumns.Add(new ListDataColumn("ID", nameof(Data.DemoObject1.ID), ListDataColumnType.UniqueIdentifier));
             wim.ListDataColumns.Add(new ListDataColumn("Title", nameof(Data.DemoObject1.Title), ListDataColumnType.HighlightPresent));
             wim.ListDataColumns.Add(new ListDataColumn("JSON", nameof(Data.DemoObject1.JSON), ListDataColumnType.APIOnly));
+            wim.ListDataColumns.Add(new ListDataColumn("UI Only", nameof(Data.DemoObject1.ExcludedFromApi), ListDataColumnType.APIExcluded));
             wim.ListDataColumns.Add(new ListDataColumn("Group", nameof(Data.DemoObject1.Group), ListDataColumnType.Default));
             wim.ListDataColumns.Add(new ListDataColumn("Created", nameof(Data.DemoObject1.Created), ListDataColumnType.Default) { ColumnWidth = 90 });
             wim.ListDataColumns.Add(new ListDataColumn("Updated", nameof(Data.DemoObject1.Updated), ListDataColumnType.Default) { ColumnWidth = 90 });

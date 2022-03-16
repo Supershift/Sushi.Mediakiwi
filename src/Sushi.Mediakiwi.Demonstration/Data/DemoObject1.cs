@@ -38,7 +38,9 @@ namespace Sushi.Mediakiwi.Demonstration.Data
                 return System.Text.Json.JsonSerializer.Serialize(this);
             }
         }
-        
+
+        public string ExcludedFromApi { get; set; } = "Not in API response";
+
         public static async Task<List<DemoObject1>> FetchAllAsync()
         {
             var connector = new Connector<DemoObject1>();
