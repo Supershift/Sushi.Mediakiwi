@@ -19,10 +19,11 @@ namespace Sushi.Mediakiwi.Demonstration.Data
                 Map(x => x.Created, "DemoObject1_Created");
                 Map(x => x.Updated, "DemoObject1_Updated");
                 Map(x => x.Group, "DemoObject1_GroupName").Length(50);
-                
+                Map(x => x.ImageID, "DemoObject1_Image_Key");
             }
         }
 
+        public int? ImageID { get; set; }
         public int ID { get; set; }
         public string Title { get; set; }
         public string Group { get; set; }

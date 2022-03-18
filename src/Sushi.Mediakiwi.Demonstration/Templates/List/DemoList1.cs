@@ -259,6 +259,9 @@ namespace Sushi.Mediakiwi.Demonstration.Templates.List
         [Date("Updated date", false)]
         public DateTime Updated { get; set; }
 
+        [Binary_Image("Select image", false)]
+        public int? ImageID { get; set; }
+
         [DataList(typeof(DemoList2))]
         public DataList Items2 { get; set; }
 
