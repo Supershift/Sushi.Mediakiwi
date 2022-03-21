@@ -1,10 +1,12 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Sushi.Mediakiwi.API.Filters;
+using Sushi.Mediakiwi.API.Transport;
 using Sushi.Mediakiwi.API.Transport.Requests;
 using Sushi.Mediakiwi.API.Transport.Responses;
 using Sushi.Mediakiwi.Data.Configuration;
 using Sushi.Mediakiwi.Persisters;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -34,6 +36,21 @@ namespace Sushi.Mediakiwi.API.Controllers
         private static BlobPersister GetPersistor
         {
             get { return new BlobPersister(); }
+        }
+
+        protected Data.IApplicationUser MediakiwiUser
+        {
+            get
+            {
+                if (HttpContext.Items.ContainsKey(Common.API_USER_CONTEXT))
+                {
+                    return HttpContext.Items[Common.API_USER_CONTEXT] as Data.IApplicationUser;
+                }
+                else
+                {
+                    return null;
+                }
+            }
         }
 
         private System.Drawing.Image CreateThumbnailImage(System.Drawing.Image input)
@@ -66,6 +83,32 @@ namespace Sushi.Mediakiwi.API.Controllers
             {
                 return null;
             }
+        }
+
+        /// <summary>
+        /// Returns all galleries that are available for the supplied user
+        /// </summary>
+        /// <returns></returns>
+        [Produces("application/json")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [HttpGet("GetGalleries")]
+        public async Task<ActionResult<List<ListItemCollectionOption>>> GetGalleries()
+        {
+            var temp = new List<ListItemCollectionOption>();
+
+            var galleries = await Data.Gallery.SelectAllAccessibleAsync(MediakiwiUser);
+            foreach (var gallery in galleries)
+            {
+                temp.Add(new ListItemCollectionOption() 
+                { 
+                    Text = gallery.CompletePath, 
+                    Value = gallery.ID.ToString(), 
+                    IsEnabled = true 
+                });
+            }
+
+            return Ok(temp);
         }
 
         /// <summary>
