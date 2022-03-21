@@ -4,6 +4,12 @@
         <name>Sushi.Mediakiwi.API</name>
     </assembly>
     <members>
+        <member name="M:Sushi.Mediakiwi.API.Controllers.AssetController.GetGalleries">
+            <summary>
+            Returns all galleries that are available for the supplied user
+            </summary>
+            <returns></returns>
+        </member>
         <member name="M:Sushi.Mediakiwi.API.Controllers.AssetController.SaveAsset(Sushi.Mediakiwi.API.Transport.Requests.SaveAssetRequest)">
             <summary>
             Saves the supplied asset to Azure and returns information about the created/updated asset
