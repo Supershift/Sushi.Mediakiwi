@@ -4,6 +4,19 @@
         <name>Sushi.Mediakiwi.API</name>
     </assembly>
     <members>
+        <member name="M:Sushi.Mediakiwi.API.Controllers.AssetController.GetGalleries">
+            <summary>
+            Returns all galleries that are available for the supplied user
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Sushi.Mediakiwi.API.Controllers.AssetController.SaveAsset(Sushi.Mediakiwi.API.Transport.Requests.SaveAssetRequest)">
+            <summary>
+            Saves the supplied asset to Azure and returns information about the created/updated asset
+            </summary>
+            <param name="request">Contains all information about the asset</param>
+            <returns></returns>
+        </member>
         <member name="M:Sushi.Mediakiwi.API.Controllers.Authentication.Login(Sushi.Mediakiwi.API.Transport.Requests.LoginRequest)">
             <summary>
             Logs a user in based on their Email / Password combination. 
@@ -850,6 +863,36 @@
             The name of the field that caused this post to happen
             </summary>
         </member>
+        <member name="T:Sushi.Mediakiwi.API.Transport.Requests.SaveAssetRequest">
+            <summary>
+            The request object for updating/creating an asset
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.Requests.SaveAssetRequest.ID">
+            <summary>
+            The Identifier for the asset to update, or 0 when it's a new asset
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.Requests.SaveAssetRequest.Title">
+            <summary>
+            The title for the asset
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.Requests.SaveAssetRequest.GalleryID">
+            <summary>
+            The gallery to which the asset should be saved
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.Requests.SaveAssetRequest.Description">
+            <summary>
+            The description for the asset
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.Requests.SaveAssetRequest.Data">
+            <summary>
+            The actual posted data which contains the asset data.
+            </summary>
+        </member>
         <member name="P:Sushi.Mediakiwi.API.Transport.ResourceItem.Type">
             <summary>
             The type of resource (JS = 1, CSS = 2, HTML = 3)
@@ -873,6 +916,41 @@
         <member name="P:Sushi.Mediakiwi.API.Transport.ResourceItem.SourceCode">
             <summary>
             The Source code for this resource
+            </summary>
+        </member>
+        <member name="T:Sushi.Mediakiwi.API.Transport.Responses.SaveAssetResponse">
+            <summary>
+            The response object which is returned after updating or creating an asset
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.Responses.SaveAssetResponse.ID">
+            <summary>
+            The ID for the updated asset
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.Responses.SaveAssetResponse.Title">
+            <summary>
+            The title for the updated asset
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.Responses.SaveAssetResponse.GalleryID">
+            <summary>
+            The Gallery to which the asset has been saved
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.Responses.SaveAssetResponse.Description">
+            <summary>
+            The description for the asset
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.Responses.SaveAssetResponse.RemoteLocation">
+            <summary>
+            The remote location (Azure URL) for the asset
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.Responses.SaveAssetResponse.RemoteLocationThumb">
+            <summary>
+            The remove location (Azure URL) for the asset thumbnail (if any)
             </summary>
         </member>
         <member name="P:Sushi.Mediakiwi.API.Transport.SiteItem.ID">

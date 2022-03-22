@@ -197,12 +197,30 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                     var factor = ((float)maxThumbHeight / (float)imageHeight);
                     imageWidth = (int)(factor * imageWidth);
                     imageHeight = maxThumbHeight;
+
+                    // Resulting thumgnail is wider then the supplied max thumb width,
+                    // recalculate height
+                    if (imageWidth > maxThumbWidth)
+                    {
+                        factor = ((float)maxThumbWidth / (float)input.Width);
+                        imageHeight = (int)(factor * input.Height);
+                        imageWidth = maxThumbWidth;
+                    }
                 }
                 else
                 {
                     var factor = ((float)maxThumbWidth / (float)imageWidth);
                     imageHeight = (int)(factor * imageHeight);
                     imageWidth = maxThumbWidth;
+
+                    // Resulting thumgnail is higher then the supplied max thumb height,
+                    // recalculate width
+                    if (imageHeight > maxThumbHeight)
+                    {
+                        factor = ((float)maxThumbHeight / (float)input.Height);
+                        imageWidth = (int)(factor * input.Width);
+                        imageHeight = maxThumbHeight;
+                    }
                 }
 
                 return input.GetThumbnailImage(imageWidth, imageHeight, () => false, System.IntPtr.Zero);
@@ -241,7 +259,8 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                 if (_Form.File.File.ContentType.Equals("image/jpeg", System.StringComparison.InvariantCultureIgnoreCase) ||
                    _Form.File.File.ContentType.Equals("image/jpg", System.StringComparison.InvariantCultureIgnoreCase) ||
                    _Form.File.File.ContentType.Equals("image/gif", System.StringComparison.InvariantCultureIgnoreCase) ||
-                   _Form.File.File.ContentType.Equals("image/png", System.StringComparison.InvariantCultureIgnoreCase))
+                   _Form.File.File.ContentType.Equals("image/png", System.StringComparison.InvariantCultureIgnoreCase) ||
+                   _Form.File.File.ContentType.Equals("image/bmp", System.StringComparison.InvariantCultureIgnoreCase))
                 {
                     m_Implement.IsImage = true;
                     using (var image = System.Drawing.Image.FromStream(_Form.File.File.OpenReadStream()))

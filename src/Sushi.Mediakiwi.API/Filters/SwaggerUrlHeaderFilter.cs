@@ -3,6 +3,7 @@ using Microsoft.OpenApi.Any;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Sushi.Mediakiwi.API.Filters
 {
@@ -17,6 +18,11 @@ namespace Sushi.Mediakiwi.API.Filters
                 if (operation.Parameters == null)
                 {
                     operation.Parameters = new List<OpenApiParameter>();
+                }
+                // Skip this for the Asset Controller
+                if (operation.Tags.Any(x => x.Name == "Asset"))
+                {
+                    return;
                 }
 
                 operation.Parameters.Add(new OpenApiParameter
