@@ -68,12 +68,30 @@ namespace Sushi.Mediakiwi.API.Controllers
                     var factor = ((float)maxThumbHeight / (float)imageHeight);
                     imageWidth = (int)(factor * imageWidth);
                     imageHeight = maxThumbHeight;
+
+                    // Resulting thumbnail is wider then the supplied max thumb width,
+                    // recalculate height
+                    if (imageWidth > maxThumbWidth)
+                    {
+                        factor = ((float)maxThumbWidth / (float)input.Width);
+                        imageHeight = (int)(factor * input.Height);
+                        imageWidth = maxThumbWidth;
+                    }
                 }
                 else
                 {
                     var factor = ((float)maxThumbWidth / (float)imageWidth);
                     imageHeight = (int)(factor * imageHeight);
                     imageWidth = maxThumbWidth;
+
+                    // Resulting thumbnail is higher then the supplied max thumb height,
+                    // recalculate width
+                    if (imageHeight > maxThumbHeight) 
+                    {
+                        factor = ((float)maxThumbHeight / (float)input.Height);
+                        imageWidth = (int)(factor * input.Width);
+                        imageHeight = maxThumbHeight;
+                    }
                 }
 
                 return input.GetThumbnailImage(imageWidth, imageHeight, () => false, System.IntPtr.Zero);
@@ -129,6 +147,12 @@ namespace Sushi.Mediakiwi.API.Controllers
                 return BadRequest();
             }
 
+            // We received a filename without extension, throw an error
+            if (request.Data?.FileName?.Contains(".", System.StringComparison.InvariantCulture) == false)
+            {
+                return BadRequest();
+            }
+
             // New image
             if (request.ID.GetValueOrDefault(0) == 0)
             {
@@ -159,19 +183,20 @@ namespace Sushi.Mediakiwi.API.Controllers
             {
                 targetAsset.Type = request.Data.ContentType;
                 targetAsset.Extention = request.Data.FileName.Substring(request.Data.FileName.LastIndexOf('.'));
-                targetAsset.FileName = request.Data.FileName;
-                targetAsset.Size = request.Data.Length;
 
                 // set the new filename
                 targetAsset.FileName = request.Data.FileName;
+                targetAsset.Size = request.Data.Length;
+
 
                 // Whenever it's an image, extract image data
                 if (request.Data.ContentType.Equals("image/jpeg", System.StringComparison.InvariantCultureIgnoreCase) ||
                    request.Data.ContentType.Equals("image/jpg", System.StringComparison.InvariantCultureIgnoreCase) ||
                    request.Data.ContentType.Equals("image/gif", System.StringComparison.InvariantCultureIgnoreCase) ||
-                   request.Data.ContentType.Equals("image/png", System.StringComparison.InvariantCultureIgnoreCase))
+                   request.Data.ContentType.Equals("image/png", System.StringComparison.InvariantCultureIgnoreCase) ||
+                   request.Data.ContentType.Equals("image/bmp", System.StringComparison.InvariantCultureIgnoreCase))
                 {
-                    targetAsset.IsImage = true; 
+                    targetAsset.IsImage = true;
                     var extension = request.Data.FileName.Substring(request.Data.FileName.LastIndexOf('.') + 1);
                     var name = request.Data.FileName.Substring(0, request.Data.FileName.LastIndexOf('.'));
 
