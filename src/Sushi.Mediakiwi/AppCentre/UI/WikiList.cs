@@ -90,7 +90,7 @@ namespace Sushi.Mediakiwi.AppCentre.UI
 
         private async Task WikiList_ListSearch(ComponentListSearchEventArgs e)
         {
-            wim.ListDataColumns.Add(new ListDataColumn("", nameof(ArticleList.ID), ListDataColumnType.UniqueIdentifier));
+            wim.ListDataColumns.Add(new ListDataColumn("ID", nameof(ArticleList.ID), ListDataColumnType.UniqueIdentifier));
             wim.ListDataColumns.Add(new ListDataColumn("Title", nameof(ArticleList.Title)));
             wim.ListDataColumns.Add(new ListDataColumn("Summary", nameof(ArticleList.Summary)));
             wim.ListDataColumns.Add(new ListDataColumn("Author", nameof(ArticleList.Author)));
