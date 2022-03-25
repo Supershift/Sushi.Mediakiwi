@@ -29,7 +29,31 @@ namespace Sushi.Mediakiwi.API.Extensions
                 {
                     foreach (var element in map.Fields.Where(x => string.IsNullOrWhiteSpace(x?.PropertyName) == false))
                     {
-                        postForm.Add(element.PropertyName, element.Value);
+                        bool isHandled = false;
+
+                        if (element.ContentType == Transport.ContentTypeEnum.DateTime)
+                        {
+                            // It's a datetime like '25-03-2022 08:55' or '25/3/2022 5:44'
+                            // The Mediakiwi UI creates two seperate inputs for this type of field, so
+                            // We should do the same here
+                            if (element?.Value?.ToString().Contains(" ", StringComparison.InvariantCulture) == true)
+                            {
+                                var temp = element.Value.ToString().Split(' ');
+                                var datePart = temp.FirstOrDefault();
+                                var timePart = temp.LastOrDefault();
+                                if (string.IsNullOrWhiteSpace(datePart) == false && string.IsNullOrWhiteSpace(timePart) == false)
+                                {
+                                    isHandled = true;
+                                    postForm.Add(element.PropertyName, datePart);
+                                    postForm.Add($"{element.PropertyName}T", timePart);
+                                }
+                            }
+                        }
+
+                        if (isHandled == false)
+                        {
+                            postForm.Add(element.PropertyName, element.Value);
+                        }
                     }
                 }
             }
