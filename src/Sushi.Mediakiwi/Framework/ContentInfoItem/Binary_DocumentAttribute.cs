@@ -186,6 +186,16 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
             else
             {
                 var candidate = SelectedID;
+
+                if (!string.IsNullOrEmpty(Console.Form(ID)))
+                {
+                    var cand = Utility.ConvertToIntNullable(Console.Form(ID), true);
+                    if (cand.HasValue)
+                    {
+                        candidate = cand.Value;
+                    }
+                }
+
                 if (candidate.HasValue)
                 {
                     m_Candidate = Asset.SelectOne(candidate.Value).DocumentInstance;
