@@ -95,9 +95,11 @@ namespace Sushi.Mediakiwi.API.Controllers
                 // Whenever a postback hits, set editmode to true, so that 
                 // possible filters can be set
                 Resolver.ListInstance.wim.IsEditMode = true;
-
+                
                 // Set Correct View (Browsing mode / Edit mode)
-                if (Resolver.ItemID.GetValueOrDefault(-1) > -1 || Resolver.ItemObject != null)
+                if (Resolver.ItemID.GetValueOrDefault(-1) > -1 
+                    || Resolver.ItemObject != null 
+                    || Resolver?.ListInstance?.wim?.CanContainSingleInstancePerDefinedList == true)
                 {
                     // Edit / Save Mode
                     Resolver.ListInstance.wim.Console.View = 0; // 0 == ContainerView.ItemSelect
