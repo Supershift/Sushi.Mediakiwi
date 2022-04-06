@@ -1035,7 +1035,7 @@ namespace Sushi.Mediakiwi.API.Services
 
             if (_resolver.ListInstance?.wim?.Console?.Request?.HttpContext?.RequestServices?.GetServices<IListModule>().Any() == true)
             {
-                listModules = _resolver.ListInstance?.wim?.Console?.Request?.HttpContext?.RequestServices?.GetServices<IListModule>().ToList();
+                listModules = _resolver.ListInstance.wim.Console.Request.HttpContext.RequestServices.GetServices<IListModule>().ToList();
 
                 // Remove modules that shouldnt be in the corresponding List State
                 if (_resolver.ListInstance.wim.IsEditMode)
