@@ -610,7 +610,7 @@ namespace Sushi.Mediakiwi.API
                                 || ItemID.GetValueOrDefault(-1) == 0
                                 || ItemObject != null
                                 || AssetID.GetValueOrDefault(-1) == 0
-                                || (_console.JsonReferrer != null && _console.JsonReferrer.Equals("edit"))
+                                || (_console.JsonReferrer != null && _console.JsonReferrer.Equals("edit", StringComparison.InvariantCultureIgnoreCase))
                                 || _console.JsonForm != null;
 
 
@@ -621,9 +621,9 @@ namespace Sushi.Mediakiwi.API
                             m_instance.wim.IsDeleteMode = isDeletePostBack;
                         }
                         // Determine Edit state when we don't have an explicit Item
-                        else if (m_instance.wim.OpenInEditMode && m_instance.wim.CanContainSingleInstancePerDefinedList)
+                        else if (m_instance.wim.CanContainSingleInstancePerDefinedList)
                         {
-                            m_instance.wim.IsEditMode = true;
+                            m_instance.wim.IsEditMode = m_instance.wim.OpenInEditMode || isEditPostBack;
 
                             // Is the form in Save Mode
                             m_instance.wim.IsSaveMode = isSavePostBack;

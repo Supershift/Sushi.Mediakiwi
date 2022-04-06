@@ -1,9 +1,13 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.DependencyInjection;
 using Sushi.Mediakiwi.API.Filters;
 using Sushi.Mediakiwi.API.Services;
 using Sushi.Mediakiwi.API.Transport.Requests;
 using Sushi.Mediakiwi.API.Transport.Responses;
+using Sushi.Mediakiwi.Framework.Interfaces;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Sushi.Mediakiwi.API.Controllers
@@ -111,6 +115,37 @@ namespace Sushi.Mediakiwi.API.Controllers
                 }
 
                 result.List = await _contentService.GetListResponseAsync(Resolver).ConfigureAwait(false);
+
+                // List Module addition
+                if (request?.PostedField?.StartsWith("listmod_", System.StringComparison.InvariantCulture) == true)
+                {
+                    string pBack = request.PostedField.Replace("listmod_", "", System.StringComparison.InvariantCultureIgnoreCase);
+
+                    IListModule targetListModule = default(IListModule);
+
+                    if (HttpContext?.RequestServices?.GetServices<IListModule>().Any() == true)
+                    {
+                        targetListModule = HttpContext.RequestServices.GetServices<IListModule>().FirstOrDefault(x => x.GetType().Name == pBack);
+                    }
+
+                    if (targetListModule != null)
+                    {
+                        try
+                        {
+                            var temp = await targetListModule.ExecuteAsync(Resolver.ListInstance, Resolver.ApplicationUser, HttpContext);
+                            if (temp.IsSuccess && string.IsNullOrWhiteSpace(temp.RedirectUrl) == false)
+                            { 
+                                result.List.RedirectURL = temp.RedirectUrl;
+                            }
+                        }
+                        catch (System.Exception ex)
+                        {
+                            await Data.Notification.InsertOneAsync(pBack, ex);
+                        }
+                    }
+
+                }
+
                 result.IsEditMode = result.List.IsEditMode;
                 result.StatusCode = System.Net.HttpStatusCode.OK;
             }

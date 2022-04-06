@@ -8,6 +8,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Reflection;
 using Sushi.Mediakiwi.API.Extensions;
+using Sushi.Mediakiwi.Framework.Interfaces;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Sushi.Mediakiwi.API.Services
 {
@@ -261,7 +263,7 @@ namespace Sushi.Mediakiwi.API.Services
             }
 
             grid.Buttons.AddRange(GetInternalButtons());
-
+            grid.Buttons.AddRange(GetListModules());
 
             #endregion Buttons
 
@@ -924,6 +926,7 @@ namespace Sushi.Mediakiwi.API.Services
 
                         // Add internal Buttons (EDIT, SAVE, DELETE)
                         newFormMap.Buttons.AddRange(GetInternalButtons());
+                        newFormMap.Buttons.AddRange(GetListModules());
 
                         result.Add(newFormMap);
                     }
@@ -1020,6 +1023,56 @@ namespace Sushi.Mediakiwi.API.Services
             return formMap;
         }
         #endregion Get Form Maps
+        
+        #region Get list Modules (Buttons)
+
+        private List<ButtonField> GetListModules()
+        {
+            List<ButtonField> result = new List<ButtonField>();
+
+            List<IListModule> listModules = default(List<IListModule>);
+
+
+            if (_resolver.ListInstance?.wim?.Console?.Request?.HttpContext?.RequestServices?.GetServices<IListModule>().Any() == true)
+            {
+                listModules = _resolver.ListInstance?.wim?.Console?.Request?.HttpContext?.RequestServices?.GetServices<IListModule>().ToList();
+
+                // Remove modules that shouldnt be in the corresponding List State
+                if (_resolver.ListInstance.wim.IsEditMode)
+                {
+                    listModules.RemoveAll(x => x.ShowInEditMode == false);
+                }
+                else
+                {
+                    listModules.RemoveAll(x => x.ShowInSearchMode == false);
+                }
+
+                foreach (var mod in listModules)
+                {
+                    if (mod.ShowOnList(_resolver.ListInstance, _resolver.ApplicationUser))
+                    {
+                        result.Add(new ButtonField()
+                        {
+                            AskConfirmation = mod.ConfirmationNeeded,
+                            ClassName = mod.IconClass,
+                            ConfirmationTitle = mod.ConfirmationTitle,
+                            ConfirmationQuestion = mod.ConfirmationQuestion,
+                            ContentType = ConvertEnum(Data.ContentType.Button),
+                            Event = JSEventEnum.Click,
+                            VueType = VueTypeEnum.FormButton,
+                            PropertyName = $"listmod_{mod.GetType().Name}",
+                            PropertyType = typeof(bool).FullName,
+                            Title = "",
+                            HelpText = mod.Tooltip,
+                        });
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        #endregion Get list Modules (Buttons)
 
         #region Get Internal Buttons
 
