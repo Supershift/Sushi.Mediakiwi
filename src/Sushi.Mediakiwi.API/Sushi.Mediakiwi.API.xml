@@ -49,6 +49,15 @@
             <response code="400">Some needed information is missing from the request</response>
             <response code="401">The user is not succesfully authenticated</response>
         </member>
+        <member name="M:Sushi.Mediakiwi.API.Controllers.Authentication.SetPassword(Sushi.Mediakiwi.API.Transport.Requests.SetPasswordRequest)">
+            <summary>
+            Will Update the password for the supplied user.
+            </summary>
+            <returns></returns>
+            <response code="200">The password was succesfully updated</response>
+            <response code="400">Some request information is missing or incorrect</response>
+            <response code="401">The user is not succesfully authenticated</response>
+        </member>
         <member name="M:Sushi.Mediakiwi.API.Controllers.Content.GetContent(Sushi.Mediakiwi.API.Transport.Requests.GetContentRequest)">
             <summary>
             Returns the CMS content belonging to the URL being viewed.
@@ -863,6 +872,16 @@
             The name of the field that caused this post to happen
             </summary>
         </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.Requests.ResetPasswordRequest.EmailAddress">
+            <summary>
+            The E-mail address that requested a password reset
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.Requests.ResetPasswordRequest.SendEmail">
+            <summary>
+            Should we also send an Email to the user ? (Default = TRUE)
+            </summary>
+        </member>
         <member name="T:Sushi.Mediakiwi.API.Transport.Requests.SaveAssetRequest">
             <summary>
             The request object for updating/creating an asset
@@ -891,6 +910,21 @@
         <member name="P:Sushi.Mediakiwi.API.Transport.Requests.SaveAssetRequest.Data">
             <summary>
             The actual posted data which contains the asset data.
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.Requests.SetPasswordRequest.EmailAddress">
+            <summary>
+            The email address to set the password for
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.Requests.SetPasswordRequest.ResetGuid">
+            <summary>
+            The Reset GUID received in the password reset email
+            </summary>
+        </member>
+        <member name="P:Sushi.Mediakiwi.API.Transport.Requests.SetPasswordRequest.Password">
+            <summary>
+            The new password to set
             </summary>
         </member>
         <member name="P:Sushi.Mediakiwi.API.Transport.ResourceItem.Type">

@@ -1,15 +1,12 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
-using Microsoft.IdentityModel.Tokens;
 using Sushi.Mediakiwi.API.Transport.Requests;
 using Sushi.Mediakiwi.API.Transport.Responses;
 using Sushi.Mediakiwi.Data;
 using System;
 using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Sushi.Mediakiwi.API.Services
@@ -20,6 +17,56 @@ namespace Sushi.Mediakiwi.API.Services
         public UserService(IHttpContextAccessor _accessor)
         {
             _httpAccessor = _accessor;
+        }
+
+        public async Task<SetPasswordResponse> SetPassword(SetPasswordRequest request)
+        {
+            // Check the mandatory request values
+            if (request == null 
+                || string.IsNullOrWhiteSpace(request.EmailAddress) 
+                || string.IsNullOrWhiteSpace(request.ResetGuid)
+                || string.IsNullOrWhiteSpace(request.Password)
+                || Guid.TryParse(request.ResetGuid, out Guid userGuid) == false)
+            {
+                return new SetPasswordResponse()
+                {
+                    StatusCode = System.Net.HttpStatusCode.BadRequest
+                };
+            }
+
+            // Check the password strength
+            if (Data.Utility.IsStrongPassword(request.Password) == false)
+            {
+                return new SetPasswordResponse()
+                {
+                    StatusCode = System.Net.HttpStatusCode.BadRequest,
+                    Message = "This password is not strong enough"
+                };
+            }
+
+            // Retrieve the user
+            var user = await ApplicationUser.SelectOneByEmailAsync(request.EmailAddress).ConfigureAwait(false);
+
+            // Check for user existence, empty reset key, or resetkey mismatch
+            if (user?.ID > 0 == false || user.ResetKey.HasValue == false || user.ResetKey.Value.Equals(userGuid) == false)
+            {
+                return new SetPasswordResponse()
+                {
+                    StatusCode = System.Net.HttpStatusCode.Unauthorized
+                };
+            }
+
+            // Set the password
+            user.ApplyPassword(request.Password);
+            user.ResetKey = null;
+
+            // Save the user
+            await user.SaveAsync();
+
+            return new SetPasswordResponse()
+            {
+                StatusCode = System.Net.HttpStatusCode.OK
+            };
         }
 
         public async Task<ResetPasswordResponse> ResetPassword(ResetPasswordRequest request, Beta.GeneratedCms.Console console)
@@ -43,8 +90,8 @@ namespace Sushi.Mediakiwi.API.Services
                 };
             }
 
-            var emailed = await user.SendForgotPasswordAsync(console).ConfigureAwait(false);
-            if (emailed)
+            var SetResetGuid = await user.SendForgotPasswordAsync(console, request.SendEmail).ConfigureAwait(false);
+            if (SetResetGuid)
             {
                 return new ResetPasswordResponse()
                 {

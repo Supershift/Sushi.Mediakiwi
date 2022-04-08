@@ -14,5 +14,8 @@ namespace Sushi.Mediakiwi.API.Services
         Task<ResetPasswordResponse> ResetPassword(ResetPasswordRequest request, Beta.GeneratedCms.Console console);
 
         Task<IApplicationUser> GetUser(Guid userGuid);
+
+        Task<SetPasswordResponse> SetPassword(SetPasswordRequest request);
+
     }
 }
