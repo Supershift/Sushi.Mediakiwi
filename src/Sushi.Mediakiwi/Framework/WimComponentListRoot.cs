@@ -1502,7 +1502,7 @@ namespace Sushi.Mediakiwi.Framework
         /// <summary>
         /// 
         /// </summary>
-        internal class StateTypeItem
+        public class StateTypeItem
         {
             /// <summary>
             /// Gets or sets the assigned property.
@@ -1692,6 +1692,15 @@ namespace Sushi.Mediakiwi.Framework
         }
 
         internal List<StateTypeItem> VisibilityItemList;
+
+        public IReadOnlyList<StateTypeItem> VisibilityList
+        {
+            get
+            {
+                return VisibilityItemList;
+            }
+        }
+
         /// <summary>
         /// Sets the property visibility.
         /// </summary>
@@ -1739,6 +1748,14 @@ namespace Sushi.Mediakiwi.Framework
         }
 
         internal List<StateTypeItem> RequiredItemList;
+        public IReadOnlyList<StateTypeItem> RequiredList
+        {
+            get
+            {
+                return RequiredItemList;
+            }
+        }
+
         /// <summary>
         /// Sets the property required.
         /// </summary>
@@ -1783,6 +1800,14 @@ namespace Sushi.Mediakiwi.Framework
         }
 
         internal List<StateTypeItem> EditableItemList;
+        public IReadOnlyList<StateTypeItem> EditableList
+        {
+            get
+            {
+                return EditableItemList;
+            }
+        }
+
         /// <summary>
         /// Sets the property editable.
         /// </summary>
