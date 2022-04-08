@@ -178,45 +178,51 @@ public static class ApplicationUserExtention
     /// </summary>
     /// <param name="inUser"></param>
     /// <returns>TRUE when succeeded, FALSE when exception occurs</returns>
-    public static async Task<bool> SendForgotPasswordAsync(this IApplicationUser inUser, Sushi.Mediakiwi.Beta.GeneratedCms.Console container)
+    public static async Task<bool> SendForgotPasswordAsync(this IApplicationUser inUser, Sushi.Mediakiwi.Beta.GeneratedCms.Console container, bool sendEmail)
     {
         var userData = await ComponentList.SelectOneAsync("Sushi.Mediakiwi.AppCentre.Data.Implementation.User").ConfigureAwait(false);
         string mail_Title = userData.Settings["Mail_ForgotTitle"].Value;
         string mail_Intro = userData.Settings["Mail_ForgotIntro"].Value;
 
-        if (string.IsNullOrEmpty(mail_Intro))
-        {
-            mail_Intro = "Dear [name],<br><br>You have requested a password reset through the \"forgotten my password\" page. Please visit the following URL and (re)apply your password:<br><br>[url]";
-        }
-
+      
         string url = await ResetPasswordAsync(inUser, container).ConfigureAwait(false);
 
-        string body = string.Format(@"Username: {0}<br/>Emailadres: {1}<br/>"
-            , inUser.Name
-            , inUser.Email);
-
-        try
+        if (sendEmail)
         {
-            Mail.Send(new System.Net.Mail.MailAddress(inUser.Email, inUser.Displayname),
-            string.IsNullOrEmpty(mail_Title) ? "Forgotten password" : mail_Title,
-            string.IsNullOrEmpty(mail_Intro) ? body
-                : mail_Intro
-                    .Replace("[credentials]", body)
-                    .Replace("[name]", inUser.Displayname)
-                    .Replace("[login]", inUser.Name)
-                    .Replace("[email]", inUser.Email)
-                    .Replace("[url]", string.Format("<a href=\"{0}\">{0}</a>", url))
-                    .Replace("http://url", string.Format("{0}", url)),
-            url, 10000);
+            if (string.IsNullOrEmpty(mail_Intro))
+            {
+                mail_Intro = "Dear [name],<br><br>You have requested a password reset through the \"forgotten my password\" page. Please visit the following URL and (re)apply your password:<br><br>[url]";
+            }
 
-            return true;
-        }
-        catch (Exception ex)
-        {
-            await Notification.InsertOneAsync("SendMail", ex.Message).ConfigureAwait(false);
+            string body = string.Format(@"Username: {0}<br/>Emailadres: {1}<br/>"
+                , inUser.Name
+                , inUser.Email);
 
-            return false;
+            try
+            {
+                Mail.Send(new System.Net.Mail.MailAddress(inUser.Email, inUser.Displayname),
+                string.IsNullOrEmpty(mail_Title) ? "Forgotten password" : mail_Title,
+                string.IsNullOrEmpty(mail_Intro) ? body
+                    : mail_Intro
+                        .Replace("[credentials]", body)
+                        .Replace("[name]", inUser.Displayname)
+                        .Replace("[login]", inUser.Name)
+                        .Replace("[email]", inUser.Email)
+                        .Replace("[url]", string.Format("<a href=\"{0}\">{0}</a>", url))
+                        .Replace("http://url", string.Format("{0}", url)),
+                url, 10000);
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                await Notification.InsertOneAsync("SendMail", ex.Message).ConfigureAwait(false);
+
+                return false;
+            }
         }
+
+        return true;
     }
 
     /// <summary>
@@ -305,7 +311,6 @@ public static class ApplicationUserExtention
         }
         return false;
     }
-
 
     internal static IApplicationUser Store(this IApplicationUser inUser, HttpContext context, string password, bool shouldRememberMe)
     {

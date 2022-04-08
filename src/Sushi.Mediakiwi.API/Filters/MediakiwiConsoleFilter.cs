@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Hosting;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Hosting;
 using Sushi.Mediakiwi.API.Extensions;
@@ -51,7 +52,14 @@ namespace Sushi.Mediakiwi.API.Filters
                 }
             }
 
+            // Set the Console to be NULL
             Beta.GeneratedCms.Console console = null;
+
+            // When a call is Anonymous, we should create a new Console anyway
+            if (context.ActionDescriptor.EndpointMetadata.OfType<AllowAnonymousAttribute>().Any())
+            {
+                console = new Beta.GeneratedCms.Console(contextCopy, environment);
+            }
 
             if (context.HttpContext.Request.Headers.TryGetValue(Common.API_HEADER_URL, out Microsoft.Extensions.Primitives.StringValues setUrl))
             {

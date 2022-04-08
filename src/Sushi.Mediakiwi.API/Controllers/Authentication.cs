@@ -149,5 +149,47 @@ namespace Sushi.Mediakiwi.API.Controllers
 
             return Ok(result);
         }
+
+
+        /// <summary>
+        /// Will Update the password for the supplied user.
+        /// </summary>
+        /// <returns></returns>
+        /// <response code="200">The password was succesfully updated</response>
+        /// <response code="400">Some request information is missing or incorrect</response>
+        /// <response code="401">The user is not succesfully authenticated</response>
+        [AllowAnonymous]
+        [Produces("application/json")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [HttpPost("SetPassword")]
+        public async Task<ActionResult<SetPasswordResponse>> SetPassword(SetPasswordRequest request)
+        {
+            if (_userService == null)
+            {
+                return BadRequest();
+            }
+
+            // Perform logic
+            var result = await _userService.SetPassword(request).ConfigureAwait(false);
+
+
+            if (result.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+            {
+                return Unauthorized();
+            }
+            else if (result.StatusCode == System.Net.HttpStatusCode.BadRequest)
+            {
+                return BadRequest(result.Message);
+            }
+            else if (result.StatusCode == System.Net.HttpStatusCode.OK)
+            { 
+                return Ok();
+            }
+
+            // Fallback to BadRequest
+            return BadRequest();
+        }
     }
 }
