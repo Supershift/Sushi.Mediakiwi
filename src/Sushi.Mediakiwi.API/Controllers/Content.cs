@@ -67,6 +67,12 @@ namespace Sushi.Mediakiwi.API.Controllers
                 result.StatusCode = System.Net.HttpStatusCode.OK;
             }
 
+            // if the post resulted in a redirect
+            if (string.IsNullOrWhiteSpace(result?.List?.RedirectURL) && string.IsNullOrWhiteSpace(Resolver?.ListInstance?.wim?.Console?.RedirectionUrl) == false)
+            {
+                result.List.RedirectURL = Resolver.ListInstance.wim.Console.RedirectionUrl;
+            }
+
             return Ok(result);
         }
 
@@ -144,6 +150,12 @@ namespace Sushi.Mediakiwi.API.Controllers
                         }
                     }
 
+                }
+
+                // if the post resulted in a redirect
+                if (string.IsNullOrWhiteSpace(result?.List?.RedirectURL) && string.IsNullOrWhiteSpace(Resolver?.ListInstance?.wim?.Console?.RedirectionUrl) == false)
+                {
+                    result.List.RedirectURL = Resolver.ListInstance.wim.Console.RedirectionUrl;
                 }
 
                 result.IsEditMode = result.List.IsEditMode;
