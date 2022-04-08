@@ -252,13 +252,39 @@ namespace Sushi.Mediakiwi.API.Services
             {
                 var buttonAttribute = item.GetCustomAttribute<Framework.ContentListSearchItem.ButtonAttribute>();
                 if (buttonAttribute != null)
-                { 
+                {
+                    // Determine visibility
+                    var isVisible = buttonAttribute.IsHidden == false;
+                    if (_resolver?.ListInstance?.wim?.VisibilityList?.Any(x => x.AssignedProperty == item.Name) == true)
+                    {
+                        isVisible = _resolver.ListInstance.wim.VisibilityList.First(x => x.AssignedProperty == item.Name).State;
+                    }
+
+                    // Determine editable
+                    var isEditable = buttonAttribute.IsReadOnly == false;
+                    if (_resolver?.ListInstance?.wim?.EditableList?.Any(x => x.AssignedProperty == item.Name) == true)
+                    {
+                        isEditable = _resolver.ListInstance.wim.EditableList.First(x => x.AssignedProperty == item.Name).State;
+                    }
+
+                    // Determine required
+                    var isRequired = buttonAttribute.Mandatory;
+                    if (_resolver?.ListInstance?.wim?.RequiredList?.Any(x => x.AssignedProperty == item.Name) == true)
+                    {
+                        isRequired = _resolver.ListInstance.wim.RequiredList.First(x => x.AssignedProperty == item.Name).State;
+                    }
+
+                    buttonAttribute.IsReadOnly = !isEditable;
+                    buttonAttribute.Mandatory = isRequired;
+                    buttonAttribute.IsHidden = !isVisible;
+
                     var newButton = await GetButtonAsync(buttonAttribute);
                     newButton.FormSection = grid.Title;
                     newButton.PropertyName = item.Name;
                     newButton.PropertyType = item.PropertyType.FullName;
 
                     grid.Buttons.Add(newButton);
+
                 }
             }
 
