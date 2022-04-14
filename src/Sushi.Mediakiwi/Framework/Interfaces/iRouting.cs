@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using System;
 
 namespace Sushi.Mediakiwi.Framework
 {
@@ -46,12 +47,29 @@ namespace Sushi.Mediakiwi.Framework
         /// </summary>
         /// <returns>Return the actual routing information. When NULL is returned than no routing is applied and the fallback class will be called upon.</returns>
         IComponentListTemplate Validate(Data.IComponentList list, ComponentListRoutingArgs args);
+
     }
 
     public class ComponentListRoutingArgs 
     {
+        /// <summary>
+        /// The selected key passed along via the parent
+        /// </summary>
         public int? SelectedKey { get; set; }
+
+        /// <summary>
+        /// The selected group passed along via the parent
+        /// </summary>
         public int? SelectedGroup { get; set; }
+
+        /// <summary>
+        /// The selected groupitem passed along via the parent
+        /// </summary>
         public int? SelectedGroupItem { get; set; }
+
+        /// <summary>
+        /// The HttpContext passed along via the parent, can be null !
+        /// </summary>
+        public HttpContext RequestContext { get; set; }
     }
 }

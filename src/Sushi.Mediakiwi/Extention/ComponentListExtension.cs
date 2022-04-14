@@ -79,6 +79,7 @@ public static class ComponentListExtension
                                 SelectedKey = Utility.ConvertToIntNullable(context.Request.Query["item"]),
                                 SelectedGroup = Utility.ConvertToIntNullable(context.Request.Query["group"]),
                                 SelectedGroupItem = Utility.ConvertToIntNullable(context.Request.Query["groupitem"]),
+                                RequestContext = context
                             };
                         }
 
@@ -125,7 +126,7 @@ public static class ComponentListExtension
             }
 
             instance = Utils.CreateInstance(inComponentList.AssemblyName, inComponentList.ClassName, out candidate, false, console.Context.RequestServices);
-
+            
             //  [11 nov 14:MM] Added routing support
             #region Routing support
 
@@ -143,6 +144,7 @@ public static class ComponentListExtension
                     {
                         //  When routing exists, validate this route, when NULL, ignore it.
                         ComponentListRoutingArgs e = null;
+
                         //  Dirty code, but SOLID priciples can not apply (yet).
                         if (console.Context != null)
                         {
@@ -151,12 +153,15 @@ public static class ComponentListExtension
                                 SelectedKey = Utility.ConvertToIntNullable(console.Context.Request.Query["item"]),
                                 SelectedGroup = Utility.ConvertToIntNullable(console.Context.Request.Query["group"]),
                                 SelectedGroupItem = Utility.ConvertToIntNullable(console.Context.Request.Query["groupitem"]),
+                                RequestContext = console.Context
                             };
                         }
 
                         var instanceCandidate = routeObject.Validate(inComponentList, e);
                         if (instanceCandidate != null)
+                        {
                             instance = instanceCandidate;
+                        }
                     }
                 }
             }
