@@ -577,6 +577,7 @@ namespace Sushi.Mediakiwi.UI
                 else
                 {
                     _Console.CurrentListInstance.wim.DoListInit();
+                    component.IsEditMode = _Console.CurrentListInstance.wim.IsEditMode;
                     GlobalWimControlBuilder = await component.CreateListAsync(_Console, _Console.OpenInFrame, IsFormatRequest_JSON);
                     if (GlobalWimControlBuilder.IsTerminated)
                     {
