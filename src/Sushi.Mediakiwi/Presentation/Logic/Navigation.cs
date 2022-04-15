@@ -847,25 +847,6 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
             {
                 int currentListID = container.Group.HasValue ? container.Group.Value : container.CurrentList.ID;
 
-                if (!container.Item.HasValue)
-                {
-                    if (!CommonConfiguration.HIDE_BREADCRUMB)
-                    {
-                        build.AppendFormat(@"<li class=""back""><span class=""icon-arrow-left-04""></span><a href=""{0}"">Home</a></li>"
-                            , container.AddApplicationPath(CommonConfiguration.PORTAL_PATH)
-                            );
-                    }
-                }
-                else
-                {
-                    var lists = await ComponentList.SelectOneAsync(currentListID).ConfigureAwait(false);
-
-                    build.AppendFormat(@"<li class=""back""><span class=""icon-arrow-left-04""></span><a href=""{0}"">{1}</a></li>"
-                        , container.UrlBuild.GetListRequest(lists)
-                        , lists.Name
-                        );
-                }
-
                 if (container.CurrentList.Type != ComponentListType.Browsing)
                 {
                     IComponentList[] lists1 = await ComponentList.SelectAllAsync(currentFolder.ID).ConfigureAwait(false);
@@ -936,6 +917,24 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                             , list.Name
                             , string.IsNullOrWhiteSpace(list.Icon) ? null : $"<i class=\"{list.Icon}\"></i> " //2
 
+                            );
+                    }
+                    else if (!container.Item.HasValue)
+                    {
+                        if (!CommonConfiguration.HIDE_BREADCRUMB)
+                        {
+                            build.AppendFormat(@"<li class=""back""><span class=""icon-arrow-left-04""></span><a href=""{0}"">Home</a></li>"
+                                , container.AddApplicationPath(CommonConfiguration.PORTAL_PATH)
+                                );
+                        }
+                    }
+                    else
+                    {
+                        var lists = await ComponentList.SelectOneAsync(currentListID).ConfigureAwait(false);
+
+                        build.AppendFormat(@"<li class=""back""><span class=""icon-arrow-left-04""></span><a href=""{0}"">{1}</a></li>"
+                            , container.UrlBuild.GetListRequest(lists)
+                            , lists.Name
                             );
                     }
 
