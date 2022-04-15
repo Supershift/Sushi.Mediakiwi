@@ -94,6 +94,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             ListLoad += Document_ListLoad;
             ListSave += Document_ListSave;
             ListDelete += Document_ListDelete;
+            ListSearch += Document_ListSearch;
         }
 
         async Task Document_ListInit()
@@ -454,6 +455,18 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             public string AssetType { get; set; }
             public bool HasAsset { get; set; }
             public string PassthroughParameter { get; set; }
+        }
+
+        async Task Document_ListSearch(ComponentListSearchEventArgs e)
+        {
+            var isImage = wim.Console.Request.Query.ContainsKey("isimage") && wim.Console.Request.Query["isimage"] == "1";
+            var assets = await Asset.SelectAllAsync(isImage).ConfigureAwait(false);
+
+            wim.ListDataColumns.Add(new ListDataColumn("ID", nameof(Asset.ID), ListDataColumnType.UniqueIdentifier));
+            wim.ListDataColumns.Add(new ListDataColumn("Filename", nameof(Asset.FileName), ListDataColumnType.HighlightPresent));
+            wim.ListDataColumns.Add(new ListDataColumn("Title", nameof(Asset.Title)));
+            wim.ListDataColumns.Add(new ListDataColumn("Type", nameof(Asset.Type)));
+            wim.ListDataAdd(assets);
         }
 
         DocumentForm _Form;

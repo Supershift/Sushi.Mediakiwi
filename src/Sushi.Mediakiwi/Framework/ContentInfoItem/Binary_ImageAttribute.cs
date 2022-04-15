@@ -76,6 +76,25 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
         }
 
         /// <summary>
+        /// Possible return types: System.Int32, System.Int32[nullable], System.String, Image
+        /// </summary>
+        /// <param name="title">The title.</param>
+        /// <param name="mandatory">if set to <c>true</c> [mandatory].</param>
+        /// <param name="gallery">The indentifier GUID of the gallery or the path of the gallery; both are an option</param>
+        /// <param name="interactiveHelp">The interactive help.</param>
+        /// <param name="onlyCrteate">Indicates the user should only have the possibility to upload a new image, not select an existing one.</param>
+        public Binary_ImageAttribute(string title, bool mandatory, string gallery, string interactiveHelp, bool canOnlyCreate)
+        {
+            m_CanHaveExpression = true;
+            ContentTypeSelection = ContentType.Binary_Image;
+            Title = title;
+            Mandatory = mandatory;
+            InteractiveHelp = interactiveHelp;
+            Collection = gallery;
+            CanOnlyAdd = canOnlyCreate;
+        }
+
+        /// <summary>
         /// Gets or sets the gallery assigning property.
         /// </summary>
         /// <value>

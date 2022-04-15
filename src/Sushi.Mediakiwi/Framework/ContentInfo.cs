@@ -197,10 +197,11 @@ namespace Sushi.Mediakiwi.Framework
         /// <param name="mandatory"></param>
         /// <param name="gallery"></param>
         /// <param name="interactiveHelp"></param>
+        /// <param name="canOnlyCreate"></param>
         /// <returns></returns>
-        public ContentSettings Image(string title, bool mandatory = false, string gallery = null, string interactiveHelp = null)
+        public ContentSettings Image(string title, bool mandatory = false, string gallery = null, string interactiveHelp = null, bool canOnlyCreate = true)
         {
-            var element = new Binary_ImageAttribute(title, mandatory, gallery, interactiveHelp);
+            var element = new Binary_ImageAttribute(title, mandatory, gallery, interactiveHelp, canOnlyCreate);
             Add(element);
             return new ContentSettings(element);
         }
