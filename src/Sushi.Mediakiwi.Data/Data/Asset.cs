@@ -390,7 +390,10 @@ namespace Sushi.Mediakiwi.Data
         {
             var connector = ConnectorFactory.CreateConnector<Asset>();
             var filter = connector.CreateQuery();
-            filter.Add(x => x.ParentID, parentID);
+            if (parentID > 0)
+            {
+                filter.Add(x => x.ParentID, parentID);
+            }
 
             return await connector.FetchAllAsync(filter).ConfigureAwait(false);
         }
@@ -473,6 +476,17 @@ where
             }
 
             return connector.FetchAll(filter);
+        }
+
+        public static async Task<List<Asset>> SelectAllAsync(bool onlyReturnImages = false)
+        {
+            var connector = ConnectorFactory.CreateConnector<Asset>();
+            var filter = connector.CreateQuery();
+            if (onlyReturnImages)
+            {
+                filter.Add(x => x.IsImage, true);
+            }
+            return await connector.FetchAllAsync(filter);
         }
 
         public static async Task<List<Asset>> SelectAllAsync(int galleryID, int? assetTypeID = null, bool onlyReturnActiveAssets = false, bool onlyReturnDocuments = false, bool onlyReturnImages = false)

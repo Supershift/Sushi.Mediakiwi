@@ -83,7 +83,8 @@ namespace Sushi.Mediakiwi.AppCentre.UI.Forms
                 isImage = wim.Console.Request.Query["isimage"].ToString();
             }
 
-            string url = $"{wim.Console.WimPagePath}?top=3&referid={referrer}&openinframe=1&selectOnly=1&isimage={isImage}";
+            var url = wim.GetUrl(new KeyValue { Key = "item", RemoveKey = true }, new KeyValue { Key = "selectOnly", Value = "1" });
+            //string url = $"{baseUrl}?top=3&referid={referrer}&openinframe=1&selectOnly=1&isimage={isImage}";
             BrowsingFrame = $"<iframe src=\"{url}\" title=\"Browse galleries\" style=\"border:none;\" width=\"100%\" height=\"300px\"></iframe>";
         }
         

@@ -32,6 +32,7 @@ namespace Sushi.Mediakiwi.Demonstration.Templates.List.Maps
             Map(x => x.Button_Additional, this).Button("Test Button");
             Map(x => x.Sublisttt, this).SubListSelect("test sublist", typeof(DemoList1));
             Map(x => x.MultiSelect, this).Dropdown("Multi select", nameof(MultiOptions), false, false, true, "");
+            Map(x => x.ImageID, this).Image("Image", canOnlyCreate: false);
         }
 
         public int[] MultiSelect { get; set; }
@@ -39,5 +40,7 @@ namespace Sushi.Mediakiwi.Demonstration.Templates.List.Maps
         public bool Button_Additional { get; set; }
 
         public SubList Sublisttt { get; set; }
+
+        public int ImageID { get; set; }
     }
 }
