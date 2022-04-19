@@ -1606,10 +1606,13 @@ namespace Sushi.Mediakiwi.API.Services
                     }
                     result.FormMaps.AddRange(formMaps);
 
-                    // Loop through any Datalists
-                    foreach (var formMap in formMaps.Where(x => x.Fields?.Any(x => x.ContentType == ContentTypeEnum.DataList) == true))
+                    // Get FormMaps which contain fields of the DataList type
+                    var datalistContentFields = formMaps.SelectMany(x => x.Fields.Where(x => x.ContentType == ContentTypeEnum.DataList));
+
+                    // Loop through DataList fields if we have any
+                    if (datalistContentFields?.Any() == true)
                     {
-                        foreach (var dataList in formMap.Fields.Where(x => x.ContentType == ContentTypeEnum.DataList))
+                        foreach (var dataList in datalistContentFields)
                         {
                             if (dataList.Settings.ContainsKey("DataListCollection"))
                             {
