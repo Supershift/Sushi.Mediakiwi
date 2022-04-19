@@ -107,8 +107,15 @@ namespace Sushi.Mediakiwi.API.Services
             }
         }
 
-        public async Task LogoutAsync() 
+        public async Task LogoutAsync()
         {
+            // Remove cookie
+            var visManager = new VisitorManager(_httpAccessor.HttpContext);
+            var visitor = await visManager.SelectAsync();
+            visitor.ProfileID = null;
+            await visManager.SaveAsync(visitor);
+            await visitor.SaveAsync();
+
             await _httpAccessor.HttpContext.SignOutAsync().ConfigureAwait(false);
         }
 
@@ -147,6 +154,12 @@ namespace Sushi.Mediakiwi.API.Services
                 CookieAuthenticationDefaults.AuthenticationScheme,
                 new ClaimsPrincipal(claimsIdentity),
                 authProperties).ConfigureAwait(false);
+
+            // Set cookie
+            var visManager = new VisitorManager(_httpAccessor.HttpContext);
+            var visitor = await visManager.SelectAsync();
+            visitor.ProfileID = user.ID;
+            await visManager.SaveAsync(visitor);
 
             return new LoginResponse()
             {
