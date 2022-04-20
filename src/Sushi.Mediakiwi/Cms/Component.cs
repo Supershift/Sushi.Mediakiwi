@@ -13,8 +13,6 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
 {
     public class Component
     {
-        public bool IsEditMode { get; set; }
-
         bool m_IsNewDesign = true;
 
         #region Header
@@ -2475,14 +2473,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                         {
                             contentItem.InfoItem.IsVisible = map.IsHidden.HasValue ? map.IsHidden.Value : !contentItem.IsHidden;
                             contentItem.InfoItem.IsCloaked = map.IsCloacked.HasValue ? map.IsCloacked.Value : contentItem.IsCloaked;
-                            if (IsEditMode)
-                            {
-                                contentItem.InfoItem.IsEditable = map.IsReadOnly.HasValue ? !map.IsReadOnly.Value : !contentItem.IsReadOnly;
-                            }
-                            else
-                            {
-                                contentItem.InfoItem.IsEditable = false;
-                            }
+                            contentItem.InfoItem.IsEditable = map.IsReadOnly.HasValue ? !map.IsReadOnly.Value : !contentItem.IsReadOnly;
                             contentItem.InfoItem.IsRequired = contentItem.Mandatory;
 
                             if (!all.Contains(contentItem.InfoItem))
@@ -2937,7 +2928,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                         skipExpression = true;
                     }
 
-                    Field field = infoItem.ContentAttribute.WriteCandidate(build2, infoItem.IsEditable && IsEditMode, infoItem.IsRequired, infoItem.IsCloaked);
+                    Field field = infoItem.ContentAttribute.WriteCandidate(build2, infoItem.IsEditable, infoItem.IsRequired, infoItem.IsCloaked);
 
                     if (fieldList != null && field != null)
                     {
