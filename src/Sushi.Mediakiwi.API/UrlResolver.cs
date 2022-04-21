@@ -557,7 +557,7 @@ namespace Sushi.Mediakiwi.API
                 }
                 else 
                 {
-                    list = lists.First();
+                    list = lists.FirstOrDefault();
                 }
 
                 if (list != null && !list.IsNewInstance)
