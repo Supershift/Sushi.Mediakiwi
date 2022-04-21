@@ -548,7 +548,25 @@ namespace Sushi.Mediakiwi.API
             if (string.IsNullOrWhiteSpace(targetName) == false)
             {
                 var urldecrypt = Utils.FromUrl(targetName);
-                var list = await Data.ComponentList.SelectOneAsync(urldecrypt, null).ConfigureAwait(false);
+                var lists = await Data.ComponentList.SelectAllAsync(urldecrypt, null).ConfigureAwait(false);
+                Data.IComponentList list = null;
+
+                if (lists?.Length > 1 && Folder?.ID > 0)
+                {
+                    if (lists.Any(x => x.FolderID == Folder.ID) == true)
+                    {
+                        list = lists.First(x => x.FolderID == Folder.ID);
+                    }
+                    else 
+                    {
+                        list = lists.FirstOrDefault();
+                    }
+                }
+                else 
+                {
+                    list = lists.FirstOrDefault();
+                }
+
                 if (list != null && !list.IsNewInstance)
                 {
                     List = list;
