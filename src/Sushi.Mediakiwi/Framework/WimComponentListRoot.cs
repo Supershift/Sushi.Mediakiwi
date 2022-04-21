@@ -2574,6 +2574,19 @@ namespace Sushi.Mediakiwi.Framework
         /// <param name="count">The count.</param>
         public void AddTab(string title, IComponentList list, int selectedItem, int? count)
         {
+            AddTab(title, list, selectedItem, count, false);   
+        }
+
+        /// <summary>
+        /// Adds the tab. These should be added in the ListLoad event
+        /// </summary>
+        /// <param name="title">The title.</param>
+        /// <param name="list">The list.</param>
+        /// <param name="selectedItem">The selected item.</param>
+        /// <param name="count">The count.</param>
+        /// <param name="triggerListLoad">If set to true, the ListLoad event for this list is always triggered, even if it is not the selected tab.</param>
+        public void AddTab(string title, IComponentList list, int selectedItem, int? count, bool triggerListLoad)
+        {
             if (!list.HasRoleAccess(CurrentApplicationUser))
             {
                 return;
@@ -2584,12 +2597,15 @@ namespace Sushi.Mediakiwi.Framework
                 m_TabCollection = new List<Tabular>();
             }
 
-            Tabular t = new Tabular();
-            t.List = list;
-            t.Selected = (Console.Request.Query["list"] == list.ID.ToString());
-            t.SelectedItem = selectedItem;
-            t.Title2 = title;
-            t.Count = count;
+            Tabular t = new Tabular
+            {
+                List = list,
+                Selected = (Console.Request.Query["list"] == list.ID.ToString()),
+                SelectedItem = selectedItem,
+                Title2 = title,
+                Count = count,
+                TiggerListLoad = triggerListLoad
+            };
             m_TabCollection.Add(t);
         }
 
@@ -2639,6 +2655,11 @@ namespace Sushi.Mediakiwi.Framework
             /// The count
             /// </summary>
             public int? Count;
+
+            /// <summary>
+            /// If set to true, a list load is triggered on the tab's list, even if it is not the current list.
+            /// </summary>
+            public bool TiggerListLoad { get; set; }
         }
 
 

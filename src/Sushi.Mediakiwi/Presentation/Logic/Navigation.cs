@@ -533,20 +533,20 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                     StringBuilder tabulars = new StringBuilder();
                     if (tabularList != null)
                     {
-                        foreach (WimComponentListRoot.Tabular t in tabularList)
+                        foreach (WimComponentListRoot.Tabular tab in tabularList)
                         {
-                            if (t.List.IsNewInstance)
+                            if (tab.List.IsNewInstance)
                             {
                                 continue;
                             }
 
-                            ApplyTabularUrl(container, t, 1);
+                            ApplyTabularUrl(container, tab, 1);
 
-                            tabulars.Append($@"<li{(t.Selected ? " class=\"active\"" : null)}><a href=""{t.Url}"">{t.TitleValue}</a></li>");
+                            tabulars.Append($@"<li{(tab.Selected ? " class=\"active\"" : null)}><a href=""{tab.Url}"">{tab.TitleValue}</a></li>");
 
-                            if (t.Selected)
+                            if (tab.Selected)
                             {
-                                selectedTab = t.List.ID;
+                                selectedTab = tab.List.ID;
                             }
 
                             if (!container.Group.HasValue)
@@ -554,8 +554,10 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                                 continue;
                             }
 
-                            if (container.CurrentListInstance.wim.CurrentList.ID == t.List.ID)
+                            // tab is the current List
+                            if (container.CurrentListInstance.wim.CurrentList.ID == tab.List.ID)
                             {
+                                
                                 if (container.CurrentListInstance.wim.m_TabCollection != null)
                                 {
                                     foreach (WimComponentListRoot.Tabular t2 in container.CurrentListInstance.wim.m_TabCollection)
@@ -573,7 +575,8 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                             }
                             else
                             {
-                                IComponentListTemplate cl = t.List.GetInstance(container.Context);
+                                // tab is one of the other lists in the tablist
+                                IComponentListTemplate cl = tab.List.GetInstance(container.Context);
                                 if (cl != null)
                                 {
                                     cl.wim.Console = master;
@@ -581,13 +584,17 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
                                     int group2Id = Utility.ConvertToInt(container.Request.Query["group2"]);
                                     int group2ElementId = Utility.ConvertToInt(container.Request.Query["group2item"]);
 
-                                    if (t.List.ID == group2Id)
+                                    // trigger list load if desired
+                                    if (tab.TiggerListLoad)
                                     {
-                                        cl.wim.DoListLoad(group2ElementId, 0);
-                                    }
-                                    else
-                                    {
-                                        cl.wim.DoListLoad(container.Item.Value, 0);
+                                        if (tab.List.ID == group2Id)
+                                        {
+                                            cl.wim.DoListLoad(group2ElementId, 0);
+                                        }
+                                        else
+                                        {
+                                            cl.wim.DoListLoad(container.Item.Value, 0);
+                                        }
                                     }
 
                                     if (cl.wim.m_TabCollection != null)
