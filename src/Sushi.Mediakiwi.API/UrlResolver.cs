@@ -553,7 +553,14 @@ namespace Sushi.Mediakiwi.API
 
                 if (lists?.Length > 1 && Folder?.ID > 0)
                 {
-                    list = lists.First(x => x.FolderID == Folder.ID);
+                    if (lists.Any(x => x.FolderID == Folder.ID) == true)
+                    {
+                        list = lists.First(x => x.FolderID == Folder.ID);
+                    }
+                    else 
+                    {
+                        list = lists.FirstOrDefault();
+                    }
                 }
                 else 
                 {
