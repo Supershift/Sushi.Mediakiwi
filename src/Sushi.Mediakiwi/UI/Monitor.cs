@@ -26,6 +26,8 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Sushi.Mediakiwi.Framework.Interfaces;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace Sushi.Mediakiwi.UI
 {
@@ -1591,6 +1593,7 @@ namespace Sushi.Mediakiwi.UI
                 if (_Console.IsPostBack("logout") || _Console.Request.Query.ContainsKey("logout"))
                 {
                     await LogoutViaSingleSignOnAsync().ConfigureAwait(false);
+                    await LogoutIdentityAsync().ConfigureAwait(false);
                 }
             }
 
@@ -1656,12 +1659,21 @@ namespace Sushi.Mediakiwi.UI
             }
         }
 
+        async Task LogoutIdentityAsync()
+        {
+            // Check if we have a context User signed in
+            if (_Context?.User?.Identity?.IsAuthenticated == true)
+            {
+                await _Context.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme).ConfigureAwait(false);
+            }
+        }
+
         async Task LogoutViaSingleSignOnAsync()
         {
             _Console.CurrentVisitor.ApplicationUserID = null;
             _Console.CurrentVisitor.Jwt = null;
             await _Console.CurrentVisitor.SaveAsync().ConfigureAwait(false);
-
+      
             if (_configuration.GetValue<bool>("mediakiwi:authentication"))
             {
                 _Context.Response.Redirect($"{_Console.CurrentDomain}/.auth/logout?post_logout_redirect_uri={_Console.GetWimPagePath(null)}");

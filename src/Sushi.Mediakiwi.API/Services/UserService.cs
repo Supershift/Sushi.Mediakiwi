@@ -109,14 +109,17 @@ namespace Sushi.Mediakiwi.API.Services
 
         public async Task LogoutAsync()
         {
-            // Remove cookie
+            // Clear cookie values
             var visManager = new VisitorManager(_httpAccessor.HttpContext);
             var visitor = await visManager.SelectAsync();
             visitor.ProfileID = null;
+            visitor.ApplicationUserID = null;
+            visitor.Jwt = null;
+
             await visManager.SaveAsync(visitor);
             await visitor.SaveAsync();
 
-            await _httpAccessor.HttpContext.SignOutAsync().ConfigureAwait(false);
+            await _httpAccessor.HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme).ConfigureAwait(false);
         }
 
         public async Task<LoginResponse> LoginAsync(LoginRequest request)
@@ -158,7 +161,7 @@ namespace Sushi.Mediakiwi.API.Services
             // Set cookie
             var visManager = new VisitorManager(_httpAccessor.HttpContext);
             var visitor = await visManager.SelectAsync();
-            visitor.ProfileID = user.ID;
+            visitor.ApplicationUserID = user.ID;
             await visManager.SaveAsync(visitor);
 
             return new LoginResponse()
