@@ -222,8 +222,8 @@ namespace Sushi.Mediakiwi
                     return false;
                 }
 
-                //  If there is no data, and no profile details to be stored, why should we save the record?
-                if ((entity.Data == null || entity.Data.Serialized == null) && !entity.ProfileID.HasValue)
+                //  If there is no data, no profile details and no appuser to be stored, why should we save the record?
+                if ((entity.Data == null || entity.Data.Serialized == null) && !entity.ProfileID.HasValue && !entity.ApplicationUserID.HasValue)
                 {
                     return false;
                 }
