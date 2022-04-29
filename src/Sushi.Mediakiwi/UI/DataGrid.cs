@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Net;
 using System.Reflection;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Sushi.Mediakiwi.UI
 {
@@ -2961,6 +2962,11 @@ namespace Sushi.Mediakiwi.UI
             if (candidate == null)
             {
                 return null;
+            }
+
+            if (container?.DateFormatSettings == null)
+            {
+                Task.Run(async () => await container.SetDateFormatAsync().ConfigureAwait(false));
             }
 
             if (candidate is DateTime)
