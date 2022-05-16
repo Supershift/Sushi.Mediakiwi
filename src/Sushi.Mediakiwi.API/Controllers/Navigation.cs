@@ -130,7 +130,7 @@ namespace Sushi.Mediakiwi.API.Controllers
                                 var addSubResult = await _navService.AddSubSubNavigationAsync(Resolver, navItem, subnavigation[index], className, role).ConfigureAwait(false);
                                 if (addSubResult.isCurrent)
                                 {
-                                    isSubSelected = true;
+                                    isSelected = true;
                                 }
                             }
                             else
