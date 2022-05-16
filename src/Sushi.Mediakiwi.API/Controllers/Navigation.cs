@@ -109,6 +109,7 @@ namespace Sushi.Mediakiwi.API.Controllers
                         className = "";
                         for (int index = 0; index < subnavigation.Count; index++)
                         {
+                            bool isSubSelected = false;
                             if (index == 0)
                             {
                                 if (item.TypeID == 8)
@@ -129,19 +130,19 @@ namespace Sushi.Mediakiwi.API.Controllers
                                 var addSubResult = await _navService.AddSubSubNavigationAsync(Resolver, navItem, subnavigation[index], className, role).ConfigureAwait(false);
                                 if (addSubResult.isCurrent)
                                 {
-                                    isSelected = true;
+                                    isSubSelected = true;
                                 }
                             }
                             else
                             {
                                 if (subnavigation[index]?.ItemID == Resolver.List?.ID)
                                 {
-                                    isSelected = true;
+                                    isSubSelected = true;
                                 }
 
                                 navItem.Items.Add(new NavigationItem()
                                 {
-                                    IsHighlighted = isSelected,
+                                    IsHighlighted = isSubSelected,
                                     Text = subnavigation[index].Name,
                                     IconClass = className,
                                     Href = await _navService.GetUrlAsync(Resolver, subnavigation[index], request.CurrentSiteID).ConfigureAwait(false),
@@ -152,9 +153,14 @@ namespace Sushi.Mediakiwi.API.Controllers
 
                     if (!isSelected)
                     {
-                        isSelected = _navService.IsRequestPartOfNavigation(item, Resolver);
+                        isSelected = navItem.Items.Any(x => x.IsHighlighted);
                     }
 
+                    if (!isSelected)
+                    {
+                        isSelected = _navService.IsRequestPartOfNavigation(item, Resolver);
+                    }
+                    
                     if (linkable)
                     {
                         navItem.Href = string.IsNullOrEmpty(firstInLineUrl) ? await _navService.GetUrlAsync(Resolver, item, request.CurrentSiteID).ConfigureAwait(false) : firstInLineUrl;
