@@ -5,9 +5,22 @@ namespace Sushi.Mediakiwi.Framework.EventArguments
 {
     public enum ReceivedItemTypeEnum
     { 
+        /// <summary>
+        /// This item is new
+        /// </summary>
         NEW = 0,
+        /// <summary>
+        /// This item has been changed
+        /// </summary>
         CHANGED = 1,
-        UNCHANGED = 2
+        /// <summary>
+        /// This item has not been changed
+        /// </summary>
+        UNCHANGED = 2,
+        /// <summary>
+        /// The items are untracked, dataset too big ?
+        /// </summary>
+        UNTRACKED = 3
     }
 
     public class ComponentListDataReceivedItem
