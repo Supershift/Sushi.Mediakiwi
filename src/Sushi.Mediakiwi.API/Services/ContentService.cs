@@ -510,12 +510,12 @@ namespace Sushi.Mediakiwi.API.Services
 
             if (_resolver.ListInstance.wim?.Page?.Resources?.Items?.Any() == true)
             {
-                foreach (var resource in _resolver.ListInstance.wim.Page.Resources.Items)
+                foreach (var resource in _resolver.ListInstance.wim.Page.Resources.Items.Where(x=>x.ResourceType != ResourceType.JSON))
                 {
                     var newResourceItem = new ResourceItem()
                     {
                         IsSync = resource.LoadAsync == false,
-                        Path = resource.Path,
+                        Path = resource.PathOrSource.ToString(),
                     };
 
                     switch (resource.Location)
@@ -534,7 +534,7 @@ namespace Sushi.Mediakiwi.API.Services
                         case ResourceType.HTML:
                             {
                                 newResourceItem.Type = 3;
-                                newResourceItem.SourceCode = resource.Path;
+                                newResourceItem.SourceCode = resource.PathOrSource.ToString();
                                 newResourceItem.Path = string.Empty;
                             }
                             break;
@@ -547,6 +547,25 @@ namespace Sushi.Mediakiwi.API.Services
         }
 
         #endregion Get Resources
+
+        #region Get JSON Objects
+
+        private Dictionary<string, object> GetJsonObjects()
+        {
+            var result = new Dictionary<string, object>();
+
+            if (_resolver.ListInstance.wim?.Page?.Resources?.Items?.Any() == true)
+            {
+                foreach (var resource in _resolver.ListInstance.wim.Page.Resources.Items.Where(x => x.ResourceType == ResourceType.JSON))
+                {
+                    result.Add(resource.Title, resource.PathOrSource);
+                }
+            }
+
+            return result;
+        }
+
+        #endregion Get JSON Objects
 
         #region Convert Enums
 
@@ -1705,6 +1724,14 @@ namespace Sushi.Mediakiwi.API.Services
                 }
                 result.Resources.AddRange(resources);
             }
+            
+            // Only add the JSON objects to the output when we actually have any
+            var jsonObjects = GetJsonObjects();
+            if (jsonObjects?.Count > 0)
+            {
+                result.JsonObjects = jsonObjects;
+            }
+
             result.SettingsURL = resolver.UrlBuild.GetListPropertiesRequest();
             result.IsEditMode = resolver.ListInstance.wim.IsEditMode;
             

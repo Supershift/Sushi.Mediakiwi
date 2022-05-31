@@ -27,6 +27,11 @@ namespace Sushi.Mediakiwi.Framework
         /// Adds a piece of sourceCode
         /// </summary>
         HTML = 30,
+
+        /// <summary>
+        /// Contains a raw JSON object
+        /// </summary>
+        JSON = 40,
     }
 
     public enum ResourceLocation
@@ -57,11 +62,13 @@ namespace Sushi.Mediakiwi.Framework
         public ResourceLocation Location { get; set; }
         public ResourceType ResourceType { get; set; }
 
-        public string Path { get; set; }
+        public object PathOrSource { get; set; }
 
         public bool AppendPath { get; set; }
 
         public bool LoadAsync { get; set; }
+
+        public string Title { get; set; }
 
         public bool Equals([AllowNull] AdditionalResourceItem other)
         {
@@ -70,7 +77,13 @@ namespace Sushi.Mediakiwi.Framework
                 return false;
             }
 
-            return (other.Location == Location && other.ResourceType == ResourceType && other.Path == Path && other.AppendPath == AppendPath && other.LoadAsync == LoadAsync);
+            return (other.Location.Equals(Location)
+                && other.ResourceType.Equals(ResourceType)
+                && other.PathOrSource.Equals(PathOrSource)
+                && other.AppendPath.Equals(AppendPath)
+                && other.LoadAsync.Equals(LoadAsync)
+                && other.Title.Equals(Title, StringComparison.InvariantCultureIgnoreCase)
+            );
         }
     }
 
@@ -96,10 +109,10 @@ namespace Sushi.Mediakiwi.Framework
         /// </summary>
         /// <param name="location">Where must the file be added</param>
         /// <param name="type">The type of file being added</param>
-        /// <param name="source">The relative path to the file, or the sourceCode when using HTML as type</param>
-        public async Task AddAsync(ResourceLocation location, ResourceType type, string source)
+        /// <param name="pathOrSource">The relative path to the file, the sourceCode when using HTML, or the JSON object</param>
+        public async Task AddAsync(ResourceLocation location, ResourceType type, string pathOrSource)
         {
-            await AddAsync(location, type, source, false);
+            await AddAsync(location, type, pathOrSource, false);
         }
 
         /// <summary>
@@ -107,11 +120,11 @@ namespace Sushi.Mediakiwi.Framework
         /// </summary>
         /// <param name="location">Where must the file be added</param>
         /// <param name="type">The type of file being added</param>
-        /// <param name="source">The relative path to the file, or the sourceCode when using HTML as type</param>
+        /// <param name="pathOrSource">The relative path to the file, the sourceCode when using HTML, or the JSON object</param>
         /// <param name="appendApplicationPath">Do we need to append the application path ? (default: false, only works for JS & CSS)</param>
-        public async Task AddAsync(ResourceLocation location, ResourceType type, string source, bool appendApplicationPath)
+        public async Task AddAsync(ResourceLocation location, ResourceType type, string pathOrSource, bool appendApplicationPath)
         {
-            await AddAsync(location, type, source, appendApplicationPath, false);
+            await AddAsync(location, type, pathOrSource, appendApplicationPath, false);
         }
 
 
@@ -119,35 +132,49 @@ namespace Sushi.Mediakiwi.Framework
         /// Adds a resource file to the page
         /// <param name="location">Where must the file be added</param>
         /// <param name="type">The type of file being added</param>
-        /// <param name="source">The relative path to the file, or the sourceCode when using HTML as type</param>
+        /// <param name="pathOrSource">The relative path to the file, the sourceCode when using HTML, or the JSON object</param>
         /// <param name="appendApplicationPath">Do we need to append the application path ? (default false, only works for JS & CSS)</param>
         /// <param name="loadAsync">Should this file be loaded Asynchronous ? (default false, only works for JS & CSS)</param>
-        public async Task AddAsync(ResourceLocation location, ResourceType type, string source, bool appendApplicationPath, bool loadAsync)
+        public async Task AddAsync(ResourceLocation location, ResourceType type, string pathOrSource, bool appendApplicationPath, bool loadAsync)
         {
-            await AddAsync(location, type, source, appendApplicationPath, loadAsync, false);
+            await AddAsync(location, type, pathOrSource, appendApplicationPath, loadAsync, false);
         }
 
         /// <summary>
         /// Adds a resource file to the page
         /// <param name="location">Where must the file be added</param>
         /// <param name="type">The type of file being added</param>
-        /// <param name="source">The relative path to the file, or the sourceCode when using HTML as type</param>
+        /// <param name="pathOrSource">The relative path to the file, the sourceCode when using HTML, or the JSON object</param>
         /// <param name="appendApplicationPath">Do we need to append the application path ? (default false, only works for JS & CSS)</param>
         /// <param name="loadAsync">Should this file be loaded Asynchronous ? (default false, only works for JS & CSS)</param>
         /// <param name="clearBaseTemplateBody">Should the existing body HTML be cleared ? this is the case when completely overwriting the page.</param>
-        public async Task AddAsync(ResourceLocation location, ResourceType type, string source, bool appendApplicationPath, bool loadAsync, bool clearBaseTemplateBody)
+        public async Task AddAsync(ResourceLocation location, ResourceType type, string pathOrSource, bool appendApplicationPath, bool loadAsync, bool clearBaseTemplateBody)
+        {
+            await AddAsync(location, type, pathOrSource, appendApplicationPath, loadAsync, clearBaseTemplateBody, "");
+        }
+
+        /// <summary>
+        /// Adds a resource file to the page
+        /// <param name="location">Where must the file be added</param>
+        /// <param name="type">The type of file being added</param>
+        /// <param name="pathOrSource">The relative path to the file, the sourceCode when using HTML, or the JSON object</param>
+        /// <param name="appendApplicationPath">Do we need to append the application path ? (default false, only works for JS & CSS)</param>
+        /// <param name="loadAsync">Should this file be loaded Asynchronous ? (default false, only works for JS & CSS)</param>
+        /// <param name="clearBaseTemplateBody">Should the existing body HTML be cleared ? this is the case when completely overwriting the page.</param>
+        /// <param name="title">The title for the resource</param>
+        public async Task AddAsync(ResourceLocation location, ResourceType type, object pathOrSource, bool appendApplicationPath, bool loadAsync, bool clearBaseTemplateBody, string title)
         {
             await _semaphoreSlim.WaitAsync();
             try
             {
-
                 var newResourceItem = new AdditionalResourceItem()
                 {
                     AppendPath = appendApplicationPath,
                     LoadAsync = loadAsync,
-                    Path = source,
+                    PathOrSource = pathOrSource,
                     Location = location,
-                    ResourceType = type
+                    ResourceType = type,
+                    Title = title
                 };
 
                 // Check if we already have this item, if so, return
@@ -162,7 +189,7 @@ namespace Sushi.Mediakiwi.Framework
                 var totalPath = "";
                 if (type == ResourceType.JAVASCRIPT || type == ResourceType.STYLESHEET)
                 {
-                    totalPath = (appendApplicationPath) ? _root.AddApplicationPath(source) : source;
+                    totalPath = (appendApplicationPath) ? _root.AddApplicationPath(pathOrSource.ToString()) : pathOrSource.ToString();
                     if (string.IsNullOrWhiteSpace(CommonConfiguration.FILE_VERSION) == false)
                     {
                         totalPath += $"?v={CommonConfiguration.FILE_VERSION}";
@@ -176,7 +203,7 @@ namespace Sushi.Mediakiwi.Framework
                     default:
                     case ResourceType.HTML:
                         {
-                            totalHtml = source;
+                            totalHtml = pathOrSource.ToString();
                         }
                         break;
                     case ResourceType.JAVASCRIPT:
@@ -187,6 +214,11 @@ namespace Sushi.Mediakiwi.Framework
                     case ResourceType.STYLESHEET:
                         {
                             totalHtml = $"<link rel=\"stylesheet\" href=\"{totalPath}\" type=\"text/css\" media=\"all\"{(loadAsync ? " async" : "")}/>";
+                        }
+                        break;
+                    case ResourceType.JSON: 
+                        {
+                            totalHtml = $"<script type=\"text/javascript\">var {title} = {System.Text.Json.JsonSerializer.Serialize(pathOrSource)};</script>";
                         }
                         break;
                 }

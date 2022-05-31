@@ -33,5 +33,8 @@ namespace Sushi.Mediakiwi.API.Transport.Responses
 
         [JsonPropertyName("resources")]
         public List<ResourceItem> Resources { get; set; }
+
+        [JsonPropertyName("jsonObjects")]
+        public Dictionary<string, object> JsonObjects { get; set; }
     }
 }
