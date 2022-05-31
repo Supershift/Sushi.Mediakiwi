@@ -218,7 +218,12 @@ namespace Sushi.Mediakiwi.Framework
                         break;
                     case ResourceType.JSON: 
                         {
-                            totalHtml = $"<script type=\"text/javascript\">var {title} = {System.Text.Json.JsonSerializer.Serialize(pathOrSource)};</script>";
+                            var jsonOptions = new System.Text.Json.JsonSerializerOptions()
+                            {
+                                PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase
+                            };
+
+                            totalHtml = $"<script type=\"text/javascript\">var {title} = {System.Text.Json.JsonSerializer.Serialize(pathOrSource, jsonOptions)};</script>";
                         }
                         break;
                 }
