@@ -794,6 +794,17 @@ namespace Sushi.Mediakiwi.Framework
         }
 
         /// <summary>
+        /// Adds a JSON object to the page header
+        /// </summary>
+        /// <param name="name">The name of the JSON object</param>
+        /// <param name="jsonObject">The JSON Object</param>
+        public async Task AddJsonAsync<T>(string name, T jsonObject)  where T : class, new()
+        {
+            name = System.Web.HttpUtility.JavaScriptStringEncode(name);
+            await _instance.Resources.AddAsync(ResourceLocation.HEADER, ResourceType.JSON, jsonObject, false, false, false, name);
+        }
+
+        /// <summary>
         /// Adds a script element to the page header
         /// </summary>
         /// <param name="path">relative path to the file</param>
