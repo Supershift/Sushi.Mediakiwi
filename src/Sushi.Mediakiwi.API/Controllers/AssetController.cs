@@ -33,19 +33,6 @@ namespace Sushi.Mediakiwi.API.Controllers
             }
         }
 
-        private static string Azure_Cdn_Uri
-        {
-            get
-            {
-                return WimServerConfiguration.Instance?.Azure_Cdn_Uri;
-            }
-        }
-
-        private static BlobPersister GetPersistor
-        {
-            get { return new BlobPersister(); }
-        }
-
         protected Data.IApplicationUser MediakiwiUser
         {
             get
@@ -61,55 +48,7 @@ namespace Sushi.Mediakiwi.API.Controllers
             }
         }
 
-        private System.Drawing.Image CreateThumbnailImage(System.Drawing.Image input)
-        {
-            try
-            {
-                var imageHeight = input.Height;
-                var imageWidth = input.Width;
-
-                var maxThumbWidth = System.Math.Max(64, WimServerConfiguration.Instance.Thumbnails.CreateThumbnailWidth);
-                var maxThumbHeight = System.Math.Max(48, WimServerConfiguration.Instance.Thumbnails.CreateThumbnailHeight);
-
-                if (imageHeight > imageWidth)
-                {
-                    var factor = ((float)maxThumbHeight / (float)imageHeight);
-                    imageWidth = (int)(factor * imageWidth);
-                    imageHeight = maxThumbHeight;
-
-                    // Resulting thumbnail is wider then the supplied max thumb width,
-                    // recalculate height
-                    if (imageWidth > maxThumbWidth)
-                    {
-                        factor = ((float)maxThumbWidth / (float)input.Width);
-                        imageHeight = (int)(factor * input.Height);
-                        imageWidth = maxThumbWidth;
-                    }
-                }
-                else
-                {
-                    var factor = ((float)maxThumbWidth / (float)imageWidth);
-                    imageHeight = (int)(factor * imageHeight);
-                    imageWidth = maxThumbWidth;
-
-                    // Resulting thumbnail is higher then the supplied max thumb height,
-                    // recalculate width
-                    if (imageHeight > maxThumbHeight) 
-                    {
-                        factor = ((float)maxThumbHeight / (float)input.Height);
-                        imageWidth = (int)(factor * input.Width);
-                        imageHeight = maxThumbHeight;
-                    }
-                }
-
-                return input.GetThumbnailImage(imageWidth, imageHeight, () => false, System.IntPtr.Zero);
-
-            }
-            catch (System.Exception ex)
-            {
-                return null;
-            }
-        }
+        
 
         /// <summary>
         /// Returns all galleries that are available for the supplied user
