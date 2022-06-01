@@ -141,7 +141,7 @@ namespace Sushi.Mediakiwi.AppCentre.UI.Forms
             if (File != null && File.File != null)
             {
                 Instance.Type = File.File.ContentType;
-                Instance.Extention = File.File.FileName.Substring(File.File.FileName.LastIndexOf('.'));
+                Instance.Extension = File.File.FileName.Substring(File.File.FileName.LastIndexOf('.'));
                 Instance.FileName = File.File.FileName;
                 Instance.Size = File.File.Length;
 

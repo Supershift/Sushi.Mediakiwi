@@ -5,6 +5,7 @@ using Sushi.Mediakiwi.API.Transport;
 using Sushi.Mediakiwi.API.Transport.Requests;
 using Sushi.Mediakiwi.API.Transport.Responses;
 using Sushi.Mediakiwi.Data.Configuration;
+using Sushi.Mediakiwi.Logic;
 using Sushi.Mediakiwi.Persisters;
 using System.Collections.Generic;
 using System.IO;
@@ -17,6 +18,13 @@ namespace Sushi.Mediakiwi.API.Controllers
     [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
     public class AssetController : ControllerBase
     {
+        private readonly AssetService _assetService;
+
+        public AssetController(AssetService assetService)
+        {
+            _assetService = assetService;
+        }
+        
         private static string Azure_Image_Container
         {
             get
@@ -170,126 +178,55 @@ namespace Sushi.Mediakiwi.API.Controllers
             }
 
             // The target asset
-            Data.Asset targetAsset = new Data.Asset();
+            Data.Asset asset = new Data.Asset();
 
             // We're updating an asset, get it from DB
             if (request.ID.GetValueOrDefault(0) > 0)
             {
-                targetAsset = await Data.Asset.SelectOneAsync(request.ID.Value);
-            }
-
-            // We have new data provided, process it
-            if (request.Data != null)
-            {
-                targetAsset.Type = request.Data.ContentType;
-                targetAsset.Extention = request.Data.FileName.Substring(request.Data.FileName.LastIndexOf('.'));
-
-                // set the new filename
-                targetAsset.FileName = request.Data.FileName;
-                targetAsset.Size = request.Data.Length;
-
-
-                // Whenever it's an image, extract image data
-                if (request.Data.ContentType.Equals("image/jpeg", System.StringComparison.InvariantCultureIgnoreCase) ||
-                   request.Data.ContentType.Equals("image/jpg", System.StringComparison.InvariantCultureIgnoreCase) ||
-                   request.Data.ContentType.Equals("image/gif", System.StringComparison.InvariantCultureIgnoreCase) ||
-                   request.Data.ContentType.Equals("image/png", System.StringComparison.InvariantCultureIgnoreCase) ||
-                   request.Data.ContentType.Equals("image/bmp", System.StringComparison.InvariantCultureIgnoreCase))
-                {
-                    targetAsset.IsImage = true;
-                    var extension = request.Data.FileName.Substring(request.Data.FileName.LastIndexOf('.') + 1);
-                    var name = request.Data.FileName.Substring(0, request.Data.FileName.LastIndexOf('.'));
-
-                    // Create an image based on the supplied data
-                    using (var image = System.Drawing.Image.FromStream(request.Data.OpenReadStream()))
-                    {
-                        targetAsset.Width = image.Width;
-                        targetAsset.Height = image.Height;
-                        
-                        // Create a thumbnail ?
-                        if (WimServerConfiguration.Instance.Thumbnails.CreateThumbnails)
-                        {
-                            try
-                            {
-
-                                using (var thumb = CreateThumbnailImage(image))
-                                {
-                                    if (thumb != null)
-                                    {
-                                  
-                                        var thumbName = $"{name}_thumb.{extension}";
-
-                                        using (MemoryStream ms = new MemoryStream())
-                                        {
-                                            thumb.Save(ms, image.RawFormat);
-                                            ms.Position = 0;
-
-                                            var thumbUpload = await GetPersistor.UploadAsync(ms, Azure_Image_Container, thumbName, request.Data.ContentType).ConfigureAwait(false);
-                                            if (string.IsNullOrWhiteSpace(Azure_Cdn_Uri))
-                                            {
-                                                targetAsset.RemoteLocation_Thumb = $"{thumbUpload.Uri}";
-                                            }
-                                            else
-                                            {
-                                                targetAsset.RemoteLocation_Thumb = $"{Azure_Cdn_Uri}{thumbUpload.Uri.PathAndQuery}";
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                            catch (System.Exception ex)
-                            {
-                                await Data.Notification.InsertOneAsync(nameof(AssetController), $"Could not create thumbnail: {ex.Message}");
-                            }
-                        }
-                    }
-                }
-
-                // SVG is also an image, but not one from which you can get the width and height
-                if (request.Data.ContentType.Equals("image/svg+xml", System.StringComparison.InvariantCultureIgnoreCase))
-                {
-                    targetAsset.IsImage = true;
-                }
-
-                // Upload the asset to azure.
-                var upload = await GetPersistor.UploadAsync(request.Data.OpenReadStream(), Azure_Image_Container, request.Data.FileName, request.Data.ContentType).ConfigureAwait(false);
-                if (string.IsNullOrWhiteSpace(Azure_Cdn_Uri))
-                {
-                    targetAsset.RemoteLocation = $"{upload.Uri}";
-                }
-                else
-                {
-                    targetAsset.RemoteLocation = $"{Azure_Cdn_Uri}{upload.Uri.PathAndQuery}";
-                }
+                asset = await Data.Asset.SelectOneAsync(request.ID.Value);
             }
 
             // Update gallery when set
             if (request.GalleryID.GetValueOrDefault(0) > 0)
             {
-                targetAsset.GalleryID = request.GalleryID.Value;
+                asset.GalleryID = request.GalleryID.Value;
             }
 
-            targetAsset.Description = request.Description;
+            asset.Description = request.Description;
             if (string.IsNullOrWhiteSpace(request.Title) == false)
             {
-                targetAsset.Title = request.Title;
+                asset.Title = request.Title;
             }
 
-            if (string.IsNullOrWhiteSpace(targetAsset.Title))
+            if (string.IsNullOrWhiteSpace(asset.Title))
             {
-                targetAsset.Title = targetAsset.FileName;
+                asset.Title = asset.FileName;
             }
 
-            await targetAsset.SaveAsync();
+            // We have new data provided, process it
+            if (request.Data != null)
+            {
+                asset.Type = request.Data.ContentType;
+                asset.Extension = request.Data.FileName.Substring(request.Data.FileName.LastIndexOf('.'));
+
+                // upload to blob and save
+                using var stream = request.Data.OpenReadStream();
+                await _assetService.UpsertAssetAsync(asset, stream, Azure_Image_Container, request.Data.FileName, request.Data.ContentType);
+            }
+            else
+            {
+                // only update metadata
+                await asset.SaveAsync();
+            }
 
             return Ok(new SaveAssetResponse() 
             {
-                Description = targetAsset.Description,
-                Title = targetAsset.Title,
-                GalleryID = targetAsset.GalleryID,
-                ID = targetAsset.ID,
-                RemoteLocation = targetAsset.RemoteLocation,
-                RemoteLocationThumb  = targetAsset.RemoteLocation_Thumb
+                Description = asset.Description,
+                Title = asset.Title,
+                GalleryID = asset.GalleryID,
+                ID = asset.ID,
+                RemoteLocation = asset.RemoteLocation,
+                RemoteLocationThumb  = asset.RemoteLocation_Thumb
             });
         }
     }

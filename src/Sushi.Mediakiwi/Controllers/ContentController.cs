@@ -12,7 +12,7 @@ using System.Threading;
 using System.Reflection;
 using Sushi.Mediakiwi.Controllers.Data;
 using Sushi.Mediakiwi.Connectors;
-using Sushi.Mediakiwi.Extention;
+using Sushi.Mediakiwi.Extension;
 
 namespace Sushi.Mediakiwi.Controllers
 {

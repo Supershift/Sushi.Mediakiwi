@@ -37,7 +37,7 @@ namespace Sushi.Mediakiwi.Data
                 Map(x => x.FileName, "Asset_Filename").SqlType(SqlDbType.NVarChar).Length(255);
                 Map(x => x.BaseGalleryID, "Gallery_Base_Key").SqlType(SqlDbType.Int).ReadOnly();
                 Map(x => x.CompletePath, "Gallery_CompletePath").SqlType(SqlDbType.NVarChar).Length(1000).ReadOnly();
-                Map(x => x.Extention, "Asset_Extention").SqlType(SqlDbType.VarChar).Length(20);
+                Map(x => x.Extension, "Asset_Extention").SqlType(SqlDbType.VarChar).Length(20);
                 Map(x => x.Size, "Asset_Size").SqlType(SqlDbType.Int);
                 Map(x => x.Type, "Asset_Type").SqlType(SqlDbType.VarChar).Length(150);
                 Map(x => x.AssetTypeID, "Asset_AssetType_Key").SqlType(SqlDbType.Int);
@@ -157,18 +157,18 @@ namespace Sushi.Mediakiwi.Data
         public string CompletePath { get; set; }
 
         /// <summary>
-        /// Gets or sets the extention.
+        /// Gets or sets the extension.
         /// </summary>
-        /// <value>The extention.</value>
-        public string Extention { get; set; }
+        /// <value>The extension.</value>
+        public string Extension { get; set; }
 
-        public string ExtentionClassName
+        public string ExtensionClassName
         {
             get
             {
-                if (!string.IsNullOrEmpty(Extention))
+                if (!string.IsNullOrEmpty(Extension))
                 {
-                    switch (Extention.ToLower())
+                    switch (Extension.ToLower())
                     {
                         case "docx":
                         case "doc": return "doc";

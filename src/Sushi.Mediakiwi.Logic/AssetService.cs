@@ -68,12 +68,12 @@ namespace Sushi.Mediakiwi.Logic
                 var extensionIndex = fileName.LastIndexOf('.');
                 if (extensionIndex > 0)
                 {
-                    fileName = fileName.Substring(0, extensionIndex) + DateTime.UtcNow.Ticks.ToString() + fileName.Skip(extensionIndex);
+                    fileName = $"{fileName.Substring(0, extensionIndex)}-{DateTime.UtcNow.Ticks}{fileName.Substring(extensionIndex)}";
                 }
                 else
                 {
                     // filename does not have an extension, append ticks at end
-                    fileName = fileName + DateTime.UtcNow.Ticks.ToString();
+                    fileName = $"{fileName}-{DateTime.UtcNow.Ticks}";
                 }
                 blobClient = containerClient.GetBlobClient(fileName);
             }
@@ -88,7 +88,8 @@ namespace Sushi.Mediakiwi.Logic
             await blobClient.UploadAsync(inputStream, new BlobUploadOptions() { HttpHeaders = headers });
 
 
-            // store asset with blob url
+            // store asset with blob url            
+            asset.FileName = fileName;
             asset.RemoteLocation = blobClient.Uri.ToString();
             
             

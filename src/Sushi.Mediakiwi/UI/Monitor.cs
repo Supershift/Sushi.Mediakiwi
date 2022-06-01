@@ -11,7 +11,6 @@ using Sushi.Mediakiwi.Beta.GeneratedCms.Source;
 using Sushi.Mediakiwi.Controllers;
 using Sushi.Mediakiwi.Data;
 using Sushi.Mediakiwi.Data.Configuration;
-using Sushi.Mediakiwi.Extention;
 using Sushi.Mediakiwi.Framework;
 using Sushi.Mediakiwi.Interfaces;
 using Sushi.Mediakiwi.Logic;
@@ -28,6 +27,7 @@ using System.Threading.Tasks;
 using Sushi.Mediakiwi.Framework.Interfaces;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Sushi.Mediakiwi.Extension;
 
 namespace Sushi.Mediakiwi.UI
 {
