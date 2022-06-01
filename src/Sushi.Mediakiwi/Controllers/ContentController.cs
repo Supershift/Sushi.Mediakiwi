@@ -13,6 +13,7 @@ using System.Reflection;
 using Sushi.Mediakiwi.Controllers.Data;
 using Sushi.Mediakiwi.Connectors;
 using Sushi.Mediakiwi.Extension;
+using Sushi.Mediakiwi.Logic;
 
 namespace Sushi.Mediakiwi.Controllers
 {
@@ -30,10 +31,12 @@ namespace Sushi.Mediakiwi.Controllers
     public class ContentController : MediakiwiController
     {
         private readonly IMemoryCache _cache;
+        private readonly AssetService _assetService;
 
-        public ContentController(IMemoryCache memoryCache)
+        public ContentController(IMemoryCache memoryCache, AssetService assetService)
         {
             _cache = memoryCache;
+            _assetService = assetService;
         }
 
         [Produces("application/json")]
@@ -488,11 +491,11 @@ namespace Sushi.Mediakiwi.Controllers
                             {
                                 content.Height = inField?.Image.Height;
                             }
-
-                            content.Url = inField.Image?.RemoteLocation;
+                            
+                            content.Url = _assetService.GetCdnUrl(inField.Image);
                             if (!string.IsNullOrWhiteSpace(AzureBlobConnector.AzurePrefix) && !string.IsNullOrWhiteSpace(content.Url))
                             {
-                                Uri path = new Uri(inField.Image.RemoteLocation, UriKind.Absolute);
+                                Uri path = new Uri(content.Url, UriKind.Absolute);
                                 content.Url = $"{AzureBlobConnector.AzurePrefix}{path.AbsolutePath}";
                             }
                         }
@@ -504,10 +507,10 @@ namespace Sushi.Mediakiwi.Controllers
                         {
                             isFilled = true;
                             content.Text = inField.Asset?.Description;
-                            content.Url = inField.Asset?.RemoteLocation;
+                            content.Url = _assetService.GetCdnUrl(inField.Asset);
                             if (!string.IsNullOrWhiteSpace(AzureBlobConnector.AzurePrefix) && !string.IsNullOrWhiteSpace(content.Url))
                             {
-                                Uri path = new Uri(inField.Asset.RemoteLocation, UriKind.Absolute);
+                                Uri path = new Uri(content.Url, UriKind.Absolute);
                                 content.Url = $"{AzureBlobConnector.AzurePrefix}{path.AbsolutePath}";
                             }
                         }

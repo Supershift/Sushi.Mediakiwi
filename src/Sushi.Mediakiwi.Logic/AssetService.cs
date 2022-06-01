@@ -28,7 +28,7 @@ namespace Sushi.Mediakiwi.Logic
         }
 
         /// <summary>
-        /// Uploads the provided stream to Azure Blob Storage and stores the provided asset with blob URL.
+        /// Uploads the provided stream to Azure Blob Storage and stores the provided asset in the dabase.
         /// </summary>
         /// <param name="asset"></param>
         /// <param name="inputStream"></param>
@@ -37,6 +37,19 @@ namespace Sushi.Mediakiwi.Logic
         /// <returns></returns>
         public async Task<Asset> UpsertAssetAsync(Asset asset, Stream inputStream, string container, string fileName, string contentType)
         {
+            // set type and size
+            asset.Type = contentType;
+            asset.Size = inputStream.Length;
+
+            // get extension
+            string extension = null;
+            var extensionIndex = fileName.LastIndexOf('.');
+            if (extensionIndex >= 0)
+            {
+                extension = fileName.Substring(extensionIndex);
+            }
+            asset.Extension = extension;
+
             // is uploaded file an image? determine from contentType
             bool isImage = ImageTypes.Contains(contentType, StringComparer.InvariantCultureIgnoreCase);            
             
@@ -63,12 +76,10 @@ namespace Sushi.Mediakiwi.Logic
             // check if exists. if already exists, append ticks to create unique filename
             bool alreadyExists = await blobClient.ExistsAsync();
             if (alreadyExists)
-            {
-                // insert ticks before file extension
-                var extensionIndex = fileName.LastIndexOf('.');
+            {   
                 if (extensionIndex > 0)
                 {
-                    fileName = $"{fileName.Substring(0, extensionIndex)}-{DateTime.UtcNow.Ticks}{fileName.Substring(extensionIndex)}";
+                    fileName = $"{fileName.Substring(0, extensionIndex)}-{DateTime.UtcNow.Ticks}{extension}";
                 }
                 else
                 {
@@ -87,11 +98,9 @@ namespace Sushi.Mediakiwi.Logic
             inputStream.Position = 0;
             await blobClient.UploadAsync(inputStream, new BlobUploadOptions() { HttpHeaders = headers });
 
-
             // store asset with blob url            
             asset.FileName = fileName;
             asset.RemoteLocation = blobClient.Uri.ToString();
-            
             
             await asset.SaveAsync().ConfigureAwait(false);
 
@@ -132,7 +141,7 @@ namespace Sushi.Mediakiwi.Logic
         /// <returns></returns>
         public string GetCdnUrl(Asset asset)
         {
-            if (!string.IsNullOrWhiteSpace(asset.RemoteLocation))
+            if (!string.IsNullOrWhiteSpace(asset?.RemoteLocation))
             {
                 if (!string.IsNullOrWhiteSpace(WimServerConfiguration.Instance?.Azure_Cdn_Uri))
                 {

@@ -145,9 +145,6 @@ namespace Sushi.Mediakiwi.API.Controllers
             // We have new data provided, process it
             if (request.Data != null)
             {
-                asset.Type = request.Data.ContentType;
-                asset.Extension = request.Data.FileName.Substring(request.Data.FileName.LastIndexOf('.'));
-
                 // upload to blob and save
                 using var stream = request.Data.OpenReadStream();
                 await _assetService.UpsertAssetAsync(asset, stream, Azure_Image_Container, request.Data.FileName, request.Data.ContentType);
