@@ -97,6 +97,32 @@ namespace Sushi.Mediakiwi.Logic
             return asset;
         }
 
+        public async Task<bool> DeleteAsync(Asset asset, string container)
+        {   
+            // get blob client
+            var containerClient = _blobServiceClient.GetBlobContainerClient(container);
+            var blobClient = containerClient.GetBlobClient(asset.FileName);
+
+            // delete blob
+            var result = await blobClient.DeleteIfExistsAsync();
+
+            if (result)
+            {
+                // Delete the DB record
+                await asset.DeleteAsync().ConfigureAwait(false);
+
+                // Get the parent gallery for the asset
+                var gallery = await Gallery.SelectOneAsync(asset.GalleryID).ConfigureAwait(false);
+
+                if (gallery?.ID > 0)
+                {
+                    await gallery.UpdateCountAsync().ConfigureAwait(false);
+                }
+            }
+
+            return result;
+        }
+
         /// <summary>
         /// If <see cref="WimServerConfiguration.Azure_Cdn_Uri"/> is set, a URL to the blob using the CDN url is returned.
         /// Otherwise the <see cref="Asset.RemoteLocation"/> is returned.
