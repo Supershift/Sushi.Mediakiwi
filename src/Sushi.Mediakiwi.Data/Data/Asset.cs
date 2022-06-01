@@ -74,14 +74,15 @@ namespace Sushi.Mediakiwi.Data
         public string LocalFilePath { get; set; }
 
 
+        /// <summary>
+        /// Gets or sets the URL at which the <see cref="Asset"/> is stored.
+        /// </summary>
         public string RemoteLocation { get; set; }
         
         public string RemoteLocation_Thumb { get; set; }
 
         public bool RemoteDownload { get; set; }
-
         
-
         /// <summary>
         /// Gets or sets the id.
         /// </summary>

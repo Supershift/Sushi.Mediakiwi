@@ -34,10 +34,10 @@ namespace Sushi.Mediakiwi.UI
     public class Monitor
     {
         private IHostEnvironment _env;
-        private HttpContext _Context;
-        private Beta.GeneratedCms.Console _Console;
-        private iPresentationMonitor _PresentationMonitor;
-        private iPresentationNavigation _PresentationNavigation;
+        private HttpContext _context;
+        private Beta.GeneratedCms.Console _console;
+        private iPresentationMonitor _presentationMonitor;
+        private iPresentationNavigation _presentationNavigation;
         private IServiceProvider _serviceProvider;
         Dictionary<GlobalPlaceholder, string> _Placeholders;
         Dictionary<CallbackTarget, List<ICallback>> _Callbacks;
@@ -45,17 +45,21 @@ namespace Sushi.Mediakiwi.UI
         public StringBuilder outputHTML;
         internal WimControlBuilder GlobalWimControlBuilder;
         private readonly IConfiguration _configuration;
+        private readonly OAuth2Logic _oAuth2Logic;
 
         public Monitor(HttpContext context, IHostEnvironment env, IConfiguration configuration)
         {
             _env = env;
-            _Context = context;
+            _context = context;
             _configuration = configuration;
-            _Console = new Beta.GeneratedCms.Console(context, _env);
-            _Console.Configuration = configuration;
+            _console = new Beta.GeneratedCms.Console(context, _env);
+            _console.Configuration = configuration;
 
-            _PresentationMonitor = new Framework.Presentation.Presentation();
-            _PresentationNavigation = new Framework.Presentation.Logic.Navigation();
+            _presentationMonitor = new Framework.Presentation.Presentation();
+            _presentationNavigation = new Framework.Presentation.Logic.Navigation();
+
+            // todo: use constructor injection
+            _oAuth2Logic = _context.RequestServices.GetRequiredService<OAuth2Logic>();
         }
 
         internal async Task StartAsync()
@@ -77,12 +81,12 @@ namespace Sushi.Mediakiwi.UI
                         var notification = await Notification.InsertOneAsync("Uncaught exception", ex).ConfigureAwait(false);
                         if (notification != null)
                         {
-                            await HandleExceptionAsync(_Context, ex, notification);
+                            await HandleExceptionAsync(_context, ex, notification);
                         }
                     }
                     catch
                     {
-                        await HandleExceptionAsync(_Context, ex, null);
+                        await HandleExceptionAsync(_context, ex, null);
                     }
                 }
             }
@@ -123,7 +127,7 @@ namespace Sushi.Mediakiwi.UI
 
             foreach (var dict in reservedDict)
             {
-                if (_Console.Request.Query.ContainsKey(dict))
+                if (_console.Request.Query.ContainsKey(dict))
                 {
                     found = true;
                     break;
@@ -136,26 +140,26 @@ namespace Sushi.Mediakiwi.UI
         internal async Task StartAsync(bool reStartWithNotificationList)
         {
             //  Set the current environment
-            _Console.CurrentEnvironment = Data.Environment.Current;
+            _console.CurrentEnvironment = Data.Environment.Current;
             var environmentVersion = await EnvironmentVersion.SelectAsync().ConfigureAwait(false);
 
             // Validate load balanced cache state
             var updated = environmentVersion.Updated.GetValueOrDefault(DateTime.UtcNow);
             await Data.Caching.Configuration.CacheManager.ValidateAsync(updated).ConfigureAwait(false);
 
-            var path = _Console.AddApplicationPath(CommonConfiguration.PORTAL_PATH);
-            var requestPath = _Console.AddApplicationPath(_Console.Request.Path.Value);
+            var path = _console.AddApplicationPath(CommonConfiguration.PORTAL_PATH);
+            var requestPath = _console.AddApplicationPath(_console.Request.Path.Value);
             if (!requestPath.StartsWith(path, StringComparison.CurrentCultureIgnoreCase))
             {
                 return;
             }
 
-            await _Console.SetDateFormatAsync();
+            await _console.SetDateFormatAsync();
 
             bool forcelogin = 
                 //_Console.Request.Path.Equals($"{Data.Environment.Current.RelativePath}/login", StringComparison.CurrentCultureIgnoreCase)
-                _Console.Url.Contains($"{path}?reset=", StringComparison.CurrentCultureIgnoreCase)
-                || _Console.Url.EndsWith($"{path}?reminder", StringComparison.CurrentCultureIgnoreCase)
+                _console.Url.Contains($"{path}?reset=", StringComparison.CurrentCultureIgnoreCase)
+                || _console.Url.EndsWith($"{path}?reminder", StringComparison.CurrentCultureIgnoreCase)
                 ;
 
             if (!await CheckRoamingApplicationUserAsync(forcelogin).ConfigureAwait(false))
@@ -163,7 +167,7 @@ namespace Sushi.Mediakiwi.UI
                 return;
             }
 
-            await _Console.SaveVisitAsync().ConfigureAwait(false);
+            await _console.SaveVisitAsync().ConfigureAwait(false);
 
             //  Obtain querystring requests
             await SetRequestTypeAsync().ConfigureAwait(false);
@@ -186,7 +190,7 @@ namespace Sushi.Mediakiwi.UI
             await CheckSiteAsync().ConfigureAwait(false);
 
             // If we are at the landing page, without any reserved querystring process as Root request
-            if (_Console.Request.Path.Equals(WimServerConfiguration.Instance.Portal_Path, StringComparison.InvariantCulture) && HasReservedRootQueryString() == false)
+            if (_console.Request.Path.Equals(WimServerConfiguration.Instance.Portal_Path, StringComparison.InvariantCulture) && HasReservedRootQueryString() == false)
             {
                 await HandleRootRequestAsync().ConfigureAwait(false);
             }
@@ -197,15 +201,15 @@ namespace Sushi.Mediakiwi.UI
                 //  Create new instances
                 DataGrid grid = new DataGrid();
                 var component = new Beta.GeneratedCms.Source.Component();
-                _Console.Component = component;
+                _console.Component = component;
 
                 await HandleRequestAsync(grid, component, isDeleteTriggered).ConfigureAwait(false);
             }
             else
             {
                 // TODO: MR:10-12-2021 Add logging
-                await _Console.Response.WriteAsync("no-access").ConfigureAwait(false);
-                await _Console.Response.CompleteAsync();
+                await _console.Response.WriteAsync("no-access").ConfigureAwait(false);
+                await _console.Response.CompleteAsync();
             }
         }
 
@@ -232,21 +236,21 @@ namespace Sushi.Mediakiwi.UI
             }
             
  
-            if (_Console.ItemType == RequestItemType.Item || _Console.ItemType == RequestItemType.Asset || _Console.CurrentListInstance.wim.CanContainSingleInstancePerDefinedList)
+            if (_console.ItemType == RequestItemType.Item || _console.ItemType == RequestItemType.Asset || _console.CurrentListInstance.wim.CanContainSingleInstancePerDefinedList)
             {
                 //  Handles the list item request.
                 await HandleListItemRequestAsync(grid, component, isDeleteTriggered).ConfigureAwait(false);
             }
-            else if (_Console.ItemType == RequestItemType.Page)
+            else if (_console.ItemType == RequestItemType.Page)
             {
-                _Console.AddTrace("Monitor", "HandlePageItemRequest(...)");
+                _console.AddTrace("Monitor", "HandlePageItemRequest(...)");
                 //  Handles the page request.
                 await HandlePageItemRequestAsync(grid, component, isDeleteTriggered).ConfigureAwait(false);
             }
             else
             {
                 //  Handles the browsing request.
-                _Console.CurrentListInstance.wim.IsSearchListMode = true;
+                _console.CurrentListInstance.wim.IsSearchListMode = true;
                 await HandleBrowsingRequestAsync(grid, component).ConfigureAwait(false);
             }
         }
@@ -260,7 +264,7 @@ namespace Sushi.Mediakiwi.UI
             var roleMenus = await Menu.SelectAllAsync().ConfigureAwait(false);
             if (roleMenus.Any())
             {
-                IMenu roleMenu = roleMenus.FirstOrDefault(x => x.GroupID == null && x.IsActive == true && x.RoleID == _Console.CurrentApplicationUser.RoleID);
+                IMenu roleMenu = roleMenus.FirstOrDefault(x => x.GroupID == null && x.IsActive == true && x.RoleID == _console.CurrentApplicationUser.RoleID);
 
                 if (roleMenu?.ID > 0)
                 {
@@ -273,7 +277,7 @@ namespace Sushi.Mediakiwi.UI
                             case 1:  // List
                                 {
                                     IComponentList implement = await ComponentList.SelectOneAsync(homepage.ItemID);
-                                    await _Console.ApplyListAsync(implement);
+                                    await _console.ApplyListAsync(implement);
                                 }
                                 break;
                             case 2:  // Folder
@@ -281,8 +285,8 @@ namespace Sushi.Mediakiwi.UI
                                 {
                                     var folder = await Folder.SelectOneAsync(homepage.ItemID);
 
-                                    _Console.CurrentListInstance.wim.IsSearchListMode = true;
-                                    _Console.CurrentListInstance.wim.m_CurrentFolder = folder;
+                                    _console.CurrentListInstance.wim.IsSearchListMode = true;
+                                    _console.CurrentListInstance.wim.m_CurrentFolder = folder;
                                 }
                                 break;
                             case 5:  // Gallery
@@ -299,15 +303,15 @@ namespace Sushi.Mediakiwi.UI
                                         folderEntity.CompletePath = gallery.CompletePath == "/" ? "/" : string.Concat(gallery.CompletePath, "/");
                                         folderEntity.Type = FolderType.Gallery;
 
-                                        _Console.CurrentListInstance.wim.IsSearchListMode = true;
-                                        _Console.CurrentListInstance.wim.m_CurrentFolder = folderEntity;
+                                        _console.CurrentListInstance.wim.IsSearchListMode = true;
+                                        _console.CurrentListInstance.wim.m_CurrentFolder = folderEntity;
                                     }
                                 }
                                 break;
                             case 3:  // Page
                                 {
-                                    _Console.Item = homepage.ItemID;
-                                    _Console.ItemType = RequestItemType.Page;
+                                    _console.Item = homepage.ItemID;
+                                    _console.ItemType = RequestItemType.Page;
                                 }
                                 break;
                             case 6: // Site (homepage)
@@ -315,8 +319,8 @@ namespace Sushi.Mediakiwi.UI
                                     var hpId = (await Site.SelectOneAsync(homepage.ItemID).ConfigureAwait(false)).HomepageID;
                                     if (hpId.GetValueOrDefault(0) > 0)
                                     {
-                                        _Console.Item = hpId;
-                                        _Console.ItemType = RequestItemType.Page;
+                                        _console.Item = hpId;
+                                        _console.ItemType = RequestItemType.Page;
                                     }
                                 }
                                 break;
@@ -335,12 +339,12 @@ namespace Sushi.Mediakiwi.UI
                                             break;
                                         case 1:
                                             {
-                                                folderEntity = Folder.SelectOneBySite(_Console.ChannelIndentifier, FolderType.Page);
+                                                folderEntity = Folder.SelectOneBySite(_console.ChannelIndentifier, FolderType.Page);
                                             }
                                             break;
                                         case 2:
                                             {
-                                                folderEntity = Folder.SelectOneBySite(_Console.ChannelIndentifier, FolderType.List);
+                                                folderEntity = Folder.SelectOneBySite(_console.ChannelIndentifier, FolderType.List);
                                             }
                                             break;
                                         case 3:
@@ -354,12 +358,12 @@ namespace Sushi.Mediakiwi.UI
                                             break;
                                         case 4:
                                             {
-                                                folderEntity = Folder.SelectOneBySite(_Console.ChannelIndentifier, FolderType.Administration);
+                                                folderEntity = Folder.SelectOneBySite(_console.ChannelIndentifier, FolderType.Administration);
                                             }
                                             break;
                                     }
-                                    _Console.CurrentListInstance.wim.IsSearchListMode = true;
-                                    _Console.CurrentListInstance.wim.m_CurrentFolder = folderEntity;
+                                    _console.CurrentListInstance.wim.IsSearchListMode = true;
+                                    _console.CurrentListInstance.wim.m_CurrentFolder = folderEntity;
                                 }
                                 break;
                         }
@@ -376,50 +380,50 @@ namespace Sushi.Mediakiwi.UI
         /// <param name="isDeleteTriggered">if set to <c>true</c> [is delete triggered].</param>
         async Task HandlePageItemRequestAsync(DataGrid grid, Beta.GeneratedCms.Source.Component component, bool isDeleteTriggered)
         {
-            _Console.CurrentListInstance.wim.IsEditMode = (await _Console.CurrentApplicationUser.SelectRoleAsync().ConfigureAwait(false)).CanChangePage;
+            _console.CurrentListInstance.wim.IsEditMode = (await _console.CurrentApplicationUser.SelectRoleAsync().ConfigureAwait(false)).CanChangePage;
 
             Page page = null;
-            if (_Console.CurrentPage == null)
+            if (_console.CurrentPage == null)
             {
-                page = await Page.SelectOneAsync(_Console.Item.Value, false);
-                _Context.Items.Add("Wim.Page", page);
-                _Context.Items.Add("Wim.Site", page.Site);
+                page = await Page.SelectOneAsync(_console.Item.Value, false);
+                _context.Items.Add("Wim.Page", page);
+                _context.Items.Add("Wim.Site", page.Site);
             }
 
-            _Console.View = 0;
+            _console.View = 0;
 
-            bool isPagePublishTriggered = _Console.IsPostBack("pagepublish");
-            bool isPageOfflineTriggered = _Console.IsPostBack("pageoffline");
+            bool isPagePublishTriggered = _console.IsPostBack("pagepublish");
+            bool isPageOfflineTriggered = _console.IsPostBack("pageoffline");
 
-            bool isPageLocalised = _Console.IsPostBack("page.localize");
-            bool isPageInherited = _Console.IsPostBack("page.inherit");
+            bool isPageLocalised = _console.IsPostBack("page.localize");
+            bool isPageInherited = _console.IsPostBack("page.inherit");
 
-            int selectedTab = Utility.ConvertToInt(_Console.Request.Query["tab"]);
-            string section = _Console.Request.Query["tab"];
+            int selectedTab = Utility.ConvertToInt(_console.Request.Query["tab"]);
+            string section = _console.Request.Query["tab"];
 
             string pBack = string.Empty;
-            if (_Console.PostBackStartsWith("pagemod_", out pBack))
+            if (_console.PostBackStartsWith("pagemod_", out pBack))
             {
                 pBack = pBack.Replace("pagemod_", "");
                 ICollection<IPageModule> pageModules = default(List<IPageModule>);
 
-                if (_Console.Context?.RequestServices?.GetServices<IPageModule>().Any() == true)
+                if (_console.Context?.RequestServices?.GetServices<IPageModule>().Any() == true)
                 {
-                    pageModules = _Console.Context.RequestServices.GetServices<IPageModule>().ToList();
+                    pageModules = _console.Context.RequestServices.GetServices<IPageModule>().ToList();
                 }
 
                 foreach (var pmodule in pageModules)
                 {
                     if (pmodule.GetType().Name == pBack)
                     {
-                        var moduleResult = await pmodule.ExecuteAsync(_Console.CurrentPage, _Console.CurrentApplicationUser, _Context);
+                        var moduleResult = await pmodule.ExecuteAsync(_console.CurrentPage, _console.CurrentApplicationUser, _context);
                         if (moduleResult.IsSuccess && string.IsNullOrWhiteSpace(moduleResult.WimNotificationOutput) == false)
                         {
-                            _Console.CurrentListInstance.wim.Notification.AddNotification(moduleResult.WimNotificationOutput);
+                            _console.CurrentListInstance.wim.Notification.AddNotification(moduleResult.WimNotificationOutput);
                         }
                         else if (string.IsNullOrWhiteSpace(moduleResult.WimNotificationOutput) == false)
                         {
-                            _Console.CurrentListInstance.wim.Notification.AddError(moduleResult.WimNotificationOutput);
+                            _console.CurrentListInstance.wim.Notification.AddError(moduleResult.WimNotificationOutput);
                         }
                     }
                 }
@@ -428,51 +432,51 @@ namespace Sushi.Mediakiwi.UI
             if (string.IsNullOrEmpty(section))
             {
                 //  26-08-14:MM
-                var sections = _Console.CurrentPage.Template.GetPageSections();
+                var sections = _console.CurrentPage.Template.GetPageSections();
                 if (sections.Length > 0)
                     section = sections[0];
             }
 
             string redirect = string.IsNullOrEmpty(section) ? "" : string.Concat("&tab=", section);
 
-            if (_Console.IsPostBack("page.translate"))
+            if (_console.IsPostBack("page.translate"))
             {
-                _Console.CurrentApplicationUser.ShowTranslationView = true;
-                await _Console.CurrentApplicationUser.SaveAsync().ConfigureAwait(false);
+                _console.CurrentApplicationUser.ShowTranslationView = true;
+                await _console.CurrentApplicationUser.SaveAsync().ConfigureAwait(false);
 
-                if (!_Console.CurrentListInstance.IsEditMode)
-                    _Console.Response.Redirect(string.Concat(_Console.WimPagePath, "?page=", _Console.Item.Value, redirect));
+                if (!_console.CurrentListInstance.IsEditMode)
+                    _console.Response.Redirect(string.Concat(_console.WimPagePath, "?page=", _console.Item.Value, redirect));
             }
 
-            if (_Console.IsPostBack("page.copy"))
+            if (_console.IsPostBack("page.copy"))
             {
-                await Framework.Inheritance.Page.CopyFromMasterAsync(_Console.Item.Value).ConfigureAwait(false);
+                await Framework.Inheritance.Page.CopyFromMasterAsync(_console.Item.Value).ConfigureAwait(false);
                 
                 // Flush all cache
                 await EnvironmentVersion.SetUpdatedAsync().ConfigureAwait(false);
 
-                _Console.Response.Redirect(string.Concat(_Console.WimPagePath, "?page=", _Console.Item.Value, redirect));
+                _console.Response.Redirect(string.Concat(_console.WimPagePath, "?page=", _console.Item.Value, redirect));
             }
 
-            if (_Console.IsPostBack("page.normal"))
+            if (_console.IsPostBack("page.normal"))
             {
-                _Console.CurrentApplicationUser.ShowTranslationView = false;
-                await _Console.CurrentApplicationUser.SaveAsync().ConfigureAwait(false);
+                _console.CurrentApplicationUser.ShowTranslationView = false;
+                await _console.CurrentApplicationUser.SaveAsync().ConfigureAwait(false);
 
-                if (!_Console.CurrentListInstance.IsEditMode)
-                    _Console.Response.Redirect(string.Concat(_Console.WimPagePath, "?page=", _Console.Item.Value, redirect));
+                if (!_console.CurrentListInstance.IsEditMode)
+                    _console.Response.Redirect(string.Concat(_console.WimPagePath, "?page=", _console.Item.Value, redirect));
             }
 
             if (isPagePublishTriggered)
             {
                 var pagePublicationHandler = new PagePublication();
 
-                await page.PublishAsync(pagePublicationHandler, _Console.CurrentApplicationUser);
+                await page.PublishAsync(pagePublicationHandler, _console.CurrentApplicationUser);
                 // Flush all cache
                 await EnvironmentVersion.SetUpdatedAsync().ConfigureAwait(false);
 
                 //Wim.Framework2.Functions.AuditTrail.Insert(_Console.CurrentApplicationUser, page, Framework2.Functions.Auditing.ActionType.Publish, null);
-                _Console.Response.Redirect(string.Concat(_Console.WimPagePath, "?page=", _Console.Item.Value, redirect));
+                _console.Response.Redirect(string.Concat(_console.WimPagePath, "?page=", _console.Item.Value, redirect));
             }
             else if (isPageOfflineTriggered)
             {
@@ -482,17 +486,17 @@ namespace Sushi.Mediakiwi.UI
                 await EnvironmentVersion.SetUpdatedAsync().ConfigureAwait(false);
 
                 //Wim.Framework2.Functions.AuditTrail.Insert(_Console.CurrentApplicationUser, page, Framework2.Functions.Auditing.ActionType.TakeOffline, null);
-                _Console.Response.Redirect(string.Concat(_Console.WimPagePath, "?page=", _Console.Item.Value, redirect));
+                _console.Response.Redirect(string.Concat(_console.WimPagePath, "?page=", _console.Item.Value, redirect));
             }
             else if (isDeleteTriggered)
             {
                 //  Save the version
                 var currentversion = await ComponentVersion.SelectAllOnPageAsync(page.ID);
-                component.SavePageVersion(page, currentversion, _Console.CurrentApplicationUser, true);
+                component.SavePageVersion(page, currentversion, _console.CurrentApplicationUser, true);
 
                 await page.DeleteAsync().ConfigureAwait(false);
                 //Wim.Framework2.Functions.AuditTrail.Insert(_Console.CurrentApplicationUser, page, Framework2.Functions.Auditing.ActionType.Remove, null);
-                _Console.Response.Redirect(string.Concat(_Console.WimPagePath, "?folder=", _Console.CurrentListInstance.wim.CurrentFolder.ID));
+                _console.Response.Redirect(string.Concat(_console.WimPagePath, "?folder=", _console.CurrentListInstance.wim.CurrentFolder.ID));
             }
             else if (isPageLocalised)
             {
@@ -501,7 +505,7 @@ namespace Sushi.Mediakiwi.UI
                 await page.SaveAsync().ConfigureAwait(false);
 
                 //Wim.Framework2.Functions.AuditTrail.Insert(_Console.CurrentApplicationUser, page, Framework2.Functions.Auditing.ActionType.Localised, null);
-                _Console.Response.Redirect(string.Concat(_Console.WimPagePath, "?page=", _Console.Item.Value, redirect));
+                _console.Response.Redirect(string.Concat(_console.WimPagePath, "?page=", _console.Item.Value, redirect));
 
             }
             else if (isPageInherited)
@@ -511,19 +515,19 @@ namespace Sushi.Mediakiwi.UI
                 await page.SaveAsync().ConfigureAwait(false);
 
                 //Wim.Framework2.Functions.AuditTrail.Insert(_Console.CurrentApplicationUser, page, Framework2.Functions.Auditing.ActionType.Inherited, null);
-                _Console.Response.Redirect(string.Concat(_Console.WimPagePath, "?page=", _Console.Item.Value, redirect));
+                _console.Response.Redirect(string.Concat(_console.WimPagePath, "?page=", _console.Item.Value, redirect));
             }
 
             Page pageInstance;
 
-            GlobalWimControlBuilder = component.CreateContentList(_Console, 0, selectedTab == 1, out pageInstance, section);
+            GlobalWimControlBuilder = component.CreateContentList(_console, 0, selectedTab == 1, out pageInstance, section);
 
 
             // Check if we have to create / update any inherited Page 
-            if (_Console.IsPostBackSave && pageInstance?.ID > 0)
+            if (_console.IsPostBackSave && pageInstance?.ID > 0)
             {
                 var hasInheritedPages = await pageInstance.HasInheritedPagesAsync().ConfigureAwait(false);
-                if (_Console.Item.Value == 0 || hasInheritedPages == false)
+                if (_console.Item.Value == 0 || hasInheritedPages == false)
                 {
                     await Framework.Inheritance.Page.CreatePageAsync(pageInstance, page.Site).ConfigureAwait(false);
                 }
@@ -533,17 +537,17 @@ namespace Sushi.Mediakiwi.UI
                 }
             }
 
-            if (!_Console.IsAdminFooter)
+            if (!_console.IsAdminFooter)
             {
                 GlobalWimControlBuilder.Canvas.Type = CanvasType.ListItem;
 
-                GlobalWimControlBuilder.Leftnav = await _PresentationNavigation.NewLeftNavigationAsync(_Console, component.m_ButtonList != null ? component.m_ButtonList.ToArray() : null).ConfigureAwait(false);
+                GlobalWimControlBuilder.Leftnav = await _presentationNavigation.NewLeftNavigationAsync(_console, component.m_ButtonList != null ? component.m_ButtonList.ToArray() : null).ConfigureAwait(false);
 
-                GlobalWimControlBuilder.TopNavigation = _PresentationNavigation.TopNavigation(_Console);
-                GlobalWimControlBuilder.Rightnav = _PresentationNavigation.RightSideNavigation(_Console, component.m_ButtonList != null ? component.m_ButtonList.ToArray() : null);
-                GlobalWimControlBuilder.Bottom = _PresentationNavigation.NewBottomNavigation(_Console, component.m_ButtonList != null ? component.m_ButtonList.ToArray() : null, false);
+                GlobalWimControlBuilder.TopNavigation = _presentationNavigation.TopNavigation(_console);
+                GlobalWimControlBuilder.Rightnav = _presentationNavigation.RightSideNavigation(_console, component.m_ButtonList != null ? component.m_ButtonList.ToArray() : null);
+                GlobalWimControlBuilder.Bottom = _presentationNavigation.NewBottomNavigation(_console, component.m_ButtonList != null ? component.m_ButtonList.ToArray() : null, false);
 
-                await AddToResponseAsync(await _PresentationMonitor.GetTemplateWrapperAsync(_Console, _Placeholders, _Callbacks, GlobalWimControlBuilder)).ConfigureAwait(false);
+                await AddToResponseAsync(await _presentationMonitor.GetTemplateWrapperAsync(_console, _Placeholders, _Callbacks, GlobalWimControlBuilder)).ConfigureAwait(false);
             }
         }
 
@@ -555,31 +559,31 @@ namespace Sushi.Mediakiwi.UI
         /// <param name="isDeleteTriggered">if set to <c>true</c> [is delete triggered].</param>
         async Task HandleListItemRequestAsync(DataGrid grid, Beta.GeneratedCms.Source.Component component, bool isDeleteTriggered)
         {
-            _Console.View = (int)ContainerView.ItemSelect;
+            _console.View = (int)ContainerView.ItemSelect;
 
-            if (_Console.CurrentList.Type == ComponentListType.ListSettings)
-                _Console.View = (int)ContainerView.ListSettingRequest;
+            if (_console.CurrentList.Type == ComponentListType.ListSettings)
+                _console.View = (int)ContainerView.ListSettingRequest;
 
-            _Console.AddTrace("Monitor", "GetExportOptionUrl(..)");
+            _console.AddTrace("Monitor", "GetExportOptionUrl(..)");
             if (await GetExportOptionUrlAsync(grid, component).ConfigureAwait(false))
                 return;
 
             await HandleListModuleActionAsync(component, true);
 
             //  Create the form
-            _Console.CurrentListInstance.wim.HideTopSectionTag = true;
+            _console.CurrentListInstance.wim.HideTopSectionTag = true;
 
-            if (!_Console.IsComponent)
+            if (!_console.IsComponent)
             {
-                if (_Console.CurrentList.Option_FormAsync && !IsFormatRequest_JSON)
+                if (_console.CurrentList.Option_FormAsync && !IsFormatRequest_JSON)
                 {
-                    _Console.CurrentListInstance.wim.DoListInit();
+                    _console.CurrentListInstance.wim.DoListInit();
                     GlobalWimControlBuilder = new WimControlBuilder();
                 }
                 else
                 {
-                    _Console.CurrentListInstance.wim.DoListInit();
-                    GlobalWimControlBuilder = await component.CreateListAsync(_Console, _Console.OpenInFrame, IsFormatRequest_JSON);
+                    _console.CurrentListInstance.wim.DoListInit();
+                    GlobalWimControlBuilder = await component.CreateListAsync(_console, _console.OpenInFrame, IsFormatRequest_JSON);
                     if (GlobalWimControlBuilder.IsTerminated)
                     {
                         return;
@@ -594,21 +598,21 @@ namespace Sushi.Mediakiwi.UI
 
                 if (IsFormatRequest_JSON)
                 {
-                    _Console.Response.ContentType = "application/json";
+                    _console.Response.ContentType = "application/json";
 
-                    _PresentationNavigation.RightSideNavigation(_Console, component.m_ButtonList != null ? component.m_ButtonList.ToArray() : null, GlobalWimControlBuilder);
-                    _PresentationNavigation.NewBottomNavigation(_Console, component.m_ButtonList != null ? component.m_ButtonList.ToArray() : null, false, GlobalWimControlBuilder);
+                    _presentationNavigation.RightSideNavigation(_console, component.m_ButtonList != null ? component.m_ButtonList.ToArray() : null, GlobalWimControlBuilder);
+                    _presentationNavigation.NewBottomNavigation(_console, component.m_ButtonList != null ? component.m_ButtonList.ToArray() : null, false, GlobalWimControlBuilder);
 
-                    GlobalWimControlBuilder.ApiResponse.CurrentSiteID = _Console.ChannelIndentifier;
-                    GlobalWimControlBuilder.ApiResponse.ListDescription = _Console.CurrentListInstance.wim.CurrentList.Description;
-                    GlobalWimControlBuilder.ApiResponse.RedirectUrl = _Console.RedirectionUrl;
-                    if (!string.IsNullOrWhiteSpace(_Console.RedirectionUrl))
+                    GlobalWimControlBuilder.ApiResponse.CurrentSiteID = _console.ChannelIndentifier;
+                    GlobalWimControlBuilder.ApiResponse.ListDescription = _console.CurrentListInstance.wim.CurrentList.Description;
+                    GlobalWimControlBuilder.ApiResponse.RedirectUrl = _console.RedirectionUrl;
+                    if (!string.IsNullOrWhiteSpace(_console.RedirectionUrl))
                     {
-                        _Console.Response.StatusCode = 302;
+                        _console.Response.StatusCode = 302;
                     }
 
-                    GlobalWimControlBuilder.ApiResponse.IsEditMode = _Console.CurrentListInstance.IsEditMode;
-                    GlobalWimControlBuilder.ApiResponse.ListTitle = _Console.CurrentListInstance.wim.ListTitle;
+                    GlobalWimControlBuilder.ApiResponse.IsEditMode = _console.CurrentListInstance.IsEditMode;
+                    GlobalWimControlBuilder.ApiResponse.ListTitle = _console.CurrentListInstance.wim.ListTitle;
                     // if this item is a button add it to the button list
 
                     // [MR:25-05-2021] added for : https://supershift.atlassian.net/browse/FTD-147
@@ -620,7 +624,7 @@ namespace Sushi.Mediakiwi.UI
 
                 else if (IsFormatRequest_AJAX)
                 {
-                    _Console.Response.ContentType = "text/plain";
+                    _console.Response.ContentType = "text/plain";
                     var searchListGrid = GlobalWimControlBuilder.SearchGrid;
                     await AddToResponseAsync(searchListGrid).ConfigureAwait(false);
                     return;
@@ -632,117 +636,117 @@ namespace Sushi.Mediakiwi.UI
 
             // <------ was here
  
-            bool isCopyTriggered = _Console.Form("copyparent") == "1";
+            bool isCopyTriggered = _console.Form("copyparent") == "1";
 
             if (isCopyTriggered)
             {
                 //
                 //_Console.CurrentListInstance.DoListDelete(_Console.Item.GetValueOrDefault(0), 0);
-                int childID = _Console.CurrentListInstance.wim.CurrentSite.ID;
-                int parentID = _Console.CurrentListInstance.wim.CurrentSite.MasterID.GetValueOrDefault();
+                int childID = _console.CurrentListInstance.wim.CurrentSite.ID;
+                int parentID = _console.CurrentListInstance.wim.CurrentSite.MasterID.GetValueOrDefault();
 
-                _Console.CurrentListInstance.wim.CurrentSite = Site.SelectOne(parentID);
-                _Console.CurrentListInstance.wim.IsCurrentList = true;
-                _Console.CurrentListInstance.wim.DoListLoad(_Console.Item.GetValueOrDefault(0), 0);
+                _console.CurrentListInstance.wim.CurrentSite = Site.SelectOne(parentID);
+                _console.CurrentListInstance.wim.IsCurrentList = true;
+                _console.CurrentListInstance.wim.DoListLoad(_console.Item.GetValueOrDefault(0), 0);
 
 
-                await AddToResponseAsync(string.Format("{0}<br/>", _Console.CurrentListInstance.wim.CurrentSite.ID)).ConfigureAwait(false);
-                await AddToResponseAsync(string.Format("{0}<br/>", _Console.CurrentListInstance.wim.CurrentSite.MasterID.GetValueOrDefault())).ConfigureAwait(false);
+                await AddToResponseAsync(string.Format("{0}<br/>", _console.CurrentListInstance.wim.CurrentSite.ID)).ConfigureAwait(false);
+                await AddToResponseAsync(string.Format("{0}<br/>", _console.CurrentListInstance.wim.CurrentSite.MasterID.GetValueOrDefault())).ConfigureAwait(false);
                 return;
             }
 
             //  Is the delete event triggered?
-            if (isDeleteTriggered && _Console.CurrentListInstance.wim.HasListDelete)
+            if (isDeleteTriggered && _console.CurrentListInstance.wim.HasListDelete)
             {
-                _Console.CurrentListInstance.wim.DoListDelete(_Console.Item.GetValueOrDefault(0), 0, null);
+                _console.CurrentListInstance.wim.DoListDelete(_console.Item.GetValueOrDefault(0), 0, null);
 
                 //  Add deletion entry
                 ComponentListVersion version = new ComponentListVersion();
-                version.SiteID = _Console.CurrentListInstance.wim.CurrentSite.ID;
-                version.ComponentListID = _Console.CurrentListInstance.wim.CurrentList.ID;
-                if (_Console.Item.HasValue)
-                    version.ComponentListItemID = _Console.Item.Value;
+                version.SiteID = _console.CurrentListInstance.wim.CurrentSite.ID;
+                version.ComponentListID = _console.CurrentListInstance.wim.CurrentList.ID;
+                if (_console.Item.HasValue)
+                    version.ComponentListItemID = _console.Item.Value;
 
-                version.ApplicationUserID = _Console.CurrentApplicationUser.ID;
+                version.ApplicationUserID = _console.CurrentApplicationUser.ID;
                 version.TypeID = 2;
                 version.Save();
 
-                if (_Console.OpenInFrame == 0)
+                if (_console.OpenInFrame == 0)
                 {
                     //  Redirect to the containing folder
-                    if (_Console.CurrentList.Type == ComponentListType.Documents)
+                    if (_console.CurrentList.Type == ComponentListType.Documents)
                     {
-                        _Console.Response.Redirect(string.Concat(_Console.WimPagePath, "?gallery=", _Console.CurrentListInstance.wim.CurrentFolder.ID));
+                        _console.Response.Redirect(string.Concat(_console.WimPagePath, "?gallery=", _console.CurrentListInstance.wim.CurrentFolder.ID));
                     }
-                    else if (_Console.CurrentListInstance.wim.CurrentFolder.Type == FolderType.Gallery)
+                    else if (_console.CurrentListInstance.wim.CurrentFolder.Type == FolderType.Gallery)
                     {
-                        _Console.Response.Redirect(string.Concat(_Console.WimPagePath, "?gallery=", _Console.CurrentListInstance.wim.CurrentFolder.ParentID));
+                        _console.Response.Redirect(string.Concat(_console.WimPagePath, "?gallery=", _console.CurrentListInstance.wim.CurrentFolder.ParentID));
                     }
-                    else if (_Console.CurrentList.Type == ComponentListType.Folders)
+                    else if (_console.CurrentList.Type == ComponentListType.Folders)
                     {
-                        _Console.Response.Redirect(string.Concat(_Console.WimPagePath, "?folder=", _Console.CurrentListInstance.wim.CurrentFolder.ParentID));
+                        _console.Response.Redirect(string.Concat(_console.WimPagePath, "?folder=", _console.CurrentListInstance.wim.CurrentFolder.ParentID));
                     }
-                    else if (_Console.Group.HasValue)
+                    else if (_console.Group.HasValue)
                     {
-                        if (string.IsNullOrWhiteSpace(_Console.CurrentListInstance.wim.SearchResultItemPassthroughParameter) == false)
+                        if (string.IsNullOrWhiteSpace(_console.CurrentListInstance.wim.SearchResultItemPassthroughParameter) == false)
                         {
-                            _Console.Response.Redirect(_Console.CurrentListInstance.wim.SearchResultItemPassthroughParameter, true);
+                            _console.Response.Redirect(_console.CurrentListInstance.wim.SearchResultItemPassthroughParameter, true);
                         }
                         else 
                         {
-                            _Console.Response.Redirect(_Console.UrlBuild.GetListRequest(_Console.Group.Value, _Console.GroupItem), true);
+                            _console.Response.Redirect(_console.UrlBuild.GetListRequest(_console.Group.Value, _console.GroupItem), true);
                         }
                     }
-                    else if (_Console.CurrentList.Type == ComponentListType.ComponentListProperties)
+                    else if (_console.CurrentList.Type == ComponentListType.ComponentListProperties)
                     {
-                        _Console.Response.Redirect(string.Concat(_Console.WimPagePath, "?folder=", _Console.CurrentListInstance.wim.CurrentFolder.ID));
+                        _console.Response.Redirect(string.Concat(_console.WimPagePath, "?folder=", _console.CurrentListInstance.wim.CurrentFolder.ID));
                     }
                     else
                     {
-                        _Console.Response.Redirect(_Console.CurrentListInstance.wim.GetUrl(new KeyValue[] { new KeyValue("item", true) }));
+                        _console.Response.Redirect(_console.CurrentListInstance.wim.GetUrl(new KeyValue[] { new KeyValue("item", true) }));
                     }
                 }
             }
 
-            if (_Console.IsComponent)
+            if (_console.IsComponent)
             {
-                _Console.CurrentListInstance.wim.DoListLoad(_Console.Item.GetValueOrDefault(), 0);
+                _console.CurrentListInstance.wim.DoListLoad(_console.Item.GetValueOrDefault(), 0);
 
-                bool isPagePublishTriggered = _Console.IsPostBack("pagepublish");
-                bool isPageOfflineTriggered = _Console.IsPostBack("pageoffline");
+                bool isPagePublishTriggered = _console.IsPostBack("pagepublish");
+                bool isPageOfflineTriggered = _console.IsPostBack("pageoffline");
 
                 if (isPagePublishTriggered)
                 {
-                    ComponentVersion.SelectOne(_Console.Item.Value).Publish();
+                    ComponentVersion.SelectOne(_console.Item.Value).Publish();
                 }
                 if (isPageOfflineTriggered)
                 {
-                    ComponentVersion.SelectOne(_Console.Item.Value).TakeDown();
+                    ComponentVersion.SelectOne(_console.Item.Value).TakeDown();
                 }
 
                 if (isPageOfflineTriggered || isPagePublishTriggered)
-                    _Console.Response.Redirect(_Console.UrlBuild.GetListRequest(_Console.CurrentList, (_Console.Item.Value)));
+                    _console.Response.Redirect(_console.UrlBuild.GetListRequest(_console.CurrentList, (_console.Item.Value)));
 
                 Page pageInstance;
 
-                GlobalWimControlBuilder = component.CreateContentList(_Console, 0, true, out pageInstance, null);
-                GlobalWimControlBuilder.Canvas.Type = _Console.OpenInFrame > 0 ? CanvasType.ListItemInLayer : CanvasType.ListItem;
-                GlobalWimControlBuilder.TopNavigation = _PresentationNavigation.TopNavigation(_Console);
-                GlobalWimControlBuilder.Bottom = _PresentationNavigation.NewBottomNavigation(_Console, component.m_ButtonList != null ? component.m_ButtonList.ToArray() : null, false);
-                GlobalWimControlBuilder.Tabularnav = Template.GetTabularTagNewDesign(_Console, _Console.CurrentList.Name, 0, false);
-                GlobalWimControlBuilder.Leftnav = await _PresentationNavigation.NewLeftNavigationAsync(_Console, component.m_ButtonList != null ? component.m_ButtonList.ToArray() : null).ConfigureAwait(false);
+                GlobalWimControlBuilder = component.CreateContentList(_console, 0, true, out pageInstance, null);
+                GlobalWimControlBuilder.Canvas.Type = _console.OpenInFrame > 0 ? CanvasType.ListItemInLayer : CanvasType.ListItem;
+                GlobalWimControlBuilder.TopNavigation = _presentationNavigation.TopNavigation(_console);
+                GlobalWimControlBuilder.Bottom = _presentationNavigation.NewBottomNavigation(_console, component.m_ButtonList != null ? component.m_ButtonList.ToArray() : null, false);
+                GlobalWimControlBuilder.Tabularnav = Template.GetTabularTagNewDesign(_console, _console.CurrentList.Name, 0, false);
+                GlobalWimControlBuilder.Leftnav = await _presentationNavigation.NewLeftNavigationAsync(_console, component.m_ButtonList != null ? component.m_ButtonList.ToArray() : null).ConfigureAwait(false);
 
-                await AddToResponseAsync(await _PresentationMonitor.GetTemplateWrapperAsync(_Console, _Placeholders, _Callbacks, GlobalWimControlBuilder));
+                await AddToResponseAsync(await _presentationMonitor.GetTemplateWrapperAsync(_console, _Placeholders, _Callbacks, GlobalWimControlBuilder));
 
                 return;
             }
 
-            if (!_Console.IsAdminFooter)
+            if (!_console.IsAdminFooter)
             {
              
-                GlobalWimControlBuilder.TopNavigation = _PresentationNavigation.TopNavigation(_Console);
-                GlobalWimControlBuilder.Canvas.Type = _Console.OpenInFrame > 0 ? CanvasType.ListItemInLayer : CanvasType.ListItem;
-                GlobalWimControlBuilder.Rightnav = _PresentationNavigation.RightSideNavigation(_Console, component.m_ButtonList != null ? component.m_ButtonList.ToArray() : null);
+                GlobalWimControlBuilder.TopNavigation = _presentationNavigation.TopNavigation(_console);
+                GlobalWimControlBuilder.Canvas.Type = _console.OpenInFrame > 0 ? CanvasType.ListItemInLayer : CanvasType.ListItem;
+                GlobalWimControlBuilder.Rightnav = _presentationNavigation.RightSideNavigation(_console, component.m_ButtonList != null ? component.m_ButtonList.ToArray() : null);
 
                 if (
                     GlobalWimControlBuilder.Canvas.Type == CanvasType.ListInLayer ||
@@ -752,11 +756,11 @@ namespace Sushi.Mediakiwi.UI
                     //  Do nothing, this is an layer and has no leftnavigation.
                 }
                 else
-                    GlobalWimControlBuilder.Leftnav = await _PresentationNavigation.NewLeftNavigationAsync(_Console, component.m_ButtonList != null ? component.m_ButtonList.ToArray() : null).ConfigureAwait(false);
-                GlobalWimControlBuilder.Bottom = _PresentationNavigation.NewBottomNavigation(_Console, component.m_ButtonList != null ? component.m_ButtonList.ToArray() : null, false);
-                GlobalWimControlBuilder.Tabularnav = Template.GetTabularTagNewDesign(_Console, _Console.CurrentList.Name, 0, false);
+                    GlobalWimControlBuilder.Leftnav = await _presentationNavigation.NewLeftNavigationAsync(_console, component.m_ButtonList != null ? component.m_ButtonList.ToArray() : null).ConfigureAwait(false);
+                GlobalWimControlBuilder.Bottom = _presentationNavigation.NewBottomNavigation(_console, component.m_ButtonList != null ? component.m_ButtonList.ToArray() : null, false);
+                GlobalWimControlBuilder.Tabularnav = Template.GetTabularTagNewDesign(_console, _console.CurrentList.Name, 0, false);
 
-                await AddToResponseAsync(await _PresentationMonitor.GetTemplateWrapperAsync(_Console, _Placeholders, _Callbacks, GlobalWimControlBuilder)).ConfigureAwait(false);
+                await AddToResponseAsync(await _presentationMonitor.GetTemplateWrapperAsync(_console, _Placeholders, _Callbacks, GlobalWimControlBuilder)).ConfigureAwait(false);
             }
         }
 
@@ -764,22 +768,22 @@ namespace Sushi.Mediakiwi.UI
         {
             string exportUrl = null;
             //  Export to XLS: XLS Creation URL
-            if (_Console.IsPostBack("export_xls") || _Console.Request.Query["xls"] == "1")
+            if (_console.IsPostBack("export_xls") || _console.Request.Query["xls"] == "1")
             {
-                exportUrl = _Console.WimPagePath;
+                exportUrl = _console.WimPagePath;
 
-                _Console.CurrentListInstance.wim.IsExportMode_XLS = true;
+                _console.CurrentListInstance.wim.IsExportMode_XLS = true;
 
-                await component.CreateSearchListAsync(_Console, 0);
-                var url = grid.GetGridFromListInstanceForXLS(_Console, _Console.CurrentListInstance, 0);
-                if (_Console.Request.Query["xp"] == "1")
+                await component.CreateSearchListAsync(_console, 0);
+                var url = grid.GetGridFromListInstanceForXLS(_console, _console.CurrentListInstance, 0);
+                if (_console.Request.Query["xp"] == "1")
                 {
                     await AddToResponseAsync(url);
                     return true;
                 }
                 else
                 {
-                    _Console.Response.Redirect(url);
+                    _console.Response.Redirect(url);
                     return true;
                 }
             }
@@ -789,28 +793,28 @@ namespace Sushi.Mediakiwi.UI
         async Task<ModuleExecutionResult> HandleListModuleActionAsync(Beta.GeneratedCms.Source.Component component, bool isItemRequest = false)
         {
             var result = new ModuleExecutionResult() { IsSuccess = false };
-            if (_Console.PostBackStartsWith("listmod_", out string pBack))
+            if (_console.PostBackStartsWith("listmod_", out string pBack))
             {
                 pBack = pBack.Replace("listmod_", "", StringComparison.InvariantCultureIgnoreCase);
 
                 ICollection<IListModule> listModules = default(List<IListModule>);
 
-                if (_Console.Context?.RequestServices?.GetServices<IListModule>().Any() == true)
+                if (_console.Context?.RequestServices?.GetServices<IListModule>().Any() == true)
                 {
-                    listModules = _Console.Context.RequestServices.GetServices<IListModule>().ToList();
+                    listModules = _console.Context.RequestServices.GetServices<IListModule>().ToList();
                 }
 
                 foreach (var pmodule in listModules)
                 {
                     if (pmodule.GetType().Name == pBack)
                     {
-                        result = await pmodule.ExecuteAsync(_Console.CurrentListInstance, _Console.CurrentApplicationUser, _Context);
+                        result = await pmodule.ExecuteAsync(_console.CurrentListInstance, _console.CurrentApplicationUser, _context);
                     }
                 }
 
                 if (string.IsNullOrWhiteSpace(result.WimNotificationOutput) == false)
                 {
-                    _Console.CurrentListInstance.wim.Notification.AddNotification(result.WimNotificationOutput, result.IsSuccess ? "Success" : "Error", true);
+                    _console.CurrentListInstance.wim.Notification.AddNotification(result.WimNotificationOutput, result.IsSuccess ? "Success" : "Error", true);
                 }
             }
 
@@ -821,7 +825,7 @@ namespace Sushi.Mediakiwi.UI
         {
             get
             {
-                return !string.IsNullOrEmpty(_Console.Form(Constants.AJAX_PARAM));
+                return !string.IsNullOrEmpty(_console.Form(Constants.AJAX_PARAM));
             }
         }
 
@@ -829,7 +833,7 @@ namespace Sushi.Mediakiwi.UI
         {
             get
             {
-                return _Console.Form(Constants.JSON_PARAM) == "1" || (_Console.Request.ContentType?.Contains("json")).GetValueOrDefault();
+                return _console.Form(Constants.JSON_PARAM) == "1" || (_console.Request.ContentType?.Contains("json")).GetValueOrDefault();
             }
         }
 
@@ -840,15 +844,15 @@ namespace Sushi.Mediakiwi.UI
         /// <param name="component">The component.</param>
         async Task HandleBrowsingRequestAsync(DataGrid grid, Beta.GeneratedCms.Source.Component component)
         {
-            _Console.CurrentListInstance.wim.DoListInit();
+            _console.CurrentListInstance.wim.DoListInit();
 
-            _Console.AddTrace("Monitor", "HandleListItemRequest.Init");
-            _Console.View = 2;
-            _Console.CurrentListInstance.wim.IsEditMode = true;
+            _console.AddTrace("Monitor", "HandleListItemRequest.Init");
+            _console.View = 2;
+            _console.CurrentListInstance.wim.IsEditMode = true;
 
             //if (!IsFormatRequest)
             //{
-            _Console.AddTrace("Monitor", "GetExportOptionUrl(..)");
+            _console.AddTrace("Monitor", "GetExportOptionUrl(..)");
             if (await GetExportOptionUrlAsync(grid, component))
                 return;
 
@@ -859,40 +863,40 @@ namespace Sushi.Mediakiwi.UI
             {
                 if (string.IsNullOrWhiteSpace(executeModule.RedirectUrl) == false)
                 { 
-                    _Console.Redirect(executeModule.RedirectUrl, true);
+                    _console.Redirect(executeModule.RedirectUrl, true);
                 }
             }
 
-            _Console.AddTrace("Monitor", "CreateSearchList(..)");
+            _console.AddTrace("Monitor", "CreateSearchList(..)");
 
-            GlobalWimControlBuilder = await component.CreateSearchListAsync(_Console, 0);
-            GlobalWimControlBuilder.Canvas.Type = _Console.OpenInFrame > 0 ? CanvasType.ListInLayer : CanvasType.List;
+            GlobalWimControlBuilder = await component.CreateSearchListAsync(_console, 0);
+            GlobalWimControlBuilder.Canvas.Type = _console.OpenInFrame > 0 ? CanvasType.ListInLayer : CanvasType.List;
 
-            if (_Console.OpenInFrame > 0)
-                _Console.CurrentListInstance.wim.Page.HideTabs = true;
+            if (_console.OpenInFrame > 0)
+                _console.CurrentListInstance.wim.Page.HideTabs = true;
             //}
 
             StringBuilder searchListGrid = new StringBuilder();
           
-            _Console.AddTrace("Monitor", "GetGridFromListInstance(..)");
+            _console.AddTrace("Monitor", "GetGridFromListInstance(..)");
 
             if (IsFormatRequest_JSON)
             {
-                _Console.Response.ContentType = "application/json";
-                searchListGrid = grid.GetGridFromListInstanceForJSON(_Console.CurrentListInstance.wim, _Console, 0, false, true);
+                _console.Response.ContentType = "application/json";
+                searchListGrid = grid.GetGridFromListInstanceForJSON(_console.CurrentListInstance.wim, _console, 0, false, true);
 
                 await AddToResponseAsync(searchListGrid.ToString()).ConfigureAwait(false);
                 return;
             }
             if (IsFormatRequest_AJAX)
             {
-                _Console.Response.ContentType = "text/plain";
+                _console.Response.ContentType = "text/plain";
                 searchListGrid = new StringBuilder();
-                while (_Console.CurrentListInstance.wim.NextGrid())
+                while (_console.CurrentListInstance.wim.NextGrid())
                 {
-                    bool hasNoTitle = string.IsNullOrEmpty(_Console.CurrentListInstance.wim.m_DataTitle);
-                    var titleText = hasNoTitle ? null : $"</section><section class=\"{_Console.CurrentListInstance.wim.Page.Body.Grid.ClassName}\"><h2>{_Console.CurrentListInstance.wim.m_DataTitle}</h2>";
-                    var gridText = grid.GetGridFromListInstance(_Console.CurrentListInstance.wim, _Console, 0, false, _Console.CurrentListInstance);
+                    bool hasNoTitle = string.IsNullOrEmpty(_console.CurrentListInstance.wim.m_DataTitle);
+                    var titleText = hasNoTitle ? null : $"</section><section class=\"{_console.CurrentListInstance.wim.Page.Body.Grid.ClassName}\"><h2>{_console.CurrentListInstance.wim.m_DataTitle}</h2>";
+                    var gridText = grid.GetGridFromListInstance(_console.CurrentListInstance.wim, _console, 0, false, _console.CurrentListInstance);
 
                     searchListGrid.Append(titleText);
                     searchListGrid.Append(gridText);
@@ -901,11 +905,11 @@ namespace Sushi.Mediakiwi.UI
                 await AddToResponseAsync(searchListGrid.ToString()).ConfigureAwait(false);
                 return;
             }
-            if (_Console.CurrentListInstance.wim.CurrentList.Option_SearchAsync)
+            if (_console.CurrentListInstance.wim.CurrentList.Option_SearchAsync)
             {
-                if (_Console.OpenInFrame > 0)
+                if (_console.OpenInFrame > 0)
                 {
-                    searchListGrid.Append($"<section id=\"datagrid\" class=\"{_Console.CurrentListInstance.wim.Page.Body.Grid.ClassName} async\"> </section>");
+                    searchListGrid.Append($"<section id=\"datagrid\" class=\"{_console.CurrentListInstance.wim.Page.Body.Grid.ClassName} async\"> </section>");
                 }
                 else
                 {
@@ -915,11 +919,11 @@ namespace Sushi.Mediakiwi.UI
             else
             {
                 searchListGrid = new StringBuilder();
-                while (_Console.CurrentListInstance.wim.NextGrid())
+                while (_console.CurrentListInstance.wim.NextGrid())
                 {
-                    bool hasNoTitle = string.IsNullOrEmpty(_Console.CurrentListInstance.wim.m_DataTitle);
-                    var titleText = hasNoTitle ? null : $"</section><section class=\"{_Console.CurrentListInstance.wim.Page.Body.Grid.ClassName}\"><h2>{_Console.CurrentListInstance.wim.m_DataTitle}</h2>";
-                    var gridText = grid.GetGridFromListInstance(_Console.CurrentListInstance.wim, _Console, 0, false, _Console.CurrentListInstance);
+                    bool hasNoTitle = string.IsNullOrEmpty(_console.CurrentListInstance.wim.m_DataTitle);
+                    var titleText = hasNoTitle ? null : $"</section><section class=\"{_console.CurrentListInstance.wim.Page.Body.Grid.ClassName}\"><h2>{_console.CurrentListInstance.wim.m_DataTitle}</h2>";
+                    var gridText = grid.GetGridFromListInstance(_console.CurrentListInstance.wim, _console, 0, false, _console.CurrentListInstance);
 
                     searchListGrid.Append(titleText);
                     searchListGrid.Append(gridText);
@@ -927,44 +931,44 @@ namespace Sushi.Mediakiwi.UI
             }
 
             //  Replacement event of ListSearchedAction
-            if (!string.IsNullOrEmpty(component.m_ClickedButton) && _Console.CurrentListInstance.wim.HasListAction)
+            if (!string.IsNullOrEmpty(component.m_ClickedButton) && _console.CurrentListInstance.wim.HasListAction)
             {
-                _Console.CurrentListInstance.wim.DoListAction(_Console.Item.GetValueOrDefault(0), 0, component.m_ClickedButton, null);
+                _console.CurrentListInstance.wim.DoListAction(_console.Item.GetValueOrDefault(0), 0, component.m_ClickedButton, null);
             }
 
             // <------ was here
 
-            _Console.AddTrace("Monitor", "AddToResponse(..)");
+            _console.AddTrace("Monitor", "AddToResponse(..)");
 
             GlobalWimControlBuilder.SearchGrid = searchListGrid.ToString();
-            GlobalWimControlBuilder.TopNavigation = _PresentationNavigation.TopNavigation(_Console);
-            GlobalWimControlBuilder.Bottom = _PresentationNavigation.NewBottomNavigation(
-                _Console,
+            GlobalWimControlBuilder.TopNavigation = _presentationNavigation.TopNavigation(_console);
+            GlobalWimControlBuilder.Bottom = _presentationNavigation.NewBottomNavigation(
+                _console,
                 component.m_ButtonList != null
                     ? component.m_ButtonList.ToArray()
                     : null,
                 !GlobalWimControlBuilder.IsNull
             );
 
-            GlobalWimControlBuilder.Tabularnav = Template.GetTabularTagNewDesign(_Console, _Console.CurrentList.Name, 0, false);
-            GlobalWimControlBuilder.Rightnav = _PresentationNavigation.RightSideNavigation(_Console, component.m_ButtonList != null ? component.m_ButtonList.ToArray() : null);
-            GlobalWimControlBuilder.Leftnav = await _PresentationNavigation.NewLeftNavigationAsync(_Console, component.m_ButtonList != null ? component.m_ButtonList.ToArray() : null).ConfigureAwait(false);
+            GlobalWimControlBuilder.Tabularnav = Template.GetTabularTagNewDesign(_console, _console.CurrentList.Name, 0, false);
+            GlobalWimControlBuilder.Rightnav = _presentationNavigation.RightSideNavigation(_console, component.m_ButtonList != null ? component.m_ButtonList.ToArray() : null);
+            GlobalWimControlBuilder.Leftnav = await _presentationNavigation.NewLeftNavigationAsync(_console, component.m_ButtonList != null ? component.m_ButtonList.ToArray() : null).ConfigureAwait(false);
 
-            await AddToResponseAsync(await _PresentationMonitor.GetTemplateWrapperAsync(_Console, _Placeholders, _Callbacks, GlobalWimControlBuilder)).ConfigureAwait(false);
+            await AddToResponseAsync(await _presentationMonitor.GetTemplateWrapperAsync(_console, _Placeholders, _Callbacks, GlobalWimControlBuilder)).ConfigureAwait(false);
         }
 
 
         async Task<bool> HandleAsyncRequestAsync(Beta.GeneratedCms.Source.Component component)
         {
-            if (_Console.CurrentListInstance == null) return false;
-            var asyncResult = Utils.GetAsyncQuery(_Console);
+            if (_console.CurrentListInstance == null) return false;
+            var asyncResult = Utils.GetAsyncQuery(_console);
             if (asyncResult == null)
                 return false;
 
-            if (_Console.CurrentListInstance.wim.HasListAsync)
+            if (_console.CurrentListInstance.wim.HasListAsync)
             {
-                _Console.HasAsyncEvent = true;
-                ComponentAsyncEventArgs eventArgs = new ComponentAsyncEventArgs(_Console.Item.GetValueOrDefault());
+                _console.HasAsyncEvent = true;
+                ComponentAsyncEventArgs eventArgs = new ComponentAsyncEventArgs(_console.Item.GetValueOrDefault());
 
                 eventArgs.Query = asyncResult.SearchQuery;
                 eventArgs.SearchType = asyncResult.SearchType;
@@ -972,11 +976,11 @@ namespace Sushi.Mediakiwi.UI
 
                 eventArgs.Data = new ASyncResult();
                 eventArgs.Data.Property = asyncResult.Property;
-                eventArgs.ApplyData(component, _Console);
-                eventArgs.SelectedGroupItemKey = _Console.GroupItem.GetValueOrDefault();
-                eventArgs.SelectedGroupKey = _Console.Group.GetValueOrDefault();
+                eventArgs.ApplyData(component, _console);
+                eventArgs.SelectedGroupItemKey = _console.GroupItem.GetValueOrDefault();
+                eventArgs.SelectedGroupKey = _console.Group.GetValueOrDefault();
 
-                var result = _Console.CurrentListInstance.wim.DoListAsync(eventArgs);
+                var result = _console.CurrentListInstance.wim.DoListAsync(eventArgs);
 
                 var options = new JsonSerializerOptions { 
                     IgnoreNullValues = true,
@@ -986,7 +990,7 @@ namespace Sushi.Mediakiwi.UI
                 };
 
                 string val = System.Text.Json.JsonSerializer.Serialize(result.Data, options);
-                _Console.Response.ContentType = "application/json";
+                _console.Response.ContentType = "application/json";
                 await AddToResponseAsync(val).ConfigureAwait(false);
 
                 return true;
@@ -997,16 +1001,16 @@ namespace Sushi.Mediakiwi.UI
         async Task<bool> HandleSortingRequestAsync()
         {
             // Is this a sorting Request ?
-            if (_Console.Request?.Query?.ContainsKey("sortF") == true && _Console.Request?.Query?.ContainsKey("sortT") == true)
+            if (_console.Request?.Query?.ContainsKey("sortF") == true && _console.Request?.Query?.ContainsKey("sortT") == true)
             {
-                int list = Utility.ConvertToInt(_Console.Request.Query["list"]);
-                int sortF = Utility.ConvertToInt(_Console.Request.Query["sortF"]);
-                int sortT = Utility.ConvertToInt(_Console.Request.Query["sortT"]);
+                int list = Utility.ConvertToInt(_console.Request.Query["list"]);
+                int sortF = Utility.ConvertToInt(_console.Request.Query["sortF"]);
+                int sortT = Utility.ConvertToInt(_console.Request.Query["sortT"]);
 
                 if (list > 0 && sortF > 0 && sortT > 0)
                 {
                     IComponentList implement = ComponentList.SelectOne(list);
-                    IComponentListTemplate currentListInstance = implement.GetInstance(_Console);
+                    IComponentListTemplate currentListInstance = implement.GetInstance(_console);
 
                     if (currentListInstance != null)
                     {
@@ -1023,17 +1027,17 @@ namespace Sushi.Mediakiwi.UI
         /// </summary>
         void HandleActionRequest()
         {
-            if (_Console.CurrentListInstance == null || string.IsNullOrEmpty(_Console.CurrentListInstance.wim.PostbackValue))
+            if (_console.CurrentListInstance == null || string.IsNullOrEmpty(_console.CurrentListInstance.wim.PostbackValue))
             {
                 return;
             }
 
             // 
-            switch (_Console.CurrentListInstance.wim.PostbackValue)
+            switch (_console.CurrentListInstance.wim.PostbackValue)
             {
                 case "PageContentPublication":
                     {
-                        _Console.CurrentListInstance.wim.Notification.AddNotification("The webcontent has been refreshed.");
+                        _console.CurrentListInstance.wim.Notification.AddNotification("The webcontent has been refreshed.");
                     } break;
             }
         }
@@ -1045,45 +1049,45 @@ namespace Sushi.Mediakiwi.UI
         async Task RedirectToChannelHomePageAsync(int siteID)
         {
             var currentUrl = "";
-            if (_Console.Request.PathBase.HasValue)
+            if (_console.Request.PathBase.HasValue)
             {
-                currentUrl = _Console.Request.PathBase.ToString();
+                currentUrl = _console.Request.PathBase.ToString();
             }
-            currentUrl += _Console.Request.Path;
+            currentUrl += _console.Request.Path;
 
             //  Find the default homepage in the menu section
-            var defaultHome = await _Console.UrlBuild.GetHomeRequestAsync(siteID).ConfigureAwait(false);
+            var defaultHome = await _console.UrlBuild.GetHomeRequestAsync(siteID).ConfigureAwait(false);
             if (currentUrl.Equals(defaultHome, StringComparison.InvariantCultureIgnoreCase) == false)
             {
-                _Console.Response.Redirect(defaultHome);
+                _console.Response.Redirect(defaultHome);
             }
         }
 
         async Task<bool> CheckSecurityAsync(bool reStartWithNotificationList)
         {
             var currentUrl = "";
-            if (_Console.Request.PathBase.HasValue)
+            if (_console.Request.PathBase.HasValue)
             {
-                currentUrl = _Console.Request.PathBase.ToString();
+                currentUrl = _console.Request.PathBase.ToString();
             }
-            currentUrl += _Console.Request.Path;
+            currentUrl += _console.Request.Path;
 
-            var sites = await _Console.CurrentListInstance.wim.CurrentApplicationUserRole.SitesAsync(_Console.CurrentApplicationUser).ConfigureAwait(false);
+            var sites = await _console.CurrentListInstance.wim.CurrentApplicationUserRole.SitesAsync(_console.CurrentApplicationUser).ConfigureAwait(false);
 
             //  ACL: Sites
-            if (!_Console.CurrentListInstance.wim.CurrentApplicationUserRole.All_Sites
+            if (!_console.CurrentListInstance.wim.CurrentApplicationUserRole.All_Sites
                 && (sites).Length == 0
                 && !reStartWithNotificationList)
             {
-                throw new Exception(ErrorCode.GetMessage(1002, _Console.CurrentApplicationUser.LanguageCulture));
+                throw new Exception(ErrorCode.GetMessage(1002, _console.CurrentApplicationUser.LanguageCulture));
             }
 
             //  ACL: Sites
-            if (!_Console.CurrentListInstance.wim.CurrentApplicationUserRole.All_Sites)
+            if (!_console.CurrentListInstance.wim.CurrentApplicationUserRole.All_Sites)
             {
-                if (!await _Console.CurrentListInstance.wim.CurrentSite.HasRoleAccessAsync(_Console.CurrentListInstance.wim.CurrentApplicationUser).ConfigureAwait(false))
+                if (!await _console.CurrentListInstance.wim.CurrentSite.HasRoleAccessAsync(_console.CurrentListInstance.wim.CurrentApplicationUser).ConfigureAwait(false))
                 {
-                    var allowed = await _Console.CurrentListInstance.wim.CurrentApplicationUserRole.SitesAsync(_Console.CurrentApplicationUser).ConfigureAwait(false);
+                    var allowed = await _console.CurrentListInstance.wim.CurrentApplicationUserRole.SitesAsync(_console.CurrentApplicationUser).ConfigureAwait(false);
                     if (allowed != null && allowed.Length > 0)
                     {
                         await RedirectToChannelHomePageAsync(allowed[0].ID).ConfigureAwait(false);
@@ -1091,13 +1095,13 @@ namespace Sushi.Mediakiwi.UI
                     }
                     else
                     {
-                        if ((await _Console.CurrentListInstance.wim.CurrentApplicationUser.SitesAsync(AccessFilter.RoleAndUser).ConfigureAwait(false))?.Length > 0)
+                        if ((await _console.CurrentListInstance.wim.CurrentApplicationUser.SitesAsync(AccessFilter.RoleAndUser).ConfigureAwait(false))?.Length > 0)
                         {
-                            var siteId = (await _Console.CurrentListInstance.wim.CurrentApplicationUser.SitesAsync(AccessFilter.RoleAndUser).ConfigureAwait(false))[0].ID;
-                            var newUrl = _Console.GetWimPagePath(siteId);
+                            var siteId = (await _console.CurrentListInstance.wim.CurrentApplicationUser.SitesAsync(AccessFilter.RoleAndUser).ConfigureAwait(false))[0].ID;
+                            var newUrl = _console.GetWimPagePath(siteId);
                             if (currentUrl.Equals(newUrl, StringComparison.InvariantCultureIgnoreCase) == false)
                             {
-                                _Console.Response.Redirect(newUrl);
+                                _console.Response.Redirect(newUrl);
                             }
 
                             return false;
@@ -1115,27 +1119,27 @@ namespace Sushi.Mediakiwi.UI
             }
 
             if (
-                _Console.CurrentListInstance.wim.CurrentFolder.ID == 0 && 
-                string.IsNullOrEmpty(_Console.Request.Query["dashboard"]))
+                _console.CurrentListInstance.wim.CurrentFolder.ID == 0 && 
+                string.IsNullOrEmpty(_console.Request.Query["dashboard"]))
             {
-                await RedirectToChannelHomePageAsync(_Console.ChannelIndentifier).ConfigureAwait(false);
+                await RedirectToChannelHomePageAsync(_console.ChannelIndentifier).ConfigureAwait(false);
                 return false;
             }
 
             //  ACL: Folders
-            if (_Console.CurrentListInstance.wim.CurrentFolder.Type != FolderType.Gallery
-                && !_Console.CurrentListInstance.wim.CurrentApplicationUserRole.All_Folders)
+            if (_console.CurrentListInstance.wim.CurrentFolder.Type != FolderType.Gallery
+                && !_console.CurrentListInstance.wim.CurrentApplicationUserRole.All_Folders)
             {
-                if (!await _Console.CurrentListInstance.wim.CurrentFolder.HasRoleAccessAsync(_Console.CurrentListInstance.wim.CurrentApplicationUser).ConfigureAwait(false))
+                if (!await _console.CurrentListInstance.wim.CurrentFolder.HasRoleAccessAsync(_console.CurrentListInstance.wim.CurrentApplicationUser).ConfigureAwait(false))
                 {
-                    if (_Console.CurrentListInstance.wim.CurrentFolder.ParentID.HasValue)
+                    if (_console.CurrentListInstance.wim.CurrentFolder.ParentID.HasValue)
                     {
-                        _Console.Response.Redirect(_Console.UrlBuild.GetFolderRequest(_Console.CurrentListInstance.wim.CurrentFolder.ParentID.Value));
+                        _console.Response.Redirect(_console.UrlBuild.GetFolderRequest(_console.CurrentListInstance.wim.CurrentFolder.ParentID.Value));
                     }
-                    var newUrl = _Console.WimPagePath;
+                    var newUrl = _console.WimPagePath;
                     if (currentUrl.Equals(newUrl, StringComparison.InvariantCultureIgnoreCase) == false)
                     {
-                        _Console.Response.Redirect(newUrl);
+                        _console.Response.Redirect(newUrl);
                     }
 
                     return false;
@@ -1144,7 +1148,7 @@ namespace Sushi.Mediakiwi.UI
 
             //  Check environment
             bool approved = false;
-            switch (_Console.CurrentListInstance.wim.CurrentFolder.Type)
+            switch (_console.CurrentListInstance.wim.CurrentFolder.Type)
             {
                 default:
                 case FolderType.Undefined:
@@ -1153,35 +1157,35 @@ namespace Sushi.Mediakiwi.UI
                     }
                 case FolderType.Page:
                     {
-                        approved = _Console.CurrentListInstance.wim.CurrentApplicationUserRole.CanSeePage;
+                        approved = _console.CurrentListInstance.wim.CurrentApplicationUserRole.CanSeePage;
                     }
                     break;
                 case FolderType.List:
                     {
-                        if (_Console.CurrentListInstance.wim.CurrentList.Type == ComponentListType.Browsing)
+                        if (_console.CurrentListInstance.wim.CurrentList.Type == ComponentListType.Browsing)
                         {
-                            approved = _Console.CurrentListInstance.wim.CurrentApplicationUserRole.CanSeeFolder;
+                            approved = _console.CurrentListInstance.wim.CurrentApplicationUserRole.CanSeeFolder;
                             if (!approved)
                             {
-                                var newUrl = _Console.WimPagePath;
+                                var newUrl = _console.WimPagePath;
                                 
                                 if (currentUrl.Equals(newUrl, StringComparison.InvariantCultureIgnoreCase) == false)
                                 {
-                                    _Console.Response.Redirect(newUrl);
+                                    _console.Response.Redirect(newUrl);
                                 }
 
                                 return false;
                             }
                         }
-                        approved = _Console.CurrentListInstance.wim.CurrentApplicationUserRole.CanSeeList;
-                        if (_Console.CurrentList.Type == ComponentListType.Undefined && !_Console.CurrentListInstance.wim.CurrentApplicationUserRole.All_Lists)
+                        approved = _console.CurrentListInstance.wim.CurrentApplicationUserRole.CanSeeList;
+                        if (_console.CurrentList.Type == ComponentListType.Undefined && !_console.CurrentListInstance.wim.CurrentApplicationUserRole.All_Lists)
                         {
-                            if (!_Console.CurrentListInstance.wim.CurrentList.HasRoleAccess(_Console.CurrentListInstance.wim.CurrentApplicationUser))
+                            if (!_console.CurrentListInstance.wim.CurrentList.HasRoleAccess(_console.CurrentListInstance.wim.CurrentApplicationUser))
                             {
-                                var newUrl = _Console.WimPagePath;
+                                var newUrl = _console.WimPagePath;
                                 if (currentUrl.Equals(newUrl, StringComparison.InvariantCultureIgnoreCase) == false)
                                 {
-                                    _Console.Response.Redirect(newUrl);
+                                    _console.Response.Redirect(newUrl);
                                 }
 
                                 return false;
@@ -1192,20 +1196,20 @@ namespace Sushi.Mediakiwi.UI
                 case FolderType.Gallery:
                     {
                         approved = true;
-                        if (!_Console.CurrentListInstance.wim.CurrentApplicationUserRole.All_Galleries)
+                        if (!_console.CurrentListInstance.wim.CurrentApplicationUserRole.All_Galleries)
                         {
-                            Gallery currentGallery = Gallery.SelectOne(_Console.CurrentListInstance.wim.CurrentFolder.ID);
-                            if (!currentGallery.HasRoleAccess(_Console.CurrentListInstance.wim.CurrentApplicationUser))
+                            Gallery currentGallery = Gallery.SelectOne(_console.CurrentListInstance.wim.CurrentFolder.ID);
+                            if (!currentGallery.HasRoleAccess(_console.CurrentListInstance.wim.CurrentApplicationUser))
                             {
                                 if (currentGallery.ParentID.HasValue)
                                 {
-                                    _Console.Response.Redirect(_Console.UrlBuild.GetGalleryRequest(currentGallery.ParentID.Value));
+                                    _console.Response.Redirect(_console.UrlBuild.GetGalleryRequest(currentGallery.ParentID.Value));
                                 }
 
-                                var newUrl = _Console.WimPagePath;
+                                var newUrl = _console.WimPagePath;
                                 if (currentUrl.Equals(newUrl, StringComparison.InvariantCultureIgnoreCase) == false)
                                 {
-                                    _Console.Response.Redirect(newUrl);
+                                    _console.Response.Redirect(newUrl);
                                 }
 
                                 return false;
@@ -1215,21 +1219,21 @@ namespace Sushi.Mediakiwi.UI
                     break;
                 case FolderType.Administration:
                     {
-                        approved = _Console.CurrentListInstance.wim.CurrentApplicationUserRole.CanSeeAdmin;
+                        approved = _console.CurrentListInstance.wim.CurrentApplicationUserRole.CanSeeAdmin;
                     }
                     break;
             }
 
             if (!approved)
             {
-                if (_Console.CurrentListInstance.wim.CurrentList.Type != ComponentListType.Images
-                    && _Console.CurrentListInstance.wim.CurrentList.Type != ComponentListType.Documents
-                    && _Console.CurrentListInstance.wim.CurrentList.Type != ComponentListType.Links)
+                if (_console.CurrentListInstance.wim.CurrentList.Type != ComponentListType.Images
+                    && _console.CurrentListInstance.wim.CurrentList.Type != ComponentListType.Documents
+                    && _console.CurrentListInstance.wim.CurrentList.Type != ComponentListType.Links)
                 {
-                    var newUrl = _Console.WimPagePath;
+                    var newUrl = _console.WimPagePath;
                     if (currentUrl.Equals(newUrl, StringComparison.InvariantCultureIgnoreCase) == false)
                     {
-                        _Console.Response.Redirect(newUrl);
+                        _console.Response.Redirect(newUrl);
                     }
 
                     return false;
@@ -1245,12 +1249,12 @@ namespace Sushi.Mediakiwi.UI
         /// <returns>Continue processing page?</returns>
         bool CheckFolder()
         {
-            if (_Console.CurrentListInstance.wim.CurrentFolder == null)
+            if (_console.CurrentListInstance.wim.CurrentFolder == null)
                 throw new Exception("No containing folder found for the requested item!");
 
             //  If in browsing mode, set the page title to the current folder
-            if (_Console.Logic == 0 && !_Console.Item.HasValue && !_Console.CurrentListInstance.wim.CurrentFolder.IsNewInstance)
-                _Console.Title = _Console.CurrentListInstance.wim.CurrentFolder.Name;
+            if (_console.Logic == 0 && !_console.Item.HasValue && !_console.CurrentListInstance.wim.CurrentFolder.IsNewInstance)
+                _console.Title = _console.CurrentListInstance.wim.CurrentFolder.Name;
             return true;
         }
 
@@ -1259,20 +1263,20 @@ namespace Sushi.Mediakiwi.UI
         /// </summary>
         async Task CheckSiteAsync()
         {
-            if (_Console.CurrentList.SiteID.HasValue && _Console.ChannelIndentifier != _Console.CurrentList.SiteID.Value)
+            if (_console.CurrentList.SiteID.HasValue && _console.ChannelIndentifier != _console.CurrentList.SiteID.Value)
             {
-                if (_Console.CurrentList.IsInherited)
+                if (_console.CurrentList.IsInherited)
                 {
                     return;
                 }
 
-                var site = await Site.SelectOneAsync(_Console.CurrentList.SiteID.Value).ConfigureAwait(false);
+                var site = await Site.SelectOneAsync(_console.CurrentList.SiteID.Value).ConfigureAwait(false);
                 if (site.Type.HasValue)
                 {
                     return;
                 }
 
-                _Console.Response.Redirect(_Console.CurrentListInstance.wim.GetUrl());
+                _console.Response.Redirect(_console.CurrentListInstance.wim.GetUrl());
             }
         }
 
@@ -1282,45 +1286,45 @@ namespace Sushi.Mediakiwi.UI
         /// <param name="isDeleteMode">if set to <c>true</c> [is delete mode].</param>
         async Task<bool> SetFormModesAsync()
         {
-            await _Console.LoadJsonStreamAsync().ConfigureAwait(false);
+            await _console.LoadJsonStreamAsync().ConfigureAwait(false);
 
             //  Is the form state in editmode?
-            _Console.CurrentListInstance.wim.IsEditMode = _Console.IsPostBack("edit")
-                || _Console.IsPostBack("save")
-                || _Console.CurrentListInstance.wim.OpenInEditMode
-                || _Console.Request.Query["item"] == "0"
-                || _Console.Request.Query["asset"] == "0"
-                || (_Console.JsonReferrer != null && _Console.JsonReferrer.Equals("edit"))
-                || _Console.JsonForm != null;
+            _console.CurrentListInstance.wim.IsEditMode = _console.IsPostBack("edit")
+                || _console.IsPostBack("save")
+                || _console.CurrentListInstance.wim.OpenInEditMode
+                || _console.Request.Query["item"] == "0"
+                || _console.Request.Query["asset"] == "0"
+                || (_console.JsonReferrer != null && _console.JsonReferrer.Equals("edit"))
+                || _console.JsonForm != null;
 
             //  Create new page
-            if (!_Console.CurrentListInstance.wim.IsEditMode
-                && _Console.ItemType == RequestItemType.Page
-                && _Console.Request.Headers["Referer"].FirstOrDefault() != null
-                && _Console.Request.Headers["Referer"].FirstOrDefault().Contains("item=0")
+            if (!_console.CurrentListInstance.wim.IsEditMode
+                && _console.ItemType == RequestItemType.Page
+                && _console.Request.Headers["Referer"].FirstOrDefault() != null
+                && _console.Request.Headers["Referer"].FirstOrDefault().Contains("item=0")
                 )
             {
-                _Console.CurrentListInstance.wim.IsEditMode = true;
+                _console.CurrentListInstance.wim.IsEditMode = true;
             }
 
             //  Is the save link clicked?
-            _Console.CurrentListInstance.wim.IsSaveMode = _Console.IsPostBack("save") || _Console.IsPostBack("saveNew");
-            _Console.IsAdminFooter = Utility.ConvertToInt(_Console.Request.Query["adminFooter"]) == 1;
+            _console.CurrentListInstance.wim.IsSaveMode = _console.IsPostBack("save") || _console.IsPostBack("saveNew");
+            _console.IsAdminFooter = Utility.ConvertToInt(_console.Request.Query["adminFooter"]) == 1;
 
             //  Is the delete link clicked?
-            bool isDeleteMode = (_Console.IsPostBack("delete") || _Console.Request.Method == "DELETE");
-            _Console.CurrentListInstance.wim.IsDeleteMode = isDeleteMode;
+            bool isDeleteMode = (_console.IsPostBack("delete") || _console.Request.Method == "DELETE");
+            _console.CurrentListInstance.wim.IsDeleteMode = isDeleteMode;
 
             //  Set the developer mode
-            if (_Console.PostbackValue == "dev_showhidden")
+            if (_console.PostbackValue == "dev_showhidden")
             {
-                _Console.CurrentApplicationUser.ShowHidden = true;
-                _Console.CurrentApplicationUser.Save();
+                _console.CurrentApplicationUser.ShowHidden = true;
+                _console.CurrentApplicationUser.Save();
             }
-            else if (_Console.PostbackValue == "dev_showvisible")
+            else if (_console.PostbackValue == "dev_showvisible")
             {
-                _Console.CurrentApplicationUser.ShowHidden = false;
-                _Console.CurrentApplicationUser.Save();
+                _console.CurrentApplicationUser.ShowHidden = false;
+                _console.CurrentApplicationUser.Save();
             }
             return isDeleteMode;
         }
@@ -1335,7 +1339,7 @@ namespace Sushi.Mediakiwi.UI
 
             // extract url details
             var wim = CommonConfiguration.PORTAL_PATH.ToLower();
-            var url = _Console.Request.Path.Value.ToLower();
+            var url = _console.Request.Path.Value.ToLower();
             var split =
                 wim == "/"
                     ? url.Split(new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries)
@@ -1350,7 +1354,7 @@ namespace Sushi.Mediakiwi.UI
                 var candidate = Utils.FromUrl(split[0]);
                 if (Utility.IsNumeric(candidate))
                 {
-                    _Console.ChannelIndentifier = Utility.ConvertToInt(candidate, Data.Environment.Current.DefaultSiteID.GetValueOrDefault());
+                    _console.ChannelIndentifier = Utility.ConvertToInt(candidate, Data.Environment.Current.DefaultSiteID.GetValueOrDefault());
                 }
                 else
                 {
@@ -1359,17 +1363,17 @@ namespace Sushi.Mediakiwi.UI
                     if (selection != null)
                     {
                         n++;
-                        _Console.ChannelIndentifier = selection.ID;
+                        _console.ChannelIndentifier = selection.ID;
                     }
                 }
 
-                if (_Console.ChannelIndentifier == 0)
+                if (_console.ChannelIndentifier == 0)
                 {
-                    _Console.ChannelIndentifier = Data.Environment.Current.DefaultSiteID.GetValueOrDefault();
-                    if (_Console.ChannelIndentifier == 0)
+                    _console.ChannelIndentifier = Data.Environment.Current.DefaultSiteID.GetValueOrDefault();
+                    if (_console.ChannelIndentifier == 0)
                     {
                         var allSites = await Site.SelectAllAsync().ConfigureAwait(false);
-                        _Console.ChannelIndentifier = allSites[0].ID;
+                        _console.ChannelIndentifier = allSites[0].ID;
                     }
                 }
 
@@ -1381,16 +1385,16 @@ namespace Sushi.Mediakiwi.UI
                     if (typecandidate.Equals("web", StringComparison.CurrentCultureIgnoreCase))
                     {
                         n++;
-                        _Console.ItemType = RequestItemType.Page;
+                        _console.ItemType = RequestItemType.Page;
                     }
                     else if (typecandidate.Equals("assets", StringComparison.CurrentCultureIgnoreCase))
                     {
                         n++;
-                        _Console.ItemType = RequestItemType.Asset;
+                        _console.ItemType = RequestItemType.Asset;
                     }
                     else
                     {
-                        _Console.ItemType = RequestItemType.Item;
+                        _console.ItemType = RequestItemType.Item;
                     }
 
                 }
@@ -1398,11 +1402,11 @@ namespace Sushi.Mediakiwi.UI
                 if (split.Length - n - 1 > 0)
                 {
                     var completepath = string.Concat("/", string.Join("/", split.Skip(n).Take(split.Length - n - 1)), "/");
-                    _Console.CurrentFolder = await Folder.SelectOneAsync(Utils.FromUrl(completepath), _Console.ChannelIndentifier).ConfigureAwait(false);
+                    _console.CurrentFolder = await Folder.SelectOneAsync(Utils.FromUrl(completepath), _console.ChannelIndentifier).ConfigureAwait(false);
 
-                    if (_Console.CurrentFolder?.ID > 0)
+                    if (_console.CurrentFolder?.ID > 0)
                     {
-                        folderId = _Console.CurrentFolder.ID;
+                        folderId = _console.CurrentFolder.ID;
                     }
                 }
 
@@ -1413,55 +1417,55 @@ namespace Sushi.Mediakiwi.UI
             }
             else
             {
-                if (_Console.ChannelIndentifier == 0)
+                if (_console.ChannelIndentifier == 0)
                 {
-                    _Console.ChannelIndentifier = Data.Environment.Current.DefaultSiteID.GetValueOrDefault();
-                    if (_Console.ChannelIndentifier == 0)
+                    _console.ChannelIndentifier = Data.Environment.Current.DefaultSiteID.GetValueOrDefault();
+                    if (_console.ChannelIndentifier == 0)
                     {
                         var allSites = await Site.SelectAllAsync().ConfigureAwait(false);
-                        _Console.ChannelIndentifier = allSites[0].ID;
+                        _console.ChannelIndentifier = allSites[0].ID;
                     }
                 }
             }
 
-            _Console.ItemType = RequestItemType.Undefined;
+            _console.ItemType = RequestItemType.Undefined;
 
             //  Verify paging page
-            _Console.ListPagingValue = _Console.Request.Query["set"];
-            _Console.Group = Utility.ConvertToIntNullable(_Console.Request.Query["group"]);
-            _Console.GroupItem = Utility.ConvertToIntNullable(_Console.Request.Query["groupitem"]);
+            _console.ListPagingValue = _console.Request.Query["set"];
+            _console.Group = Utility.ConvertToIntNullable(_console.Request.Query["group"]);
+            _console.GroupItem = Utility.ConvertToIntNullable(_console.Request.Query["groupitem"]);
 
             //  Verify page request
-            _Console.Item = Utility.ConvertToIntNullable(_Console.Request.Query["page"], false);
-            if (_Console.Item.HasValue)
+            _console.Item = Utility.ConvertToIntNullable(_console.Request.Query["page"], false);
+            if (_console.Item.HasValue)
             {
-                await _Console.ApplyListAsync(ComponentListType.Browsing).ConfigureAwait(false);
-                _Console.ItemType = RequestItemType.Page;
+                await _console.ApplyListAsync(ComponentListType.Browsing).ConfigureAwait(false);
+                _console.ItemType = RequestItemType.Page;
                 return;
             }
 
             //  Verify asset request
-            _Console.Item = Utility.ConvertToIntNullable(_Console.Request.Query["asset"], false);
-            if (_Console.Item.HasValue)
+            _console.Item = Utility.ConvertToIntNullable(_console.Request.Query["asset"], false);
+            if (_console.Item.HasValue)
             {
-                await _Console.ApplyListAsync(ComponentListType.Documents).ConfigureAwait(false);
-                _Console.ItemType = RequestItemType.Asset;
+                await _console.ApplyListAsync(ComponentListType.Documents).ConfigureAwait(false);
+                _console.ItemType = RequestItemType.Asset;
                 return;
             }
 
             //  Verify dashboard request
-            _Console.Item = Utility.ConvertToIntNullable(_Console.Request.Query["dashboard"], false);
-            if (_Console.Item.HasValue)
+            _console.Item = Utility.ConvertToIntNullable(_console.Request.Query["dashboard"], false);
+            if (_console.Item.HasValue)
             {
-                _Console.ItemType = RequestItemType.Dashboard;
+                _console.ItemType = RequestItemType.Dashboard;
                 return;
             }
 
             //  Verify list-item request
-            _Console.Item = Utility.ConvertToIntNullable(_Console.Request.Query["item"], false);
-            if (_Console.Item.HasValue)
+            _console.Item = Utility.ConvertToIntNullable(_console.Request.Query["item"], false);
+            if (_console.Item.HasValue)
             {
-                _Console.ItemType = RequestItemType.Item;
+                _console.ItemType = RequestItemType.Item;
             }
 
             //  Apply the current component list based on the roaming environment settings
@@ -1474,29 +1478,29 @@ namespace Sushi.Mediakiwi.UI
         /// <returns>Continue processing page?</returns>
         async Task<bool> OutputAjaxRequestAsync()
         {
-            if (!string.IsNullOrEmpty(_Console.Request.Query["xml"]))
+            if (!string.IsNullOrEmpty(_console.Request.Query["xml"]))
             {
-                _Console.Response.ContentType = "text/xml";
+                _console.Response.ContentType = "text/xml";
                 //_Console.Response.Cache.SetCacheability(HttpCacheability.NoCache);
                 //_Console.Response.Cache.SetAllowResponseInBrowserHistory(false);
 
-                var type = Utility.ConvertToIntNullable(_Console.Request.Query["xml"]);
+                var type = Utility.ConvertToIntNullable(_console.Request.Query["xml"]);
                 if (type.HasValue)
                 {
                     WimControlBuilder build = new WimControlBuilder();
                     MetaData meta = new MetaData();
                     meta.ContentTypeSelection = type.Value.ToString();
                     var element = meta.GetContentInfo();
-                    string name = string.Concat(_Console.Request.Query["id"], "__", type.Value, "__", _Console.Request.Query["index"]);
+                    string name = string.Concat(_console.Request.Query["id"], "__", type.Value, "__", _console.Request.Query["index"]);
 
 
                     ((ContentSharedAttribute)element).ID = name;
                     ((ContentSharedAttribute)element).OverrideTableGeneration = true;
-                    ((ContentSharedAttribute)element).Expression = (_Console.Request.Query["w"] == "2" ? OutputExpression.FullWidth : OutputExpression.Alternating);
-                    ((ContentSharedAttribute)element).Console = _Console;
+                    ((ContentSharedAttribute)element).Expression = (_console.Request.Query["w"] == "2" ? OutputExpression.FullWidth : OutputExpression.Alternating);
+                    ((ContentSharedAttribute)element).Console = _console;
                     ((ContentSharedAttribute)element).IsBluePrint = true;
                     if (element.ContentTypeSelection == ContentType.Binary_Image)
-                        ((Framework.ContentInfoItem.Binary_ImageAttribute)element).GalleryPropertyUrl = _Console.Request.Query["gallery"];
+                        ((Framework.ContentInfoItem.Binary_ImageAttribute)element).GalleryPropertyUrl = _console.Request.Query["gallery"];
 
 
                     element.SetCandidate(new Field(), true);
@@ -1525,10 +1529,10 @@ namespace Sushi.Mediakiwi.UI
                 }
 
 
-                if (_Console.Request.Query["xml"] == "component")
+                if (_console.Request.Query["xml"] == "component")
                 {
-                    var page = Utility.ConvertToInt(_Console.Request.Query["page"]);
-                    var target = _Console.Request.Query["tab"];
+                    var page = Utility.ConvertToInt(_console.Request.Query["page"]);
+                    var target = _console.Request.Query["tab"];
                     if (string.IsNullOrEmpty(target) && page > 0)
                     {
                         var pageInstance = await Page.SelectOneAsync(page).ConfigureAwait(false);
@@ -1539,7 +1543,7 @@ namespace Sushi.Mediakiwi.UI
                         }
                     }
 
-                    var content = await Beta.GeneratedCms.Source.Xml.Component.GetAsync(_Console, Utility.ConvertToInt(_Console.Request.Query["id"]), page, Utility.ConvertToInt(_Console.Request.Query["cmpt"]), target).ConfigureAwait(false);
+                    var content = await Beta.GeneratedCms.Source.Xml.Component.GetAsync(_console, Utility.ConvertToInt(_console.Request.Query["id"]), page, Utility.ConvertToInt(_console.Request.Query["cmpt"]), target).ConfigureAwait(false);
                     await AddToResponseAsync(content).ConfigureAwait(false);
                 }
 
@@ -1559,23 +1563,23 @@ namespace Sushi.Mediakiwi.UI
                 var list = await ComponentList.SelectOneAsync(urldecrypt, folderId).ConfigureAwait(false);
                 if (list?.ID > 0)
                 {
-                    return await _Console.ApplyListAsync(list).ConfigureAwait(false);
+                    return await _console.ApplyListAsync(list).ConfigureAwait(false);
                 }
             }
 
             //  If the list is not know, take the default list in stead (browsing)
-            if (!string.IsNullOrEmpty(_Console.Request.Query["list"]))
+            if (!string.IsNullOrEmpty(_console.Request.Query["list"]))
             {
                 //  The list reference can be a INT or a GUID
-                return await _Console.ApplyListAsync(_Console.Request.Query["list"]).ConfigureAwait(false);
+                return await _console.ApplyListAsync(_console.Request.Query["list"]).ConfigureAwait(false);
             }
-            else if (_Console.ItemType == RequestItemType.Asset)
+            else if (_console.ItemType == RequestItemType.Asset)
             {
-                await _Console.ApplyListAsync(ComponentListType.Documents).ConfigureAwait(false);
+                await _console.ApplyListAsync(ComponentListType.Documents).ConfigureAwait(false);
             }
             else
             {
-                await _Console.ApplyListAsync(typeof(AppCentre.Data.Implementation.Browsing)).ConfigureAwait(false);
+                await _console.ApplyListAsync(typeof(AppCentre.Data.Implementation.Browsing)).ConfigureAwait(false);
             }
 
             return true;
@@ -1590,7 +1594,7 @@ namespace Sushi.Mediakiwi.UI
             if (!showLogin)
             {
                 //  Check if logout request is performed
-                if (_Console.IsPostBack("logout") || _Console.Request.Query.ContainsKey("logout"))
+                if (_console.IsPostBack("logout") || _console.Request.Query.ContainsKey("logout"))
                 {
                     await LogoutViaSingleSignOnAsync().ConfigureAwait(false);
                     await LogoutIdentityAsync().ConfigureAwait(false);
@@ -1598,20 +1602,20 @@ namespace Sushi.Mediakiwi.UI
             }
 
             // Load the current application user
-            await _Console.LoadCurrentApplicationUserAsync();
+            await _console.LoadCurrentApplicationUserAsync();
 
             // Authenticate via Azure Active Directory
             await AuthenticateViaSingleSignOnAsync(true).ConfigureAwait(false);
 
             //  Check roaming profile
-            if (!showLogin && _Console.CurrentApplicationUser != null)
+            if (!showLogin && _console.CurrentApplicationUser != null)
             {
                 await ValidateHijackResetAsync().ConfigureAwait(false);
                 return true;
             }
             else
             {
-                string reaction = await _PresentationMonitor.GetLoginWrapperAsync(_Console, _Placeholders, _Callbacks);
+                string reaction = await _presentationMonitor.GetLoginWrapperAsync(_console, _Placeholders, _Callbacks);
                 if (!string.IsNullOrEmpty(reaction))
                 {
                     await AddToResponseAsync(reaction).ConfigureAwait(false);
@@ -1623,22 +1627,22 @@ namespace Sushi.Mediakiwi.UI
 
         async Task ValidateHijackResetAsync()
         {
-            if (_Console.Request.QueryString.HasValue 
-                && _Console.Request.QueryString.Value.Equals("?reset", StringComparison.CurrentCultureIgnoreCase))
+            if (_console.Request.QueryString.HasValue 
+                && _console.Request.QueryString.Value.Equals("?reset", StringComparison.CurrentCultureIgnoreCase))
             {
-                if (_Console.CurrentVisitor != null && _Console.CurrentVisitor.Data != null)
+                if (_console.CurrentVisitor != null && _console.CurrentVisitor.Data != null)
                 {
-                    if (!_Console.CurrentVisitor.Data["Wim.Reset.Me"].IsNull)
+                    if (!_console.CurrentVisitor.Data["Wim.Reset.Me"].IsNull)
                     {
-                        if (Guid.TryParse(_Console.CurrentVisitor.Data["Wim.Reset.Me"].Value, out var id))
+                        if (Guid.TryParse(_console.CurrentVisitor.Data["Wim.Reset.Me"].Value, out var id))
                         {
                             var user = await ApplicationUser.SelectOneAsync(id).ConfigureAwait(false);
                             if (user?.ID > 0)
                             {
-                                _Console.CurrentVisitor.Data.Apply("Wim.Reset.Me", null);
-                                _Console.CurrentVisitor.ApplicationUserID = user.ID;
-                                _Console.CurrentApplicationUser = user;
-                                _Console.SaveVisit();
+                                _console.CurrentVisitor.Data.Apply("Wim.Reset.Me", null);
+                                _console.CurrentVisitor.ApplicationUserID = user.ID;
+                                _console.CurrentApplicationUser = user;
+                                _console.SaveVisit();
 
                                 user.LastLoggedVisit = DateTime.UtcNow;
                                 await user.SaveAsync().ConfigureAwait(false);
@@ -1647,7 +1651,7 @@ namespace Sushi.Mediakiwi.UI
                                 {
                                     Action = ActionType.Login,
                                     Type = ItemType.Undefined,
-                                    ItemID = _Console.CurrentApplicationUser.ID,
+                                    ItemID = _console.CurrentApplicationUser.ID,
                                     Message = "Reset impersonation",
                                     Created = user.LastLoggedVisit.Value
                                 }.InsertAsync().ConfigureAwait(false);
@@ -1662,36 +1666,36 @@ namespace Sushi.Mediakiwi.UI
         async Task LogoutIdentityAsync()
         {
             // Check if we have a context User signed in
-            if (_Context?.User?.Identity?.IsAuthenticated == true)
+            if (_context?.User?.Identity?.IsAuthenticated == true)
             {
-                await _Context.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme).ConfigureAwait(false);
+                await _context.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme).ConfigureAwait(false);
             }
         }
 
         async Task LogoutViaSingleSignOnAsync()
         {
-            _Console.CurrentVisitor.ApplicationUserID = null;
-            _Console.CurrentVisitor.Jwt = null;
-            await _Console.CurrentVisitor.SaveAsync().ConfigureAwait(false);
+            _console.CurrentVisitor.ApplicationUserID = null;
+            _console.CurrentVisitor.Jwt = null;
+            await _console.CurrentVisitor.SaveAsync().ConfigureAwait(false);
       
             if (_configuration.GetValue<bool>("mediakiwi:authentication"))
             {
-                _Context.Response.Redirect($"{_Console.CurrentDomain}/.auth/logout?post_logout_redirect_uri={_Console.GetWimPagePath(null)}");
+                _context.Response.Redirect($"{_console.CurrentDomain}/.auth/logout?post_logout_redirect_uri={_console.GetWimPagePath(null)}");
             }
             else
             {
-                _Console.Response.Redirect(_Console.WimPagePath);
+                _console.Response.Redirect(_console.WimPagePath);
             }
         }
 
         internal async Task AuthenticateViaSingleSignOnAsync(bool redirectOnAnonymous, bool outputRedirectPage = false)
         {
-            if (WimServerConfiguration.Instance.Authentication != null && WimServerConfiguration.Instance.Authentication.Aad != null && WimServerConfiguration.Instance.Authentication.Aad.Enabled && _Console.CurrentApplicationUser == null)
+            if (WimServerConfiguration.Instance.Authentication != null && WimServerConfiguration.Instance.Authentication.Aad != null && WimServerConfiguration.Instance.Authentication.Aad.Enabled && _console.CurrentApplicationUser == null)
             {
-                var jwt = _Console.GetSafePost("id_token");
+                var jwt = _console.GetSafePost("id_token");
                 if (!string.IsNullOrEmpty(jwt))
                 {
-                    string email = await OAuth2Logic.ExtractUpnAsync(WimServerConfiguration.Instance.Authentication, jwt, _Context).ConfigureAwait(false);
+                    string email = await _oAuth2Logic.ExtractUpnAsync(WimServerConfiguration.Instance.Authentication, jwt);
                 
                     if (!string.IsNullOrEmpty(email))
                     {
@@ -1699,33 +1703,33 @@ namespace Sushi.Mediakiwi.UI
                         var applicationUser = ApplicationUser.SelectOne(email, true);
                         if (applicationUser != null && !applicationUser.IsNewInstance)
                         {
-                            _Console.CurrentApplicationUser = applicationUser;
+                            _console.CurrentApplicationUser = applicationUser;
                             var now = DateTime.UtcNow;
 
                             await new AuditTrail()
                             {
                                 Action = ActionType.Login,
                                 Type = ItemType.Undefined,
-                                ItemID = _Console.CurrentApplicationUser.ID,
+                                ItemID = _console.CurrentApplicationUser.ID,
                                 Message = "Claim based (id_token)",
                                 Created = now
                             }.InsertAsync().ConfigureAwait(false);
 
-                            _Console.CurrentVisitor.Jwt = jwt;
-                            _Console.CurrentApplicationUser.LastLoggedVisit = now;
-                            await _Console.CurrentApplicationUser.SaveAsync().ConfigureAwait(false);
+                            _console.CurrentVisitor.Jwt = jwt;
+                            _console.CurrentApplicationUser.LastLoggedVisit = now;
+                            await _console.CurrentApplicationUser.SaveAsync().ConfigureAwait(false);
 
-                            _Console.SaveVisit();
-                            _Console.SetClientRedirect(new Uri(_Console.GetSafePost("state")), true);
+                            _console.SaveVisit();
+                            _console.SetClientRedirect(new Uri(_console.GetSafePost("state")), true);
 
                             if (outputRedirectPage)
                             {
                                 var presentation = new Framework.Presentation.Presentation();
 
-                                await _Console.ApplyListAsync(ComponentListType.Browsing).ConfigureAwait(false);
+                                await _console.ApplyListAsync(ComponentListType.Browsing).ConfigureAwait(false);
 
-                                var output = await presentation.GetTemplateWrapperAsync(_Console, null, null, null);
-                                await _Console.Response.WriteAsync(output).ConfigureAwait(false);
+                                var output = await presentation.GetTemplateWrapperAsync(_console, null, null, null);
+                                await _console.Response.WriteAsync(output).ConfigureAwait(false);
                             }
                             return;
                         }
@@ -1734,18 +1738,18 @@ namespace Sushi.Mediakiwi.UI
 
                 if (redirectOnAnonymous)
                 {
-                    if (_Console.CurrentApplicationUser != null && _Console.CurrentApplicationUser.IsActive)
+                    if (_console.CurrentApplicationUser != null && _console.CurrentApplicationUser.IsActive)
                     {
                         // do nothing, user is logged in.
                     }
                     else
                     {
-                        var url = _Console.Url;
+                        var url = _console.Url;
                         if (url.Contains("?logout", StringComparison.CurrentCultureIgnoreCase))
                         {
-                            url = _Console.GetWimPagePath(null);
+                            url = _console.GetWimPagePath(null);
                         }
-                        _Context.Response.Redirect(OAuth2Logic.AuthenticationUrl(url, _Console.CurrentDomain).ToString());
+                        _context.Response.Redirect(OAuth2Logic.AuthenticationUrl(url, _console.CurrentDomain).ToString());
                     }
                 }
             }
@@ -1764,13 +1768,13 @@ namespace Sushi.Mediakiwi.UI
                 outputHTML.Append(output);
             else
             {
-                if (_Console.Request.Query["split"] == "homeArticle")
+                if (_console.Request.Query["split"] == "homeArticle")
                 {
                     var split = output.Split(new string[] { @"<article id=""homeArticle"">", "</article>" }, StringSplitOptions.RemoveEmptyEntries);
                     output = split[1];
                 }
                 Body = output;
-                await _Console.Response.WriteAsync(output).ConfigureAwait(false);
+                await _console.Response.WriteAsync(output).ConfigureAwait(false);
             }
         }
 

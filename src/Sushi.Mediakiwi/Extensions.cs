@@ -1,10 +1,12 @@
 ﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Protocols;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Sushi.Mediakiwi.Authentication;
 using Sushi.Mediakiwi.Framework;
+using Sushi.Mediakiwi.Logic;
 using Sushi.Mediakiwi.PageModules.ExportPage;
 
 namespace Sushi.Mediakiwi
@@ -47,14 +49,14 @@ namespace Sushi.Mediakiwi
            );
         }
 
-        public static void AddMediakiwi(this IServiceCollection services)
+        public static void AddMediakiwi(this IServiceCollection services, IConfiguration configuration, string? azureStorageConnectionString = null)
         {
             services.AddAuthentication()
                 .AddScheme<MediaKiwiAuthenticationOptions, MediaKiwiAuthenticationHandler>(AuthenticationDefaults.AuthenticationScheme, null);
             
-            services.AddSingleton<IPageModule, ExportPageModule>();
-            services.AddSingleton<Interfaces.ITrailExtension, Logic.WikiTrailExtension>();
-            
+            services.AddTransient<IPageModule, ExportPageModule>();
+            services.AddTransient<Interfaces.ITrailExtension, Logic.WikiTrailExtension>();
+            services.AddTransient<OAuth2Logic>();
             services.AddSingleton(s=>
             {
                 // todo: inject config using options pattern
@@ -64,6 +66,19 @@ namespace Sushi.Mediakiwi
                 result.AutomaticRefreshInterval = System.TimeSpan.FromHours(1);
                 return result;
             });
+
+            // add azure storage services
+            if(azureStorageConnectionString == null)
+            {
+                azureStorageConnectionString = configuration.GetConnectionString("azurestore");
+            }    
+            services.AddAzureClients(builder =>
+            {
+                // Add a Storage account client
+                builder.AddBlobServiceClient(azureStorageConnectionString);
+            });
+
+            services.AddTransient<AssetService>();
         }
     }
 }

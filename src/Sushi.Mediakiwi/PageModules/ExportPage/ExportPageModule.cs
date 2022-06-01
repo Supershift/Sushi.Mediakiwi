@@ -27,7 +27,7 @@ namespace Sushi.Mediakiwi.PageModules.ExportPage
         public bool ConfirmationNeeded { get; set; }
         public string ConfirmationTitle { get; set; }
         public string ConfirmationQuestion { get; set; }
-
+        
         public async Task<ModuleExecutionResult> ExecuteAsync(Page inPage, IApplicationUser inUser, HttpContext context)
         {
             PageTransferExporter exporter = new PageTransferExporter();

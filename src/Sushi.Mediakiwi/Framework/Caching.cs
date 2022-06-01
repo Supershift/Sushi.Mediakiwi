@@ -184,12 +184,33 @@ namespace Sushi.Mediakiwi.Framework
 
                 if (Data.CommonConfiguration.IS_LOAD_BALANCED && !igNoreLoadBalancedCacheCheck)
                 {
-                    CacheItemLogic.ApplyLoadBalancedCacheCheckItem(cacheKey, false);
+                    ApplyLoadBalancedCacheCheckItem(cacheKey, false);
                 }
 
                 return true;
             }
             return false;
+        }
+
+        /// <summary>
+        /// Applies the load balanced cache check item.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="isIndexKey">if set to <c>true</c> [is index key].</param>
+        public static void ApplyLoadBalancedCacheCheckItem(string key, bool isIndexKey)
+        {
+            if (!Data.CommonConfiguration.IS_LOAD_BALANCED)
+            {
+                return;
+            }
+
+            var cache = new CacheItem();
+            cache.Name = key;
+            cache.IsIndex = isIndexKey;
+            cache.Created = Common.DatabaseDateTime;
+            cache.Save();
+
+            Framework.Caching.Add("Node.TimeStamp", cache.Created);
         }
 
         /// <summary>
@@ -220,7 +241,7 @@ namespace Sushi.Mediakiwi.Framework
 
             if (Data.CommonConfiguration.IS_LOAD_BALANCED && hasFoundCachedItem)
             {
-                CacheItemLogic.ApplyLoadBalancedCacheCheckItem(cacheKey, true);
+                ApplyLoadBalancedCacheCheckItem(cacheKey, true);
             }
         }
    

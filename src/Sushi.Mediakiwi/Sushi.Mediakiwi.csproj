@@ -152,11 +152,6 @@
     <Compile Include="Framework\Option.cs" />
     <Compile Include="Framework\PagePreview.cs" />
     <Compile Include="Framework\TopListPosition.cs" />
-    <Compile Include="Logic\ApplicationUserLogic.cs" />
-    <Compile Include="Logic\FolderLogic.cs" />
-    <Compile Include="Logic\OAuth2Logic.cs" />
-    <Compile Include="Logic\PageLogic.cs" />
-    <Compile Include="Logic\PropertyLogic.cs" />
     <Compile Include="Logic\WikiTrailExtension.cs" />
     <Compile Include="Presentation\Logic\Navigation.cs" />
     <Compile Include="Presentation\Monitor.cs" />
@@ -312,7 +307,6 @@
     <Compile Include="Framework\TextContentSettings.cs" />
     <Compile Include="Framework\WimComponentListRoot.cs" />
     <Compile Include="Framework\WimControlBuilder.cs" />
-    <Compile Include="Logic\CacheItemLogic.cs" />
     <Compile Include="UI\Constants.cs" />
     <Compile Include="UI\Control.cs" />
     <Compile Include="UI\DataGrid.cs" />
@@ -327,6 +321,7 @@
   <ItemGroup>
     <PackageReference Include="Azure.Storage.Blobs" Version="12.9.1" />
     <PackageReference Include="HtmlAgilityPack" Version="1.11.30" />
+    <PackageReference Include="Microsoft.Extensions.Azure" Version="1.2.0" />
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="6.0.0" />
     <PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="6.15.0" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
@@ -336,6 +331,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Sushi.Mediakiwi.Data\Sushi.Mediakiwi.Data.csproj" />
+    <ProjectReference Include="..\Sushi.Mediakiwi.Logic\Sushi.Mediakiwi.Logic.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -15,14 +15,18 @@ namespace Sushi.Mediakiwi.Authentication
 {
     public class MediaKiwiAuthenticationHandler : AuthenticationHandler<MediaKiwiAuthenticationOptions>
     {
+        private readonly OAuth2Logic _oAuth2Logic;
+
         public MediaKiwiAuthenticationHandler(
             IOptionsMonitor<MediaKiwiAuthenticationOptions> options,
+            OAuth2Logic oAuth2Logic,
             ILoggerFactory logger,
             UrlEncoder encoder,
             ISystemClock clock
             )
             : base(options, logger, encoder, clock)
         {
+            _oAuth2Logic = oAuth2Logic;
         }
 
         protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
@@ -45,7 +49,7 @@ namespace Sushi.Mediakiwi.Authentication
             if (!string.IsNullOrWhiteSpace(currentVisitor?.Jwt))
             {
                 // Validate the JWT
-                string email = await OAuth2Logic.ExtractUpnAsync(WimServerConfiguration.Instance.Authentication, currentVisitor.Jwt, Context);
+                string email = await _oAuth2Logic.ExtractUpnAsync(WimServerConfiguration.Instance.Authentication, currentVisitor.Jwt);
                 if (!string.IsNullOrWhiteSpace(email))
                 {
                     var currentApplicationUser = await ApplicationUser.SelectOneByEmailAsync(email, true);

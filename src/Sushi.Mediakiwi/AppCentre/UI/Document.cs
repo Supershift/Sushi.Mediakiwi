@@ -2,6 +2,7 @@ using Sushi.Mediakiwi.AppCentre.UI.Forms;
 using Sushi.Mediakiwi.Data;
 using Sushi.Mediakiwi.Data.Configuration;
 using Sushi.Mediakiwi.Framework;
+using Sushi.Mediakiwi.Logic;
 using Sushi.Mediakiwi.Persisters;
 using Sushi.Mediakiwi.UI;
 using System.Collections.Generic;
@@ -58,6 +59,10 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
 
     public class Image : Document
     {
+        public Image(AssetService assetService) : base(assetService)
+        {
+
+        }
     }
 
     /// <summary>
@@ -88,13 +93,14 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// <summary>
         /// Initializes a new instance of the <see cref="Document"/> class.
         /// </summary>
-        public Document()
+        public Document(AssetService assetService)
         {
             ListInit += Document_ListInit;
             ListLoad += Document_ListLoad;
             ListSave += Document_ListSave;
             ListDelete += Document_ListDelete;
             ListSearch += Document_ListSearch;
+            _assetService = assetService;
         }
 
         async Task Document_ListInit()
@@ -177,12 +183,6 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             }
         }
 
-
-        public virtual BlobPersister GetPersistor
-        {
-            get { return new BlobPersister(); }
-        }
-
         private System.Drawing.Image CreateThumbnailImage(System.Drawing.Image input)
         {
             try
@@ -257,77 +257,14 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
             {
                 _Form.Evaluate();
 
-                if (_Form.File.File.ContentType.Equals("image/jpeg", System.StringComparison.InvariantCultureIgnoreCase) ||
-                   _Form.File.File.ContentType.Equals("image/jpg", System.StringComparison.InvariantCultureIgnoreCase) ||
-                   _Form.File.File.ContentType.Equals("image/gif", System.StringComparison.InvariantCultureIgnoreCase) ||
-                   _Form.File.File.ContentType.Equals("image/png", System.StringComparison.InvariantCultureIgnoreCase) ||
-                   _Form.File.File.ContentType.Equals("image/bmp", System.StringComparison.InvariantCultureIgnoreCase))
-                {
-                    m_Implement.IsImage = true;
-                    using (var image = System.Drawing.Image.FromStream(_Form.File.File.OpenReadStream()))
-                    {
-                        m_Implement.Width = image.Width;
-                        m_Implement.Height = image.Height;
+                // open stream
+                using var inputStream = _Form.File.File.OpenReadStream();
 
-                        // Create a thumbnail
-                        if (WimServerConfiguration.Instance.Thumbnails.CreateThumbnails)
-                        {
-                            try
-                            {
-
-                                using (var thumb = CreateThumbnailImage(image))
-                                {
-                                    if (thumb != null)
-                                    {
-                                        var extension = _Form.File.File.FileName.Substring(_Form.File.File.FileName.LastIndexOf('.') + 1);
-                                        var name = _Form.File.File.FileName.Substring(0, _Form.File.File.FileName.LastIndexOf('.'));
-                                        var thumbName = $"{name}_thumb.{extension}";
-
-                                        using (MemoryStream ms = new MemoryStream())
-                                        {
-                                            thumb.Save(ms, image.RawFormat);
-                                            ms.Position = 0;
-
-                                            var thumbUpload = await GetPersistor.UploadAsync(ms, Azure_Image_Container, thumbName, _Form.File.File.ContentType).ConfigureAwait(false);
-                                            if (string.IsNullOrWhiteSpace(Azure_Cdn_Uri))
-                                            {
-                                                m_Implement.RemoteLocation_Thumb = $"{thumbUpload.Uri}";
-                                            }
-                                            else
-                                            {
-                                                m_Implement.RemoteLocation_Thumb = $"{Azure_Cdn_Uri}{thumbUpload.Uri.PathAndQuery}";
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                            catch (System.Exception ex)
-                            {
-                                wim.Notification.AddNotification($"Could not create thumbnail: {ex.Message}");
-                            }
-                        }
-                    }
-                }
-
-                // SVG is also an image, but not one from which you can get the width and height
-                if (_Form.File.File.ContentType.Equals("image/svg+xml", System.StringComparison.InvariantCultureIgnoreCase))
-                {
-                    m_Implement.IsImage = true;
-                }
-
-                var upload = await GetPersistor.UploadAsync(_Form.File.File.OpenReadStream(), Azure_Image_Container, _Form.File.File.FileName, _Form.File.File.ContentType).ConfigureAwait(false);
-                if (string.IsNullOrWhiteSpace(Azure_Cdn_Uri))
-                {
-                    m_Implement.RemoteLocation = $"{upload.Uri}";
-                }
-                else
-                {
-                    m_Implement.RemoteLocation = $"{Azure_Cdn_Uri}{upload.Uri.PathAndQuery}";
-                }
-                await m_Implement.SaveAsync().ConfigureAwait(false);
+                // create or update asset
+                m_Implement = await _assetService.UpsertAssetAsync(m_Implement, inputStream, Azure_Image_Container, _Form.File.File.FileName, _Form.File.File.ContentType);
             }
 
-            string info = null;
+            string info;
             if (currentAsset.IsImage)
             {
                 info = $"{currentAsset.Title} <span>({currentAsset.Width}px / {currentAsset.Height}px)</span>";
@@ -743,6 +680,8 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         }
 
         private string m_Note = "<b>Document is not physically present on server!</b>";
+        private readonly AssetService _assetService;
+
         /// <summary>
         /// Gets or sets the note.
         /// </summary>
