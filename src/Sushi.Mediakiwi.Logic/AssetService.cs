@@ -27,6 +27,17 @@ namespace Sushi.Mediakiwi.Logic
             _blobServiceClient = blobServiceClient;
         }
 
+        /// <summary>
+        /// Creates a new <see cref="Asset"/>. The provided <paramref name="inputStream"/> is uploaded to Azure Blob Storage.
+        /// </summary>
+        /// <param name="inputStream"></param>
+        /// <param name="container"></param>
+        /// <param name="fileName"></param>
+        /// <param name="contentType"></param>
+        /// <param name="galleryID"></param>
+        /// <param name="title"></param>
+        /// <param name="description"></param>
+        /// <returns></returns>
         public async Task<Asset> CreateAssetAsync(Stream inputStream, string container, string fileName, string contentType, int galleryID, string? title = null, string? description = null)
         {
             // create asset
@@ -37,11 +48,20 @@ namespace Sushi.Mediakiwi.Logic
 
             return await UpsertAssetAsync(asset, inputStream, container, fileName, contentType, galleryID, title, description);
         }
-
         
-        
-        
-        public async Task<Asset?> UpdateAssetAsync(int id, Stream inputStream, string container, string fileName, string contentType, int? galleryID = null, string? title = null, string? description = null)
+        /// <summary>
+        /// Updates an existing <see cref="Asset"/> with the provided data. If <paramref name="inputStream"/> is NULL, only metadata is set.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="inputStream"></param>
+        /// <param name="container"></param>
+        /// <param name="fileName"></param>
+        /// <param name="contentType"></param>
+        /// <param name="galleryID"></param>
+        /// <param name="title"></param>
+        /// <param name="description"></param>
+        /// <returns></returns>
+        public async Task<Asset?> UpdateAssetAsync(int id, Stream? inputStream, string container, string fileName, string contentType, int? galleryID = null, string? title = null, string? description = null)
         {
             // get asset
             var asset = await Asset.SelectOneAsync(id);
@@ -52,11 +72,17 @@ namespace Sushi.Mediakiwi.Logic
             return await UpsertAssetAsync(asset, inputStream, container, fileName, contentType, galleryID, title, description);
         }
 
-        public async Task<bool> DeleteAsync(Asset asset, string container)
-        {   
+
+        public async Task<bool> DeleteAsync(int id)
+        {
+            // get asset
+            var asset = await Asset.SelectOneAsync(id);
+
+            if (asset?.ID > 0 == false)
+                return true;
+
             // get blob client
-            var containerClient = _blobServiceClient.GetBlobContainerClient(container);
-            var blobClient = containerClient.GetBlobClient(asset.FileName);
+            var blobClient = GetBlobClient(asset);
 
             // delete blob
             var result = await blobClient.DeleteIfExistsAsync();
@@ -192,10 +218,31 @@ namespace Sushi.Mediakiwi.Logic
 
             return asset;
         }
-
-        private async Task UploadToBlobAsync(Stream inputStream, Asset asset, string fileName, string container)
+        
+        /// <summary>
+        /// Returns a blob client using <see cref="Asset.RemoteLocation"/> from the provided <paramref name="asset"/>.
+        /// </summary>
+        /// <param name="asset"></param>
+        /// <returns></returns>
+        public BlobClient? GetBlobClient(Asset asset)
         {
+            // get container name from asset
+            var uri = new Uri(asset.RemoteLocation);
+
+            // first part of the path is the container, eg. /container/folder/subfolder/filename.jpg
+            int slashIndex = uri.PathAndQuery.IndexOf('/', 1);
+            if (slashIndex == -1)
+            {
+                return null;
+            }
+
+            string container = uri.PathAndQuery.Substring(1, slashIndex - 1);
+            string blobName = uri.PathAndQuery.Substring(slashIndex + 1);
+
+            var containerClient = _blobServiceClient.GetBlobContainerClient(container);
+            var result = containerClient.GetBlobClient(blobName);
             
+            return result;
         }
     }
 }

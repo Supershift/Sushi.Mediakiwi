@@ -119,7 +119,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
         /// <param name="e">The <see cref="ComponentListEventArgs"/> instance containing the event data.</param>
         async Task Document_ListDelete(ComponentListEventArgs e)
         {
-            await _assetService.DeleteAsync(m_Implement, Azure_Image_Container);
+            await _assetService.DeleteAsync(m_Implement.ID);
 
             if (wim.IsLayerMode)
             {
