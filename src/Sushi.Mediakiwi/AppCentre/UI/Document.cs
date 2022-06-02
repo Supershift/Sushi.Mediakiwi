@@ -211,7 +211,16 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                 using var inputStream = _Form.File.File.OpenReadStream();
 
                 // create or update asset
-                m_Implement = await _assetService.UpsertAssetAsync(m_Implement, inputStream, Azure_Image_Container, _Form.File.File.FileName, _Form.File.File.ContentType);
+                if (m_Implement.ID > 0)
+                {
+                    m_Implement = await _assetService.UpdateAssetAsync(m_Implement.ID, inputStream, Azure_Image_Container, _Form.File.File.FileName, _Form.File.File.ContentType, 
+                        m_Implement.GalleryID, m_Implement.Title, m_Implement.Description);
+                }
+                else
+                {
+                    m_Implement = await _assetService.CreateAssetAsync(inputStream, Azure_Image_Container, _Form.File.File.FileName, _Form.File.File.ContentType,
+                        m_Implement.GalleryID, m_Implement.Title, m_Implement.Description);
+                }
             }
 
             string info;

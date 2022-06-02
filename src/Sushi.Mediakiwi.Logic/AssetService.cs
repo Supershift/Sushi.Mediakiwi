@@ -27,84 +27,29 @@ namespace Sushi.Mediakiwi.Logic
             _blobServiceClient = blobServiceClient;
         }
 
-        /// <summary>
-        /// Uploads the provided stream to Azure Blob Storage and stores the provided asset in the dabase.
-        /// </summary>
-        /// <param name="asset"></param>
-        /// <param name="inputStream"></param>
-        /// <param name="fileName"></param>
-        /// <param name="contentType"></param>
-        /// <returns></returns>
-        public async Task<Asset> UpsertAssetAsync(Asset asset, Stream inputStream, string container, string fileName, string contentType)
+        public async Task<Asset> CreateAssetAsync(Stream inputStream, string container, string fileName, string contentType, int galleryID, string? title = null, string? description = null)
         {
-            // set type and size
-            asset.Type = contentType;
-            asset.Size = inputStream.Length;
-
-            // get extension
-            string extension = null;
-            var extensionIndex = fileName.LastIndexOf('.');
-            if (extensionIndex >= 0)
+            // create asset
+            var asset = new Asset()
             {
-                extension = fileName.Substring(extensionIndex);
-            }
-            asset.Extension = extension;
-
-            // is uploaded file an image? determine from contentType
-            bool isImage = ImageTypes.Contains(contentType, StringComparer.InvariantCultureIgnoreCase);            
-            
-            if (isImage)
-            {
-                asset.IsImage = true;
-                // determine width and heigth from image stream
-                var imageInfo = await SixLabors.ImageSharp.Image.IdentifyAsync(inputStream);
-
-                asset.Width = imageInfo.Width;
-                asset.Height = imageInfo.Height;
-            }
-
-            // SVG is also an image, but not one from which you can get the width and height
-            if (contentType.Equals("image/svg+xml", StringComparison.InvariantCultureIgnoreCase))
-            {
-                asset.IsImage = true;
-            }
-
-            // upload stream to blob storage            
-            var containerClient = _blobServiceClient.GetBlobContainerClient(container);
-            var blobClient = containerClient.GetBlobClient(fileName);
-
-            // check if exists. if already exists, append ticks to create unique filename
-            bool alreadyExists = await blobClient.ExistsAsync();
-            if (alreadyExists)
-            {   
-                if (extensionIndex > 0)
-                {
-                    fileName = $"{fileName.Substring(0, extensionIndex)}-{DateTime.UtcNow.Ticks}{extension}";
-                }
-                else
-                {
-                    // filename does not have an extension, append ticks at end
-                    fileName = $"{fileName}-{DateTime.UtcNow.Ticks}";
-                }
-                blobClient = containerClient.GetBlobClient(fileName);
-            }
-
-            // upload to blob
-            var headers = new BlobHttpHeaders
-            {
-                ContentType = contentType                 
+                Created = DateTime.UtcNow
             };
 
-            inputStream.Position = 0;
-            await blobClient.UploadAsync(inputStream, new BlobUploadOptions() { HttpHeaders = headers });
+            return await UpsertAssetAsync(asset, inputStream, container, fileName, contentType, galleryID, title, description);
+        }
 
-            // store asset with blob url            
-            asset.FileName = fileName;
-            asset.RemoteLocation = blobClient.Uri.ToString();
-            
-            await asset.SaveAsync().ConfigureAwait(false);
+        
+        
+        
+        public async Task<Asset?> UpdateAssetAsync(int id, Stream inputStream, string container, string fileName, string contentType, int? galleryID = null, string? title = null, string? description = null)
+        {
+            // get asset
+            var asset = await Asset.SelectOneAsync(id);
 
-            return asset;
+            if (asset == null || asset.ID == 0)
+                return null;
+
+            return await UpsertAssetAsync(asset, inputStream, container, fileName, contentType, galleryID, title, description);
         }
 
         public async Task<bool> DeleteAsync(Asset asset, string container)
@@ -155,6 +100,102 @@ namespace Sushi.Mediakiwi.Logic
             {
                 return null;
             }
+        }
+
+        private async Task<Asset> UpsertAssetAsync(Asset asset, Stream? inputStream, string container, string? fileName, string? contentType, int? galleryID = null, string? title = null, string? description = null)
+        {
+            // get extension
+            string extension = null;
+            var extensionIndex = fileName.LastIndexOf('.');
+            if (extensionIndex >= 0)
+            {
+                extension = fileName.Substring(extensionIndex);
+            }
+
+            // set asset properties            
+            asset.GalleryID = galleryID.GetValueOrDefault(asset.GalleryID);
+            asset.Description = description;
+            asset.Extension = extension;
+            asset.Type = contentType;
+            
+            // if a stream is supplied, upload to blob
+            if (inputStream != null)
+            {
+                asset.Size = inputStream.Length;
+
+                // is uploaded file an image? determine from contentType
+                bool isImage = ImageTypes.Contains(contentType, StringComparer.InvariantCultureIgnoreCase);
+
+                if (isImage)
+                {
+                    asset.IsImage = true;
+                    // determine width and heigth from image stream
+                    var imageInfo = await SixLabors.ImageSharp.Image.IdentifyAsync(inputStream);
+
+                    asset.Width = imageInfo.Width;
+                    asset.Height = imageInfo.Height;
+                }
+
+                // SVG is also an image, but not one from which you can get the width and height
+                if (contentType.Equals("image/svg+xml", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    asset.IsImage = true;
+                }
+
+                // upload stream to blob storage            
+                var containerClient = _blobServiceClient.GetBlobContainerClient(container);
+                var blobClient = containerClient.GetBlobClient(fileName);
+
+                // check if exists. if already exists, append ticks to create unique filename
+                bool alreadyExists = await blobClient.ExistsAsync();
+                if (alreadyExists)
+                {
+                    if (extensionIndex > 0)
+                    {
+                        fileName = $"{fileName.Substring(0, extensionIndex)}-{DateTime.UtcNow.Ticks}{asset.Extension}";
+                    }
+                    else
+                    {
+                        // filename does not have an extension, append ticks at end
+                        fileName = $"{fileName}-{DateTime.UtcNow.Ticks}";
+                    }
+
+                    // create new client for new blobname
+                    blobClient = containerClient.GetBlobClient(fileName);
+                }
+
+                // upload to blob
+                var headers = new BlobHttpHeaders
+                {
+                    ContentType = asset.Type
+                };
+
+                inputStream.Position = 0;
+                await blobClient.UploadAsync(inputStream, new BlobUploadOptions() { HttpHeaders = headers });
+
+                // set blob url and unique filename
+                asset.FileName = fileName;
+                asset.RemoteLocation = blobClient.Uri.ToString();
+            }
+            // if no title supplied, set title to filename
+            if (string.IsNullOrWhiteSpace(title))
+            {
+                asset.Title = asset.FileName;
+            }
+            else
+            {
+                asset.Title = title;
+            }
+
+            // save asset to database
+            await asset.SaveAsync();
+
+            return asset;
+        }
+
+        private async Task UploadToBlobAsync(Stream inputStream, Asset asset, string fileName, string container)
+        {
+            
         }
     }
 }

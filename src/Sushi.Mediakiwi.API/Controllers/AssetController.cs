@@ -116,43 +116,27 @@ namespace Sushi.Mediakiwi.API.Controllers
                 }
             }
 
-            // The target asset
-            Data.Asset asset = new Data.Asset();
-
-            // We're updating an asset, get it from DB
-            if (request.ID.GetValueOrDefault(0) > 0)
-            {
-                asset = await Data.Asset.SelectOneAsync(request.ID.Value);
-            }
-
-            // Update gallery when set
-            if (request.GalleryID.GetValueOrDefault(0) > 0)
-            {
-                asset.GalleryID = request.GalleryID.Value;
-            }
-
-            asset.Description = request.Description;
-            if (string.IsNullOrWhiteSpace(request.Title) == false)
-            {
-                asset.Title = request.Title;
-            }
-
-            if (string.IsNullOrWhiteSpace(asset.Title))
-            {
-                asset.Title = asset.FileName;
-            }
-
             // We have new data provided, process it
+            Data.Asset asset;
             if (request.Data != null)
             {
                 // upload to blob and save
                 using var stream = request.Data.OpenReadStream();
-                await _assetService.UpsertAssetAsync(asset, stream, Azure_Image_Container, request.Data.FileName, request.Data.ContentType);
+
+                if (request.ID.HasValue)
+                {
+                    asset = await _assetService.UpdateAssetAsync(request.ID.Value, stream, Azure_Image_Container, request.Data.FileName, request.Data.ContentType, request.GalleryID, request.Title,
+                        request.Description);
+                }
+                else
+                {
+                    asset = await _assetService.CreateAssetAsync(stream, Azure_Image_Container, request.Data.FileName, request.Data.ContentType, request.GalleryID.Value, request.Title, request.Description);
+                }
             }
             else
             {
-                // only update metadata
-                await asset.SaveAsync();
+                asset = await _assetService.UpdateAssetAsync(request.ID.Value, null, Azure_Image_Container, request.Data.FileName, request.Data.ContentType, request.GalleryID, request.Title,
+                        request.Description);
             }
 
             return Ok(new SaveAssetResponse() 
