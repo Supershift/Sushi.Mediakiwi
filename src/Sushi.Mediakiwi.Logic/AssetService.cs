@@ -226,8 +226,18 @@ namespace Sushi.Mediakiwi.Logic
         /// <returns></returns>
         public BlobClient? GetBlobClient(Asset asset)
         {
+            return GetBlobClient(asset.RemoteLocation);            
+        }
+
+        /// <summary>
+        /// Returns a blob client for the provided <paramref name="url"/>.
+        /// </summary>
+        /// <param name="asset"></param>
+        /// <returns></returns>
+        public BlobClient? GetBlobClient(string url)
+        {
             // get container name from asset
-            var uri = new Uri(asset.RemoteLocation);
+            var uri = new Uri(url);
 
             // first part of the path is the container, eg. /container/folder/subfolder/filename.jpg
             int slashIndex = uri.PathAndQuery.IndexOf('/', 1);
@@ -241,7 +251,7 @@ namespace Sushi.Mediakiwi.Logic
 
             var containerClient = _blobServiceClient.GetBlobContainerClient(container);
             var result = containerClient.GetBlobClient(blobName);
-            
+
             return result;
         }
     }
