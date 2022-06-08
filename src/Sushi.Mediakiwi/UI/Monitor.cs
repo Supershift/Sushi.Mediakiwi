@@ -930,7 +930,7 @@ namespace Sushi.Mediakiwi.UI
                 }
             }
 
-            _Console.AddTrace("Monitor", "AddToResponse(..)");
+            _console.AddTrace("Monitor", "AddToResponse(..)");
 
             GlobalWimControlBuilder.SearchGrid = searchListGrid.ToString();
             GlobalWimControlBuilder.TopNavigation = _presentationNavigation.TopNavigation(_console);
