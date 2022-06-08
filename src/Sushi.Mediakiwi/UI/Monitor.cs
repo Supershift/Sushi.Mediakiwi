@@ -926,14 +926,6 @@ namespace Sushi.Mediakiwi.UI
                 }
             }
 
-            //  Replacement event of ListSearchedAction
-            if (!string.IsNullOrEmpty(component.m_ClickedButton) && _Console.CurrentListInstance.wim.HasListAction)
-            {
-                _Console.CurrentListInstance.wim.DoListAction(_Console.Item.GetValueOrDefault(0), 0, component.m_ClickedButton, null);
-            }
-
-            // <------ was here
-
             _Console.AddTrace("Monitor", "AddToResponse(..)");
 
             GlobalWimControlBuilder.SearchGrid = searchListGrid.ToString();

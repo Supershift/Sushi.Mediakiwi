@@ -12,6 +12,9 @@ namespace Sushi.Mediakiwi.Demonstration.Templates.List
 
     public class DemoList1 : ComponentListTemplate
     {
+        [Framework.ContentListSearchItem.Button("Test action 1")]
+        public bool Button_ActionTest1 { get; set; }
+
         public Random random { get; set; } = new Random(DateTime.UtcNow.Millisecond);
 
         [Framework.ContentSettingItem.Choice_Checkbox("Generate items", InteractiveHelp = "When no items exist, create 100 items")]
@@ -30,6 +33,12 @@ namespace Sushi.Mediakiwi.Demonstration.Templates.List
             ListDelete += DemoList1_ListDelete;
             ListDataReceived += DemoList1_ListDataReceived;
             ListDataItemCreated += DemoList1_ListDataItemCreated;
+            ListAction += DemoList1_ListAction;
+        }
+
+        private async Task DemoList1_ListAction(ComponentActionEventArgs arg)
+        {
+            
         }
 
         private void DemoList1_ListDataItemCreated(object sender, ListDataItemCreatedEventArgs e)
@@ -270,6 +279,9 @@ namespace Sushi.Mediakiwi.Demonstration.Templates.List
 
         [Button("Test button 2", OpenInPopupLayer = true, PopupLayerHeight = "400px", PopupLayerWidth = "80%", PopupLayerSize = LayerSize.Normal, PopupLayerScrollBar = true, PopupTitle = "Test popup", CustomUrlProperty = nameof(Button_Test2_URL))]
         public bool Button_Test2 { get; set; }
+
+        [Button("Test action 2")]
+        public bool Button_ActionTest2 { get; set; }
 
         public string Button_Test2_URL { get; set; } = "https://www.google.nl";
 
