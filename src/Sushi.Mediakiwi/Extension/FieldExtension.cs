@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Sushi.Mediakiwi.Extention
+namespace Sushi.Mediakiwi.Extension
 {
     public static class FieldExtension
     {
@@ -15,7 +15,7 @@ namespace Sushi.Mediakiwi.Extention
         /// <param name="inField">The field that has a matching SharedFieldTranslation</param>
         /// <param name="sharedValue">The matching SharedFieldTranslation</param>
         /// <returns></returns>
-        public static Field ApplySharedValue(this Field inField, SharedFieldTranslation sharedValue) => ApplySharedValue(inField, sharedValue, false);
+        public static Field ApplySharedValue(this Field inField, SharedFieldTranslation sharedValue) => inField.ApplySharedValue(sharedValue, false);
 
         /// <summary>
         /// Returns a new Field based on the value of the SharedFieldTranslation
@@ -27,16 +27,10 @@ namespace Sushi.Mediakiwi.Extention
         public static Field ApplySharedValue(this Field inField, SharedFieldTranslation sharedValue, bool useEditValue)
         {
             if (sharedValue?.ID > 0)
-            {
                 if (useEditValue)
-                {
                     return new Field(sharedValue.FieldName, sharedValue.ContentTypeID, sharedValue.EditValue);
-                }
                 else
-                {
                     return new Field(sharedValue.FieldName, sharedValue.ContentTypeID, sharedValue.Value);
-                }
-            }
 
             return inField;
         }

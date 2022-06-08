@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
-    <Version>8.1.50</Version>    
+    <Version>8.1.51</Version>    
     <Product>Mediakiwi</Product>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <Company>Supershift</Company>
@@ -30,7 +30,7 @@
     <Compile Remove="DataEntities\**" />
     <Compile Remove="Data\**" />
     <Compile Remove="Exporting\**" />
-    <Compile Remove="Extention\**" />
+    <Compile Remove="Extension\**" />
     <Compile Remove="Framework\**" />
     <Compile Remove="Logic\**" />
     <Compile Remove="Presentation\**" />
@@ -45,7 +45,7 @@
     <EmbeddedResource Remove="DataEntities\**" />
     <EmbeddedResource Remove="Data\**" />
     <EmbeddedResource Remove="Exporting\**" />
-    <EmbeddedResource Remove="Extention\**" />
+    <EmbeddedResource Remove="Extension\**" />
     <EmbeddedResource Remove="Framework\**" />
     <EmbeddedResource Remove="Logic\**" />
     <EmbeddedResource Remove="Presentation\**" />
@@ -60,7 +60,7 @@
     <None Remove="DataEntities\**" />
     <None Remove="Data\**" />
     <None Remove="Exporting\**" />
-    <None Remove="Extention\**" />
+    <None Remove="Extension\**" />
     <None Remove="Framework\**" />
     <None Remove="Logic\**" />
     <None Remove="Presentation\**" />
@@ -125,17 +125,16 @@
     <Compile Include="Cms\Data\Component.cs" />
     <Compile Include="Cms\Template.cs" />
     <Compile Include="DataEntities\GridExtention.cs" />
-    <Compile Include="Extention\ApplicationUserExtention.cs" />
-    <Compile Include="Extention\AssetExtension.cs" />
-    <Compile Include="Extention\ComponentListTemplateExtension.cs" />
-    <Compile Include="Extention\ComponentVersionExtension.cs" />
-    <Compile Include="Extention\FieldExtension.cs" />
-    <Compile Include="Extention\GalleryExtension.cs" />
-    <Compile Include="Extention\LinkExtension.cs" />
-    <Compile Include="Extention\PageExtension.cs" />
-    <Compile Include="Extention\PageTemplateExtension.cs" />
-    <Compile Include="Extention\PropertyExtension.cs" />
-    <Compile Include="Extention\SiteExtension.cs" />
+    <Compile Include="Extension\ApplicationUserExtention.cs" />
+    <Compile Include="Extension\ComponentListTemplateExtension.cs" />
+    <Compile Include="Extension\ComponentVersionExtension.cs" />
+    <Compile Include="Extension\FieldExtension.cs" />
+    <Compile Include="Extension\GalleryExtension.cs" />
+    <Compile Include="Extension\LinkExtension.cs" />
+    <Compile Include="Extension\PageExtension.cs" />
+    <Compile Include="Extension\PageTemplateExtension.cs" />
+    <Compile Include="Extension\PropertyExtension.cs" />
+    <Compile Include="Extension\SiteExtension.cs" />
     <Compile Include="Framework\AdditionalResource.cs" />
     <Compile Include="Framework\ASyncQuery.cs" />
     <Compile Include="Framework\CacheManager.cs" />
@@ -152,11 +151,6 @@
     <Compile Include="Framework\Option.cs" />
     <Compile Include="Framework\PagePreview.cs" />
     <Compile Include="Framework\TopListPosition.cs" />
-    <Compile Include="Logic\ApplicationUserLogic.cs" />
-    <Compile Include="Logic\FolderLogic.cs" />
-    <Compile Include="Logic\OAuth2Logic.cs" />
-    <Compile Include="Logic\PageLogic.cs" />
-    <Compile Include="Logic\PropertyLogic.cs" />
     <Compile Include="Logic\WikiTrailExtension.cs" />
     <Compile Include="Presentation\Logic\Navigation.cs" />
     <Compile Include="Presentation\Monitor.cs" />
@@ -166,7 +160,7 @@
     <Compile Include="Cms\Component.cs" />
     <Compile Include="Cms\ContainerView.cs" />
     <Compile Include="Cms\UrlBuilder.cs" />
-    <Compile Include="Extention\ComponentListExtension.cs" />
+    <Compile Include="Extension\ComponentListExtension.cs" />
     <Compile Include="Framework\Api\Logic\ListItemCollectionConverter.cs" />
     <Compile Include="Framework\Api\MediakiwiApiFormResponse.cs" />
     <Compile Include="Framework\Api\MediakiwiApiGridResponse.cs" />
@@ -312,7 +306,6 @@
     <Compile Include="Framework\TextContentSettings.cs" />
     <Compile Include="Framework\WimComponentListRoot.cs" />
     <Compile Include="Framework\WimControlBuilder.cs" />
-    <Compile Include="Logic\CacheItemLogic.cs" />
     <Compile Include="UI\Constants.cs" />
     <Compile Include="UI\Control.cs" />
     <Compile Include="UI\DataGrid.cs" />
@@ -327,15 +320,16 @@
   <ItemGroup>
     <PackageReference Include="Azure.Storage.Blobs" Version="12.9.1" />
     <PackageReference Include="HtmlAgilityPack" Version="1.11.30" />
+    <PackageReference Include="Microsoft.Extensions.Azure" Version="1.2.0" />
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="6.0.0" />
     <PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="6.15.0" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
     <PackageReference Include="System.Configuration.ConfigurationManager" Version="5.0.0" />
-    <PackageReference Include="System.Drawing.Common" Version="5.0.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Sushi.Mediakiwi.Data\Sushi.Mediakiwi.Data.csproj" />
+    <ProjectReference Include="..\Sushi.Mediakiwi.Logic\Sushi.Mediakiwi.Logic.csproj" />
   </ItemGroup>
 
   <ItemGroup>

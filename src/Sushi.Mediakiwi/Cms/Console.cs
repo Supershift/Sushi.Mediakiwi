@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
 using Sushi.Mediakiwi.Data;
@@ -24,6 +25,30 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
     /// </summary>
     public class Console
     {
+        private readonly OAuth2Logic _oAuth2Logic;
+        
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Console"/> class.
+        /// </summary>
+        /// <param name="application">The application.</param>
+        public Console(HttpContext application, IHostEnvironment env)
+        {
+            _env = env;
+            m_Application = application;
+
+            Response = m_Application.Response;
+            Request = m_Application.Request;
+            Context = m_Application;
+
+            WimRepository = string.Concat(CurrentDomain, AddApplicationPath("testdrive/files"));
+            BaseRepository = string.Concat(CurrentDomain, AddApplicationPath("repository"));
+
+            _VisitorManager = new VisitorManager(application);
+
+            // todo: use constructor injection
+            _oAuth2Logic = Context.RequestServices.GetRequiredService<OAuth2Logic>();
+        }
+
         /// <summary>
         /// Gets the safe post.
         /// </summary>
@@ -466,25 +491,6 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
             }
         }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Console"/> class.
-        /// </summary>
-        /// <param name="application">The application.</param>
-        public Console(HttpContext application, IHostEnvironment env)
-        {
-            _env = env;
-            m_Application = application;
-
-            Response = m_Application.Response;
-            Request = m_Application.Request;
-            Context = m_Application;
-
-            WimRepository = string.Concat(CurrentDomain, AddApplicationPath("testdrive/files"));
-            BaseRepository = string.Concat(CurrentDomain, AddApplicationPath("repository"));
-
-            _VisitorManager = new VisitorManager(application);
-        }
-
         internal string Form(string name)
         {
             if (string.IsNullOrEmpty(name))
@@ -720,7 +726,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
                     if (!string.IsNullOrWhiteSpace(CurrentVisitor?.Jwt))
                     {
                         // Validate the JWT
-                        string email = await OAuth2Logic.ExtractUpnAsync(WimServerConfiguration.Instance.Authentication, CurrentVisitor.Jwt, Context);
+                        string email = await _oAuth2Logic.ExtractUpnAsync(WimServerConfiguration.Instance.Authentication, CurrentVisitor.Jwt);
                         if (!string.IsNullOrWhiteSpace(email))
                         {
                             m_CurrentApplicationUser = await ApplicationUser.SelectOneByEmailAsync(email, true);

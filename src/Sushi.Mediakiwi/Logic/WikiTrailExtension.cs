@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Sushi.Mediakiwi.Logic
 {
-    internal class WikiTrailExtension : ITrailExtension
+    public class WikiTrailExtension : ITrailExtension
     {
         public async Task<string> RenderExtrasAsync(string propertyButton, Beta.GeneratedCms.Console console)
         {

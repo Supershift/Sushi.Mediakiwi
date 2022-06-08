@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Data;
-using System.Drawing;
 using System.Globalization;
 using System.Collections;
 using Sushi.Mediakiwi.AppCentre.Data.Implementation;

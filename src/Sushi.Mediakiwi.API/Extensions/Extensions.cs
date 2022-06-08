@@ -154,9 +154,9 @@ namespace Sushi.Mediakiwi.API.Extensions
             });
 
             // Add API services
-            services.AddSingleton<IUserService, UserService>();
-            services.AddSingleton<INavigationService, NavigationService>();
-            services.AddSingleton<IContentService, ContentService>();
+            services.AddTransient<IUserService, UserService>();
+            services.AddTransient<INavigationService, NavigationService>();
+            services.AddTransient<IContentService, ContentService>();
             services.AddControllers(o =>
             {
                 o.Conventions.Add(new SwaggerSchemaFilter());

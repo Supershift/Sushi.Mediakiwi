@@ -30,7 +30,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sushi.Mediakiwi.Data.Elasti
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sushi.Mediakiwi.API", "src\Sushi.Mediakiwi.API\Sushi.Mediakiwi.API.csproj", "{E704A69C-82FE-4CB0-9486-67797B90A898}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sushi.Mediakiwi.Elastic.UI", "src\Sushi.Mediakiwi.Elastic.UI\Sushi.Mediakiwi.Elastic.UI.csproj", "{3BD036F9-FF92-4F6D-AC80-F4B017AF37CF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sushi.Mediakiwi.Elastic.UI", "src\Sushi.Mediakiwi.Elastic.UI\Sushi.Mediakiwi.Elastic.UI.csproj", "{3BD036F9-FF92-4F6D-AC80-F4B017AF37CF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sushi.Mediakiwi.Logic", "src\Sushi.Mediakiwi.Logic\Sushi.Mediakiwi.Logic.csproj", "{C651778F-4720-4978-84ED-E4ED2166FE56}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -78,6 +80,10 @@ Global
 		{3BD036F9-FF92-4F6D-AC80-F4B017AF37CF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3BD036F9-FF92-4F6D-AC80-F4B017AF37CF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3BD036F9-FF92-4F6D-AC80-F4B017AF37CF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C651778F-4720-4978-84ED-E4ED2166FE56}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C651778F-4720-4978-84ED-E4ED2166FE56}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C651778F-4720-4978-84ED-E4ED2166FE56}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C651778F-4720-4978-84ED-E4ED2166FE56}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

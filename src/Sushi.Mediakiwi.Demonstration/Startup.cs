@@ -41,7 +41,7 @@ namespace Sushi.Mediakiwi.Demonstration
                 options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
             });
 
-            services.AddMediakiwi();
+            services.AddMediakiwi(Configuration);
             services.AddMediakiwiApi();
             //services.AddMediakiwiGlobalListSetting<string>("googleSheetsUrl", "Google sheets URL", "The URL of the Google sheets doc representing this list");
 
