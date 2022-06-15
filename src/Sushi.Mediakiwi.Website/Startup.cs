@@ -54,6 +54,7 @@ namespace Sushi.Mediakiwi.Website
             services.AddMemoryCache();
 
             // Add strongly typed Config
+            services.AddSingleton(appSettings);
             services.AddSingleton<ISushiApplicationSettings>(appSettings);
 
             // Enable Compression ?
