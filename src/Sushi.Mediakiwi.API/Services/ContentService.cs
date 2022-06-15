@@ -472,18 +472,27 @@ namespace Sushi.Mediakiwi.API.Services
                     IsError = true,
                     Message = error.Value,
                     PropertyNames = new List<string>()
-                        {
-                            error.Key
-                        }
+                    {
+                        error.Key
+                    }
                 });
             }
 
+
+            // Retrieve faulty elements
+            List<string> faultyElements = new List<string>();
+            if (_resolver?.ListInstance?.wim?.Form?.ListItemElementList?.Any(x => x.IsValid == false) == true)
+            {
+                faultyElements = _resolver.ListInstance.wim.Form.ListItemElementList.Where(x => x.IsValid == false).Select(x => x.Info.Name).ToList();
+            }
+            
             foreach (var error in _resolver.ListInstance.wim.Notification.GetGenericErrors)
             {
                 result.Add(new Notification()
                 {
                     IsError = true,
-                    Message = error
+                    Message = error,
+                    PropertyNames = faultyElements
                 });
             }
 

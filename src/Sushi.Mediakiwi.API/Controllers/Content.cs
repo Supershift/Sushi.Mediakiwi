@@ -159,7 +159,14 @@ namespace Sushi.Mediakiwi.API.Controllers
                 }
 
                 result.IsEditMode = result.List.IsEditMode;
-                result.StatusCode = System.Net.HttpStatusCode.OK;
+                if (result?.List?.Notifications?.Any(x => x.IsError) == true)
+                {
+                    return BadRequest(new BadRequestObjectResult(result.List.Notifications.Where(x => x.IsError)));
+                }
+                else
+                {
+                    result.StatusCode = System.Net.HttpStatusCode.OK;
+                }
             }
 
             return Ok(result);

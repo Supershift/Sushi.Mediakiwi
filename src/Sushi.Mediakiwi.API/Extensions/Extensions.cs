@@ -98,6 +98,11 @@ namespace Sushi.Mediakiwi.API.Extensions
                 newContext.Request.Form = new FormCollection(httpContext.Request.Form.ToDictionary(f => f.Key, f => f.Value));
             }
 
+            if (httpContext.RequestServices != null)
+            {
+                newContext.RequestServices = httpContext.RequestServices;
+            }
+
             return newContext;
         }
 
