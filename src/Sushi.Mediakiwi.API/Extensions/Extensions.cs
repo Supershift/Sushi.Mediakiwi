@@ -92,6 +92,12 @@ namespace Sushi.Mediakiwi.API.Extensions
 
             var newContext = new DefaultHttpContext(features);
 
+            // Copy the RequestServices for DI
+            if (httpContext?.RequestServices != null)
+            {
+                newContext.RequestServices = httpContext.RequestServices;
+            }
+
             // Can happen if the body was not copied
             if (httpContext.Request.HasFormContentType && httpContext.Request.Form.Count != newContext.Request.Form.Count)
             {
