@@ -548,6 +548,7 @@ namespace Sushi.Mediakiwi.Controllers
                         {
                             isFilled = true;
                             content.Text = Utility.CleanConcurrentBreaks(inField.Value, true);
+                            content.Text = Utils.ApplyRichtext(request.Page.Site, content.Text);
                         }
                     }
                     break;
