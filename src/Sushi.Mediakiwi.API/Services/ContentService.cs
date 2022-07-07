@@ -7,16 +7,20 @@ using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Reflection;
-using Sushi.Mediakiwi.API.Extensions;
 using Sushi.Mediakiwi.Framework.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.AspNetCore.WebUtilities;
 
 namespace Sushi.Mediakiwi.API.Services
 {
     public class ContentService : IContentService
     {
         private UrlResolver _resolver { get; set; }
+        private readonly IServiceProvider _services;
+
+        public ContentService(IServiceProvider services)
+        {
+            _services = services;
+        }
 
         #region Is Key Column
 
@@ -1255,9 +1259,9 @@ namespace Sushi.Mediakiwi.API.Services
             List<IListModule> listModules = default(List<IListModule>);
 
 
-            if (_resolver.ListInstance?.wim?.Console?.Request?.HttpContext?.RequestServices?.GetServices<IListModule>().Any() == true)
+            if (_services?.GetServices<IListModule>().Any() == true)
             {
-                listModules = _resolver.ListInstance.wim.Console.Request.HttpContext.RequestServices.GetServices<IListModule>().ToList();
+                listModules = _services.GetServices<IListModule>().ToList();
 
                 // Remove modules that shouldnt be in the corresponding List State
                 if (_resolver.ListInstance.wim.IsEditMode)
@@ -1640,7 +1644,7 @@ namespace Sushi.Mediakiwi.API.Services
                                     var targetDatalist = await Data.ComponentList.SelectOneAsync(listGuid);
                                     if (targetDatalist?.ID > 0)
                                     {
-                                        var targetList = Utils.CreateInstance(targetDatalist, _resolver.ListInstance.wim.Console.Request.HttpContext.RequestServices) as ComponentListTemplate;
+                                        var targetList = Utils.CreateInstance(targetDatalist, _services) as ComponentListTemplate;
                                         targetList.Init(_resolver.ListInstance.wim.Console);
                                         targetList.SenderInstance = _resolver.ListInstance;
                                         targetList.wim.Console = _resolver.ListInstance.wim.Console;
