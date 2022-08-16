@@ -654,7 +654,7 @@ namespace Sushi.Mediakiwi.API.Services
 
         #region Get Field
 
-        private ContentField GetField(Framework.Api.MediakiwiField field)
+        private async Task<ContentField> GetFieldAsync(Framework.Api.MediakiwiField field)
         {
             var newField = new ContentField()
             {
@@ -682,6 +682,61 @@ namespace Sushi.Mediakiwi.API.Services
                 Value = (field.Value != null) ? field.Value.ToString() : "",
                 VueType = ConvertEnum(field.VueType)
             };
+
+            //// An Image is treated differently, because we're showing multiple
+            //// parts of information 
+            //if (field.ContentTypeID == Data.ContentType.Binary_Image)
+            //{
+            //    newField.PropertyType = typeof(string).FullName;
+
+            //    int? currentAssetId = null;
+            //    if (_resolver.ListInstance != null)
+            //    {
+            //        var prop = _resolver.ListInstance.GetType().GetProperty(field.PropertyName);
+            //        if (prop != null)
+            //        {
+            //            var _value = prop.GetValue(_resolver.ListInstance, null);
+            //            if (_value is int)
+            //            {
+            //                currentAssetId = (int)_value;
+            //            }
+            //            else if (_value is int?)
+            //            {
+            //                currentAssetId = (int?)_value;
+            //            }
+            //        }
+            //    }
+
+            //    AssetInfoJson info = new();
+
+            //    if (currentAssetId.GetValueOrDefault(0) > 0)
+            //    {
+            //        var currentAsset = await Data.Asset.SelectOneAsync(currentAssetId.Value);
+            //        if (currentAsset?.ID > 0)
+            //        {
+            //            info = new()
+            //            {
+            //                Title = currentAsset.Title,
+            //                FileSize = currentAsset.Size,
+            //                GalleryID = currentAsset.GalleryID,
+            //                Height = currentAsset.Height,
+            //                Width = currentAsset.Width,
+            //                ID = currentAsset.ID,
+            //                URL = currentAsset.RemoteLocation,
+            //                Description = currentAsset.Description
+            //            };
+            //        }
+            //    }
+
+            //    var options = new System.Text.Json.JsonSerializerOptions
+            //    {
+            //        PropertyNameCaseInsensitive = true,
+            //        IgnoreReadOnlyProperties = true,
+            //        PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase
+            //    };
+
+            //    newField.Value = System.Text.Json.JsonSerializer.Serialize<AssetInfoJson>(info, options);
+            //}
 
             if (field.Value is ICollection<string> stringCol)
             {
@@ -749,7 +804,7 @@ namespace Sushi.Mediakiwi.API.Services
             ButtonField newButton = new ButtonField();
 
             // Get all standard Field content
-            ContentField result = GetField(field);
+            ContentField result = await GetFieldAsync(field);
 
             // Copy all field Content to button            
             Utils.ReflectProperty(result, newButton);
@@ -1109,7 +1164,7 @@ namespace Sushi.Mediakiwi.API.Services
                             }
                             else if (field.ContentTypeID == Data.ContentType.DataList)
                             {
-                                var newField = GetField(field);
+                                var newField = await GetFieldAsync(field);
 
                                 // Get property
                                 var prop = _resolver.ListInstance.GetType().GetProperty(field.PropertyName);
@@ -1135,7 +1190,7 @@ namespace Sushi.Mediakiwi.API.Services
                             }
                             else 
                             {
-                                var newField = GetField(field);
+                                var newField = await GetFieldAsync(field);
                                 if (newField == null)
                                 {
                                     continue;
@@ -1199,7 +1254,7 @@ namespace Sushi.Mediakiwi.API.Services
                             ci.SenderInstance = _resolver.ListInstance;
                             var apiField = await ci.GetApiFieldAsync();
 
-                            formMap.Fields.Add(GetField(apiField));
+                            formMap.Fields.Add(await GetFieldAsync(apiField));
                         }
                     }
                 }
@@ -1221,7 +1276,7 @@ namespace Sushi.Mediakiwi.API.Services
                         mapElement.SenderInstance = _resolver.ListInstance;
                         var apiField = await mapElement.GetApiFieldAsync();
 
-                        formMap.Fields.Add(GetField(apiField));
+                        formMap.Fields.Add(await GetFieldAsync(apiField));
                     }
                 }
             }
