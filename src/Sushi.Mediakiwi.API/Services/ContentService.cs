@@ -654,7 +654,7 @@ namespace Sushi.Mediakiwi.API.Services
 
         #region Get Field
 
-        private ContentField GetField(Framework.Api.MediakiwiField field)
+        private async Task<ContentField> GetFieldAsync(Framework.Api.MediakiwiField field)
         {
             var newField = new ContentField()
             {
@@ -749,7 +749,7 @@ namespace Sushi.Mediakiwi.API.Services
             ButtonField newButton = new ButtonField();
 
             // Get all standard Field content
-            ContentField result = GetField(field);
+            ContentField result = await GetFieldAsync(field);
 
             // Copy all field Content to button            
             Utils.ReflectProperty(result, newButton);
@@ -1109,7 +1109,7 @@ namespace Sushi.Mediakiwi.API.Services
                             }
                             else if (field.ContentTypeID == Data.ContentType.DataList)
                             {
-                                var newField = GetField(field);
+                                var newField = await GetFieldAsync(field);
 
                                 // Get property
                                 var prop = _resolver.ListInstance.GetType().GetProperty(field.PropertyName);
@@ -1135,7 +1135,7 @@ namespace Sushi.Mediakiwi.API.Services
                             }
                             else 
                             {
-                                var newField = GetField(field);
+                                var newField = await GetFieldAsync(field);
                                 if (newField == null)
                                 {
                                     continue;
@@ -1199,7 +1199,7 @@ namespace Sushi.Mediakiwi.API.Services
                             ci.SenderInstance = _resolver.ListInstance;
                             var apiField = await ci.GetApiFieldAsync();
 
-                            formMap.Fields.Add(GetField(apiField));
+                            formMap.Fields.Add(await GetFieldAsync(apiField));
                         }
                     }
                 }
@@ -1221,7 +1221,7 @@ namespace Sushi.Mediakiwi.API.Services
                         mapElement.SenderInstance = _resolver.ListInstance;
                         var apiField = await mapElement.GetApiFieldAsync();
 
-                        formMap.Fields.Add(GetField(apiField));
+                        formMap.Fields.Add(await GetFieldAsync(apiField));
                     }
                 }
             }

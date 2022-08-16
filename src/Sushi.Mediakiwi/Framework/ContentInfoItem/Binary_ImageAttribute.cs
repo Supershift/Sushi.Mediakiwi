@@ -1,4 +1,5 @@
 using Sushi.Mediakiwi.Data;
+using Sushi.Mediakiwi.Presentation.Json;
 using System;
 using System.Globalization;
 using System.Threading.Tasks;
@@ -12,14 +13,45 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
     {
         public async Task<Api.MediakiwiField> GetApiFieldAsync()
         {
+            // An Image is treated differently, because we're showing multiple
+            // parts of information 
+            string value = OutputText;
+
+            AssetInfoJson info = new();
+
+            if (m_Candidate?.ID > 0)
+            {
+                info = new()
+                {
+                    Title = m_Candidate.Title,
+                    FileSize = m_Candidate.Size,
+                    GalleryID = m_Candidate.GalleryID,
+                    Height = m_Candidate.Height,
+                    Width = m_Candidate.Width,
+                    ID = m_Candidate.ID,
+                    URL = m_Candidate.RemoteLocation,
+                    Description = m_Candidate.Description
+                };
+
+                var options = new System.Text.Json.JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true,
+                    IgnoreReadOnlyProperties = true,
+                    PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase
+                };
+
+                value = System.Text.Json.JsonSerializer.Serialize<AssetInfoJson>(info, options);
+            }
+            
+
             return new Api.MediakiwiField()
             {
                 Event = m_AutoPostBack ? Api.MediakiwiJSEvent.Change : Api.MediakiwiJSEvent.None,
                 Title = MandatoryWrap(Title),
-                Value = OutputText,
+                Value = value,
                 Expression = Expression,
                 PropertyName = ID,
-                PropertyType = (Property == null) ? typeof(string).FullName : Property.PropertyType.FullName,
+                PropertyType = typeof(string).FullName,
                 VueType = Api.MediakiwiFormVueType.undefined,
                 ClassName = InputClassName(IsValid(Mandatory)),
                 ReadOnly = IsReadOnly,
@@ -134,6 +166,32 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
         /// <param name="isEditMode">if set to <c>true</c> [is edit mode].</param>
         public void SetCandidate(Field field, bool isEditMode)
         {
+            if (Console.IsJson && Console.JsonForm.TryGetValue(ID, out object _assetInfoObj))
+            {
+                if (_assetInfoObj != null)
+                {
+                    var options = new System.Text.Json.JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true,
+                        IgnoreReadOnlyProperties = true,
+                        PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase
+                    };
+
+                    try
+                    {
+                        var assetInfo = System.Text.Json.JsonSerializer.Deserialize<AssetInfoJson>(_assetInfoObj.ToString(), options);
+                        if (assetInfo?.ID > 0)
+                        {
+                            Console.JsonForm[ID] = assetInfo.ID.Value;
+                        }
+                    }
+                    catch (Exception)
+                    {
+
+                    }
+                }
+            }
+
             SetMultiFieldTitleHTML(Labels.ResourceManager.GetString("input_image", new CultureInfo(Console.CurrentApplicationUser.LanguageCulture)), "icon-photo");
 
             if (Property != null && Property.PropertyType == typeof(CustomData))
