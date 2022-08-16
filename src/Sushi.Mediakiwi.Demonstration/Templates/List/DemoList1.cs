@@ -12,8 +12,13 @@ namespace Sushi.Mediakiwi.Demonstration.Templates.List
 
     public class DemoList1 : ComponentListTemplate
     {
-        [Framework.ContentListSearchItem.Button("Test action 1")]
+        [OnlyVisibleForRoles("super admin")]
+        [Framework.ContentListSearchItem.Button("Test action 1 (SuperAdmin)")]
         public bool Button_ActionTest1 { get; set; }
+        
+        [OnlyVisibleForRoles("admin")]
+        [Framework.ContentListSearchItem.Button("Test action 3 (Admin)")]
+        public bool Button_ActionTest3 { get; set; }
 
         public Random random { get; set; } = new Random(DateTime.UtcNow.Millisecond);
 
@@ -256,6 +261,7 @@ namespace Sushi.Mediakiwi.Demonstration.Templates.List
             }
         }
 
+        [OnlyEditableForRoles("admin")]
         [TextField("Title", 100, true)]
         public string Title { get; set; }
 

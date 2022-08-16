@@ -137,6 +137,12 @@
     <Compile Include="Extension\SiteExtension.cs" />
     <Compile Include="Framework\AdditionalResource.cs" />
     <Compile Include="Framework\ASyncQuery.cs" />
+    <Compile Include="Framework\Attributes\OnlyEditableForRoles.cs" />
+    <Compile Include="Framework\Attributes\OnlyEditableWhenFalse.cs" />
+    <Compile Include="Framework\Attributes\OnlyRequiredWhenFalse.cs" />
+    <Compile Include="Framework\Attributes\OnlyRequiredWhenTrue.cs" />
+    <Compile Include="Framework\Attributes\OnlyVisibleWhenFalse.cs" />
+    <Compile Include="Framework\Attributes\OnlyVisibleForRoles.cs" />
     <Compile Include="Framework\CacheManager.cs" />
     <Compile Include="Framework\ErrorCode.cs" />
     <Compile Include="Framework\EventArguments\ComponentListDataReceived.cs" />
@@ -173,8 +179,8 @@
     <Compile Include="Framework\Api\MediakiwiNotification.cs" />
     <Compile Include="Framework\Api\MediakiwiPostRequest.cs" />
     <Compile Include="Framework\Attributes\ExposedListCollection.cs" />
-    <Compile Include="Framework\Attributes\OnlyEditableAttribute.cs" />
-    <Compile Include="Framework\Attributes\OnlyVisibleAttribute.cs" />
+    <Compile Include="Framework\Attributes\OnlyEditableWhenTrue.cs" />
+    <Compile Include="Framework\Attributes\OnlyVisibleWhenTrue.cs" />
     <Compile Include="Framework\Attributes\PolutionIgnore.cs" />
     <Compile Include="Framework\Caching.cs" />
     <Compile Include="Framework\ClassMaps\DummyPropertyInfo.cs" />

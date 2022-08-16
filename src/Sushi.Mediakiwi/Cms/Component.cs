@@ -3125,6 +3125,28 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                         isRequiredOverride = false;
                     }
                 }
+                else if (attribute is OnlyVisibleForRoles onlyVisibleForRole)
+                {
+                    if (onlyVisibleForRole?.RoleNames?.Count > 0)
+                    {
+                        var currentRoleName = container?.CurrentApplicationUser?.RoleName;
+                        if (string.IsNullOrWhiteSpace(currentRoleName) == false && onlyVisibleForRole.RoleNames.Contains(currentRoleName.ToLowerInvariant()) == false)
+                        {
+                            isVisible = false;
+                        }
+                    }
+                }
+                else if (attribute is OnlyEditableForRoles onlyEdtiableForRole)
+                {
+                    if (onlyEdtiableForRole?.RoleNames?.Count > 0)
+                    {
+                        var currentRoleName = container?.CurrentApplicationUser?.RoleName;
+                        if (string.IsNullOrWhiteSpace(currentRoleName) == false && onlyEdtiableForRole.RoleNames.Contains(currentRoleName.ToLowerInvariant()) == false)
+                        {
+                            isEditable = false;
+                        }
+                    }
+                }
             }
 
             if (contentAttribute != null)
