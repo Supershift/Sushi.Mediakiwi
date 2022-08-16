@@ -683,61 +683,6 @@ namespace Sushi.Mediakiwi.API.Services
                 VueType = ConvertEnum(field.VueType)
             };
 
-            //// An Image is treated differently, because we're showing multiple
-            //// parts of information 
-            //if (field.ContentTypeID == Data.ContentType.Binary_Image)
-            //{
-            //    newField.PropertyType = typeof(string).FullName;
-
-            //    int? currentAssetId = null;
-            //    if (_resolver.ListInstance != null)
-            //    {
-            //        var prop = _resolver.ListInstance.GetType().GetProperty(field.PropertyName);
-            //        if (prop != null)
-            //        {
-            //            var _value = prop.GetValue(_resolver.ListInstance, null);
-            //            if (_value is int)
-            //            {
-            //                currentAssetId = (int)_value;
-            //            }
-            //            else if (_value is int?)
-            //            {
-            //                currentAssetId = (int?)_value;
-            //            }
-            //        }
-            //    }
-
-            //    AssetInfoJson info = new();
-
-            //    if (currentAssetId.GetValueOrDefault(0) > 0)
-            //    {
-            //        var currentAsset = await Data.Asset.SelectOneAsync(currentAssetId.Value);
-            //        if (currentAsset?.ID > 0)
-            //        {
-            //            info = new()
-            //            {
-            //                Title = currentAsset.Title,
-            //                FileSize = currentAsset.Size,
-            //                GalleryID = currentAsset.GalleryID,
-            //                Height = currentAsset.Height,
-            //                Width = currentAsset.Width,
-            //                ID = currentAsset.ID,
-            //                URL = currentAsset.RemoteLocation,
-            //                Description = currentAsset.Description
-            //            };
-            //        }
-            //    }
-
-            //    var options = new System.Text.Json.JsonSerializerOptions
-            //    {
-            //        PropertyNameCaseInsensitive = true,
-            //        IgnoreReadOnlyProperties = true,
-            //        PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase
-            //    };
-
-            //    newField.Value = System.Text.Json.JsonSerializer.Serialize<AssetInfoJson>(info, options);
-            //}
-
             if (field.Value is ICollection<string> stringCol)
             {
                 newField.Value = string.Join(',', stringCol);
