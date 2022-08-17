@@ -56,7 +56,8 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                 HelpText = InteractiveHelp,
                 FormSection = GetFormMapClass(),
                 Hidden = IsCloaked,
-                Options = optionsList
+                Options = optionsList, 
+                GroupName = Groupname,
             };
         }
 
@@ -459,25 +460,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                 build.Append(GetSimpleTextElement(candidate));
             }
 
-            build.ApiResponse.Fields.Add(new Api.MediakiwiField()
-            {
-                Event = AutoPostBack ? Api.MediakiwiJSEvent.Change : Api.MediakiwiJSEvent.None,
-                Title = MandatoryWrap(Title),
-                Value = OutputText,
-                Expression = Expression,
-                PropertyName = ID,
-                PropertyType = (Property == null) ? typeof(string).FullName : Property.PropertyType.FullName,
-                VueType = Api.MediakiwiFormVueType.wimChoiceRadio,
-                Options = optionsList,
-                GroupName = Groupname,
-                ReadOnly = IsReadOnly,
-                ContentTypeID = ContentTypeSelection,
-                IsAutoPostback = AutoPostBack,
-                IsMandatory = Mandatory,
-                MaxLength = MaxValueLength,
-                HelpText = InteractiveHelp,
-                FormSection = formName
-            });
+            build.ApiResponse.Fields.Add(Task.Run(async () => await GetApiFieldAsync()).Result);
 
             return ReadCandidate(OutputText);
         }
