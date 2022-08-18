@@ -907,6 +907,9 @@ namespace Sushi.Mediakiwi.Data
         {
             var connector = ConnectorFactory.CreateConnector(new ApplicationUserMap(true));
             connector.Delete(this);
+
+            connector.Cache?.FlushRegion(connector.CacheRegion);
+
             return true;
         }
 
@@ -914,6 +917,9 @@ namespace Sushi.Mediakiwi.Data
         {
             var connector = ConnectorFactory.CreateConnector(new ApplicationUserMap(true));
             await connector.DeleteAsync(this).ConfigureAwait(false);
+
+            connector.Cache?.FlushRegion(connector.CacheRegion);
+
             return true;
         }
 
@@ -961,6 +967,8 @@ namespace Sushi.Mediakiwi.Data
             var connector = ConnectorFactory.CreateConnector(new ApplicationUserMap(true));
             connector.Save(this);
 
+            connector.Cache?.FlushRegion(connector.CacheRegion);
+
             return true;
         }
 
@@ -989,6 +997,8 @@ namespace Sushi.Mediakiwi.Data
 
             var connector = ConnectorFactory.CreateConnector(new ApplicationUserMap(true));
             await connector.SaveAsync(this).ConfigureAwait(false);
+            
+            connector.Cache?.FlushRegion(connector.CacheRegion);
 
             return true;
         }
