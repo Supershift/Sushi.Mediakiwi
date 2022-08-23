@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
 using Microsoft.Extensions.DependencyInjection;
+using System.Net;
 
 namespace Sushi.Mediakiwi.API
 {
@@ -52,6 +53,7 @@ namespace Sushi.Mediakiwi.API
         }
 
         public Data.IApplicationUser ApplicationUser { get; internal set; }
+        public HttpStatusCode StatusCode { get; internal set; }
 
         #endregion
 

@@ -48,8 +48,14 @@ namespace Sushi.Mediakiwi.API.Controllers
                 return BadRequest();
             }
 
+
+            // The requested user doesn't have access rights to this list / page
+            if (Resolver.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+            {
+                return Unauthorized();
+            }
             // We are looking at a list, but not the Browsing list
-            if (Resolver.ListInstance != null && Resolver.List.ClassName.Contains("Sushi.Mediakiwi.AppCentre.Data.Implementation.Browsing", System.StringComparison.InvariantCultureIgnoreCase)== false)
+            else if (Resolver.ListInstance != null && Resolver.List.ClassName.Contains("Sushi.Mediakiwi.AppCentre.Data.Implementation.Browsing", System.StringComparison.InvariantCultureIgnoreCase)== false)
             {
                 result.List = await _contentService.GetListResponseAsync(Resolver).ConfigureAwait(false);
                 result.IsEditMode = result.List.IsEditMode;
@@ -99,8 +105,13 @@ namespace Sushi.Mediakiwi.API.Controllers
                 return BadRequest();
             }
 
+            // The requested user doesn't have access rights to this list / page
+            if (Resolver.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+            {
+                return Unauthorized();
+            }
             // We are looking at a list
-            if (Resolver.ListInstance != null)
+            else if (Resolver.ListInstance != null)
             {
                 // Whenever a postback hits, set editmode to true, so that 
                 // possible filters can be set

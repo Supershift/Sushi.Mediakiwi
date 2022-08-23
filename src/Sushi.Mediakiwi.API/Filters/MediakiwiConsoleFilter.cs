@@ -6,6 +6,7 @@ using Sushi.Mediakiwi.API.Extensions;
 using Sushi.Mediakiwi.API.Transport.Requests;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace Sushi.Mediakiwi.API.Filters
@@ -105,13 +106,24 @@ namespace Sushi.Mediakiwi.API.Filters
                 // Create an URL resolver
                 UrlResolver resolver = new UrlResolver(context.HttpContext.RequestServices, console);
 
+                // Set default status
+                resolver.StatusCode = HttpStatusCode.OK;
+
                 // Resolve the supplied URL 
                 await resolver.ResolveUrlAsync(schemeString, hostString, pathBaseString, pathString, query).ConfigureAwait(false);
 
                 // When the resolver created a list, assign it to the Console
                 if (resolver.List != null)
                 {
-                    console.CurrentList = resolver.List;
+                    var userHasAccess = await resolver.List.HasRoleAccessAsync(resolver.ApplicationUser);
+                    if (userHasAccess == false)
+                    {
+                        resolver.StatusCode = HttpStatusCode.Unauthorized;
+                    }
+                    else
+                    {
+                        console.CurrentList = resolver.List;
+                    }
                 }
 
                 // When the resolver created a list instance, assign it to the Console
