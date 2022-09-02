@@ -3658,6 +3658,14 @@ namespace Sushi.Mediakiwi.Framework
             return false;
         }
 
+        /// <summary>
+        /// Clears the existing grid data
+        /// </summary>
+        public void ClearGridData()
+        {
+            _Grids = null;
+        }
+
         internal List<GridInstance> _Grids;
 
         // [MR:010713] Returns the number of items in the Grid.
@@ -4972,6 +4980,17 @@ namespace Sushi.Mediakiwi.Framework
             foreach (string item in index)
             {
                 Caching.FlushIndexOfCache(item);
+            }
+        }
+
+        /// <summary>
+        /// Is this call coming from the MKAPI ?
+        /// </summary>
+        public bool IsMKApiCall
+        {
+            get 
+            {
+                return (Console?.Request?.HttpContext?.Items?.ContainsKey("MKAPICALL") == true);
             }
         }
     }

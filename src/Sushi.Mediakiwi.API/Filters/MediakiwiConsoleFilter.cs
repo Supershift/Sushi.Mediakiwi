@@ -143,7 +143,7 @@ namespace Sushi.Mediakiwi.API.Filters
                 
                 // Add the resolver to the HttpContext
                 context.HttpContext.Items.Add(Common.API_HTTPCONTEXT_URLRESOLVER, resolver);
-                
+                context.HttpContext.Items.Add(Common.API_HTTPCONTEXT_ITEM, "1");
             }
 
             // Add the console to the HttpContext
