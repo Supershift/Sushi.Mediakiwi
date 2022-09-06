@@ -115,14 +115,26 @@ namespace Sushi.Mediakiwi.API.Filters
                 // When the resolver created a list, assign it to the Console
                 if (resolver.List != null)
                 {
-                    var userHasAccess = await resolver.List.HasRoleAccessAsync(resolver.ApplicationUser);
-                    if (userHasAccess == false)
-                    {
-                        resolver.StatusCode = HttpStatusCode.Unauthorized;
-                    }
-                    else
+                    // Allow links, images and documents to all users
+                    if (
+                            resolver.List.Type == Data.ComponentListType.Images
+                        ||  resolver.List.Type == Data.ComponentListType.Documents
+                        ||  resolver.List.Type == Data.ComponentListType.Links)
                     {
                         console.CurrentList = resolver.List;
+                    }
+                    // Check if the user has rights to view that list.
+                    else 
+                    {
+                        var userHasAccess = await resolver.List.HasRoleAccessAsync(resolver.ApplicationUser);
+                        if (userHasAccess == false)
+                        {
+                            resolver.StatusCode = HttpStatusCode.Unauthorized;
+                        }
+                        else
+                        {
+                            console.CurrentList = resolver.List;
+                        }
                     }
                 }
 
