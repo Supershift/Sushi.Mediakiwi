@@ -167,6 +167,7 @@ namespace Sushi.Mediakiwi.Framework
         ///   <c>true</c> if [disable default setup]; otherwise, <c>false</c>.
         /// </value>
         public bool DisableDefaultSetup { get; set; }
+
         WimComponentListRoot _instance;
         public Filter(WimComponentListRoot instance)
         {

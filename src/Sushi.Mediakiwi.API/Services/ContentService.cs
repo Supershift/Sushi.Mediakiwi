@@ -1197,6 +1197,8 @@ namespace Sushi.Mediakiwi.API.Services
                             ci.Property = prop;
                             ci.ID = prop.Name;
                             ci.SenderInstance = _resolver.ListInstance;
+                            ci.SetCandidate(_resolver.ListInstance.IsEditMode);
+
                             var apiField = await ci.GetApiFieldAsync();
 
                             formMap.Fields.Add(await GetFieldAsync(apiField));
@@ -1219,6 +1221,8 @@ namespace Sushi.Mediakiwi.API.Services
                     foreach (var mapElement in map.Elements)
                     {
                         mapElement.SenderInstance = _resolver.ListInstance;
+                        mapElement.SetCandidate(_resolver.ListInstance.IsEditMode);
+
                         var apiField = await mapElement.GetApiFieldAsync();
 
                         formMap.Fields.Add(await GetFieldAsync(apiField));
