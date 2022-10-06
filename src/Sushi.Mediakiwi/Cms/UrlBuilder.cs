@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Sushi.Mediakiwi.Data;
 using System;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,7 +14,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
     public class UrlBuilder
     {
         IComponentList m_List_Folders;
-        IComponentList List_Folders 
+        IComponentList List_Folders
         {
             get
             {
@@ -137,9 +138,17 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
         /// </summary>
         /// <param name="folderID">The folder ID.</param>
         /// <returns></returns>
-        public string GetFolderRequest(int folderID)
+        public string GetFolderRequest(int folderID, int? channelId = null)
         {
-            return $"{Console.WimPagePath}?folder={folderID}";
+            var targetFolder = Folder.SelectOne(folderID);
+            if (channelId == null || (channelId.GetValueOrDefault(0) > 0 && targetFolder.SiteID != channelId.Value))
+            {
+                return $"{Console.GetWimPagePath(targetFolder.SiteID, false)}?folder={folderID}";
+            }
+            else
+            {
+                return $"{Console.GetWimPagePath(channelId, false)}?folder={folderID}";
+            }
         }
 
         /// <summary>
@@ -155,7 +164,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
         {
             StringBuilder build = new StringBuilder();
 
-            foreach (string key in context.Request.Query.Keys )
+            foreach (string key in context.Request.Query.Keys)
             {
                 if (key == "channel" || key == null) continue;
                 string keyvalue = context.Request.Query[key];
@@ -296,27 +305,27 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
         /// <param name="list">The list.</param>
         /// <param name="itemID">The item ID.</param>
         /// <returns></returns>
-        public string GetListRequest(int listID, int? itemID = null)
+        public string GetListRequest(int listID, int? itemID = null, int? channelId = null)
         {
             var list = ComponentList.SelectOne(listID);
-            return GetListRequest(list, itemID);
+            return GetListRequest(list, itemID, channelId);
         }
 
-        public string GetListRequest(Type listType, int? itemID = null)
+        public string GetListRequest(Type listType, int? itemID = null, int? channelId = null)
         {
             var list = ComponentList.SelectOne(listType);
-            return GetListRequest(list, itemID);
+            return GetListRequest(list, itemID, channelId);
         }
 
         /// <summary>
         /// Gets the list request.
         /// </summary>
-        public string GetListRequest(IComponentList list, int? itemID = null)
+        public string GetListRequest(IComponentList list, int? itemID = null, int? channelId = null)
         {
             var path = string.Empty;
             if (list != null)
             {
-                var folder = Folder.SelectOneChild(list.FolderID.GetValueOrDefault(), Console.ChannelIndentifier);
+                var folder = Folder.SelectOneChild(list.FolderID.GetValueOrDefault(), channelId ?? Console.ChannelIndentifier);
                 path = list.Name;
 
                 if (folder != null && !folder.IsNewInstance)
@@ -330,16 +339,16 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
             }
             else
             {
-                return Console.WimPagePath;
+                return Console.GetWimPagePath(channelId, false);
             }
 
             if (itemID.HasValue)
             {
-                path = string.Concat(Console.WimPagePath, Utils.ToUrl(path), "?item=", itemID);
+                path = string.Concat(Console.GetWimPagePath(channelId, false), Utils.ToUrl(path), "?item=", itemID);
             }
             else
             {
-                path = string.Concat(Console.WimPagePath, Utils.ToUrl(path));
+                path = string.Concat(Console.GetWimPagePath(channelId, false), Utils.ToUrl(path));
             }
 
             if (path.StartsWith(@"\\", StringComparison.InvariantCultureIgnoreCase) || path.StartsWith(@"//", StringComparison.InvariantCultureIgnoreCase))
@@ -353,15 +362,16 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
 
         private async Task<string> GetHomepageFromMenuAsync(int? channelId = null)
         {
-             string path = "";
+            string path = "";
 
             var roleMenus = await Menu.SelectAllAsync().ConfigureAwait(false);
             IMenu roleMenu;
-            if (channelId.GetValueOrDefault(0) > 0)
+
+            if (channelId.GetValueOrDefault(0) > 0 && roleMenus.Any(x => x.SiteID == channelId.Value && x.IsActive == true && x.RoleID == Console.CurrentApplicationUser.RoleID))
             {
                 roleMenu = roleMenus.FirstOrDefault(x => x.SiteID == channelId.Value && x.IsActive == true && x.RoleID == Console.CurrentApplicationUser.RoleID);
             }
-            else 
+            else
             {
                 roleMenu = roleMenus.FirstOrDefault(x => x.IsActive == true && x.RoleID == Console.CurrentApplicationUser.RoleID);
             }
@@ -375,46 +385,48 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                     switch (homepage.TypeID)
                     {
                         default: { path = Console.WimPagePath; } break;
-                        case 1: { path = GetListRequest(homepage.ItemID); } break;
-                        case 2: { path = GetFolderRequest(homepage.ItemID); } break;
-                        case 3: { path = GetPageRequest(homepage.ItemID); } break;
-                        case 5: { path = GetGalleryRequest(homepage.ItemID); } break;
-                        case 6: 
+                        case 1: { path = GetListRequest(homepage.ItemID, null, channelId); } break;
+                        case 2: { path = GetFolderRequest(homepage.ItemID, channelId); } break;
+                        case 3: { path = GetPageRequest(homepage.ItemID, channelId); } break;
+                        case 5: { path = GetGalleryRequest(homepage.ItemID, channelId); } break;
+                        case 6:
                             {
                                 var hpId = (await Site.SelectOneAsync(homepage.ItemID).ConfigureAwait(false)).HomepageID;
                                 if (hpId.GetValueOrDefault(0) > 0)
                                 {
-                                    path = GetPageRequest(hpId.Value);
+                                    path = GetPageRequest(hpId.Value, channelId);
                                 }
-                            } break;
-                        case 7: 
+                            }
+                            break;
+                        case 7:
                             {
                                 if (Enum.TryParse(homepage.ItemID.ToString(), out FolderType type))
                                 {
-                                    path = GetSectionRequest(type);
+                                    path = GetSectionRequest(type, channelId);
                                 }
-                                
-                            } break;
-                        case 8: { path = GetFolderRequest(homepage.ItemID); } break;
+
+                            }
+                            break;
+                        case 8: { path = GetFolderRequest(homepage.ItemID, channelId); } break;
                     }
                 }
             }
 
             if (string.IsNullOrWhiteSpace(path))
             {
-                path = Console.WimPagePath;
+                path = Console.GetWimPagePath(channelId, false);
             }
 
             return path;
         }
-        
+
         /// <summary>
         /// Gets the home request.
         /// </summary>
         /// <returns></returns>
         public async Task<string> GetHomeRequestAsync(int? channelId = null)
         {
-            return  await GetHomepageFromMenuAsync(channelId).ConfigureAwait(false);
+            return await GetHomepageFromMenuAsync(channelId).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -432,9 +444,9 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
         /// </summary>
         /// <param name="pageId">The page ID.</param>
         /// <returns></returns>
-        public string GetPageRequest(int pageId)
+        public string GetPageRequest(int pageId, int? channelId = null)
         {
-            return string.Concat(Console.WimPagePath, "?page=", pageId);
+            return $"{Console.GetWimPagePath(channelId, false)}?page={pageId}";
         }
 
         /// <summary>
@@ -442,16 +454,19 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
         /// </summary>
         /// <param name="type">The type.</param>
         /// <returns></returns>
-        public string GetSectionRequest(FolderType type)
+        public string GetSectionRequest(FolderType type, int? channelId = null)
         {
+            var baseUrl = Console.GetWimPagePath(channelId, false);
+
             switch (type)
             {
-                case FolderType.Page: return string.Concat(Console.WimPagePath, "?top=", 1);
-                case FolderType.List: return string.Concat(Console.WimPagePath, "?top=", 2);
-                case FolderType.Gallery: return string.Concat(Console.WimPagePath, "?top=", 3);
-                case FolderType.Administration: return string.Concat(Console.WimPagePath, "?top=", 4);
+                case FolderType.Page: return $"{baseUrl}?top={1}";
+                case FolderType.List: return $"{baseUrl}?top={2}";
+                case FolderType.Gallery: return $"{baseUrl}?top={3}";
+                case FolderType.Administration: return $"{baseUrl}?top={4}";
             }
-            return string.Concat(Console.WimPagePath);
+
+            return baseUrl;
         }
 
 
@@ -460,9 +475,9 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
         /// </summary>
         /// <param name="gallery">The gallery.</param>
         /// <returns></returns>
-        public string GetGalleryRequest(Gallery gallery)
+        public string GetGalleryRequest(Gallery gallery, int? channelId = null)
         {
-            return string.Concat(Console.WimPagePath, "?gallery=", gallery.ID);
+            return $"{Console.GetWimPagePath(channelId, false)}?gallery={gallery.ID}";
         }
 
         /// <summary>
@@ -470,9 +485,9 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
         /// </summary>
         /// <param name="galleryID">The gallery ID.</param>
         /// <returns></returns>
-        public string GetGalleryRequest(int galleryID)
+        public string GetGalleryRequest(int galleryID, int? channelId = null)
         {
-            return string.Concat(Console.WimPagePath, "?gallery=", galleryID);
+            return $"{Console.GetWimPagePath(channelId, false)}?gallery={galleryID}";
         }
 
         /// <summary>

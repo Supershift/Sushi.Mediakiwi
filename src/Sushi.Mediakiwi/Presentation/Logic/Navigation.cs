@@ -275,7 +275,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation.Logic
             switch (entity.TypeID)
             {
                 case 1:
-                    return container.UrlBuild.GetListRequest(Convert.ToInt32(entity.ItemID));
+                    return container.UrlBuild.GetListRequest(Convert.ToInt32(entity.ItemID), null, channel);
 
                 case 2: querystring = $"?folder={entity.ItemID}"; break;
                 case 3: querystring = $"?page={entity.ItemID}"; break;

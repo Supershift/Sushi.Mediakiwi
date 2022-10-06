@@ -1,3 +1,4 @@
+// CONSOLE
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
@@ -673,7 +674,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
         /// <value>The current list instance item.</value>
         public object CurrentListInstanceItem { get; set; }
 
-       IApplicationUser m_CurrentApplicationUser;
+        IApplicationUser m_CurrentApplicationUser;
         /// <summary>
         /// Gets or sets the current application user.
         /// </summary>
@@ -766,7 +767,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
         /// </summary>
         /// <value>The current environment.</value>
         internal IEnvironment CurrentEnvironment { get; set; }
-      
+
         internal bool IsCodeUpdate;
 
         /// <summary>
@@ -910,7 +911,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
 
         void ValidateChannelSwitchPageInheritance(Site currentChannel, Site requestedChannel)
         {
-            var pageID =Utility.ConvertToIntNullable(Request.Query["page"]);
+            var pageID = Utility.ConvertToIntNullable(Request.Query["page"]);
             if (!pageID.HasValue)
             {
                 return;
@@ -1063,7 +1064,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
 
         internal IConfiguration Configuration
         {
-            get;set;
+            get; set;
         }
 
         public T ConfigurationValue<T>(string value)
@@ -1196,18 +1197,34 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
         /// </summary>
         /// <param name="channel">The channel.</param>
         /// <returns></returns>
-        public string GetWimPagePath(int? channel)
+        public string GetWimPagePath(int? channel, bool addApplicationPath = true)
         {
-            if (channel.HasValue)
+            if (channel.GetValueOrDefault(0) > 0)
             {
                 var candidate = Site.SelectOne(channel.Value);
                 if (candidate != null)
                 {
-                    return AddApplicationPath(string.Concat(CommonConfiguration.PORTAL_PATH, "/", Utils.ToUrl(candidate.Name)), true);
+                    if (addApplicationPath)
+                    {
+                        return AddApplicationPath(string.Concat(CommonConfiguration.PORTAL_PATH, "/", Utils.ToUrl(candidate.Name)), true);
+                    }
+                    else
+                    {
+                        return string.Concat(CommonConfiguration.PORTAL_PATH, "/", Utils.ToUrl(candidate.Name));
+                    }
                 }
             }
-            return AddApplicationPath(string.Concat(CommonConfiguration.PORTAL_PATH), true);
+
+            if (addApplicationPath)
+            {
+                return AddApplicationPath(string.Concat(CommonConfiguration.PORTAL_PATH), true);
+            }
+            else
+            {
+                return string.Concat(CommonConfiguration.PORTAL_PATH);
+            }
         }
+
 
         /// <summary>
         /// Gets or sets the wim repository.
