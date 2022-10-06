@@ -9,3 +9,4 @@
 **/.vs
 *.suo
 *.csproj.user
+/src/Sushi.Mediakiwi.Demonstration
