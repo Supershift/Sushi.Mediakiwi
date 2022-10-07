@@ -14,6 +14,8 @@ namespace Sushi.Mediakiwi.AppCentre.Data
     /// </summary>
     public class MenuList : ComponentListTemplate
     {
+        private List<IApplicationRole> allRoles { get; set; }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="MenuList"/> class.
         /// </summary>
@@ -24,6 +26,30 @@ namespace Sushi.Mediakiwi.AppCentre.Data
             ListLoad += MenuList_ListLoad;
             ListSearch += MenuList_ListSearch;
             ListDelete += MenuList_ListDelete;
+            ListDataItemCreated += MenuList_ListDataItemCreated;
+            ListInit += MenuList_ListInit;
+        }
+
+        private async Task MenuList_ListInit()
+        {
+            allRoles = (await ApplicationRole.SelectAllAsync()).ToList();
+        }
+
+        private void MenuList_ListDataItemCreated(object sender, ListDataItemCreatedEventArgs e)
+        {
+            if (e.ColumnProperty == nameof(Menu.RoleID) && e.Item is Menu menu && e.Type == DataItemType.TableCell)
+            {
+                if (menu.RoleID.GetValueOrDefault(0) > 0)
+                {
+                    var role = allRoles.FirstOrDefault(x => x.ID == menu.RoleID.Value);
+
+                    e.InnerHTML = role?.ID > 0 ? role.Name : "- UNKNOWN -";
+                }
+                else
+                {
+                    e.InnerHTML = "";
+                }
+            }
         }
 
         async Task MenuList_ListSave(ComponentListEventArgs e)
@@ -92,6 +118,7 @@ namespace Sushi.Mediakiwi.AppCentre.Data
             {
                 await item.DeleteAsync().ConfigureAwait(false);
             }
+            await Implement.DeleteAsync();
         }
 
         IMenu Implement { get; set; }
@@ -156,7 +183,8 @@ namespace Sushi.Mediakiwi.AppCentre.Data
             wim.ListDataColumns.Add(new ListDataColumn("ID", nameof(Menu.ID), ListDataColumnType.UniqueIdentifier));
             wim.ListDataColumns.Add(new ListDataColumn("Name", nameof(Menu.Name), ListDataColumnType.HighlightPresent) { ColumnWidth = 200 });
             wim.ListDataColumns.Add(new ListDataColumn("Group", nameof(Menu.GroupTitle), ListDataColumnType.Default) { ColumnWidth = 150 });
-            wim.ListDataColumns.Add(new ListDataColumn("", nameof(Menu.IsActive)) { ColumnWidth = 30 });
+            wim.ListDataColumns.Add(new ListDataColumn("Role", nameof(Menu.RoleID), ListDataColumnType.Default) { ColumnWidth = 100, Alignment = Align.Right });
+            wim.ListDataColumns.Add(new ListDataColumn("Active", nameof(Menu.IsActive)) { ColumnWidth = 30, Alignment = Align.Center });
 
             var results = await Menu.SelectAllAsync().ConfigureAwait(false);
             wim.ListDataAdd(results);
