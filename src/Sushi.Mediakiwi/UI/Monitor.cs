@@ -797,7 +797,14 @@ namespace Sushi.Mediakiwi.UI
         {
             //  Find the default homepage in the menu section
             var defaultHome = await _Console.UrlBuild.GetHomeRequestAsync(siteID).ConfigureAwait(false);
-            if (_Console.Request.Path.Equals(defaultHome) == false)
+            if (Uri.TryCreate(defaultHome, UriKind.RelativeOrAbsolute, out Uri homeUrl))
+            {
+                if (_Console.Request.Path.Equals(homeUrl.PathAndQuery) == false)
+                {
+                    _Console.Response.Redirect(defaultHome);
+                }
+            }
+            else if (_Console.Request.Path.Equals(defaultHome) == false)
             {
                 _Console.Response.Redirect(defaultHome);
             }

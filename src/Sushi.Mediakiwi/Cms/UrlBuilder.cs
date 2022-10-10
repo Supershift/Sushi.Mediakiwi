@@ -4,6 +4,7 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading.Channels;
 using System.Threading.Tasks;
 
 namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
@@ -140,14 +141,13 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
         /// <returns></returns>
         public string GetFolderRequest(int folderID, int? channelId = null)
         {
-            var targetFolder = Folder.SelectOne(folderID);
-            if (channelId == null || (channelId.GetValueOrDefault(0) > 0 && targetFolder.SiteID != channelId.Value))
+            if (channelId.GetValueOrDefault(0) > 0)
             {
-                return $"{Console.GetWimPagePath(targetFolder.SiteID, false)}?folder={folderID}";
+                return $"{Console.GetWimPagePath(channelId.Value)}?folder={folderID}";
             }
             else
             {
-                return $"{Console.GetWimPagePath(channelId, false)}?folder={folderID}";
+                return $"{Console.WimPagePath}?folder={folderID}";
             }
         }
 
@@ -316,7 +316,6 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
             var list = ComponentList.SelectOne(listType);
             return GetListRequest(list, itemID, channelId);
         }
-
         /// <summary>
         /// Gets the list request.
         /// </summary>
@@ -337,18 +336,28 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                     path = $"/{path}";
                 }
             }
+            else if (channelId.GetValueOrDefault(0) > 0)
+            {
+                return Console.GetWimPagePath(channelId);
+            }
             else
             {
-                return Console.GetWimPagePath(channelId, false);
+                return Console.WimPagePath;
+            }
+
+
+            if (channelId.GetValueOrDefault(0) > 0)
+            {
+                path = string.Concat(Console.GetWimPagePath(channelId), Utils.ToUrl(path));
+            }
+            else
+            {
+                path = string.Concat(Console.WimPagePath, Utils.ToUrl(path));
             }
 
             if (itemID.HasValue)
             {
-                path = string.Concat(Console.GetWimPagePath(channelId, false), Utils.ToUrl(path), "?item=", itemID);
-            }
-            else
-            {
-                path = string.Concat(Console.GetWimPagePath(channelId, false), Utils.ToUrl(path));
+                path = string.Concat(path, "?item=", itemID);
             }
 
             if (path.StartsWith(@"\\", StringComparison.InvariantCultureIgnoreCase) || path.StartsWith(@"//", StringComparison.InvariantCultureIgnoreCase))
@@ -389,24 +398,22 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
                         case 2: { path = GetFolderRequest(homepage.ItemID, channelId); } break;
                         case 3: { path = GetPageRequest(homepage.ItemID, channelId); } break;
                         case 5: { path = GetGalleryRequest(homepage.ItemID, channelId); } break;
-                        case 6:
+                        case 6: 
                             {
                                 var hpId = (await Site.SelectOneAsync(homepage.ItemID).ConfigureAwait(false)).HomepageID;
                                 if (hpId.GetValueOrDefault(0) > 0)
                                 {
                                     path = GetPageRequest(hpId.Value, channelId);
                                 }
-                            }
-                            break;
-                        case 7:
+                            } break;
+                        case 7: 
                             {
                                 if (Enum.TryParse(homepage.ItemID.ToString(), out FolderType type))
                                 {
                                     path = GetSectionRequest(type, channelId);
                                 }
-
-                            }
-                            break;
+                                
+                            } break;
                         case 8: { path = GetFolderRequest(homepage.ItemID, channelId); } break;
                     }
                 }
@@ -414,7 +421,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
 
             if (string.IsNullOrWhiteSpace(path))
             {
-                path = Console.GetWimPagePath(channelId, false);
+                path = Console.WimPagePath;
             }
 
             return path;
@@ -434,9 +441,9 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
         /// </summary>
         /// <param name="page">The page.</param>
         /// <returns></returns>
-        public string GetPageRequest(Page page)
+        public string GetPageRequest(Page page, int? channelId = null)
         {
-            return GetPageRequest(page.ID);
+            return GetPageRequest(page.ID, channelId);
         }
 
         /// <summary>
@@ -446,7 +453,14 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
         /// <returns></returns>
         public string GetPageRequest(int pageId, int? channelId = null)
         {
-            return $"{Console.GetWimPagePath(channelId, false)}?page={pageId}";
+            if (channelId.GetValueOrDefault(0) > 0)
+            {
+                return string.Concat(Console.GetWimPagePath(channelId), "?page=", pageId);
+            }
+            else
+            {
+                return string.Concat(Console.WimPagePath, "?page=", pageId);
+            }
         }
 
         /// <summary>
@@ -456,7 +470,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
         /// <returns></returns>
         public string GetSectionRequest(FolderType type, int? channelId = null)
         {
-            var baseUrl = Console.GetWimPagePath(channelId, false);
+            var baseUrl = channelId.GetValueOrDefault(0) > 0 ? Console.GetWimPagePath(channelId) : Console.WimPagePath;
 
             switch (type)
             {
@@ -477,7 +491,7 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
         /// <returns></returns>
         public string GetGalleryRequest(Gallery gallery, int? channelId = null)
         {
-            return $"{Console.GetWimPagePath(channelId, false)}?gallery={gallery.ID}";
+            return GetGalleryRequest(gallery.ID, channelId);
         }
 
         /// <summary>
@@ -487,7 +501,14 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms.Source
         /// <returns></returns>
         public string GetGalleryRequest(int galleryID, int? channelId = null)
         {
-            return $"{Console.GetWimPagePath(channelId, false)}?gallery={galleryID}";
+            if (channelId.GetValueOrDefault(0) > 0)
+            {
+                return string.Concat(Console.GetWimPagePath(channelId), "?gallery=", galleryID);
+            }
+            else
+            {
+                return string.Concat(Console.WimPagePath, "?gallery=", galleryID);
+            }
         }
 
         /// <summary>
