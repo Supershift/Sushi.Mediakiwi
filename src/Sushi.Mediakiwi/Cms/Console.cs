@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Sushi.Mediakiwi.Data;
 using Sushi.Mediakiwi.Data.Configuration;
 using Sushi.Mediakiwi.Framework;
@@ -146,11 +147,36 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
         {
             if (IsJson)
             {
+                var result = default(string[]);
+
                 if (JsonForm != null)
                 {
-                    return JsonConvert.DeserializeObject<string[]>(value);
+                    try
+                    {
+                        result = JsonConvert.DeserializeObject<string[]>(value);
+                        return result;
+                    }
+                    catch (JsonSerializationException)
+                    {
+                        // JSON deserialization failed, this happens on int[] to string[] conversion
+                        // i.e. the value "61, 64" will fail conversion
+                        // use non-JSON array conversion as backup
+                        if (value.Contains(",", StringComparison.InvariantCulture))
+                        {
+                            result = value.Split(',').ToArray();
+                        }
+                        else
+                        {
+                            result = new List<string>() { value }.ToArray();
+                        }
+                    }
+                    catch
+                    {
+                        throw;
+                    }
                 }
-                return default(string[]);
+
+                return result;
             }
             else
             {
