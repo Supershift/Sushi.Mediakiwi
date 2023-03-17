@@ -64,6 +64,9 @@
     <Folder Include="Properties\PublishProfiles\" />
     <Folder Include="wwwroot\Images\" />
   </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Sushi.MicroORM" Version="2.0.0" />
+	</ItemGroup>
   <ProjectExtensions><VisualStudio><UserProperties appsettings_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>
 
 </Project>

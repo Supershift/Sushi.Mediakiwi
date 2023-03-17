@@ -9,6 +9,7 @@ using Sushi.Mediakiwi.Framework;
 using Sushi.Mediakiwi.Framework.Api;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -247,44 +248,20 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
 
         internal void SetDateFormat()
         {
-            if (CommonConfiguration.FORM_DATEPICKER.Equals("nl", StringComparison.CurrentCultureIgnoreCase))
-            {
-                GlobalisationCulture = "nl-nl";
-                DateFormat = NL_DATE;
-                DateTimeFormat = NL_DATETIME;
-
-                DateFormatShort = NL_SHORT_DATE;
-                DateTimeFormatShort = NL_SHORT_DATETIME;
-            }
-            else
-            {
-                GlobalisationCulture = "en-us";
-                DateFormat = EN_DATE;
-                DateTimeFormat = EN_DATETIME;
-
-                DateFormatShort = EN_SHORT_DATE;
-                DateTimeFormatShort = EN_SHORT_DATETIME;
-            }
+            var dateInfo = Common.GetDateInformation();
+            DateCulture = dateInfo.culture;
+            DateFormat = dateInfo.dateFormat;
+            DateTimeFormat = dateInfo.dateTimeFormat;
+            DateFormatShort = dateInfo.dateFormatShort;
+            DateTimeFormatShort = dateInfo.dateTimeFormatShort;
         }
-
-        readonly string NL_SHORT_DATE = "dd-MM-yy";
-        readonly string EN_SHORT_DATE = "dd-MM-yy";
-
-        readonly string NL_SHORT_DATETIME = "dd-MM-yy HH:mm";
-        readonly string EN_SHORT_DATETIME = "dd-MM-yy HH:mm";
-
-        readonly string NL_DATE = "dd-MM-yyyy";
-        readonly string EN_DATE = "dd-MM-yyyy";
-
-        readonly string NL_DATETIME = "dd-MM-yyyy HH:mm";
-        readonly string EN_DATETIME = "dd-MM-yyyy HH:mm";
 
         public string DateFormat { get; private set; }
         public string DateTimeFormat { get; private set; }
         public string DateFormatShort { get; private set; }
         public string DateTimeFormatShort { get; private set; }
         public string GlobalisationCulture { get; private set; }
-
+        public CultureInfo DateCulture { get; private set; }
 
         /// <summary>
         /// Adds the trace.

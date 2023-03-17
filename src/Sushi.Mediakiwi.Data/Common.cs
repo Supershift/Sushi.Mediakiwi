@@ -350,7 +350,74 @@ namespace Sushi.Mediakiwi
             get { return "/"; }
         }
 
-        
+        /// <summary>
+        /// Returns all information regarding formatting and displaying dates
+        /// This is based on the appsetting <c>Datepicker_Language</c>
+        /// </summary>
+        /// <returns></returns>
+        public static (System.Globalization.CultureInfo culture, string dateFormat, string dateTimeFormat, string dateFormatShort, string dateTimeFormatShort) GetDateInformation()
+        {
+            if (Data.CommonConfiguration.FORM_DATEPICKER.Equals("nl", StringComparison.CurrentCultureIgnoreCase))
+            {
+                return (
+                    new System.Globalization.CultureInfo("nl-NL"),
+                    NL_DATE,
+                    NL_DATETIME,
+                    NL_SHORT_DATE,
+                    NL_SHORT_DATETIME
+                );
+            }
+            else
+            {
+                return (
+                  new System.Globalization.CultureInfo("en-GB"),
+                  EN_DATE,
+                  EN_DATETIME,
+                  EN_SHORT_DATE,
+                  EN_SHORT_DATETIME
+                );
 
+            }
+        }
+
+        /// <summary>
+        /// Standard short Date representation for NL
+        /// </summary>
+        public static readonly string NL_SHORT_DATE = "dd-MM-yy";
+
+        /// <summary>
+        /// Standard short Date representation for EN
+        /// </summary>
+        public static readonly string EN_SHORT_DATE = "MM/dd/yy";
+
+        /// <summary>
+        /// Standard short DateTime representation for NL
+        /// </summary>
+        public static readonly string NL_SHORT_DATETIME = "dd-MM-yy HH:mm";
+
+        /// <summary>
+        /// Standard short DateTime representation for EN
+        /// </summary>
+        public static readonly string EN_SHORT_DATETIME = "MM/dd/yy HH:mm";
+
+        /// <summary>
+        /// Standard Date representation for NL
+        /// </summary>
+        public static readonly string NL_DATE = "dd-MM-yyyy";
+
+        /// <summary>
+        /// Standard Date representation for EN
+        /// </summary>
+        public static readonly string EN_DATE = "MM/dd/yyyy";
+
+        /// <summary>
+        /// Standard DateTime representation for NL
+        /// </summary>
+        public static readonly string NL_DATETIME = "dd-MM-yyyy HH:mm";
+
+        /// <summary>
+        /// Standard DateTime representation for EN
+        /// </summary>
+        public static readonly string EN_DATETIME = "MM/dd/yyyy HH:mm";
     }
 }

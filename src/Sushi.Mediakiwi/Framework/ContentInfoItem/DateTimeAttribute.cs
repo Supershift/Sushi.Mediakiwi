@@ -1,5 +1,6 @@
 using Sushi.Mediakiwi.Data;
 using System;
+using System.Globalization;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -114,6 +115,9 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                 SetContentContainer(field);
             }
 
+            // Get formatting information for dates
+            var dateInfo = Common.GetDateInformation();
+
             m_Candidate = null;
             if (IsInitialLoad || !isEditMode)
             {
@@ -125,7 +129,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                         {
                             //  Previous WIM versions
                             DateTime tmp;
-                            if (DateTime.TryParse(field.Value, new System.Globalization.CultureInfo("NL-nl"), System.Globalization.DateTimeStyles.None, out tmp))
+                            if (DateTime.TryParse(field.Value, dateInfo.culture, DateTimeStyles.None, out tmp))
                             {
                                 m_Candidate = tmp;
                             }
@@ -166,7 +170,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                     {
                         string candidate = Console.Form(ID);
                         DateTime tmp;
-                        if (DateTime.TryParse(candidate, new System.Globalization.CultureInfo(Console.GlobalisationCulture), System.Globalization.DateTimeStyles.None, out tmp))
+                        if (DateTime.TryParse(candidate, dateInfo.culture, DateTimeStyles.None, out tmp))
                         {
                             if (!string.IsNullOrEmpty(Console.Form(ID + "T")))
                             {
@@ -212,7 +216,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
             OutputText = null;
             if (m_Candidate.HasValue)
             {
-                OutputText = m_Candidate.Value.ToString(Console.DateTimeFormat);
+                OutputText = m_Candidate.Value.ToString(dateInfo.dateTimeFormat, dateInfo.culture);
             }
 
             //  Inherited content section
@@ -222,14 +226,14 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                 {
                     //  Previous WIM versions
                     DateTime tmp;
-                    if (DateTime.TryParse(field.InheritedValue, new System.Globalization.CultureInfo("NL-nl"), System.Globalization.DateTimeStyles.None, out tmp))
+                    if (DateTime.TryParse(field.InheritedValue, dateInfo.culture, DateTimeStyles.None, out tmp))
                     {
-                        InhertitedOutputText = tmp.ToString(Console.DateTimeFormat);
+                        InhertitedOutputText = tmp.ToString(dateInfo.dateTimeFormat, dateInfo.culture);
                     }
                 }
                 else
                 {
-                    InhertitedOutputText = new DateTime(long.Parse(field.InheritedValue)).ToString(Console.DateTimeFormat);
+                    InhertitedOutputText = new DateTime(long.Parse(field.InheritedValue)).ToString(dateInfo.dateTimeFormat, dateInfo.culture);
                 }
             }
         }
@@ -247,6 +251,9 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
         public Field WriteCandidate(WimControlBuilder build, bool isEditMode, bool isRequired, bool isCloaked)
         {
             SetWriteEnvironment();
+
+            // Get formatting information for dates
+            var dateInfo = Common.GetDateInformation();
 
             IsCloaked = isCloaked;
             Mandatory = isRequired;
@@ -291,8 +298,8 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
 
                 element.AppendFormat("<input class=\"date datepicker{3}\" name=\"{0}\" type=\"text\" id=\"{0}\" maxlength=\"10\" value=\"{1}\" placeholder=\"{2}\"/>"
                     , ID
-                    , m_Candidate.HasValue ? m_Candidate.Value.ToString(Console.DateFormat) : string.Empty
-                    , Console.DateFormat.ToLower()
+                    , m_Candidate.HasValue ? m_Candidate.Value.ToString(dateInfo.dateFormat, dateInfo.culture) : string.Empty
+                    , dateInfo.dateFormat.ToLower()
                      , IsCloaked ? " hidden" : null
                     );
 

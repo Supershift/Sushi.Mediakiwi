@@ -80,7 +80,10 @@
 
 /* Interaction Cues
 ----------------------------------*/
-.ui-state-highlight, .ui-widget-content .ui-state-highlight, .ui-widget-header .ui-state-highlight  {background: none !important; border: 1px dotted white; }
+.ui-state-highlight, .ui-widget-content .ui-state-highlight, .ui-widget-header .ui-state-highlight {
+	background: none !important;
+	border: 1px dotted white;
+}
 .sorttable-highlight {  }
 
 .ui-state-highlight a, .ui-widget-content .ui-state-highlight a,.ui-widget-header .ui-state-highlight a { color: #363636; }
@@ -530,7 +533,21 @@ li.ui-tabs-selected + li span{visibility: hidden}
  *
  * http://docs.jquery.com/UI/Datepicker#theming
  */
-.ui-datepicker { width: 17em; padding: 0; display: none; }
+.ui-datepicker .ui-datepicker-current-day {
+	background: #388CC8;
+}
+
+.ui-datepicker .ui-datepicker-current-day a {
+	color: #ffffff !important;
+	font-weight: bold !important;
+	border: 1px dotted white;
+}
+
+.ui-datepicker {
+	width: 17em;
+	padding: 0;
+	display: none;
+}
 .ui-datepicker .ui-datepicker-header { position:relative; padding:.2em 0; }
 .ui-datepicker .ui-datepicker-prev, .ui-datepicker .ui-datepicker-next { position:absolute; top: 2px; width: 1.8em; height: 1.8em; }
 .ui-datepicker .ui-datepicker-prev-hover, .ui-datepicker .ui-datepicker-next-hover { top: 2px; }
@@ -589,8 +606,9 @@ li.ui-tabs-selected + li span{visibility: hidden}
 
 /*costum Datepicker css*/
 #ui-datepicker-div {
-	border:1px solid #C4C4C4!important;
+	border: 1px solid #C4C4C4 !important;
 	background: #e2e2e2; /* Old browsers */
+	z-index: 1000 !important;
 }
 .ui-datepicker-title span{
 	color:#000000;

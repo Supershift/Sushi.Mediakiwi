@@ -77,6 +77,7 @@ namespace Sushi.Mediakiwi.Data
             {
                 if (!string.IsNullOrEmpty(Value))
                 {
+                    var dateInfo = Mediakiwi.Common.GetDateInformation();
                     long ticks;
                     if (Utility.IsNumeric(Value, out ticks))
                     {
@@ -87,17 +88,16 @@ namespace Sushi.Mediakiwi.Data
                         try
                         {
                             DateTime dt;
-                            System.Globalization.CultureInfo info =
-                                new System.Globalization.CultureInfo("nl-NL");
-                            //if (DateTime.TryParseExact(Value, "dd-MM-yyyy", info, System.Globalization.DateTimeStyles.None, out dt))
-                            if (DateTime.TryParse(Value, info, System.Globalization.DateTimeStyles.None, out dt))
+                            if (DateTime.TryParse(Value, dateInfo.culture, System.Globalization.DateTimeStyles.None, out dt))
+                            {
                                 return dt;
+                            }
 
                             return DateTime.MinValue;
                         }
                         catch (Exception ex)
                         {
-                            throw new Exception(string.Format("VALUE: '{0}' - {1}", Value, ex.Message));
+                            throw new Exception($"VALUE: '{Value}' - {ex.Message}");
                         }
                     }
                 }

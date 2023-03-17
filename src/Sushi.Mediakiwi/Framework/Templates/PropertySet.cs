@@ -146,8 +146,7 @@ namespace Sushi.Mediakiwi.Framework.Templates
                 return true;
             }
 
-            System.Globalization.CultureInfo cultureInfo =
-                new System.Globalization.CultureInfo("nl-NL");
+            System.Globalization.CultureInfo cultureInfo = new System.Globalization.CultureInfo("nl-NL");
 
             RichLink rlink = new RichLink(site);
 
