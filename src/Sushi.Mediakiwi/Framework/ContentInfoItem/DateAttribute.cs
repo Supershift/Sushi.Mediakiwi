@@ -253,16 +253,6 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
 
                 StringBuilder element = new StringBuilder();
 
-                element.AppendFormat("<input class=\"date datepicker{3}{4}{6}\" name=\"{0}\"  type=\"text\" id=\"{0}\" maxlength=\"10\" value=\"{1}\" placeholder=\"{5}\"/>{2}"
-                   , ID
-                   , m_Candidate.HasValue ? m_Candidate.Value.ToString(Console.DateFormat) : string.Empty
-                   , IsCloaked ? "" : InputPostText
-                   , IsValid(isRequired) ? string.Empty : " error"
-                   , AutoPostBack ? " postBack" : string.Empty // 4
-                   , Console.DateFormat.ToLower()
-                   , IsCloaked ? " hidden" : null
-                   );
-
                 var format = m_Candidate.HasValue ? m_Candidate.Value.ToString(Console.DateFormat, Console.DateCulture) : string.Empty;
                 var validClass = IsValid(isRequired) ? string.Empty : " error";
                 var postbackClass = AutoPostBack ? " postBack" : string.Empty;
@@ -270,7 +260,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                 var hiddenClass = IsCloaked ? " hidden" : null;
                 var setValue = (IsCloaked ? "" : InputPostText);
 
-                element.Append(Console.DateCulture, $"<input class=\"date datepicker{validClass}{postbackClass}{hiddenClass}\" name=\"{ID}\"  type=\"text\" id=\"{ID}\" maxlength=\"10\" value=\"{format}\" placeholder=\"{dateFormat}\"/>{setValue}");
+                element.AppendFormat(Console.DateCulture, $"<input class=\"date datepicker{validClass}{postbackClass}{hiddenClass}\" name=\"{ID}\"  type=\"text\" id=\"{ID}\" maxlength=\"10\" value=\"{format}\" placeholder=\"{dateFormat}\"/>{setValue}");
 
                 #endregion Element creation
 
