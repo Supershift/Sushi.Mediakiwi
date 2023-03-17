@@ -20,16 +20,17 @@ namespace Sushi.Mediakiwi
 
         /// <summary>
         /// Set the datepicker format, options 'nl' (EU) or 'en' (US)
+        /// Get the datepicker culture code (ie 'en-GB')
         /// </summary>
-        public static string FORM_DATEPICKER
+        public static string DATEPICKER_CULTURE
         {
             get
             {
-                if (string.IsNullOrWhiteSpace(WimServerConfiguration.Instance.Datepicker_Language))
+                if (string.IsNullOrWhiteSpace(WimServerConfiguration.Instance.Datepicker_Culture))
                 {
-                    return "EN";
+                    return "en-GB";
                 }
-                return WimServerConfiguration.Instance.Datepicker_Language;
+                return WimServerConfiguration.Instance.Datepicker_Culture;
             }
         }
 

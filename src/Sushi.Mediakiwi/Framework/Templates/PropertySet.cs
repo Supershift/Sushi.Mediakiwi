@@ -7,13 +7,13 @@ namespace Sushi.Mediakiwi.Framework.Templates
     /// 
     /// </summary>
 	public class PropertySet
-	{
+    {
         /// <summary>
         /// 
         /// </summary>
-		public PropertySet( )
-		{
-		}
+		public PropertySet()
+        {
+        }
 
         /// <summary>
         /// 
@@ -132,8 +132,10 @@ namespace Sushi.Mediakiwi.Framework.Templates
         /// <returns></returns>
         public bool SetValue(Site site, object loadedControl, Content content, Component component, Page callingPage)
         {
+            var dateInfo = Common.GetDateInformation(site);
+
             bool isInheritedContent = false;
-            if ( callingPage != null && callingPage.InheritContent )
+            if (callingPage != null && callingPage.InheritContent)
                 isInheritedContent = true;
 
             if (loadedControl == null || content == null)
@@ -155,39 +157,39 @@ namespace Sushi.Mediakiwi.Framework.Templates
             //    SetCustomControls(rlink, site, (Sushi.Mediakiwi.UI.Control)loadedControl, content, ((Sushi.Mediakiwi.UI.Control)loadedControl).Controls, component);
 
             //  Set all fields
-            foreach ( System.Reflection.PropertyInfo info in loadedControl.GetType().GetProperties() )
-            {   
+            foreach (System.Reflection.PropertyInfo info in loadedControl.GetType().GetProperties())
+            {
                 //  Get all public properties
-                if ( info.CanWrite )
+                if (info.CanWrite)
                 {
                     // Get all writable public properties
-                    foreach( object attribute in info.GetCustomAttributes( false ) )
-                    {   
+                    foreach (object attribute in info.GetCustomAttributes(false))
+                    {
                         //  Get all custom info attributes
                         if (attribute is IContentInfo)
                         {
-                            foreach(var field in content.Fields )
+                            foreach (var field in content.Fields)
                             {
-                                if ( field.Property != info.Name )
+                                if (field.Property != info.Name)
                                     continue;   //  Just skip it
-                                if ( field.Value == null || field.Value == string.Empty )
+                                if (field.Value == null || field.Value == string.Empty)
                                 {
-                                    info.SetValue(loadedControl, null, null );
+                                    info.SetValue(loadedControl, null, null);
                                     break;
                                 }
 
                                 object itemValue = field.Value;
 
-                                switch( field.Type ) 
+                                switch (field.Type)
                                 {
                                     case (int)ContentType.FileUpload:
                                         break;   //  Skip because this is handled internally (appcentre)
                                     case (int)ContentType.ListItemSelect:
                                         #region ContentListType.ListItemSelect
                                         string[] itemArr = itemValue.ToString().Split(',');
-                                        if ( info.PropertyType == typeof(string[]) )
+                                        if (info.PropertyType == typeof(string[]))
                                         {
-                                            info.SetValue(loadedControl, itemArr, null );
+                                            info.SetValue(loadedControl, itemArr, null);
                                             break;
                                         }
                                         if (info.PropertyType == typeof(int[]))
@@ -195,10 +197,10 @@ namespace Sushi.Mediakiwi.Framework.Templates
                                             info.SetValue(loadedControl, Utility.ConvertToIntArray(itemArr), null);
                                             break;
                                         }
-                                        
+
                                         SendNotification("ListItemSelect", loadedControl, info);
                                         break;
-                                        #endregion ContentListType.ListItemSelect
+                                    #endregion ContentListType.ListItemSelect
 
                                     case (int)ContentType.MultiImageSelect:
                                         #region ContentListType.MultiImageSelect
@@ -221,25 +223,25 @@ namespace Sushi.Mediakiwi.Framework.Templates
 
                                         SendNotification("MultiImageSelect", loadedControl, info);
                                         break;
-                                        #endregion ContentListType.ListItemSelect
-                                    
+                                    #endregion ContentListType.ListItemSelect
+
                                     case (int)ContentType.SubListSelect:
                                         #region ContentType.SubListSelect
                                         SubList sublist =
-                                            SubList.GetDeserialized( itemValue.ToString() );
-                                        if ( sublist == null )
+                                            SubList.GetDeserialized(itemValue.ToString());
+                                        if (sublist == null)
                                             break;
-                                        if ( info.PropertyType == typeof(SubList) )
+                                        if (info.PropertyType == typeof(SubList))
                                         {
-                                            info.SetValue(loadedControl, sublist, null );
+                                            info.SetValue(loadedControl, sublist, null);
                                             break;
                                         }
                                         SendNotification("SubListSelect", loadedControl, info);
                                         break;
-                                        #endregion ContentType.SubListSelect
+                                    #endregion ContentType.SubListSelect
                                     case (int)ContentType.FolderSelect:
                                         #region ContentType.FolderSelect
-                                        int folderId = Utility.ConvertToInt( field.Value );
+                                        int folderId = Utility.ConvertToInt(field.Value);
 
                                         Folder folder = null;
                                         if (folderId != 0)
@@ -257,28 +259,28 @@ namespace Sushi.Mediakiwi.Framework.Templates
                                         }
 
                                         //  Choices: int, Sushi.Mediakiwi.Data.Link
-                                        if ( info.PropertyType == typeof(int) )
+                                        if (info.PropertyType == typeof(int))
                                         {
-                                            info.SetValue(loadedControl, folderId, null );
+                                            info.SetValue(loadedControl, folderId, null);
                                             break;
                                         }
 
                                         //  NOTE: Rest is only for ContentInfoSharedAttribute
-                                        if ( attribute is IListContentInfo )
+                                        if (attribute is IListContentInfo)
                                         {
                                             SendNotification("FolderSelect", loadedControl, info);
                                             break;
                                         }
 
-                                        if ( info.PropertyType == typeof(Folder) )
+                                        if (info.PropertyType == typeof(Folder))
                                         {
-                                            info.SetValue(loadedControl, folder, null );
+                                            info.SetValue(loadedControl, folder, null);
                                             break;
                                         }
                                         SendNotification("FolderSelect", loadedControl, info);
 
                                         break;
-                                        #endregion ContentType.FolderSelect
+                                    #endregion ContentType.FolderSelect
                                     case (int)ContentType.Button:
                                         if (info.PropertyType == typeof(bool))
                                         {
@@ -302,7 +304,7 @@ namespace Sushi.Mediakiwi.Framework.Templates
                                     case (int)ContentType.Date:
                                     case (int)ContentType.DateTime:
                                         #region ContentType.DateTime
-                                        
+
                                         DateTime dtResult;
 
                                         long newDt;
@@ -314,7 +316,7 @@ namespace Sushi.Mediakiwi.Framework.Templates
                                         }
                                         else
                                         {
-                                            if (DateTime.TryParse(itemValue.ToString(), cultureInfo, System.Globalization.DateTimeStyles.None, out dtResult))
+                                            if (DateTime.TryParseExact(itemValue.ToString(), dateInfo.DateTimeFormatShort, dateInfo.Culture, System.Globalization.DateTimeStyles.None, out dtResult))
                                             {
                                                 dtResult = ConvertDateTimeToLocal(loadedControl, dtResult);
                                                 info.SetValue(loadedControl, dtResult, null);
@@ -326,10 +328,10 @@ namespace Sushi.Mediakiwi.Framework.Templates
                                         }
                                         break;
 
-                                        #endregion ContentType.DateTime
+                                    #endregion ContentType.DateTime
                                     case (int)ContentType.PageSelect:
                                         #region ContentType.PageSelect
-                                        int pageId = Utility.ConvertToInt( field.Value );
+                                        int pageId = Utility.ConvertToInt(field.Value);
 
                                         //  Choices: int, Sushi.Mediakiwi.Data.Link
                                         if (info.PropertyType == typeof(int))
@@ -338,7 +340,7 @@ namespace Sushi.Mediakiwi.Framework.Templates
                                             break;
                                         }
 
-                                        if ( pageId != 0 )
+                                        if (pageId != 0)
                                         {
                                             Page page = null;
 
@@ -360,14 +362,14 @@ namespace Sushi.Mediakiwi.Framework.Templates
                                                 break;
                                             }
 
-                                            if ( info.PropertyType == typeof(Page) )
+                                            if (info.PropertyType == typeof(Page))
                                             {
-                                                info.SetValue(loadedControl, page, null );
+                                                info.SetValue(loadedControl, page, null);
                                                 break;
                                             }
-                                            if ( info.PropertyType == typeof(string) )
+                                            if (info.PropertyType == typeof(string))
                                             {
-                                                info.SetValue(loadedControl, page.HRef, null );
+                                                info.SetValue(loadedControl, page.HRef, null);
                                                 break;
                                             }
 
@@ -375,11 +377,11 @@ namespace Sushi.Mediakiwi.Framework.Templates
                                         }
 
                                         break;
-                                        #endregion ContentType.PageSelect
+                                    #endregion ContentType.PageSelect
                                     case (int)ContentType.Hyperlink:
                                         #region ContentType.Hyperlink
-                                        int hyperlink = Utility.ConvertToInt( field.Value );
-                                        
+                                        int hyperlink = Utility.ConvertToInt(field.Value);
+
                                         //if ( hyperlink == 0 && field.Value != "0" )
                                         //{
                                         //    //  This could be the old system, so for now
@@ -396,7 +398,7 @@ namespace Sushi.Mediakiwi.Framework.Templates
                                         //    //    Sushi.Mediakiwi.Data.Page page = null;
                                         //    //    if (link.PageId.HasValue)
                                         //    //        page = Sushi.Mediakiwi.Data.Page.SelectOne(link.PageId.Value);
-                                        
+
                                         //    //    if ( page == null ||!page.IsPublished )
                                         //    //        link2 = null;
                                         //    //    else
@@ -408,44 +410,44 @@ namespace Sushi.Mediakiwi.Framework.Templates
                                         //}
                                         //else
                                         //{
-                                            //  Choices: int, Sushi.Mediakiwi.Data.Link
-                                            if ( info.PropertyType == typeof(int) )
-                                            {
-                                                info.SetValue(loadedControl, hyperlink, null );
-                                                break;
-                                            }
+                                        //  Choices: int, Sushi.Mediakiwi.Data.Link
+                                        if (info.PropertyType == typeof(int))
+                                        {
+                                            info.SetValue(loadedControl, hyperlink, null);
+                                            break;
+                                        }
 
-                                            //  NOTE: Rest is only for ContentInfoSharedAttribute
-                                            if (attribute is IListContentInfo)
-                                                break;
+                                        //  NOTE: Rest is only for ContentInfoSharedAttribute
+                                        if (attribute is IListContentInfo)
+                                            break;
 
-                                            if ( info.PropertyType == typeof(Link) )
-                                            {
+                                        if (info.PropertyType == typeof(Link))
+                                        {
                                             Link link = Link.SelectOne(hyperlink);
-                                                info.SetValue(loadedControl, link, null );
-                                                break;
-                                            }
+                                            info.SetValue(loadedControl, link, null);
+                                            break;
+                                        }
                                         //}
                                         SendNotification("Hyperlink", loadedControl, info);
 
                                         break;
-                                        #endregion ContentType.Hyperlink
+                                    #endregion ContentType.Hyperlink
                                     case (int)ContentType.Binary_Image:
                                         #region Binary_Image
-                                        int imageId = Utility.ConvertToInt( itemValue.ToString() );
+                                        int imageId = Utility.ConvertToInt(itemValue.ToString());
                                         if (imageId == 0)
                                         {
                                             info.SetValue(loadedControl, null, null);
                                             break;
                                         }
 
-                                        Image image = Image.SelectOne(imageId );
-                                        if ( image == null )
+                                        Image image = Image.SelectOne(imageId);
+                                        if (image == null)
                                             break;
 
-                                        if ( info.PropertyType == typeof(int) )
+                                        if (info.PropertyType == typeof(int))
                                         {
-                                            info.SetValue(loadedControl, imageId, null );
+                                            info.SetValue(loadedControl, imageId, null);
                                             break;
                                         }
 
@@ -456,37 +458,37 @@ namespace Sushi.Mediakiwi.Framework.Templates
                                             break;
                                         }
 
-                                        if ( info.PropertyType == typeof(string) )
+                                        if (info.PropertyType == typeof(string))
                                         {
-                                            info.SetValue(loadedControl, image.Path, null );
+                                            info.SetValue(loadedControl, image.Path, null);
                                             break;
                                         }
-                                        if ( info.PropertyType == typeof(Image) )
+                                        if (info.PropertyType == typeof(Image))
                                         {
-                                            info.SetValue(loadedControl, image, null );
+                                            info.SetValue(loadedControl, image, null);
                                             break;
                                         }
 
                                         SendNotification("Binary_Image", loadedControl, info);
 
                                         break;
-                                        #endregion Binary_Image
+                                    #endregion Binary_Image
                                     case (int)ContentType.Binary_Document:
                                         #region Binary_Document
-                                        int documentId = Utility.ConvertToInt( itemValue.ToString() );
+                                        int documentId = Utility.ConvertToInt(itemValue.ToString());
                                         if (documentId == 0)
                                         {
                                             info.SetValue(loadedControl, null, null);
                                             break;
                                         }
 
-                                        Document document = Document.SelectOne(documentId );
-                                        if ( document == null )
+                                        Document document = Document.SelectOne(documentId);
+                                        if (document == null)
                                             break;
 
-                                        if ( info.PropertyType == typeof(int) )
+                                        if (info.PropertyType == typeof(int))
                                         {
-                                            info.SetValue(loadedControl, documentId, null );
+                                            info.SetValue(loadedControl, documentId, null);
                                             break;
                                         }
 
@@ -497,26 +499,26 @@ namespace Sushi.Mediakiwi.Framework.Templates
                                             break;
                                         }
 
-                                        if ( info.PropertyType == typeof(string) )
+                                        if (info.PropertyType == typeof(string))
                                         {
-                                            info.SetValue(loadedControl, document.Path, null );
+                                            info.SetValue(loadedControl, document.Path, null);
                                             break;
                                         }
-                                        if ( info.PropertyType == typeof(Document) )
+                                        if (info.PropertyType == typeof(Document))
                                         {
-                                            info.SetValue(loadedControl, document, null );
+                                            info.SetValue(loadedControl, document, null);
                                             break;
                                         }
                                         SendNotification("Binary_Document", loadedControl, info);
                                         break;
-                                        #endregion Binary_Document
+                                    #endregion Binary_Document
                                     case (int)ContentType.RichText:
 
-                                        if (attribute is IListContentInfo) 
+                                        if (attribute is IListContentInfo)
                                         {
                                         }
                                         //else
-                                            //itemValue = Data.Utility.ApplyRichtextLinks(rlink.Site, itemValue.ToString());
+                                        //itemValue = Data.Utility.ApplyRichtextLinks(rlink.Site, itemValue.ToString());
 
                                         if (attribute is IContentInfo)
                                         {
@@ -525,7 +527,7 @@ namespace Sushi.Mediakiwi.Framework.Templates
                                         }
 
                                         info.SetValue(loadedControl, itemValue, null);
-                                        
+
                                         break;
 
                                     case (int)ContentType.TextArea:
@@ -572,7 +574,7 @@ namespace Sushi.Mediakiwi.Framework.Templates
                                             info.SetValue(loadedControl, Utility.ConvertToDecimalNullable(itemValue), null);
 
                                         break;
-                                            
+
                                     default:
                                         try
                                         {
@@ -606,14 +608,14 @@ namespace Sushi.Mediakiwi.Framework.Templates
             return inDateTime;
         }
 
-        private static void SendNotification( string type, object loadedControl, System.Reflection.PropertyInfo info )
+        private static void SendNotification(string type, object loadedControl, System.Reflection.PropertyInfo info)
         {
-            Notification.InsertOne("Internal Wim error", NotificationType.Error, 
-                string.Format("Wrong type set for {0}<br/>Currently set: {1} for control: {2}", type, info.PropertyType.ToString(), loadedControl.GetType().ToString() ) 
+            Notification.InsertOne("Internal Wim error", NotificationType.Error,
+                string.Format("Wrong type set for {0}<br/>Currently set: {1} for control: {2}", type, info.PropertyType.ToString(), loadedControl.GetType().ToString())
                 );
         }
 
 
 
-	}
+    }
 }

@@ -103,7 +103,7 @@ namespace Sushi.Mediakiwi.UI
                 return;
             }
 
-            _Console.SetDateFormat();
+            await _Console.SetDateFormatAsync();
 
             bool forcelogin = 
                 //_Console.Request.Path.Equals($"{Data.Environment.Current.RelativePath}/login", StringComparison.CurrentCultureIgnoreCase)

@@ -74,20 +74,5 @@ namespace Sushi.Mediakiwi.Data
                 return WimServerConfiguration.Instance.Is_Local_Development;
             }
         }
-
-        /// <summary>
-        /// Set the datepicker format, options 'nl' (EU) or 'en' (GB)
-        /// </summary>
-        public static string FORM_DATEPICKER
-        {
-            get
-            {
-                if (string.IsNullOrWhiteSpace(WimServerConfiguration.Instance.Datepicker_Language))
-                {
-                    return "EN";
-                }
-                return WimServerConfiguration.Instance.Datepicker_Language;
-            }
-        }
     }
 }

@@ -1,4 +1,3 @@
-using Microsoft.Extensions.Primitives;
 using Sushi.Mediakiwi.Data;
 using System;
 using System.Globalization;
@@ -80,6 +79,9 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
         /// <param name="isEditMode">if set to <c>true</c> [is edit mode].</param>
         public void SetCandidate(Field field, bool isEditMode)
         {
+            // Get formatting information for dates
+            var dateInfo = Common.GetDateInformation();
+
             if (Property != null && Property.PropertyType == typeof(CustomData))
             {
                 SetContentContainer(field);
@@ -96,7 +98,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                         {
                             //  Previous WIM versions
                             DateTime tmp;
-                            if (DateTime.TryParse(field.Value, Console.DateCulture, DateTimeStyles.None, out tmp))
+                            if (DateTime.TryParseExact(field.Value, dateInfo.DateFormatShort, dateInfo.Culture, DateTimeStyles.None, out tmp))
                             {
                                 m_Candidate = tmp;
                             }
@@ -135,7 +137,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                     {
                         string candidate = Console.Form(ID);
                         DateTime tmp;
-                        if (DateTime.TryParse(candidate, Console.DateCulture, DateTimeStyles.None, out tmp))
+                        if (DateTime.TryParseExact(candidate, dateInfo.DateFormatShort, dateInfo.Culture, DateTimeStyles.None, out tmp))
                         {
                             m_Candidate = tmp;
                         }
@@ -175,7 +177,7 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                 //if (Console.CurrentList.Option_ConvertUTCToLocalTime && m_Candidate.Value.Kind != DateTimeKind.Local)
                 //    m_Candidate = AppCentre.Data.Supporting.LocalDateTime.GetDate(m_Candidate.Value, Console.CurrentListInstance.wim.CurrentSite, true);
 
-                OutputText = m_Candidate.Value.ToString(Console.DateFormat, Console.DateCulture);
+                OutputText = m_Candidate.Value.ToString(dateInfo.DateFormatShort, dateInfo.Culture);
             }
 
             //  Inherited content section
@@ -185,14 +187,14 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                 {
                     //  Previous WIM versions
                     DateTime tmp;
-                    if (DateTime.TryParse(field.InheritedValue, Console.DateCulture, DateTimeStyles.None, out tmp))
+                    if (DateTime.TryParseExact(field.InheritedValue, dateInfo.DateFormatShort, dateInfo.Culture, DateTimeStyles.None, out tmp))
                     {
-                        InhertitedOutputText = tmp.ToString(Console.DateFormat, Console.DateCulture);
+                        InhertitedOutputText = tmp.ToString(dateInfo.DateFormatShort, dateInfo.Culture);
                     }
                 }
                 else
                 {
-                    InhertitedOutputText = new DateTime(long.Parse(field.InheritedValue)).ToString(Console.DateFormat, Console.DateCulture);
+                    InhertitedOutputText = new DateTime(long.Parse(field.InheritedValue)).ToString(dateInfo.DateFormatShort, dateInfo.Culture);
                 }
             }
         }
@@ -214,6 +216,9 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
         /// <returns></returns>
         public Field WriteCandidate(WimControlBuilder build, bool isEditMode, bool isRequired, bool isCloaked)
         {
+            // Get formatting information for dates
+            var dateInfo = Common.GetDateInformation();
+
             SetWriteEnvironment();
 
             IsCloaked = isCloaked;
@@ -252,15 +257,14 @@ namespace Sushi.Mediakiwi.Framework.ContentInfoItem
                 #region Element creation
 
                 StringBuilder element = new StringBuilder();
-
-                var format = m_Candidate.HasValue ? m_Candidate.Value.ToString(Console.DateFormat, Console.DateCulture) : string.Empty;
+                var format = m_Candidate.HasValue ? m_Candidate.Value.ToString(dateInfo.DateFormatShort, dateInfo.Culture) : string.Empty;
                 var validClass = IsValid(isRequired) ? string.Empty : " error";
                 var postbackClass = AutoPostBack ? " postBack" : string.Empty;
-                var dateFormat = Console.DateFormat.ToLowerInvariant();
+                var dateFormat = dateInfo.DateFormatShort.ToLowerInvariant();
                 var hiddenClass = IsCloaked ? " hidden" : null;
                 var setValue = (IsCloaked ? "" : InputPostText);
 
-                element.AppendFormat(Console.DateCulture, $"<input class=\"date datepicker{validClass}{postbackClass}{hiddenClass}\" name=\"{ID}\"  type=\"text\" id=\"{ID}\" maxlength=\"10\" value=\"{format}\" placeholder=\"{dateFormat}\"/>{setValue}");
+                element.AppendFormat(dateInfo.Culture, $"<input class=\"date datepicker{validClass}{postbackClass}{hiddenClass}\" name=\"{ID}\"  type=\"text\" id=\"{ID}\" maxlength=\"10\" value=\"{format}\" placeholder=\"{dateFormat}\"/>{setValue}");
 
                 #endregion Element creation
 

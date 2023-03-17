@@ -62,9 +62,9 @@ namespace Sushi.Mediakiwi.Data.Configuration
         public string Portal_Path { get; set; }
 
         /// <summary>
-        /// Can be set to NL or EN, any invalid option will default to EN
+        /// This will be used as FallBack culture whenever a Site Culture is not available
         /// </summary>
-        public string Datepicker_Language { get; set; }
+        public string Datepicker_Culture { get; set; }
 
         public bool Sql_Install_Enabled { get; set; }
         public bool Sql_Install_Actions_Enabled { get; set; }

@@ -1,4 +1,5 @@
 ﻿using Sushi.Mediakiwi.Data.Configuration;
+using Sushi.Mediakiwi.Data.Globalization;
 using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
@@ -350,34 +351,69 @@ namespace Sushi.Mediakiwi
             get { return "/"; }
         }
 
+
         /// <summary>
-        /// Returns all information regarding formatting and displaying dates
-        /// This is based on the appsetting <c>Datepicker_Language</c>
+        /// Returns all information regarding formatting and displaying dates. Will get the culture code (ie 'en-GB') from <c>Datepicker_Culture</c>
         /// </summary>
         /// <returns></returns>
-        public static (System.Globalization.CultureInfo culture, string dateFormat, string dateTimeFormat, string dateFormatShort, string dateTimeFormatShort) GetDateInformation()
+        public static DateFormatSettings GetDateInformation()
         {
-            if (Data.CommonConfiguration.FORM_DATEPICKER.Equals("nl", StringComparison.CurrentCultureIgnoreCase))
-            {
-                return (
-                    new System.Globalization.CultureInfo("nl-NL"),
-                    NL_DATE,
-                    NL_DATETIME,
-                    NL_SHORT_DATE,
-                    NL_SHORT_DATETIME
-                );
-            }
-            else
-            {
-                return (
-                  new System.Globalization.CultureInfo("en-GB"),
-                  EN_DATE,
-                  EN_DATETIME,
-                  EN_SHORT_DATE,
-                  EN_SHORT_DATETIME
-                );
+            var culture = "en-GB";
 
+            if (string.IsNullOrWhiteSpace(WimServerConfiguration.Instance.Datepicker_Culture) == false)
+            {
+                culture = WimServerConfiguration.Instance.Datepicker_Culture;
             }
+
+            return GetDateInformation(culture);
+        }
+
+        /// <summary>
+        /// Returns all information regarding formatting and displaying dates
+        /// </summary>
+        /// <param name="site">The site settings determine the dateformatting. Falls back to the setting from <c>Datepicker_Culture</c> when not available</param>
+        /// <returns></returns>
+        public static DateFormatSettings GetDateInformation(Data.Site site)
+        {
+            var culture = "en-GB";
+
+            if (string.IsNullOrWhiteSpace(site?.Culture) == false)
+            {
+                culture = site.Culture;
+            }
+            else if (string.IsNullOrWhiteSpace(WimServerConfiguration.Instance.Datepicker_Culture) == false)
+            {
+                culture = WimServerConfiguration.Instance.Datepicker_Culture;
+            }
+
+            return GetDateInformation(culture);
+        }
+
+        /// <summary>
+        /// Returns all information regarding formatting and displaying dates
+        /// </summary>
+        /// <param name="cultureCode">The culture code (ie 'en-GB') for which to get the date- and timeformatting. Falls back to the setting from <c>Datepicker_Culture</c> when left empty</param>
+        /// <returns></returns>
+        public static DateFormatSettings GetDateInformation(string cultureCode)
+        {
+            var culture = new System.Globalization.CultureInfo("en-GB");
+
+
+            if (string.IsNullOrWhiteSpace(cultureCode) == false)
+            {
+                culture = new System.Globalization.CultureInfo(cultureCode);
+            }
+            else if (string.IsNullOrWhiteSpace(WimServerConfiguration.Instance.Datepicker_Culture) == false)
+            {
+                culture = new System.Globalization.CultureInfo(WimServerConfiguration.Instance.Datepicker_Culture);
+            }
+
+            return new DateFormatSettings()
+            {
+                Culture = culture,
+                DateFormatShort = culture.DateTimeFormat.ShortDatePattern,
+                DateTimeFormatShort = $"{culture.DateTimeFormat.ShortDatePattern} {culture.DateTimeFormat.ShortTimePattern}",
+            };
         }
 
         /// <summary>

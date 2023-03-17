@@ -22,9 +22,9 @@ namespace Sushi.Mediakiwi.Data
         /// <param name="value">The value.</param>
         public Field(string property, ContentType type, string value)
         {
-            this.Type = (int)type;
-            this.Property = property;
-            this.Value = value;
+            Type = (int)type;
+            Property = property;
+            Value = value;
         }
 
         /// <summary>
@@ -35,9 +35,9 @@ namespace Sushi.Mediakiwi.Data
         /// <param name="value">The value.</param>
         public Field(string property, int type, string value)
         {
-            this.Type = type;
-            this.Property = property;
-            this.Value = value;
+            Type = type;
+            Property = property;
+            Value = value;
         }
 
         /// <summary>
@@ -77,28 +77,10 @@ namespace Sushi.Mediakiwi.Data
             {
                 if (!string.IsNullOrEmpty(Value))
                 {
-                    var dateInfo = Mediakiwi.Common.GetDateInformation();
                     long ticks;
                     if (Utility.IsNumeric(Value, out ticks))
                     {
                         return new DateTime(ticks);
-                    }
-                    else
-                    {
-                        try
-                        {
-                            DateTime dt;
-                            if (DateTime.TryParse(Value, dateInfo.culture, System.Globalization.DateTimeStyles.None, out dt))
-                            {
-                                return dt;
-                            }
-
-                            return DateTime.MinValue;
-                        }
-                        catch (Exception ex)
-                        {
-                            throw new Exception($"VALUE: '{Value}' - {ex.Message}");
-                        }
                     }
                 }
             }

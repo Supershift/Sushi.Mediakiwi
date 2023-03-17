@@ -1282,12 +1282,16 @@ namespace Sushi.Mediakiwi.Framework.Presentation
         {
             string datepicker = string.Empty;
             var lang = "en";
-            if (CommonConfiguration.FORM_DATEPICKER.Equals("nl", StringComparison.CurrentCultureIgnoreCase))
+            if (CommonConfiguration.DATEPICKER_CULTURE.Contains("nl", StringComparison.CurrentCultureIgnoreCase))
             {
-                lang = CommonConfiguration.FORM_DATEPICKER.ToLowerInvariant();
+                lang = "nl";
                 datepicker = $@"<script type=""text/javascript"" src=""{FolderVersion("scripts")}jquery-ui-datepicker-nl.js?v={FileVersion}""></script>";
             }
-
+            else if (CommonConfiguration.DATEPICKER_CULTURE.Contains("gb", StringComparison.CurrentCultureIgnoreCase))
+            {
+                lang = "gb";
+                datepicker = $@"<script type=""text/javascript"" src=""{FolderVersion("scripts")}jquery-ui-datepicker-gb.js?v={FileVersion}""></script>";
+            }
             string vuelibrary = string.Empty;
             if (asyncEnabled)
                 vuelibrary = $@"<script type=""text/javascript"" src=""{FolderVersion("app/dist")}bundle.js?v={FileVersion}""></script>";
@@ -1340,7 +1344,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation
                 return $@"
 		<link rel=""stylesheet"" href=""{FolderVersion("compiled")}bundel.min.css?v={FileVersion}"" type=""text/css"" media=""all"" />
         " + styleAddition + $@"
-        <script type=""text/javascript"" src=""{FolderVersion("compiled")}bundel.nl.min.js?v={FileVersion}""></script>
+        <script type=""text/javascript"" src=""{FolderVersion("compiled")}bundel.{lang}.min.js?v={FileVersion}""></script>
 		<script type=""text/javascript"" src=""{FolderVersion("scripts/tinymce")}tinymce.min.js?v={FileVersion}""></script>
         <link rel=""stylesheet"" href=""{FolderVersion("scripts/dist/css")}select2.css?v={FileVersion}"" type=""text/css"" media=""all"" />" + vuelibrary;
             }

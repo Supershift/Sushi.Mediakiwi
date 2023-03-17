@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
 using Sushi.Mediakiwi.Data;
+using Sushi.Mediakiwi.Data.Globalization;
 using Sushi.Mediakiwi.Framework;
 using Sushi.Mediakiwi.Framework.Api;
 using System;
@@ -246,22 +247,27 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
         public Dictionary<string, object> JsonForm { get; set; }
 
 
-        internal void SetDateFormat()
+        internal async Task SetDateFormatAsync()
         {
-            var dateInfo = Common.GetDateInformation();
-            DateCulture = dateInfo.culture;
-            DateFormat = dateInfo.dateFormat;
-            DateTimeFormat = dateInfo.dateTimeFormat;
-            DateFormatShort = dateInfo.dateFormatShort;
-            DateTimeFormatShort = dateInfo.dateTimeFormatShort;
+            DateFormatSettings = new Data.Globalization.DateFormatSettings();
+            // Do we have a list with a site connected ?
+            if (CurrentList?.SiteID.GetValueOrDefault(0) > 0)
+            {
+                DateFormatSettings = Common.GetDateInformation(await Site.SelectOneAsync(CurrentList.SiteID.Value));
+            }
+            // Or a page with a site connected ?
+            else if (CurrentPage?.Site?.ID > 0)
+            {
+                DateFormatSettings = Common.GetDateInformation(CurrentPage.Site);
+            }
+            // Or a default site set up in environment ?
+            else if (CurrentEnvironment?.DefaultSiteID.GetValueOrDefault(0) > 0)
+            {
+                DateFormatSettings = Common.GetDateInformation(await Site.SelectOneAsync(CurrentEnvironment.DefaultSiteID.Value));
+            }
         }
 
-        public string DateFormat { get; private set; }
-        public string DateTimeFormat { get; private set; }
-        public string DateFormatShort { get; private set; }
-        public string DateTimeFormatShort { get; private set; }
-        public string GlobalisationCulture { get; private set; }
-        public CultureInfo DateCulture { get; private set; }
+        public Data.Globalization.DateFormatSettings DateFormatSettings { get; private set; }
 
         /// <summary>
         /// Adds the trace.

@@ -35,14 +35,14 @@ namespace Sushi.Mediakiwi.Data
 
                 if (error != "")
                     error += "<br/><br/>";
-             
+
                 error += string.Format(@"<b>Error:</b><br/>{0}
 <br/><br/><b>Source:</b><br/>{1}
 <br/><br/><b>Method:</b><br/>{2}
 <br/><br/><b>Stacktrace:</b>{3}
 "
                         , ex.Message, ex.Source, ex.TargetSite, stackTrace);
-              
+
                 ex = ex.InnerException;
             }
             return error;
@@ -295,32 +295,53 @@ namespace Sushi.Mediakiwi.Data
         /// </summary>
         /// <param name="propertyContainerFrom">The property container from.</param>
         /// <param name="propertyContainerTo">The property container to.</param>
-        /// <param name="reflectNull">if set to <c>true</c> [reflect null].</param>
+        /// <param name="reflectNull">If set to <c>true</c> the target will receive NULL values. If set to <c>false</c>, source values that are NULL are skipped.</param>
         public static void ReflectProperty(object propertyContainerFrom, object propertyContainerTo, bool reflectNull)
         {
-            if (propertyContainerFrom == null || propertyContainerTo == null)
-                return;
+            ReflectProperty(propertyContainerFrom, propertyContainerTo, reflectNull, string.Empty, string.Empty);
+        }
 
-            var dateInfo = Mediakiwi.Common.GetDateInformation();
+        /// <summary>
+        /// Copy get; set; properties with reflected Name and PropertyType.
+        /// </summary>
+        /// <param name="propertyContainerFrom">The property container from.</param>
+        /// <param name="propertyContainerTo">The property container to.</param>
+        /// <param name="reflectNull">If set to <c>true</c> the target will receive NULL values. If set to <c>false</c>, source values that are NULL are skipped.</param>
+        /// <param name="dateCultureFrom">The source dateformat culture (for converting from String -> DateTime)</param>
+        /// <param name="dateCultureTo">The target dateformat culture (for converting from DateTime -> String)</param>
+        public static void ReflectProperty(object propertyContainerFrom, object propertyContainerTo, bool reflectNull, string dateCultureFrom, string dateCultureTo)
+        {
+            var dateInfoTo = Mediakiwi.Common.GetDateInformation(dateCultureTo);
+
+            if (propertyContainerFrom == null || propertyContainerTo == null)
+            {
+                return;
+            }
 
             System.Reflection.PropertyInfo[] propertiesFrom = propertyContainerFrom.GetType().GetProperties();
             System.Reflection.PropertyInfo[] propertiesTo = propertyContainerTo.GetType().GetProperties();
 
             foreach (System.Reflection.PropertyInfo from in propertiesFrom)
             {
-                if (!from.CanRead) continue;
+                if (!from.CanRead)
+                {
+                    continue;
+                }
+
                 foreach (System.Reflection.PropertyInfo to in propertiesTo)
                 {
                     if (from.Name == to.Name)
                     {
-                        if (!to.CanWrite) break;
+                        if (!to.CanWrite)
+                        {
+                            break;
+                        }
 
                         object fromPropertyValue = from.GetValue(propertyContainerFrom, null);
 
-                        if (fromPropertyValue == null)
+                        if (fromPropertyValue == null && reflectNull)
                         {
-                            if (reflectNull)
-                                to.SetValue(propertyContainerTo, null, null);
+                            to.SetValue(propertyContainerTo, null, null);
                             continue;
                         }
 
@@ -357,7 +378,7 @@ namespace Sushi.Mediakiwi.Data
                             {
                                 //  Datetime --> String
                                 DateTime dt = (DateTime)fromPropertyValue;
-                                to.SetValue(propertyContainerTo, dt.ToString(dateInfo.dateFormat, dateInfo.culture), null);
+                                to.SetValue(propertyContainerTo, dt.ToString(dateInfoTo.DateFormatShort, dateInfoTo.Culture), null);
                             }
                             else if (from.PropertyType == typeof(decimal))
                             {
@@ -373,12 +394,18 @@ namespace Sushi.Mediakiwi.Data
                                 //  Boolean --> String
                                 bool tmp = Convert.ToBoolean(fromPropertyValue);
                                 if (tmp)
+                                {
                                     to.SetValue(propertyContainerTo, "1", null);
+                                }
                                 else
+                                {
                                     to.SetValue(propertyContainerTo, "0", null);
+                                }
                             }
                             else if (from.PropertyType == typeof(int) || from.PropertyType == typeof(Guid))
+                            {
                                 to.SetValue(propertyContainerTo, fromPropertyValue.ToString(), null);
+                            }
                         }
 
                         #endregion ? --> String
@@ -392,9 +419,13 @@ namespace Sushi.Mediakiwi.Data
                                 //  String[] --> String[]
 
                                 if (fromPropertyValue == null)
+                                {
                                     to.SetValue(propertyContainerTo, null, null);
+                                }
                                 else
+                                {
                                     to.SetValue(propertyContainerTo, fromPropertyValue.ToString().Split(','), null);
+                                }
                             }
                             if (to.PropertyType == typeof(int[]))
                             {
@@ -414,7 +445,7 @@ namespace Sushi.Mediakiwi.Data
                             if (to.PropertyType == typeof(DateTime))
                             {
                                 //  String --> Datetime
-                                to.SetValue(propertyContainerTo, ConvertWimDateTime(fromPropertyValue), null);
+                                to.SetValue(propertyContainerTo, ConvertWimDateTime(fromPropertyValue, dateCultureFrom), null);
                             }
                             else if (to.PropertyType == typeof(decimal))
                             {
@@ -432,10 +463,24 @@ namespace Sushi.Mediakiwi.Data
                                 if (!string.IsNullOrEmpty(tmp1))
                                 {
                                     bool tmp;
-                                    if (tmp1 == "1") tmp = true;
-                                    else if (tmp1 == "0") tmp = false;
-                                    else
-                                        tmp = Convert.ToBoolean(fromPropertyValue);
+                                    switch (tmp1)
+                                    {
+                                        default:
+                                            {
+                                                tmp = Convert.ToBoolean(fromPropertyValue);
+                                            }
+                                            break;
+                                        case "1":
+                                            {
+                                                tmp = true;
+                                            }
+                                            break;
+                                        case "0":
+                                            {
+                                                tmp = false;
+                                            }
+                                            break;
+                                    }
 
                                     to.SetValue(propertyContainerTo, tmp, null);
                                 }
@@ -462,7 +507,9 @@ namespace Sushi.Mediakiwi.Data
                         else if (from.PropertyType == typeof(decimal?) && to.PropertyType == typeof(decimal))
                         {
                             if (fromPropertyValue != null)
+                            {
                                 to.SetValue(propertyContainerTo, ((decimal?)fromPropertyValue).Value, null);
+                            }
                         }
                         else if (from.PropertyType == typeof(decimal) && to.PropertyType == typeof(decimal?))
                         {
@@ -471,7 +518,9 @@ namespace Sushi.Mediakiwi.Data
                         else if (from.PropertyType == typeof(int?) && to.PropertyType == typeof(int))
                         {
                             if (fromPropertyValue != null)
+                            {
                                 to.SetValue(propertyContainerTo, ((int?)fromPropertyValue).Value, null);
+                            }
                         }
                         else if (from.PropertyType == typeof(int) && to.PropertyType == typeof(int?))
                         {
@@ -480,7 +529,9 @@ namespace Sushi.Mediakiwi.Data
                         else if (from.PropertyType == typeof(long?) && to.PropertyType == typeof(long))
                         {
                             if (fromPropertyValue != null)
+                            {
                                 to.SetValue(propertyContainerTo, ((long?)fromPropertyValue).Value, null);
+                            }
                         }
                         else if (from.PropertyType == typeof(long) && to.PropertyType == typeof(long?))
                         {
@@ -489,7 +540,9 @@ namespace Sushi.Mediakiwi.Data
                         else if (from.PropertyType == typeof(DateTime?) && to.PropertyType == typeof(DateTime))
                         {
                             if (fromPropertyValue != null)
+                            {
                                 to.SetValue(propertyContainerTo, ((DateTime?)fromPropertyValue).Value, null);
+                            }
                         }
                         else if (from.PropertyType == typeof(DateTime) && to.PropertyType == typeof(DateTime?))
                         {
@@ -1113,18 +1166,30 @@ namespace Sushi.Mediakiwi.Data
         }
 
         /// <summary>
-        /// Convert a Wim DateTime which is based on the nl-NL culture.
+        /// Convert an object containing DateTime information base on the <c>Datepicker_Culture</c> culture.
         /// </summary>
-        /// <param name="candidate"></param>
-        /// <returns></returns>
+        /// <param name="candidate">The object to convert to a valid DateTime</param>
         public static DateTime ConvertWimDateTime(object candidate)
         {
+            return ConvertWimDateTime(candidate, string.Empty);
+        }
+
+        /// <summary>
+        /// Convert an object containing DateTime information base on the supplied culture.
+        /// </summary>
+        /// <param name="candidate">The object to convert to a valid DateTime</param>
+        /// <param name="dateFormatCulture">The Culture to use as DateFormat. Falls back to the setting from <c>Datepicker_Culture</c> when left empty</param>
+        /// <returns></returns>
+        public static DateTime ConvertWimDateTime(object candidate, string dateFormatCulture)
+        {
+            var dateInfo = Mediakiwi.Common.GetDateInformation(dateFormatCulture);
+
             if (candidate == null || candidate.ToString().Length == 0)
             {
                 return DateTime.MinValue;
             }
 
-            if (DateTime.TryParse(candidate.ToString(), WimCultureInfo, DateTimeStyles.None, out DateTime dt))
+            if (DateTime.TryParseExact(candidate.ToString(), dateInfo.DateTimeFormatShort, dateInfo.Culture, DateTimeStyles.None, out DateTime dt))
             {
                 return dt;
             }
@@ -2029,7 +2094,7 @@ namespace Sushi.Mediakiwi.Data
         {
             return GetSerialized(content.GetType(), content);
         }
-        
+
         static bool m_HasCheckedSettings;
         static Wim.Data.Interfaces.IConfigurationSetting m_Settings;
 
