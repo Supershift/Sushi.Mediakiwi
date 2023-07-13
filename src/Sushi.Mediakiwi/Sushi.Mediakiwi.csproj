@@ -2,11 +2,11 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <Version>7.17.6</Version>
+    <Version>7.18.0</Version>
     <Product>Mediakiwi</Product>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <Company>Supershift</Company>
-    <Authors>Marc Molenwijk, Jean Paul Kommers, Mark Rienstra, Mark de Vries</Authors>
+    <Authors>Marc Molenwijk, Mark Rienstra, Mark de Vries, Bart van der Drift, Jean-Paul Kommers</Authors>
     <Copyright>2005-2022 Supershift</Copyright>
     <Description>Rapid Portal Development Framework including a Headless Content Management System component build and optimized for Microsoft Azure (cloud)</Description>
     <PackageProjectUrl>https://mediakiwi.atlassian.net/wiki/spaces/CORE/overview</PackageProjectUrl>
