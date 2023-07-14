@@ -11,7 +11,7 @@ module.exports = function (grunt) {
 
     var src_less = 'styles';
     var dest_less = 'compiled';
-     
+
     var src_css = 'styles';
     var dest_css = 'compiled';
 
@@ -23,9 +23,9 @@ module.exports = function (grunt) {
         cssmin: {
             all: {
                 files: [
-                { expand: true, cwd: src_css, src: ['*.css', '!*.min.css'], dest: dest_css, ext: '.min.css' },
-                { expand: true, cwd: dest_less, src: ['*.css', '!*.min.css'], dest: dest_css, ext: '.min.css' }
-]
+                    { expand: true, cwd: src_css, src: ['*.css', '!*.min.css'], dest: dest_css, ext: '.min.css' },
+                    { expand: true, cwd: dest_less, src: ['*.css', '!*.min.css'], dest: dest_css, ext: '.min.css' }
+                ]
             }
         },
         uglify: {
@@ -34,9 +34,12 @@ module.exports = function (grunt) {
                     { expand: true, cwd: src_js, src: ['*.js', '!*.min.js'], dest: dest_js, ext: '.min.js' }
                 ]
             },
-
-        }
-        ,
+            tinyMce: {
+                files: [
+                    { expand: true, cwd: src_js + "/tinymce/plugins/link", src: ['*.js', '!*.min.js'], dest: src_js + "/tinymce/plugins/link", ext: '.min.js' }
+                ]
+            }
+        },
         copy: {
             all: {
                 files: [
@@ -151,7 +154,7 @@ module.exports = function (grunt) {
             cssmin: { files: [dest_less + '/*.css', src_css + '/*.css'], tasks: ['newer:cssmin:all'] },
             uglify: { files: [src_js + '/*.js'], tasks: ['newer:uglify:all'] },
             copy: { files: [src_js + '/*.js', src_css + '*.min.css'], tasks: ['newer:copy:all'] },
-            concat: { files: [dest_less + '/*.*' ], tasks: ['concat:all'] },
+            concat: { files: [dest_less + '/*.*'], tasks: ['concat:all'] },
 
         }
     });
