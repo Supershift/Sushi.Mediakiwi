@@ -199,7 +199,7 @@ namespace Sushi.Mediakiwi
             }
         }
         public static string STYLE_INCLUDE
-        {   
+        {
             get
             {
                 return WimServerConfiguration.Instance.Stylesheet;
@@ -224,9 +224,9 @@ namespace Sushi.Mediakiwi
                 return WimServerConfiguration.Instance.Local_File_Path;
             }
         }
-     
+
         public static bool DISABLE_CACHE
-        {  
+        {
             get
             {
                 return WimServerConfiguration.Instance.Disable_Caching;
@@ -250,7 +250,8 @@ namespace Sushi.Mediakiwi
         /// </summary>
         public static decimal Version
         {
-            get {
+            get
+            {
                 Version version = Assembly.GetExecutingAssembly().GetName().Version;
                 return Convert.ToDecimal(string.Format("{0}{2}{1}", version.Major, version.Minor, System.Threading.Thread.CurrentThread.CurrentCulture.NumberFormat.NumberDecimalSeparator));
             }
@@ -291,6 +292,14 @@ namespace Sushi.Mediakiwi
             get
             {
                 return WimServerConfiguration.Instance.Wiki.EnableHelpOnPages;
+            }
+        }
+
+        public static bool DEBUG_SCRIPTS
+        {
+            get
+            {
+                return WimServerConfiguration.Instance.Debug_Scripts;
             }
         }
     }

@@ -86,7 +86,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation
             m_container = container;
             m_Placeholders = placeholders;
             m_Callbacks = callbacks;
-           
+
 
             if (builder == null)
             {
@@ -713,7 +713,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation
             {
                 if (m_container.CurrentListInstance.wim.HeaderScript == null)
                     m_container.CurrentListInstance.wim.HeaderScript = string.Empty;
-                
+
 
                 m_container.CurrentListInstance.wim.HeaderScript += $@"
         <link type=""text/css"" rel=""stylesheet"" href=""{FolderVersion("scripts/codemirror")}codemirror.min.css?v={FileVersion}"" />
@@ -950,7 +950,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation
 	</head>
 	<body class=""" + (builder.Canvas.LeftNavigation.Hide ? "full" : null) + addedBodyClass
                     + @""">
-    <form id=""uxForm"" method=""post"" action="""+url+ @""" enctype=""multipart/form-data"">
+    <form id=""uxForm"" method=""post"" action=""" + url + @""" enctype=""multipart/form-data"">
         <input type=""hidden"" name=""autopostback"" id=""autopostback"" value="""" />
 		<section id=""bodySection"">
 			<header id=""bodyHeader"">
@@ -1060,7 +1060,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation
         }
 
 
-  
+
 
         /// <summary>
         /// Gets the login wrapper.
@@ -1189,7 +1189,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation
 
         async Task<(bool success, bool hasError)> SetLoginAsync(Beta.GeneratedCms.Console container, string username, string password, bool rememberMe)
         {
-            bool hasError = false; 
+            bool hasError = false;
             if (string.IsNullOrWhiteSpace(password) || string.IsNullOrWhiteSpace(username))
             {
                 return (false, false);
@@ -1261,8 +1261,8 @@ namespace Sushi.Mediakiwi.Framework.Presentation
             if (!string.IsNullOrEmpty(CommonConfiguration.STYLE_INCLUDE))
             {
                 var custom = string.Format("<link rel=\"stylesheet\" href=\"{0}\" type=\"text/css\" media=\"all\" />"
-                    , (CommonConfiguration.STYLE_INCLUDE.StartsWith("http", StringComparison.OrdinalIgnoreCase) 
-                        ? CommonConfiguration.STYLE_INCLUDE 
+                    , (CommonConfiguration.STYLE_INCLUDE.StartsWith("http", StringComparison.OrdinalIgnoreCase)
+                        ? CommonConfiguration.STYLE_INCLUDE
                         : m_container.AddApplicationPath(CommonConfiguration.STYLE_INCLUDE)
                         ));
 
@@ -1296,9 +1296,9 @@ namespace Sushi.Mediakiwi.Framework.Presentation
             if (asyncEnabled)
                 vuelibrary = $@"<script type=""text/javascript"" src=""{FolderVersion("app/dist")}bundle.js?v={FileVersion}""></script>";
 
-#if DEBUG
-
-            return $@"
+            if (CommonConfiguration.DEBUG_SCRIPTS)
+            {
+                return $@"
 		<link rel=""stylesheet"" href=""{FolderVersion("compiled")}mediakiwiForm.min.css?v={FileVersion}"" type=""text/css"" media=""all"" />
 		<link rel=""stylesheet"" href=""{FolderVersion("styles")}stylesFlatv2.css?v={FileVersion}"" type=""text/css"" media=""all"" />
 		<link rel=""stylesheet"" href=""{FolderVersion("styles")}mainMenuFlatv2.css?v={FileVersion}"" type=""text/css""  media=""all"" />
@@ -1328,31 +1328,30 @@ namespace Sushi.Mediakiwi.Framework.Presentation
         <link rel=""stylesheet"" href=""{FolderVersion("scripts/dist/css")}select2.css?v={FileVersion}"" type=""text/css"" media=""all"" />
 		<script type=""text/javascript"" src=""{FolderVersion("scripts")}select2.js?v={FileVersion}""></script>
 		<script type=""text/javascript"" src=""{FolderVersion("scripts")}jquery-nicescroll.js?v={FileVersion}""></script>" + vuelibrary;
-
-#else
-          if (lang == "en")
+            }
+            else
             {
-                return $@"
+
+                if (lang == "en")
+                {
+                    return $@"
 		<link rel=""stylesheet"" href=""{FolderVersion("compiled")}bundel.min.css?v={FileVersion}"" type=""text/css"" media=""all"" />
         " + styleAddition + $@"
         <script type=""text/javascript"" src=""{FolderVersion("compiled")}bundel.en.min.js?v={FileVersion}""></script>
 		<script type=""text/javascript"" src=""{FolderVersion("scripts/tinymce")}tinymce.min.js?v={FileVersion}""></script>
         <link rel=""stylesheet"" href=""{FolderVersion("scripts/dist/css")}select2.css?v={FileVersion}"" type=""text/css"" media=""all"" />" + vuelibrary;
-            }
-            else
-            {
-                return $@"
+                }
+                else
+                {
+                    return $@"
 		<link rel=""stylesheet"" href=""{FolderVersion("compiled")}bundel.min.css?v={FileVersion}"" type=""text/css"" media=""all"" />
         " + styleAddition + $@"
         <script type=""text/javascript"" src=""{FolderVersion("compiled")}bundel.{lang}.min.js?v={FileVersion}""></script>
 		<script type=""text/javascript"" src=""{FolderVersion("scripts/tinymce")}tinymce.min.js?v={FileVersion}""></script>
         <link rel=""stylesheet"" href=""{FolderVersion("scripts/dist/css")}select2.css?v={FileVersion}"" type=""text/css"" media=""all"" />" + vuelibrary;
+                }
             }
-  
-#endif
-
         }
-
 
         public string LogoUrl(Beta.GeneratedCms.Console container)
         {
@@ -1362,7 +1361,6 @@ namespace Sushi.Mediakiwi.Framework.Presentation
             }
             return container.AddApplicationPath(CommonConfiguration.LOGO_URL, true);
         }
-
 
         CustomData _UserData;
         CustomData UserData
