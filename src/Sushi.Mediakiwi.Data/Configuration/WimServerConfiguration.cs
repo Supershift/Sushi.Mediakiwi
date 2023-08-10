@@ -160,6 +160,11 @@ namespace Sushi.Mediakiwi.Data.Configuration
         public AuthenticationConfiguration Authentication { get; set; }
 
         public WikiConfiguration Wiki { get; set; } = new WikiConfiguration();
+
+        /// <summary>
+        /// Enable to load al script individually on the page instead of the bundel.js
+        /// </summary>
+        public bool Debug_Scripts { get; set; }
     }
 
     public class AuthenticationConfiguration
