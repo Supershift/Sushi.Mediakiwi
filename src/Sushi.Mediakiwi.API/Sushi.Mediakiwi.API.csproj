@@ -2,12 +2,12 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-	<Version>7.18.0</Version>
+	<Version>7.18.1</Version>
     <Authors>Mark Rienstra</Authors>
     <Company>Supershift</Company>
     <Product>Mediakiwi API</Product>
     <Description>Contains all API's needed to communicate with the MediaKiwi Headless CMS.</Description>
-    <Copyright>2005-2022 Supershift</Copyright>
+    <Copyright>2005-2023 Supershift</Copyright>
     <PackageProjectUrl>https://mediakiwi.atlassian.net/wiki/spaces/CORE/overview</PackageProjectUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <RepositoryUrl>https://github.com/Supershift/Sushi.Mediakiwi</RepositoryUrl>

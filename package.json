@@ -1,0 +1,9 @@
+{
+  "name": "sushi-mediakiwi",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dotnet:run:demonstration": "cd src/Sushi.Mediakiwi.Demonstration && dotnet build && dotnet watch run",
+    "dotnet:run:website": "cd src/Sushi.Mediakiwi.Website && dotnet build && dotnet watch run"
+  }
+}
