@@ -12,6 +12,7 @@ namespace Sushi.Mediakiwi.Demonstration.Templates.List
     {
         public int ID { get; set; }
         public string Title { get; set; }
+        public DateTime? LastSaved {get;set;}
 
         public static List<DemoObject1> FetchAll()
         {
@@ -21,7 +22,8 @@ namespace Sushi.Mediakiwi.Demonstration.Templates.List
                 tmp.Add(new DemoObject1()
                 {
                     ID = i,
-                    Title = $"Demo1Title {i}"
+                    Title = $"Demo1Title {i}",
+                    LastSaved = i % 2 == 0 ? DateTime.UtcNow : null
                 });
             }
 
@@ -34,7 +36,8 @@ namespace Sushi.Mediakiwi.Demonstration.Templates.List
             return new DemoObject1()
             {
                 ID = id,
-                Title = $"Demo1Title {id}"
+                Title = $"Demo1Title {id}",
+                LastSaved = DateTime.UtcNow
             };
         }
     }
@@ -71,7 +74,8 @@ namespace Sushi.Mediakiwi.Demonstration.Templates.List
         private async Task DemoList1_ListSearch(ComponentListSearchEventArgs arg)
         {
             wim.ListDataColumns.Add(new ListDataColumn("ID", nameof(DemoObject1.ID), ListDataColumnType.UniqueIdentifier));
-            wim.ListDataColumns.Add(new ListDataColumn("Title", nameof(DemoObject1.Title), ListDataColumnType.HighlightPresent));
+            wim.ListDataColumns.Add(new ListDataColumn("Title", nameof(DemoObject1.Title)));
+            wim.ListDataColumns.Add(new ListDataColumn("Saved", nameof(DemoObject1.LastSaved), ListDataColumnType.Default));
 
             var allItems = DemoObject1.FetchAll();
 
