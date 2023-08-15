@@ -5,7 +5,9 @@ using Sushi.Mediakiwi.Interfaces;
 using Sushi.Mediakiwi.UI;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace Sushi.Mediakiwi.Framework.Presentation
@@ -762,6 +764,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation
                 string layerBody = @"
     <form id=""uxForm"" method=""post"" action=""" + url + @""" enctype=""multipart/form-data"">
         <input type=""hidden"" name=""autopostback"" id=""autopostback"" value="""" />
+        " + getBodyAddition(container) + @"
 		<section id=""popupContent"">
 	        <article>
                 " + section + @"
@@ -791,7 +794,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation
 	<head>
 		" + layerHead + @"
 	</head>
-	<body class=""popupPage" + addedBodyClass + @""">
+	<body class=""popupPage" + addedBodyClass + @""">    
     " + layerBody + @"
 	</body>
 </html>";
@@ -922,9 +925,10 @@ namespace Sushi.Mediakiwi.Framework.Presentation
 		<![endif]-->
 		<meta http-equiv=""Content-Type"" content=""text/html; charset=UTF-8"" />
 	</head>
-	<body class=""" + (builder.Canvas.LeftNavigation.Hide ? "full" : null) + addedBodyClass
+	<body class=""" + (builder.Canvas.LeftNavigation.Hide ? "full" : null) + addedBodyClass 
                             + @""">
     <form id=""uxForm"" method=""post"" action=""" + url + @""" enctype=""multipart/form-data"">
+        " + getBodyAddition(container) + @"
         <input type=""hidden"" name=""autopostback"" id=""autopostback"" value="""" />
 		<footer class=""bodyFooter""></footer><script type=""text/javascript"">window.location.replace('" + m_container.ClientRedirectionUrl + @"');</script>
     </form>
@@ -951,6 +955,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation
 	<body class=""" + (builder.Canvas.LeftNavigation.Hide ? "full" : null) + addedBodyClass
                     + @""">
     <form id=""uxForm"" method=""post"" action=""" + url + @""" enctype=""multipart/form-data"">
+    " + getBodyAddition(container) + @"
         <input type=""hidden"" name=""autopostback"" id=""autopostback"" value="""" />
 		<section id=""bodySection"">
 			<header id=""bodyHeader"">
@@ -1351,6 +1356,16 @@ namespace Sushi.Mediakiwi.Framework.Presentation
         <link rel=""stylesheet"" href=""{FolderVersion("scripts/dist/css")}select2.css?v={FileVersion}"" type=""text/css"" media=""all"" />" + vuelibrary;
                 }
             }
+        }
+
+        public string getBodyAddition(Beta.GeneratedCms.Console container)
+        {
+            var additionalBodyHtml = string.Empty;
+
+            // Add the complete portal url to the body
+            additionalBodyHtml += @$"<input value=""{container?.PortalUrl}"" type=""hidden"" id=""portalbaseurl"" name=""portalbaseurl"" />";
+
+            return additionalBodyHtml;
         }
 
         public string LogoUrl(Beta.GeneratedCms.Console container)

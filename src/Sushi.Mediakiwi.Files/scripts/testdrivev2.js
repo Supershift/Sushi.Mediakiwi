@@ -997,6 +997,8 @@ $(document).ready(function () {
 
 //tinymce.get('textarea.rte').getBody().setAttribute('contenteditable', false);
 
+
+
 function showLink() {
     var dom = tinymce.activeEditor.dom;
     var selectedElm = tinymce.activeEditor.selection.getNode();
@@ -1008,6 +1010,13 @@ function showLink() {
         url += "&item=" + linkID;
         // console.log(url);
     }
+
+    // get the prefix
+    var urlBasePath = mediakiwi.getPortalBaseURL();   
+    if (urlBasePath) {
+        url = urlBasePath + url;
+    }
+
     var title = 'Add link';
     $.colorbox({ href: url, title: title, iframe: true, fixed: true, width: "790px", height: "360px", transition: "elastic", scrolling: false });
 }
@@ -1096,6 +1105,19 @@ mediakiwi.moveGridScrollbarX = function (x, index) {
     mediakiwi.GridScrollbar.x = x;
     mediakiwi.GridScrollbar.index = index;
 };
+
+
+/**
+ * Returns the portal base url including the extra portal path
+ * Example https://localhost:52767/webcontent
+ */
+mediakiwi.getPortalBaseURL = function () {
+    var elm = document.querySelector("#portalbaseurl");
+    if (elm && elm.value) {
+        return elm.value;
+    }
+    return "/";
+}
 
 mediakiwi.async = [];
 mediakiwi.registerASyncReadyCallBack = function (name, f) {
