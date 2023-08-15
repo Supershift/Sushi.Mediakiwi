@@ -1363,7 +1363,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation
             var additionalBodyHtml = string.Empty;
 
             // Add the complete portal url to the body
-            additionalBodyHtml += @$"<input value=""{container.PortalUrl}"" type=""hidden"" id=""portalbaseurl"" name=""portalbaseurl"" />";
+            additionalBodyHtml += @$"<input value=""{container?.PortalUrl}"" type=""hidden"" id=""portalbaseurl"" name=""portalbaseurl"" />";
 
             return additionalBodyHtml;
         }
