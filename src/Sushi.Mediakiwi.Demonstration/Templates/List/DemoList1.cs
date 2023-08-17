@@ -1,47 +1,10 @@
-﻿using Sushi.Mediakiwi.Data;
+﻿using Sushi.Mediakiwi.Demonstration.Templates.Entities;
 using Sushi.Mediakiwi.Framework;
 using Sushi.Mediakiwi.Framework.ContentListItem;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Sushi.Mediakiwi.Demonstration.Templates.List
 {
-    public class DemoObject1
-    {
-        public int ID { get; set; }
-        public string Title { get; set; }
-        public DateTime? LastSaved {get;set;}
-
-        public static List<DemoObject1> FetchAll()
-        {
-            List<DemoObject1> tmp = new List<DemoObject1>();
-            for (int i = 1; i < 200; i++)
-            {
-                tmp.Add(new DemoObject1()
-                {
-                    ID = i,
-                    Title = $"Demo1Title {i}",
-                    LastSaved = i % 2 == 0 ? DateTime.UtcNow : null
-                });
-            }
-
-            return tmp;
-        }
-
-
-        public static DemoObject1 FetchSingle(int id)
-        {
-            return new DemoObject1()
-            {
-                ID = id,
-                Title = $"Demo1Title {id}",
-                LastSaved = DateTime.UtcNow
-            };
-        }
-    }
-
     public class DemoList1 : ComponentListTemplate
     {
         DemoObject1 Implement;
@@ -51,11 +14,14 @@ namespace Sushi.Mediakiwi.Demonstration.Templates.List
             ListLoad += DemoList1_ListLoad;
             ListInit += DemoList1_ListInit;
             ListSave += DemoList1_ListSave;
+            wim.OpenInEditMode = true;
         }
 
         private async Task DemoList1_ListSave(ComponentListEventArgs arg)
         {
+            Implement.Text = this.Text;
 
+            await Implement.SaveAsync().ConfigureAwait(false);
         }
 
         private async Task DemoList1_ListInit()
@@ -67,7 +33,7 @@ namespace Sushi.Mediakiwi.Demonstration.Templates.List
         {
             await wim.Page.Resources.AddAsync(ResourceLocation.HEADER, ResourceType.JAVASCRIPT, "/js/dingesHeader1LOAD.js", true, true);
 
-            Implement = DemoObject1.FetchSingle(e.SelectedKey);
+            Implement = await DemoObject1.FetchSingle(e.SelectedKey);
             Utils.ReflectProperty(Implement, this);
         }
 
@@ -75,9 +41,9 @@ namespace Sushi.Mediakiwi.Demonstration.Templates.List
         {
             wim.ListDataColumns.Add(new ListDataColumn("ID", nameof(DemoObject1.ID), ListDataColumnType.UniqueIdentifier));
             wim.ListDataColumns.Add(new ListDataColumn("Title", nameof(DemoObject1.Title)));
-            wim.ListDataColumns.Add(new ListDataColumn("Saved", nameof(DemoObject1.LastSaved), ListDataColumnType.Default));
+            wim.ListDataColumns.Add(new ListDataColumn("Saved", nameof(DemoObject1.Created), ListDataColumnType.Default));
 
-            var allItems = DemoObject1.FetchAll();
+            var allItems = await DemoObject1.FetchAll();
 
             // Resources test
             await wim.Page.Resources.AddAsync(ResourceLocation.HEADER, ResourceType.JAVASCRIPT, "/js/dingesHeader1.js", true, true);
@@ -91,12 +57,15 @@ namespace Sushi.Mediakiwi.Demonstration.Templates.List
 
         [TextLine("Title")]
         public string Title { get; set; }
-        
+
         [Binary_Image("Select image")]
         public int ImageId { get; set; }
 
-        [DataList(typeof(DemoList2))]
-        public DataList Items2 { get; set; }
+        [RichText("Rich", 0)]
+        public string Text { get; set; }
+
+        //[DataList(typeof(DemoList2))]
+        //public DataList Items2 { get; set; }
 
         [Button("Test button", OpenInPopupLayer = true, PopupLayerHeight = "400px", PopupLayerWidth = "80%", PopupLayerSize = LayerSize.Normal, PopupLayerScrollBar = true, PopupTitle = "Test popup", ListInPopupLayer = "d4721c3a-bf3b-4192-a394-767bbf4784a6")]
         public bool Button_Test { get; set; }
