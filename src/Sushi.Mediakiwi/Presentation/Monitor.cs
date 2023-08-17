@@ -1329,7 +1329,7 @@ namespace Sushi.Mediakiwi.Framework.Presentation
 		<script type=""text/javascript"" src=""{FolderVersion("scripts")}slip.js?v={FileVersion}""></script>
 		<script type=""text/javascript"" src=""{FolderVersion("scripts")}fixedBar.js?v={FileVersion}""></script>
         <script type=""text/javascript"" src=""{FolderVersion("scripts")}testdrivev2.js?v={FileVersion}""></script>
-		<script type=""text/javascript"" src=""{FolderVersion("scripts/tinymce")}tinymce.js?v={FileVersion}""></script>
+        <script type=""text/javascript"" src=""{FolderVersion("scripts/tinymce")}tinymce.min.js?v={FileVersion}""></script>
         <link rel=""stylesheet"" href=""{FolderVersion("scripts/dist/css")}select2.css?v={FileVersion}"" type=""text/css"" media=""all"" />
 		<script type=""text/javascript"" src=""{FolderVersion("scripts")}select2.js?v={FileVersion}""></script>
 		<script type=""text/javascript"" src=""{FolderVersion("scripts")}jquery-nicescroll.js?v={FileVersion}""></script>" + vuelibrary;
