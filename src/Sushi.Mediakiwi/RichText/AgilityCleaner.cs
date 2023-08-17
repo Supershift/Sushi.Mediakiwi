@@ -26,7 +26,9 @@ namespace Sushi.Mediakiwi.RichRext
         /// </summary>
         readonly string[][] m_AllowedElementAttributes = new string[][] { 
             //new string[] { "div", "class" }, 
-            new string[] { "a", "href" },
+            new string[] { "a", "href", },
+            new string[] { "a", "title" },
+            new string[] { "a", "target" },
             new string[] { "ul", "style", "list-style-type: circle;" },
             new string[] { "ul", "style", "list-style-type: disc;" },
             new string[] { "ul", "style", "list-style-type: square;" },
@@ -215,20 +217,25 @@ namespace Sushi.Mediakiwi.RichRext
         }
 
         /// <summary>
-        /// Nodes the parser.
+        /// Parse the nodes
         /// </summary>
         /// <param name="nodes">The nodes.</param>
         void NodeParser(HtmlNodeCollection nodes)
         {
+            // Loop through the node collection
             for (int index = 0; index < nodes.Count; index++)
             {
+                // Get the current node
                 var node = nodes[index];
 
+                // Recursive execute this function if the node has children
                 if (node.HasChildNodes)
                     NodeParser(node.ChildNodes);
 
+                // Check the node type for Element or Comment. The former must be parsed, the latter must be removed.
                 if (node.NodeType == HtmlNodeType.Element)
                 {
+                    // Remove the element if its not available in the allowedElements
                     var found = (from item in m_AllowedElements where item == node.Name select item).FirstOrDefault();
 
                     if (string.IsNullOrEmpty(found))
@@ -238,14 +245,23 @@ namespace Sushi.Mediakiwi.RichRext
                     }
                     else
                     {
+                        // Find the options based on the node name (Multiple results can occur, item[0] being the node name)
                         var attributeOptions = (from item in m_AllowedElementAttributes where item[0] == node.Name select item);
+
+                        // Remove all of them if not allowed
                         if (attributeOptions.Count() == 0)
+                        {
                             node.Attributes.RemoveAll();
+                        }
                         else
                         {
+                            // Loop through each of the attributes of the current node
                             for (int index2 = 0; index2 < node.Attributes.Count; index2++)
                             {
+                                // Get the checklist for the current attribute (item[1] being the attribute name)
                                 var checkList = (from item in attributeOptions where item[1] == node.Attributes[index2].Name select item).ToList();
+
+                                // Remove if node checklists where found
                                 if (checkList == null || checkList.Count() == 0)
                                 {
                                     node.Attributes[index2].Remove();
@@ -253,6 +269,8 @@ namespace Sushi.Mediakiwi.RichRext
                                 }
                                 else
                                 {
+                                    // Validate if the there is only one checklist
+                                    // or if the checlist has only 1 item present (being the attribute name)
                                     if (checkList.Count == 1 && checkList[0].Count() == 2)
                                     {
                                         //  Do Nothing
@@ -261,6 +279,7 @@ namespace Sushi.Mediakiwi.RichRext
                                     {
                                         try
                                         {
+                                            // Validate the attribute value if present in the m_AllowedElementAttributes (item[2] being the attr value)
                                             var findType = (from item in checkList where item[2] == node.Attributes[index2].Value select item).FirstOrDefault();
                                             if (findType == null)
                                             {
@@ -268,7 +287,8 @@ namespace Sushi.Mediakiwi.RichRext
                                                 index2--;
                                             }
                                         }
-                                        catch (Exception ex) {
+                                        catch (Exception ex)
+                                        {
                                             throw new Exception("Expected a third attributes validation tag (m_AlloweddElementAttributes)", ex);
                                         }
                                     }
