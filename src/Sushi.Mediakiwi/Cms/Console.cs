@@ -246,6 +246,29 @@ namespace Sushi.Mediakiwi.Beta.GeneratedCms
 
         public Dictionary<string, object> JsonForm { get; set; }
 
+        /// <summary>
+        /// Set the DateFormatSettings Sync for Reflection purposes
+        /// </summary>
+        internal void SetDateFormat()
+        {
+            DateFormatSettings = new Data.Globalization.DateFormatSettings();
+            // Do we have a list with a site connected ?
+            if (CurrentList?.SiteID.GetValueOrDefault(0) > 0)
+            {
+                DateFormatSettings = Common.GetDateInformation(Site.SelectOne(CurrentList.SiteID.Value));
+            }
+            // Or a page with a site connected ?
+            else if (CurrentPage?.Site?.ID > 0)
+            {
+                DateFormatSettings = Common.GetDateInformation(CurrentPage.Site);
+            }
+            // Or a default site set up in environment ?
+            else if (CurrentEnvironment?.DefaultSiteID.GetValueOrDefault(0) > 0)
+            {
+                DateFormatSettings = Common.GetDateInformation(Site.SelectOne(CurrentEnvironment.DefaultSiteID.Value));
+            }
+        }
+
 
         internal async Task SetDateFormatAsync()
         {
