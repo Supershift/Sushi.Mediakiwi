@@ -2948,9 +2948,9 @@ namespace Sushi.Mediakiwi.UI
                 return null;
             }
 
-            if (container?.DateFormatSettings == null)
+            if (container?.DateFormatSettings == null || container?.DateFormatSettings?.Culture == null)
             {
-                Task.Run(async () => await container.SetDateFormatAsync().ConfigureAwait(false));
+                container.SetDateFormat();
             }
 
             if (candidate is DateTime)
