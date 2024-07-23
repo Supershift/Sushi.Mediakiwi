@@ -223,6 +223,11 @@ namespace Sushi.Mediakiwi.AppCentre.Data.Implementation
                 }
             }
 
+            if (currentAsset.ID == 0 && m_Implement.ID > 0)
+            {
+                currentAsset.ID = m_Implement.ID;
+            }
+
             string info;
             if (currentAsset.IsImage)
             {
