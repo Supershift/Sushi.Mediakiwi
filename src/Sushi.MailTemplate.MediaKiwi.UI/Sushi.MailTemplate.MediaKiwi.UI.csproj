@@ -2,11 +2,11 @@
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
-    <Version>3.1.0</Version>
+    <Version>8.2.0</Version>
     <Authors>Supershift B.V.</Authors>
     <Company>Supershift B.V.</Company>
     <Description>Provides UI classes to use Sushi.Mailtemplate in Sushi.MediaKiwi.</Description>
-	<Copyright>2019-2024 Supershift B.V.</Copyright>
+	<Copyright>2019-2025 Supershift B.V.</Copyright>
 	<PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/Supershift/Sushi.MailTemplate</PackageProjectUrl>
     <RepositoryUrl>https://github.com/Supershift/Sushi.MailTemplate</RepositoryUrl>

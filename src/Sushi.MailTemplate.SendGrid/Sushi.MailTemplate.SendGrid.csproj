@@ -10,7 +10,7 @@
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>3.1.0</Version>
+    <Version>8.2.0</Version>
 	<Authors>Supershift B.V.</Authors>
 	<Company>Supershift B.V.</Company>
     <Description>This module sends e-mails using SendGrid by providing it with a Wim.Module.MailTemplate.MailTemplate</Description>
