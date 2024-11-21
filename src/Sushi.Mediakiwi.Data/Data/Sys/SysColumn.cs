@@ -1,5 +1,5 @@
-﻿using Sushi.MicroORM;
-using Sushi.MicroORM.Mapping;
+﻿using Sushi.Mediakiwi.MicroORM;
+using Sushi.Mediakiwi.MicroORM.Mapping;
 using System;
 using System.Collections.Generic;
 using System.Text;

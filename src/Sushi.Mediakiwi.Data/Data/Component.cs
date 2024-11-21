@@ -1,5 +1,5 @@
 ﻿using Sushi.Mediakiwi.Data.MicroORM;
-using Sushi.MicroORM.Mapping;
+using Sushi.Mediakiwi.MicroORM.Mapping;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -548,7 +548,7 @@ namespace Sushi.Mediakiwi.Data
 
             var filter = connector.CreateQuery();
             filter.Add(x => x.PageID, pageID);
-            filter.AddOrder(x => x.SortOrder, Sushi.MicroORM.SortOrder.ASC);
+            filter.AddOrder(x => x.SortOrder, Mediakiwi.MicroORM.SortOrder.ASC);
 
             var result = await connector.FetchAllAsync(filter).ConfigureAwait(false);
             foreach (var component in result)

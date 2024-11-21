@@ -1,6 +1,6 @@
 ﻿using Sushi.Mediakiwi.Data.MicroORM;
-using Sushi.MicroORM;
-using Sushi.MicroORM.Mapping;
+using Sushi.Mediakiwi.MicroORM;
+using Sushi.Mediakiwi.MicroORM.Mapping;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -524,8 +524,8 @@ namespace Sushi.Mediakiwi.Data
 
             if (listTypeID.HasValue && listTypeID.Value > 0)
             {
-                filter.AddOrder(x => x.ListTypeID, Sushi.MicroORM.SortOrder.ASC);
-                filter.AddOrder(x => x.SortOrder, Sushi.MicroORM.SortOrder.ASC);
+                filter.AddOrder(x => x.ListTypeID, Mediakiwi.MicroORM.SortOrder.ASC);
+                filter.AddOrder(x => x.SortOrder, Mediakiwi.MicroORM.SortOrder.ASC);
 
                 if (showEmptyTypes)
                 {

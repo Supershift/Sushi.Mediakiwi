@@ -48,9 +48,8 @@ namespace Sushi.Mediakiwi.Test.ORM
             Assert.IsTrue(_TestObj.ID > 0);
 
             // MJ: check if saved db record is ok            
-            var expected = new Likeness<PropertySearchColumn, PropertySearchColumn>(_TestObj);
             PropertySearchColumn db = PropertySearchColumn.SelectOne(_TestObj.ID);
-            Assert.AreEqual(expected, db);
+            Assert.AreEqual(_TestObj, db);
 
             if (_TestObj.ID > 0)
             {
@@ -65,9 +64,8 @@ namespace Sushi.Mediakiwi.Test.ORM
             Assert.IsTrue(_TestObjAsync.ID > 0);
 
             // MJ: check if saved db record is ok            
-            var expected = new Likeness<PropertySearchColumn, PropertySearchColumn>(_TestObjAsync);
             PropertySearchColumn db = PropertySearchColumn.SelectOne(_TestObjAsync.ID);
-            Assert.AreEqual(expected, db);
+            Assert.AreEqual(_TestObjAsync, db);
 
             if (_TestObjAsync.ID > 0)
             {

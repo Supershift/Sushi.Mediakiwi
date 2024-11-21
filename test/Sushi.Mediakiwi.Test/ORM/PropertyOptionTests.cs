@@ -45,9 +45,8 @@ namespace Sushi.Mediakiwi.Test.ORM
             _TestObj.SortOrderID = _TestObj.ID;
 
             // MJ: check if saved db record is ok            
-            var expected = new Likeness<PropertyOption, PropertyOption>(_TestObj);
             PropertyOption db = PropertyOption.SelectOne(_TestObj.ID);
-            Assert.AreEqual(expected, db);
+            Assert.AreEqual(_TestObj, db);
 
             if (_TestObj.ID > 0)
             {
@@ -65,9 +64,8 @@ namespace Sushi.Mediakiwi.Test.ORM
             _TestObjAsync.SortOrderID = _TestObjAsync.ID;
 
             // MJ: check if saved db record is ok            
-            var expected = new Likeness<PropertyOption, PropertyOption>(_TestObjAsync);
             PropertyOption db = PropertyOption.SelectOne(_TestObjAsync.ID);
-            Assert.AreEqual(expected, db);
+            Assert.AreEqual(_TestObjAsync, db);
 
             if (_TestObjAsync.ID > 0)
             {

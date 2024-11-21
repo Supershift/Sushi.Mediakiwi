@@ -1,6 +1,6 @@
 ﻿using Sushi.Mediakiwi.Data.MicroORM;
 using Sushi.Mediakiwi.Framework;
-using Sushi.MicroORM.Mapping;
+using Sushi.Mediakiwi.MicroORM.Mapping;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 

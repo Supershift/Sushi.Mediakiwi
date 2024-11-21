@@ -46,10 +46,9 @@ namespace Sushi.Mediakiwi.Test.ORM
             Assert.IsTrue(_TestObj?.ID > 0);
 
             // MJ: check if saved db record is ok            
-            var expected = new Likeness<MenuItem, MenuItem>(_TestObj);
             var db = MenuItem.SelectAll(_TestObj.MenuID);
             MenuItem ass = (MenuItem)db.Where(x => x.ItemID == _TestObj.ItemID).FirstOrDefault();
-            Assert.AreEqual(expected, ass);
+            Assert.AreEqual(_TestObj, ass);
 
             if (_TestObj.ID > 0)
             {
@@ -64,10 +63,9 @@ namespace Sushi.Mediakiwi.Test.ORM
             Assert.IsTrue(_TestObjAsync?.ID > 0);
 
             // MJ: check if saved db record is ok            
-            var expected = new Likeness<MenuItem, MenuItem>(_TestObjAsync);
             var db = MenuItem.SelectAll(_TestObjAsync.MenuID);
             MenuItem ass = (MenuItem)db.Where(x => x.ItemID == _TestObjAsync.ItemID).FirstOrDefault();
-            Assert.AreEqual(expected, ass);
+            Assert.AreEqual(_TestObjAsync, ass);
 
             if (_TestObjAsync.ID > 0)
             {

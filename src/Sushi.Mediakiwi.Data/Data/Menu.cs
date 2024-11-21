@@ -1,5 +1,5 @@
 ﻿using Sushi.Mediakiwi.Data.MicroORM;
-using Sushi.MicroORM.Mapping;
+using Sushi.Mediakiwi.MicroORM.Mapping;
 using System.Data;
 using System.Threading.Tasks;
 

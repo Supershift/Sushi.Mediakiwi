@@ -43,8 +43,7 @@ namespace Sushi.Mediakiwi.Demonstration
 
             services.AddMediakiwi(Configuration);
             services.AddMediakiwiApi();
-            //services.AddMediakiwiGlobalListSetting<string>("googleSheetsUrl", "Google sheets URL", "The URL of the Google sheets doc representing this list");
-
+            services.AddSushiMailTemplateSendgrid(Configuration.GetSection("SendGridMailerOptions"));
 
             var elasticSettings = new Nest.ConnectionSettings(new Uri(Configuration["ElasticUrl"]))
                 .BasicAuthentication(Configuration["ElasticUsername"], Configuration["ElasticPassword"])
@@ -74,37 +73,15 @@ namespace Sushi.Mediakiwi.Demonstration
             app.UseSwagger();
             app.UseSwaggerUI();
 
-            string[] excludePaths = new string[] { "/api/custom", "/myfiles", "/mkapi", "/api" };
+            string[] excludePaths = ["/api/custom", "/myfiles", "/mkapi", "/api"];
             
             app.UseMediakiwi(excludePaths);
             app.UseMediakiwiApi();
-
+  
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
             });
-
-            // Set Azure Storage account for storing mail queues
-            var emailStorageAccount = Configuration["EmailStorageAccount"];
-            
-            // Set Azure storage account container for storing mail queues
-            var emailBlobContainer = Configuration["EmailBlobContainer"];
-
-            // Set Azure storage queue name for mail
-            var emailQueueName = Configuration["EmailQueueName"];
-
-            // Set Sendgrid API key for sending e-mails
-            var sendGridApiKey = Configuration["SendGridAPIKey"];
-
-            // Hook up the Mailer 
-            if (
-                string.IsNullOrWhiteSpace(emailStorageAccount) == false
-                && string.IsNullOrWhiteSpace(emailBlobContainer) == false
-                && string.IsNullOrWhiteSpace(emailQueueName) == false
-                && string.IsNullOrWhiteSpace(sendGridApiKey) == false)
-            {
-                _ = new Mailer(emailStorageAccount, emailBlobContainer, emailQueueName, sendGridApiKey);
-            }
         }
     }
 }

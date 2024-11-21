@@ -1,0 +1,25 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+	  <TargetFramework>net8.0</TargetFramework>
+	  <Version>3.1.0</Version>
+    <Authors>Supershift B.V.</Authors>
+    <Company>Supershift B.V.</Company>
+    <Description>This module creates mail templates with placeholder logic.</Description>
+    <Copyright>2019-2024 Supershift B.V.</Copyright>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/Supershift/Sushi.MailTemplate</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/Supershift/Sushi.MailTemplate</RepositoryUrl>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile>obj\Debug\Sushi.MailTemplate.xml</DocumentationFile>
+    <OutputPath>bin</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DocumentationFile>obj\Release\Sushi.MailTemplate.xml</DocumentationFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Sushi.Mediakiwi.MicroOrm\Sushi.Mediakiwi.MicroORM.csproj" />
+  </ItemGroup>
+
+</Project>
