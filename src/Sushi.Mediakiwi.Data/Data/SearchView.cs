@@ -1,7 +1,7 @@
 ﻿using Sushi.Mediakiwi.Data.Interfaces;
 using Sushi.Mediakiwi.Data.MicroORM;
-using Sushi.MicroORM;
-using Sushi.MicroORM.Mapping;
+using Sushi.Mediakiwi.MicroORM;
+using Sushi.Mediakiwi.MicroORM.Mapping;
 using System.Threading.Tasks;
 
 namespace Sushi.Mediakiwi.Data

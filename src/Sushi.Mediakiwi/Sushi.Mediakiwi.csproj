@@ -1,13 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
-    <Version>8.1.64</Version>    
+    <TargetFramework>net8.0</TargetFramework>
+    <Version>8.2.0</Version>    
     <Product>Mediakiwi</Product>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <Company>Supershift</Company>
     <Authors>Marc Molenwijk, Jean Paul Kommers, Mark Rienstra, Mark de Vries</Authors>
-    <Copyright>2005-2022 Supershift</Copyright>
+    <Copyright>2005-2025 Supershift</Copyright>
     <Description>Rapid Portal Development Framework including a Headless Content Management System component build and optimized for Microsoft Azure (cloud)</Description>
     <PackageProjectUrl>https://mediakiwi.atlassian.net/wiki/spaces/CORE/overview</PackageProjectUrl>
     <RepositoryUrl>https://github.com/Supershift/Sushi.Mediakiwi</RepositoryUrl>
@@ -319,13 +319,16 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Azure.Storage.Blobs" Version="12.21.0" />
+    <PackageReference Include="Azure.Storage.Blobs" Version="12.23.0" />
     <PackageReference Include="HtmlAgilityPack" Version="1.11.30" />
-    <PackageReference Include="Microsoft.Extensions.Azure" Version="1.2.0" />
-    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="6.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Azure" Version="1.8.0" />
+    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="8.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="8.0.1" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.2" />
     <PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="6.36.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-    <PackageReference Include="System.Configuration.ConfigurationManager" Version="5.0.0" />
+    <PackageReference Include="System.Configuration.ConfigurationManager" Version="8.0.1" />
   </ItemGroup>
 
   <ItemGroup>

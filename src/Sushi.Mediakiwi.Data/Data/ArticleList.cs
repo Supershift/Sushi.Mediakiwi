@@ -1,4 +1,4 @@
-﻿using Sushi.MicroORM.Mapping;
+﻿using Sushi.Mediakiwi.MicroORM.Mapping;
 using System.Data;
 
 namespace Sushi.Mediakiwi.Data

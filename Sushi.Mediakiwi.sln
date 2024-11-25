@@ -34,6 +34,18 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sushi.Mediakiwi.Elastic.UI"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sushi.Mediakiwi.Logic", "src\Sushi.Mediakiwi.Logic\Sushi.Mediakiwi.Logic.csproj", "{C651778F-4720-4978-84ED-E4ED2166FE56}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sushi.Mediakiwi.MicroORM", "src\Sushi.Mediakiwi.MicroOrm\Sushi.Mediakiwi.MicroORM.csproj", "{25CEF479-EBB1-40FF-8535-6313280105D6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sushi.MailTemplate", "src\Sushi.MailTemplate\Sushi.MailTemplate.csproj", "{A88A5525-5A0A-40B7-A228-8B70F5A77159}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sushi.MailTemplate.MediaKiwi.Portal", "src\Sushi.MailTemplate.MediaKiwi.Portal\Sushi.MailTemplate.MediaKiwi.Portal.csproj", "{A3F6C25F-B917-4C27-8ABB-904E0B52A493}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sushi.MailTemplate.SendGrid", "src\Sushi.MailTemplate.SendGrid\Sushi.MailTemplate.SendGrid.csproj", "{93E209E6-939A-4FC0-8338-3BABADA5D639}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sushi.MailTemplate.Tests", "src\Sushi.MailTemplate.Tests\Sushi.MailTemplate.Tests.csproj", "{8117C1E9-B99B-4D76-958F-4CFCD7B49F7E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sushi.MailTemplate.MediaKiwi.UI", "src\Sushi.MailTemplate.MediaKiwi.UI\Sushi.MailTemplate.MediaKiwi.UI.csproj", "{0BC9EB53-FF11-4E06-B50B-9D457479D644}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -84,6 +96,30 @@ Global
 		{C651778F-4720-4978-84ED-E4ED2166FE56}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C651778F-4720-4978-84ED-E4ED2166FE56}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C651778F-4720-4978-84ED-E4ED2166FE56}.Release|Any CPU.Build.0 = Release|Any CPU
+		{25CEF479-EBB1-40FF-8535-6313280105D6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{25CEF479-EBB1-40FF-8535-6313280105D6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{25CEF479-EBB1-40FF-8535-6313280105D6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{25CEF479-EBB1-40FF-8535-6313280105D6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A88A5525-5A0A-40B7-A228-8B70F5A77159}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A88A5525-5A0A-40B7-A228-8B70F5A77159}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A88A5525-5A0A-40B7-A228-8B70F5A77159}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A88A5525-5A0A-40B7-A228-8B70F5A77159}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A3F6C25F-B917-4C27-8ABB-904E0B52A493}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A3F6C25F-B917-4C27-8ABB-904E0B52A493}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A3F6C25F-B917-4C27-8ABB-904E0B52A493}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A3F6C25F-B917-4C27-8ABB-904E0B52A493}.Release|Any CPU.Build.0 = Release|Any CPU
+		{93E209E6-939A-4FC0-8338-3BABADA5D639}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{93E209E6-939A-4FC0-8338-3BABADA5D639}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{93E209E6-939A-4FC0-8338-3BABADA5D639}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{93E209E6-939A-4FC0-8338-3BABADA5D639}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8117C1E9-B99B-4D76-958F-4CFCD7B49F7E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8117C1E9-B99B-4D76-958F-4CFCD7B49F7E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8117C1E9-B99B-4D76-958F-4CFCD7B49F7E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8117C1E9-B99B-4D76-958F-4CFCD7B49F7E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0BC9EB53-FF11-4E06-B50B-9D457479D644}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0BC9EB53-FF11-4E06-B50B-9D457479D644}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0BC9EB53-FF11-4E06-B50B-9D457479D644}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0BC9EB53-FF11-4E06-B50B-9D457479D644}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

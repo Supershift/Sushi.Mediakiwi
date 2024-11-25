@@ -1,6 +1,6 @@
-﻿using Sushi.MicroORM;
-using Sushi.MicroORM.Mapping;
-using Sushi.MicroORM.Supporting;
+﻿using Sushi.Mediakiwi.MicroORM;
+using Sushi.Mediakiwi.MicroORM.Mapping;
+using Sushi.Mediakiwi.MicroORM.Supporting;
 using System;
 using System.Text;
 using System.Threading;

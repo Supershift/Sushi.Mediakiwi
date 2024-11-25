@@ -34,17 +34,17 @@ namespace Sushi.Mediakiwi
         {
             return app.UseWhen((context) =>
             {
-               if (excludePaths != null)
-               {
-                   foreach (var path in excludePaths)
-                   {
-                       var isMatch = context.Request.Path.StartsWithSegments(path, System.StringComparison.InvariantCultureIgnoreCase);
-                       if (isMatch)
-                           return false;
-                   }
-               }
-               return true;
-           },
+                if (excludePaths != null)
+                {
+                    foreach (var path in excludePaths)
+                    {
+                        var isMatch = context.Request.Path.StartsWithSegments(path, System.StringComparison.InvariantCultureIgnoreCase);
+                        if (isMatch)
+                            return false;
+                    }
+                }
+                return true;
+            },
            a => a.UseMiddleware<Portal>()
            );
         }
@@ -53,11 +53,11 @@ namespace Sushi.Mediakiwi
         {
             services.AddAuthentication()
                 .AddScheme<MediaKiwiAuthenticationOptions, MediaKiwiAuthenticationHandler>(AuthenticationDefaults.AuthenticationScheme, null);
-            
+
             services.AddTransient<IPageModule, ExportPageModule>();
             services.AddTransient<Interfaces.ITrailExtension, Logic.WikiTrailExtension>();
             services.AddTransient<OAuth2Logic>();
-            services.AddSingleton(s=>
+            services.AddSingleton(s =>
             {
                 // todo: inject config using options pattern
                 string tenant = Data.Configuration.WimServerConfiguration.Instance?.Authentication?.Aad?.Tenant;
@@ -68,10 +68,10 @@ namespace Sushi.Mediakiwi
             });
 
             // add azure storage services
-            if(azureStorageConnectionString == null)
+            if (azureStorageConnectionString == null)
             {
                 azureStorageConnectionString = configuration.GetConnectionString("azurestore");
-            }    
+            }
             services.AddAzureClients(builder =>
             {
                 // Add a Storage account client

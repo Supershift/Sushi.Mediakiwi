@@ -82,9 +82,8 @@ namespace Sushi.Mediakiwi.Test.ORM
             Assert.IsTrue(_TestObj.ID > 0);
 
             // Check if saved DB record is ok with SemanticComparison
-            var expected = new Likeness<ApplicationRole, ApplicationRole>(_TestObj);
             ApplicationRole db = (ApplicationRole)ApplicationRole.SelectOne(_TestObj.ID);
-            Assert.AreEqual(expected, db);
+            Assert.AreEqual(_TestObj, db);
 
             if (_TestObj.ID > 0)
             {
@@ -99,9 +98,8 @@ namespace Sushi.Mediakiwi.Test.ORM
             Assert.IsTrue(_TestObjAsync.ID > 0);
 
             // Check if saved DB record is ok with SemanticComparison
-            var expected = new Likeness<ApplicationRole, ApplicationRole>(_TestObjAsync);
             var db = await ApplicationRole.SelectOneAsync(_TestObjAsync.ID);
-            Assert.AreEqual(expected, (ApplicationRole)db);
+            Assert.Equals(_TestObjAsync, (ApplicationRole)db);
 
             if (_TestObjAsync.ID > 0)
             {

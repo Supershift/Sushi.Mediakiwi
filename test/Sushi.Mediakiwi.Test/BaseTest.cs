@@ -2,7 +2,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Sushi.Mediakiwi.Data.Caching;
 using Sushi.Mediakiwi.Data.Configuration;
-using Sushi.MicroORM;
+using Sushi.Mediakiwi.MicroORM;
 using System;
 using System.Collections.Concurrent;
 using System.Linq;

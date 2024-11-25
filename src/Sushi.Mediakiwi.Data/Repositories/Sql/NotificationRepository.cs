@@ -8,7 +8,7 @@ namespace Sushi.Mediakiwi.Data.Repositories.Sql
     /// </summary>
     public class NotificationRepository : INotificationRepository
     {
-        private readonly Sushi.MicroORM.Connector<sql.Notification> connector = new Sushi.MicroORM.Connector<sql.Notification>();
+        private readonly Sushi.Mediakiwi.MicroORM.Connector<sql.Notification> connector = new Sushi.Mediakiwi.MicroORM.Connector<sql.Notification>();
         
         public Notification Save(Notification notification)
         {
@@ -139,7 +139,7 @@ namespace Sushi.Mediakiwi.Data.Repositories.Sql
         public sql.Notification[] SelectAll(string group, int selection, int? maxResult)
         {   
             var filter = connector.CreateQuery();
-            filter.AddOrder(x => x.ID, Sushi.MicroORM.SortOrder.DESC);
+            filter.AddOrder(x => x.ID, Mediakiwi.MicroORM.SortOrder.DESC);
             if (maxResult.GetValueOrDefault(0) > 0)
             {
                 filter.MaxResults = maxResult.Value;
@@ -164,7 +164,7 @@ namespace Sushi.Mediakiwi.Data.Repositories.Sql
         public async Task<sql.Notification[]> SelectAllAsync(string group, int selection, int? maxResult)
         {   
             var filter = connector.CreateQuery();
-            filter.AddOrder(x => x.ID, Sushi.MicroORM.SortOrder.DESC);
+            filter.AddOrder(x => x.ID, Mediakiwi.MicroORM.SortOrder.DESC);
             filter.Add(x => x.Group, group);
             filter.Add(x => x.Selection, selection);
             if (maxResult.GetValueOrDefault(0) > 0)

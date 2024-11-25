@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>    
+    <TargetFramework>net8.0</TargetFramework>    
     <UserSecretsId>f68e663d-31b5-4d3b-82e0-bed96bdc7b85</UserSecretsId>
     <RunAnalyzersDuringBuild>false</RunAnalyzersDuringBuild>
   </PropertyGroup>
@@ -12,6 +12,9 @@
    <Compile Remove="BasicAuthenticationHandler.cs" />
  </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Sushi.MailTemplate.MediaKiwi.UI\Sushi.MailTemplate.MediaKiwi.UI.csproj" />
+    <ProjectReference Include="..\Sushi.MailTemplate.SendGrid\Sushi.MailTemplate.SendGrid.csproj" />
+    <ProjectReference Include="..\Sushi.MailTemplate\Sushi.MailTemplate.csproj" />
     <ProjectReference Include="..\Sushi.Mediakiwi.Data.Elastic\Sushi.Mediakiwi.Data.Elastic.csproj" />
     <ProjectReference Include="..\Sushi.Mediakiwi.API\Sushi.Mediakiwi.API.csproj" />
     <ProjectReference Include="..\Sushi.Mediakiwi.Headless\Sushi.Mediakiwi.Headless.csproj" />
@@ -65,10 +68,12 @@
     <Folder Include="wwwroot\Images\" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Sushi.MailTemplate" Version="2.0.0" />
-    <PackageReference Include="Sushi.MailTemplate.MediaKiwi.UI" Version="2.0.0" />
-    <PackageReference Include="Sushi.MailTemplate.SendGrid" Version="2.0.0" />
-    <PackageReference Include="Sushi.MicroORM" Version="2.0.0" />
+    <PackageReference Include="Azure.Storage.Blobs" Version="12.23.0" />
+    <PackageReference Include="Microsoft.Extensions.Azure" Version="1.8.0" />
+    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="8.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="8.0.1" />
+    <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="7.0.0" />
   </ItemGroup>
   <ItemGroup>
     <Compile Update="Properties\Resources.Designer.cs">

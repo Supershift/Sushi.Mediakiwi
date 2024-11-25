@@ -42,8 +42,7 @@ namespace Sushi.Mediakiwi.Test.ORM
 
             var allAssert = RoleRight.SelectAll(_TestObj.RoleID, RoleRightType.List);
             // MJ: check if saved db record is ok            
-            var expected = new Likeness<RoleRight, RoleRight>(_TestObj);
-            Assert.AreEqual(expected, allAssert[0]);
+            Assert.AreEqual(_TestObj, allAssert[0]);
 
             // Delete
             RoleRight.Update(new SubList(), RoleRightType.List, _TestObj.RoleID);
@@ -62,8 +61,7 @@ namespace Sushi.Mediakiwi.Test.ORM
 
             var allAssert = await RoleRight.SelectAllAsync(_TestObjAsync.RoleID, RoleRightType.List);
             // MJ: check if saved db record is ok            
-            var expected = new Likeness<RoleRight, RoleRight>(_TestObjAsync);
-            Assert.AreEqual(expected, allAssert[0]);
+            Assert.AreEqual(_TestObjAsync, allAssert[0]);
 
             // Delete
             await RoleRight.UpdateAsync(new SubList(), RoleRightType.List, _TestObjAsync.RoleID);
@@ -133,10 +131,8 @@ namespace Sushi.Mediakiwi.Test.ORM
             // Check if both record are there
             Assert.IsTrue(allAssert.Length == 2);
             // MJ: check if saved db records are ok            
-            var expected = new Likeness<RoleRight, RoleRight>(_TestObj);            
-            Assert.AreEqual(expected, allAssert[0]);
-            expected = new Likeness<RoleRight, RoleRight>(_TestObjAsync);
-            Assert.AreEqual(expected, allAssert[1]);
+            Assert.AreEqual(_TestObj, allAssert[0]);
+            Assert.AreEqual(_TestObjAsync, allAssert[1]);
 
             // Delete
             RoleRight.Update(new SubList(), RoleRightType.List, _TestObj.RoleID);
@@ -161,10 +157,8 @@ namespace Sushi.Mediakiwi.Test.ORM
             // Check if both record are there
             Assert.IsTrue(allAssert.Length == 2);
             // check if saved db records are ok            
-            var expected = new Likeness<RoleRight, RoleRight>(_TestObj);
-            Assert.AreEqual(expected, allAssert[0]);
-            expected = new Likeness<RoleRight, RoleRight>(_TestObjAsync);
-            Assert.AreEqual(expected, allAssert[1]);
+            Assert.AreEqual(_TestObj, allAssert[0]);
+            Assert.AreEqual(_TestObjAsync, allAssert[1]);
 
             // Delete
             await RoleRight.UpdateAsync(new SubList(), RoleRightType.List, _TestObjAsync.RoleID);

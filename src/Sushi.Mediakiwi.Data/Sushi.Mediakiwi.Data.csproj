@@ -1,13 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
-    <Version>8.1.64</Version>
+    <TargetFramework>net8.0</TargetFramework>
+    <Version>8.2.0</Version>
     <Authors>Marc Molenwijk, Mark Rienstra, Mark de Vries</Authors>
     <Company>Supershift</Company>
     <Product>Mediakiwi</Product>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <Copyright>2005-2022 Supershift</Copyright>
+    <Copyright>2005-2025 Supershift</Copyright>
     <Description>Data Access Layer for the Mediakiwi Rapid Portal Development Framework.</Description>
     <PackageProjectUrl>https://mediakiwi.atlassian.net/wiki/spaces/CORE/overview</PackageProjectUrl>
     <RepositoryUrl>https://github.com/Supershift/Sushi.Mediakiwi</RepositoryUrl>
@@ -24,11 +24,15 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Configuration" Version="6.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="6.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="6.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="6.0.0" />
-    <PackageReference Include="Sushi.MicroORM" Version="2.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="8.0.2" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="8.0.1" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Sushi.Mediakiwi.MicroOrm\Sushi.Mediakiwi.MicroORM.csproj" />
   </ItemGroup>
 
 </Project>

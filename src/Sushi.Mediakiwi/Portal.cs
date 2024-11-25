@@ -7,7 +7,7 @@ using Sushi.Mediakiwi.Data.Caching;
 using Sushi.Mediakiwi.Data.Configuration;
 using Sushi.Mediakiwi.Framework;
 using Sushi.Mediakiwi.UI;
-using Sushi.MicroORM;
+using Sushi.Mediakiwi.MicroORM;
 using System;
 using System.Collections.Concurrent;
 using System.Threading.Tasks;

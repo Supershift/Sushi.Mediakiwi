@@ -1,6 +1,6 @@
 ﻿using Sushi.Mediakiwi.Data.MicroORM;
-using Sushi.MicroORM;
-using Sushi.MicroORM.Mapping;
+using Sushi.Mediakiwi.MicroORM;
+using Sushi.Mediakiwi.MicroORM.Mapping;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -543,25 +543,25 @@ namespace Sushi.Mediakiwi.Data
 
             if (sort == PageSortBy.Name)
             {
-                filter.AddOrder(x => x.Name, Sushi.MicroORM.SortOrder.ASC);
+                filter.AddOrder(x => x.Name, Mediakiwi.MicroORM.SortOrder.ASC);
             }
             else if (sort == PageSortBy.LinkText)
             {
-                filter.AddOrder(x => x.LinkText, Sushi.MicroORM.SortOrder.ASC);
+                filter.AddOrder(x => x.LinkText, Mediakiwi.MicroORM.SortOrder.ASC);
             }
             else if (sort == PageSortBy.SortOrder)
             {
-                filter.AddOrder(x => x.SortOrder, Sushi.MicroORM.SortOrder.ASC);
+                filter.AddOrder(x => x.SortOrder, Mediakiwi.MicroORM.SortOrder.ASC);
             }
             else if (sort == PageSortBy.CustomDate)
             {
-                filter.AddOrder(x => x.CustomDate, Sushi.MicroORM.SortOrder.ASC);
-                filter.AddOrder(x => x.SortOrder, Sushi.MicroORM.SortOrder.ASC);
+                filter.AddOrder(x => x.CustomDate, Mediakiwi.MicroORM.SortOrder.ASC);
+                filter.AddOrder(x => x.SortOrder, Mediakiwi.MicroORM.SortOrder.ASC);
             }
             else if (sort == PageSortBy.CustomDateDown)
             {
-                filter.AddOrder(x => x.CustomDate, Sushi.MicroORM.SortOrder.DESC);
-                filter.AddOrder(x => x.SortOrder, Sushi.MicroORM.SortOrder.ASC);
+                filter.AddOrder(x => x.CustomDate, Mediakiwi.MicroORM.SortOrder.DESC);
+                filter.AddOrder(x => x.SortOrder, Mediakiwi.MicroORM.SortOrder.ASC);
             }
 
             switch (propertySet)
@@ -607,25 +607,25 @@ namespace Sushi.Mediakiwi.Data
 
             if (sort == PageSortBy.Name)
             {
-                filter.AddOrder(x => x.Name, Sushi.MicroORM.SortOrder.ASC);
+                filter.AddOrder(x => x.Name, Mediakiwi.MicroORM.SortOrder.ASC);
             }
             else if (sort == PageSortBy.LinkText)
             {
-                filter.AddOrder(x => x.LinkText, Sushi.MicroORM.SortOrder.ASC);
+                filter.AddOrder(x => x.LinkText, Mediakiwi.MicroORM.SortOrder.ASC);
             }
             else if (sort == PageSortBy.SortOrder)
             {
-                filter.AddOrder(x => x.SortOrder, Sushi.MicroORM.SortOrder.ASC);
+                filter.AddOrder(x => x.SortOrder, Mediakiwi.MicroORM.SortOrder.ASC);
             }
             else if (sort == PageSortBy.CustomDate)
             {
-                filter.AddOrder(x => x.CustomDate, Sushi.MicroORM.SortOrder.ASC);
-                filter.AddOrder(x => x.SortOrder, Sushi.MicroORM.SortOrder.ASC);
+                filter.AddOrder(x => x.CustomDate, Mediakiwi.MicroORM.SortOrder.ASC);
+                filter.AddOrder(x => x.SortOrder, Mediakiwi.MicroORM.SortOrder.ASC);
             }
             else if (sort == PageSortBy.CustomDateDown)
             {
-                filter.AddOrder(x => x.CustomDate, Sushi.MicroORM.SortOrder.DESC);
-                filter.AddOrder(x => x.SortOrder, Sushi.MicroORM.SortOrder.ASC);
+                filter.AddOrder(x => x.CustomDate, Mediakiwi.MicroORM.SortOrder.DESC);
+                filter.AddOrder(x => x.SortOrder, Mediakiwi.MicroORM.SortOrder.ASC);
             }
 
             switch (propertySet)
@@ -1970,11 +1970,11 @@ namespace Sushi.Mediakiwi.Data
 
             if (desc)
             {
-                filter.AddOrder(x => x.CustomDate, Sushi.MicroORM.SortOrder.DESC);
+                filter.AddOrder(x => x.CustomDate, Mediakiwi.MicroORM.SortOrder.DESC);
             }
             else
             {
-                filter.AddOrder(x => x.CustomDate, Sushi.MicroORM.SortOrder.ASC);
+                filter.AddOrder(x => x.CustomDate, Mediakiwi.MicroORM.SortOrder.ASC);
             }
 
             filter.Add(x => x.FolderID, folderID);
@@ -2014,11 +2014,11 @@ namespace Sushi.Mediakiwi.Data
 
             if (desc)
             {
-                filter.AddOrder(x => x.CustomDate, Sushi.MicroORM.SortOrder.DESC);
+                filter.AddOrder(x => x.CustomDate, Mediakiwi.MicroORM.SortOrder.DESC);
             }
             else
             {
-                filter.AddOrder(x => x.CustomDate, Sushi.MicroORM.SortOrder.ASC);
+                filter.AddOrder(x => x.CustomDate, Mediakiwi.MicroORM.SortOrder.ASC);
             }
 
             filter.Add(x => x.FolderID, folderID);

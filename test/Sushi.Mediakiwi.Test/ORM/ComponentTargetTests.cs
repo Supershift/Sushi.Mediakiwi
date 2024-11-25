@@ -49,9 +49,8 @@ namespace Sushi.Mediakiwi.Test.ORM
             Assert.IsTrue(_TestObj?.ID > 0);
 
             // MJ: check if saved db record is ok            
-            var expected = new Likeness<ComponentTarget, ComponentTarget>(_TestObj);
             ComponentTarget db = (ComponentTarget)ComponentTarget.SelectOne(_TestObj.ID);
-            Assert.AreEqual(expected, db);
+            Assert.AreEqual(_TestObj, db);
 
             if (_TestObj.ID > 0)
             {
@@ -72,9 +71,8 @@ namespace Sushi.Mediakiwi.Test.ORM
             Assert.IsTrue(_TestObjAsync?.ID > 0);
 
             // MJ: check if saved db record is ok            
-            var expected = new Likeness<ComponentTarget, ComponentTarget>(_TestObjAsync);
             var db = await ComponentTarget.SelectOneAsync(_TestObjAsync.ID);
-            Assert.AreEqual(expected, (ComponentTarget)db);
+            Assert.AreEqual(_TestObjAsync, (ComponentTarget)db);
 
             if (_TestObjAsync.ID > 0)
             {
